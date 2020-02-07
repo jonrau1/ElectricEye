@@ -1,0 +1,272 @@
+import boto3
+import datetime
+import os
+# import boto3 clients
+securityhub = boto3.client('securityhub')
+appstream = boto3.client('appstream')
+sts = boto3.client('sts')
+# create account id & region variables
+awsAccount = sts.get_caller_identity()['Account']
+awsRegion = os.environ['AWS_REGION']
+
+def default_internet_access_check():
+    # loop through AppStream 2.0 fleets
+    response = appstream.describe_fleets()
+    myAppstreamFleets = response['Fleets']
+    for fleet in myAppstreamFleets:
+        fleetArn = str(fleet['Arn'])
+        fleetName = str(fleet['DisplayName'])
+        # find fleets that are configured to provide default internet access
+        defaultInternetAccessCheck = str(fleet['EnableDefaultInternetAccess'])
+        if defaultInternetAccessCheck == 'True':
+            try:
+                # ISO Time
+                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                # create Sec Hub finding
+                response = securityhub.batch_import_findings(
+                    Findings=[
+                        {
+                            'SchemaVersion': '2018-10-08',
+                            'Id': fleetArn + '/default-internet-access',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
+                            'GeneratorId': fleetArn,
+                            'AwsAccountId': awsAccount,
+                            'Types': [
+                                'Software and Configuration Checks/AWS Security Best Practices'
+                            ],
+                            'FirstObservedAt': iso8601Time,
+                            'CreatedAt': iso8601Time,
+                            'UpdatedAt': iso8601Time,
+                            'Severity': { 'Normalized': 40 },
+                            'Confidence': 99,
+                            'Title': '[AppStream.1] AppStream 2.0 fleets should not provide default internet access',
+                            'Description': 'AppStream 2.0 fleet ' + fleetName + ' is configured to provide default internet access. Refer to the remediation instructions if this configuration is not intended',
+                            'Remediation': {
+                                'Recommendation': {
+                                    'Text': 'If your fleet should not have default internet access refer to the instructions in the Amazon AppStream 2.0 Administration Guide',
+                                    'Url': 'https://docs.aws.amazon.com/appstream2/latest/developerguide/internet-access.html'
+                                }
+                            },
+                            'ProductFields': {
+                                'Product Name': 'Docker Compliance Machine Dont Stop'
+                            },
+                            'Resources': [
+                                {
+                                    'Type': 'Other',
+                                    'Id': fleetArn,
+                                    'Partition': 'aws',
+                                    'Region': awsRegion,
+                                    'Details': {
+                                        'Other': { 
+                                            'Fleet Name': fleetName 
+                                        }
+                                    }
+                                }
+                            ],
+                            'Compliance': { 'Status': 'FAILED' },
+                            'RecordState': 'ACTIVE'
+                        }
+                    ]
+                )
+                print(response)
+            except Exception as e:
+                print(e)
+        else:
+            print('AppStream 2.0 Fleet does not have default internet access')
+
+def public_image_check():
+    # loop through AppStream 2.0 images
+    response = appstream.describe_images(Type='PUBLIC',MaxResults=25)
+    myAppstreamImages = response['Images']
+    for images in myAppstreamImages:
+        imageName = str(images['Name'])
+        imageArn = str(images['Arn'])
+        try:
+            # ISO Time
+            iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+            # create Sec Hub finding
+            response = securityhub.batch_import_findings(
+                Findings=[
+                    {
+                        'SchemaVersion': '2018-10-08',
+                        'Id': imageArn + '/public-image',
+                        'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
+                        'GeneratorId': imageArn,
+                        'AwsAccountId': awsAccount,
+                        'Types': [
+                            'Software and Configuration Checks/AWS Security Best Practices',
+                            'Effects/Data Exposure'
+                        ],
+                        'FirstObservedAt': iso8601Time,
+                        'CreatedAt': iso8601Time,
+                        'UpdatedAt': iso8601Time,
+                        'Severity': { 'Normalized': 60 },
+                        'Confidence': 99,
+                        'Title': '[AppStream.2] AppStream 2.0 images you build should not be publicly accessible',
+                        'Description': 'AppStream 2.0 image ' + imageName + ' is publicly accessible. Refer to the remediation instructions if this configuration is not intended. Note that AWS managed AppStream 2.0 images will always be publicly accessible',
+                        'Remediation': {
+                            'Recommendation': {
+                                'Text': 'If your image should not be publicly accessible refer to the instructions in the Amazon AppStream 2.0 Administration Guide',
+                                'Url': 'https://docs.aws.amazon.com/appstream2/latest/developerguide/administer-images.html#stop-sharing-image-with-all-accounts'
+                            }
+                        },
+                        'ProductFields': {
+                            'Product Name': 'Docker Compliance Machine Dont Stop'
+                        },
+                        'Resources': [
+                            {
+                                'Type': 'Other',
+                                'Id': imageArn,
+                                'Partition': 'aws',
+                                'Region': awsRegion,
+                                'Details': {
+                                    'Other': { 'Image Name': imageName }
+                                }
+                            }
+                        ],
+                        'Compliance': { 'Status': 'FAILED' },
+                        'RecordState': 'ACTIVE'
+                    }
+                ]
+            )
+            print(response)
+        except Exception as e:
+            print(e)
+
+def compromised_appstream_user_check():
+    # loop through AppStream 2.0 users
+    response = appstream.describe_users(AuthenticationType='USERPOOL')
+    myAppStreamUsers = response['Users']
+    for users in myAppStreamUsers:
+        userArn = str(users['Arn'])
+        userName = str(users['UserName'])
+        userStatus = str(users['Status'])
+        if userStatus == 'COMPROMISED':
+            try:
+                # ISO Time
+                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                # create Sec Hub finding
+                response = securityhub.batch_import_findings(
+                    Findings=[
+                        {
+                            'SchemaVersion': '2018-10-08',
+                            'Id': userArn + '/compromised-user',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
+                            'GeneratorId': userArn,
+                            'AwsAccountId': awsAccount,
+                            'Types': [
+                                'Software and Configuration Checks/AWS Security Best Practices'
+                            ],
+                            'FirstObservedAt': iso8601Time,
+                            'CreatedAt': iso8601Time,
+                            'UpdatedAt': iso8601Time,
+                            'Severity': { 'Normalized': 90 },
+                            'Confidence': 99,
+                            'Title': '[AppStream.3] AppStream 2.0 users should be monitored for signs of compromise',
+                            'Description': 'AppStream 2.0 user ' + userName + ' is compromised. Refer to the remediation instructions for information on how to remove them',
+                            'Remediation': {
+                                'Recommendation': {
+                                    'Text': 'To disable and remove compromised users refer to the instructions in the User Pool Administration section of the Amazon AppStream 2.0 Administration Guide',
+                                    'Url': 'https://docs.aws.amazon.com/appstream2/latest/developerguide/user-pool-admin.html#user-pool-admin-disabling'
+                                }
+                            },
+                            'ProductFields': {
+                                'Product Name': 'Docker Compliance Machine Dont Stop'
+                            },
+                            'Resources': [
+                                {
+                                    'Type': 'Other',
+                                    'Id': userArn,
+                                    'Partition': 'aws',
+                                    'Region': awsRegion,
+                                    'Details': {
+                                        'Other': { 
+                                            'User Name': userName
+                                        }
+                                    }
+                                }
+                            ],
+                            'Compliance': { 'Status': 'FAILED' },
+                            'RecordState': 'ACTIVE'
+                        }
+                    ]
+                )
+                print(response)
+            except Exception as e:
+                print(e)
+        else:
+            print('AppStream 2.0 user is not compromised')
+
+def userpool_auth_check():
+    # loop through AppStream 2.0 users
+    response = appstream.describe_users(AuthenticationType='USERPOOL')
+    myAppStreamUsers = response['Users']
+    for users in myAppStreamUsers:
+        userArn = str(users['Arn'])
+        userName = str(users['UserName'])
+        # find users that do not auth with SAML
+        # basic auth & API access will show as non-compliant
+        userAuthType = str(users['AuthenticationType'])
+        if userAuthType != 'SAML':
+            try:
+                # ISO Time
+                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                # create Sec Hub finding
+                response = securityhub.batch_import_findings(
+                    Findings=[
+                        {
+                            'SchemaVersion': '2018-10-08',
+                            'Id': userArn + '/compromised-user',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
+                            'GeneratorId': userArn,
+                            'AwsAccountId': awsAccount,
+                            'Types': [
+                                'Software and Configuration Checks/AWS Security Best Practices'
+                            ],
+                            'FirstObservedAt': iso8601Time,
+                            'CreatedAt': iso8601Time,
+                            'UpdatedAt': iso8601Time,
+                            'Severity': { 'Normalized': 40 },
+                            'Confidence': 99,
+                            'Title': '[AppStream.4] AppStream 2.0 users should be configured to authenticate using SAML',
+                            'Description': 'AppStream 2.0 user ' + userName + ' is not configured to authenticate using SAML. Refer to the remediation instructions for information on how to remove them',
+                            'Remediation': {
+                                'Recommendation': {
+                                    'Text': 'For information on setting up SAML refer to the Setting Up SAML section of the Amazon AppStream 2.0 Administration Guide',
+                                    'Url': 'https://docs.aws.amazon.com/appstream2/latest/developerguide/external-identity-providers-setting-up-saml.html#external-identity-providers-create-saml-provider'
+                                }
+                            },
+                            'ProductFields': {
+                                'Product Name': 'Docker Compliance Machine Dont Stop'
+                            },
+                            'Resources': [
+                                {
+                                    'Type': 'Other',
+                                    'Id': userArn,
+                                    'Partition': 'aws',
+                                    'Region': awsRegion,
+                                    'Details': {
+                                        'Other': { 
+                                            'User Name': userName
+                                        }
+                                    }
+                                }
+                            ],
+                            'Compliance': { 'Status': 'FAILED' },
+                            'RecordState': 'ACTIVE'
+                        }
+                    ]
+                )
+                print(response)
+            except Exception as e:
+                print(e)
+        else:
+            print('AppStream 2.0 user is using SAML')
+
+def appstream_auditor():
+    default_internet_access_check()
+    public_image_check()
+    compromised_appstream_user_check()
+    userpool_auth_check()
+
+appstream_auditor()
