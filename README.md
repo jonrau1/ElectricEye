@@ -32,4 +32,33 @@ No. If you wanted to use this tool to satisfy an audit, I would recommend you wo
 If you find that it does, you can use `Compliance.RelatedRequirements` to denote those. I would recommend forking and modifying the code for that purpose.
 
 **3 - Can this be the primary tool I use for AWS security scanning?**
-Only you can make that determination. More is always better, there are far more mature projects that exist such as Prowler, PaCBot, Cloud Inquisitor and Scout2. You should perform a detailed analysis about which tools support what checks, what your ultimate downstream tool with be (Splunk, Kibana, Security Hub, etc.) and how many false-positives or false-negatives are created by it.
+Only you can make that determination. More is always better, there are far more mature projects that exist such as [Prowler](https://github.com/toniblyx/prowler), [PacBot](https://github.com/tmobile/pacbot), [Cloud Inquisitor](https://github.com/RiotGames/cloud-inquisitor) and [Scout2](https://github.com/nccgroup/ScoutSuite). 
+
+You should perform a detailed analysis about which tools support what checks, what your ultimate downstream tool will be for taking actions or analyzing findings (Splunk, Kibana, Security Hub, etc.) and how many false-positives or false-negatives are created by what tool.
+
+**4 - Why didn't you build Config rules do these?**
+Mainly because I couldn't get RDK working to save my life, and I do not know how to.
+
+I built ElectricEye with Security Hub in mind, using custom Config rules would require a lot of additional infrastructure and API calls to parse out a specific rule, map what little information Config gives to the ASFF and also perform more API calls to enrich the findings and send it, that is not something I would want to do.
+
+**5 - What are the advantages over AWS Security Hub compliance standards? Why shouldn't I use those instead?**
+You should use them! The only notable "advantage" would be ElectricEye might support a resource before a Security Hub compliance standard does, or it may support a check that Security Hub compliance standards do not.
+
+**6 - What are the advantages over Config Conformance Packs? Why shouldn't I use those instead?**
+Similar to above, ElectricEye may support another service or another type of check that Config rules do not. You should keep using Conformance Packs if you already do, there are some awesome ARG-powered Config Rules in IAM that ElectricEye would never support.
+
+**7 - Can I scope these checks by tag or by a certain resource?**
+No. That is a great idea for a PR though.
+
+**8 - Why do I have to set this up per account? Why can't I just scan all of my resources across all accounts?**
+Doing these scans per accounts let your on-call / account owner to view it within their own Security Hub versus not knowing they are potentially using dangerous configurations. Security should be democratized.
+
+Also, that's like...really hard. Good idea for a PR though.
+
+**9 - Why don't you support (insert service name here)?**
+I will, eventually. Open up an issue if you really want it or open up a PR if you figured it out.
+
+**10 - Where is that automated remediation you like so much?**
+You probably have me confused with someone else...
+
+That is a Phase 2 after I am done scanning all the things, we can remediate all of the things.
