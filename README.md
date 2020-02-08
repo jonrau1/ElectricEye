@@ -8,19 +8,31 @@ Scans your AWS serivces for misconfigurations that can lead to degradation of co
 <sub>*Judas Priest, 1982*</sub>
 
 ## Description
-ElectricEye is a set of Python scripts that use boto3 to scan your AWS infrastructure looking for security and availability configurations that do not align with AWS best practices. Services that fail these checks will have findings for them sent to AWS Security Hub, where you perform basic correlation against other AWS and 3rd Party services that send findings to Security Hub and have a centralized view from which account owners and other responsible parties can view them.
+ElectricEye is a set of Python scripts that use boto3 to scan your AWS infrastructure looking for security and availability configurations that do not align with AWS best practices for security or well-architected. Services that fail these checks will have findings sent to AWS Security Hub, where you can perform basic correlation against other AWS and 3rd Party services that send findings to Security Hub and, have a centralized view from which account owners and other responsible parties can view them. Scans that pick up services which are in a compliant state will be sent as informational, archived findings. This serves a double-purpose of having your fixes reflect accurately if you remediate them ahead of the next scan.
 
-ElectricEye runs on AWS Fargate, which is a serverless container orchestration platform. You will build and push a Docker image and use Terraform to create all necessary components needed for ElectricEye to perform its scans. You can set how often you want the scans to happen, and all findings will link to relevant AWS documentation to give you information on how to remediate potential misconfigurations.
+ElectricEye runs on AWS Fargate, which is a serverless container orchestration service. You will build and push a Docker image and use Terraform to create all necessary components needed for ElectricEye to perform its scans. You can set how often you want the scans to happen, and all findings will link to relevant AWS documentation to give you information on how to remediate potential misconfigurations.
 
 Personas who can make use of this tool are DevOps/DevSecOps engineers, SecOps analysts, Enterprise Architects, SREs, Internal Audit and/or Compliance Analysts.
 
-ElectricEye scans 12 different AWS services such as AppStream 2.0, AMIs and Managed Kafka Service clusters and supports 41 unique checks across all services. More checks and services will be added periodically.
+ElectricEye scans 14 different AWS services such as AppStream 2.0, Managed Kafka Service clusters, RDS Instances and supports 52 unique checks across all services. More checks and services will be added periodically.
 
 ## Solution Architecture
 TBD
 
 ## Setting Up
 TBD
+
+## Supported Services and Checks
+TBD
+
+## Known Issues & Limitiations
+This section is likely to wax and wane depending on future releases, PRs and changes to AWS APIs.
+
+- DocumentDB and RDS Describe APIs bleed over each other's information, leading to failed RDS checks that are really DocDB and vice versa. The only recourse is to continually archive these findings.
+
+- No tag-based scoping or exemption process out of the box. You will need to manually archive these, remove checks not pertinent to you and/or create your own automation to automatically archive findings for resources that shouldn't be in-scope.
+
+- Some resources, such as Elasticsearch Service, cannot be remediate after creation for some checks and will continue to show as non-compliant until you manually migrate them, or create automation to silence these findings.
 
 ## FAQ
 ##### 1. Why should I use this tool?
