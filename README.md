@@ -23,7 +23,7 @@ TBD
 TBD
 
 ## FAQ
-1. Why should I use this tool?
+##### 1. Why should I use this tool?
 Primarily because it is free. This tool will also help cover services not currently covered by Amazon GuardDuty or AWS Security Hub compliance standards. This tool is also natively integrated with Security Hub, no need to create additional services to perform translation into the AWS Security Finding Format and calling the BatchImportFindings API to send findings to Security Hub.
 
 2. Will this tool help me become compliant with (insert regulatory framework here)?
