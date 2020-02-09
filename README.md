@@ -8,13 +8,11 @@ Scans your AWS serivces for misconfigurations that can lead to degradation of co
 <sub>*Judas Priest, 1982*</sub>
 
 ## Description
-ElectricEye is a set of Python scripts that use boto3 to scan your AWS infrastructure looking for security and availability configurations that do not align with AWS best practices for security or well-architected. Services that fail these checks will have findings sent to AWS Security Hub, where you can perform basic correlation against other AWS and 3rd Party services that send findings to Security Hub and, have a centralized view from which account owners and other responsible parties can view them. Scans that pick up services which are in a compliant state will be sent as informational, archived findings. This serves a double-purpose of having your fixes reflect accurately if you remediate them ahead of the next scan.
+ElectricEye is a set of Python scripts (affectionately called **Auditors**) that scan your AWS infrastructure looking for configurations related to confidentiality, integrity and availability that do not align with AWS best practices. All findings from these scans will be sent to AWS Security Hub where you can perform basic correlation against other AWS and 3rd Party services that send findings to Security Hub. Security Hub also provides a centralized view from which account owners and other responsible parties can view and take action on findings.
 
-ElectricEye runs on AWS Fargate, which is a serverless container orchestration service. You will build and push a Docker image and use Terraform to create all necessary components needed for ElectricEye to perform its scans. You can set how often you want the scans to happen, and all findings will link to relevant AWS documentation to give you information on how to remediate potential misconfigurations.
+ElectricEye runs on AWS Fargate, which is a serverless container orchestration service. A Docker image will be scheduled to be run on top of Fargate, download all of the auditor code from a S3 bucket, run through scans and send results to Security Hub. All infrastructure will be deployed via Terraform to help you apply this solution to many accounts and/or regions. All findings (passed or failed) will contain AWS documentation references in the `Remediation.Recommendation` section of the ASFF (the Remediaiton section of the Security Hub UI) to further educate yourself and others on.
 
-Personas who can make use of this tool are DevOps/DevSecOps engineers, SecOps analysts, Enterprise Architects, SREs, Internal Audit and/or Compliance Analysts.
-
-ElectricEye scans 14 different AWS services such as AppStream 2.0, Managed Kafka Service clusters, RDS Instances and supports 49 unique checks across all services. More checks and services will be added periodically.
+Personas who can make use of this tool are DevOps/DevSecOps engineers, SecOps analysts, Cloud Center-of-Excellence personnel, Site Relability Engineers (SREs), Internal Audit and/or Compliance Analysts.
 
 ## Solution Architecture
 ![Architecture](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/Architecture.jpg)
@@ -23,7 +21,9 @@ ElectricEye scans 14 different AWS services such as AppStream 2.0, Managed Kafka
 3. The ElectricEye Docker image is pulled from [Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/) when the task runs
 4. Using the bucket name from SSM Parameter Store, the Task will [download](https://docs.aws.amazon.com/cli/latest/reference/s3/cp.html) all scripts from S3
 5. ElectricEye executes the scripts to scan your AWS infrastructure for both compliant and non-compliant configurations
-6. All findings are sent to Security Hub using the [BatchImportFindings API](https://docs.aws.amazon.com/securityhub/1.0/APIReference/API_BatchImportFindings.html), findings about compliant resources are automatically [archived](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-concepts.html) as to not clutter Security Hub  
+6. All findings are sent to Security Hub using the [BatchImportFindings API](https://docs.aws.amazon.com/securityhub/1.0/APIReference/API_BatchImportFindings.html), findings about compliant resources are automatically [archived](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-concepts.html) as to not clutter Security Hub
+
+Refer to the [Supported Services and Checks](https://github.com/jonrau1/ElectricEye#supported-services-and-checks) section for an update to date list of support services and checks performed by the Auditors.
 
 ## Setting Up
 These steps are split across their relevant sections. All CLI commands are executed from an Ubuntu 18.04LTS [Cloud9 IDE](https://aws.amazon.com/cloud9/details/), modify them to fit your OS.
@@ -74,7 +74,59 @@ Steps
 Steps
 
 ## Supported Services and Checks
-TBD
+These are the following services and checks perform by each Auditor. There are currently **49** checks supported across **14** services.
+
+| Auditor File Name                      | AWS Service                | Scan Performed                                                        |
+|----------------------------------------|----------------------------|-----------------------------------------------------------------------|
+| Amazon_AppStream_Auditor.py            | AppStream 2.0 (Fleets)     | Do Fleets allow Default<br>Internet Access                            |
+| Amazon_AppStream_Auditor.py            | AppStream 2.0 (Images)     | Are Images Public                                                     |
+| Amazon_AppStream_Auditor.py            | AppStream 2.0 (Users)      | Are users reported as Compromised                                     |
+| Amazon_AppStream_Auditor.py            | AppStream 2.0 (Users)      | Do users use SAML authentication                                      |
+| Amazon_CognitoIdP_Auditor.py           | Cognito Identity Pool      | Does the Password policy comply<br>with AWS CIS Foundations Benchmark |
+| Amazon_CognitoIdP_Auditor.py           | Cognito Identity Pool      | Cognito Temporary Password Age                                        |
+| Amazon_CognitoIdP_Auditor.py           | Cognito Identity Pool      | Does the Identity pool enforce MFA                                    |
+| Amazon_DocumentDB_Auditor.py           | DocumentDB Instance        | Are Instances publicly accessible                                     |
+| Amazon_DocumentDB_Auditor.py           | DocumentDB Instance        | Are Instance encrypted                                                |
+| Amazon_DocumentDB_Auditor.py           | DocumentDB Cluster         | Is the Cluster configured for HA                                      |
+| Amazon_DocumentDB_Auditor.py           | DocumentDB Cluster         | Is the Cluster deletion protected                                     |
+| Amazon_ECR_Auditor.py                  | ECR Repository             | Does the repository support<br>scan-on-push                           |
+| Amazon_EKS_Auditor.py                  | EKS Cluster                | Is the API Server publicly<br>accessible                              |
+| Amazon_EKS_Auditor.py                  | EKS Cluster                | Is K8s 1.14 used                                                      |
+| Amazon_Elasticache_Redis_Auditor.py    | Elasticache Redis Cluster  | Is an AUTH Token used                                                 |
+| Amazon_Elasticache_Redis_Auditor.py    | Elasticache Redis Cluster  | Is the cluster encrypted at rest                                      |
+| Amazon_Elasticache_Redis_Auditor.py    | Elasticache Redis Cluster  | Does the cluster encrypt in transit                                   |
+| Amazon_ElasticsearchService_Auditor.py | Elasticsearch Domain       | Are dedicated masters used                                            |
+| Amazon_ElasticsearchService_Auditor.py | Elasticsearch Domain       | Is Cognito auth used                                                  |
+| Amazon_ElasticsearchService_Auditor.py | Elasticsearch Domain       | Is encryption at rest used                                            |
+| Amazon_ElasticsearchService_Auditor.py | Elasticsearch Domain       | Is Node2Node encryption used                                          |
+| Amazon_ElasticsearchService_Auditor.py | Elasticsearch Domain       | Is HTTPS-only enforced                                                |
+| Amazon_ElasticsearchService_Auditor.py | Elasticsearch Domain       | Is a TLS 1.2 policy used                                              |
+| Amazon_ElasticsearchService_Auditor.py | Elasticsearch Domain       | Are there available version updates                                   |
+| Amazon_MSK_Auditor.py                  | MSK Cluster                | Is inter-cluster encryption used                                      |
+| Amazon_MSK_Auditor.py                  | MSK Cluster                | Is client-broker communications<br>TLS-only                           |
+| Amazon_MSK_Auditor.py                  | MSK Cluster                | Is enhanced monitoring used                                           |
+| Amazon_MSK_Auditor.py                  | MSK Cluster                | Is Private CA TLS auth used                                           |
+| Amazon_RDS_Auditor.py                  | RDS DB Instance            | Is HA configured                                                      |
+| Amazon_RDS_Auditor.py                  | RDS DB Instance            | Are DB instances publicly accessible                                  |
+| Amazon_RDS_Auditor.py                  | RDS DB Instance            | Is DB storage encrypted                                               |
+| Amazon_RDS_Auditor.py                  | RDS DB Instance            | Do supported DBs use IAM Authentication                               |
+| Amazon_RDS_Auditor.py                  | RDS DB Instance            | Are supported DBs joined to a domain                                  |
+| Amazon_RDS_Auditor.py                  | RDS DB Instance            | Is performance insights enabled                                       |
+| Amazon_RDS_Auditor.py                  | RDS DB Instance            | Is deletion protection enabled                                        |
+| AMI_Auditor.py                         | Amazon Machine Image (AMI) | Are owned AMIs public                                                 |
+| AMI_Auditor.py                         | Amazon Machine Image (AMI) | Are owned AMIs encrypted                                              |
+| AWS_Backup_Auditor.py                  | EC2 Instance               | Are EC2 instances backed up                                           |
+| AWS_Backup_Auditor.py                  | EBS Volume                 | Are EBS volumes backed up                                             |
+| AWS_Backup_Auditor.py                  | DynamoDB tables            | Are DynamoDB tables backed up                                         |
+| AWS_Backup_Auditor.py                  | RDS DB Instance            | Are RDS DB instances backed up                                        |
+| AWS_CloudFormation_Auditor.py          | CloudFormation Stack       | Is drift detection enabled                                            |
+| AWS_CloudFormation_Auditor.py          | CloudFormation Stack       | Are stacks monitored                                                  |
+| AWS_CodeBuild_Auditor.py               | CodeBuild project          | Is artifact encryption enabled                                        |
+| AWS_CodeBuild_Auditor.py               | CodeBuild project          | Is Insecure SSL enabled                                               |
+| AWS_CodeBuild_Auditor.py               | CodeBuild project          | Are plaintext environmental<br>variables used                         |
+| AWS_CodeBuild_Auditor.py               | CodeBuild project          | Is S3 logging encryption enabled                                      |
+| AWS_CodeBuild_Auditor.py               | CodeBuild project          | Is CloudWatch logging enabled                                         |
+| AWS_Security_Hub_Auditor.py            | Security Hub (Account)     | Are there active high or critical<br>findings in Security Hub         |
 
 ## Known Issues & Limitiations
 This section is likely to wax and wane depending on future releases, PRs and changes to AWS APIs.
@@ -123,24 +175,19 @@ You should consider taking a look at any of these:
 <br>**Secrets Scanning**</br>
 - [truffleHog](https://github.com/dxa4481/truffleHog)
 - [git-secrets](https://github.com/awslabs/git-secrets)
-
 <br>**Static Analysis**</br>
 - [Bandit](https://github.com/PyCQA/bandit) (for Python)
 - [GoSec](https://github.com/securego/gosec) (for Golang)
 - [NodeJsScan](https://github.com/ajinabraham/NodeJsScan) (for NodeJS)
 - [tfsec](https://github.com/liamg/tfsec) (for Terraform "SAST")
-
 <br>**Linters**</br>
 - [hadolint](https://github.com/hadolint/hadolint) (for Docker)
 - [cfn-python-lint](https://github.com/aws-cloudformation/cfn-python-lint) (for CloudFormation)
 - [cfn-nag](https://github.com/stelligent/cfn_nag) (for CloudFormation)
-
 <br>**Dynamic Analysis**</br>
 - [Zed Attack Proxy (ZAP)](https://owasp.org/www-project-zap/)
-
 <br>**Anti-Virus**</br>
 - [ClamAV](https://www.clamav.net/documents/clamav-development)
-
 <br>**IDS/IPS**</br>
 - [Suricata](https://suricata-ids.org/)
 - [Snort](https://www.snort.org/)
