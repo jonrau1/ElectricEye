@@ -13,7 +13,6 @@ Scans your AWS serivces for misconfigurations that can lead to degradation of co
 - [Setting Up](https://github.com/jonrau1/ElectricEye#setting-up)
   - [Build and push the Docker image](https://github.com/jonrau1/ElectricEye#build-and-push-the-docker-image)
   - [Deploy the baseline infrastructure](https://github.com/jonrau1/ElectricEye#deploy-the-baseline-infrastructure)
-  - Upload Auditor code to S3
   - Manually execute the ElectricEye ECS Task
 - [Supported Services and Checks](https://github.com/jonrau1/ElectricEye#supported-services-and-checks)
 - [Known Issues & Limitiations](https://github.com/jonrau1/ElectricEye#known-issues--limitiations)
@@ -41,7 +40,7 @@ Refer to the [Supported Services and Checks](https://github.com/jonrau1/Electric
 These steps are split across their relevant sections. All CLI commands are executed from an Ubuntu 18.04LTS [Cloud9 IDE](https://aws.amazon.com/cloud9/details/), modify them to fit your OS.
 
 #### Build and push the Docker image
-Before starting attach this IAM policy to your [Instance Profile](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html) (if you are using Cloud9 or EC2).
+Before starting [attach this IAM policy](https://github.com/jonrau1/ElectricEye/blob/master/policies/Instance_Profile_IAM_Policy.json) to your [Instance Profile](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html) (if you are using Cloud9 or EC2).
 1. Update your machine and clone this repository
 ```bash
 sudo apt update
@@ -64,11 +63,11 @@ sudo docker tag <REPO_NAME>:latest <ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.c
 sudo docker push <ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/<REPO_NAME>:latest
 ```
 
-4. Navigate to the ECR console and copy the `URI` of your Docker image. It will be in the format of `<ACCOUNT_ID>.dkr.ecr.<AWS_REGION.amazonaws.com/<REPO_NAME>:latest`
+4. Navigate to the ECR console and copy the `URI` of your Docker image. It will be in the format of `<ACCOUNT_ID>.dkr.ecr.<AWS_REGION.amazonaws.com/<REPO_NAME>:latest`. Save this as you will need it when configuring Terraform.
 
 Do not navigate away from this directory, as you will enter more code in the next stage.
 
-#### Deploy the baseline infrastructure
+#### Setup baseline infrastructure
 In this stage we will install and deploy the ElectricEye infrastructure via Terraform. To securely backup your state file, you should explore the usage of a [S3 backend](https://www.terraform.io/docs/backends/index.html), this is also described in this [AWS Security Blog post](https://aws.amazon.com/blogs/security/how-use-ci-cd-deploy-configure-aws-security-services-terraform/).
 
 1. Install the dependencies for Terraform. **Note:** these configuration files are written for `v 0.11.x` and will not work with `v 0.12.x` Terraform installations and rewriting for that spec is not in the immediate roadmap.
@@ -79,10 +78,29 @@ sudo mv terraform /usr/local/bin/
 terraform --version
 ```
 
-2. 
+2. Change directories, and modify the `variables.tf` config file to include the URI of your Docker image as shown in the screenshot below
+```bash
+cd terraform-config-files
+nano variables.tf
+```
 
-#### Upload Auditor code to S3
-Steps
+3. Initialize, plan and apply your state with Terraform, this step should not take too long.
+```bash
+terraform init
+terraform plan
+terraform apply -auto-approve
+```
+
+4. Navigate to the S3 console and locate the name of the S3 bucket created by Terraform for the next step. It should be in the format of `electriceye-artifact-bucket-(AWS_REGION)-(ACCOUNT-NUMBER)` if you left everything else default in `variables.tf`
+
+5. Navigate to the `auditors` directory and upload the code base to your S3 bucket
+```bash
+cd -
+cd auditors
+aws s3 sync . s3://<your-bucket-name>
+```
+
+6. Navigate to the `insights` directory and execute the Python script to have Security Hub Insights created. Insights are saved searches that can also be used as quick-view dashboards (though no where near the sophsication of a QuickSight dashboard)
 
 #### Manually execute the ElectricEye ECS Task (you only need to do this once)
 Steps
@@ -184,7 +202,28 @@ I will, eventually. Open up an issue if you really want it or open up a PR if yo
 #### 10. Where is that automated remediation you like so much?
 You probably have me confused with someone else...That is a Phase 2 plan: after I am done scanning all the things, we can remediate all of the things.
 
-#### 11. What are those other tools you mentioned?
+#### 11. How much does this solution cost to run?
+The costs are extremely negligible, as the primary costs are Fargate vCPU and Memory per GB per Hour and then Security Hub finding ingestion about 10,000 per Region per Month (the first 10,000 is perpetually free). We will use two scenarios as an example for the costs, you will likely need to perform your own analysis to forecast potential costs. ElectricEye's ECS Task Definition is 2 vCPU and 4GB of Memory by default.
+
+##### Fargate Costs
+**30 Day Period: Running ElectricEye every 12 hours and it takes 5 minutes per Run**
+5 hours of total runtime per month: $0.49370/region/account/month
+
+**30 Day Period: Running ElectricEye every 6 hours and it takes 10 minutes per Run**
+20 hours of total runtime per month: $1.61920/region/account/month
+
+##### Security Hub Costs
+**Having 10 resources per check in scope for all 49 checks running 120 times a month (every 12 hours)**
+58800 findings, 48800 in scope for charges: **$1.46 /region/account/month**
+
+**Having 5 resources per check in scope for all 49 checks running 60 times a month (every 12 hours)**
+14700 findings, 4700 in scope for charges: **$0.14/region/account/month**
+
+With the above examples, if you had Fargate running for 20 hours a month and generated 48800 metered findings it would cost **$3.08320** per region per account per month. If you had Fargate running 5 hours a month and generated 4700 metered findings it would cost **$0.63470** per region per account per month.
+
+To put it another way, the most expensive example in these scenarios would cost **$37.00** per year per region per account. That means running ElectricEye in that price range across 50 accounts and 4 regions would be **$7,399.68** a year. You could potentially save up to 70% on Fargate costs by modifying ElectricEye to run on [Fargate Spot](https://aws.amazon.com/blogs/aws/aws-fargate-spot-now-generally-available/).
+
+#### 12. What are those other tools you mentioned?
 You should consider taking a look at any of these:
 
 <br>**Secrets Scanning**</br>
