@@ -45,7 +45,8 @@ Before starting [attach this IAM policy](https://github.com/jonrau1/ElectricEye/
 ```bash
 sudo apt update
 sudo apt upgrade -y
-sudo apt install -y unzip awscli docker.ce
+sudo apt install -y unzip awscli docker.ce python3 python3-pip
+pip3 install boto3
 git clone https://github.com/jonrau1/ElectricEye.git
 ```
 
@@ -69,6 +70,10 @@ Do not navigate away from this directory, as you will enter more code in the nex
 
 #### Setup baseline infrastructure
 In this stage we will install and deploy the ElectricEye infrastructure via Terraform. To securely backup your state file, you should explore the usage of a [S3 backend](https://www.terraform.io/docs/backends/index.html), this is also described in this [AWS Security Blog post](https://aws.amazon.com/blogs/security/how-use-ci-cd-deploy-configure-aws-security-services-terraform/).
+
+**Important Note:** The policy for the instance profile is ***highly dangerous*** given the S3, VPC and IAM related permissions given to it, Terraform needs a wide swath of CRUD permissions and even permissions for things that aren't deployed by the config files. 
+
+For rolling ElectricEye out in a Production or otherwise highly-regulated environment, consider adding [IAM Condition Keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_actions-resources-contextkeys.html#context_keys_table), using CI/CD (no human access) and backing up your Terraform state files to a S3 backend to add guardrails around this deployment. I would avoid adding these permissions to an IAM user, and any roles that use this should only be assumable by where you are deploying it from, consider adding other Condition Keys to the Trust Policy.
 
 1. Install the dependencies for Terraform. **Note:** these configuration files are written for `v 0.11.x` and will not work with `v 0.12.x` Terraform installations and rewriting for that spec is not in the immediate roadmap.
 ```bash
@@ -102,9 +107,33 @@ aws s3 sync . s3://<your-bucket-name>
 ```
 
 6. Navigate to the `insights` directory and execute the Python script to have Security Hub Insights created. Insights are saved searches that can also be used as quick-view dashboards (though no where near the sophsication of a QuickSight dashboard)
+```bash
+cd -
+cd insights
+python3 electriceye-insights.py
+```
+
+In the next stage your will run the ElectricEye ECS task manually, after Terraform deploys this solution it will automatically run and it will fail due to a lack of auditors in the S3 bucket. You can skip the next section if you intend to have ElectricEye run automatically.
 
 #### Manually execute the ElectricEye ECS Task (you only need to do this once)
-Steps
+In this stage we will use the console the manually run the ElectricEye ECS task.
+
+1. Navigate to the ECS Console, select **Task Definitions** and toggle the `electric-eye` task definition. Select the **Actions** dropdown menu and select **Run Task** as shown in the below screenshot.
+![Run task dropdown](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/run-ecs-task-dropdown.JPG)
+
+2. Configure the following settings in the **Run Task** screen as shown in the screenshot below
+- Launch type: **Fargate**
+- Platform version: **LATEST**
+- Cluster: **electric-eye-vpc-ecs-cluster** (unless named otherwise)
+- Number of tasks: **1**
+- Task group: ***LEAVE THIS BLANK***
+- Cluster VPC: **electric-eye-vpc**
+- Subnets: ***any eletric eye Subnet***
+- Security groups: **electric-eye-vpc-sec-group** (you will need to select **Modify** and choose from another menu)
+- Auto-assign public IP: **ENABLED**
+![ECS task menu](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/ecs-task-menu-modifications.JPG)
+
+3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
 ## Supported Services and Checks
 These are the following services and checks perform by each Auditor. There are currently **49** checks supported across **14** services.
