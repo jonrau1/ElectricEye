@@ -14,13 +14,25 @@ ElectricEye runs on AWS Fargate, which is a serverless container orchestration s
 
 Personas who can make use of this tool are DevOps/DevSecOps engineers, SecOps analysts, Enterprise Architects, SREs, Internal Audit and/or Compliance Analysts.
 
-ElectricEye scans 14 different AWS services such as AppStream 2.0, Managed Kafka Service clusters, RDS Instances and supports 52 unique checks across all services. More checks and services will be added periodically.
+ElectricEye scans 14 different AWS services such as AppStream 2.0, Managed Kafka Service clusters, RDS Instances and supports 49 unique checks across all services. More checks and services will be added periodically.
 
 ## Solution Architecture
-TBD
+architecture
+1.  
 
 ## Setting Up
-TBD
+These steps are split across their relevant sections. All CLI commands are executed from an Ubuntu 18.04LTS machine.
+#### Build and push the Docker image
+Steps
+
+#### Deploy the baseline infrastructure
+Steps
+
+#### Upload scan code to S3
+Steps
+
+#### Manually execute the ElectricEye ECS Task (you only need to do this once)
+Steps
 
 ## Supported Services and Checks
 TBD
