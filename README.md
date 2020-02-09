@@ -7,10 +7,22 @@ Scans your AWS serivces for misconfigurations that can lead to degradation of co
 ***Everything you do***<br/>
 <sub>*Judas Priest, 1982*</sub>
 
+## Table of Contents
+- [Description](https://github.com/jonrau1/ElectricEye#description)
+- [Solution Architecture](https://github.com/jonrau1/ElectricEye#solution-architecture)
+- [Setting Up](https://github.com/jonrau1/ElectricEye#setting-up)
+  - [Build and push the Docker image](https://github.com/jonrau1/ElectricEye#build-and-push-the-docker-image)
+  - [Deploy the baseline infrastructure](https://github.com/jonrau1/ElectricEye#deploy-the-baseline-infrastructure)
+  - Upload Auditor code to S3
+  - Manually execute the ElectricEye ECS Task
+- [Supported Services and Checks](https://github.com/jonrau1/ElectricEye#supported-services-and-checks)
+- [Known Issues & Limitiations](https://github.com/jonrau1/ElectricEye#known-issues--limitiations)
+- [FAQ](https://github.com/jonrau1/ElectricEye#faq)
+
 ## Description
 ElectricEye is a set of Python scripts (affectionately called **Auditors**) that scan your AWS infrastructure looking for configurations related to confidentiality, integrity and availability that do not align with AWS best practices. All findings from these scans will be sent to AWS Security Hub where you can perform basic correlation against other AWS and 3rd Party services that send findings to Security Hub. Security Hub also provides a centralized view from which account owners and other responsible parties can view and take action on findings.
 
-ElectricEye runs on AWS Fargate, which is a serverless container orchestration service. A Docker image will be scheduled to be run on top of Fargate, download all of the auditor code from a S3 bucket, run through scans and send results to Security Hub. All infrastructure will be deployed via Terraform to help you apply this solution to many accounts and/or regions. All findings (passed or failed) will contain AWS documentation references in the `Remediation.Recommendation` section of the ASFF (the Remediaiton section of the Security Hub UI) to further educate yourself and others on.
+ElectricEye runs on AWS Fargate, which is a serverless container orchestration service. A Docker image will be scheduled to be run on top of Fargate, download all of the auditor code from a S3 bucket, run through scans and send results to Security Hub. All infrastructure will be deployed via Terraform to help you apply this solution to many accounts and/or regions. All findings (passed or failed) will contain AWS documentation references in the `Remediation.Recommendation` section of the ASFF (and the **Remediaiton** section of the Security Hub UI) to further educate yourself and others on.
 
 Personas who can make use of this tool are DevOps/DevSecOps engineers, SecOps analysts, Cloud Center-of-Excellence personnel, Site Relability Engineers (SREs), Internal Audit and/or Compliance Analysts.
 
@@ -23,7 +35,7 @@ Personas who can make use of this tool are DevOps/DevSecOps engineers, SecOps an
 5. ElectricEye executes the scripts to scan your AWS infrastructure for both compliant and non-compliant configurations
 6. All findings are sent to Security Hub using the [BatchImportFindings API](https://docs.aws.amazon.com/securityhub/1.0/APIReference/API_BatchImportFindings.html), findings about compliant resources are automatically [archived](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-concepts.html) as to not clutter Security Hub
 
-Refer to the [Supported Services and Checks](https://github.com/jonrau1/ElectricEye#supported-services-and-checks) section for an update to date list of support services and checks performed by the Auditors.
+Refer to the [Supported Services and Checks](https://github.com/jonrau1/ElectricEye#supported-services-and-checks) section for an up-to-date list of supported services and checks performed by the Auditors.
 
 ## Setting Up
 These steps are split across their relevant sections. All CLI commands are executed from an Ubuntu 18.04LTS [Cloud9 IDE](https://aws.amazon.com/cloud9/details/), modify them to fit your OS.
@@ -67,7 +79,7 @@ sudo mv terraform /usr/local/bin/
 terraform --version
 ```
 
-#### Upload scan code to S3
+#### Upload Auditor code to S3
 Steps
 
 #### Manually execute the ElectricEye ECS Task (you only need to do this once)
