@@ -140,54 +140,60 @@ This section is likely to wax and wane depending on future releases, PRs and cha
 - CloudFormation checks are noisy, consider deleting the `AWS_CloudFormation_Auditor.py` file unless your organization mandates the usage of Drift detection and Alarm based monitoring for stack rollbacks.
 
 ## FAQ
-##### 1. Why should I use this tool?
+#### 1. Why should I use this tool?
 Primarily because it is free. This tool will also help cover services not currently covered by AWS Config rules or AWS Security Hub compliance standards. This tool is also natively integrated with Security Hub, no need to create additional services to perform translation into the AWS Security Finding Format and calling the BatchImportFindings API to send findings to Security Hub.
 
-##### 2. Will this tool help me become compliant with (insert regulatory framework here)?
+#### 2. Will this tool help me become compliant with (insert regulatory framework here)?
 No. If you wanted to use this tool to satisfy an audit, I would recommend you work closely with your GRC and Legal functions to determine if the checks performed by ElectricEye will legally satisfy the requirements of any compliance framework or regulations you need to comply with. If you find that it does, you can use the `Compliance.RelatedRequirements` array within the ASFF to denote those. I would recommend forking and modifying the code for that purpose.
 
-##### 3. Can this be the primary tool I use for AWS security scanning?
+#### 3. Can this be the primary tool I use for AWS security scanning?
 Only you can make that determination. More is always better, there are far more mature projects that exist such as [Prowler](https://github.com/toniblyx/prowler), [PacBot](https://github.com/tmobile/pacbot), [Cloud Inquisitor](https://github.com/RiotGames/cloud-inquisitor) and [Scout2](https://github.com/nccgroup/ScoutSuite). You should perform a detailed analysis about which tools support what checks, what your ultimate downstream tool will be for taking actions or analyzing findings (Splunk, Kibana, Security Hub, etc.) and how many false-positives or false-negatives are created by what tool. Some of those tools also do other things, and that is not to mention the endless list of logging, monitoring, tracing and AppSec related tools you will also need to use.
 
-##### 4. Why didn't you build Config rules do these?
+#### 4. Why didn't you build Config rules do these?
 I built ElectricEye with Security Hub in mind, using custom Config rules would require a lot of additional infrastructure and API calls to parse out a specific rule, map what little information Config gives to the ASFF and also perform more API calls to enrich the findings and send it, that is not something I would want to do. Additionally, you are looking at $0.001/rule evaluation/region and then have to pay for the Lambda invocations and (potentially) for any findings above the first 10,000 going to Security Hub a month.
 
-##### 5. What are the advantages over AWS Security Hub compliance standards? Why shouldn't I use those instead?
+#### 5. What are the advantages over AWS Security Hub compliance standards? Why shouldn't I use those instead?
 You should use them! The only notable "advantage" would be ElectricEye might support a resource before a Security Hub compliance standard does, or it may support a check that Security Hub compliance standards do not.
 
-##### 6. What are the advantages over Config Conformance Packs? Why shouldn't I use those instead?
+#### 6. What are the advantages over Config Conformance Packs? Why shouldn't I use those instead?
 Similar to above, ElectricEye may support another service or another type of check that Config rules do not, on top of the additional charges you pay for using Conformance packs ($0.0012 per evaluation per Region).
 
-##### 7. Can I scope these checks by tag or by a certain resource?
+#### 7. Can I scope these checks by tag or by a certain resource?
 No. That is a great idea for a PR though, and something that is actively being looked at.
 
-##### 8. Why do I have to set this up per account? Why can't I just scan all of my resources across all accounts?
+#### 8. Why do I have to set this up per account? Why can't I just scan all of my resources across all accounts?
 Doing these scans per accounts let your on-call / account owner to view it within their own Security Hub versus not knowing they are potentially using dangerous configurations. Security should be democratized.
 
-##### 9. Why don't you support (insert service name here)?
+#### 9. Why don't you support (insert service name here)?
 I will, eventually. Open up an issue if you really want it or open up a PR if you figured it out.
 
-##### 10. Where is that automated remediation you like so much?
+#### 10. Where is that automated remediation you like so much?
 You probably have me confused with someone else...That is a Phase 2 plan: after I am done scanning all the things, we can remediate all of the things.
 
-##### 11. What are those other tools you mentioned?
+#### 11. What are those other tools you mentioned?
 You should consider taking a look at any of these:
+
 <br>**Secrets Scanning**</br>
 - [truffleHog](https://github.com/dxa4481/truffleHog)
 - [git-secrets](https://github.com/awslabs/git-secrets)
+
 <br>**Static Analysis**</br>
 - [Bandit](https://github.com/PyCQA/bandit) (for Python)
 - [GoSec](https://github.com/securego/gosec) (for Golang)
 - [NodeJsScan](https://github.com/ajinabraham/NodeJsScan) (for NodeJS)
 - [tfsec](https://github.com/liamg/tfsec) (for Terraform "SAST")
+
 <br>**Linters**</br>
 - [hadolint](https://github.com/hadolint/hadolint) (for Docker)
 - [cfn-python-lint](https://github.com/aws-cloudformation/cfn-python-lint) (for CloudFormation)
 - [cfn-nag](https://github.com/stelligent/cfn_nag) (for CloudFormation)
+
 <br>**Dynamic Analysis**</br>
 - [Zed Attack Proxy (ZAP)](https://owasp.org/www-project-zap/)
+
 <br>**Anti-Virus**</br>
 - [ClamAV](https://www.clamav.net/documents/clamav-development)
+
 <br>**IDS/IPS**</br>
 - [Suricata](https://suricata-ids.org/)
 - [Snort](https://www.snort.org/)
