@@ -83,6 +83,7 @@ terraform --version
 cd terraform-config-files
 nano variables.tf
 ```
+![Variables.tf modification](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/variables-tf-uri-modification.JPG)
 
 3. Initialize, plan and apply your state with Terraform, this step should not take too long.
 ```bash
