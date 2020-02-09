@@ -17,13 +17,19 @@ Personas who can make use of this tool are DevOps/DevSecOps engineers, SecOps an
 ElectricEye scans 14 different AWS services such as AppStream 2.0, Managed Kafka Service clusters, RDS Instances and supports 49 unique checks across all services. More checks and services will be added periodically.
 
 ## Solution Architecture
-architecture
-1.  
+![Architecture](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/Architecture.jpg)
+1. A [time-based CloudWatch Event](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html) starts up an ElectricEye task every 12 hours (or whatever time period you set)
+2. The name of S3 bucket containing the ElectricEye scripts is saved as a [Systems Manager Parameter](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html) which is passed to the ElectricEye Task as an [environmental variable](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#container_definition_environment)
+3. The ElectricEye Docker image is pulled from [Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/) when the task runs
+4. Using the bucket name from SSM Parameter Store, the Task will [download](https://docs.aws.amazon.com/cli/latest/reference/s3/cp.html) all scripts from S3
+5. ElectricEye executes the scripts to scan your AWS infrastructure for both compliant and non-compliant configurations
+6. All findings are sent to Security Hub using the [BatchImportFindings API](https://docs.aws.amazon.com/securityhub/1.0/APIReference/API_BatchImportFindings.html), findings about compliant resources are automatically [archived](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-concepts.html) as to not clutter Security Hub  
 
 ## Setting Up
-These steps are split across their relevant sections. All CLI commands are executed from an Ubuntu 18.04LTS machine.
+These steps are split across their relevant sections. All CLI commands are executed from an Ubuntu 18.04LTS [Cloud9 IDE](https://aws.amazon.com/cloud9/details/), modify them to fit your OS.
+
 #### Build and push the Docker image
-Steps
+Before starting attach the following IAM policy to your [Instance Profile](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html) (if you are using Cloud9 or EC2).
 
 #### Deploy the baseline infrastructure
 Steps
