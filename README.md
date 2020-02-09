@@ -79,6 +79,8 @@ sudo mv terraform /usr/local/bin/
 terraform --version
 ```
 
+2. 
+
 #### Upload Auditor code to S3
 Steps
 
