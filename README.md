@@ -247,17 +247,17 @@ You probably have me confused with someone else...That is a Phase 2 plan: after 
 The costs are extremely negligible, as the primary costs are Fargate vCPU and Memory per GB per Hour and then Security Hub finding ingestion above 10,000 findings per Region per Month (the first 10,000 is perpetually free). We will use two scenarios as an example for the costs, you will likely need to perform your own analysis to forecast potential costs. ElectricEye's ECS Task Definition is 2 vCPU and 4GB of Memory by default.
 
 ##### Fargate Costs
-**30 Day Period: Running ElectricEye every 12 hours and it takes 5 minutes per Run**
+**30 Day Period: Running ElectricEye every 12 hours and it takes 5 minutes per Run**</br>
 5 hours of total runtime per month: **$0.49370/region/account/month**
 
-**30 Day Period: Running ElectricEye every 6 hours and it takes 10 minutes per Run**
+**30 Day Period: Running ElectricEye every 6 hours and it takes 10 minutes per Run**</br>
 20 hours of total runtime per month: **$1.61920/region/account/month**
 
 ##### Security Hub Costs
-**Having 10 resources per check in scope for all 49 checks running 120 times a month (every 12 hours)**
+**Having 10 resources per check in scope for all 49 checks running 120 times a month (every 12 hours)**</br>
 58,800 findings, 48,800 in scope for charges: **$1.46 /region/account/month**
 
-**Having 5 resources per check in scope for all 49 checks running 60 times a month (every 12 hours)**
+**Having 5 resources per check in scope for all 49 checks running 60 times a month (every 12 hours)**</br>
 14,700 findings, 4700 in scope for charges: **$0.14/region/account/month**
 
 With the above examples, if you had Fargate running for 20 hours a month and generated 48,800 metered findings it would cost **$3.08320** per region per account per month. If you had Fargate running 5 hours a month and generated 4700 metered findings it would cost **$0.63470** per region per account per month.
