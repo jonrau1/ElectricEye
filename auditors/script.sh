@@ -13,6 +13,8 @@ python3 AMI_Auditor.py
 python3 AWS_Backup_Auditor.py
 python3 AWS_CloudFormation_Auditor.py
 python3 AWS_CodeBuild_Auditor.py
+python3 AWS_Secrets_Manager_Auditor.py
+python3 AWS_Security_Services_Auditor.py
 python3 AWS_Security_Hub_Auditor.py
 echo "All scans complete, exiting"
 exit 1
