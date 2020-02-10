@@ -43,7 +43,7 @@ for repo in myRepos:
                             }
                         },
                         'ProductFields': {
-                            'Product Name': 'Docker Compliance Machine Dont Stop'
+                            'Product Name': 'ElectricEye'
                         },
                         'Resources': [
                             {
@@ -92,7 +92,7 @@ for repo in myRepos:
                             }
                         },
                         'ProductFields': {
-                            'Product Name': 'Docker Compliance Machine Dont Stop'
+                            'Product Name': 'ElectricEye'
                         },
                         'Resources': [
                             {

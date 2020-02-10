@@ -13,7 +13,7 @@ Scans your AWS serivces for misconfigurations that can lead to degradation of co
 - [Setting Up](https://github.com/jonrau1/ElectricEye#setting-up)
   - [Build and push the Docker image](https://github.com/jonrau1/ElectricEye#build-and-push-the-docker-image)
   - [Deploy the baseline infrastructure](https://github.com/jonrau1/ElectricEye#deploy-the-baseline-infrastructure)
-  - Manually execute the ElectricEye ECS Task
+  - [Manually execute the ElectricEye ECS Task](https://github.com/jonrau1/ElectricEye#manually-execute-the-electriceye-ecs-task-you-only-need-to-do-this-once)
 - [Supported Services and Checks](https://github.com/jonrau1/ElectricEye#supported-services-and-checks)
 - [Known Issues & Limitiations](https://github.com/jonrau1/ElectricEye#known-issues--limitiations)
 - [FAQ](https://github.com/jonrau1/ElectricEye#faq)
@@ -136,59 +136,70 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **49** checks supported across **14** services.
+These are the following services and checks perform by each Auditor. There are currently **59** checks supported across **20** services.
 
-| Auditor File Name                      | AWS Service                | Scan Performed                                                        |
-|----------------------------------------|----------------------------|-----------------------------------------------------------------------|
-| Amazon_AppStream_Auditor.py            | AppStream 2.0 (Fleets)     | Do Fleets allow Default<br>Internet Access                            |
-| Amazon_AppStream_Auditor.py            | AppStream 2.0 (Images)     | Are Images Public                                                     |
-| Amazon_AppStream_Auditor.py            | AppStream 2.0 (Users)      | Are users reported as Compromised                                     |
-| Amazon_AppStream_Auditor.py            | AppStream 2.0 (Users)      | Do users use SAML authentication                                      |
-| Amazon_CognitoIdP_Auditor.py           | Cognito Identity Pool      | Does the Password policy comply<br>with AWS CIS Foundations Benchmark |
-| Amazon_CognitoIdP_Auditor.py           | Cognito Identity Pool      | Cognito Temporary Password Age                                        |
-| Amazon_CognitoIdP_Auditor.py           | Cognito Identity Pool      | Does the Identity pool enforce MFA                                    |
-| Amazon_DocumentDB_Auditor.py           | DocumentDB Instance        | Are Instances publicly accessible                                     |
-| Amazon_DocumentDB_Auditor.py           | DocumentDB Instance        | Are Instance encrypted                                                |
-| Amazon_DocumentDB_Auditor.py           | DocumentDB Cluster         | Is the Cluster configured for HA                                      |
-| Amazon_DocumentDB_Auditor.py           | DocumentDB Cluster         | Is the Cluster deletion protected                                     |
-| Amazon_ECR_Auditor.py                  | ECR Repository             | Does the repository support<br>scan-on-push                           |
-| Amazon_EKS_Auditor.py                  | EKS Cluster                | Is the API Server publicly<br>accessible                              |
-| Amazon_EKS_Auditor.py                  | EKS Cluster                | Is K8s 1.14 used                                                      |
-| Amazon_Elasticache_Redis_Auditor.py    | Elasticache Redis Cluster  | Is an AUTH Token used                                                 |
-| Amazon_Elasticache_Redis_Auditor.py    | Elasticache Redis Cluster  | Is the cluster encrypted at rest                                      |
-| Amazon_Elasticache_Redis_Auditor.py    | Elasticache Redis Cluster  | Does the cluster encrypt in transit                                   |
-| Amazon_ElasticsearchService_Auditor.py | Elasticsearch Domain       | Are dedicated masters used                                            |
-| Amazon_ElasticsearchService_Auditor.py | Elasticsearch Domain       | Is Cognito auth used                                                  |
-| Amazon_ElasticsearchService_Auditor.py | Elasticsearch Domain       | Is encryption at rest used                                            |
-| Amazon_ElasticsearchService_Auditor.py | Elasticsearch Domain       | Is Node2Node encryption used                                          |
-| Amazon_ElasticsearchService_Auditor.py | Elasticsearch Domain       | Is HTTPS-only enforced                                                |
-| Amazon_ElasticsearchService_Auditor.py | Elasticsearch Domain       | Is a TLS 1.2 policy used                                              |
-| Amazon_ElasticsearchService_Auditor.py | Elasticsearch Domain       | Are there available version updates                                   |
-| Amazon_MSK_Auditor.py                  | MSK Cluster                | Is inter-cluster encryption used                                      |
-| Amazon_MSK_Auditor.py                  | MSK Cluster                | Is client-broker communications<br>TLS-only                           |
-| Amazon_MSK_Auditor.py                  | MSK Cluster                | Is enhanced monitoring used                                           |
-| Amazon_MSK_Auditor.py                  | MSK Cluster                | Is Private CA TLS auth used                                           |
-| Amazon_RDS_Auditor.py                  | RDS DB Instance            | Is HA configured                                                      |
-| Amazon_RDS_Auditor.py                  | RDS DB Instance            | Are DB instances publicly accessible                                  |
-| Amazon_RDS_Auditor.py                  | RDS DB Instance            | Is DB storage encrypted                                               |
-| Amazon_RDS_Auditor.py                  | RDS DB Instance            | Do supported DBs use IAM Authentication                               |
-| Amazon_RDS_Auditor.py                  | RDS DB Instance            | Are supported DBs joined to a domain                                  |
-| Amazon_RDS_Auditor.py                  | RDS DB Instance            | Is performance insights enabled                                       |
-| Amazon_RDS_Auditor.py                  | RDS DB Instance            | Is deletion protection enabled                                        |
-| AMI_Auditor.py                         | Amazon Machine Image (AMI) | Are owned AMIs public                                                 |
-| AMI_Auditor.py                         | Amazon Machine Image (AMI) | Are owned AMIs encrypted                                              |
-| AWS_Backup_Auditor.py                  | EC2 Instance               | Are EC2 instances backed up                                           |
-| AWS_Backup_Auditor.py                  | EBS Volume                 | Are EBS volumes backed up                                             |
-| AWS_Backup_Auditor.py                  | DynamoDB tables            | Are DynamoDB tables backed up                                         |
-| AWS_Backup_Auditor.py                  | RDS DB Instance            | Are RDS DB instances backed up                                        |
-| AWS_CloudFormation_Auditor.py          | CloudFormation Stack       | Is drift detection enabled                                            |
-| AWS_CloudFormation_Auditor.py          | CloudFormation Stack       | Are stacks monitored                                                  |
-| AWS_CodeBuild_Auditor.py               | CodeBuild project          | Is artifact encryption enabled                                        |
-| AWS_CodeBuild_Auditor.py               | CodeBuild project          | Is Insecure SSL enabled                                               |
-| AWS_CodeBuild_Auditor.py               | CodeBuild project          | Are plaintext environmental<br>variables used                         |
-| AWS_CodeBuild_Auditor.py               | CodeBuild project          | Is S3 logging encryption enabled                                      |
-| AWS_CodeBuild_Auditor.py               | CodeBuild project          | Is CloudWatch logging enabled                                         |
-| AWS_Security_Hub_Auditor.py            | Security Hub (Account)     | Are there active high or critical<br>findings in Security Hub         |
+| Auditor File Name                      | AWS Service                   | Auditor Scan Description                                              |
+|----------------------------------------|-------------------------------|-----------------------------------------------------------------------|
+| Amazon_AppStream_Auditor.py            | AppStream 2.0 (Fleets)        | Do Fleets allow Default<br>Internet Access                            |
+| Amazon_AppStream_Auditor.py            | AppStream 2.0 (Images)        | Are Images Public                                                     |
+| Amazon_AppStream_Auditor.py            | AppStream 2.0 (Users)         | Are users reported as Compromised                                     |
+| Amazon_AppStream_Auditor.py            | AppStream 2.0 (Users)         | Do users use SAML authentication                                      |
+| Amazon_CognitoIdP_Auditor.py           | Cognito Identity Pool         | Does the Password policy comply<br>with AWS CIS Foundations Benchmark |
+| Amazon_CognitoIdP_Auditor.py           | Cognito Identity Pool         | Cognito Temporary Password Age                                        |
+| Amazon_CognitoIdP_Auditor.py           | Cognito Identity Pool         | Does the Identity pool enforce MFA                                    |
+| Amazon_DocumentDB_Auditor.py           | DocumentDB Instance           | Are Instances publicly accessible                                     |
+| Amazon_DocumentDB_Auditor.py           | DocumentDB Instance           | Are Instance encrypted                                                |
+| Amazon_DocumentDB_Auditor.py           | DocumentDB Cluster            | Is the Cluster configured for HA                                      |
+| Amazon_DocumentDB_Auditor.py           | DocumentDB Cluster            | Is the Cluster deletion protected                                     |
+| Amazon_EBS_Auditor.py                  | EBS Volume                    | Is the Volume attached                                                |
+| Amazon_EBS_Auditor.py                  | EBS Volume                    | Is the Volume configured to be<br>deleted on instance termination     |
+| Amazon_EBS_Auditor.py                  | EBS Volume                    | Is the Volume encrypted                                               |
+| Amazon_ECR_Auditor.py                  | ECR Repository                | Does the repository support<br>scan-on-push                           |
+| Amazon_EKS_Auditor.py                  | EKS Cluster                   | Is the API Server publicly<br>accessible                              |
+| Amazon_EKS_Auditor.py                  | EKS Cluster                   | Is K8s version 1.14 used                                              |
+| Amazon_Elasticache_Redis_Auditor.py    | Elasticache Redis Cluster     | Is an AUTH Token used                                                 |
+| Amazon_Elasticache_Redis_Auditor.py    | Elasticache Redis Cluster     | Is the cluster encrypted at rest                                      |
+| Amazon_Elasticache_Redis_Auditor.py    | Elasticache Redis Cluster     | Does the cluster encrypt in transit                                   |
+| Amazon_ElasticsearchService_Auditor.py | Elasticsearch Domain          | Are dedicated masters used                                            |
+| Amazon_ElasticsearchService_Auditor.py | Elasticsearch Domain          | Is Cognito auth used                                                  |
+| Amazon_ElasticsearchService_Auditor.py | Elasticsearch Domain          | Is encryption at rest used                                            |
+| Amazon_ElasticsearchService_Auditor.py | Elasticsearch Domain          | Is Node2Node encryption used                                          |
+| Amazon_ElasticsearchService_Auditor.py | Elasticsearch Domain          | Is HTTPS-only enforced                                                |
+| Amazon_ElasticsearchService_Auditor.py | Elasticsearch Domain          | Is a TLS 1.2 policy used                                              |
+| Amazon_ElasticsearchService_Auditor.py | Elasticsearch Domain          | Are there available version updates                                   |
+| Amazon_ELBv2_Auditor.py                | ELBv2 (ALB/NLB)               | Is access logging enabled                                             |
+| Amazon_ELBv2_Auditor.py                | ELBv2 (ALB/NLB)               | Is deletion protection enabled                                        |
+| Amazon_ELBv2_Auditor.py                | ELBv2 (ALB/NLB)               | Do internet facing ELBs have a <br>secure listener                    |
+| Amazon_ELBv2_Auditor.py                | ELBv2 (ALB/NLB)               | Do secure listeners enforce TLS 1.2                                   |
+| Amazon_MSK_Auditor.py                  | MSK Cluster                   | Is inter-cluster encryption used                                      |
+| Amazon_MSK_Auditor.py                  | MSK Cluster                   | Is client-broker communications<br>TLS-only                           |
+| Amazon_MSK_Auditor.py                  | MSK Cluster                   | Is enhanced monitoring used                                           |
+| Amazon_MSK_Auditor.py                  | MSK Cluster                   | Is Private CA TLS auth used                                           |
+| Amazon_RDS_Auditor.py                  | RDS DB Instance               | Is HA configured                                                      |
+| Amazon_RDS_Auditor.py                  | RDS DB Instance               | Are DB instances publicly accessible                                  |
+| Amazon_RDS_Auditor.py                  | RDS DB Instance               | Is DB storage encrypted                                               |
+| Amazon_RDS_Auditor.py                  | RDS DB Instance               | Do supported DBs use IAM Authentication                               |
+| Amazon_RDS_Auditor.py                  | RDS DB Instance               | Are supported DBs joined to a domain                                  |
+| Amazon_RDS_Auditor.py                  | RDS DB Instance               | Is performance insights enabled                                       |
+| Amazon_RDS_Auditor.py                  | RDS DB Instance               | Is deletion protection enabled                                        |
+| AMI_Auditor.py                         | Amazon Machine Image (AMI)    | Are owned AMIs public                                                 |
+| AMI_Auditor.py                         | Amazon Machine Image (AMI)    | Are owned AMIs encrypted                                              |
+| AWS_Backup_Auditor.py                  | EC2 Instance                  | Are EC2 instances backed up                                           |
+| AWS_Backup_Auditor.py                  | EBS Volume                    | Are EBS volumes backed up                                             |
+| AWS_Backup_Auditor.py                  | DynamoDB tables               | Are DynamoDB tables backed up                                         |
+| AWS_Backup_Auditor.py                  | RDS DB Instance               | Are RDS DB instances backed up                                        |
+| AWS_CloudFormation_Auditor.py          | CloudFormation Stack          | Is drift detection enabled                                            |
+| AWS_CloudFormation_Auditor.py          | CloudFormation Stack          | Are stacks monitored                                                  |
+| AWS_CodeBuild_Auditor.py               | CodeBuild project             | Is artifact encryption enabled                                        |
+| AWS_CodeBuild_Auditor.py               | CodeBuild project             | Is Insecure SSL enabled                                               |
+| AWS_CodeBuild_Auditor.py               | CodeBuild project             | Are plaintext environmental<br>variables used                         |
+| AWS_CodeBuild_Auditor.py               | CodeBuild project             | Is S3 logging encryption enabled                                      |
+| AWS_CodeBuild_Auditor.py               | CodeBuild project             | Is CloudWatch logging enabled                                         |
+| AWS_Secrets_Manager_Auditor.py         | Secrets Manager secret        | Is the secret over 90 days old                                        |
+| AWS_Secrets_Manager_Auditor.py         | Secrets Manager secret        | Is secret auto-rotation enabled                                       |
+| AWS_Security_Hub_Auditor.py            | Security Hub (Account)        | Are there active high or critical<br>findings in Security Hub         |
+| AWS_Security_Services_Auditor.py       | IAM Access Analyzer (Account) | Is IAM Access Analyzer enabled                                        |
+| AWS_Security_Services_Auditor.py       | GuardDuty (Account)           | Is GuardDuty enabled                                                  |
 
 ## Known Issues & Limitiations
 This section is likely to wax and wane depending on future releases, PRs and changes to AWS APIs.
@@ -209,52 +220,52 @@ Primarily because it is free. This tool will also help cover services not curren
 No. If you wanted to use this tool to satisfy an audit, I would recommend you work closely with your GRC and Legal functions to determine if the checks performed by ElectricEye will legally satisfy the requirements of any compliance framework or regulations you need to comply with. If you find that it does, you can use the `Compliance.RelatedRequirements` array within the ASFF to denote those. I would recommend forking and modifying the code for that purpose.
 
 #### 3. Can this be the primary tool I use for AWS security scanning?
-Only you can make that determination. More is always better, there are far more mature projects that exist such as [Prowler](https://github.com/toniblyx/prowler), [PacBot](https://github.com/tmobile/pacbot), [Cloud Inquisitor](https://github.com/RiotGames/cloud-inquisitor) and [Scout2](https://github.com/nccgroup/ScoutSuite). You should perform a detailed analysis about which tools support what checks, what your ultimate downstream tool will be for taking actions or analyzing findings (Splunk, Kibana, Security Hub, etc.) and how many false-positives or false-negatives are created by what tool. Some of those tools also do other things, and that is not to mention the endless list of logging, monitoring, tracing and AppSec related tools you will also need to use.
+Only you can make that determination. More is always better, there are far more mature projects that exist such as [Prowler](https://github.com/toniblyx/prowler), [PacBot](https://github.com/tmobile/pacbot), [Cloud Inquisitor](https://github.com/RiotGames/cloud-inquisitor) and [Scout2](https://github.com/nccgroup/ScoutSuite). You should perform a detailed analysis about which tools support what checks, what your ultimate downstream tool will be for taking actions or analyzing findings (Splunk, Kibana, Security Hub, etc.) and how many false-positives or false-negatives are created by what tool. Some of those tools also do other things, and that is not to mention the endless list of logging, monitoring, tracing and AppSec related tools you will also need to use. There are additional tools listed in [FAQ #12](https://github.com/jonrau1/ElectricEye#12-what-are-those-other-tools-you-mentioned) below.
 
 #### 4. Why didn't you build Config rules do these?
 I built ElectricEye with Security Hub in mind, using custom Config rules would require a lot of additional infrastructure and API calls to parse out a specific rule, map what little information Config gives to the ASFF and also perform more API calls to enrich the findings and send it, that is not something I would want to do. Additionally, you are looking at $0.001/rule evaluation/region and then have to pay for the Lambda invocations and (potentially) for any findings above the first 10,000 going to Security Hub a month.
 
 #### 5. What are the advantages over AWS Security Hub compliance standards? Why shouldn't I use those instead?
-You should use them! The only notable "advantage" would be ElectricEye might support a resource before a Security Hub compliance standard does, or it may support a check that Security Hub compliance standards do not.
+You should use them! The only notable "advantage" would be ElectricEye might support a resource before a Security Hub compliance standard does, or it may support a check that Security Hub compliance standards do not. At the very least, you should use the CIS AWS Foundations Benchmark standard, it contains common sense checks that audit IAM users and basic security group misconfigurations.
 
 #### 6. What are the advantages over Config Conformance Packs? Why shouldn't I use those instead?
-Similar to above, ElectricEye may support another service or another type of check that Config rules do not, on top of the additional charges you pay for using Conformance packs ($0.0012 per evaluation per Region).
+Similar to above, ElectricEye may support another service or another type of check that Config rules do not, on top of the additional charges you pay for using Conformance packs ($0.0012 per evaluation per Region). That said, you should probably continue to use the IAM-related Config rules as many of them are powered by [Zelkova](https://aws.amazon.com/blogs/security/protect-sensitive-data-in-the-cloud-with-automated-reasoning-zelkova/), which uses automated reasoning to analyze policies and the future consequences of policies.
 
 #### 7. Can I scope these checks by tag or by a certain resource?
-No. That is a great idea for a PR though, and something that is actively being looked at.
+No. That is something in mind for the future, and a very good idea for a PR.
 
 #### 8. Why do I have to set this up per account? Why can't I just scan all of my resources across all accounts?
-Doing these scans per accounts let your on-call / account owner to view it within their own Security Hub versus not knowing they are potentially using dangerous configurations. Security should be democratized.
+Doing these scans per accounts let your on-call / account owner to view it within their own Security Hub versus not knowing they are potentially using dangerous configurations,  security should be democratized.
 
 #### 9. Why don't you support (insert service name here)?
-I will, eventually. Open up an issue if you really want it or open up a PR if you figured it out.
+I will, eventually. If you really have a need for a specific check, or need a specific service, please create an Issue.
 
 #### 10. Where is that automated remediation you like so much?
 You probably have me confused with someone else...That is a Phase 2 plan: after I am done scanning all the things, we can remediate all of the things.
 
 #### 11. How much does this solution cost to run?
-The costs are extremely negligible, as the primary costs are Fargate vCPU and Memory per GB per Hour and then Security Hub finding ingestion about 10,000 per Region per Month (the first 10,000 is perpetually free). We will use two scenarios as an example for the costs, you will likely need to perform your own analysis to forecast potential costs. ElectricEye's ECS Task Definition is 2 vCPU and 4GB of Memory by default.
+The costs are extremely negligible, as the primary costs are Fargate vCPU and Memory per GB per Hour and then Security Hub finding ingestion above 10,000 findings per Region per Month (the first 10,000 is perpetually free). We will use two scenarios as an example for the costs, you will likely need to perform your own analysis to forecast potential costs. ElectricEye's ECS Task Definition is 2 vCPU and 4GB of Memory by default.
 
 ##### Fargate Costs
 **30 Day Period: Running ElectricEye every 12 hours and it takes 5 minutes per Run**
-5 hours of total runtime per month: $0.49370/region/account/month
+5 hours of total runtime per month: **$0.49370/region/account/month**
 
 **30 Day Period: Running ElectricEye every 6 hours and it takes 10 minutes per Run**
-20 hours of total runtime per month: $1.61920/region/account/month
+20 hours of total runtime per month: **$1.61920/region/account/month**
 
 ##### Security Hub Costs
 **Having 10 resources per check in scope for all 49 checks running 120 times a month (every 12 hours)**
-58800 findings, 48800 in scope for charges: **$1.46 /region/account/month**
+58,800 findings, 48,800 in scope for charges: **$1.46 /region/account/month**
 
 **Having 5 resources per check in scope for all 49 checks running 60 times a month (every 12 hours)**
-14700 findings, 4700 in scope for charges: **$0.14/region/account/month**
+14,700 findings, 4700 in scope for charges: **$0.14/region/account/month**
 
-With the above examples, if you had Fargate running for 20 hours a month and generated 48800 metered findings it would cost **$3.08320** per region per account per month. If you had Fargate running 5 hours a month and generated 4700 metered findings it would cost **$0.63470** per region per account per month.
+With the above examples, if you had Fargate running for 20 hours a month and generated 48,800 metered findings it would cost **$3.08320** per region per account per month. If you had Fargate running 5 hours a month and generated 4700 metered findings it would cost **$0.63470** per region per account per month.
 
 To put it another way, the most expensive example in these scenarios would cost **$37.00** per year per region per account. That means running ElectricEye in that price range across 50 accounts and 4 regions would be **$7,399.68** a year. You could potentially save up to 70% on Fargate costs by modifying ElectricEye to run on [Fargate Spot](https://aws.amazon.com/blogs/aws/aws-fargate-spot-now-generally-available/).
 
 #### 12. What are those other tools you mentioned?
-You should consider taking a look at any of these:
+You should consider taking a look at all of these:
 
 <br>**Secrets Scanning**</br>
 - [truffleHog](https://github.com/dxa4481/truffleHog)
