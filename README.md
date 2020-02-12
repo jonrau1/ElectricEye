@@ -136,7 +136,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **59** checks supported across **20** services.
+These are the following services and checks perform by each Auditor. There are currently **67** checks supported across **22** services.
 
 | Auditor File Name                      | AWS Service                   | Auditor Scan Description                                              |
 |----------------------------------------|-------------------------------|-----------------------------------------------------------------------|
@@ -171,6 +171,8 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_ELBv2_Auditor.py                | ELBv2 (ALB/NLB)               | Is deletion protection enabled                                        |
 | Amazon_ELBv2_Auditor.py                | ELBv2 (ALB/NLB)               | Do internet facing ELBs have a <br>secure listener                    |
 | Amazon_ELBv2_Auditor.py                | ELBv2 (ALB/NLB)               | Do secure listeners enforce TLS 1.2                                   |
+| Amazon_Kinesis_Data_Streams_Auditor.py | Kinesis Data Stream           | Is stream encryption enabled                                          |
+| Amazon_Kinesis_Data_Streams_Auditor.py | Kinesis Data Stream           | Is enhanced monitoring enabled                                        |
 | Amazon_MSK_Auditor.py                  | MSK Cluster                   | Is inter-cluster encryption used                                      |
 | Amazon_MSK_Auditor.py                  | MSK Cluster                   | Is client-broker communications<br>TLS-only                           |
 | Amazon_MSK_Auditor.py                  | MSK Cluster                   | Is enhanced monitoring used                                           |
@@ -182,6 +184,11 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_RDS_Auditor.py                  | RDS DB Instance               | Are supported DBs joined to a domain                                  |
 | Amazon_RDS_Auditor.py                  | RDS DB Instance               | Is performance insights enabled                                       |
 | Amazon_RDS_Auditor.py                  | RDS DB Instance               | Is deletion protection enabled                                        |
+| Amazon_SageMaker_Auditor.py            | SageMaker Notebook            | Is notebook encryption enabled                                        |
+| Amazon_SageMaker_Auditor.py            | SageMaker Notebook            | Is notebook direct internet access<br>enabled                         |
+| Amazon_SageMaker_Auditor.py            | SageMaker Notebook            | Is the notebook in a vpc                                              |
+| Amazon_SageMaker_Auditor.py            | SageMaker Endpoint            | Is endpoint encryption enabled                                        |
+| Amazon_SageMaker_Auditor.py            | SageMaker Model               | Is model network isolation enabled                                    |
 | AMI_Auditor.py                         | Amazon Machine Image (AMI)    | Are owned AMIs public                                                 |
 | AMI_Auditor.py                         | Amazon Machine Image (AMI)    | Are owned AMIs encrypted                                              |
 | AWS_Backup_Auditor.py                  | EC2 Instance                  | Are EC2 instances backed up                                           |
@@ -204,6 +211,8 @@ These are the following services and checks perform by each Auditor. There are c
 ## Known Issues & Limitiations
 This section is likely to wax and wane depending on future releases, PRs and changes to AWS APIs.
 
+- No way to dynamically change Severity. All Severity Label's in Security Hub come from a conversion of `Severity.Normalized` which ranges from 1-100, to modify these values you will need to fork and modify to fit your organization's definition of severity based on threat modeling and risk appetite for certain configurations.
+
 - DocumentDB and RDS Describe APIs bleed over each other's information, leading to failed RDS checks that are really DocDB and vice versa. The only recourse is to continually archive these findings. The root of a DocumentDB ARN is from RDS, [as described here](https://docs.aws.amazon.com/documentdb/latest/developerguide/documentdb-arns.html#documentdb-arns-constructing).
 
 - No tag-based scoping or exemption process out of the box. You will need to manually archive these, remove checks not pertinent to you and/or create your own automation to automatically archive findings for resources that shouldn't be in-scope.
@@ -211,6 +220,8 @@ This section is likely to wax and wane depending on future releases, PRs and cha
 - Some resources, such as Elasticsearch Service, cannot be remediate after creation for some checks and will continue to show as non-compliant until you manually migrate them, or create automation to silence these findings.
 
 - CloudFormation checks are noisy, consider deleting the `AWS_CloudFormation_Auditor.py` file unless your organization mandates the usage of Drift detection and Alarm based monitoring for stack rollbacks.
+
+- AppStream 2.0 Image checks are noisy, there is not a way to differentiate between AWS and customer-owned AS 2.0 images and you will get at least a dozen failed findings because of this coming from AWS-managed instances.
 
 ## FAQ
 #### 1. Why should I use this tool?

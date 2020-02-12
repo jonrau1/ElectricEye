@@ -7,8 +7,11 @@ python3 Amazon_ECR_Auditor.py
 python3 Amazon_EKS_Auditor.py
 python3 Amazon_Elasticache_Redis_Auditor.py
 python3 Amazon_ElasticsearchService_Auditor.py
+python3 Amazon_ELBv2_Auditor.py
+python3 Amazon_Kinesis_Data_Streams_Auditor.py
 python3 Amazon_MSK_Auditor.py
 python3 Amazon_RDS_Auditor.py
+python3 Amazon_SageMaker_Auditor.py
 python3 AMI_Auditor.py
 python3 AWS_Backup_Auditor.py
 python3 AWS_CloudFormation_Auditor.py
