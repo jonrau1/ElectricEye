@@ -11,6 +11,9 @@ awsAccountId = sts.get_caller_identity()['Account']
 # loop through EBS volumes
 response = ec2.describe_volumes(DryRun=False,MaxResults=500)
 myEbsVolumes = response['Volumes']
+# loop through EBS snapshots
+response = ec2.describe_snapshots(OwnerIds=[ awsAccountId ],DryRun=False)
+myEbsSnapshots = response['Snapshots']
 
 def ebs_volume_attachment_check():
     for volumes in myEbsVolumes:
@@ -334,9 +337,287 @@ def ebs_volume_encryption_check():
             except Exception as e:
                 print(e)
 
+def ebs_snapshot_encryption_check():
+    for snapshots in myEbsSnapshots:
+        snapshotId = str(snapshots['SnapshotId'])
+        snapshotArn = 'arn:aws:ec2:' + awsRegion + '::snapshot/' + snapshotId
+        snapshotEncryptionCheck = str(snapshots['Encrypted'])
+        if snapshotEncryptionCheck == 'False':
+            try:
+                # ISO Time
+                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                # create Sec Hub finding
+                response = securityhub.batch_import_findings(
+                    Findings=[
+                        {
+                            'SchemaVersion': '2018-10-08',
+                            'Id': snapshotArn + '/ebs-snapshot-encryption-check',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                            'GeneratorId': snapshotArn,
+                            'AwsAccountId': awsAccountId,
+                            'Types': [ 
+                                'Software and Configuration Checks/AWS Security Best Practices',
+                                'Effects/Data Exposure'
+                            ],
+                            'FirstObservedAt': iso8601Time,
+                            'CreatedAt': iso8601Time,
+                            'UpdatedAt': iso8601Time,
+                            'Severity': { 'Normalized': 80 },
+                            'Confidence': 99,
+                            'Title': '[EBS.4] EBS Snapshots should be encrypted',
+                            'Description': 'EBS Snapshot ' + snapshotId + ' is not encrypted. Refer to the remediation instructions if this configuration is not intended',
+                            'Remediation': {
+                                'Recommendation': {
+                                    'Text': 'If your EBS snapshot should be encrypted refer to the Encryption Support for Snapshots section of the Amazon Elastic Compute Cloud User Guide',
+                                    'Url': 'https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/EBSSnapshots.html#encryption-support'
+                                }
+                            },
+                            'ProductFields': {
+                                'Product Name': 'ElectricEye'
+                            },
+                            'Resources': [
+                                {
+                                    'Type': 'AwsEc2Snapshot',
+                                    'Id': snapshotArn,
+                                    'Partition': 'aws',
+                                    'Region': awsRegion,
+                                    'Details': {
+                                        'Other': { 'Volume Id': snapshotId }
+                                    }
+                                }
+                            ],
+                            'Compliance': { 'Status': 'FAILED' },
+                            'RecordState': 'ACTIVE'
+                        }
+                    ]
+                )
+                print(response)
+            except Exception as e:
+                print(e)
+        else:
+            try:
+                # ISO Time
+                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                # create Sec Hub finding
+                response = securityhub.batch_import_findings(
+                    Findings=[
+                        {
+                            'SchemaVersion': '2018-10-08',
+                            'Id': snapshotArn + '/ebs-snapshot-encryption-check',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                            'GeneratorId': snapshotArn,
+                            'AwsAccountId': awsAccountId,
+                            'Types': [ 
+                                'Software and Configuration Checks/AWS Security Best Practices',
+                                'Effects/Data Exposure'
+                            ],
+                            'FirstObservedAt': iso8601Time,
+                            'CreatedAt': iso8601Time,
+                            'UpdatedAt': iso8601Time,
+                            'Severity': { 'Normalized': 0 },
+                            'Confidence': 99,
+                            'Title': '[EBS.4] EBS Snapshots should be encrypted',
+                            'Description': 'EBS Snapshot ' + snapshotId + ' is encrypted.',
+                            'Remediation': {
+                                'Recommendation': {
+                                    'Text': 'If your EBS snapshot should be encrypted refer to the Encryption Support for Snapshots section of the Amazon Elastic Compute Cloud User Guide',
+                                    'Url': 'https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/EBSSnapshots.html#encryption-support'
+                                }
+                            },
+                            'ProductFields': {
+                                'Product Name': 'ElectricEye'
+                            },
+                            'Resources': [
+                                {
+                                    'Type': 'AwsEc2Snapshot',
+                                    'Id': snapshotArn,
+                                    'Partition': 'aws',
+                                    'Region': awsRegion,
+                                    'Details': {
+                                        'Other': { 'Volume Id': snapshotId }
+                                    }
+                                }
+                            ],
+                            'Compliance': { 'Status': 'PASSED' },
+                            'RecordState': 'ARCHIVED'
+                        }
+                    ]
+                )
+                print(response)
+            except Exception as e:
+                print(e)
+
+def ebs_snapshot_public_check():
+    for snapshots in myEbsSnapshots:
+        snapshotId = str(snapshots['SnapshotId'])
+        snapshotArn = 'arn:aws:ec2:' + awsRegion + '::snapshot/' + snapshotId
+        response = ec2.describe_snapshot_attribute(Attribute='createVolumePermission',SnapshotId=snapshotId,DryRun=False)
+        if str(response['CreateVolumePermissions']) == '[]':
+            try:
+                # ISO Time
+                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                # create Sec Hub finding
+                response = securityhub.batch_import_findings(
+                    Findings=[
+                        {
+                            'SchemaVersion': '2018-10-08',
+                            'Id': snapshotArn + '/ebs-snapshot-public-share-check',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                            'GeneratorId': snapshotArn,
+                            'AwsAccountId': awsAccountId,
+                            'Types': [ 
+                                'Software and Configuration Checks/AWS Security Best Practices',
+                                'Effects/Data Exposure'
+                            ],
+                            'FirstObservedAt': iso8601Time,
+                            'CreatedAt': iso8601Time,
+                            'UpdatedAt': iso8601Time,
+                            'Severity': { 'Normalized': 0 },
+                            'Confidence': 99,
+                            'Title': '[EBS.5] EBS Snapshots should not be public',
+                            'Description': 'EBS Snapshot ' + snapshotId + ' is private.',
+                            'Remediation': {
+                                'Recommendation': {
+                                    'Text': 'If your EBS snapshot should not be public refer to the Sharing an Amazon EBS Snapshot section of the Amazon Elastic Compute Cloud User Guide',
+                                    'Url': 'https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ebs-modifying-snapshot-permissions.html'
+                                }
+                            },
+                            'ProductFields': {
+                                'Product Name': 'ElectricEye'
+                            },
+                            'Resources': [
+                                {
+                                    'Type': 'AwsEc2Snapshot',
+                                    'Id': snapshotArn,
+                                    'Partition': 'aws',
+                                    'Region': awsRegion,
+                                    'Details': {
+                                        'Other': { 'Volume Id': snapshotId }
+                                    }
+                                }
+                            ],
+                            'Compliance': { 'Status': 'PASSED' },
+                            'RecordState': 'ARCHIVED'
+                        }
+                    ]
+                )
+                print(response)
+            except Exception as e:
+                print(e)
+        else:
+            for permissions in response['CreateVolumePermissions']:
+                # {'Group': 'all'} denotes public
+                # you should still audit accounts you have shared
+                if str(permissions) == "{'Group': 'all'}":
+                    try:
+                        # ISO Time
+                        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                        # create Sec Hub finding
+                        response = securityhub.batch_import_findings(
+                            Findings=[
+                                {
+                                    'SchemaVersion': '2018-10-08',
+                                    'Id': snapshotArn + '/ebs-snapshot-public-share-check',
+                                    'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                    'GeneratorId': snapshotArn,
+                                    'AwsAccountId': awsAccountId,
+                                    'Types': [ 
+                                        'Software and Configuration Checks/AWS Security Best Practices',
+                                        'Effects/Data Exposure'
+                                    ],
+                                    'FirstObservedAt': iso8601Time,
+                                    'CreatedAt': iso8601Time,
+                                    'UpdatedAt': iso8601Time,
+                                    'Severity': { 'Normalized': 90 },
+                                    'Confidence': 99,
+                                    'Title': '[EBS.5] EBS Snapshots should not be public',
+                                    'Description': 'EBS Snapshot ' + snapshotId + ' is public. Refer to the remediation instructions to remediate this behavior',
+                                    'Remediation': {
+                                        'Recommendation': {
+                                            'Text': 'If your EBS snapshot should not be public refer to the Sharing an Amazon EBS Snapshot section of the Amazon Elastic Compute Cloud User Guide',
+                                            'Url': 'https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ebs-modifying-snapshot-permissions.html'
+                                        }
+                                    },
+                                    'ProductFields': {
+                                        'Product Name': 'ElectricEye'
+                                    },
+                                    'Resources': [
+                                        {
+                                            'Type': 'AwsEc2Snapshot',
+                                            'Id': snapshotArn,
+                                            'Partition': 'aws',
+                                            'Region': awsRegion,
+                                            'Details': {
+                                                'Other': { 'Volume Id': snapshotId }
+                                            }
+                                        }
+                                    ],
+                                    'Compliance': { 'Status': 'FAILED' },
+                                    'RecordState': 'ACTIVE'
+                                }
+                            ]
+                        )
+                        print(response)
+                    except Exception as e:
+                        print(e)
+                else:
+                    try:
+                        # ISO Time
+                        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                        # create Sec Hub finding
+                        response = securityhub.batch_import_findings(
+                            Findings=[
+                                {
+                                    'SchemaVersion': '2018-10-08',
+                                    'Id': snapshotArn + '/ebs-snapshot-public-share-check',
+                                    'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                    'GeneratorId': snapshotArn,
+                                    'AwsAccountId': awsAccountId,
+                                    'Types': [ 
+                                        'Software and Configuration Checks/AWS Security Best Practices',
+                                        'Effects/Data Exposure'
+                                    ],
+                                    'FirstObservedAt': iso8601Time,
+                                    'CreatedAt': iso8601Time,
+                                    'UpdatedAt': iso8601Time,
+                                    'Severity': { 'Normalized': 0 },
+                                    'Confidence': 99,
+                                    'Title': '[EBS.5] EBS Snapshots should not be public',
+                                    'Description': 'EBS Snapshot ' + snapshotId + ' is private, however, this snapshot has been identified as being shared with other accounts. You should audit these accounts to ensure they are still authorized to have this snapshot shared with them.',
+                                    'Remediation': {
+                                        'Recommendation': {
+                                            'Text': 'If your EBS snapshot should not be public refer to the Sharing an Amazon EBS Snapshot section of the Amazon Elastic Compute Cloud User Guide',
+                                            'Url': 'https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ebs-modifying-snapshot-permissions.html'
+                                        }
+                                    },
+                                    'ProductFields': {
+                                        'Product Name': 'ElectricEye'
+                                    },
+                                    'Resources': [
+                                        {
+                                            'Type': 'AwsEc2Snapshot',
+                                            'Id': snapshotArn,
+                                            'Partition': 'aws',
+                                            'Region': awsRegion,
+                                            'Details': {
+                                                'Other': { 'Volume Id': snapshotId }
+                                            }
+                                        }
+                                    ],
+                                    'Compliance': { 'Status': 'PASSED' },
+                                    'RecordState': 'ACTIVE'
+                                }
+                            ]
+                        )
+                        print(response)
+                    except Exception as e:
+                        print(e)
+
 def ebs_volume_auditor():
     ebs_volume_attachment_check()
     ebs_volume_delete_on_termination_check()
     ebs_volume_encryption_check()
+    ebs_snapshot_encryption_check()
+    ebs_snapshot_public_check()
 
 ebs_volume_auditor()
