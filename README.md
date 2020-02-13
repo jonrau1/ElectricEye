@@ -136,7 +136,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **75** checks supported across **24** services.
+These are the following services and checks perform by each Auditor. There are currently **76** checks supported across **24** services.
 
 | Auditor File Name                      | AWS Service                   | Auditor Scan Description                                              |
 |----------------------------------------|-------------------------------|-----------------------------------------------------------------------|
@@ -156,6 +156,7 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_EBS_Auditor.py                  | EBS Volume                    | Is the Volume encrypted                                               |
 | Amazon_EBS_Auditor.py                  | EBS Snapshot                  | Is the Snapshot encrypted                                             |
 | Amazon_EBS_Auditor.py                  | EBS Snapshot                  | Is the Snapshot public                                                |
+| Amazon_EBS_Auditor.py                  | Account                       | Is account level encryption by<br>default enabled                     |
 | Amazon_EC2_SSM_Auditor.py              | EC2 Instance                  | Is the instance managed by SSM                                        |
 | Amazon_EC2_SSM_Auditor.py              | EC2 Instance                  | Does the instance have a successful<br>SSM association                |
 | Amazon_EC2_SSM_Auditor.py              | EC2 Instance                  | Is the SSM Agent up to date                                           |

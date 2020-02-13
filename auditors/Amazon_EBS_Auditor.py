@@ -613,11 +613,107 @@ def ebs_snapshot_public_check():
                     except Exception as e:
                         print(e)
 
+def ebs_account_encryption_by_default_check():
+    response = ec2.get_ebs_encryption_by_default(DryRun=False)
+    if str(response['EbsEncryptionByDefault']) == 'False':
+        try:
+            # ISO Time
+            iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+            # create Sec Hub finding
+            response = securityhub.batch_import_findings(
+                Findings=[
+                    {
+                        'SchemaVersion': '2018-10-08',
+                        'Id': awsAccountId + awsRegion + '/ebs-account-encryption-check',
+                        'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                        'GeneratorId': awsAccountId + '/' + awsRegion,
+                        'AwsAccountId': awsAccountId,
+                        'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                        'FirstObservedAt': iso8601Time,
+                        'CreatedAt': iso8601Time,
+                        'UpdatedAt': iso8601Time,
+                        'Severity': { 'Normalized': 40 },
+                        'Confidence': 99,
+                        'Title': '[EBS.6] Account-level EBS Volume encryption should be enabled',
+                        'Description': 'Account-level EBS volume encryption is not enabled for AWS Account ' + awsAccountId + ' in ' + awsRegion + '. Refer to the remediation instructions if this configuration is not intended',
+                        'Remediation': {
+                            'Recommendation': {
+                                'Text': 'For information on Account-level encryption refer to the Encryption by Default to an Instance section of the Amazon Elastic Compute Cloud User Guide',
+                                'Url': 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#encryption-by-default'
+                            }
+                        },
+                        'ProductFields': {
+                            'Product Name': 'ElectricEye'
+                        },
+                        'Resources': [
+                            {
+                                'Type': 'AwsAccount',
+                                'Id': 'AWS::::Account:' + awsAccountId,
+                                'Partition': 'aws',
+                                'Region': awsRegion
+                            }
+                        ],
+                        'Compliance': { 'Status': 'FAILED' },
+                        'RecordState': 'ACTIVE'
+                    }
+                ]
+            )
+            print(response)
+        except Exception as e:
+            print(e)
+    else:
+        try:
+            # ISO Time
+            iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+            # create Sec Hub finding
+            response = securityhub.batch_import_findings(
+                Findings=[
+                    {
+                        'SchemaVersion': '2018-10-08',
+                        'Id': awsAccountId + awsRegion + '/ebs-account-encryption-check',
+                        'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                        'GeneratorId': awsAccountId + '/' + awsRegion,
+                        'AwsAccountId': awsAccountId,
+                        'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                        'FirstObservedAt': iso8601Time,
+                        'CreatedAt': iso8601Time,
+                        'UpdatedAt': iso8601Time,
+                        'Severity': { 'Normalized': 0 },
+                        'Confidence': 99,
+                        'Title': '[EBS.6] Account-level EBS Volume encryption should be enabled',
+                        'Description': 'Account-level EBS volume encryption is enabled for AWS Account ' + awsAccountId + ' in ' + awsRegion + '.',
+                        'Remediation': {
+                            'Recommendation': {
+                                'Text': 'For information on Account-level encryption refer to the Encryption by Default to an Instance section of the Amazon Elastic Compute Cloud User Guide',
+                                'Url': 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#encryption-by-default'
+                            }
+                        },
+                        'ProductFields': {
+                            'Product Name': 'ElectricEye'
+                        },
+                        'Resources': [
+                            {
+                                'Type': 'AwsAccount',
+                                'Id': 'AWS::::Account:' + awsAccountId,
+                                'Partition': 'aws',
+                                'Region': awsRegion
+                            }
+                        ],
+                        'Compliance': { 'Status': 'PASSED' },
+                        'RecordState': 'ARCHIVED'
+                    }
+                ]
+            )
+            print(response)
+        except Exception as e:
+            print(e)
+
 def ebs_volume_auditor():
     ebs_volume_attachment_check()
     ebs_volume_delete_on_termination_check()
     ebs_volume_encryption_check()
     ebs_snapshot_encryption_check()
     ebs_snapshot_public_check()
+    ebs_account_encryption_by_default_check()
 
 ebs_volume_auditor()
