@@ -15,6 +15,7 @@ myAmis = response['Images']
 def public_ami_check():
     for ami in myAmis:
         imageId = str(ami['ImageId'])
+        amiArn = 'arn:aws:ec2:' + awsRegion + '::image/' + imageId
         imageName = str(ami['Name'])
         imageCreatedDate = str(ami['CreationDate'])
         publicCheck = str(ami['Public'])
@@ -27,9 +28,9 @@ def public_ami_check():
                     Findings=[
                         {
                             'SchemaVersion': '2018-10-08',
-                            'Id': imageId + '/public-ami',
+                            'Id': amiArn + '/public-ami',
                             'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
-                            'GeneratorId': imageId,
+                            'GeneratorId': amiArn,
                             'AwsAccountId': awsAccount,
                             'Types': [
                                 'Software and Configuration Checks/AWS Security Best Practices',
@@ -54,7 +55,7 @@ def public_ami_check():
                             'Resources': [
                                 {
                                     'Type': 'Other',
-                                    'Id': imageId,
+                                    'Id': amiArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
@@ -79,9 +80,9 @@ def public_ami_check():
                     Findings=[
                         {
                             'SchemaVersion': '2018-10-08',
-                            'Id': imageId + '/public-ami',
+                            'Id': amiArn + '/public-ami',
                             'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
-                            'GeneratorId': imageId,
+                            'GeneratorId': amiArn,
                             'AwsAccountId': awsAccount,
                             'Types': [
                                 'Software and Configuration Checks/AWS Security Best Practices',
@@ -106,7 +107,7 @@ def public_ami_check():
                             'Resources': [
                                 {
                                     'Type': 'Other',
-                                    'Id': imageId,
+                                    'Id': amiArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
@@ -126,6 +127,7 @@ def public_ami_check():
 def encrypted_ami_check():
     for ami in myAmis:
         imageId = str(ami['ImageId'])
+        amiArn = 'arn:aws:ec2:' + awsRegion + '::image/' + imageId
         imageName = str(ami['Name'])
         imageCreatedDate = str(ami['CreationDate'])
         BlockDevices = ami['BlockDeviceMappings']
@@ -140,9 +142,9 @@ def encrypted_ami_check():
                         Findings=[
                             {
                                 'SchemaVersion': '2018-10-08',
-                                'Id': imageId + '/public-ami',
+                                'Id': amiArn + '/public-ami',
                                 'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
-                                'GeneratorId': imageId,
+                                'GeneratorId': amiArn,
                                 'AwsAccountId': awsAccount,
                                 'Types': [
                                     'Software and Configuration Checks/AWS Security Best Practices',
@@ -167,7 +169,7 @@ def encrypted_ami_check():
                                 'Resources': [
                                     {
                                         'Type': 'Other',
-                                        'Id': imageId,
+                                        'Id': amiArn,
                                         'Partition': 'aws',
                                         'Region': awsRegion,
                                         'Details': {
@@ -192,9 +194,9 @@ def encrypted_ami_check():
                         Findings=[
                             {
                                 'SchemaVersion': '2018-10-08',
-                                'Id': imageId + '/public-ami',
+                                'Id': amiArn + '/public-ami',
                                 'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
-                                'GeneratorId': imageId,
+                                'GeneratorId': amiArn,
                                 'AwsAccountId': awsAccount,
                                 'Types': [
                                     'Software and Configuration Checks/AWS Security Best Practices',
@@ -219,7 +221,7 @@ def encrypted_ami_check():
                                 'Resources': [
                                     {
                                         'Type': 'Other',
-                                        'Id': imageId,
+                                        'Id': amiArn,
                                         'Partition': 'aws',
                                         'Region': awsRegion,
                                         'Details': {

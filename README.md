@@ -1,5 +1,5 @@
 # ElectricEye
-Scans your AWS serivces for misconfigurations that can lead to degradation of confidentiality, integrity or availability. All results will be sent to Security Hub for further aggregation and analysis. 
+Continuously monitor your AWS serivces for misconfigurations that can lead to degradation of confidentiality, integrity or availability. All results will be sent to Security Hub for further aggregation and analysis. 
 
 ***Up here in space***<br/>
 ***I'm looking down on you***<br/>
@@ -19,9 +19,9 @@ Scans your AWS serivces for misconfigurations that can lead to degradation of co
 - [FAQ](https://github.com/jonrau1/ElectricEye#faq)
 
 ## Description
-ElectricEye is a set of Python scripts (affectionately called **Auditors**) that scan your AWS infrastructure looking for configurations related to confidentiality, integrity and availability that do not align with AWS best practices. All findings from these scans will be sent to AWS Security Hub where you can perform basic correlation against other AWS and 3rd Party services that send findings to Security Hub. Security Hub also provides a centralized view from which account owners and other responsible parties can view and take action on findings.
+ElectricEye is a set of Python scripts (affectionately called **Auditors**) that continuously monitor your AWS infrastructure looking for configurations related to confidentiality, integrity and availability that do not align with AWS best practices. All findings from these scans will be sent to AWS Security Hub where you can perform basic correlation against other AWS and 3rd Party services that send findings to Security Hub. Security Hub also provides a centralized view from which account owners and other responsible parties can view and take action on findings.
 
-ElectricEye runs on AWS Fargate, which is a serverless container orchestration service. A Docker image will be scheduled to be run on top of Fargate, download all of the auditor code from a S3 bucket, run through scans and send results to Security Hub. All infrastructure will be deployed via Terraform to help you apply this solution to many accounts and/or regions. All findings (passed or failed) will contain AWS documentation references in the `Remediation.Recommendation` section of the ASFF (and the **Remediation** section of the Security Hub UI) to further educate yourself and others on.
+ElectricEye runs on AWS Fargate, which is a serverless container orchestration service. On a schedule, Fargate will download all of the auditor scripts from a S3 bucket, run the checks and send results to Security Hub. All infrastructure will be deployed via Terraform to help you apply this solution to many accounts and/or regions. All findings (passed or failed) will contain AWS documentation references in the `Remediation.Recommendation` section of the ASFF (and the **Remediation** section of the Security Hub UI) to further educate yourself and others on.
 
 Personas who can make use of this tool are DevOps/DevSecOps engineers, SecOps analysts, Cloud Center-of-Excellence personnel, Site Relability Engineers (SREs), Internal Audit and/or Compliance Analysts.
 
@@ -136,7 +136,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **67** checks supported across **22** services.
+These are the following services and checks perform by each Auditor. There are currently **75** checks supported across **24** services.
 
 | Auditor File Name                      | AWS Service                   | Auditor Scan Description                                              |
 |----------------------------------------|-------------------------------|-----------------------------------------------------------------------|
@@ -154,6 +154,12 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_EBS_Auditor.py                  | EBS Volume                    | Is the Volume attached                                                |
 | Amazon_EBS_Auditor.py                  | EBS Volume                    | Is the Volume configured to be<br>deleted on instance termination     |
 | Amazon_EBS_Auditor.py                  | EBS Volume                    | Is the Volume encrypted                                               |
+| Amazon_EBS_Auditor.py                  | EBS Snapshot                  | Is the Snapshot encrypted                                             |
+| Amazon_EBS_Auditor.py                  | EBS Snapshot                  | Is the Snapshot public                                                |
+| Amazon_EC2_SSM_Auditor.py              | EC2 Instance                  | Is the instance managed by SSM                                        |
+| Amazon_EC2_SSM_Auditor.py              | EC2 Instance                  | Does the instance have a successful<br>SSM association                |
+| Amazon_EC2_SSM_Auditor.py              | EC2 Instance                  | Is the SSM Agent up to date                                           |
+| Amazon_EC2_SSM_Auditor.py              | EC2 Instance                  | Is the Patch status up to date                                        |
 | Amazon_ECR_Auditor.py                  | ECR Repository                | Does the repository support<br>scan-on-push                           |
 | Amazon_EKS_Auditor.py                  | EKS Cluster                   | Is the API Server publicly<br>accessible                              |
 | Amazon_EKS_Auditor.py                  | EKS Cluster                   | Is K8s version 1.14 used                                              |
@@ -189,6 +195,8 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_SageMaker_Auditor.py            | SageMaker Notebook            | Is the notebook in a vpc                                              |
 | Amazon_SageMaker_Auditor.py            | SageMaker Endpoint            | Is endpoint encryption enabled                                        |
 | Amazon_SageMaker_Auditor.py            | SageMaker Model               | Is model network isolation enabled                                    |
+| Amazon_VPC_Auditor.py                  | VPC                           | Is the default VPC out and about                                      |
+| Amazon_VPC_Auditor.py                  | VPC                           | Is flow logging enabled                                               |
 | AMI_Auditor.py                         | Amazon Machine Image (AMI)    | Are owned AMIs public                                                 |
 | AMI_Auditor.py                         | Amazon Machine Image (AMI)    | Are owned AMIs encrypted                                              |
 | AWS_Backup_Auditor.py                  | EC2 Instance                  | Are EC2 instances backed up                                           |
@@ -208,7 +216,7 @@ These are the following services and checks perform by each Auditor. There are c
 | AWS_Security_Services_Auditor.py       | IAM Access Analyzer (Account) | Is IAM Access Analyzer enabled                                        |
 | AWS_Security_Services_Auditor.py       | GuardDuty (Account)           | Is GuardDuty enabled                                                  |
 
-## Known Issues & Limitiations
+## Known Issues & Limitations
 This section is likely to wax and wane depending on future releases, PRs and changes to AWS APIs.
 
 - No way to dynamically change Severity. All Severity Label's in Security Hub come from a conversion of `Severity.Normalized` which ranges from 1-100, to modify these values you will need to fork and modify to fit your organization's definition of severity based on threat modeling and risk appetite for certain configurations.
@@ -217,21 +225,31 @@ This section is likely to wax and wane depending on future releases, PRs and cha
 
 - No tag-based scoping or exemption process out of the box. You will need to manually archive these, remove checks not pertinent to you and/or create your own automation to automatically archive findings for resources that shouldn't be in-scope.
 
-- Some resources, such as Elasticsearch Service, cannot be remediate after creation for some checks and will continue to show as non-compliant until you manually migrate them, or create automation to silence these findings.
+- Some resources, such as Elasticsearch Service, cannot be remediated after creation for some checks and will continue to show as non-compliant until you manually migrate them, or create automation to auto-archive these findings.
 
 - CloudFormation checks are noisy, consider deleting the `AWS_CloudFormation_Auditor.py` file unless your organization mandates the usage of Drift detection and Alarm based monitoring for stack rollbacks.
 
 - AppStream 2.0 Image checks are noisy, there is not a way to differentiate between AWS and customer-owned AS 2.0 images and you will get at least a dozen failed findings because of this coming from AWS-managed instances.
 
 ## FAQ
+#### 0. Why is continuous compliance monitoring (CCM) important?
+One of the main benefits to moving to the cloud is the agility it gives you to quickly iterate on prototypes, drive business value and globally scale. That is what is known as a double-edge sword, because you can also quickly pivot into an insecure state. CCM gives you near real-time (*near* being defined by your Fargate schedule) security configuration information from which you can assess risk to your applications and data, determine if you fell out of compliance with regulatory or industry frameworks and/or determine if you fell out of your organizational privacy protection posture, among other things. Depending on how your deliver software or services, this will allow your developers to keep being agile in their delivery and remediation of any security issues that pop up. If security is owned by a central function, CCM allows them to at least *keep up* with the business, make informed risk-based decisions and quickly take action and either remediate, mitigate or accept risks due to certain configurations.
+
+ElectricEye won't take the place of a crack squad of principal security engineers or stand-in for a compliance, infosec, privacy or risk function but it will help you stay informed to the security posture of your AWS environment across a multitude of services.
+
+Or, you could just not do security at all and look like pic below:
+![ThreatActorKittens](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/plz-no.jpg)
+
 #### 1. Why should I use this tool?
-Primarily because it is free. This tool will also help cover services not currently covered by AWS Config rules or AWS Security Hub compliance standards. This tool is also natively integrated with Security Hub, no need to create additional services to perform translation into the AWS Security Finding Format and calling the BatchImportFindings API to send findings to Security Hub.
+Primarily because it is free to *use* (you still need to pay for the infrastructure). This tool will also help cover services not currently covered by AWS Config rules or AWS Security Hub compliance standards. This tool is also natively integrated with Security Hub, no need to create additional services to perform translation into the AWS Security Finding Format and calling the BatchImportFindings API to send findings to Security Hub.
 
-#### 2. Will this tool help me become compliant with (insert regulatory framework here)?
-No. If you wanted to use this tool to satisfy an audit, I would recommend you work closely with your GRC and Legal functions to determine if the checks performed by ElectricEye will legally satisfy the requirements of any compliance framework or regulations you need to comply with. If you find that it does, you can use the `Compliance.RelatedRequirements` array within the ASFF to denote those. I would recommend forking and modifying the code for that purpose.
+#### 2. Will this tool help me become compliant with (insert industry or regulatory framework here)?
+No. If you wanted to use this tool to satisfy an audit, I would recommend you work closely with your GRC and Legal functions to determine if the checks performed by ElectricEye will legally satisfy the requirements of any compliance framework or regulations you need to comply with. If you find that it does, you can use the `Compliance.RelatedRequirements` array within the ASFF to denote those. I would recommend forking and modifying the code for that purpose. 
 
-#### 3. Can this be the primary tool I use for AWS security scanning?
-Only you can make that determination. More is always better, there are far more mature projects that exist such as [Prowler](https://github.com/toniblyx/prowler), [PacBot](https://github.com/tmobile/pacbot), [Cloud Inquisitor](https://github.com/RiotGames/cloud-inquisitor) and [Scout2](https://github.com/nccgroup/ScoutSuite). You should perform a detailed analysis about which tools support what checks, what your ultimate downstream tool will be for taking actions or analyzing findings (Splunk, Kibana, Security Hub, etc.) and how many false-positives or false-negatives are created by what tool. Some of those tools also do other things, and that is not to mention the endless list of logging, monitoring, tracing and AppSec related tools you will also need to use. There are additional tools listed in [FAQ #12](https://github.com/jonrau1/ElectricEye#12-what-are-those-other-tools-you-mentioned) below.
+Howver, if you 1) work on behalf of an organization who can provide attestations that these technical controls satisfy the spirit of certain requirements in certain industry or regulatory standards and 2) would like to provide an attestation for the betterment of the community please email me to discuss.
+
+#### 3. Can this be the primary tool I use for AWS security assessments?
+Only you can make that determination. More is always better, there are far more mature projects that exist such as [Prowler](https://github.com/toniblyx/prowler), [PacBot](https://github.com/tmobile/pacbot), [Cloud Inquisitor](https://github.com/RiotGames/cloud-inquisitor) and [Scout2](https://github.com/nccgroup/ScoutSuite). You should perform a detailed analysis about which tools support what services, what checks, what your ultimate downstream tool will be for taking actions or analyzing findings (Splunk, Kibana, Security Hub, Demisto, Phantom, QuickSight, etc.) and how many false-positives or false-negatives are created by what tool. Some of those tools also do other things, and that is not to mention the endless list of logging, monitoring, tracing and AppSec related tools you will also need to use. There are additional tools listed in [FAQ #13](https://github.com/jonrau1/ElectricEye#12-what-are-those-other-tools-you-mentioned) below.
 
 #### 4. Why didn't you build Config rules do these?
 I built ElectricEye with Security Hub in mind, using custom Config rules would require a lot of additional infrastructure and API calls to parse out a specific rule, map what little information Config gives to the ASFF and also perform more API calls to enrich the findings and send it, that is not something I would want to do. Additionally, you are looking at $0.001/rule evaluation/region and then have to pay for the Lambda invocations and (potentially) for any findings above the first 10,000 going to Security Hub a month.
@@ -249,12 +267,17 @@ No. That is something in mind for the future, and a very good idea for a PR.
 Doing these scans per accounts let your on-call / account owner to view it within their own Security Hub versus not knowing they are potentially using dangerous configurations,  security should be democratized.
 
 #### 9. Why don't you support (insert service name here)?
-I will, eventually. If you really have a need for a specific check, or need a specific service, please create an Issue.
+I will, eventually. If you really need a specific check supported RIGHT NOW please create an Issue, and if it is feasible, I will tackle it. PRs are welcome for any additions.
 
 #### 10. Where is that automated remediation you like so much?
 You probably have me confused with someone else...That is a Phase 2 plan: after I am done scanning all the things, we can remediate all of the things.
 
-#### 11. How much does this solution cost to run?
+#### 11. Why do some of the severity scores / labels for the same failing check have different values?!
+Some checks, such as the EC2 Systems Manager check for having the latest patches installed are dual-purpose and will have different severities. For instance, that check looks if you have any patch state infromation reported at all, if you do not you likely are not even managing that instance as part of the patch baseline. If a missing or failed patch is reported, then the severity is bumped up since you ARE managing patches but something happened and now the patch is not being installed.
+
+In a similar vein, some findings that have a severity score of 0 (severity label of `INFORMATIONAL`) and a Compliance status of `PASSED` may not be Archived if it is something you may want to pay attention to. An example of this are EBS Snapshots that are shared with other accounts, it is no where near as bad as being public but you should audit these accounts to make sure you are sharing with folks who should be shared with (I cannot tell who that is, your SecOps analyst should be able to).
+
+#### 12. How much does this solution cost to run?
 The costs are extremely negligible, as the primary costs are Fargate vCPU and Memory per GB per Hour and then Security Hub finding ingestion above 10,000 findings per Region per Month (the first 10,000 is perpetually free). We will use two scenarios as an example for the costs, you will likely need to perform your own analysis to forecast potential costs. ElectricEye's ECS Task Definition is 2 vCPU and 4GB of Memory by default.
 
 ##### Fargate Costs
@@ -275,14 +298,14 @@ With the above examples, if you had Fargate running for 20 hours a month and gen
 
 To put it another way, the most expensive example in these scenarios would cost **$37.00** per year per region per account. That means running ElectricEye in that price range across 50 accounts and 4 regions would be **$7,399.68** a year. You could potentially save up to 70% on Fargate costs by modifying ElectricEye to run on [Fargate Spot](https://aws.amazon.com/blogs/aws/aws-fargate-spot-now-generally-available/).
 
-#### 12. What are those other tools you mentioned?
+#### 13. What are those other tools you mentioned?
 You should consider taking a look at all of these:
 
 <br>**Secrets Scanning**</br>
 - [truffleHog](https://github.com/dxa4481/truffleHog)
 - [git-secrets](https://github.com/awslabs/git-secrets)
 
-<br>**Static Analysis**</br>
+<br>**SAST**</br>
 - [Bandit](https://github.com/PyCQA/bandit) (for Python)
 - [GoSec](https://github.com/securego/gosec) (for Golang)
 - [NodeJsScan](https://github.com/ajinabraham/NodeJsScan) (for NodeJS)
@@ -293,13 +316,28 @@ You should consider taking a look at all of these:
 - [cfn-python-lint](https://github.com/aws-cloudformation/cfn-python-lint) (for CloudFormation)
 - [cfn-nag](https://github.com/stelligent/cfn_nag) (for CloudFormation)
 
-<br>**Dynamic Analysis**</br>
+<br>**DAST**</br>
 - [Zed Attack Proxy (ZAP)](https://owasp.org/www-project-zap/)
 
-<br>**Anti-Virus**</br>
+<br>**AV**</br>
 - [ClamAV](https://www.clamav.net/documents/clamav-development)
+- [aws-s3-virusscan](https://github.com/widdix/aws-s3-virusscan) (for S3 buckets, obviously)
+- [BinaryAlert](http://www.binaryalert.io/) (serverless, YARA backed for S3 buckets)
 
 <br>**IDS/IPS**</br>
 - [Suricata](https://suricata-ids.org/)
 - [Snort](https://www.snort.org/)
 - [Zeek](https://www.zeek.org/)
+
+<br>**DFIR**</br>
+- [Fenrir](https://github.com/Neo23x0/Fenrir) (bash-based IOC scanner)
+- [Loki](https://github.com/Neo23x0/Loki) (Python-based IOC scanner w/ Yara)
+- [GRR Rapid Response](https://github.com/google/grr) (Python agent-based IR)
+- this one is deprecated but... [MIG](http://mozilla.github.io/mig/)
+
+<br>**Threat Hunting**</br>
+- [ThreatHunter-Playbook](https://github.com/hunters-forge/ThreatHunter-Playbook)
+- [Mordor](https://github.com/hunters-forge/mordor)
+
+<br>**Misc**</br>
+- [LambdaGuard](https://github.com/Skyscanner/LambdaGuard)

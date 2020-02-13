@@ -380,7 +380,7 @@ def cluster_deletion_protection_check():
                             'Resources': [
                                 {
                                     'Type': 'Other',
-                                    'Id': docdbclusterId,
+                                    'Id': docdbClusterArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
@@ -429,7 +429,7 @@ def cluster_deletion_protection_check():
                             'Resources': [
                                 {
                                     'Type': 'Other',
-                                    'Id': docdbclusterId,
+                                    'Id': docdbClusterArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
