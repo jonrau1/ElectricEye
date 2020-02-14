@@ -24,7 +24,11 @@ python3 Amazon_Kinesis_Data_Streams_Auditor.py
 sleep 2
 python3 Amazon_MSK_Auditor.py
 sleep 2
+python3 Amazon_Neptune_Auditor.py
+sleep 2
 python3 Amazon_RDS_Auditor.py
+sleep 2
+python3 Amazon_S3_Auditor.py
 sleep 2
 python3 Amazon_SageMaker_Auditor.py
 sleep 2

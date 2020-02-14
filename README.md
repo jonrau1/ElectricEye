@@ -39,7 +39,7 @@ Refer to the [Supported Services and Checks](https://github.com/jonrau1/Electric
 ## Setting Up
 These steps are split across their relevant sections. All CLI commands are executed from an Ubuntu 18.04LTS [Cloud9 IDE](https://aws.amazon.com/cloud9/details/), modify them to fit your OS.
 
-#### Build and push the Docker image
+### Build and push the Docker image
 Before starting [attach this IAM policy](https://github.com/jonrau1/ElectricEye/blob/master/policies/Instance_Profile_IAM_Policy.json) to your [Instance Profile](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html) (if you are using Cloud9 or EC2).
 
 **Important Note:** The policy for the instance profile is ***highly dangerous*** given the S3, VPC and IAM related permissions given to it, Terraform needs a wide swath of CRUD permissions and even permissions for things that aren't deployed by the config files. For rolling ElectricEye out in a Production or an otherwise highly-regulated environment, consider adding [IAM Condition Keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_actions-resources-contextkeys.html#context_keys_table), using CI/CD (no human access) and backing up your Terraform state files to a S3 backend to add guardrails around this deployment. I would avoid adding these permissions to an IAM user, and any roles that use this should only be assumable by where you are deploying it from, consider adding other Condition Keys to the Trust Policy.
@@ -71,7 +71,7 @@ sudo docker push <ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/<REPO_NAME>:lat
 
 Do not navigate away from this directory, as you will enter more code in the next stage.
 
-#### Setup baseline infrastructure
+### Setup baseline infrastructure
 In this stage we will install and deploy the ElectricEye infrastructure via Terraform. To securely backup your state file, you should explore the usage of a [S3 backend](https://www.terraform.io/docs/backends/index.html), this is also described in this [AWS Security Blog post](https://aws.amazon.com/blogs/security/how-use-ci-cd-deploy-configure-aws-security-services-terraform/).
 
 1. Install the dependencies for Terraform. **Note:** these configuration files are written for `v 0.11.x` and will not work with `v 0.12.x` Terraform installations and rewriting for that spec is not in the immediate roadmap.
@@ -114,7 +114,7 @@ python3 electriceye-insights.py
 
 In the next stage your will run the ElectricEye ECS task manually, after Terraform deploys this solution it will automatically run and it will fail due to a lack of auditors in the S3 bucket. You can skip the next section if you intend to have ElectricEye run automatically.
 
-#### Manually execute the ElectricEye ECS Task (you only need to do this once)
+### Manually execute the ElectricEye ECS Task (you only need to do this once)
 In this stage we will use the console the manually run the ElectricEye ECS task.
 
 1. Navigate to the ECS Console, select **Task Definitions** and toggle the `electric-eye` task definition. Select the **Actions** dropdown menu and select **Run Task** as shown in the below screenshot.
@@ -135,7 +135,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **76** checks supported across **24** services.
+These are the following services and checks perform by each Auditor. There are currently **82** checks supported across **26** services.
 
 | Auditor File Name                      | AWS Service                   | Auditor Scan Description                                              |
 |----------------------------------------|-------------------------------|-----------------------------------------------------------------------|
@@ -183,6 +183,9 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_MSK_Auditor.py                  | MSK Cluster                   | Is client-broker communications<br>TLS-only                           |
 | Amazon_MSK_Auditor.py                  | MSK Cluster                   | Is enhanced monitoring used                                           |
 | Amazon_MSK_Auditor.py                  | MSK Cluster                   | Is Private CA TLS auth used                                           |
+| Amazon_Neptune_Auditor.py              | Neptune instance              | Is Neptune configured for HA                                          |
+| Amazon_Neptune_Auditor.py              | Neptune instance              | Is Neptune storage encrypted                                          |
+| Amazon_Neptune_Auditor.py              | Neptune instance              | Does Neptune use IAM DB Auth                                          |
 | Amazon_RDS_Auditor.py                  | RDS DB Instance               | Is HA configured                                                      |
 | Amazon_RDS_Auditor.py                  | RDS DB Instance               | Are DB instances publicly accessible                                  |
 | Amazon_RDS_Auditor.py                  | RDS DB Instance               | Is DB storage encrypted                                               |
@@ -190,6 +193,9 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_RDS_Auditor.py                  | RDS DB Instance               | Are supported DBs joined to a domain                                  |
 | Amazon_RDS_Auditor.py                  | RDS DB Instance               | Is performance insights enabled                                       |
 | Amazon_RDS_Auditor.py                  | RDS DB Instance               | Is deletion protection enabled                                        |
+| Amazon_S3_Auditor.py                   | S3 Bucket                     | Is bucket encryption enabled                                          |
+| Amazon_S3_Auditor.py                   | S3 Bucket                     | Is a bucket lifecycle enabled                                         |
+| Amazon_S3_Auditor.py                   | Account                       | Is account level public access block<br>configured                    |
 | Amazon_SageMaker_Auditor.py            | SageMaker Notebook            | Is notebook encryption enabled                                        |
 | Amazon_SageMaker_Auditor.py            | SageMaker Notebook            | Is notebook direct internet access<br>enabled                         |
 | Amazon_SageMaker_Auditor.py            | SageMaker Notebook            | Is the notebook in a vpc                                              |
@@ -232,7 +238,7 @@ This section is likely to wax and wane depending on future releases, PRs and cha
 - AppStream 2.0 Image checks are noisy, there is not a way to differentiate between AWS and customer-owned AS 2.0 images and you will get at least a dozen failed findings because of this coming from AWS-managed instances.
 
 ## FAQ
-#### 0. Why is continuous compliance monitoring (CCM) important?
+### 0. Why is continuous compliance monitoring (CCM) important?
 One of the main benefits to moving to the cloud is the agility it gives you to quickly iterate on prototypes, drive business value and globally scale. That is what is known as a double-edge sword, because you can also quickly pivot into an insecure state. CCM gives you near real-time (*near* being defined by your Fargate schedule) security configuration information from which you can assess risk to your applications and data, determine if you fell out of compliance with regulatory or industry frameworks and/or determine if you fell out of your organizational privacy protection posture, among other things. Depending on how your deliver software or services, this will allow your developers to keep being agile in their delivery and remediation of any security issues that pop up. If security is owned by a central function, CCM allows them to at least *keep up* with the business, make informed risk-based decisions and quickly take action and either remediate, mitigate or accept risks due to certain configurations.
 
 ElectricEye won't take the place of a crack squad of principal security engineers or stand-in for a compliance, infosec, privacy or risk function but it will help you stay informed to the security posture of your AWS environment across a multitude of services.
@@ -240,54 +246,54 @@ ElectricEye won't take the place of a crack squad of principal security engineer
 Or, you could just not do security at all and look like pic below:
 ![ThreatActorKittens](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/plz-no.jpg)
 
-#### 1. Why should I use this tool?
+### 1. Why should I use this tool?
 Primarily because it is free to *use* (you still need to pay for the infrastructure). This tool will also help cover services not currently covered by AWS Config rules or AWS Security Hub compliance standards. This tool is also natively integrated with Security Hub, no need to create additional services to perform translation into the AWS Security Finding Format and calling the BatchImportFindings API to send findings to Security Hub.
 
-#### 2. Will this tool help me become compliant with (insert industry or regulatory framework here)?
+### 2. Will this tool help me become compliant with (insert industry or regulatory framework here)?
 No. If you wanted to use this tool to satisfy an audit, I would recommend you work closely with your GRC and Legal functions to determine if the checks performed by ElectricEye will legally satisfy the requirements of any compliance framework or regulations you need to comply with. If you find that it does, you can use the `Compliance.RelatedRequirements` array within the ASFF to denote those. I would recommend forking and modifying the code for that purpose. 
 
 Howver, if you 1) work on behalf of an organization who can provide attestations that these technical controls satisfy the spirit of certain requirements in certain industry or regulatory standards and 2) would like to provide an attestation for the betterment of the community please email me to discuss.
 
-#### 3. Can this be the primary tool I use for AWS security assessments?
+### 3. Can this be the primary tool I use for AWS security assessments?
 Only you can make that determination. More is always better, there are far more mature projects that exist such as [Prowler](https://github.com/toniblyx/prowler), [PacBot](https://github.com/tmobile/pacbot), [Cloud Inquisitor](https://github.com/RiotGames/cloud-inquisitor) and [Scout2](https://github.com/nccgroup/ScoutSuite). You should perform a detailed analysis about which tools support what services, what checks, what your ultimate downstream tool will be for taking actions or analyzing findings (Splunk, Kibana, Security Hub, Demisto, Phantom, QuickSight, etc.) and how many false-positives or false-negatives are created by what tool. Some of those tools also do other things, and that is not to mention the endless list of logging, monitoring, tracing and AppSec related tools you will also need to use. There are additional tools listed in [FAQ #13](https://github.com/jonrau1/ElectricEye#12-what-are-those-other-tools-you-mentioned) below.
 
-#### 4. Why didn't you build Config rules do these?
+### 4. Why didn't you build Config rules do these?
 I built ElectricEye with Security Hub in mind, using custom Config rules would require a lot of additional infrastructure and API calls to parse out a specific rule, map what little information Config gives to the ASFF and also perform more API calls to enrich the findings and send it, that is not something I would want to do. Additionally, you are looking at $0.001/rule evaluation/region and then have to pay for the Lambda invocations and (potentially) for any findings above the first 10,000 going to Security Hub a month.
 
-#### 5. What are the advantages over AWS Security Hub compliance standards? Why shouldn't I use those instead?
+### 5. What are the advantages over AWS Security Hub compliance standards? Why shouldn't I use those instead?
 You should use them! The only notable "advantage" would be ElectricEye might support a resource before a Security Hub compliance standard does, or it may support a check that Security Hub compliance standards do not. At the very least, you should use the CIS AWS Foundations Benchmark standard, it contains common sense checks that audit IAM users and basic security group misconfigurations.
 
-#### 6. What are the advantages over Config Conformance Packs? Why shouldn't I use those instead?
+### 6. What are the advantages over Config Conformance Packs? Why shouldn't I use those instead?
 Similar to above, ElectricEye may support another service or another type of check that Config rules do not, on top of the additional charges you pay for using Conformance packs ($0.0012 per evaluation per Region). That said, you should probably continue to use the IAM-related Config rules as many of them are powered by [Zelkova](https://aws.amazon.com/blogs/security/protect-sensitive-data-in-the-cloud-with-automated-reasoning-zelkova/), which uses automated reasoning to analyze policies and the future consequences of policies.
 
-#### 7. Can I scope these checks by tag or by a certain resource?
+### 7. Can I scope these checks by tag or by a certain resource?
 No. That is something in mind for the future, and a very good idea for a PR.
 
-#### 8. Why do I have to set this up per account? Why can't I just scan all of my resources across all accounts?
+### 8. Why do I have to set this up per account? Why can't I just scan all of my resources across all accounts?
 Doing these scans per accounts let your on-call / account owner to view it within their own Security Hub versus not knowing they are potentially using dangerous configurations,  security should be democratized.
 
-#### 9. Why don't you support (insert service name here)?
+### 9. Why don't you support (insert service name here)?
 I will, eventually. If you really need a specific check supported RIGHT NOW please create an Issue, and if it is feasible, I will tackle it. PRs are welcome for any additions.
 
-#### 10. Where is that automated remediation you like so much?
+### 10. Where is that automated remediation you like so much?
 You probably have me confused with someone else...That is a Phase 2 plan: after I am done scanning all the things, we can remediate all of the things.
 
-#### 11. Why do some of the severity scores / labels for the same failing check have different values?!
+### 11. Why do some of the severity scores / labels for the same failing check have different values?!
 Some checks, such as the EC2 Systems Manager check for having the latest patches installed are dual-purpose and will have different severities. For instance, that check looks if you have any patch state infromation reported at all, if you do not you likely are not even managing that instance as part of the patch baseline. If a missing or failed patch is reported, then the severity is bumped up since you ARE managing patches but something happened and now the patch is not being installed.
 
 In a similar vein, some findings that have a severity score of 0 (severity label of `INFORMATIONAL`) and a Compliance status of `PASSED` may not be Archived if it is something you may want to pay attention to. An example of this are EBS Snapshots that are shared with other accounts, it is no where near as bad as being public but you should audit these accounts to make sure you are sharing with folks who should be shared with (I cannot tell who that is, your SecOps analyst should be able to).
 
-#### 12. How much does this solution cost to run?
+### 12. How much does this solution cost to run?
 The costs are extremely negligible, as the primary costs are Fargate vCPU and Memory per GB per Hour and then Security Hub finding ingestion above 10,000 findings per Region per Month (the first 10,000 is perpetually free). We will use two scenarios as an example for the costs, you will likely need to perform your own analysis to forecast potential costs. ElectricEye's ECS Task Definition is 2 vCPU and 4GB of Memory by default.
 
-##### Fargate Costs
+#### Fargate Costs
 **30 Day Period: Running ElectricEye every 12 hours and it takes 5 minutes per Run**</br>
 5 hours of total runtime per month: **$0.49370/region/account/month**
 
 **30 Day Period: Running ElectricEye every 6 hours and it takes 10 minutes per Run**</br>
 20 hours of total runtime per month: **$1.61920/region/account/month**
 
-##### Security Hub Costs
+#### Security Hub Costs
 **Having 10 resources per check in scope for all 49 checks running 120 times a month (every 12 hours)**</br>
 58,800 findings, 48,800 in scope for charges: **$1.46 /region/account/month**
 
@@ -298,7 +304,7 @@ With the above examples, if you had Fargate running for 20 hours a month and gen
 
 To put it another way, the most expensive example in these scenarios would cost **$37.00** per year per region per account. That means running ElectricEye in that price range across 50 accounts and 4 regions would be **$7,399.68** a year. You could potentially save up to 70% on Fargate costs by modifying ElectricEye to run on [Fargate Spot](https://aws.amazon.com/blogs/aws/aws-fargate-spot-now-generally-available/).
 
-#### 13. What are those other tools you mentioned?
+### 13. What are those other tools you mentioned?
 You should consider taking a look at all of these:
 
 <br>**Secrets Scanning**</br>
