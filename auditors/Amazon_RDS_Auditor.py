@@ -9,7 +9,30 @@ securityhub = boto3.client('securityhub')
 awsRegion = os.environ['AWS_REGION']
 awsAccountId = sts.get_caller_identity()['Account']
 # loop through all RDS DB instances
-response = rds.describe_db_instances(MaxRecords=100)
+response = rds.describe_db_instances(
+    Filters=[
+        {
+            'Name': 'engine',
+            'Values': [
+                'aurora',
+                'aurora-mysql',
+                'aurora-postgresql',
+                'mariadb',
+                'mysql',
+                'oracle-ee',
+                'oracle-se2',
+                'oracle-se1',
+                'oracle-se',
+                'postgres',
+                'sqlserver-ee',
+                'sqlserver-se',
+                'sqlserver-ex',
+                'sqlserver-web'
+            ]
+        }
+    ],
+    MaxRecords=100
+)
 myRdsInstances = response['DBInstances']
 
 def rds_instance_ha_check():
