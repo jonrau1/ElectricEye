@@ -270,9 +270,9 @@ Similar to above, ElectricEye may support another service or another type of che
 No. That is something in mind for the future, and a very good idea for a PR. The only way to do so now is to manually rewrite the checks and/or delete any auditors you don't need from use.
 
 ### 8. Why do I have to set this up per account? Why can't I just scan all of my resources across all accounts?
-First, the IAM permissions needed to run all of the auditors' scans are numerous, and while not particularly destructive, give a lot of Read/List rights which can be an awesome recon tool (very fitting given the name of the tool) for a malicious insider or threat actor. Giving it cross-account rights could potentially allow someone wanting to figure out where your crown jewels are and the security posture of your environment accomplish their job easier. It could also make provisioning a little harder, given that you have to keep up to 1000s (depending on how many accounts you have) of roles up-to-date as ElectricEye adds new capabilities.
+First, the IAM permissions needed to run all of the auditors' scans are numerous, and while not particularly destructive, give a lot of Read/List rights which can be an awesome recon tool (very fitting given the name of the tool) for a malicious insider or threat actor. Giving it cross-account just makes that totally-not-cool individual's job of mass destruction so much easier, this security information can give them all sorts of ideas for attacks to launch. Lastly, it could also make provisioning a little harder, given that you have to keep up to 1000s (depending on how many accounts you have) of roles up-to-date as ElectricEye adds new capabilities.
 
-These are lazy answers above, I did not want to make this a master-member tool because security should be democratized. You are **NOT** doing your account owners, DevOps teams or anyone else in the business any favors if you are just running scans and slapping a report you did up in Quicksight in front of them. By allowing them to view their findings in their own Security Hub console and take action on them, you are empowering and entrusting them with security goodness and fortune shall smile upon you.
+These are lazy answers above, I did not want to make this a master-member tool because security should be democratized. You are **NOT** doing your account owners, DevOps teams or anyone else in the business any favors if you are just running scans and slapping a report you did up in Quicksight in front of them. By allowing them to view their findings in their own Security Hub console and take action on them, you are empowering and entrusting them with security goodness and fortune shall smile upon you. With that, I will not make this master-member nor accept any PRs that attempt to.
 
 Plus, Security Hub supports master-member patterns, so you can get your nasty security-as-a-dashboard paws on the findings there.
 
@@ -287,7 +287,12 @@ Some checks, such as the EC2 Systems Manager check for having the latest patches
 
 In a similar vein, some findings that have a severity score of 0 (severity label of `INFORMATIONAL`) and a Compliance status of `PASSED` may not be Archived if it is something you may want to pay attention to. An example of this are EBS Snapshots that are shared with other accounts, it is no where near as bad as being public but you should audit these accounts to make sure you are sharing with folks who should be shared with (I cannot tell who that is, your SecOps analyst should be able to).
 
-### 12. How much does this solution cost to run?
+### 12. What if I run into throttling issues, how can I get the findings?
+For now, I put (lazy) sleep steps in the bash script that runs all of the auditors. It should hopefully add enough cooldown to avoid getting near the 10TPS rate limit, let alone the 30TPS burst limit of the BIF API. You are throttled after bursting, but the auditors do not run in parallel for this reason, so you should not run into that unless for some reason you have 1000s of a single type of resource in a single region.
+
+That said, it is possible some of you crazy folks have that many resources. A To-Do is improve ElectricEye's architecture (while increasing costs) and write up batches of findings to SQS which will be parsed and sent to BIF via Lambda. So even if you had 1000 resources, if I did the full batch of 100, you wouldn't tip that scale and have some retry ability. A similar pattern could technically be done with Kinesis, but more research for the best pattern is needed.
+
+### 13. How much does this solution cost to run?
 The costs are extremely negligible, as the primary costs are Fargate vCPU and Memory per GB per Hour and then Security Hub finding ingestion above 10,000 findings per Region per Month (the first 10,000 is perpetually free). We will use two scenarios as an example for the costs, you will likely need to perform your own analysis to forecast potential costs. ElectricEye's ECS Task Definition is 2 vCPU and 4GB of Memory by default.
 
 #### Fargate Costs
@@ -308,7 +313,7 @@ With the above examples, if you had Fargate running for 20 hours a month and gen
 
 To put it another way, the most expensive example in these scenarios would cost **$37.00** per year per region per account. That means running ElectricEye in that price range across 50 accounts and 4 regions would be **$7,399.68** a year. You could potentially save up to 70% on Fargate costs by modifying ElectricEye to run on [Fargate Spot](https://aws.amazon.com/blogs/aws/aws-fargate-spot-now-generally-available/).
 
-### 13. What are those other tools you mentioned?
+### 14. What are those other tools you mentioned?
 You should consider taking a look at all of these:
 
 <br>**Secrets Scanning**</br>
