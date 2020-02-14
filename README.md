@@ -267,10 +267,14 @@ You should use them! The only notable "advantage" would be ElectricEye might sup
 Similar to above, ElectricEye may support another service or another type of check that Config rules do not, on top of the additional charges you pay for using Conformance packs ($0.0012 per evaluation per Region). That said, you should probably continue to use the IAM-related Config rules as many of them are powered by [Zelkova](https://aws.amazon.com/blogs/security/protect-sensitive-data-in-the-cloud-with-automated-reasoning-zelkova/), which uses automated reasoning to analyze policies and the future consequences of policies.
 
 ### 7. Can I scope these checks by tag or by a certain resource?
-No. That is something in mind for the future, and a very good idea for a PR.
+No. That is something in mind for the future, and a very good idea for a PR. The only way to do so now is to manually rewrite the checks and/or delete any auditors you don't need from use.
 
 ### 8. Why do I have to set this up per account? Why can't I just scan all of my resources across all accounts?
-Doing these scans per accounts let your on-call / account owner to view it within their own Security Hub versus not knowing they are potentially using dangerous configurations,  security should be democratized.
+First, the IAM permissions needed to run all of the auditors' scans are numerous, and while not particularly destructive, give a lot of Read/List rights which can be an awesome recon tool (very fitting given the name of the tool) for a malicious insider or threat actor. Giving it cross-account rights could potentially allow someone wanting to figure out where your crown jewels are and the security posture of your environment accomplish their job easier. It could also make provisioning a little harder, given that you have to keep up to 1000s (depending on how many accounts you have) of roles up-to-date as ElectricEye adds new capabilities.
+
+These are lazy answers above, I did not want to make this a master-member tool because security should be democratized. You are **NOT** doing your account owners, DevOps teams or anyone else in the business any favors if you are just running scans and slapping a report you did up in Quicksight in front of them. By allowing them to view their findings in their own Security Hub console and take action on them, you are empowering and entrusting them with security goodness and fortune shall smile upon you.
+
+Plus, Security Hub supports master-member patterns, so you can get your nasty security-as-a-dashboard paws on the findings there.
 
 ### 9. Why don't you support (insert service name here)?
 I will, eventually. If you really need a specific check supported RIGHT NOW please create an Issue, and if it is feasible, I will tackle it. PRs are welcome for any additions.
