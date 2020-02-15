@@ -28,11 +28,17 @@ python3 Amazon_Neptune_Auditor.py
 sleep 2
 python3 Amazon_RDS_Auditor.py
 sleep 2
+python3 Amazon_Redshift_Auditor.py
+sleep 2
 python3 Amazon_S3_Auditor.py
 sleep 2
 python3 Amazon_SageMaker_Auditor.py
 sleep 2
+python3 Amazon_Shield_Advanced_Auditor.py
+sleep 2
 python3 Amazon_VPC_Auditor.py
+sleep 2
+python3 Amazon_WorkSpaces_Auditor.py
 sleep 2
 python3 AMI_Auditor.py
 sleep 2

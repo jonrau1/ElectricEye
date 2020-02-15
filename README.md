@@ -135,7 +135,9 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **82** checks supported across **26** services.
+These are the following services and checks perform by each Auditor. There are currently **98** checks supported across **33** services.
+
+**Important Note:** You need to have Shield Advance enabled and Business or Enterprise support to run through the full list of Shield Advanced auditor checks
 
 | Auditor File Name                      | AWS Service                   | Auditor Scan Description                                              |
 |----------------------------------------|-------------------------------|-----------------------------------------------------------------------|
@@ -193,6 +195,10 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_RDS_Auditor.py                  | RDS DB Instance               | Are supported DBs joined to a domain                                  |
 | Amazon_RDS_Auditor.py                  | RDS DB Instance               | Is performance insights enabled                                       |
 | Amazon_RDS_Auditor.py                  | RDS DB Instance               | Is deletion protection enabled                                        |
+| Amazon_Redshift_Auditor.py             | Redshift cluster              | Is the cluster publicly accessible                                    |
+| Amazon_Redshift_Auditor.py             | Redshift cluster              | Is the cluster encrypted                                              |
+| Amazon_Redshift_Auditor.py             | Redshift cluster              | Is enhanced VPC routing enabled                                       |
+| Amazon_Redshift_Auditor.py             | Redshift cluster              | Is cluster audit logging enabled                                      |
 | Amazon_S3_Auditor.py                   | S3 Bucket                     | Is bucket encryption enabled                                          |
 | Amazon_S3_Auditor.py                   | S3 Bucket                     | Is a bucket lifecycle enabled                                         |
 | Amazon_S3_Auditor.py                   | Account                       | Is account level public access block<br>configured                    |
@@ -201,8 +207,20 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_SageMaker_Auditor.py            | SageMaker Notebook            | Is the notebook in a vpc                                              |
 | Amazon_SageMaker_Auditor.py            | SageMaker Endpoint            | Is endpoint encryption enabled                                        |
 | Amazon_SageMaker_Auditor.py            | SageMaker Model               | Is model network isolation enabled                                    |
+| Amazon_Shield_Advanced_Auditor.py      | Route53 Hosted Zone           | Are Rt53 hosted zones protected by<br>Shield Advanced                 |
+| Amazon_Shield_Advanced_Auditor.py      | Classic Load Balancer         | Are CLBs protected by Shield Adv                                      |
+| Amazon_Shield_Advanced_Auditor.py      | ELBv2 (ALB/NLB)               | Are ELBv2s protected by Shield Adv                                    |
+| Amazon_Shield_Advanced_Auditor.py      | Elastic IP                    | Are EIPs protected by Shield Adv                                      |
+| Amazon_Shield_Advanced_Auditor.py      | CloudFront Distribution       | Are CF Distros protected by Shield Adv                                |
+| Amazon_Shield_Advanced_Auditor.py      | Account (DRT IAM Role)        | Does the DRT have account authz via IAM<br>role                       |
+| Amazon_Shield_Advanced_Auditor.py      | Account (DRT S3 Access)       | Does the DRT have access to WAF logs<br>S3 buckets                    |
+| Amazon_Shield_Advanced_Auditor.py      | Account (Shield subscription) | Is Shield Adv subscription on auto <br>renew                          |
 | Amazon_VPC_Auditor.py                  | VPC                           | Is the default VPC out and about                                      |
 | Amazon_VPC_Auditor.py                  | VPC                           | Is flow logging enabled                                               |
+| Amazon_WorkSpaces_Auditor.py           | Workspace                     | Is user volume encrypted                                              |
+| Amazon_WorkSpaces_Auditor.py           | Workspace                     | Is root volume encrypted                                              |
+| Amazon_WorkSpaces_Auditor.py           | Workspace                     | Is running mode set to auto-off                                       |
+| Amazon_WorkSpaces_Auditor.py           | Workspace Directory           | Does directory allow default internet<br>access                       |
 | AMI_Auditor.py                         | Amazon Machine Image (AMI)    | Are owned AMIs public                                                 |
 | AMI_Auditor.py                         | Amazon Machine Image (AMI)    | Are owned AMIs encrypted                                              |
 | AWS_Backup_Auditor.py                  | EC2 Instance                  | Are EC2 instances backed up                                           |
