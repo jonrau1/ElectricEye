@@ -20,8 +20,6 @@ response = rds.describe_db_instances(
                 'mariadb',
                 'mysql',
                 'oracle-ee',
-                'oracle-se1',
-                'oracle-se',
                 'postgres',
                 'sqlserver-ee',
                 'sqlserver-se',
