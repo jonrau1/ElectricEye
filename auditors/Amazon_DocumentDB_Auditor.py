@@ -57,7 +57,7 @@ def public_instance_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'DocumentDB Instance': docdbId }
+                                        'Other': { 'InstanceId': docdbId }
                                     }
                                 }
                             ],
@@ -109,7 +109,7 @@ def public_instance_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'DocumentDB Instance': docdbId }
+                                        'Other': { 'InstanceId': docdbId }
                                     }
                                 }
                             ],
@@ -167,7 +167,7 @@ def instance_encryption_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'DocumentDB Instance': docdbId }
+                                        'Other': { 'InstanceId': docdbId }
                                     }
                                 }
                             ],
@@ -219,7 +219,7 @@ def instance_encryption_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'DocumentDB Instance': docdbId }
+                                        'Other': { 'InstanceId': docdbId }
                                     }
                                 }
                             ],
@@ -277,7 +277,7 @@ def cluster_multiaz_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'DocumentDB Cluster': docdbclusterId }
+                                        'Other': { 'ClusterId': docdbclusterId }
                                     }
                                 }
                             ],
@@ -326,7 +326,7 @@ def cluster_multiaz_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'DocumentDB Cluster': docdbclusterId }
+                                        'Other': { 'ClusterId': docdbclusterId }
                                     }
                                 }
                             ],
@@ -384,7 +384,7 @@ def cluster_deletion_protection_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'DocumentDB Cluster': docdbclusterId }
+                                        'Other': { 'ClusterId': docdbclusterId }
                                     }
                                 }
                             ],
@@ -433,7 +433,7 @@ def cluster_deletion_protection_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'DocumentDB Cluster': docdbclusterId }
+                                        'Other': { 'ClusterId': docdbclusterId }
                                     }
                                 }
                             ],

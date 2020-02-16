@@ -80,6 +80,7 @@ if str(getFindings['Findings']) == '[]':
                     'Severity': { 'Normalized': 0 },
                     'Title': '[SecurityHub.1] Security Hub should not have active high or critical severity findings from AWS services',
                     'Description': 'High or critical findings were not found in the Security Hub hub for AWS account ' + awsAccountId,
+                    'ProductFields': { 'Product Name': 'ElectricEye' },
                     'Resources': [
                         {
                             'Type': 'AwsAccount',

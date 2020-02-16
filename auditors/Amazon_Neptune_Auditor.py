@@ -50,7 +50,7 @@ def neptune_instance_multi_az_check():
                                     'Region': awsRegion,
                                     'Details': {
                                         'Other': {
-                                            'Neptune Instance ID': neptuneDbId
+                                            'InstanceId': neptuneDbId
                                         }
                                     }
                                 }
@@ -97,7 +97,7 @@ def neptune_instance_multi_az_check():
                                     'Region': awsRegion,
                                     'Details': {
                                         'Other': {
-                                            'Neptune Instance ID': neptuneDbId
+                                            'InstanceId': neptuneDbId
                                         }
                                     }
                                 }
@@ -153,7 +153,7 @@ def neptune_instance_storage_encryption_check():
                                     'Region': awsRegion,
                                     'Details': {
                                         'Other': {
-                                            'Neptune Instance ID': neptuneDbId
+                                            'InstanceId': neptuneDbId
                                         }
                                     }
                                 }
@@ -203,7 +203,7 @@ def neptune_instance_storage_encryption_check():
                                     'Region': awsRegion,
                                     'Details': {
                                         'Other': {
-                                            'Neptune Instance ID': neptuneDbId
+                                            'InstanceId': neptuneDbId
                                         }
                                     }
                                 }
@@ -259,7 +259,7 @@ def neptune_instance_iam_authentication_check():
                                     'Region': awsRegion,
                                     'Details': {
                                         'Other': {
-                                            'Neptune Instance ID': neptuneDbId
+                                            'InstanceId': neptuneDbId
                                         }
                                     }
                                 }
@@ -309,7 +309,7 @@ def neptune_instance_iam_authentication_check():
                                     'Region': awsRegion,
                                     'Details': {
                                         'Other': {
-                                            'Neptune Instance ID': neptuneDbId
+                                            'InstanceId': neptuneDbId
                                         }
                                     }
                                 }

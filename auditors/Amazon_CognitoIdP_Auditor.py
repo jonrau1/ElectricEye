@@ -60,7 +60,7 @@ def cognitoidp_cis_password_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'Cognito User Pool Id': userPoolId }
+                                        'Other': { 'UserPoolId': userPoolId }
                                     }
                                 }
                             ],
@@ -109,7 +109,7 @@ def cognitoidp_cis_password_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'Cognito User Pool Id': userPoolId }
+                                        'Other': { 'UserPoolId': userPoolId }
                                     }
                                 }
                             ],
@@ -169,7 +169,7 @@ def cognitoidp_temp_password_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'Cognito User Pool Id': userPoolId }
+                                        'Other': { 'UserPoolId': userPoolId }
                                     }
                                 }
                             ],
@@ -218,7 +218,7 @@ def cognitoidp_temp_password_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'Cognito User Pool Id': userPoolId }
+                                        'Other': { 'UserPoolId': userPoolId }
                                     }
                                 }
                             ],
@@ -257,7 +257,7 @@ def cognitoidp_mfa_check():
                             'FirstObservedAt': iso8601Time,
                             'CreatedAt': iso8601Time,
                             'UpdatedAt': iso8601Time,
-                            'Severity': { 'Normalized': 90 },
+                            'Severity': { 'Normalized': 80 },
                             'Confidence': 99,
                             'Title': '[Cognito-IdP.3] Cognito user pools should enforce multi factor authentication (MFA)',
                             'Description': 'Cognito user pool ' + userPoolArn + ' does not enforce multi factor authentication (MFA). Refer to the remediation instructions to remediate this behavior',
@@ -277,7 +277,7 @@ def cognitoidp_mfa_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'Cognito User Pool Id': userPoolId }
+                                        'Other': { 'UserPoolId': userPoolId }
                                     }
                                 }
                             ],
@@ -326,7 +326,7 @@ def cognitoidp_mfa_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'Cognito User Pool Id': userPoolId }
+                                        'Other': { 'UserPoolId': userPoolId }
                                     }
                                 }
                             ],

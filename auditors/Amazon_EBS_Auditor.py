@@ -59,7 +59,7 @@ def ebs_volume_attachment_check():
                                         'Partition': 'aws',
                                         'Region': awsRegion,
                                         'Details': {
-                                            'Other': { 'Volume Id': ebsVolumeId }
+                                            'Other': { 'VolumeId': ebsVolumeId }
                                         }
                                     }
                                 ],
@@ -108,7 +108,7 @@ def ebs_volume_attachment_check():
                                         'Partition': 'aws',
                                         'Region': awsRegion,
                                         'Details': {
-                                            'Other': { 'Volume Id': ebsVolumeId }
+                                            'Other': { 'VolumeId': ebsVolumeId }
                                         }
                                     }
                                 ],
@@ -165,7 +165,7 @@ def ebs_volume_delete_on_termination_check():
                                         'Partition': 'aws',
                                         'Region': awsRegion,
                                         'Details': {
-                                            'Other': { 'Volume Id': ebsVolumeId }
+                                            'Other': { 'VolumeId': ebsVolumeId }
                                         }
                                     }
                                 ],
@@ -214,7 +214,7 @@ def ebs_volume_delete_on_termination_check():
                                         'Partition': 'aws',
                                         'Region': awsRegion,
                                         'Details': {
-                                            'Other': { 'Volume Id': ebsVolumeId }
+                                            'Other': { 'VolumeId': ebsVolumeId }
                                         }
                                     }
                                 ],
@@ -272,7 +272,7 @@ def ebs_volume_encryption_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'Volume Id': ebsVolumeId }
+                                        'Other': { 'VolumeId': ebsVolumeId }
                                     }
                                 }
                             ],
@@ -324,7 +324,7 @@ def ebs_volume_encryption_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'Volume Id': ebsVolumeId }
+                                        'Other': { 'VolumeId': ebsVolumeId }
                                     }
                                 }
                             ],
@@ -382,7 +382,7 @@ def ebs_snapshot_encryption_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'Volume Id': snapshotId }
+                                        'Other': { 'SnapshotId': snapshotId }
                                     }
                                 }
                             ],
@@ -434,7 +434,7 @@ def ebs_snapshot_encryption_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'Volume Id': snapshotId }
+                                        'Other': { 'SnapshotId': snapshotId }
                                     }
                                 }
                             ],
@@ -492,7 +492,7 @@ def ebs_snapshot_public_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'Volume Id': snapshotId }
+                                        'Other': { 'SnapshotId': snapshotId }
                                     }
                                 }
                             ],
@@ -548,7 +548,7 @@ def ebs_snapshot_public_check():
                                             'Partition': 'aws',
                                             'Region': awsRegion,
                                             'Details': {
-                                                'Other': { 'Volume Id': snapshotId }
+                                                'Other': { 'SnapshotId': snapshotId }
                                             }
                                         }
                                     ],
@@ -600,7 +600,7 @@ def ebs_snapshot_public_check():
                                             'Partition': 'aws',
                                             'Region': awsRegion,
                                             'Details': {
-                                                'Other': { 'Volume Id': snapshotId }
+                                                'Other': { 'SnapshotId': snapshotId }
                                             }
                                         }
                                     ],

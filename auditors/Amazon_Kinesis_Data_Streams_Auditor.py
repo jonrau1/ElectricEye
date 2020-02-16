@@ -55,7 +55,7 @@ def kinesis_stream_encryption_check():
                                     'Region': awsRegion,
                                     'Details': {
                                         'Other': {
-                                            'Stream Name': streamName
+                                            'StreamName': streamName
                                         }
                                     }
                                 }
@@ -105,7 +105,7 @@ def kinesis_stream_encryption_check():
                                     'Region': awsRegion,
                                     'Details': {
                                         'Other': {
-                                            'Stream Name': streamName
+                                            'StreamName': streamName
                                         }
                                     }
                                 }
@@ -161,7 +161,7 @@ def kinesis_enhanced_monitoring_check():
                                         'Region': awsRegion,
                                         'Details': {
                                             'Other': {
-                                                'Stream Name': streamName
+                                                'StreamName': streamName
                                             }
                                         }
                                     }
@@ -208,7 +208,7 @@ def kinesis_enhanced_monitoring_check():
                                         'Region': awsRegion,
                                         'Details': {
                                             'Other': {
-                                                'Stream Name': streamName
+                                                'StreamName': streamName
                                             }
                                         }
                                     }

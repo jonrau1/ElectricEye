@@ -54,7 +54,7 @@ def inter_cluster_encryption_in_transit_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'Cluster Name': clusterName }
+                                        'Other': { 'ClusterName': clusterName }
                                     }
                                 }
                             ],
@@ -103,7 +103,7 @@ def inter_cluster_encryption_in_transit_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'Cluster Name': clusterName }
+                                        'Other': { 'ClusterName': clusterName }
                                     }
                                 }
                             ],
@@ -158,7 +158,7 @@ def client_broker_encryption_in_transit_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'Cluster Name': clusterName }
+                                        'Other': { 'ClusterName': clusterName }
                                     }
                                 }
                             ],
@@ -207,7 +207,7 @@ def client_broker_encryption_in_transit_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'Cluster Name': clusterName }
+                                        'Other': { 'ClusterName': clusterName }
                                     }
                                 }
                             ],
@@ -262,7 +262,7 @@ def client_authentication_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'Cluster Name': clusterName }
+                                        'Other': { 'ClusterName': clusterName }
                                     }
                                 }
                             ],
@@ -311,7 +311,7 @@ def client_authentication_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'Cluster Name': clusterName }
+                                        'Other': { 'ClusterName': clusterName }
                                     }
                                 }
                             ],
@@ -366,7 +366,7 @@ def cluster_enhanced_monitoring_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'Cluster Name': clusterName }
+                                        'Other': { 'ClusterName': clusterName }
                                     }
                                 }
                             ],
@@ -415,7 +415,7 @@ def cluster_enhanced_monitoring_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'Cluster Name': clusterName }
+                                        'Other': { 'ClusterName': clusterName }
                                     }
                                 }
                             ],

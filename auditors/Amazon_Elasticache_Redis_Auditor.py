@@ -64,7 +64,7 @@ def redis_auth_check():
                                         'Partition': 'aws',
                                         'Region': awsRegion,
                                         'Details': {
-                                            'Other': { 'Cluster ID': clusterId, 'Engine Version': engineVersion }
+                                            'Other': { 'ClusterId': clusterId, 'EngineVersion': engineVersion }
                                         }
                                     }
                                 ],
@@ -116,7 +116,7 @@ def redis_auth_check():
                                         'Partition': 'aws',
                                         'Region': awsRegion,
                                         'Details': {
-                                            'Other': { 'Cluster ID': clusterId, 'Engine Version': engineVersion }
+                                            'Other': { 'ClusterId': clusterId, 'EngineVersion': engineVersion }
                                         }
                                     }
                                 ],
@@ -184,7 +184,7 @@ def encryption_at_rest_check():
                                         'Partition': 'aws',
                                         'Region': awsRegion,
                                         'Details': {
-                                            'Other': { 'Cluster ID': clusterId, 'Engine Version': engineVersion }
+                                            'Other': { 'ClusterId': clusterId, 'EngineVersion': engineVersion }
                                         }
                                     }
                                 ],
@@ -236,7 +236,7 @@ def encryption_at_rest_check():
                                         'Partition': 'aws',
                                         'Region': awsRegion,
                                         'Details': {
-                                            'Other': { 'Cluster ID': clusterId, 'Engine Version': engineVersion }
+                                            'Other': { 'ClusterId': clusterId, 'EngineVersion': engineVersion }
                                         }
                                     }
                                 ],
@@ -304,7 +304,7 @@ def encryption_in_transit_check():
                                         'Partition': 'aws',
                                         'Region': awsRegion,
                                         'Details': {
-                                            'Other': { 'Cluster ID': clusterId, 'Engine Version': engineVersion }
+                                            'Other': { 'ClusterId': clusterId, 'EngineVersion': engineVersion }
                                         }
                                     }
                                 ],
@@ -356,7 +356,7 @@ def encryption_in_transit_check():
                                         'Partition': 'aws',
                                         'Region': awsRegion,
                                         'Details': {
-                                            'Other': { 'Cluster ID': clusterId, 'Engine Version': engineVersion }
+                                            'Other': { 'ClusterId': clusterId, 'EngineVersion': engineVersion }
                                         }
                                     }
                                 ],
