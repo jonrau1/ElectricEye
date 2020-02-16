@@ -135,7 +135,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **100** checks supported across **34** AWS services / components.
+These are the following services and checks perform by each Auditor. There are currently **102** checks supported across **34** AWS services / components.
 
 **Important Note:** You need to have Shield Advance enabled and Business or Enterprise support to run through the full list of Shield Advanced auditor checks
 
@@ -163,6 +163,8 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_EC2_SSM_Auditor.py              | EC2 Instance                  | Is the SSM Agent up to date                                           |
 | Amazon_EC2_SSM_Auditor.py              | EC2 Instance                  | Is the Patch status up to date                                        |
 | Amazon_ECR_Auditor.py                  | ECR Repository                | Does the repository support<br>scan-on-push                           |
+| Amazon_ECR_Auditor.py                  | ECR Repository                | Is there an image lifecycle policy                                    |
+| Amazon_ECR_Auditor.py                  | ECR Repository                | Is there a repo access policy                                         |
 | Amazon_EKS_Auditor.py                  | EKS Cluster                   | Is the API Server publicly<br>accessible                              |
 | Amazon_EKS_Auditor.py                  | EKS Cluster                   | Is K8s version 1.14 used                                              |
 | Amazon_Elasticache_Redis_Auditor.py    | Elasticache Redis Cluster     | Is an AUTH Token used                                                 |

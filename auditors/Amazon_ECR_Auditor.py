@@ -11,105 +11,324 @@ awsRegion = os.environ['AWS_REGION']
 # loop through ECR repos
 response = ecr.describe_repositories(maxResults=1000)
 myRepos = response['repositories']
-for repo in myRepos:
-    repoArn = str(repo['repositoryArn'])
-    repoName = str(repo['repositoryName'])
-    scanningConfig = str(repo['imageScanningConfiguration']['scanOnPush'])
-    if scanningConfig == 'False':
-        try:
-            # ISO Time
-            iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-            # create Sec Hub finding
-            response = securityhub.batch_import_findings(
-                Findings=[
-                    {
-                        'SchemaVersion': '2018-10-08',
-                        'Id': repoArn + '/ecr-no-scan',
-                        'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
-                        'GeneratorId': repoArn,
-                        'AwsAccountId': awsAccount,
-                        'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
-                        'FirstObservedAt': iso8601Time,
-                        'CreatedAt': iso8601Time,
-                        'UpdatedAt': iso8601Time,
-                        'Severity': { 'Normalized': 40 },
-                        'Confidence': 99,
-                        'Title': '[ECR.1] Elastic Container Registry repositories should be configured to scan images on push',
-                        'Description': 'Elastic Container Registry repository ' + repoName + ' is not configured to scan images on push. Refer to the remediation instructions if this configuration is not intended',
-                        'Remediation': {
-                            'Recommendation': {
-                                'Text': 'If your repository should be configured to scan on push refer to Image Scanning in the Amazon ECR User Guide',
-                                'Url': 'https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html'
-                            }
-                        },
-                        'ProductFields': {
-                            'Product Name': 'ElectricEye'
-                        },
-                        'Resources': [
-                            {
-                                'Type': 'Other',
-                                'Id': repoArn,
-                                'Partition': 'aws',
-                                'Region': awsRegion,
-                                'Details': {
-                                    'Other': { 'Repository Name': repoName }
+
+def ecr_repo_vuln_scan_check():
+    for repo in myRepos:
+        repoArn = str(repo['repositoryArn'])
+        repoName = str(repo['repositoryName'])
+        scanningConfig = str(repo['imageScanningConfiguration']['scanOnPush'])
+        if scanningConfig == 'False':
+            try:
+                # ISO Time
+                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                # create Sec Hub finding
+                response = securityhub.batch_import_findings(
+                    Findings=[
+                        {
+                            'SchemaVersion': '2018-10-08',
+                            'Id': repoArn + '/ecr-no-scan',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
+                            'GeneratorId': repoArn,
+                            'AwsAccountId': awsAccount,
+                            'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                            'FirstObservedAt': iso8601Time,
+                            'CreatedAt': iso8601Time,
+                            'UpdatedAt': iso8601Time,
+                            'Severity': { 'Normalized': 40 },
+                            'Confidence': 99,
+                            'Title': '[ECR.1] ECR repositories should be configured to scan images on push',
+                            'Description': 'ECR repository ' + repoName + ' is not configured to scan images on push. Refer to the remediation instructions if this configuration is not intended',
+                            'Remediation': {
+                                'Recommendation': {
+                                    'Text': 'If your repository should be configured to scan on push refer to the Image Scanning section in the Amazon ECR User Guide',
+                                    'Url': 'https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html'
                                 }
-                            }
-                        ],
-                        'Compliance': { 'Status': 'FAILED' },
-                        'RecordState': 'ACTIVE'
-                    }
-                ]
-            )
-            print(response)
-        except Exception as e:
-            print(e)
-    else:
-        try:
-            # ISO Time
-            iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-            # create Sec Hub finding
-            response = securityhub.batch_import_findings(
-                Findings=[
-                    {
-                        'SchemaVersion': '2018-10-08',
-                        'Id': repoArn + '/ecr-no-scan',
-                        'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
-                        'GeneratorId': repoArn,
-                        'AwsAccountId': awsAccount,
-                        'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
-                        'FirstObservedAt': iso8601Time,
-                        'CreatedAt': iso8601Time,
-                        'UpdatedAt': iso8601Time,
-                        'Severity': { 'Normalized': 0 },
-                        'Confidence': 99,
-                        'Title': '[ECR.1] Elastic Container Registry repositories should be configured to scan images on push',
-                        'Description': 'Elastic Container Registry repository ' + repoName + ' is configured to scan images on push.',
-                        'Remediation': {
-                            'Recommendation': {
-                                'Text': 'If your repository should be configured to scan on push refer to Image Scanning in the Amazon ECR User Guide',
-                                'Url': 'https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html'
-                            }
-                        },
-                        'ProductFields': {
-                            'Product Name': 'ElectricEye'
-                        },
-                        'Resources': [
-                            {
-                                'Type': 'Other',
-                                'Id': repoArn,
-                                'Partition': 'aws',
-                                'Region': awsRegion,
-                                'Details': {
-                                    'Other': { 'Repository Name': repoName }
+                            },
+                            'ProductFields': {
+                                'Product Name': 'ElectricEye'
+                            },
+                            'Resources': [
+                                {
+                                    'Type': 'Other',
+                                    'Id': repoArn,
+                                    'Partition': 'aws',
+                                    'Region': awsRegion,
+                                    'Details': {
+                                        'Other': { 'RepositoryName': repoName }
+                                    }
                                 }
-                            }
-                        ],
-                        'Compliance': { 'Status': 'PASSED' },
-                        'RecordState': 'ARCHIVED'
-                    }
-                ]
-            )
-            print(response)
-        except Exception as e:
-            print(e)
+                            ],
+                            'Compliance': { 'Status': 'FAILED' },
+                            'RecordState': 'ACTIVE'
+                        }
+                    ]
+                )
+                print(response)
+            except Exception as e:
+                print(e)
+        else:
+            try:
+                # ISO Time
+                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                # create Sec Hub finding
+                response = securityhub.batch_import_findings(
+                    Findings=[
+                        {
+                            'SchemaVersion': '2018-10-08',
+                            'Id': repoArn + '/ecr-no-scan',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
+                            'GeneratorId': repoArn,
+                            'AwsAccountId': awsAccount,
+                            'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                            'FirstObservedAt': iso8601Time,
+                            'CreatedAt': iso8601Time,
+                            'UpdatedAt': iso8601Time,
+                            'Severity': { 'Normalized': 0 },
+                            'Confidence': 99,
+                            'Title': '[ECR.1] ECR repositories should be configured to scan images on push',
+                            'Description': 'ECR repository ' + repoName + ' is configured to scan images on push.',
+                            'Remediation': {
+                                'Recommendation': {
+                                    'Text': 'If your repository should be configured to scan on push refer to the Image Scanning section in the Amazon ECR User Guide',
+                                    'Url': 'https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html'
+                                }
+                            },
+                            'ProductFields': {
+                                'Product Name': 'ElectricEye'
+                            },
+                            'Resources': [
+                                {
+                                    'Type': 'Other',
+                                    'Id': repoArn,
+                                    'Partition': 'aws',
+                                    'Region': awsRegion,
+                                    'Details': {
+                                        'Other': { 'RepositoryName': repoName }
+                                    }
+                                }
+                            ],
+                            'Compliance': { 'Status': 'PASSED' },
+                            'RecordState': 'ARCHIVED'
+                        }
+                    ]
+                )
+                print(response)
+            except Exception as e:
+                print(e)
+
+def ecr_repo_image_lifecycle_policy_check():
+    for repo in myRepos:
+        repoArn = str(repo['repositoryArn'])
+        repoName = str(repo['repositoryName'])
+        try:
+            # this is a passing finding
+            response = ecr.get_lifecycle_policy(repositoryName=repoName)
+            try:
+                # ISO Time
+                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                # create Sec Hub finding
+                response = securityhub.batch_import_findings(
+                    Findings=[
+                        {
+                            'SchemaVersion': '2018-10-08',
+                            'Id': repoArn + '/ecr-lifecycle-policy-check',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
+                            'GeneratorId': repoArn,
+                            'AwsAccountId': awsAccount,
+                            'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                            'FirstObservedAt': iso8601Time,
+                            'CreatedAt': iso8601Time,
+                            'UpdatedAt': iso8601Time,
+                            'Severity': { 'Normalized': 0 },
+                            'Confidence': 99,
+                            'Title': '[ECR.2] ECR repositories should be have an image lifecycle policy configured',
+                            'Description': 'ECR repository ' + repoName + ' does not have an image lifecycle policy configured. Refer to the remediation instructions if this configuration is not intended',
+                            'Remediation': {
+                                'Recommendation': {
+                                    'Text': 'If your repository should be configured to have an image lifecycle policy refer to the Amazon ECR Lifecycle Policies section in the Amazon ECR User Guide',
+                                    'Url': 'https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html'
+                                }
+                            },
+                            'ProductFields': {
+                                'Product Name': 'ElectricEye'
+                            },
+                            'Resources': [
+                                {
+                                    'Type': 'Other',
+                                    'Id': repoArn,
+                                    'Partition': 'aws',
+                                    'Region': awsRegion,
+                                    'Details': {
+                                        'Other': { 'RepositoryName': repoName }
+                                    }
+                                }
+                            ],
+                            'Compliance': { 'Status': 'PASSED' },
+                            'RecordState': 'ARCHIVED'
+                        }
+                    ]
+                )
+                print(response)
+            except Exception as e:
+                print(e)
+        except:
+            try:
+                # ISO Time
+                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                # create Sec Hub finding
+                response = securityhub.batch_import_findings(
+                    Findings=[
+                        {
+                            'SchemaVersion': '2018-10-08',
+                            'Id': repoArn + '/ecr-lifecycle-policy-check',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
+                            'GeneratorId': repoArn,
+                            'AwsAccountId': awsAccount,
+                            'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                            'FirstObservedAt': iso8601Time,
+                            'CreatedAt': iso8601Time,
+                            'UpdatedAt': iso8601Time,
+                            'Severity': { 'Normalized': 40 },
+                            'Confidence': 99,
+                            'Title': '[ECR.2] ECR repositories should be have an image lifecycle policy configured',
+                            'Description': 'ECR repository ' + repoName + ' does not have an image lifecycle policy configured. Refer to the remediation instructions if this configuration is not intended',
+                            'Remediation': {
+                                'Recommendation': {
+                                    'Text': 'If your repository should be configured to have an image lifecycle policy refer to the Amazon ECR Lifecycle Policies section in the Amazon ECR User Guide',
+                                    'Url': 'https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html'
+                                }
+                            },
+                            'ProductFields': {
+                                'Product Name': 'ElectricEye'
+                            },
+                            'Resources': [
+                                {
+                                    'Type': 'Other',
+                                    'Id': repoArn,
+                                    'Partition': 'aws',
+                                    'Region': awsRegion,
+                                    'Details': {
+                                        'Other': { 'RepositoryName': repoName }
+                                    }
+                                }
+                            ],
+                            'Compliance': { 'Status': 'FAILED' },
+                            'RecordState': 'ACTIVE'
+                        }
+                    ]
+                )
+                print(response)
+            except Exception as e:
+                print(e)
+
+def ecr_repo_permission_policy():
+    for repo in myRepos:
+        repoArn = str(repo['repositoryArn'])
+        repoName = str(repo['repositoryName'])
+        try:
+            # this is a passing finding
+            response = ecr.get_repository_policy(repositoryName=repoName)
+            try:
+                # ISO Time
+                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                # create Sec Hub finding
+                response = securityhub.batch_import_findings(
+                    Findings=[
+                        {
+                            'SchemaVersion': '2018-10-08',
+                            'Id': repoArn + '/ecr-repo-access-policy-check',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
+                            'GeneratorId': repoArn,
+                            'AwsAccountId': awsAccount,
+                            'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                            'FirstObservedAt': iso8601Time,
+                            'CreatedAt': iso8601Time,
+                            'UpdatedAt': iso8601Time,
+                            'Severity': { 'Normalized': 0 },
+                            'Confidence': 99,
+                            'Title': '[ECR.3] ECR repositories should be have a repository policy configured',
+                            'Description': 'ECR repository ' + repoName + ' has a repository policy configured.',
+                            'Remediation': {
+                                'Recommendation': {
+                                    'Text': 'If your repository should be configured to have a repository policy refer to the Amazon ECR Repository Policies section in the Amazon ECR User Guide',
+                                    'Url': 'https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-policies.html'
+                                }
+                            },
+                            'ProductFields': {
+                                'Product Name': 'ElectricEye'
+                            },
+                            'Resources': [
+                                {
+                                    'Type': 'Other',
+                                    'Id': repoArn,
+                                    'Partition': 'aws',
+                                    'Region': awsRegion,
+                                    'Details': {
+                                        'Other': { 'RepositoryName': repoName }
+                                    }
+                                }
+                            ],
+                            'Compliance': { 'Status': 'PASSED' },
+                            'RecordState': 'ARCHIVED'
+                        }
+                    ]
+                )
+                print(response)
+            except Exception as e:
+                print(e)
+        except:
+            try:
+                # ISO Time
+                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                # create Sec Hub finding
+                response = securityhub.batch_import_findings(
+                    Findings=[
+                        {
+                            'SchemaVersion': '2018-10-08',
+                            'Id': repoArn + '/ecr-repo-access-policy-check',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
+                            'GeneratorId': repoArn,
+                            'AwsAccountId': awsAccount,
+                            'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                            'FirstObservedAt': iso8601Time,
+                            'CreatedAt': iso8601Time,
+                            'UpdatedAt': iso8601Time,
+                            'Severity': { 'Normalized': 40 },
+                            'Confidence': 99,
+                            'Title': '[ECR.3] ECR repositories should be have a repository policy configured',
+                            'Description': 'ECR repository ' + repoName + ' does not have a repository policy configured. Refer to the remediation instructions if this configuration is not intended',
+                            'Remediation': {
+                                'Recommendation': {
+                                    'Text': 'If your repository should be configured to have a repository policy refer to the Amazon ECR Repository Policies section in the Amazon ECR User Guide',
+                                    'Url': 'https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-policies.html'
+                                }
+                            },
+                            'ProductFields': {
+                                'Product Name': 'ElectricEye'
+                            },
+                            'Resources': [
+                                {
+                                    'Type': 'Other',
+                                    'Id': repoArn,
+                                    'Partition': 'aws',
+                                    'Region': awsRegion,
+                                    'Details': {
+                                        'Other': { 'RepositoryName': repoName }
+                                    }
+                                }
+                            ],
+                            'Compliance': { 'Status': 'FAILED' },
+                            'RecordState': 'ACTIVE'
+                        }
+                    ]
+                )
+                print(response)
+            except Exception as e:
+                print(e)
+
+def ecr_auditor():
+    ecr_repo_vuln_scan_check()
+    ecr_repo_image_lifecycle_policy_check()
+    ecr_repo_permission_policy()
+
+ecr_auditor()
