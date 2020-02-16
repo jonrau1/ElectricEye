@@ -15,7 +15,7 @@ Continuously monitor your AWS serivces for misconfigurations that can lead to de
   - [Deploy the baseline infrastructure](https://github.com/jonrau1/ElectricEye#deploy-the-baseline-infrastructure)
   - [Manually execute the ElectricEye ECS Task](https://github.com/jonrau1/ElectricEye#manually-execute-the-electriceye-ecs-task-you-only-need-to-do-this-once)
 - [Supported Services and Checks](https://github.com/jonrau1/ElectricEye#supported-services-and-checks)
-- [Known Issues & Limitiations](https://github.com/jonrau1/ElectricEye#known-issues--limitiations)
+- [Known Issues & Limitiations](https://github.com/jonrau1/ElectricEye#known-issues--limitations)
 - [FAQ](https://github.com/jonrau1/ElectricEye#faq)
 
 ## Description
@@ -247,11 +247,9 @@ This section is likely to wax and wane depending on future releases, PRs and cha
 
 - No way to dynamically change Severity. All Severity Label's in Security Hub come from a conversion of `Severity.Normalized` which ranges from 1-100, to modify these values you will need to fork and modify to fit your organization's definition of severity based on threat modeling and risk appetite for certain configurations.
 
-- DocumentDB and RDS Describe APIs bleed over each other's information, leading to failed RDS checks that are really DocDB and vice versa. The only recourse is to continually archive these findings. The root of a DocumentDB ARN is from RDS, [as described here](https://docs.aws.amazon.com/documentdb/latest/developerguide/documentdb-arns.html#documentdb-arns-constructing).
-
 - No tag-based scoping or exemption process out of the box. You will need to manually archive these, remove checks not pertinent to you and/or create your own automation to automatically archive findings for resources that shouldn't be in-scope.
 
-- Some resources, such as Elasticsearch Service, cannot be remediated after creation for some checks and will continue to show as non-compliant until you manually migrate them, or create automation to auto-archive these findings.
+- Some resources, such as Elasticsearch Service, cannot be changed after creation for some checks and will continue to show as non-compliant until you manually migrate them, or create automation to auto-archive these findings.
 
 - CloudFormation checks are noisy, consider deleting the `AWS_CloudFormation_Auditor.py` file unless your organization mandates the usage of Drift detection and Alarm based monitoring for stack rollbacks.
 

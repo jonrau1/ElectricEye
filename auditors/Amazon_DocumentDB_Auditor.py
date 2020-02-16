@@ -9,7 +9,15 @@ sts = boto3.client('sts')
 awsAccount = sts.get_caller_identity()['Account']
 awsRegion = os.environ['AWS_REGION']
 # find document db instances
-response = documentdb.describe_db_instances(MaxRecords=100)
+response = documentdb.describe_db_instances(
+    Filters=[
+        {
+            'Name': 'engine',
+            'Values': [ 'docdb' ]
+        }
+    ],
+    MaxRecords=100
+)
 myDocDbs = response['DBInstances']
 
 def public_instance_check():   
