@@ -196,9 +196,9 @@ def instance_encryption_check():
                     Findings=[
                         {
                             'SchemaVersion': '2018-10-08',
-                            'Id': docdbId + '/docdb-encryption-check',
+                            'Id': docdbArn + '/docdb-encryption-check',
                             'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
-                            'GeneratorId': docdbId,
+                            'GeneratorId': docdbArn,
                             'AwsAccountId': awsAccount,
                             'Types': [
                                 'Software and Configuration Checks/AWS Security Best Practices',
