@@ -31,6 +31,9 @@ response = rds.describe_db_instances(
     MaxRecords=100
 )
 myRdsInstances = response['DBInstances']
+# loop through all RDS DB snapshots
+response = rds.describe_db_snapshots()
+myRdsSnapshots = response['DBSnapshots']
 
 def rds_instance_ha_check():
     for dbinstances in myRdsInstances:
@@ -171,7 +174,7 @@ def rds_instance_public_access_check():
                             'FirstObservedAt': iso8601Time,
                             'CreatedAt': iso8601Time,
                             'UpdatedAt': iso8601Time,
-                            'Severity': { 'Normalized': 80 },
+                            'Severity': { 'Normalized': 90 },
                             'Confidence': 99,
                             'Title': '[RDS.2] RDS instances should not be publicly accessible',
                             'Description': 'RDS DB instance ' + instanceId + ' is publicly accessible. Refer to the remediation instructions to remediate this behavior',
@@ -846,6 +849,228 @@ def rds_instance_deletion_protection_check():
             except Exception as e:
                 print(e)
 
+def rds_snapshot_encryption_check():
+    for snapshot in myRdsSnapshots:
+        snapshotId = str(snapshot['DBSnapshotIdentifier'])
+        snapshotArn = str(snapshot['DBSnapshotArn'])
+        snapshotEncryptionCheck = str(snapshot['Encrypted'])
+        if snapshotEncryptionCheck == 'False':
+            try:
+                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                response = securityhub.batch_import_findings(
+                    Findings=[
+                        {
+                            'SchemaVersion': '2018-10-08',
+                            'Id': snapshotArn + '/rds-snapshot-encryption-check',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                            'GeneratorId': snapshotArn,
+                            'AwsAccountId': awsAccountId,
+                            'Types': [
+                                'Software and Configuration Checks/AWS Security Best Practices',
+                                'Effects/Data Exposure'
+                            ],
+                            'FirstObservedAt': iso8601Time,
+                            'CreatedAt': iso8601Time,
+                            'UpdatedAt': iso8601Time,
+                            'Severity': { 'Normalized': 80 },
+                            'Confidence': 99,
+                            'Title': '[RDS.8] RDS snapshots should be encrypted',
+                            'Description': 'RDS snapshot ' + snapshotId + ' is not encrypted. Refer to the remediation instructions to remediate this behavior',
+                            'Remediation': {
+                                'Recommendation': {
+                                    'Text': 'For more information on encrypting RDS snapshots refer to the AWS Premium Support Knowledge Center Entry How do I encrypt Amazon RDS snapshots?',
+                                    'Url': 'https://aws.amazon.com/premiumsupport/knowledge-center/encrypt-rds-snapshots/'
+                                }
+                            },
+                            'ProductFields': { 'Product Name': 'ElectricEye' },
+                            'Resources': [
+                                {
+                                    'Type': 'AwsRdsDbSnapshot',
+                                    'Id': snapshotArn,
+                                    'Partition': 'aws',
+                                    'Region': awsRegion,
+                                    'Details': {
+                                        'Other': {
+                                            'SnapshotId': snapshotId
+                                        }
+                                    }
+                                }
+                            ],
+                            'Compliance': { 'Status': 'FAILED' },
+                            'RecordState': 'ACTIVE'
+                        }
+                    ]
+                )
+                print(response)
+            except Exception as e:
+                print(e)
+        else:
+            try:
+                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                response = securityhub.batch_import_findings(
+                    Findings=[
+                        {
+                            'SchemaVersion': '2018-10-08',
+                            'Id': snapshotArn + '/rds-snapshot-encryption-check',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                            'GeneratorId': snapshotArn,
+                            'AwsAccountId': awsAccountId,
+                            'Types': [
+                                'Software and Configuration Checks/AWS Security Best Practices',
+                                'Effects/Data Exposure'
+                            ],
+                            'FirstObservedAt': iso8601Time,
+                            'CreatedAt': iso8601Time,
+                            'UpdatedAt': iso8601Time,
+                            'Severity': { 'Normalized': 0 },
+                            'Confidence': 99,
+                            'Title': '[RDS.8] RDS snapshots should be encrypted',
+                            'Description': 'RDS snapshot ' + snapshotId + ' is encrypted.',
+                            'Remediation': {
+                                'Recommendation': {
+                                    'Text': 'For more information on encrypting RDS snapshots refer to the AWS Premium Support Knowledge Center Entry How do I encrypt Amazon RDS snapshots?',
+                                    'Url': 'https://aws.amazon.com/premiumsupport/knowledge-center/encrypt-rds-snapshots/'
+                                }
+                            },
+                            'ProductFields': { 'Product Name': 'ElectricEye' },
+                            'Resources': [
+                                {
+                                    'Type': 'AwsRdsDbSnapshot',
+                                    'Id': snapshotArn,
+                                    'Partition': 'aws',
+                                    'Region': awsRegion,
+                                    'Details': {
+                                        'Other': {
+                                            'SnapshotId': snapshotId
+                                        }
+                                    }
+                                }
+                            ],
+                            'Compliance': { 'Status': 'PASSED' },
+                            'RecordState': 'ARCHIVED'
+                        }
+                    ]
+                )
+                print(response)
+            except Exception as e:
+                print(e)
+
+def rds_snapshot_public_share_check():
+    for snapshot in myRdsSnapshots:
+        snapshotId = str(snapshot['DBSnapshotIdentifier'])
+        snapshotArn = str(snapshot['DBSnapshotArn'])
+        response = rds.describe_db_snapshot_attributes(DBSnapshotIdentifier=snapshotId)
+        rdsSnapshotAttrs = response['DBSnapshotAttributesResult']['DBSnapshotAttributes']
+        for attribute in rdsSnapshotAttrs:
+            attrName = str(attribute['AttributeName'])
+            if attrName == 'restore':
+                attrValue = str(attribute['AttributeValues'])
+                if attrValue == "['all']":
+                    try:
+                        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                        response = securityhub.batch_import_findings(
+                            Findings=[
+                                {
+                                    'SchemaVersion': '2018-10-08',
+                                    'Id': snapshotArn + '/rds-snapshot-public-share-check',
+                                    'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                    'GeneratorId': snapshotArn,
+                                    'AwsAccountId': awsAccountId,
+                                    'Types': [
+                                        'Software and Configuration Checks/AWS Security Best Practices',
+                                        'Effects/Data Exposure',
+                                        'Sensitive Data Identifications'
+                                    ],
+                                    'FirstObservedAt': iso8601Time,
+                                    'CreatedAt': iso8601Time,
+                                    'UpdatedAt': iso8601Time,
+                                    'Severity': { 'Normalized': 90 },
+                                    'Confidence': 99,
+                                    'Title': '[RDS.9] RDS snapshots should not be publicly shared',
+                                    'Description': 'RDS snapshot ' + snapshotId + ' is publicly shared. Refer to the remediation instructions to remediate this behavior',
+                                    'Remediation': {
+                                        'Recommendation': {
+                                            'Text': 'For more information on sharing RDS snapshots refer to the Sharing a Snapshot section of the Amazon Relational Database Service User Guide',
+                                            'Url': 'https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ShareSnapshot.html#USER_ShareSnapshot.Sharing'
+                                        }
+                                    },
+                                    'ProductFields': { 'Product Name': 'ElectricEye' },
+                                    'Resources': [
+                                        {
+                                            'Type': 'AwsRdsDbSnapshot',
+                                            'Id': snapshotArn,
+                                            'Partition': 'aws',
+                                            'Region': awsRegion,
+                                            'Details': {
+                                                'Other': {
+                                                    'SnapshotId': snapshotId
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    'Compliance': { 'Status': 'FAILED' },
+                                    'RecordState': 'ACTIVE'
+                                }
+                            ]
+                        )
+                        print(response)
+                    except Exception as e:
+                        print(e)
+                else:
+                    try:
+                        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                        response = securityhub.batch_import_findings(
+                            Findings=[
+                                {
+                                    'SchemaVersion': '2018-10-08',
+                                    'Id': snapshotArn + '/rds-snapshot-public-share-check',
+                                    'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                    'GeneratorId': snapshotArn,
+                                    'AwsAccountId': awsAccountId,
+                                    'Types': [
+                                        'Software and Configuration Checks/AWS Security Best Practices',
+                                        'Effects/Data Exposure',
+                                        'Sensitive Data Identifications'
+                                    ],
+                                    'FirstObservedAt': iso8601Time,
+                                    'CreatedAt': iso8601Time,
+                                    'UpdatedAt': iso8601Time,
+                                    'Severity': { 'Normalized': 0 },
+                                    'Confidence': 99,
+                                    'Title': '[RDS.9] RDS snapshots should not be publicly shared',
+                                    'Description': 'RDS snapshot ' + snapshotId + ' is not publicly shared.',
+                                    'Remediation': {
+                                        'Recommendation': {
+                                            'Text': 'For more information on sharing RDS snapshots refer to the Sharing a Snapshot section of the Amazon Relational Database Service User Guide',
+                                            'Url': 'https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ShareSnapshot.html#USER_ShareSnapshot.Sharing'
+                                        }
+                                    },
+                                    'ProductFields': { 'Product Name': 'ElectricEye' },
+                                    'Resources': [
+                                        {
+                                            'Type': 'AwsRdsDbSnapshot',
+                                            'Id': snapshotArn,
+                                            'Partition': 'aws',
+                                            'Region': awsRegion,
+                                            'Details': {
+                                                'Other': {
+                                                    'SnapshotId': snapshotId
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    'Compliance': { 'Status': 'PASSED' },
+                                    'RecordState': 'ARCHIVED'
+                                }
+                            ]
+                        )
+                        print(response)
+                    except Exception as e:
+                        print(e)
+            else:
+                print('non-supported attribute encountered')
+                pass
+
 def rds_instance_auditor():
     rds_instance_ha_check()
     rds_instance_public_access_check()
@@ -854,5 +1079,7 @@ def rds_instance_auditor():
     rds_instance_domain_join_check()
     rds_instance_performance_insights_check()
     rds_instance_deletion_protection_check()
+    rds_snapshot_encryption_check()
+    rds_snapshot_public_share_check()
 
 rds_instance_auditor()
