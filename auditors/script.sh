@@ -36,6 +36,8 @@ python3 Amazon_SageMaker_Auditor.py
 sleep 2
 python3 Amazon_Shield_Advanced_Auditor.py
 sleep 2
+python3 Amazon_SNS_Auditor.py
+sleep 2
 python3 Amazon_VPC_Auditor.py
 sleep 2
 python3 Amazon_WorkSpaces_Auditor.py
