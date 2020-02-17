@@ -39,6 +39,8 @@ Refer to the [Supported Services and Checks](https://github.com/jonrau1/Electric
 ## Setting Up
 These steps are split across their relevant sections. All CLI commands are executed from an Ubuntu 18.04LTS [Cloud9 IDE](https://aws.amazon.com/cloud9/details/), modify them to fit your OS.
 
+**Note:** Ensure AWS Security Hub is enabled in the region you are attempting to run ElectricEye
+
 ### Build and push the Docker image
 Before starting [attach this IAM policy](https://github.com/jonrau1/ElectricEye/blob/master/policies/Instance_Profile_IAM_Policy.json) to your [Instance Profile](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html) (if you are using Cloud9 or EC2).
 
@@ -323,25 +325,26 @@ The costs are extremely negligible, as the primary costs are Fargate vCPU and Me
 
 #### Fargate Costs
 **30 Day Period: Running ElectricEye every 12 hours and it takes 5 minutes per Run**</br>
-5 hours of total runtime per month: **$0.49370/region/account/month**
+5 hours of total runtime per month: **$0.224625/region/account/month**
 
-**30 Day Period: Running ElectricEye every 6 hours and it takes 10 minutes per Run**</br>
-20 hours of total runtime per month: **$1.61920/region/account/month**
+**30 Day Period: Running ElectricEye every 3 hours and it takes 10 minutes per Run**</br>
+40 hours of total runtime per month: **$1.797/region/account/month**
 
 #### Security Hub Costs
-**Having 10 resources per check in scope for all 49 checks running 120 times a month (every 12 hours)**</br>
-58,800 findings, 48,800 in scope for charges: **$1.46 /region/account/month**
+**Having 5 resources per check in scope for 108 checks running 60 times a month (every 12 hours)**</br>
+32,400 findings with 22,400 in scope for charges: **$0.6720/region/account/month**
 
-**Having 5 resources per check in scope for all 49 checks running 60 times a month (every 12 hours)**</br>
-14,700 findings, 4700 in scope for charges: **$0.14/region/account/month**
+**Having 15 resources per check in scope for 108 checks running 240 times a month (every 3 hours)**</br>
+388,800 findings with 378,800 in scope for charges: **$11.3640/region/account/month**
 
-With the above examples, if you had Fargate running for 20 hours a month and generated 48,800 metered findings it would cost **$3.08320** per region per account per month. If you had Fargate running 5 hours a month and generated 4700 metered findings it would cost **$0.63470** per region per account per month.
+If you take the most expensive examples of having 15 resources in scope for 108 checks being run every 3 hours (for 40 total hours of Fargate runtime and 378K findings in Security Hub) that would be a combined monthly cost of **$13.161000** with a yearly cost of **$157.93** per region per month. If you were running across *4 regions* that would be **$631.73** and across *18 regions* would be **$2,842.78** per year per account.
 
-To put it another way, the most expensive example in these scenarios would cost **$37.00** per year per region per account. That means running ElectricEye in that price range across 50 accounts and 4 regions would be **$7,399.68** a year. You could potentially save up to 70% on Fargate costs by modifying ElectricEye to run on [Fargate Spot](https://aws.amazon.com/blogs/aws/aws-fargate-spot-now-generally-available/).
+If you ran in 2 regions across 50 accounts your approx. cost would be **$15,793.20** per year, bump that up to 4 regions and 500 accounts and you are looking at approx. **$315,864.00** a year (price is the same for 1 region, 2000 accounts). You could potentially save up to 70% on Fargate costs by modifying ElectricEye to run on [Fargate Spot](https://aws.amazon.com/blogs/aws/aws-fargate-spot-now-generally-available/).
+
+The best way to estimate your Security Hub costs is to confer the Usage tab within the Settings sub-menu, this will give you your total usage types, items in scope for it and estimated items per month with a forecasted cost.
 
 ### 14. What are those other tools you mentioned?
 You should consider taking a look at all of these:
-
 <br>**Secrets Scanning**</br>
 - [truffleHog](https://github.com/dxa4481/truffleHog)
 - [git-secrets](https://github.com/awslabs/git-secrets)
