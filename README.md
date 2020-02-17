@@ -135,7 +135,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **106** checks supported across **40** AWS services / components.
+These are the following services and checks perform by each Auditor. There are currently **108** checks supported across **41** AWS services / components.
 
 **Important Note:** You need to have Shield Advance enabled and Business or Enterprise support to run through the full list of Shield Advanced auditor checks
 
@@ -221,6 +221,8 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_Shield_Advanced_Auditor.py      | Account (DRT IAM Role)        | Does the DRT have account authz via IAM<br>role                       |
 | Amazon_Shield_Advanced_Auditor.py      | Account (DRT S3 Access)       | Does the DRT have access to WAF logs<br>S3 buckets                    |
 | Amazon_Shield_Advanced_Auditor.py      | Account (Shield subscription) | Is Shield Adv subscription on auto <br>renew                          |
+| Amazon_SNS_Auditor.py                  | SNS Topic                     | Is the topic encrypted                                                |
+| Amazon_SNS_Auditor.py                  | SNS Topic                     | Does the topic have plaintext (HTTP)<br>subscriptions                 |
 | Amazon_VPC_Auditor.py                  | VPC                           | Is the default VPC out and about                                      |
 | Amazon_VPC_Auditor.py                  | VPC                           | Is flow logging enabled                                               |
 | Amazon_WorkSpaces_Auditor.py           | Workspace                     | Is user volume encrypted                                              |
