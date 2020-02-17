@@ -17,7 +17,6 @@ def security_group_all_open_check():
         sgName = str(secgroup['GroupName'])
         sgId = str(secgroup['GroupId'])
         sgArn = 'arn:aws:ec2:' + awsRegion + ':' + awsAccountId + ':security-group/' + sgId
-        # arn:${Partition}:ec2:${Region}:${Account}:security-group/${SecurityGroupId}
         for permissions in secgroup['IpPermissions']:
             try:
                 fromPort = str(permissions['FromPort'])
