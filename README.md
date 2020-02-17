@@ -135,7 +135,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **104** checks supported across **34** AWS services / components.
+These are the following services and checks perform by each Auditor. There are currently **106** checks supported across **40** AWS services / components.
 
 **Important Note:** You need to have Shield Advance enabled and Business or Enterprise support to run through the full list of Shield Advanced auditor checks
 
@@ -226,7 +226,7 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_WorkSpaces_Auditor.py           | Workspace                     | Is user volume encrypted                                              |
 | Amazon_WorkSpaces_Auditor.py           | Workspace                     | Is root volume encrypted                                              |
 | Amazon_WorkSpaces_Auditor.py           | Workspace                     | Is running mode set to auto-off                                       |
-| Amazon_WorkSpaces_Auditor.py           | Workspace Directory           | Does directory allow default internet<br>access                       |
+| Amazon_WorkSpaces_Auditor.py           | DS Directory                  | Does directory allow default internet<br>access                       |
 | AMI_Auditor.py                         | Amazon Machine Image (AMI)    | Are owned AMIs public                                                 |
 | AMI_Auditor.py                         | Amazon Machine Image (AMI)    | Are owned AMIs encrypted                                              |
 | AWS_Backup_Auditor.py                  | EC2 Instance                  | Are EC2 instances backed up                                           |
@@ -240,6 +240,8 @@ These are the following services and checks perform by each Auditor. There are c
 | AWS_CodeBuild_Auditor.py               | CodeBuild project             | Are plaintext environmental<br>variables used                         |
 | AWS_CodeBuild_Auditor.py               | CodeBuild project             | Is S3 logging encryption enabled                                      |
 | AWS_CodeBuild_Auditor.py               | CodeBuild project             | Is CloudWatch logging enabled                                         |
+| AWS_Directory_Service_Auditor.py       | DS Directory                  | Is RADIUS enabled                                                     |
+| AWS_Directory_Service_Auditor.py       | DS Directory                  | Is CloudWatch log forwarding enabled                                  |
 | AWS_Secrets_Manager_Auditor.py         | Secrets Manager secret        | Is the secret over 90 days old                                        |
 | AWS_Secrets_Manager_Auditor.py         | Secrets Manager secret        | Is secret auto-rotation enabled                                       |
 | AWS_Security_Hub_Auditor.py            | Security Hub (Account)        | Are there active high or critical<br>findings in Security Hub         |
