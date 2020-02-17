@@ -137,7 +137,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **108** checks supported across **41** AWS services / components.
+These are the following services and checks perform by each Auditor. There are currently **124** checks supported across **42** AWS services / components.
 
 **Important Note:** You need to have Shield Advance enabled and Business or Enterprise support to run through the full list of Shield Advanced auditor checks
 
@@ -161,6 +161,22 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_EBS_Auditor.py                  | EBS Snapshot                  | Is the Snapshot encrypted                                             |
 | Amazon_EBS_Auditor.py                  | EBS Snapshot                  | Is the Snapshot public                                                |
 | Amazon_EBS_Auditor.py                  | Account                       | Is account level encryption by<br>default enabled                     |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Are all ports (-1) open to the internet                               |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is FTP open to the internet                                           |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is TelNet open to the internet                                        |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is WSDCOM-RPC (tcp135) open to the<br>internet                        |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is SMB open to the internet                                           |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is MSSQL open to the internet                                         |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is Oracle DB open to the internet                                     |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is MySQL/MariaDB open to the internet                                 |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is RDP open to the internet                                           |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is PostgreSQL open to the internet                                    |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is Kibana open to the internet                                        |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is Redis open to the internet                                         |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is Splunkd open to the internet                                       |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is Elasticsearch (tcp 9200) open to<br>the internet                   |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is Elasticsearch (tcp 9300) open to<br>the internet                   |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is Memcached open to the internet                                     |
 | Amazon_EC2_SSM_Auditor.py              | EC2 Instance                  | Is the instance managed by SSM                                        |
 | Amazon_EC2_SSM_Auditor.py              | EC2 Instance                  | Does the instance have a successful<br>SSM association                |
 | Amazon_EC2_SSM_Auditor.py              | EC2 Instance                  | Is the SSM Agent up to date                                           |
@@ -321,14 +337,14 @@ For now, I put (lazy) sleep steps in the bash script that runs all of the audito
 That said, it is possible some of you crazy folks have that many resources. A To-Do is improve ElectricEye's architecture (while increasing costs) and write up batches of findings to SQS which will be parsed and sent to BIF via Lambda. So even if you had 1000 resources, if I did the full batch of 100, you wouldn't tip that scale and have some retry ability. A similar pattern could technically be done with Kinesis, but more research for the best pattern is needed.
 
 ### 13. How much does this solution cost to run?
-The costs are extremely negligible, as the primary costs are Fargate vCPU and Memory per GB per Hour and then Security Hub finding ingestion above 10,000 findings per Region per Month (the first 10,000 is perpetually free). We will use two scenarios as an example for the costs, you will likely need to perform your own analysis to forecast potential costs. ElectricEye's ECS Task Definition is 2 vCPU and 4GB of Memory by default.
+The costs are extremely negligible, as the primary costs are Fargate vCPU and Memory per GB per Hour and then Security Hub finding ingestion above 10,000 findings per Region per Month (the first 10,000 is perpetually free). We will use two scenarios as an example for the costs, you will likely need to perform your own analysis to forecast potential costs. ElectricEye's ECS Task Definition is ***2 vCPU and 4GB of Memory by default***. I made a [very rough cost calculator](https://github.com/jonrau1/ElectricEye/blob/master/cost-calculator/electriceye-cost-calculations.csv) in CSV you can confer, I will try to reflect the latest that is on the ReadMe to the worksheet, but no promises.
 
 #### Fargate Costs
 **30 Day Period: Running ElectricEye every 12 hours and it takes 5 minutes per Run**</br>
-5 hours of total runtime per month: **$0.224625/region/account/month**
+5 hours of total runtime per month: **$0.493700/region/account/month**
 
 **30 Day Period: Running ElectricEye every 3 hours and it takes 10 minutes per Run**</br>
-40 hours of total runtime per month: **$1.797/region/account/month**
+40 hours of total runtime per month: **$$3.949600/region/account/month**
 
 #### Security Hub Costs
 **Having 5 resources per check in scope for 108 checks running 60 times a month (every 12 hours)**</br>
@@ -337,9 +353,9 @@ The costs are extremely negligible, as the primary costs are Fargate vCPU and Me
 **Having 15 resources per check in scope for 108 checks running 240 times a month (every 3 hours)**</br>
 388,800 findings with 378,800 in scope for charges: **$11.3640/region/account/month**
 
-If you take the most expensive examples of having 15 resources in scope for 108 checks being run every 3 hours (for 40 total hours of Fargate runtime and 378K findings in Security Hub) that would be a combined monthly cost of **$13.161000** with a yearly cost of **$157.93** per region per month. If you were running across *4 regions* that would be **$631.73** and across *18 regions* would be **$2,842.78** per year per account.
+If you take the most expensive examples of having 15 resources in scope for 108 checks being run every 3 hours (for 40 total hours of Fargate runtime and 378K findings in Security Hub) that would be a combined monthly cost of **$15.313600** with a yearly cost of **$183.76** per region per month. If you were running across *4 regions* that would be **$$735.05** and across *18 regions* would be **$3,307.74** per year per account.
 
-If you ran in 2 regions across 50 accounts your approx. cost would be **$15,793.20** per year, bump that up to 4 regions and 500 accounts and you are looking at approx. **$315,864.00** a year (price is the same for 1 region, 2000 accounts). You could potentially save up to 70% on Fargate costs by modifying ElectricEye to run on [Fargate Spot](https://aws.amazon.com/blogs/aws/aws-fargate-spot-now-generally-available/).
+If you ran in 2 regions across 50 accounts your approx. cost would be **$18,376.32** per year, bump that up to 4 regions and 500 accounts and you are looking at approx. **$367,526.40** a year (price is the same for 1 region, 2000 accounts). You could potentially save up to 70% on Fargate costs by modifying ElectricEye to run on [Fargate Spot](https://aws.amazon.com/blogs/aws/aws-fargate-spot-now-generally-available/).
 
 The best way to estimate your Security Hub costs is to confer the Usage tab within the Settings sub-menu, this will give you your total usage types, items in scope for it and estimated items per month with a forecasted cost.
 

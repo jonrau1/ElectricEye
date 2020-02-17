@@ -8,6 +8,8 @@ python3 Amazon_DocumentDB_Auditor.py
 sleep 2
 python3 Amazon_EBS_Auditor.py
 sleep 2
+python3 Amazon_EC2_Security_Group_Auditor.py
+sleep 2
 python3 Amazon_EC2_SSM_Auditor.py
 sleep 2
 python3 Amazon_ECR_Auditor.py
