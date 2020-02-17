@@ -20,7 +20,7 @@ response = documentdb.describe_db_instances(
 )
 myDocDbs = response['DBInstances']
 
-def public_instance_check():   
+def docdb_public_instance_check():   
     for docdb in myDocDbs:
         docdbId = str(docdb['DBInstanceIdentifier'])
         docdbArn = str(docdb['DBInstanceArn'])
@@ -130,7 +130,7 @@ def public_instance_check():
             except Exception as e:
                 print(e)
 
-def instance_encryption_check():
+def docdb_instance_encryption_check():
     for docdb in myDocDbs:
         docdbId = str(docdb['DBInstanceIdentifier'])
         docdbArn = str(docdb['DBInstanceArn'])
@@ -240,7 +240,112 @@ def instance_encryption_check():
             except Exception as e:
                 print(e)
 
-def cluster_multiaz_check():
+def docdb_instance_audit_logging_check():
+    for docdb in myDocDbs:
+        docdbId = str(docdb['DBInstanceIdentifier'])
+        docdbArn = str(docdb['DBInstanceArn'])
+        try:
+            # this is a passing check
+            logCheck = str(docdb['EnabledCloudwatchLogsExports'])
+            try:
+                # ISO Time
+                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                # create Sec Hub finding
+                response = securityhub.batch_import_findings(
+                    Findings=[
+                        {
+                            'SchemaVersion': '2018-10-08',
+                            'Id': docdbArn + '/docdb-instance-audit-logging-check',
+                            'ProductArn': 'arn:docdbArn:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
+                            'GeneratorId': docdbArn,
+                            'AwsAccountId': awsAccount,
+                            'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                            'FirstObservedAt': iso8601Time,
+                            'CreatedAt': iso8601Time,
+                            'UpdatedAt': iso8601Time,
+                            'Severity': { 'Normalized': 0 },
+                            'Confidence': 99,
+                            'Title': '[DocDb.3] DocumentDB instances should have audit logging configured',
+                            'Description': 'DocumentDB instance ' + docdbId + ' has audit logging configured.',
+                            'Remediation': {
+                                'Recommendation': {
+                                    'Text': 'For information on DocumentDB audit logging refer to the Auditing Amazon DocumentDB Events section in the Amazon DocumentDB Developer Guide',
+                                    'Url': 'https://docs.aws.amazon.com/documentdb/latest/developerguide/event-auditing.html'
+                                }
+                            },
+                            'ProductFields': {
+                                'Product Name': 'ElectricEye'
+                            },
+                            'Resources': [
+                                {
+                                    'Type': 'Other',
+                                    'Id': docdbArn,
+                                    'Partition': 'aws',
+                                    'Region': awsRegion,
+                                    'Details': {
+                                        'Other': { 'InstanceId': docdbId }
+                                    }
+                                }
+                            ],
+                            'Compliance': { 'Status': 'PASSED' },
+                            'RecordState': 'ARCHIVED'
+                        }
+                    ]
+                )
+                print(response)
+            except Exception as e:
+                print(e)
+        except:
+            try:
+                # ISO Time
+                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                # create Sec Hub finding
+                response = securityhub.batch_import_findings(
+                    Findings=[
+                        {
+                            'SchemaVersion': '2018-10-08',
+                            'Id': docdbArn + '/docdb-instance-audit-logging-check',
+                            'ProductArn': 'arn:docdbArn:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
+                            'GeneratorId': docdbArn,
+                            'AwsAccountId': awsAccount,
+                            'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                            'FirstObservedAt': iso8601Time,
+                            'CreatedAt': iso8601Time,
+                            'UpdatedAt': iso8601Time,
+                            'Severity': { 'Normalized': 20 },
+                            'Confidence': 99,
+                            'Title': '[DocDb.3] DocumentDB instances should have audit logging configured',
+                            'Description': 'DocumentDB instance ' + docdbId + ' does not have audit logging configured. Refer to the remediation instructions if this configuration is not intended',
+                            'Remediation': {
+                                'Recommendation': {
+                                    'Text': 'For information on DocumentDB audit logging refer to the Auditing Amazon DocumentDB Events section in the Amazon DocumentDB Developer Guide',
+                                    'Url': 'https://docs.aws.amazon.com/documentdb/latest/developerguide/event-auditing.html'
+                                }
+                            },
+                            'ProductFields': {
+                                'Product Name': 'ElectricEye'
+                            },
+                            'Resources': [
+                                {
+                                    'Type': 'Other',
+                                    'Id': docdbArn,
+                                    'Partition': 'aws',
+                                    'Region': awsRegion,
+                                    'Details': {
+                                        'Other': { 'InstanceId': docdbId }
+                                    }
+                                }
+                            ],
+                            'Compliance': { 'Status': 'FAILED' },
+                            'RecordState': 'ACTIVE'
+                        }
+                    ]
+                )
+                print(response)
+            except Exception as e:
+                print(e)
+
+def docdb_cluster_multiaz_check():
     # find document db clusters
     response = documentdb.describe_db_clusters(MaxRecords=100)
     myDocDbClusters = response['DBClusters']
@@ -267,7 +372,7 @@ def cluster_multiaz_check():
                             'UpdatedAt': iso8601Time,
                             'Severity': { 'Normalized': 20 },
                             'Confidence': 99,
-                            'Title': '[DocDb.3] DocumentDB clusters should be configured for Multi-AZ',
+                            'Title': '[DocDb.4] DocumentDB clusters should be configured for Multi-AZ',
                             'Description': 'DocumentDB cluster ' + docdbclusterId + ' is not configured for Multi-AZ. Refer to the remediation instructions if this configuration is not intended',
                             'Remediation': {
                                 'Recommendation': {
@@ -316,7 +421,7 @@ def cluster_multiaz_check():
                             'UpdatedAt': iso8601Time,
                             'Severity': { 'Normalized': 0 },
                             'Confidence': 99,
-                            'Title': '[DocDb.3] DocumentDB clusters should be configured for Multi-AZ',
+                            'Title': '[DocDb.5] DocumentDB clusters should be configured for Multi-AZ',
                             'Description': 'DocumentDB cluster ' + docdbclusterId + ' is configured for Multi-AZ.',
                             'Remediation': {
                                 'Recommendation': {
@@ -455,9 +560,10 @@ def cluster_deletion_protection_check():
                 print(e)
 
 def documentdb_auditor():
-    public_instance_check()
-    instance_encryption_check()
-    cluster_multiaz_check()
+    docdb_public_instance_check()
+    docdb_instance_encryption_check()
+    docdb_instance_audit_logging_check()
+    docdb_cluster_multiaz_check()
     cluster_deletion_protection_check()
 
 documentdb_auditor()

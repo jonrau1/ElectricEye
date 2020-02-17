@@ -135,7 +135,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **102** checks supported across **34** AWS services / components.
+These are the following services and checks perform by each Auditor. There are currently **104** checks supported across **34** AWS services / components.
 
 **Important Note:** You need to have Shield Advance enabled and Business or Enterprise support to run through the full list of Shield Advanced auditor checks
 
@@ -150,6 +150,7 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_CognitoIdP_Auditor.py           | Cognito Identity Pool         | Does the Identity pool enforce MFA                                    |
 | Amazon_DocumentDB_Auditor.py           | DocumentDB Instance           | Are Instances publicly accessible                                     |
 | Amazon_DocumentDB_Auditor.py           | DocumentDB Instance           | Are Instance encrypted                                                |
+| Amazon_DocumentDB_Auditor.py           | DocumentDB Instance           | Is audit logging enabled                                              |
 | Amazon_DocumentDB_Auditor.py           | DocumentDB Cluster            | Is the Cluster configured for HA                                      |
 | Amazon_DocumentDB_Auditor.py           | DocumentDB Cluster            | Is the Cluster deletion protected                                     |
 | Amazon_EBS_Auditor.py                  | EBS Volume                    | Is the Volume attached                                                |
@@ -197,6 +198,7 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_RDS_Auditor.py                  | RDS DB Instance               | Are supported DBs joined to a domain                                  |
 | Amazon_RDS_Auditor.py                  | RDS DB Instance               | Is performance insights enabled                                       |
 | Amazon_RDS_Auditor.py                  | RDS DB Instance               | Is deletion protection enabled                                        |
+| Amazon_RDS_Auditor.py                  | RDS DB Instance               | Is database CloudWatch logging enabled                                |
 | Amazon_RDS_Auditor.py                  | RDS Snapshot                  | Are snapshots encrypted                                               |
 | Amazon_RDS_Auditor.py                  | RDS Snapshot                  | Are snapshots public                                                  |
 | Amazon_Redshift_Auditor.py             | Redshift cluster              | Is the cluster publicly accessible                                    |

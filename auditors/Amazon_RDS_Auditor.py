@@ -803,7 +803,7 @@ def rds_instance_deletion_protection_check():
                     Findings=[
                         {
                             'SchemaVersion': '2018-10-08',
-                            'Id': instanceArn + '/instance-deletion-prot-check',
+                            'Id': instanceArn + '/instance-database-cloudwatch-logs-check',
                             'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
                             'GeneratorId': instanceArn,
                             'AwsAccountId': awsAccountId,
@@ -849,6 +849,119 @@ def rds_instance_deletion_protection_check():
             except Exception as e:
                 print(e)
 
+def rds_instance_cloudwatch_logging_check():
+    for dbinstances in myRdsInstances:
+        instanceArn = str(dbinstances['DBInstanceArn'])
+        instanceId = str(dbinstances['DBInstanceIdentifier'])
+        instanceClass = str(dbinstances['DBInstanceClass'])
+        instancePort = int(dbinstances['Endpoint']['Port'])
+        instanceEngine = str(dbinstances['Engine'])
+        instanceEngineVersion = str(dbinstances['EngineVersion'])
+        try:
+            logCheck = str(database['EnabledCloudwatchLogsExports'])
+            # this is a passing check
+            try:
+                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                response = securityhub.batch_import_findings(
+                    Findings=[
+                        {
+                            'SchemaVersion': '2018-10-08',
+                            'Id': instanceArn + '/instance-database-cloudwatch-logs-check',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                            'GeneratorId': instanceArn,
+                            'AwsAccountId': awsAccountId,
+                            'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                            'FirstObservedAt': iso8601Time,
+                            'CreatedAt': iso8601Time,
+                            'UpdatedAt': iso8601Time,
+                            'Severity': { 'Normalized': 0 },
+                            'Confidence': 99,
+                            'Title': '[RDS.8] RDS instances should publish database logs to CloudWatch Logs',
+                            'Description': 'RDS DB instance ' + instanceId + ' publishes ' + logCheck + ' logs to CloudWatch Logs. Review the types of logs that are published to ensure they fulfill organizational and regulatory requirements as needed.',
+                            'Remediation': {
+                                'Recommendation': {
+                                    'Text': 'For more information on database logging with CloudWatch and how to configure it refer to the Publishing Database Logs to Amazon CloudWatch Logs section of the Amazon Relational Database Service User Guide. Aurora does support this but you will need to address another User Guide for information on Aurora database logging with CloudWatch',
+                                    'Url': 'https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.html#USER_LogAccess.Procedural.UploadtoCloudWatch'
+                                }
+                            },
+                            'ProductFields': { 'Product Name': 'ElectricEye' },
+                            'Resources': [
+                                {
+                                    'Type': 'AwsRdsDbInstance',
+                                    'Id': instanceArn,
+                                    'Partition': 'aws',
+                                    'Region': awsRegion,
+                                    'Details': {
+                                        'AwsRdsDbInstance': {
+                                            'DBInstanceIdentifier': instanceId,
+                                            'DBInstanceClass': instanceClass,
+                                            'DbInstancePort': instancePort,
+                                            'Engine': instanceEngine,
+                                            'EngineVersion': instanceEngineVersion
+                                        }
+                                    }
+                                }
+                            ],
+                            'Compliance': { 'Status': 'FAILED' },
+                            'RecordState': 'ACTIVE'
+                        }
+                    ]
+                )
+                print(response)
+            except Exception as e:
+                print(e)
+        except:
+            try:
+                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                response = securityhub.batch_import_findings(
+                    Findings=[
+                        {
+                            'SchemaVersion': '2018-10-08',
+                            'Id': instanceArn + '/instance-deletion-prot-check',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                            'GeneratorId': instanceArn,
+                            'AwsAccountId': awsAccountId,
+                            'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                            'FirstObservedAt': iso8601Time,
+                            'CreatedAt': iso8601Time,
+                            'UpdatedAt': iso8601Time,
+                            'Severity': { 'Normalized': 20 },
+                            'Confidence': 99,
+                            'Title': '[RDS.8] RDS instances should publish database logs to CloudWatch Logs',
+                            'Description': 'RDS DB instance ' + instanceId + ' does not publish database logs to CloudWatch Logs. Refer to the remediation instructions to remediate this behavior',
+                            'Remediation': {
+                                'Recommendation': {
+                                    'Text': 'For more information on database logging with CloudWatch and how to configure it refer to the Publishing Database Logs to Amazon CloudWatch Logs section of the Amazon Relational Database Service User Guide. Aurora does support this but you will need to address another User Guide for information on Aurora database logging with CloudWatch',
+                                    'Url': 'https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.html#USER_LogAccess.Procedural.UploadtoCloudWatch'
+                                }
+                            },
+                            'ProductFields': { 'Product Name': 'ElectricEye' },
+                            'Resources': [
+                                {
+                                    'Type': 'AwsRdsDbInstance',
+                                    'Id': instanceArn,
+                                    'Partition': 'aws',
+                                    'Region': awsRegion,
+                                    'Details': {
+                                        'AwsRdsDbInstance': {
+                                            'DBInstanceIdentifier': instanceId,
+                                            'DBInstanceClass': instanceClass,
+                                            'DbInstancePort': instancePort,
+                                            'Engine': instanceEngine,
+                                            'EngineVersion': instanceEngineVersion
+                                        }
+                                    }
+                                }
+                            ],
+                            'Compliance': { 'Status': 'FAILED' },
+                            'RecordState': 'ACTIVE'
+                        }
+                    ]
+                )
+                print(response)
+            except Exception as e:
+                print(e)
+
 def rds_snapshot_encryption_check():
     for snapshot in myRdsSnapshots:
         snapshotId = str(snapshot['DBSnapshotIdentifier'])
@@ -874,7 +987,7 @@ def rds_snapshot_encryption_check():
                             'UpdatedAt': iso8601Time,
                             'Severity': { 'Normalized': 80 },
                             'Confidence': 99,
-                            'Title': '[RDS.8] RDS snapshots should be encrypted',
+                            'Title': '[RDS.9] RDS snapshots should be encrypted',
                             'Description': 'RDS snapshot ' + snapshotId + ' is not encrypted. Refer to the remediation instructions to remediate this behavior',
                             'Remediation': {
                                 'Recommendation': {
@@ -924,7 +1037,7 @@ def rds_snapshot_encryption_check():
                             'UpdatedAt': iso8601Time,
                             'Severity': { 'Normalized': 0 },
                             'Confidence': 99,
-                            'Title': '[RDS.8] RDS snapshots should be encrypted',
+                            'Title': '[RDS.9] RDS snapshots should be encrypted',
                             'Description': 'RDS snapshot ' + snapshotId + ' is encrypted.',
                             'Remediation': {
                                 'Recommendation': {
@@ -986,7 +1099,7 @@ def rds_snapshot_public_share_check():
                                     'UpdatedAt': iso8601Time,
                                     'Severity': { 'Normalized': 90 },
                                     'Confidence': 99,
-                                    'Title': '[RDS.9] RDS snapshots should not be publicly shared',
+                                    'Title': '[RDS.10] RDS snapshots should not be publicly shared',
                                     'Description': 'RDS snapshot ' + snapshotId + ' is publicly shared. Refer to the remediation instructions to remediate this behavior',
                                     'Remediation': {
                                         'Recommendation': {
@@ -1037,7 +1150,7 @@ def rds_snapshot_public_share_check():
                                     'UpdatedAt': iso8601Time,
                                     'Severity': { 'Normalized': 0 },
                                     'Confidence': 99,
-                                    'Title': '[RDS.9] RDS snapshots should not be publicly shared',
+                                    'Title': '[RDS.10] RDS snapshots should not be publicly shared',
                                     'Description': 'RDS snapshot ' + snapshotId + ' is not publicly shared.',
                                     'Remediation': {
                                         'Recommendation': {
@@ -1079,6 +1192,7 @@ def rds_instance_auditor():
     rds_instance_domain_join_check()
     rds_instance_performance_insights_check()
     rds_instance_deletion_protection_check()
+    rds_instance_cloudwatch_logging_check()
     rds_snapshot_encryption_check()
     rds_snapshot_public_share_check()
 
