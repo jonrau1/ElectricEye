@@ -17,6 +17,11 @@ Continuously monitor your AWS serivces for misconfigurations that can lead to de
 - [Supported Services and Checks](https://github.com/jonrau1/ElectricEye#supported-services-and-checks)
 - [Known Issues & Limitiations](https://github.com/jonrau1/ElectricEye#known-issues--limitations)
 - [FAQ](https://github.com/jonrau1/ElectricEye#faq)
+  - [13. How much does this solution cost to run?](https://github.com/jonrau1/ElectricEye#13-how-much-does-this-solution-cost-to-run)
+  - [14. What are those other tools you mentioned?](https://github.com/jonrau1/ElectricEye#14-what-are-those-other-tools-you-mentioned)
+- [Contributing](https://github.com/jonrau1/ElectricEye#contributing)
+  - [ToDo](https://github.com/jonrau1/ElectricEye#to-do)
+- [License](https://github.com/jonrau1/ElectricEye#license)
 
 ## Description
 ElectricEye is a set of Python scripts (affectionately called **Auditors**) that continuously monitor your AWS infrastructure looking for configurations related to confidentiality, integrity and availability that do not align with AWS best practices. All findings from these scans will be sent to AWS Security Hub where you can perform basic correlation against other AWS and 3rd Party services that send findings to Security Hub. Security Hub also provides a centralized view from which account owners and other responsible parties can view and take action on findings.
@@ -353,7 +358,7 @@ The costs are extremely negligible, as the primary costs are Fargate vCPU and Me
 **Having 15 resources per check in scope for 108 checks running 240 times a month (every 3 hours)**</br>
 388,800 findings with 378,800 in scope for charges: **$11.3640/region/account/month**
 
-If you take the most expensive examples of having 15 resources in scope for 108 checks being run every 3 hours (for 40 total hours of Fargate runtime and 378K findings in Security Hub) that would be a combined monthly cost of **$15.313600** with a yearly cost of **$183.76** per region per month. If you were running across *4 regions* that would be **$$735.05** and across *18 regions* would be **$3,307.74** per year per account.
+If you take the most expensive examples of having 15 resources in scope for 108 checks being run every 3 hours (for 40 total hours of Fargate runtime and 378K findings in Security Hub) that would be a combined monthly cost of **$15.3136** with a yearly cost of **$183.76** per region per month. If you were running across *4 regions* that would be **$735.05** and across *18 regions* would be **$3,307.74** per year per account.
 
 If you ran in 2 regions across 50 accounts your approx. cost would be **$18,376.32** per year, bump that up to 4 regions and 500 accounts and you are looking at approx. **$367,526.40** a year (price is the same for 1 region, 2000 accounts). You could potentially save up to 70% on Fargate costs by modifying ElectricEye to run on [Fargate Spot](https://aws.amazon.com/blogs/aws/aws-fargate-spot-now-generally-available/).
 
@@ -412,14 +417,14 @@ I am very happy to accept PR's for the following:
 - My to-do list!
 
 ### To-Do
-- [] Create an ElectricEye Logo
-- [] Investigate publishing ASFF schema to SQS>Lambda>BIF API for scale/throttle handling
-- [] Add in Shodan.io checks for internet-facing resources (RDS, Redshift, DocDB, Elasticsearch, EC2, ELBv2, etc)
-- [] Upload response and remediation playbooks and IAC for them - Custom Action Version
-- [] Upload response and remediation playbooks and IAC for them - Title II Version (Full auto, that is)
-- [] Create an Alerting framework with ChatBot for Critical findings / whatever
-- [] Create a Reporting module for use with Elasticsearch & Kibana
-- [] Create a Reporting module (serverless edition) for use with QuickSight
+[] Create an ElectricEye Logo
+[] Investigate publishing ASFF schema to SQS>Lambda>BIF API for scale/throttle handling
+[] Add in Shodan.io checks for internet-facing resources (RDS, Redshift, DocDB, Elasticsearch, EC2, ELBv2, etc)
+[] Upload response and remediation playbooks and IAC for them - Custom Action Version
+[] Upload response and remediation playbooks and IAC for them - Title II Version (Full auto, that is)
+[] Create an Alerting framework with ChatBot for Critical findings / whatever
+[] Create a Reporting module for use with Elasticsearch & Kibana
+[] Create a Reporting module (serverless edition) for use with QuickSight
 
 ## License
 This library is licensed under the GNU General Public License v3.0 (GPL-3.0) License. See the LICENSE file.
