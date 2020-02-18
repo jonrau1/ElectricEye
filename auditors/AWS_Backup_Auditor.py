@@ -59,7 +59,7 @@ def volume_backup_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'Volume Id': volumeId }
+                                        'Other': { 'VolumeId': volumeId }
                                     }
                                 }
                             ],
@@ -88,7 +88,7 @@ def volume_backup_check():
                             'FirstObservedAt': iso8601Time,
                             'CreatedAt': iso8601Time,
                             'UpdatedAt': iso8601Time,
-                            'Severity': { 'Normalized': 20 },
+                            'Severity': { 'Normalized': 40 },
                             'Confidence': 99,
                             'Title': '[Backup.1] EBS volumes should be protected by AWS Backup',
                             'Description': 'EBS volume ' + volumeId + ' is not protected by AWS Backup. Refer to the remediation instructions for information on ensuring disaster recovery and business continuity requirements are fulfilled for EBS volumes',
@@ -108,7 +108,7 @@ def volume_backup_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'Volume Id': volumeId }
+                                        'Other': { 'VolumeId': volumeId }
                                     }
                                 }
                             ],
@@ -207,7 +207,7 @@ def ec2_backup_check():
                                 'FirstObservedAt': iso8601Time,
                                 'CreatedAt': iso8601Time,
                                 'UpdatedAt': iso8601Time,
-                                'Severity': { 'Normalized': 20 },
+                                'Severity': { 'Normalized': 40 },
                                 'Confidence': 99,
                                 'Title': '[Backup.2] EC2 instances should be protected by AWS Backup',
                                 'Description': 'EC2 instance ' + instanceId + ' is not protected by AWS Backup. Refer to the remediation instructions for information on ensuring disaster recovery and business continuity requirements are fulfilled for EC2 instances',
@@ -292,7 +292,7 @@ def ddb_backup_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'Table Name': tableName }
+                                        'Other': { 'TableName': tableName }
                                     }
                                 }
                             ],
@@ -321,7 +321,7 @@ def ddb_backup_check():
                             'FirstObservedAt': iso8601Time,
                             'CreatedAt': iso8601Time,
                             'UpdatedAt': iso8601Time,
-                            'Severity': { 'Normalized': 20 },
+                            'Severity': { 'Normalized': 40 },
                             'Confidence': 99,
                             'Title': '[Backup.3] DynamoDB tables should be protected by AWS Backup',
                             'Description': 'DynamoDB table ' + tableName + ' is not protected by AWS Backup. Refer to the remediation instructions for information on ensuring disaster recovery and business continuity requirements are fulfilled for DynamoDB tables',
@@ -341,7 +341,7 @@ def ddb_backup_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'Table Name': tableName }
+                                        'Other': { 'TableName': tableName }
                                     }
                                 }
                             ],
@@ -356,7 +356,27 @@ def ddb_backup_check():
             
 def rds_backup_check():
     # loop through rds db instances
-    response = rds.describe_db_instances()
+    response = rds.describe_db_instances(
+        Filters=[
+            {
+                'Name': 'engine',
+                'Values': [
+                    'aurora',
+                    'aurora-mysql',
+                    'aurora-postgresql',
+                    'mariadb',
+                    'mysql',
+                    'oracle-ee',
+                    'postgres',
+                    'sqlserver-ee',
+                    'sqlserver-se',
+                    'sqlserver-ex',
+                    'sqlserver-web'
+                ]
+            }
+        ],
+        MaxRecords=100
+    )
     myRdsInstances = response['DBInstances']
     for databases in myRdsInstances:
         dbArn = str(databases['DBInstanceArn'])
@@ -435,7 +455,7 @@ def rds_backup_check():
                             'FirstObservedAt': iso8601Time,
                             'CreatedAt': iso8601Time,
                             'UpdatedAt': iso8601Time,
-                            'Severity': { 'Normalized': 20 },
+                            'Severity': { 'Normalized': 40 },
                             'Confidence': 99,
                             'Title': '[Backup.4] RDS database instances should be protected by AWS Backup',
                             'Description': 'RDS database instance ' + dbId + ' is not protected by AWS Backup. Refer to the remediation instructions for information on ensuring disaster recovery and business continuity requirements are fulfilled for RDS instances',

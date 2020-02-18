@@ -137,7 +137,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **124** checks supported across **42** AWS services / components.
+These are the following services and checks perform by each Auditor. There are currently **124** checks supported across **42** AWS services / components using **31** Auditors.
 
 **Important Note:** You need to have Shield Advance enabled and Business or Enterprise support to run through the full list of Shield Advanced auditor checks
 
@@ -401,3 +401,25 @@ You should consider taking a look at all of these:
 
 <br>**Misc**</br>
 - [LambdaGuard](https://github.com/Skyscanner/LambdaGuard)
+
+## Contributing
+I am very happy to accept PR's for the following:
+- Adding new Auditors
+- Adding new checks to existing Auditors
+- Fixing my stupid grammar errors, spelling errors and inconsistencies
+- Removing any unused IAM permissions that may have popped up
+- Adding new forms of deployment scripts or IAC (Salt stacks, Ansible playbooks, etc.)
+- My to-do list!
+
+### To-Do
+- [] Create an ElectricEye Logo
+- [] Investigate publishing ASFF schema to SQS>Lambda>BIF API for scale/throttle handling
+- [] Add in Shodan.io checks for internet-facing resources (RDS, Redshift, DocDB, Elasticsearch, EC2, ELBv2, etc)
+- [] Upload response and remediation playbooks and IAC for them - Custom Action Version
+- [] Upload response and remediation playbooks and IAC for them - Title II Version (Full auto, that is)
+- [] Create an Alerting framework with ChatBot for Critical findings / whatever
+- [] Create a Reporting module for use with Elasticsearch & Kibana
+- [] Create a Reporting module (serverless edition) for use with QuickSight
+
+## License
+This library is licensed under the GNU General Public License v3.0 (GPL-3.0) License. See the LICENSE file.
