@@ -44,7 +44,7 @@ def elbv2_logging_check():
                                         'UpdatedAt': iso8601Time,
                                         'Severity': { 'Normalized': 20 },
                                         'Confidence': 99,
-                                        'Title': '[ELB.1] Application and Network Load Balancers should have access logging enabled',
+                                        'Title': '[ELBv2.1] Application and Network Load Balancers should have access logging enabled',
                                         'Description': 'ELB ' + elbv2LbType + ' load balancer ' + elbv2Name + ' does not have access logging enabled. Refer to the remediation instructions to remediate this behavior',
                                         'Remediation': {
                                             'Recommendation': {
@@ -95,7 +95,7 @@ def elbv2_logging_check():
                                         'UpdatedAt': iso8601Time,
                                         'Severity': { 'Normalized': 0 },
                                         'Confidence': 99,
-                                        'Title': '[ELB.1] Application and Network Load Balancers should have access logging enabled',
+                                        'Title': '[ELBv2.1] Application and Network Load Balancers should have access logging enabled',
                                         'Description': 'ELB ' + elbv2LbType + ' load balancer ' + elbv2Name + ' has access logging enabled.',
                                         'Remediation': {
                                             'Recommendation': {
@@ -167,7 +167,7 @@ def elbv2_deletion_protection_check():
                                         'UpdatedAt': iso8601Time,
                                         'Severity': { 'Normalized': 20 },
                                         'Confidence': 99,
-                                        'Title': '[ELB.2] Application and Network Load Balancers should have deletion protection enabled',
+                                        'Title': '[ELBv2.2] Application and Network Load Balancers should have deletion protection enabled',
                                         'Description': 'ELB ' + elbv2LbType + ' load balancer ' + elbv2Name + ' does not have deletion protection enabled. Refer to the remediation instructions to remediate this behavior',
                                         'Remediation': {
                                             'Recommendation': {
@@ -218,7 +218,7 @@ def elbv2_deletion_protection_check():
                                         'UpdatedAt': iso8601Time,
                                         'Severity': { 'Normalized': 0 },
                                         'Confidence': 99,
-                                        'Title': '[ELB.2] Application and Network Load Balancers should have deletion protection enabled',
+                                        'Title': '[ELBv2.2] Application and Network Load Balancers should have deletion protection enabled',
                                         'Description': 'ELB ' + elbv2LbType + ' load balancer ' + elbv2Name + ' has deletion protection enabled.',
                                         'Remediation': {
                                             'Recommendation': {
@@ -289,7 +289,7 @@ def elbv2_internet_facing_secure_listeners_check():
                                     'UpdatedAt': iso8601Time,
                                     'Severity': { 'Normalized': 70 },
                                     'Confidence': 99,
-                                    'Title': '[ELB.3] Internet-facing Application and Network Load Balancers should have secure listeners configured',
+                                    'Title': '[ELBv2.3] Internet-facing Application and Network Load Balancers should have secure listeners configured',
                                     'Description': 'ELB ' + elbv2LbType + ' load balancer ' + elbv2Name + ' does not have a secure listener configured. Refer to the remediation instructions to remediate this behavior',
                                     'Remediation': {
                                         'Recommendation': {
@@ -340,7 +340,7 @@ def elbv2_internet_facing_secure_listeners_check():
                                     'UpdatedAt': iso8601Time,
                                     'Severity': { 'Normalized': 0 },
                                     'Confidence': 99,
-                                    'Title': '[ELB.3] Internet-facing Application and Network Load Balancers should have secure listeners configured',
+                                    'Title': '[ELBv2.3] Internet-facing Application and Network Load Balancers should have secure listeners configured',
                                     'Description': 'ELB ' + elbv2LbType + ' load balancer ' + elbv2Name + ' has a secure listener configured.',
                                     'Remediation': {
                                         'Recommendation': {
@@ -377,7 +377,7 @@ def elbv2_internet_facing_secure_listeners_check():
         except Exception as e:
             print(e)
 
-def elbv2_tls12_listener_policy():
+def elbv2_tls12_listener_policy_check():
     for loadbalancers in myElbv2LoadBalancers:
         elbv2Arn = str(loadbalancers['LoadBalancerArn'])
         elbv2Name = str(loadbalancers['LoadBalancerName'])
@@ -410,7 +410,7 @@ def elbv2_tls12_listener_policy():
                                         'UpdatedAt': iso8601Time,
                                         'Severity': { 'Normalized': 70 },
                                         'Confidence': 99,
-                                        'Title': '[ELB.4] Application and Network Load Balancers with HTTPS or TLS listeners should enforce TLS 1.2 policies',
+                                        'Title': '[ELBv2.4] Application and Network Load Balancers with HTTPS or TLS listeners should enforce TLS 1.2 policies',
                                         'Description': 'ELB ' + elbv2LbType + ' load balancer ' + elbv2Name + ' does not enforce a TLS 1.2 policy. Refer to the remediation instructions to remediate this behavior',
                                         'Remediation': {
                                             'Recommendation': {
@@ -461,7 +461,7 @@ def elbv2_tls12_listener_policy():
                                         'UpdatedAt': iso8601Time,
                                         'Severity': { 'Normalized': 0 },
                                         'Confidence': 99,
-                                        'Title': '[ELB.4] Application and Network Load Balancers with HTTPS or TLS listeners should enforce TLS 1.2 policies',
+                                        'Title': '[ELBv2.4] Application and Network Load Balancers with HTTPS or TLS listeners should enforce TLS 1.2 policies',
                                         'Description': 'ELB ' + elbv2LbType + ' load balancer ' + elbv2Name + ' enforces a TLS 1.2 policy.',
                                         'Remediation': {
                                             'Recommendation': {
@@ -501,10 +501,130 @@ def elbv2_tls12_listener_policy():
         except Exception as e:
             print(e)
 
+def elbv2_drop_invalid_header_check():
+    for loadbalancers in myElbv2LoadBalancers:
+        elbv2Arn = str(loadbalancers['LoadBalancerArn'])
+        elbv2Name = str(loadbalancers['LoadBalancerName'])
+        elbv2DnsName = str(loadbalancers['DNSName'])
+        elbv2LbType = str(loadbalancers['Type']) 
+        elbv2Scheme = str(loadbalancers['Scheme']) 
+        elbv2VpcId = str(loadbalancers['VpcId'])
+        elbv2IpAddressType = str(loadbalancers['IpAddressType'])
+        response = elbv2.describe_load_balancer_attributes(LoadBalancerArn=loadbalancerArn)
+        elbv2Attributes = response['Attributes']
+        for attributes in elbv2Attributes:
+            if str(attributes['Key']) == 'routing.http.drop_invalid_header_fields.enabled':
+                elbv2DropInvalidHeaderCheck = str(attributes['Value'])
+                if elbv2DropInvalidHeaderCheck == 'false':
+                    try:
+                        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                        response = securityhub.batch_import_findings(
+                            Findings=[
+                                {
+                                    'SchemaVersion': '2018-10-08',
+                                    'Id': elbv2Arn + '/elbv2-drop-invalid-header-fields-check',
+                                    'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                    'GeneratorId': elbv2Arn,
+                                    'AwsAccountId': awsAccountId,
+                                    'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                                    'FirstObservedAt': iso8601Time,
+                                    'CreatedAt': iso8601Time,
+                                    'UpdatedAt': iso8601Time,
+                                    'Severity': { 'Normalized': 60 },
+                                    'Confidence': 99,
+                                    'Title': '[ELBv2.5] Application Load Balancers should drop invalid HTTP header fields',
+                                    'Description': 'ELB ' + elbv2LbType + ' load balancer ' + elbv2Name + ' does not drop invalid HTTP header fields. Refer to the remediation instructions to remediate this behavior',
+                                    'Remediation': {
+                                        'Recommendation': {
+                                            'Text': 'For more information on dropping invalid HTTP headers refer to the routing.http.drop_invalid_header_fields.enabled section of the Application Load Balancers User Guide.',
+                                            'Url': 'https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancers.html#load-balancer-attributes'
+                                        }
+                                    },
+                                    'ProductFields': { 'Product Name': 'ElectricEye' },
+                                    'Resources': [
+                                        {
+                                            'Type': 'AwsElbv2LoadBalancer',
+                                            'Id': elbv2Arn,
+                                            'Partition': 'aws',
+                                            'Region': awsRegion,
+                                            'Details': {
+                                                'AwsElbv2LoadBalancer': {
+                                                    'DNSName': elbv2DnsName,
+                                                    'IpAddressType': elbv2IpAddressType,
+                                                    'Scheme': elbv2Scheme,
+                                                    'Type': elbv2LbType,
+                                                    'VpcId': elbv2VpcId
+                                                },
+                                            }
+                                        }
+                                    ],
+                                    'Compliance': { 'Status': 'FAILED' },
+                                    'RecordState': 'ACTIVE'
+                                }
+                            ]
+                        )
+                        print(response)
+                    except Exception as e:
+                        print(e)
+                else:
+                    try:
+                        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                        response = securityhub.batch_import_findings(
+                            Findings=[
+                                {
+                                    'SchemaVersion': '2018-10-08',
+                                    'Id': elbv2Arn + '/elbv2-drop-invalid-header-fields-check',
+                                    'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                    'GeneratorId': elbv2Arn,
+                                    'AwsAccountId': awsAccountId,
+                                    'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                                    'FirstObservedAt': iso8601Time,
+                                    'CreatedAt': iso8601Time,
+                                    'UpdatedAt': iso8601Time,
+                                    'Severity': { 'Normalized': 0 },
+                                    'Confidence': 99,
+                                    'Title': '[ELBv2.5] Application Load Balancers should drop invalid HTTP header fields',
+                                    'Description': 'ELB ' + elbv2LbType + ' load balancer ' + elbv2Name + ' drops invalid HTTP header fields.',
+                                    'Remediation': {
+                                        'Recommendation': {
+                                            'Text': 'For more information on dropping invalid HTTP headers refer to the routing.http.drop_invalid_header_fields.enabled section of the Application Load Balancers User Guide.',
+                                            'Url': 'https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancers.html#load-balancer-attributes'
+                                        }
+                                    },
+                                    'ProductFields': { 'Product Name': 'ElectricEye' },
+                                    'Resources': [
+                                        {
+                                            'Type': 'AwsElbv2LoadBalancer',
+                                            'Id': elbv2Arn,
+                                            'Partition': 'aws',
+                                            'Region': awsRegion,
+                                            'Details': {
+                                                'AwsElbv2LoadBalancer': {
+                                                    'DNSName': elbv2DnsName,
+                                                    'IpAddressType': elbv2IpAddressType,
+                                                    'Scheme': elbv2Scheme,
+                                                    'Type': elbv2LbType,
+                                                    'VpcId': elbv2VpcId
+                                                },
+                                            }
+                                        }
+                                    ],
+                                    'Compliance': { 'Status': 'PASSED' },
+                                    'RecordState': 'ARCHIVED'
+                                }
+                            ]
+                        )
+                        print(response)
+                    except Exception as e:
+                        print(e)
+            else:
+                pass
+
 def elbv2_auditor():
     elbv2_logging_check()
     elbv2_deletion_protection_check()
     elbv2_internet_facing_secure_listeners_check()
-    elbv2_tls12_listener_policy()
+    elbv2_tls12_listener_policy_check()
+    elbv2_drop_invalid_header_check()
 
 elbv2_auditor()

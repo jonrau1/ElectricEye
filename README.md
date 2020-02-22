@@ -47,9 +47,7 @@ These steps are split across their relevant sections. All CLI commands are execu
 **Note:** Ensure AWS Security Hub is enabled in the region you are attempting to run ElectricEye
 
 ### Build and push the Docker image
-Before starting [attach this IAM policy](https://github.com/jonrau1/ElectricEye/blob/master/policies/Instance_Profile_IAM_Policy.json) to your [Instance Profile](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html) (if you are using Cloud9 or EC2).
-
-**Important Note:** The policy for the instance profile is ***highly dangerous*** given the S3, VPC and IAM related permissions given to it, Terraform needs a wide swath of CRUD permissions and even permissions for things that aren't deployed by the config files. For rolling ElectricEye out in a Production or an otherwise highly-regulated environment, consider adding [IAM Condition Keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_actions-resources-contextkeys.html#context_keys_table), using CI/CD (no human access) and backing up your Terraform state files to a S3 backend to add guardrails around this deployment. I would avoid adding these permissions to an IAM user, and any roles that use this should only be assumable by where you are deploying it from, consider adding other Condition Keys to the Trust Policy.
+**Note:** You must have [permissions to push images](https://docs.aws.amazon.com/AmazonECR/latest/userguide/docker-push-ecr-image.html) to ECR before performing this step.
 
 1. Update your machine and clone this repository
 ```bash
@@ -78,7 +76,11 @@ sudo docker push <ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/<REPO_NAME>:lat
 
 Do not navigate away from this directory, as you will enter more code in the next stage.
 
-### Setup baseline infrastructure
+### Setup baseline infrastructure via Terraform
+Before starting [attach this IAM policy](https://github.com/jonrau1/ElectricEye/blob/master/policies/Instance_Profile_IAM_Policy.json) to your [Instance Profile](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html) (if you are using Cloud9 or EC2).
+
+**Important Note:** The policy for the instance profile is ***highly dangerous*** given the S3, VPC and IAM related permissions given to it, Terraform needs a wide swath of CRUD permissions and even permissions for things that aren't deployed by the config files. For rolling ElectricEye out in a Production or an otherwise highly-regulated environment, consider adding [IAM Condition Keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_actions-resources-contextkeys.html#context_keys_table), using CI/CD (no human access) and backing up your Terraform state files to a S3 backend to add guardrails around this deployment. I would avoid adding these permissions to an IAM user, and any roles that use this should only be assumable by where you are deploying it from, consider adding other Condition Keys to the Trust Policy.
+
 In this stage we will install and deploy the ElectricEye infrastructure via Terraform. To securely backup your state file, you should explore the usage of a [S3 backend](https://www.terraform.io/docs/backends/index.html), this is also described in this [AWS Security Blog post](https://aws.amazon.com/blogs/security/how-use-ci-cd-deploy-configure-aws-security-services-terraform/).
 
 1. Install the dependencies for Terraform. **Note:** these configuration files are written for `v 0.11.x` and will not work with `v 0.12.x` Terraform installations and rewriting for that spec is not in the immediate roadmap.
@@ -120,6 +122,9 @@ python3 electriceye-insights.py
 ```
 
 In the next stage your will run the ElectricEye ECS task manually, after Terraform deploys this solution it will automatically run and it will fail due to a lack of auditors in the S3 bucket. You can skip the next section if you intend to have ElectricEye run automatically.
+
+### Setup baseline infrastructure via AWS CloudFormation
+To-do
 
 ### Manually execute the ElectricEye ECS Task (you only need to do this once)
 In this stage we will use the console the manually run the ElectricEye ECS task.
@@ -201,10 +206,16 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_ElasticsearchService_Auditor.py | Elasticsearch Domain          | Is HTTPS-only enforced                                                |
 | Amazon_ElasticsearchService_Auditor.py | Elasticsearch Domain          | Is a TLS 1.2 policy used                                              |
 | Amazon_ElasticsearchService_Auditor.py | Elasticsearch Domain          | Are there available version updates                                   |
+| Amazon_ELB_Auditor.py                  | ELB (Classic Load Balancer)   | Do internet facing ELBs have a <br>secure listener                    |
+| Amazon_ELB_Auditor.py                  | ELB (Classic Load Balancer)   | Do secure listeners enforce TLS 1.2                                   |
+| Amazon_ELB_Auditor.py                  | ELB (Classic Load Balancer)   | Is cross zone load balancing enabled                                  |
+| Amazon_ELB_Auditor.py                  | ELB (Classic Load Balancer)   | Is connection draining enabled                                        |
+| Amazon_ELB_Auditor.py                  | ELB (Classic Load Balancer)   | Is access logging enabled                                             |
 | Amazon_ELBv2_Auditor.py                | ELBv2 (ALB/NLB)               | Is access logging enabled                                             |
 | Amazon_ELBv2_Auditor.py                | ELBv2 (ALB/NLB)               | Is deletion protection enabled                                        |
 | Amazon_ELBv2_Auditor.py                | ELBv2 (ALB/NLB)               | Do internet facing ELBs have a <br>secure listener                    |
 | Amazon_ELBv2_Auditor.py                | ELBv2 (ALB/NLB)               | Do secure listeners enforce TLS 1.2                                   |
+| Amazon_ELBv2_Auditor.py                | ELBv2 (ALB/NLB)               | Are invalid HTTP headers dropped                                      |
 | Amazon_Kinesis_Data_Streams_Auditor.py | Kinesis Data Stream           | Is stream encryption enabled                                          |
 | Amazon_Kinesis_Data_Streams_Auditor.py | Kinesis Data Stream           | Is enhanced monitoring enabled                                        |
 | Amazon_MSK_Auditor.py                  | MSK Cluster                   | Is inter-cluster encryption used                                      |
@@ -267,6 +278,9 @@ These are the following services and checks perform by each Auditor. There are c
 | AWS_CodeBuild_Auditor.py               | CodeBuild project             | Is CloudWatch logging enabled                                         |
 | AWS_Directory_Service_Auditor.py       | DS Directory                  | Is RADIUS enabled                                                     |
 | AWS_Directory_Service_Auditor.py       | DS Directory                  | Is CloudWatch log forwarding enabled                                  |
+| AWS_DMS_Auditor.py                     | DMS Replication Instance      | Are DMS instances publicly accessible                                 |
+| AWS_DMS_Auditor.py                     | DMS Replication Instance      | Is DMS multi-az configured                                            |
+| AWS_DMS_Auditor.py                     | DMS Replication Instance      | Are minor version updates configured                                  |
 | AWS_Secrets_Manager_Auditor.py         | Secrets Manager secret        | Is the secret over 90 days old                                        |
 | AWS_Secrets_Manager_Auditor.py         | Secrets Manager secret        | Is secret auto-rotation enabled                                       |
 | AWS_Security_Hub_Auditor.py            | Security Hub (Account)        | Are there active high or critical<br>findings in Security Hub         |

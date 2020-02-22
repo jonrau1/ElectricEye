@@ -323,9 +323,215 @@ def neptune_instance_iam_authentication_check():
             except Exception as e:
                 print(e)
 
+def neptune_cluster_parameter_ssl_enforcement_check():
+    response = neptune.describe_db_cluster_parameter_groups()
+    for parametergroup in response['DBClusterParameterGroups']:
+        parameterGroupName = str(parametergroup['DBClusterParameterGroupName'])
+        parameterGroupArn = str(parametergroup['DBClusterParameterGroupArn'])
+        response = neptune.describe_db_cluster_parameters(DBClusterParameterGroupName=parameterGroupName)
+        for parameters in response['Parameters']:
+            if str(parameters['ParameterName']) == 'neptune_enforce_ssl':
+                sslEnforcementCheck = str(parameters['ParameterValue'])
+                if sslEnforcementCheck == '0':
+                    try:
+                        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                        response = securityhub.batch_import_findings(
+                            Findings=[
+                                {
+                                    'SchemaVersion': '2018-10-08',
+                                    'Id': parameterGroupArn + '/neptune-cluster-param-group-ssl-enforcement-check',
+                                    'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                    'GeneratorId': parameterGroupArn,
+                                    'AwsAccountId': awsAccountId,
+                                    'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                                    'FirstObservedAt': iso8601Time,
+                                    'CreatedAt': iso8601Time,
+                                    'UpdatedAt': iso8601Time,
+                                    'Severity': { 'Normalized': 60 },
+                                    'Confidence': 99,
+                                    'Title': '[Neptune.4] Neptune cluster parameter groups should enforce SSL connections to Neptune databases',
+                                    'Description': 'Neptune cluster parameter group ' + parameterGroupName + ' does not enforce SSL connections. Refer to the remediation instructions to remediate this behavior',
+                                    'Remediation': {
+                                        'Recommendation': {
+                                            'Text': 'For more information on enforcing SSL/HTTPS connections to Neptune instances refer to the Encryption in Transit: Connecting to Neptune Using SSL/HTTPS section of the Amazon Neptune User Guide.',
+                                            'Url': 'https://docs.aws.amazon.com/neptune/latest/userguide/security-ssl.html'
+                                        }
+                                    },
+                                    'ProductFields': { 'Product Name': 'ElectricEye' },
+                                    'Resources': [
+                                        {
+                                            'Type': 'Other',
+                                            'Id': parameterGroupArn,
+                                            'Partition': 'aws',
+                                            'Region': awsRegion,
+                                            'Details': {
+                                                'Other': { 'ParameterGroupName': parameterGroupName }
+                                            }
+                                        }
+                                    ],
+                                    'Compliance': { 'Status': 'FAILED' },
+                                    'RecordState': 'ACTIVE'
+                                }
+                            ]
+                        )
+                        print(response)
+                    except Exception as e:
+                        print(e)
+                else:
+                    try:
+                        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                        response = securityhub.batch_import_findings(
+                            Findings=[
+                                {
+                                    'SchemaVersion': '2018-10-08',
+                                    'Id': parameterGroupArn + '/neptune-cluster-param-group-ssl-enforcement-check',
+                                    'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                    'GeneratorId': parameterGroupArn,
+                                    'AwsAccountId': awsAccountId,
+                                    'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                                    'FirstObservedAt': iso8601Time,
+                                    'CreatedAt': iso8601Time,
+                                    'UpdatedAt': iso8601Time,
+                                    'Severity': { 'Normalized': 0 },
+                                    'Confidence': 99,
+                                    'Title': '[Neptune.4] Neptune cluster parameter groups should enforce SSL connections to Neptune databases',
+                                    'Description': 'Neptune cluster parameter group ' + parameterGroupName + ' enforces SSL connections.',
+                                    'Remediation': {
+                                        'Recommendation': {
+                                            'Text': 'For more information on enforcing SSL/HTTPS connections to Neptune instances refer to the Encryption in Transit: Connecting to Neptune Using SSL/HTTPS section of the Amazon Neptune User Guide.',
+                                            'Url': 'https://docs.aws.amazon.com/neptune/latest/userguide/security-ssl.html'
+                                        }
+                                    },
+                                    'ProductFields': { 'Product Name': 'ElectricEye' },
+                                    'Resources': [
+                                        {
+                                            'Type': 'Other',
+                                            'Id': parameterGroupArn,
+                                            'Partition': 'aws',
+                                            'Region': awsRegion,
+                                            'Details': {
+                                                'Other': { 'ParameterGroupName': parameterGroupName }
+                                            }
+                                        }
+                                    ],
+                                    'Compliance': { 'Status': 'PASSED' },
+                                    'RecordState': 'ARCHIVED'
+                                }
+                            ]
+                        )
+                        print(response)
+                    except Exception as e:
+                        print(e)
+            else:
+                pass
+
+def neptune_cluster_parameter_audit_log_check():
+    response = neptune.describe_db_cluster_parameter_groups()
+    for parametergroup in response['DBClusterParameterGroups']:
+        parameterGroupName = str(parametergroup['DBClusterParameterGroupName'])
+        parameterGroupArn = str(parametergroup['DBClusterParameterGroupArn'])
+        response = neptune.describe_db_cluster_parameters(DBClusterParameterGroupName=parameterGroupName)
+        for parameters in response['Parameters']:
+            if str(parameters['ParameterName']) == 'neptune_enable_audit_log':
+                auditLogCheck = str(parameters['ParameterValue'])
+                if auditLogCheck == '0':
+                    try:
+                        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                        response = securityhub.batch_import_findings(
+                            Findings=[
+                                {
+                                    'SchemaVersion': '2018-10-08',
+                                    'Id': parameterGroupArn + '/neptune-cluster-param-group-audit-logging-check',
+                                    'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                    'GeneratorId': parameterGroupArn,
+                                    'AwsAccountId': awsAccountId,
+                                    'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                                    'FirstObservedAt': iso8601Time,
+                                    'CreatedAt': iso8601Time,
+                                    'UpdatedAt': iso8601Time,
+                                    'Severity': { 'Normalized': 40 },
+                                    'Confidence': 99,
+                                    'Title': '[Neptune.5] Neptune cluster parameter groups should enforce audit logging for Neptune databases',
+                                    'Description': 'Neptune cluster parameter group ' + parameterGroupName + ' does not enforce audit logging. Refer to the remediation instructions to remediate this behavior',
+                                    'Remediation': {
+                                        'Recommendation': {
+                                            'Text': 'For more information on audit logging for Neptune instances refer to the Enabling Neptune Audit Logs section of the Amazon Neptune User Guide.',
+                                            'Url': 'https://docs.aws.amazon.com/neptune/latest/userguide/auditing.html#auditing-enable'
+                                        }
+                                    },
+                                    'ProductFields': { 'Product Name': 'ElectricEye' },
+                                    'Resources': [
+                                        {
+                                            'Type': 'Other',
+                                            'Id': parameterGroupArn,
+                                            'Partition': 'aws',
+                                            'Region': awsRegion,
+                                            'Details': {
+                                                'Other': { 'ParameterGroupName': parameterGroupName }
+                                            }
+                                        }
+                                    ],
+                                    'Compliance': { 'Status': 'FAILED' },
+                                    'RecordState': 'ACTIVE'
+                                }
+                            ]
+                        )
+                        print(response)
+                    except Exception as e:
+                        print(e)
+                else:
+                    try:
+                        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                        response = securityhub.batch_import_findings(
+                            Findings=[
+                                {
+                                    'SchemaVersion': '2018-10-08',
+                                    'Id': parameterGroupArn + '/neptune-cluster-param-group-audit-logging-check',
+                                    'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                    'GeneratorId': parameterGroupArn,
+                                    'AwsAccountId': awsAccountId,
+                                    'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                                    'FirstObservedAt': iso8601Time,
+                                    'CreatedAt': iso8601Time,
+                                    'UpdatedAt': iso8601Time,
+                                    'Severity': { 'Normalized': 0 },
+                                    'Confidence': 99,
+                                    'Title': '[Neptune.5] Neptune cluster parameter groups should enforce audit logging for Neptune databases',
+                                    'Description': 'Neptune cluster parameter group ' + parameterGroupName + ' enforces audit logging.',
+                                    'Remediation': {
+                                        'Recommendation': {
+                                            'Text': 'For more information on audit logging for Neptune instances refer to the Enabling Neptune Audit Logs section of the Amazon Neptune User Guide.',
+                                            'Url': 'https://docs.aws.amazon.com/neptune/latest/userguide/auditing.html#auditing-enable'
+                                        }
+                                    },
+                                    'ProductFields': { 'Product Name': 'ElectricEye' },
+                                    'Resources': [
+                                        {
+                                            'Type': 'Other',
+                                            'Id': parameterGroupArn,
+                                            'Partition': 'aws',
+                                            'Region': awsRegion,
+                                            'Details': {
+                                                'Other': { 'ParameterGroupName': parameterGroupName }
+                                            }
+                                        }
+                                    ],
+                                    'Compliance': { 'Status': 'PASSED' },
+                                    'RecordState': 'ARCHIVED'
+                                }
+                            ]
+                        )
+                        print(response)
+                    except Exception as e:
+                        print(e)
+            else:
+                pass
+
 def neptune_auditor():
     neptune_instance_multi_az_check()
     neptune_instance_storage_encryption_check()
     neptune_instance_iam_authentication_check()
+    neptune_cluster_parameter_ssl_enforcement_check()
+    neptune_cluster_parameter_audit_log_check()
 
 neptune_auditor()
