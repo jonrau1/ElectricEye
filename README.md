@@ -1,5 +1,5 @@
 # ElectricEye
-Continuously monitor your AWS serivces for misconfigurations that can lead to degradation of confidentiality, integrity or availability. All results will be sent to Security Hub for further aggregation and analysis. 
+Continuously monitor your AWS services for configurations that can lead to degradation of confidentiality, integrity or availability. All results will be sent to Security Hub for further aggregation and analysis.
 
 ***Up here in space***<br/>
 ***I'm looking down on you***<br/>
@@ -122,7 +122,26 @@ python3 electriceye-insights.py
 In the next stage your will run the ElectricEye ECS task manually, after Terraform deploys this solution it will automatically run and it will fail due to a lack of auditors in the S3 bucket. You can skip the next section if you intend to have ElectricEye run automatically.
 
 ### Setup baseline infrastructure via AWS CloudFormation
-To-do
+1. Download the [CloudFormation template](https://github.com/jonrau1/ElectricEye/blob/master/cloudformation/ElectricEye_CFN.yaml) and create a Stack. Refer to the [Get Started](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/GettingStarted.Walkthrough.html) section of the *AWS CloudFormation User Guide* if you have not done this before.
+
+2. Enter the URI of the Docker image in the space for the parameter **ElectricEyeContainerInfo**. Leave all other parameters as the default value, unless you already used `10.77.0.0/16` as the CIDR for one of your VPCs and plan to attach this VPC to your [T-Gateway](https://aws.amazon.com/transit-gateway/). Then create your stack.
+![Run task dropdown](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/cfn-parameter-uri-modification.JPG)
+
+3. Navigate to the S3 console and locate the name of the S3 bucket created by CloudFormation for the next step. It should be in the format of `electric-eye-artifact-bucket--(AWS_REGION)-(ACCOUNT-NUMBER)`
+
+4. Navigate to the `auditors` directory and upload the code base to your S3 bucket
+```bash
+cd -
+cd auditors
+aws s3 sync . s3://<your-bucket-name>
+```
+
+5. Navigate to the `insights` directory and execute the Python script to have Security Hub Insights created. Insights are saved searches that can also be used as quick-view dashboards (though no where near the sophsication of a QuickSight dashboard)
+```bash
+cd -
+cd insights
+python3 electriceye-insights.py
+```
 
 ### Manually execute the ElectricEye ECS Task (you only need to do this once)
 In this stage we will use the console the manually run the ElectricEye ECS task.
@@ -384,37 +403,37 @@ The best way to estimate your Security Hub costs is to confer the Usage tab with
 
 ### 14. What are those other tools you mentioned?
 You should consider taking a look at all of these:
-<br>**Secrets Scanning**</br>
+#### Secrets Scanning
 - [truffleHog](https://github.com/dxa4481/truffleHog)
 - [git-secrets](https://github.com/awslabs/git-secrets)
-<br>**SAST**</br>
+#### SAST
 - [Bandit](https://github.com/PyCQA/bandit) (for Python)
 - [GoSec](https://github.com/securego/gosec) (for Golang)
 - [NodeJsScan](https://github.com/ajinabraham/NodeJsScan) (for NodeJS)
 - [tfsec](https://github.com/liamg/tfsec) (for Terraform "SAST")
-<br>**Linters**</br>
+#### Linters
 - [hadolint](https://github.com/hadolint/hadolint) (for Docker)
 - [cfn-python-lint](https://github.com/aws-cloudformation/cfn-python-lint) (for CloudFormation)
 - [cfn-nag](https://github.com/stelligent/cfn_nag) (for CloudFormation)
-<br>**DAST**</br>
+#### DAST
 - [Zed Attack Proxy (ZAP)](https://owasp.org/www-project-zap/)
-<br>**AV**</br>
+#### AV
 - [ClamAV](https://www.clamav.net/documents/clamav-development)
 - [aws-s3-virusscan](https://github.com/widdix/aws-s3-virusscan) (for S3 buckets, obviously)
 - [BinaryAlert](http://www.binaryalert.io/) (serverless, YARA backed for S3 buckets)
-<br>**IDS/IPS**</br>
+#### IDS/IPS
 - [Suricata](https://suricata-ids.org/)
 - [Snort](https://www.snort.org/)
 - [Zeek](https://www.zeek.org/)
-<br>**DFIR**</br>
+#### DFIR
 - [Fenrir](https://github.com/Neo23x0/Fenrir) (bash-based IOC scanner)
 - [Loki](https://github.com/Neo23x0/Loki) (Python-based IOC scanner w/ Yara)
 - [GRR Rapid Response](https://github.com/google/grr) (Python agent-based IR)
 - this one is deprecated but... [MIG](http://mozilla.github.io/mig/)
-<br>**Threat Hunting**</br>
+#### Threat Hunting
 - [ThreatHunter-Playbook](https://github.com/hunters-forge/ThreatHunter-Playbook)
 - [Mordor](https://github.com/hunters-forge/mordor)
-<br>**Misc**</br>
+#### Misc
 - [LambdaGuard](https://github.com/Skyscanner/LambdaGuard)
 
 ## Contributing
