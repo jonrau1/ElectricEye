@@ -510,7 +510,7 @@ def elbv2_drop_invalid_header_check():
         elbv2Scheme = str(loadbalancers['Scheme']) 
         elbv2VpcId = str(loadbalancers['VpcId'])
         elbv2IpAddressType = str(loadbalancers['IpAddressType'])
-        response = elbv2.describe_load_balancer_attributes(LoadBalancerArn=loadbalancerArn)
+        response = elbv2.describe_load_balancer_attributes(LoadBalancerArn=elbv2Arn)
         elbv2Attributes = response['Attributes']
         for attributes in elbv2Attributes:
             if str(attributes['Key']) == 'routing.http.drop_invalid_header_fields.enabled':

@@ -6,7 +6,7 @@ securityhub = boto3.client('securityhub')
 documentdb = boto3.client('docdb')
 sts = boto3.client('sts')
 # create account id & region variables
-awsAccount = sts.get_caller_identity()['Account']
+awsAccountId = sts.get_caller_identity()['Account']
 awsRegion = os.environ['AWS_REGION']
 # find document db instances
 response = documentdb.describe_db_instances(
@@ -35,9 +35,9 @@ def docdb_public_instance_check():
                         {
                             'SchemaVersion': '2018-10-08',
                             'Id': docdbArn + '/docdb-public-access',
-                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
                             'GeneratorId': docdbArn,
-                            'AwsAccountId': awsAccount,
+                            'AwsAccountId': awsAccountId,
                             'Types': [
                                 'Software and Configuration Checks/AWS Security Best Practices',
                                 'Effects/Data Exposure'
@@ -87,9 +87,9 @@ def docdb_public_instance_check():
                         {
                             'SchemaVersion': '2018-10-08',
                             'Id': docdbArn + '/docdb-public-access',
-                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
                             'GeneratorId': docdbArn,
-                            'AwsAccountId': awsAccount,
+                            'AwsAccountId': awsAccountId,
                             'Types': [
                                 'Software and Configuration Checks/AWS Security Best Practices',
                                 'Effects/Data Exposure'
@@ -145,9 +145,9 @@ def docdb_instance_encryption_check():
                         {
                             'SchemaVersion': '2018-10-08',
                             'Id': docdbArn + '/docdb-encryption-check',
-                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
                             'GeneratorId': docdbArn,
-                            'AwsAccountId': awsAccount,
+                            'AwsAccountId': awsAccountId,
                             'Types': [
                                 'Software and Configuration Checks/AWS Security Best Practices',
                                 'Effects/Data Exposure'
@@ -197,9 +197,9 @@ def docdb_instance_encryption_check():
                         {
                             'SchemaVersion': '2018-10-08',
                             'Id': docdbArn + '/docdb-encryption-check',
-                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
                             'GeneratorId': docdbArn,
-                            'AwsAccountId': awsAccount,
+                            'AwsAccountId': awsAccountId,
                             'Types': [
                                 'Software and Configuration Checks/AWS Security Best Practices',
                                 'Effects/Data Exposure'
@@ -256,9 +256,9 @@ def docdb_instance_audit_logging_check():
                         {
                             'SchemaVersion': '2018-10-08',
                             'Id': docdbArn + '/docdb-instance-audit-logging-check',
-                            'ProductArn': 'arn:docdbArn:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
                             'GeneratorId': docdbArn,
-                            'AwsAccountId': awsAccount,
+                            'AwsAccountId': awsAccountId,
                             'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
                             'FirstObservedAt': iso8601Time,
                             'CreatedAt': iso8601Time,
@@ -305,9 +305,9 @@ def docdb_instance_audit_logging_check():
                         {
                             'SchemaVersion': '2018-10-08',
                             'Id': docdbArn + '/docdb-instance-audit-logging-check',
-                            'ProductArn': 'arn:docdbArn:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
                             'GeneratorId': docdbArn,
-                            'AwsAccountId': awsAccount,
+                            'AwsAccountId': awsAccountId,
                             'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
                             'FirstObservedAt': iso8601Time,
                             'CreatedAt': iso8601Time,
@@ -363,9 +363,9 @@ def docdb_cluster_multiaz_check():
                         {
                             'SchemaVersion': '2018-10-08',
                             'Id': docdbClusterArn + '/docdb-cluster-multi-az-check',
-                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
                             'GeneratorId': docdbclusterId,
-                            'AwsAccountId': awsAccount,
+                            'AwsAccountId': awsAccountId,
                             'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
                             'FirstObservedAt': iso8601Time,
                             'CreatedAt': iso8601Time,
@@ -412,9 +412,9 @@ def docdb_cluster_multiaz_check():
                         {
                             'SchemaVersion': '2018-10-08',
                             'Id': docdbClusterArn + '/docdb-cluster-multi-az-check',
-                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
                             'GeneratorId': docdbClusterArn,
-                            'AwsAccountId': awsAccount,
+                            'AwsAccountId': awsAccountId,
                             'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
                             'FirstObservedAt': iso8601Time,
                             'CreatedAt': iso8601Time,
@@ -470,9 +470,9 @@ def docdb_cluster_deletion_protection_check():
                         {
                             'SchemaVersion': '2018-10-08',
                             'Id': docdbClusterArn + '/docdb-cluster-deletion-protection-check',
-                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
                             'GeneratorId': docdbClusterArn,
-                            'AwsAccountId': awsAccount,
+                            'AwsAccountId': awsAccountId,
                             'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
                             'FirstObservedAt': iso8601Time,
                             'CreatedAt': iso8601Time,
@@ -519,9 +519,9 @@ def docdb_cluster_deletion_protection_check():
                         {
                             'SchemaVersion': '2018-10-08',
                             'Id': docdbClusterArn + '/docdb-cluster-deletion-protection-check',
-                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
                             'GeneratorId': docdbClusterArn,
-                            'AwsAccountId': awsAccount,
+                            'AwsAccountId': awsAccountId,
                             'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
                             'FirstObservedAt': iso8601Time,
                             'CreatedAt': iso8601Time,

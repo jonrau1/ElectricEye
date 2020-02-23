@@ -20,6 +20,8 @@ python3 Amazon_Elasticache_Redis_Auditor.py
 sleep 2
 python3 Amazon_ElasticsearchService_Auditor.py
 sleep 2
+python3 Amazon_ELB_Auditor.py
+sleep 2
 python3 Amazon_ELBv2_Auditor.py
 sleep 2
 python3 Amazon_Kinesis_Data_Streams_Auditor.py
@@ -51,6 +53,10 @@ sleep 2
 python3 AWS_CloudFormation_Auditor.py
 sleep 2
 python3 AWS_CodeBuild_Auditor.py
+sleep 2
+python3 AWS_Directory_Service_Auditor.py
+sleep 2
+python3 AWS_DMS_Auditor.py
 sleep 2
 python3 AWS_Secrets_Manager_Auditor.py
 sleep 2

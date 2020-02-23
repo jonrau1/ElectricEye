@@ -74,8 +74,6 @@ sudo docker push <ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/<REPO_NAME>:lat
 
 4. Navigate to the ECR console and copy the `URI` of your Docker image. It will be in the format of `<ACCOUNT_ID>.dkr.ecr.<AWS_REGION.amazonaws.com/<REPO_NAME>:latest`. Save this as you will need it when configuring Terraform.
 
-Do not navigate away from this directory, as you will enter more code in the next stage.
-
 ### Setup baseline infrastructure via Terraform
 Before starting [attach this IAM policy](https://github.com/jonrau1/ElectricEye/blob/master/policies/Instance_Profile_IAM_Policy.json) to your [Instance Profile](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html) (if you are using Cloud9 or EC2).
 
@@ -147,7 +145,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **139** checks supported across **46** AWS services / components using **33** Auditors.
+These are the following services and checks perform by each Auditor. There are currently **139** checks supported across **46** AWS services / components using **32** Auditors.
 
 **Important Note:** You need to have Shield Advance enabled and Business or Enterprise support to run through the full list of Shield Advanced auditor checks
 
@@ -254,7 +252,7 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_SageMaker_Auditor.py            | SageMaker Endpoint            | Is endpoint encryption enabled                                        |
 | Amazon_SageMaker_Auditor.py            | SageMaker Model               | Is model network isolation enabled                                    |
 | Amazon_Shield_Advanced_Auditor.py      | Route53 Hosted Zone           | Are Rt53 hosted zones protected by<br>Shield Advanced                 |
-| Amazon_Shield_Advanced_Auditor.py      | Classic Load Balancer         | Are CLBs protected by Shield Adv                                      |
+| Amazon_Shield_Advanced_Auditor.py      | ELB (Classic Load Balancer)   | Are CLBs protected by Shield Adv                                      |
 | Amazon_Shield_Advanced_Auditor.py      | ELBv2 (ALB/NLB)               | Are ELBv2s protected by Shield Adv                                    |
 | Amazon_Shield_Advanced_Auditor.py      | Elastic IP                    | Are EIPs protected by Shield Adv                                      |
 | Amazon_Shield_Advanced_Auditor.py      | CloudFront Distribution       | Are CF Distros protected by Shield Adv                                |
@@ -389,41 +387,33 @@ You should consider taking a look at all of these:
 <br>**Secrets Scanning**</br>
 - [truffleHog](https://github.com/dxa4481/truffleHog)
 - [git-secrets](https://github.com/awslabs/git-secrets)
-
 <br>**SAST**</br>
 - [Bandit](https://github.com/PyCQA/bandit) (for Python)
 - [GoSec](https://github.com/securego/gosec) (for Golang)
 - [NodeJsScan](https://github.com/ajinabraham/NodeJsScan) (for NodeJS)
 - [tfsec](https://github.com/liamg/tfsec) (for Terraform "SAST")
-
 <br>**Linters**</br>
 - [hadolint](https://github.com/hadolint/hadolint) (for Docker)
 - [cfn-python-lint](https://github.com/aws-cloudformation/cfn-python-lint) (for CloudFormation)
 - [cfn-nag](https://github.com/stelligent/cfn_nag) (for CloudFormation)
-
 <br>**DAST**</br>
 - [Zed Attack Proxy (ZAP)](https://owasp.org/www-project-zap/)
-
 <br>**AV**</br>
 - [ClamAV](https://www.clamav.net/documents/clamav-development)
 - [aws-s3-virusscan](https://github.com/widdix/aws-s3-virusscan) (for S3 buckets, obviously)
 - [BinaryAlert](http://www.binaryalert.io/) (serverless, YARA backed for S3 buckets)
-
 <br>**IDS/IPS**</br>
 - [Suricata](https://suricata-ids.org/)
 - [Snort](https://www.snort.org/)
 - [Zeek](https://www.zeek.org/)
-
 <br>**DFIR**</br>
 - [Fenrir](https://github.com/Neo23x0/Fenrir) (bash-based IOC scanner)
 - [Loki](https://github.com/Neo23x0/Loki) (Python-based IOC scanner w/ Yara)
 - [GRR Rapid Response](https://github.com/google/grr) (Python agent-based IR)
 - this one is deprecated but... [MIG](http://mozilla.github.io/mig/)
-
 <br>**Threat Hunting**</br>
 - [ThreatHunter-Playbook](https://github.com/hunters-forge/ThreatHunter-Playbook)
 - [Mordor](https://github.com/hunters-forge/mordor)
-
 <br>**Misc**</br>
 - [LambdaGuard](https://github.com/Skyscanner/LambdaGuard)
 
@@ -434,17 +424,18 @@ I am very happy to accept PR's for the following:
 - Fixing my stupid grammar errors, spelling errors and inconsistencies
 - Removing any unused IAM permissions that may have popped up
 - Adding new forms of deployment scripts or IAC (Salt stacks, Ansible playbooks, etc.)
-- My to-do list!
+- Adding Terraform `v0.12.x` support
+- My to-do list
 
 ### To-Do
-[] Create an ElectricEye Logo
-[] Investigate publishing ASFF schema to SQS>Lambda>BIF API for scale/throttle handling
-[] Add in Shodan.io checks for internet-facing resources (RDS, Redshift, DocDB, Elasticsearch, EC2, ELBv2, etc)
-[] Upload response and remediation playbooks and IAC for them - Custom Action Version
-[] Upload response and remediation playbooks and IAC for them - Title II Version (Full auto, that is)
-[] Create an Alerting framework with ChatBot for Critical findings / whatever
-[] Create a Reporting module for use with Elasticsearch & Kibana
-[] Create a Reporting module (serverless edition) for use with QuickSight
+- [] Create an ElectricEye Logo
+- [] Investigate publishing ASFF schema to SQS>Lambda>BIF API for scale/throttle handling
+- [] Add in Shodan.io checks for internet-facing resources (RDS, Redshift, DocDB, Elasticsearch, EC2, ELBv2, etc)
+- [] Upload response and remediation playbooks and IAC for them - Custom Action Version
+- [] Upload response and remediation playbooks and IAC for them - Title II Version (Full auto, that is)
+- [] Create an Alerting framework with ChatBot for Critical findings / whatever
+- [] Create a Reporting module for use with Elasticsearch & Kibana
+- [] Create a Reporting module (serverless edition) for use with QuickSight
 
 ## License
 This library is licensed under the GNU General Public License v3.0 (GPL-3.0) License. See the LICENSE file.
