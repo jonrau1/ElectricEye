@@ -147,7 +147,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **124** checks supported across **42** AWS services / components using **31** Auditors.
+These are the following services and checks perform by each Auditor. There are currently **139** checks supported across **46** AWS services / components using **33** Auditors.
 
 **Important Note:** You need to have Shield Advance enabled and Business or Enterprise support to run through the full list of Shield Advanced auditor checks
 
@@ -165,6 +165,10 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_DocumentDB_Auditor.py           | DocumentDB Instance           | Is audit logging enabled                                              |
 | Amazon_DocumentDB_Auditor.py           | DocumentDB Cluster            | Is the Cluster configured for HA                                      |
 | Amazon_DocumentDB_Auditor.py           | DocumentDB Cluster            | Is the Cluster deletion protected                                     |
+| Amazon_DocumentDB_Auditor.py           | DocumentDB Cluster            | Is cluster audit logging on                                           |
+| Amazon_DocumentDB_Auditor.py           | DocumentDB Cluster            | Is cluster TLS enforcement on                                         |
+| Amazon_DocumentDB_Auditor.py           | DocDB Snapshot                | Are docdb cluster snapshots encrypted                                 |
+| Amazon_DocumentDB_Auditor.py           | DocDB Snapshot                | Are docdb cluster snapshots public                                    |
 | Amazon_EBS_Auditor.py                  | EBS Volume                    | Is the Volume attached                                                |
 | Amazon_EBS_Auditor.py                  | EBS Volume                    | Is the Volume configured to be<br>deleted on instance termination     |
 | Amazon_EBS_Auditor.py                  | EBS Volume                    | Is the Volume encrypted                                               |
@@ -225,6 +229,8 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_Neptune_Auditor.py              | Neptune instance              | Is Neptune configured for HA                                          |
 | Amazon_Neptune_Auditor.py              | Neptune instance              | Is Neptune storage encrypted                                          |
 | Amazon_Neptune_Auditor.py              | Neptune instance              | Does Neptune use IAM DB Auth                                          |
+| Amazon_Neptune_Auditor.py              | Neptune cluster               | Is SSL connection enforced                                            |
+| Amazon_Neptune_Auditor.py              | Neptune cluster               | Is audit logging enabled                                              |
 | Amazon_RDS_Auditor.py                  | RDS DB Instance               | Is HA configured                                                      |
 | Amazon_RDS_Auditor.py                  | RDS DB Instance               | Are DB instances publicly accessible                                  |
 | Amazon_RDS_Auditor.py                  | RDS DB Instance               | Is DB storage encrypted                                               |
