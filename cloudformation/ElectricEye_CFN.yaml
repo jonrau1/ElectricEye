@@ -139,8 +139,101 @@ Resources:
   ElectricEyeTaskRole:
     Type: AWS::IAM::Role
     Properties:
-      ManagedPolicyArns: 
-       - arn:aws:iam::aws:policy/AdministratorAccess
+      Policies:
+      - PolicyName: ElectricEyeTaskRole-Policy
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+          - Effect: Allow
+            Action:
+            - access-analyzer:ListAnalyzers
+            - ec2:DescribeInstances
+            - ec2:GetEbsEncryptionByDefault
+            - ssm:DescribeInstancePatches
+            - ec2:DescribeSnapshots
+            - kinesis:ListStreams
+            - elasticloadbalancing:DescribeLoadBalancers
+            - cognito-idp:DescribeUserPool
+            - dynamodb:DescribeTable
+            - shield:DescribeSubscription
+            - ec2:DescribeVolumes
+            - ec2:GetEbsDefaultKmsKeyId
+            - securityhub:GetFindings
+            - codebuild:ListProjects
+            - workspaces:DescribeWorkspaces
+            - ecr:GetLifecyclePolicy
+            - sns:ListSubscriptionsByTopic
+            - rds:DescribeDBSnapshots
+            - ec2:DescribeSnapshotAttribute
+            - appstream:DescribeImages
+            - kafka:DescribeCluster
+            - cognito-idp:ListUserPools
+            - cloudformation:DescribeStacks
+            - elasticloadbalancing:DescribeLoadBalancerAttributes
+            - ds:ListLogSubscriptions
+            - s3:GetObject
+            - ec2:DescribeImageAttribute
+            - eks:DescribeCluster
+            - eks:ListClusters
+            - elasticache:DescribeCacheClusters
+            - secretsmanager:ListSecrets
+            - shield:DescribeDRTAccess
+            - s3:GetLifecycleConfiguration
+            - appstream:DescribeUsers
+            - ec2:DescribeAddresses
+            - kafka:ListClusters
+            - dynamodb:ListTables
+            - shield:DescribeProtection
+            - ec2:DescribeInstanceAttribute
+            - sagemaker:DescribeNotebookInstance
+            - ec2:DescribeFlowLogs
+            - sns:ListTopics
+            - s3:ListBucket
+            - rds:DescribeDBParameterGroups
+            - backup:DescribeProtectedResource
+            - s3:GetEncryptionConfiguration
+            - elasticloadbalancing:DescribeListeners
+            - es:DescribeElasticsearchDomain
+            - ssm:DescribeInstancePatchStates
+            - rds:DescribeDBInstances
+            - redshift:DescribeLoggingStatus
+            - appstream:DescribeFleets
+            - ecr:DescribeRepositories
+            - rds:DescribeDBParameters
+            - sagemaker:DescribeEndpoint
+            - workspaces:DescribeWorkspaceDirectories
+            - ssm:DescribeInstanceAssociationsStatus
+            - sagemaker:ListNotebookInstances
+            - ssm:DescribeInstanceProperties
+            - rds:DescribeDBClusterParameters
+            - codebuild:BatchGetProjects
+            - dms:DescribeReplicationInstances
+            - sns:GetTopicAttributes
+            - guardduty:ListDetectors
+            - route53:ListHostedZones
+            - sagemaker:DescribeModel
+            - kinesis:DescribeStream
+            - sns:ListSubscriptions
+            - rds:DescribeDBSnapshotAttributes
+            - ec2:DescribeSecurityGroups
+            - ec2:DescribeImages
+            - es:ListDomainNames
+            - s3:GetAccountPublicAccessBlock
+            - s3:ListAllMyBuckets
+            - ssm:DescribeInstanceInformation
+            - ec2:DescribeSecurityGroupReferences
+            - ec2:DescribeVpcs
+            - rds:DescribeDBClusterSnapshots
+            - sagemaker:ListModels
+            - redshift:DescribeClusters
+            - cloudfront:ListDistributions
+            - ds:DescribeDirectories
+            - securityhub:BatchImportFindings
+            - sagemaker:ListEndpoints
+            - rds:DescribeDBClusters
+            - ecr:GetRepositoryPolicy
+            - rds:DescribeDBClusterParameterGroups
+            Resource: "*"
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:

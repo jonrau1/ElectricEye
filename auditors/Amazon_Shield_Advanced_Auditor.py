@@ -706,7 +706,6 @@ else:
 
     def shield_advanced_drt_s3bucket_check():
         response = shield.describe_drt_access()
-        response = shield.describe_drt_access()
         try:
             logBucketList = str(response['LogBucketList'])
             print(logBucketList)
