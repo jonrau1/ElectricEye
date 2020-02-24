@@ -1,0 +1,18 @@
+{
+  "source": [
+    "aws.config"
+  ],
+  "detail-type": [
+    "Config Configuration Item Change"
+  ],
+  "detail": {
+    "messageType": [
+      "ConfigurationItemChangeNotification"
+    ],
+    "configurationItem": {
+      "configurationItemStatus": [
+        "ResourceDeleted"
+      ]
+    }
+  }
+}
