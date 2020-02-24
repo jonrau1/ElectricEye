@@ -11,7 +11,7 @@ Continuously monitor your AWS services for configurations that can lead to degra
 ElectricEye `config-deletion-pruner` will auto-archived findings related to deleted resources in AWS Config. This functionality utilizes the AWS Config recorder, an Amazon CloudWatch Event rule and AWS Lambda function to parse out the ARN / ID of a resource that has been deleted and use the Security Hub `UpdateFindings` API to archive the deleted resource based on its ARN / ID.
 
 ## Solution Architecture
-[!ThePrunes](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/config-deletion-pruner/config-deletion-pruner.jpg)
+![ThePrunes](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/config-deletion-pruner/config-deletion-pruner.jpg)
 
 ## How To
 The following steps should be performed in the AWS Management Console.
@@ -25,4 +25,4 @@ The following steps should be performed in the AWS Management Console.
 4. Select **Add target** and specify the Lambda function you created in **Step 1**. Select **Configure details** and specify and name and description and select **Create rule**
 
 5. As resources that are recorded by AWS Config are deleted, all related findings will be set to an `ARCHIVED` record state in Security Hub and a `Note` will be added to the finding as shown below.
-[!PrunerNote](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/config-deletion-pruner/config-pruner-finding-note.jpg)
+![PrunerNote](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/config-deletion-pruner/config-pruner-finding-note.jpg)

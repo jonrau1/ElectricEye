@@ -16,6 +16,8 @@ Continuously monitor your AWS services for configurations that can lead to degra
   - [Setup baseline infrastructure via AWS CloudFormation](https://github.com/jonrau1/ElectricEye#setup-baseline-infrastructure-via-aws-cloudformation)
   - [Manually execute the ElectricEye ECS Task](https://github.com/jonrau1/ElectricEye#manually-execute-the-electriceye-ecs-task-you-only-need-to-do-this-once)
 - [Supported Services and Checks](https://github.com/jonrau1/ElectricEye#supported-services-and-checks)
+- [Add-on Modules](https://github.com/jonrau1/ElectricEye#add-on-modules)
+  - [Config Findings Pruner](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/config-deletion-pruner/README.md)
 - [Known Issues & Limitiations](https://github.com/jonrau1/ElectricEye#known-issues--limitations)
 - [FAQ](https://github.com/jonrau1/ElectricEye#faq)
   - [13. How much does this solution cost to run?](https://github.com/jonrau1/ElectricEye#13-how-much-does-this-solution-cost-to-run)
