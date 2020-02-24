@@ -151,8 +151,8 @@ Resources:
             - ec2:GetEbsEncryptionByDefault
             - ssm:DescribeInstancePatches
             - ec2:DescribeSnapshots
-            - kinesis:ListStreams
             - elasticloadbalancing:DescribeLoadBalancers
+            - kinesis:ListStreams
             - cognito-idp:DescribeUserPool
             - dynamodb:DescribeTable
             - shield:DescribeSubscription
@@ -176,20 +176,20 @@ Resources:
             - eks:DescribeCluster
             - eks:ListClusters
             - elasticache:DescribeCacheClusters
-            - secretsmanager:ListSecrets
             - shield:DescribeDRTAccess
+            - secretsmanager:ListSecrets
             - s3:GetLifecycleConfiguration
-            - appstream:DescribeUsers
             - ec2:DescribeAddresses
+            - appstream:DescribeUsers
             - kafka:ListClusters
             - dynamodb:ListTables
             - shield:DescribeProtection
             - ec2:DescribeInstanceAttribute
-            - sagemaker:DescribeNotebookInstance
             - ec2:DescribeFlowLogs
+            - sagemaker:DescribeNotebookInstance
             - sns:ListTopics
-            - s3:ListBucket
             - rds:DescribeDBParameterGroups
+            - s3:ListBucket
             - backup:DescribeProtectedResource
             - s3:GetEncryptionConfiguration
             - elasticloadbalancing:DescribeListeners
@@ -201,21 +201,22 @@ Resources:
             - ecr:DescribeRepositories
             - rds:DescribeDBParameters
             - sagemaker:DescribeEndpoint
-            - workspaces:DescribeWorkspaceDirectories
             - ssm:DescribeInstanceAssociationsStatus
+            - workspaces:DescribeWorkspaceDirectories
             - sagemaker:ListNotebookInstances
             - ssm:DescribeInstanceProperties
-            - rds:DescribeDBClusterParameters
             - codebuild:BatchGetProjects
+            - rds:DescribeDBClusterSnapshotAttributes
+            - rds:DescribeDBClusterParameters
+            - guardduty:ListDetectors
             - dms:DescribeReplicationInstances
             - sns:GetTopicAttributes
-            - guardduty:ListDetectors
             - route53:ListHostedZones
             - sagemaker:DescribeModel
             - kinesis:DescribeStream
             - sns:ListSubscriptions
-            - rds:DescribeDBSnapshotAttributes
             - ec2:DescribeSecurityGroups
+            - rds:DescribeDBSnapshotAttributes
             - ec2:DescribeImages
             - es:ListDomainNames
             - s3:GetAccountPublicAccessBlock
@@ -224,13 +225,13 @@ Resources:
             - ec2:DescribeSecurityGroupReferences
             - ec2:DescribeVpcs
             - rds:DescribeDBClusterSnapshots
-            - sagemaker:ListModels
             - redshift:DescribeClusters
             - cloudfront:ListDistributions
+            - sagemaker:ListModels
             - ds:DescribeDirectories
             - securityhub:BatchImportFindings
-            - sagemaker:ListEndpoints
             - rds:DescribeDBClusters
+            - sagemaker:ListEndpoints
             - ecr:GetRepositoryPolicy
             - rds:DescribeDBClusterParameterGroups
             Resource: "*"
