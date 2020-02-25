@@ -57,6 +57,7 @@
                 "rds:DescribeDBInstances",
                 "redshift:DescribeLoggingStatus",
                 "appstream:DescribeFleets",
+                "apigateway:GET",
                 "ecr:DescribeRepositories",
                 "rds:DescribeDBParameters",
                 "sagemaker:DescribeEndpoint",

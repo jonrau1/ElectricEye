@@ -146,6 +146,7 @@ Resources:
           Statement:
           - Effect: Allow
             Action:
+            - apigateway:GET
             - access-analyzer:ListAnalyzers
             - ec2:DescribeInstances
             - ec2:GetEbsEncryptionByDefault

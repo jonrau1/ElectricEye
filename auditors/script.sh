@@ -15,6 +15,8 @@
 
 #!/bin/bash
 echo "Executing security checks"
+python3 Amazon_APIGW_Auditor.py
+sleep 2
 python3 Amazon_AppStream_Auditor.py
 sleep 2
 python3 Amazon_CognitoIdP_Auditor.py

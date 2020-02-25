@@ -167,12 +167,18 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **139** checks supported across **46** AWS services / components using **32** Auditors.
+These are the following services and checks perform by each Auditor. There are currently **145** checks supported across **47** AWS services / components using **33** Auditors.
 
 **Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
 | Auditor File Name                      | AWS Service                   | Auditor Scan Description                                              |
 |----------------------------------------|-------------------------------|-----------------------------------------------------------------------|
+| Amazon_APIGW_Auditor.py                | API Gateway Stage             | Are stage metrics enabled                                             |
+| Amazon_APIGW_Auditor.py                | API Gateway Stage             | Is stage API logging enabled                                          |
+| Amazon_APIGW_Auditor.py                | API Gateway Stage             | Is stage caching enabled                                              |
+| Amazon_APIGW_Auditor.py                | API Gateway Stage             | Is cache encryption enabled                                           |
+| Amazon_APIGW_Auditor.py                | API Gateway Stage             | Is stage xray tracing configured                                      |
+| Amazon_APIGW_Auditor.py                | API Gateway Stage             | Is the stage protected by a WAF WACL                                  |
 | Amazon_AppStream_Auditor.py            | AppStream 2.0 (Fleets)        | Do Fleets allow Default<br>Internet Access                            |
 | Amazon_AppStream_Auditor.py            | AppStream 2.0 (Images)        | Are Images Public                                                     |
 | Amazon_AppStream_Auditor.py            | AppStream 2.0 (Users)         | Are users reported as Compromised                                     |
@@ -274,7 +280,7 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_SageMaker_Auditor.py            | SageMaker Endpoint            | Is endpoint encryption enabled                                        |
 | Amazon_SageMaker_Auditor.py            | SageMaker Model               | Is model network isolation enabled                                    |
 | Amazon_Shield_Advanced_Auditor.py      | Route53 Hosted Zone           | Are Rt53 hosted zones protected by<br>Shield Advanced                 |
-| Amazon_Shield_Advanced_Auditor.py      | ELB (Classic Load Balancer)   | Are CLBs protected by Shield Adv                                      |
+| Amazon_Shield_Advanced_Auditor.py      | Classic Load Balancer         | Are CLBs protected by Shield Adv                                      |
 | Amazon_Shield_Advanced_Auditor.py      | ELBv2 (ALB/NLB)               | Are ELBv2s protected by Shield Adv                                    |
 | Amazon_Shield_Advanced_Auditor.py      | Elastic IP                    | Are EIPs protected by Shield Adv                                      |
 | Amazon_Shield_Advanced_Auditor.py      | CloudFront Distribution       | Are CF Distros protected by Shield Adv                                |
