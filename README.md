@@ -17,8 +17,8 @@ Continuously monitor your AWS services for configurations that can lead to degra
   - [Manually execute the ElectricEye ECS Task](https://github.com/jonrau1/ElectricEye#manually-execute-the-electriceye-ecs-task-you-only-need-to-do-this-once)
 - [Supported Services and Checks](https://github.com/jonrau1/ElectricEye#supported-services-and-checks)
 - [Add-on Modules](https://github.com/jonrau1/ElectricEye#add-on-modules)
-  - [Config Findings Pruner](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/config-deletion-pruner/README.md)
-  - [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response/README.md)
+  - [Config Findings Pruner](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/config-deletion-pruner)
+  - [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response)
 - [Known Issues & Limitiations](https://github.com/jonrau1/ElectricEye#known-issues--limitations)
 - [FAQ](https://github.com/jonrau1/ElectricEye#faq)
   - [13. How much does this solution cost to run?](https://github.com/jonrau1/ElectricEye#13-how-much-does-this-solution-cost-to-run)
@@ -323,8 +323,10 @@ These are the following services and checks perform by each Auditor. There are c
 ## Add-on Modules
 The following are optional add-on's to ElectricEye that will extend its functionality via reporting, alerting, enrichment and/or finding lifecycle management.
 
-- [Config Findings Pruner](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/config-deletion-pruner/README.md)
+- [Config Findings Pruner](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/config-deletion-pruner)
   - This add-on utilizes the AWS Config recorder, an Amazon CloudWatch Event rule and AWS Lambda function to parse out the ARN / ID of a resource that has been deleted and use the Security Hub `UpdateFindings` API to archive the deleted resource based on its ARN / ID.
+- [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response)
+  - ElectricEye-Response is a multi-account automation framework for response and remediation actions heavily influenced by [work I did when employed by AWS](https://aws.amazon.com/blogs/security/automated-response-and-remediation-with-aws-security-hub/). From your Security Hub Master, you can launch response and remediation actions by using CloudWatch Event rules, Lambda functions, Security Token Service (STS) and downstream services (such as Systems Manager Automation or Run Command). You can run these in a targetted manner (using Custom Actions) or fully automatically (using the CloudWatch detail type of `Security Hub Findings - Imported`).
 
 ## Known Issues & Limitations
 This section is likely to wax and wane depending on future releases, PRs and changes to AWS APIs.
@@ -387,7 +389,9 @@ Plus, Security Hub supports master-member patterns, so you can get your nasty se
 I will, eventually. If you really need a specific check supported RIGHT NOW please create an Issue, and if it is feasible, I will tackle it. PRs are welcome for any additions.
 
 ### 10. Where is that automated remediation you like so much?
-You probably have me confused with someone else...That is a Phase 2 plan: after I am done scanning all the things, we can remediate all of the things.
+~~You probably have me confused with someone else...That is a Phase 2 plan: after I am done scanning all the things, we can remediate all of the things.~~
+
+Work has started in [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response)
 
 ### 11. Why do some of the severity scores / labels for the same failing check have different values?!
 Some checks, such as the EC2 Systems Manager check for having the latest patches installed are dual-purpose and will have different severities. For instance, that check looks if you have any patch state infromation reported at all, if you do not you likely are not even managing that instance as part of the patch baseline. If a missing or failed patch is reported, then the severity is bumped up since you ARE managing patches but something happened and now the patch is not being installed.
@@ -471,8 +475,8 @@ I am very happy to accept PR's for the following:
 - [] Create an ElectricEye Logo
 - [] Investigate publishing ASFF schema to SQS>Lambda>BIF API for scale/throttle handling
 - [] Add in Shodan.io checks for internet-facing resources (RDS, Redshift, DocDB, Elasticsearch, EC2, ELBv2, etc)
-- [] Upload response and remediation playbooks and IAC for them - Custom Action Version
-- [] Upload response and remediation playbooks and IAC for them - Title II Version (Full auto, that is)
+- [X] Upload response and remediation playbooks and IAC for them - Custom Action Version
+- [X] Upload response and remediation playbooks and IAC for them - Title II Version (Full auto, that is)
 - [] Create an Alerting framework with ChatBot for Critical findings / whatever
 - [] Create a Reporting module for use with Elasticsearch & Kibana
 - [] Create a Reporting module (serverless edition) for use with QuickSight

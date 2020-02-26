@@ -1,3 +1,17 @@
+# This file is part of ElectricEye.
+
+# ElectricEye is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# ElectricEye is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License along with ElectricEye.  
+# If not, see https://github.com/jonrau1/ElectricEye/blob/master/LICENSE.
 import boto3
 import os
 
@@ -29,7 +43,7 @@ def lambda_handler(event, context):
                 # create service client using the assumed role credentials
                 rds = boto3.client('rds',aws_access_key_id=xAcctAccessKey,aws_secret_access_key=xAcctSecretKey,aws_session_token=xAcctSeshToken)
                 try:
-                    # enable RDS multi-az
+                    # enable RDS deletion protection
                     response = rds.modify_db_instance(DBInstanceIdentifier=rdsInstance,DeletionProtection=True,ApplyImmediately=True)
                     try:
                         response = securityhub.update_findings(
@@ -45,7 +59,7 @@ def lambda_handler(event, context):
             else:
                 try:
                     rds = boto3.client('rds')
-                    # enable RDS multi-az
+                    # enable RDS deletion protection
                     response = rds.modify_db_instance(DBInstanceIdentifier=rdsInstance,DeletionProtection=True,ApplyImmediately=True)
                     try:
                         response = securityhub.update_findings(

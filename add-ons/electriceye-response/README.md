@@ -8,18 +8,18 @@ Continuously monitor your AWS services for configurations that can lead to degra
 <sub>*Judas Priest, 1982*</sub>
 
 ## Table of Contents
-- Description
-- Solution Architecture
-- Prerequisites
-- Setting Up
-  - Deploying ElectricEye-Response Cross-Account Role via StackSets
-  - Semi-Auto ElectricEye-Response with CloudFormation
-  - Full-Auto ElectricEye-Response with Terraform
-- Known Issues and Limitations
-- License
+- [Description](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response/README.md#description)
+- [Solution Architecture](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response/README.md#solution-architecture)
+- [Prerequisites](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response/README.md#prerequisites)
+- [Setting Up](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response/README.md#setting-up)
+  - [Deploying ElectricEye-Response Cross-Account Role via StackSets](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response/README.md#deploying-electriceye-response-cross-account-role-via-stacksets)
+  - [Semi-Auto ElectricEye-Response with CloudFormation](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response/README.md#semi-auto-electriceye-response-with-cloudformation)
+  - [Full-Auto ElectricEye-Response with Terraform](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response/README.md#full-auto-electriceye-response-with-terraform)
+- [Known Issues and Limitations](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response/README.md#known-issues-and-limitations)
+- [License](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response/README.md#license)
 
 ## Description
-ElectricEye-Response is a multi-account automation framework for response and remediation actions heavily influenced by [work I did when employed by AWS](). From your Security Hub Master, you can launch response and remediation actions by using CloudWatch Event rules, Lambda functions, Security Token Service (STS) and downstream services (such as Systems Manager Automation or Run Command). You can run these in a targetted manner (using Custom Actions) or fully automatically (using the CloudWatch detail type of `Security Hub Findings - Imported`).
+ElectricEye-Response is a multi-account automation framework for response and remediation actions heavily influenced by [work I did when employed by AWS](https://aws.amazon.com/blogs/security/automated-response-and-remediation-with-aws-security-hub/). From your Security Hub Master, you can launch response and remediation actions by using CloudWatch Event rules, Lambda functions, Security Token Service (STS) and downstream services (such as Systems Manager Automation or Run Command). You can run these in a targetted manner (using Custom Actions) or fully automatically (using the CloudWatch detail type of `Security Hub Findings - Imported`).
 
 These are written to support native Security Hub security standards (CIS, PCI-DSS, etc.) as well as ElectricEye Auditor checks. The role that ElectricEye-Response will assume to perform cross-account response actions will be deployed via CloudFormation (to take advantage of StackSets). The bulk of the codebase will be deployed via Terraform for fully-automatic remediation or via CloudFormation (for Custom Actions using custom providers).
 
