@@ -1,0 +1,84 @@
+# This file is part of ElectricEye.
+
+# ElectricEye is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# ElectricEye is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License along with ElectricEye.  
+# If not, see https://github.com/jonrau1/ElectricEye/blob/master/LICENSE.
+
+AWSTemplateFormatVersion: 2010-09-09
+Description: This CloudFormation template will deploy a cross-account role for use by ElectricEye-Response for response and remediation actions from the Security Hub master
+Metadata:
+  License: GPL-3.0
+Parameters:
+  SecHubMasterAcctNumber:
+    Type: String
+    Description: Account number where the Security Hub master is located
+Resources:
+  XAccountIAMRole:
+    Type: AWS::IAM::Role
+    Properties: 
+      RoleName: XA-ElectricEye-Response
+      Description: Allows ElectricEye to perform response and remediation actions from the Security Hub Master Account
+      ManagedPolicyArns: 
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup
+        - arn:aws:iam::aws:policy/service-role/AWSBackupServiceRolePolicyForRestores
+        - arn:aws:iam::aws:policy/service-role/AmazonSSMAutomationRole
+      Policies:
+      - PolicyName: XAccount-Sechub-LambdaPolicy
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+          - Effect: Allow
+            Action:
+            - backup:StartBackupJob
+            - kms:EnableKeyRotation
+            - cloudtrail:UpdateTrail
+            - iam:UpdateAccessKey
+            - iam:ListAccessKeys
+            - iam:PassRole
+            - iam:UpdateAccountPasswordPolicy
+            - ec2:DescribeSecurityGroups
+            - ec2:UpdateSecurityGroupRuleDescriptionsIngress
+            - ec2:RevokeSecurityGroupIngress
+            - ec2:DescribeSecurityGroupReferences
+            - ec2:ReleaseAddress
+            - ec2:ModifySnapshotAttribute
+            - ec2:UpdateSecurityGroupRuleDescriptionsEgress
+            - ec2:RevokeSecurityGroupEgress
+            - ec2:DeleteSecurityGroup
+            - elasticloadbalancing:ModifyLoadBalancerAttributes 
+            - securityhub:UpdateFindings
+            - s3:PutBucketAcl
+            - s3:PutLifecycleConfiguration
+            - s3:PutEncryptionConfiguration
+            - shield:CreateProtection
+            - shield:GetSubscriptionState
+            - shield:UpdateSubscription
+            - rds:ModifyDBSnapshot
+            - rds:ModifyDBInstance
+            - rds:ModifyDBSnapshotAttribute
+            Resource: '*'
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Principal: { AWS: !Ref SecHubMasterAcctNumber }
+          Action:
+          - sts:AssumeRole
+        - Effect: Allow
+          Principal: { Service: ssm.amazonaws.com }
+          Action:
+          - sts:AssumeRole
+        - Effect: Allow
+          Principal: { Service: backup.amazonaws.com }
+          Action:
+          - sts:AssumeRole

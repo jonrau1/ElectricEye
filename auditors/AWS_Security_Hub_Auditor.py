@@ -99,7 +99,7 @@ if str(getFindings['Findings']) == '[]':
                     'Resources': [
                         {
                             'Type': 'AwsAccount',
-                            'Id': awsAccountId,
+                            'Id': 'AWS::::Account:' + awsAccountId,
                             'Partition': 'aws',
                             'Region': awsRegion
                         }
@@ -139,7 +139,7 @@ else:
                     'Resources': [
                         {
                             'Type': 'AwsAccount',
-                            'Id': awsAccountId,
+                            'Id': 'AWS::::Account:' + awsAccountId,
                             'Partition': 'aws',
                             'Region': awsRegion
                         }
