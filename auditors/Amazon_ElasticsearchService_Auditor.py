@@ -23,10 +23,10 @@ securityhub = boto3.client('securityhub')
 # create env vars for account and region
 awsRegion = os.environ['AWS_REGION']
 awsAccountId = sts.get_caller_identity()['Account']
-# loop through all elasticsearch domains
+# loop through elasticsearch domains
 response = elasticsearch.list_domain_names()
 myDomainNames = response['DomainNames']
-    
+
 def dedicated_master_check():    
     for domains in myDomainNames:
         esDomainName = str(domains['DomainName'])

@@ -480,6 +480,7 @@ def security_group_open_dcom_rpc_check():
                                     },
                                     'ThreatIntelIndicators': [
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'Attack signature information, refer to Threatl Intel Source URL',
                                             'Source': 'Symantec Security Center',
                                             'SourceUrl': 'https://www.symantec.com/security_response/attacksignatures/detail.jsp?asid=20387'
@@ -538,6 +539,7 @@ def security_group_open_dcom_rpc_check():
                                     },
                                     'ThreatIntelIndicators': [
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'Attack signature information, refer to Threatl Intel Source URL',
                                             'Source': 'Symantec Security Center',
                                             'SourceUrl': 'https://www.symantec.com/security_response/attacksignatures/detail.jsp?asid=20387'
@@ -626,11 +628,13 @@ def security_group_open_smb_check():
                                     },
                                     'ThreatIntelIndicators': [
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'MS17-010 EternalBlue SMB Remote Windows Kernel Pool Corruption',
                                             'Source': 'Rapid7 Vulnerability & Exploit Database',
                                             'SourceUrl': 'https://www.rapid7.com/db/modules/exploit/windows/smb/ms17_010_eternalblue'
                                         },
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'How to use EternalBlue to Exploit SMB Port using Public Wi-Fi',
                                             'Source': 'Medium',
                                             'SourceUrl': 'https://medium.com/@melvinshb/how-to-use-eternalblue-to-exploit-smb-port-using-public-wi-fi-79a996821767'
@@ -689,11 +693,13 @@ def security_group_open_smb_check():
                                     },
                                     'ThreatIntelIndicators': [
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'MS17-010 EternalBlue SMB Remote Windows Kernel Pool Corruption',
                                             'Source': 'Rapid7 Vulnerability & Exploit Database',
                                             'SourceUrl': 'https://www.rapid7.com/db/modules/exploit/windows/smb/ms17_010_eternalblue'
                                         },
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'How to use EternalBlue to Exploit SMB Port using Public Wi-Fi',
                                             'Source': 'Medium',
                                             'SourceUrl': 'https://medium.com/@melvinshb/how-to-use-eternalblue-to-exploit-smb-port-using-public-wi-fi-79a996821767'
@@ -782,16 +788,19 @@ def security_group_open_mssql_check():
                                     },
                                     'ThreatIntelIndicators': [
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'Microsoft CVE-2020-0618: Microsoft SQL Server Reporting Services Remote Code Execution Vulnerability',
                                             'Source': 'Rapid7 Vulnerability & Exploit Database',
                                             'SourceUrl': 'https://www.rapid7.com/db/vulnerabilities/msft-cve-2020-0618'
                                         },
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'Microsoft CVE-2019-0819: Microsoft SQL Server Analysis Services Information Disclosure Vulnerability',
                                             'Source': 'Rapid7 Vulnerability & Exploit Database',
                                             'SourceUrl': 'https://www.rapid7.com/db/vulnerabilities/msft-cve-2019-0819'
                                         },
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'Microsoft CVE-2018-8273: Microsoft SQL Server Remote Code Execution Vulnerability',
                                             'Source': 'Rapid7 Vulnerability & Exploit Database',
                                             'SourceUrl': 'https://www.rapid7.com/db/vulnerabilities/msft-cve-2018-8273'
@@ -850,16 +859,19 @@ def security_group_open_mssql_check():
                                     },
                                     'ThreatIntelIndicators': [
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'Microsoft CVE-2020-0618: Microsoft SQL Server Reporting Services Remote Code Execution Vulnerability',
                                             'Source': 'Rapid7 Vulnerability & Exploit Database',
                                             'SourceUrl': 'https://www.rapid7.com/db/vulnerabilities/msft-cve-2020-0618'
                                         },
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'Microsoft CVE-2019-0819: Microsoft SQL Server Analysis Services Information Disclosure Vulnerability',
                                             'Source': 'Rapid7 Vulnerability & Exploit Database',
                                             'SourceUrl': 'https://www.rapid7.com/db/vulnerabilities/msft-cve-2019-0819'
                                         },
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'Microsoft CVE-2018-8273: Microsoft SQL Server Remote Code Execution Vulnerability',
                                             'Source': 'Rapid7 Vulnerability & Exploit Database',
                                             'SourceUrl': 'https://www.rapid7.com/db/vulnerabilities/msft-cve-2018-8273'
@@ -1213,11 +1225,13 @@ def security_group_open_rdp_check():
                                     'ProductFields': { 'Product Name': 'ElectricEye' },
                                     'ThreatIntelIndicators': [
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'Microsoft CVE-2020-0660: Windows Remote Desktop Protocol (RDP) Denial of Service Vulnerability',
                                             'Source': 'Rapid7 Vulnerability & Exploit Database',
                                             'SourceUrl': 'https://www.rapid7.com/db/vulnerabilities/msft-cve-2020-0660'
                                         },
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'Microsoft CVE-2020-0610: Windows Remote Desktop Gateway (RD Gateway) Remote Code Execution Vulnerability',
                                             'Source': 'Rapid7 Vulnerability & Exploit Database',
                                             'SourceUrl': 'https://www.rapid7.com/db/vulnerabilities/msft-cve-2020-0610'
@@ -1276,11 +1290,13 @@ def security_group_open_rdp_check():
                                     'ProductFields': { 'Product Name': 'ElectricEye' },
                                     'ThreatIntelIndicators': [
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'Microsoft CVE-2020-0660: Windows Remote Desktop Protocol (RDP) Denial of Service Vulnerability',
                                             'Source': 'Rapid7 Vulnerability & Exploit Database',
                                             'SourceUrl': 'https://www.rapid7.com/db/vulnerabilities/msft-cve-2020-0660'
                                         },
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'Microsoft CVE-2020-0610: Windows Remote Desktop Gateway (RD Gateway) Remote Code Execution Vulnerability',
                                             'Source': 'Rapid7 Vulnerability & Exploit Database',
                                             'SourceUrl': 'https://www.rapid7.com/db/vulnerabilities/msft-cve-2020-0610'
@@ -1501,11 +1517,13 @@ def security_group_open_kibana_check():
                                     'ProductFields': { 'Product Name': 'ElectricEye' },
                                     'ThreatIntelIndicators': [
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'CVE-2019-7609: Exploit Script Available for Kibana Remote Code Execution Vulnerability',
                                             'Source': 'Tenable Blog',
                                             'SourceUrl': 'https://www.rapid7.com/db/vulnerabilities/msft-cve-2020-0660'
                                         },
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'Red Hat OpenShift: CVE-2019-7608: kibana: Cross-site scripting vulnerability permits perform destructive actions on behalf of other Kibana users',
                                             'Source': 'Rapid7 Vulnerability & Exploit Database',
                                             'SourceUrl': 'https://www.rapid7.com/db/vulnerabilities/redhat-openshift-cve-2019-7608'
@@ -1564,11 +1582,13 @@ def security_group_open_kibana_check():
                                     'ProductFields': { 'Product Name': 'ElectricEye' },
                                     'ThreatIntelIndicators': [
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'CVE-2019-7609: Exploit Script Available for Kibana Remote Code Execution Vulnerability',
                                             'Source': 'Tenable Blog',
                                             'SourceUrl': 'https://www.rapid7.com/db/vulnerabilities/msft-cve-2020-0660'
                                         },
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'Red Hat OpenShift: CVE-2019-7608: kibana: Cross-site scripting vulnerability permits perform destructive actions on behalf of other Kibana users',
                                             'Source': 'Rapid7 Vulnerability & Exploit Database',
                                             'SourceUrl': 'https://www.rapid7.com/db/vulnerabilities/redhat-openshift-cve-2019-7608'
@@ -1657,11 +1677,13 @@ def security_group_open_redis_check():
                                     'ProductFields': { 'Product Name': 'ElectricEye' },
                                     'ThreatIntelIndicators': [
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'Redis 4.x / 5.x - Unauthenticated Code Execution (Metasploit)',
                                             'Source': 'ExploitDB',
                                             'SourceUrl': 'https://www.exploit-db.com/exploits/47195'
                                         },
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'Redis: Improper Input Validation (CVE-2013-0178)',
                                             'Source': 'Rapid7 Vulnerability & Exploit Database',
                                             'SourceUrl': 'https://www.rapid7.com/db/vulnerabilities/redislabs-redis-cve-2013-0178'
@@ -1720,11 +1742,13 @@ def security_group_open_redis_check():
                                     'ProductFields': { 'Product Name': 'ElectricEye' },
                                     'ThreatIntelIndicators': [
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'Redis 4.x / 5.x - Unauthenticated Code Execution (Metasploit)',
                                             'Source': 'ExploitDB',
                                             'SourceUrl': 'https://www.exploit-db.com/exploits/47195'
                                         },
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'Redis: Improper Input Validation (CVE-2013-0178)',
                                             'Source': 'Rapid7 Vulnerability & Exploit Database',
                                             'SourceUrl': 'https://www.rapid7.com/db/vulnerabilities/redislabs-redis-cve-2013-0178'
@@ -1813,11 +1837,13 @@ def security_group_open_splunkd_check():
                                     'ProductFields': { 'Product Name': 'ElectricEye' },
                                     'ThreatIntelIndicators': [
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'Splunk - Remote Command Execution',
                                             'Source': 'ExploitDB',
                                             'SourceUrl': 'https://www.exploit-db.com/exploits/18245'
                                         },
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'Splunk Web Interface Login Utility',
                                             'Source': 'Rapid7 Vulnerability & Exploit Database',
                                             'SourceUrl': 'https://www.rapid7.com/db/modules/auxiliary/scanner/http/splunk_web_login'
@@ -1876,11 +1902,13 @@ def security_group_open_splunkd_check():
                                     'ProductFields': { 'Product Name': 'ElectricEye' },
                                     'ThreatIntelIndicators': [
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'Splunk - Remote Command Execution',
                                             'Source': 'ExploitDB',
                                             'SourceUrl': 'https://www.exploit-db.com/exploits/18245'
                                         },
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'Splunk Web Interface Login Utility',
                                             'Source': 'Rapid7 Vulnerability & Exploit Database',
                                             'SourceUrl': 'https://www.rapid7.com/db/modules/auxiliary/scanner/http/splunk_web_login'
@@ -2233,11 +2261,13 @@ def security_group_open_memcached_check():
                                     'ProductFields': { 'Product Name': 'ElectricEye' },
                                     'ThreatIntelIndicators': [
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'memcached 1.4.2 - Memory Consumption Remote Denial of Service',
                                             'Source': 'ExploitDB',
                                             'SourceUrl': 'https://www.exploit-db.com/exploits/33850'
                                         },
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'Ubuntu: USN-4125-1 (CVE-2019-15026): Memcached vulnerability',
                                             'Source': 'Rapid7 Vulnerability & Exploit Database',
                                             'SourceUrl': 'https://www.rapid7.com/db/vulnerabilities/ubuntu-cve-2019-15026'
@@ -2296,11 +2326,13 @@ def security_group_open_memcached_check():
                                     'ProductFields': { 'Product Name': 'ElectricEye' },
                                     'ThreatIntelIndicators': [
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'memcached 1.4.2 - Memory Consumption Remote Denial of Service',
                                             'Source': 'ExploitDB',
                                             'SourceUrl': 'https://www.exploit-db.com/exploits/33850'
                                         },
                                         {
+                                            'Category': 'BACKDOOR',
                                             'Value': 'Ubuntu: USN-4125-1 (CVE-2019-15026): Memcached vulnerability',
                                             'Source': 'Rapid7 Vulnerability & Exploit Database',
                                             'SourceUrl': 'https://www.rapid7.com/db/vulnerabilities/ubuntu-cve-2019-15026'
