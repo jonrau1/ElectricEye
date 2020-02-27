@@ -169,7 +169,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **145** checks supported across **47** AWS services / components using **33** Auditors. ElectricEye-Response currently supports **27** response and remediation playbooks.
+These are the following services and checks perform by each Auditor. There are currently **150** checks supported across **48** AWS services / components using **34** Auditors. ElectricEye-Response currently supports **27** response and remediation playbooks.
 
 **Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -305,6 +305,11 @@ These are the following services and checks perform by each Auditor. There are c
 | AWS_Backup_Auditor.py                  | RDS DB Instance               | Are RDS DB instances backed up                                        |
 | AWS_CloudFormation_Auditor.py          | CloudFormation Stack          | Is drift detection enabled                                            |
 | AWS_CloudFormation_Auditor.py          | CloudFormation Stack          | Are stacks monitored                                                  |
+| AWS_CloudTrail_Auditor.py              | CloudTrail                    | Is the trail multi-region                                             |
+| AWS_CloudTrail_Auditor.py              | CloudTrail                    | Does the trail send logs to CWL                                       |
+| AWS_CloudTrail_Auditor.py              | CloudTrail                    | Is the trail encrypted by KMS                                         |
+| AWS_CloudTrail_Auditor.py              | CloudTrail                    | Are global/management events logged                                   |
+| AWS_CloudTrail_Auditor.py              | CloudTrail                    | Is log file validation enabled                                        |
 | AWS_CodeBuild_Auditor.py               | CodeBuild project             | Is artifact encryption enabled                                        |
 | AWS_CodeBuild_Auditor.py               | CodeBuild project             | Is Insecure SSL enabled                                               |
 | AWS_CodeBuild_Auditor.py               | CodeBuild project             | Are plaintext environmental<br>variables used                         |
@@ -407,14 +412,14 @@ For now, I put (lazy) sleep steps in the bash script that runs all of the audito
 That said, it is possible some of you crazy folks have that many resources. A To-Do is improve ElectricEye's architecture (while increasing costs) and write up batches of findings to SQS which will be parsed and sent to BIF via Lambda. So even if you had 1000 resources, if I did the full batch of 100, you wouldn't tip that scale and have some retry ability. A similar pattern could technically be done with Kinesis, but more research for the best pattern is needed.
 
 ### 13. How much does this solution cost to run?
-The costs are extremely negligible, as the primary costs are Fargate vCPU and Memory per GB per Hour and then Security Hub finding ingestion above 10,000 findings per Region per Month (the first 10,000 is perpetually free). We will use two scenarios as an example for the costs, you will likely need to perform your own analysis to forecast potential costs. ElectricEye's ECS Task Definition is ***2 vCPU and 4GB of Memory by default***. I made a [very rough cost calculator](https://github.com/jonrau1/ElectricEye/blob/master/cost-calculator/electriceye-cost-calculations.csv) in CSV you can confer, I will try to reflect the latest that is on the ReadMe to the worksheet, but no promises.
+The costs are extremely negligible, as the primary costs are Fargate vCPU and Memory per GB per Hour and then Security Hub finding ingestion above 10,000 findings per Region per Month (the first 10,000 is perpetually free). We will use two scenarios as an example for the costs, you will likely need to perform your own analysis to forecast potential costs. ElectricEye's ECS Task Definition is ***2 vCPU and 4GB of Memory by default***. I made a [very rough cost calculator](https://github.com/jonrau1/ElectricEye/blob/master/cost-calculator/electriceye-cost-calculations.csv) in CSV you can refer to, I will try to reflect the latest that is on the ReadMe to the worksheet, but no promises.
 
 #### Fargate Costs
 **30 Day Period: Running ElectricEye every 12 hours and it takes 5 minutes per Run**</br>
 5 hours of total runtime per month: **$0.493700/region/account/month**
 
 **30 Day Period: Running ElectricEye every 3 hours and it takes 10 minutes per Run**</br>
-40 hours of total runtime per month: **$$3.949600/region/account/month**
+40 hours of total runtime per month: **$3.949600/region/account/month**
 
 #### Security Hub Costs
 **Having 5 resources per check in scope for 108 checks running 60 times a month (every 12 hours)**</br>
@@ -427,7 +432,7 @@ If you take the most expensive examples of having 15 resources in scope for 108 
 
 If you ran in 2 regions across 50 accounts your approx. cost would be **$18,376.32** per year, bump that up to 4 regions and 500 accounts and you are looking at approx. **$367,526.40** a year (price is the same for 1 region, 2000 accounts). You could potentially save up to 70% on Fargate costs by modifying ElectricEye to run on [Fargate Spot](https://aws.amazon.com/blogs/aws/aws-fargate-spot-now-generally-available/).
 
-The best way to estimate your Security Hub costs is to confer the Usage tab within the Settings sub-menu, this will give you your total usage types, items in scope for it and estimated items per month with a forecasted cost.
+The best way to estimate your Security Hub costs is to refer to the Usage tab within the Settings sub-menu, this will give you your total usage types, items in scope for it and estimated items per month with a forecasted cost.
 
 ### 14. What are those other tools you mentioned?
 You should consider taking a look at all of these:
@@ -468,6 +473,8 @@ You should consider taking a look at all of these:
 I am very happy to accept PR's for the following:
 - Adding new Auditors
 - Adding new checks to existing Auditors
+- Adding new ElectricEye-Response playbooks
+- Adding new Event Patterns for ElectricEye-ChatOps
 - Fixing my stupid grammar errors, spelling errors and inconsistencies
 - Removing any unused IAM permissions that may have popped up
 - Adding new forms of deployment scripts or IAC (Salt stacks, Ansible playbooks, etc.)
@@ -480,7 +487,7 @@ I am very happy to accept PR's for the following:
 - [] Add in Shodan.io checks for internet-facing resources (RDS, Redshift, DocDB, Elasticsearch, EC2, ELBv2, etc)
 - [X] Upload response and remediation playbooks and IAC for them - Custom Action Version
 - [X] Upload response and remediation playbooks and IAC for them - Title II Version (Full auto, that is)
-- [] Create an Alerting framework with ChatBot for Critical findings / whatever
+- [X] Create an Alerting framework with ChatBot for Critical findings / whatever
 - [] Create a Reporting module for use with Elasticsearch & Kibana
 - [] Create a Reporting module (serverless edition) for use with QuickSight
 

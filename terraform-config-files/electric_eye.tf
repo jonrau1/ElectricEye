@@ -156,6 +156,8 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
             "Sid": "VisualEditor0",
             "Effect": "Allow",
             "Action": [
+                "cloudtrail:DescribeTrails",
+                "cloudtrail:ListTrails",
                 "access-analyzer:ListAnalyzers",
                 "ec2:DescribeInstances",
                 "ec2:GetEbsEncryptionByDefault",
@@ -249,6 +251,8 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
             "Resource": "*"
         }
     ]
+}
+EOF
 }
 resource "aws_cloudwatch_event_rule" "Electric_Eye_Task_Scheduling_CW_Event_Rule" {
   name                = "${var.Electric_Eye_ECS_Resources_Name}-scheduler"

@@ -39,7 +39,7 @@ These are written to support native Security Hub security standards (CIS, PCI-DS
 ## Prerequisites
 - ElectricEye-Response must be deployed to the account your Security Hub Master is located
 - For using StackSets you must have the required [execution roles](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-prereqs.html) configured
-- AWS Config and the PCI-DSS / CIS security standards enabled in your member accounts (ElectricEye-Response will work anyway)
+- AWS Config and the PCI-DSS / CIS security standards enabled in your member accounts (ElectricEye-Response will work without these turned on)
 
 ## Setting Up
 These steps are split across their relevant sections. All CLI commands are executed from an Ubuntu 18.04LTS [Cloud9 IDE](https://aws.amazon.com/cloud9/details/), modify them to fit your OS.
@@ -74,7 +74,7 @@ All CLI commands are executed from an Ubuntu 18.04LTS [Cloud9 IDE](https://aws.a
 ***WORK IN PROGRESS***
 
 ## Known Issues and Limitations
-- Security Hub Security Standards currently use finding that is scoped to the `AwsAccount` resource in the ASFF to roll up all results and give you a pass/fail/not available score on the control. Due to this, you may encountere failures or exceptions in your CloudWatch logs from these findings.
+- Security Hub Security Standards currently use a finding that is scoped to the `AwsAccount` resource in the ASFF to roll up all results and give you a pass/fail/not available score on the control. Due to this, you may encountere failures or exceptions in your CloudWatch logs from these findings.
 
 - As designed these playbooks will not consider any exceptions you may have. Please open a PR for this functionality, it may make sense to develop that as a Step Function state machine versus a Lambda function.
 

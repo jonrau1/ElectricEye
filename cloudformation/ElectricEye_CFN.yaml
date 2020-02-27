@@ -146,6 +146,8 @@ Resources:
           Statement:
           - Effect: Allow
             Action:
+            - cloudtrail:DescribeTrails
+            - cloudtrail:ListTrails
             - apigateway:GET
             - access-analyzer:ListAnalyzers
             - ec2:DescribeInstances
