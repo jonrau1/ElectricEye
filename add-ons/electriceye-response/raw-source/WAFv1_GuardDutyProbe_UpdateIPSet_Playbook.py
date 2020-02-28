@@ -60,11 +60,11 @@ def lambda_handler(event, context):
                             print(response)
                             try:
                                 response = securityhub.update_findings(
-                                    Filters={'Id': [{'Value': findingId,'Comparison': 'EQUALS'}]},
-                                    Note={'Text': 'The malicious caller IP addresses have been parsed from the original GuardDuty finding and added to your WAF IP Set. Consider performing forensics on the host that received the port probe if other behavior suggests an indicator of compromise.','UpdatedBy': lambdaFunctionName},
-                                    RecordState='ARCHIVED'
-                                )
-                                print(response)
+                                        Filters={'Id': [{'Value': findingId,'Comparison': 'EQUALS'}]},
+                                        Note={'Text': 'The malicious caller IP addresses have been parsed from the original GuardDuty finding and added to all Regional WAF IP Sets and the finding was archived. Consider performing forensics on the host that received the port probe if other behavior suggests an indicator of compromise.','UpdatedBy': lambdaFunctionName},
+                                        RecordState='ARCHIVED'
+                                    )
+                                    print(response)
                             except Exception as e:
                                 print(e)
                         except Exception as e:
@@ -91,11 +91,11 @@ def lambda_handler(event, context):
                             print(response)
                             try:
                                 response = securityhub.update_findings(
-                                    Filters={'Id': [{'Value': findingId,'Comparison': 'EQUALS'}]},
-                                    Note={'Text': 'The malicious caller IP addresses have been parsed from the original GuardDuty finding and added to your WAF IP Set. Consider performing forensics on the host that received the port probe if other behavior suggests an indicator of compromise.','UpdatedBy': lambdaFunctionName},
-                                    RecordState='ARCHIVED'
-                                )
-                                print(response)
+                                        Filters={'Id': [{'Value': findingId,'Comparison': 'EQUALS'}]},
+                                        Note={'Text': 'The malicious caller IP addresses have been parsed from the original GuardDuty finding and added to all Regional WAF IP Sets and the finding was archived. Consider performing forensics on the host that received the port probe if other behavior suggests an indicator of compromise.','UpdatedBy': lambdaFunctionName},
+                                        RecordState='ARCHIVED'
+                                    )
+                                    print(response)
                             except Exception as e:
                                 print(e)
                         except Exception as e:

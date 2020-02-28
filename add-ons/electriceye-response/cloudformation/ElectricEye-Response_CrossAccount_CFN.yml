@@ -55,7 +55,12 @@ Resources:
             - ec2:UpdateSecurityGroupRuleDescriptionsEgress
             - ec2:RevokeSecurityGroupEgress
             - ec2:DeleteSecurityGroup
-            - elasticloadbalancing:ModifyLoadBalancerAttributes 
+            - ec2:DescribeInstances
+            - ec2:CreateSecurityGroup
+            - ec2:RevokeSecurityGroupEgress
+            - ec2:ModifyInstanceAttribute
+            - elasticloadbalancing:ModifyLoadBalancerAttributes
+            - kinesis:StartStreamEncryption
             - securityhub:UpdateFindings
             - s3:PutBucketAcl
             - s3:PutLifecycleConfiguration
@@ -66,6 +71,13 @@ Resources:
             - rds:ModifyDBSnapshot
             - rds:ModifyDBInstance
             - rds:ModifyDBSnapshotAttribute
+            - guardduty:GetFindings
+            - waf-regional:GetChangeToken
+            - waf:UpdateIPSet
+            - waf:GetChangeToken
+            - wafv2:ListIPSets
+            - waf-regional:UpdateIPSet
+            - wafv2:UpdateIPSet
             Resource: '*'
       AssumeRolePolicyDocument:
         Version: 2012-10-17

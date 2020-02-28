@@ -64,7 +64,7 @@ def lambda_handler(event, context):
                                 try:
                                     response = securityhub.update_findings(
                                         Filters={'Id': [{'Value': findingId,'Comparison': 'EQUALS'}]},
-                                        Note={'Text': 'The malicious caller IP addresses have been parsed from the original GuardDuty finding and added to all Regional WAFv2 IP Sets. Consider performing forensics on the host that received the port probe if other behavior suggests an indicator of compromise.','UpdatedBy': lambdaFunctionName},
+                                        Note={'Text': 'The malicious caller IP addresses have been parsed from the original GuardDuty finding and added to all Regional WAFv2 IP Sets and the finding was archived. Consider performing forensics on the host that received the port probe if other behavior suggests an indicator of compromise.','UpdatedBy': lambdaFunctionName},
                                         RecordState='ARCHIVED'
                                     )
                                     print(response)
@@ -100,7 +100,7 @@ def lambda_handler(event, context):
                                 try:
                                     response = securityhub.update_findings(
                                         Filters={'Id': [{'Value': findingId,'Comparison': 'EQUALS'}]},
-                                        Note={'Text': 'The malicious caller IP addresses have been parsed from the original GuardDuty finding and added to all Regional WAFv2 IP Sets. Consider performing forensics on the host that received the port probe if other behavior suggests an indicator of compromise.','UpdatedBy': lambdaFunctionName},
+                                        Note={'Text': 'The malicious caller IP addresses have been parsed from the original GuardDuty finding and added to all Regional WAFv2 IP Sets and the finding was archived. Consider performing forensics on the host that received the port probe if other behavior suggests an indicator of compromise.','UpdatedBy': lambdaFunctionName},
                                         RecordState='ARCHIVED'
                                     )
                                     print(response)
