@@ -46,6 +46,9 @@ Resources:
             - iam:ListAccessKeys
             - iam:PassRole
             - iam:UpdateAccountPasswordPolicy
+            - ec2:CreateSnapshot
+            - ec2:StopInstances
+            - ec2:TerminateInstances
             - ec2:DescribeSecurityGroups
             - ec2:UpdateSecurityGroupRuleDescriptionsIngress
             - ec2:RevokeSecurityGroupIngress
