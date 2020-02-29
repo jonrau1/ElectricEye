@@ -36,24 +36,14 @@ def lambda_handler(event, context):
             xAcctSecretKey = memberAcct['Credentials']['SecretAccessKey']
             xAcctSeshToken = memberAcct['Credentials']['SessionToken']
             # create service client using the assumed role credentials
-            iam = boto3.client('iam',aws_access_key_id=xAcctAccessKey,aws_secret_access_key=xAcctSecretKey,aws_session_token=xAcctSeshToken)
+            ec2 = boto3.client('ec2',aws_access_key_id=xAcctAccessKey,aws_secret_access_key=xAcctSecretKey,aws_session_token=xAcctSeshToken)
             try:
-                response = iam.update_account_password_policy(
-                    MinimumPasswordLength=15,
-                    RequireSymbols=True,
-                    RequireNumbers=True,
-                    RequireUppercaseCharacters=True,
-                    RequireLowercaseCharacters=True,
-                    AllowUsersToChangePassword=True,
-                    MaxPasswordAge=90,
-                    PasswordReusePrevention=24,
-                    HardExpiry=True
-                    )
+                response = ec2.enable_ebs_encryption_by_default(DryRun=False)
                 print(response)
                 try:
                     response = securityhub.update_findings(
                         Filters={'Id': [{'Value': findingId,'Comparison': 'EQUALS'}]},
-                        Note={'Text': 'Your AWS Account IAM Password policy has been updated to meet all requirements defined by CIS. Refer to the Security Hub CIS Controls 1.5 through 1.11 to ensure the change has taken place and investigate further to determine if this was a result of malicious activity.','UpdatedBy': lambdaFunctionName},
+                        Note={'Text': 'Your AWS Account has been configured to encrypt all EBS volumes by default and the finding has been archived. This will not affect any in-use EBS volumes. If you want to specify a different default key you will need to use the ModifyEbsDefaultKmsKeyId API.','UpdatedBy': lambdaFunctionName},
                         RecordState='ARCHIVED'
                     )
                     print(response)
@@ -63,23 +53,13 @@ def lambda_handler(event, context):
                 print(e)
         else:
             try:
-                iam = boto3.client('iam')
-                response = iam.update_account_password_policy(
-                    MinimumPasswordLength=14,
-                    RequireSymbols=True,
-                    RequireNumbers=True,
-                    RequireUppercaseCharacters=True,
-                    RequireLowercaseCharacters=True,
-                    AllowUsersToChangePassword=True,
-                    MaxPasswordAge=90,
-                    PasswordReusePrevention=24,
-                    HardExpiry=True
-                    )
+                ec2 = boto3.client('ec2')
+                response = ec2.enable_ebs_encryption_by_default(DryRun=False)
                 print(response)
                 try:
                     response = securityhub.update_findings(
                         Filters={'Id': [{'Value': findingId,'Comparison': 'EQUALS'}]},
-                        Note={'Text': 'Your AWS Account IAM Password policy has been updated to meet all requirements defined by CIS. Refer to the Security Hub CIS Controls 1.5 through 1.11 to ensure the change has taken place and investigate further to determine if this was a result of malicious activity.','UpdatedBy': lambdaFunctionName},
+                        Note={'Text': 'Your AWS Account has been configured to encrypt all EBS volumes by default and the finding has been archived. This will not affect any in-use EBS volumes. If you want to specify a different default key you will need to use the ModifyEbsDefaultKmsKeyId API.','UpdatedBy': lambdaFunctionName},
                         RecordState='ARCHIVED'
                     )
                     print(response)

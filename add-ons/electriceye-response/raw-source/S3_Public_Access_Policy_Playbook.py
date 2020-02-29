@@ -36,24 +36,22 @@ def lambda_handler(event, context):
             xAcctSecretKey = memberAcct['Credentials']['SecretAccessKey']
             xAcctSeshToken = memberAcct['Credentials']['SessionToken']
             # create service client using the assumed role credentials
-            iam = boto3.client('iam',aws_access_key_id=xAcctAccessKey,aws_secret_access_key=xAcctSecretKey,aws_session_token=xAcctSeshToken)
+            s3control = boto3.client('s3control',aws_access_key_id=xAcctAccessKey,aws_secret_access_key=xAcctSecretKey,aws_session_token=xAcctSeshToken)
             try:
-                response = iam.update_account_password_policy(
-                    MinimumPasswordLength=15,
-                    RequireSymbols=True,
-                    RequireNumbers=True,
-                    RequireUppercaseCharacters=True,
-                    RequireLowercaseCharacters=True,
-                    AllowUsersToChangePassword=True,
-                    MaxPasswordAge=90,
-                    PasswordReusePrevention=24,
-                    HardExpiry=True
-                    )
+                response = s3control.put_public_access_block(
+                    PublicAccessBlockConfiguration={
+                        'BlockPublicAcls': True,
+                        'IgnorePublicAcls': True,
+                        'BlockPublicPolicy': True,
+                        'RestrictPublicBuckets': True
+                    },
+                    AccountId=findingOwner
+                )
                 print(response)
                 try:
                     response = securityhub.update_findings(
                         Filters={'Id': [{'Value': findingId,'Comparison': 'EQUALS'}]},
-                        Note={'Text': 'Your AWS Account IAM Password policy has been updated to meet all requirements defined by CIS. Refer to the Security Hub CIS Controls 1.5 through 1.11 to ensure the change has taken place and investigate further to determine if this was a result of malicious activity.','UpdatedBy': lambdaFunctionName},
+                        Note={'Text': 'Your AWS Account has been configure to block all S3 Public access via policies and ACLs. and the finding has been archived. This will affect any S3 bucket that should be public..','UpdatedBy': lambdaFunctionName},
                         RecordState='ARCHIVED'
                     )
                     print(response)
@@ -63,23 +61,21 @@ def lambda_handler(event, context):
                 print(e)
         else:
             try:
-                iam = boto3.client('iam')
-                response = iam.update_account_password_policy(
-                    MinimumPasswordLength=14,
-                    RequireSymbols=True,
-                    RequireNumbers=True,
-                    RequireUppercaseCharacters=True,
-                    RequireLowercaseCharacters=True,
-                    AllowUsersToChangePassword=True,
-                    MaxPasswordAge=90,
-                    PasswordReusePrevention=24,
-                    HardExpiry=True
-                    )
+                s3control = boto3.client('s3control')
+                response = s3control.put_public_access_block(
+                    PublicAccessBlockConfiguration={
+                        'BlockPublicAcls': True,
+                        'IgnorePublicAcls': True,
+                        'BlockPublicPolicy': True,
+                        'RestrictPublicBuckets': True
+                    },
+                    AccountId=findingOwner
+                )
                 print(response)
                 try:
                     response = securityhub.update_findings(
                         Filters={'Id': [{'Value': findingId,'Comparison': 'EQUALS'}]},
-                        Note={'Text': 'Your AWS Account IAM Password policy has been updated to meet all requirements defined by CIS. Refer to the Security Hub CIS Controls 1.5 through 1.11 to ensure the change has taken place and investigate further to determine if this was a result of malicious activity.','UpdatedBy': lambdaFunctionName},
+                        Note={'Text': 'Your AWS Account has been configure to block all S3 Public access via policies and ACLs. and the finding has been archived. This will affect any S3 bucket that should be public..','UpdatedBy': lambdaFunctionName},
                         RecordState='ARCHIVED'
                     )
                     print(response)

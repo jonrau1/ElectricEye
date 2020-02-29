@@ -59,18 +59,24 @@ Resources:
             - ec2:CreateSecurityGroup
             - ec2:RevokeSecurityGroupEgress
             - ec2:ModifyInstanceAttribute
+            - ec2:EnableEbsEncryptionByDefault
             - elasticloadbalancing:ModifyLoadBalancerAttributes
             - kinesis:StartStreamEncryption
             - securityhub:UpdateFindings
             - s3:PutBucketAcl
             - s3:PutLifecycleConfiguration
             - s3:PutEncryptionConfiguration
+            - s3:PutAccountPublicAccessBlock
+            - s3:PutBucketPublicAccessBlock
             - shield:CreateProtection
             - shield:GetSubscriptionState
             - shield:UpdateSubscription
+            - ssm:SendCommand
+            - ssm:StartAutomationExecution
             - rds:ModifyDBSnapshot
             - rds:ModifyDBInstance
             - rds:ModifyDBSnapshotAttribute
+            - redshift:ModifyCluster
             - guardduty:GetFindings
             - waf-regional:GetChangeToken
             - waf:UpdateIPSet
