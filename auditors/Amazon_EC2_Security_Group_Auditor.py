@@ -204,7 +204,7 @@ def security_group_open_ftp_check():
                                     'FirstObservedAt': iso8601Time,
                                     'CreatedAt': iso8601Time,
                                     'UpdatedAt': iso8601Time,
-                                    'Severity': { 'Normalized': 80 },
+                                    'Severity': { 'Normalized': 40 },
                                     'Confidence': 99,
                                     'Title': '[SecurityGroup.2] Security groups should not allow unrestricted File Transfer Protocol (FTP) access',
                                     'Description': 'Security group ' + sgName + ' allows unrestricted File Transfer Protocol (FTP) access on ' + ipProtocol + '. Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.',
@@ -237,7 +237,7 @@ def security_group_open_ftp_check():
                         print(response)
                     except Exception as e:
                         print(e)
-                elif toPort =='20' and fromPort == '21' and cidrIpRange == '0.0.0.0/0':
+                elif toPort =='20' and fromPort == '21' and cidrIpRange != '0.0.0.0/0':
                     try:
                         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                         response = securityhub.batch_import_findings(
@@ -336,7 +336,7 @@ def security_group_open_telnet_check():
                                     'FirstObservedAt': iso8601Time,
                                     'CreatedAt': iso8601Time,
                                     'UpdatedAt': iso8601Time,
-                                    'Severity': { 'Normalized': 80 },
+                                    'Severity': { 'Normalized': 40 },
                                     'Confidence': 99,
                                     'Title': '[SecurityGroup.3] Security groups should not allow unrestricted TelNet access',
                                     'Description': 'Security group ' + sgName + ' allows unrestricted TelNet access on ' + ipProtocol + '. Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.',
@@ -468,7 +468,7 @@ def security_group_open_dcom_rpc_check():
                                     'FirstObservedAt': iso8601Time,
                                     'CreatedAt': iso8601Time,
                                     'UpdatedAt': iso8601Time,
-                                    'Severity': { 'Normalized': 80 },
+                                    'Severity': { 'Normalized': 40 },
                                     'Confidence': 99,
                                     'Title': '[SecurityGroup.4] Security groups should not allow unrestricted Windows RPC DCOM access',
                                     'Description': 'Security group ' + sgName + ' allows unrestricted Windows RPC DCOM access on ' + ipProtocol + '. Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.',
@@ -616,7 +616,7 @@ def security_group_open_smb_check():
                                     'FirstObservedAt': iso8601Time,
                                     'CreatedAt': iso8601Time,
                                     'UpdatedAt': iso8601Time,
-                                    'Severity': { 'Normalized': 80 },
+                                    'Severity': { 'Normalized': 40 },
                                     'Confidence': 99,
                                     'Title': '[SecurityGroup.5] Security groups should not allow unrestricted Server Message Blocks (SMB) access',
                                     'Description': 'Security group ' + sgName + ' allows unrestricted Server Message Blocks (SMB) access on ' + ipProtocol + '. Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.',
@@ -776,7 +776,7 @@ def security_group_open_mssql_check():
                                     'FirstObservedAt': iso8601Time,
                                     'CreatedAt': iso8601Time,
                                     'UpdatedAt': iso8601Time,
-                                    'Severity': { 'Normalized': 80 },
+                                    'Severity': { 'Normalized': 40 },
                                     'Confidence': 99,
                                     'Title': '[SecurityGroup.6] Security groups should not allow unrestricted Microsoft SQL Server (MSSQL) access',
                                     'Description': 'Security group ' + sgName + ' allows unrestricted Microsoft SQL Server (MSSQL) access on ' + ipProtocol + '. Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.',
@@ -948,7 +948,7 @@ def security_group_open_oracle_check():
                                     'FirstObservedAt': iso8601Time,
                                     'CreatedAt': iso8601Time,
                                     'UpdatedAt': iso8601Time,
-                                    'Severity': { 'Normalized': 80 },
+                                    'Severity': { 'Normalized': 40 },
                                     'Confidence': 99,
                                     'Title': '[SecurityGroup.7] Security groups should not allow unrestricted Oracle database (TCP 1521) access',
                                     'Description': 'Security group ' + sgName + ' allows unrestricted Oracle database (TCP 1521) access on ' + ipProtocol + '. Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.',
@@ -981,7 +981,7 @@ def security_group_open_oracle_check():
                         print(response)
                     except Exception as e:
                         print(e)
-                elif toPort and fromPort == '1521' and cidrIpRange == '0.0.0.0/0':
+                elif toPort and fromPort == '1521' and cidrIpRange != '0.0.0.0/0':
                     try:
                         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                         response = securityhub.batch_import_findings(
@@ -1080,7 +1080,7 @@ def security_group_open_mysql_mariadb_check():
                                     'FirstObservedAt': iso8601Time,
                                     'CreatedAt': iso8601Time,
                                     'UpdatedAt': iso8601Time,
-                                    'Severity': { 'Normalized': 80 },
+                                    'Severity': { 'Normalized': 40 },
                                     'Confidence': 99,
                                     'Title': '[SecurityGroup.8] Security groups should not allow unrestricted MySQL or MariaDB database (TCP 3306) access',
                                     'Description': 'Security group ' + sgName + ' allows unrestricted MySQL or MariaDB database (TCP 3306) access on ' + ipProtocol + '. Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.',
@@ -1372,7 +1372,7 @@ def security_group_open_postgresql_check():
                                     'FirstObservedAt': iso8601Time,
                                     'CreatedAt': iso8601Time,
                                     'UpdatedAt': iso8601Time,
-                                    'Severity': { 'Normalized': 80 },
+                                    'Severity': { 'Normalized': 40 },
                                     'Confidence': 99,
                                     'Title': '[SecurityGroup.10] Security groups should not allow unrestricted PostgreSQL datbase (TCP 5432) access',
                                     'Description': 'Security group ' + sgName + ' allows unrestricted PostgreSQL datbase (TCP 5432) access on ' + ipProtocol + '. Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.',
@@ -1504,7 +1504,7 @@ def security_group_open_kibana_check():
                                     'FirstObservedAt': iso8601Time,
                                     'CreatedAt': iso8601Time,
                                     'UpdatedAt': iso8601Time,
-                                    'Severity': { 'Normalized': 80 },
+                                    'Severity': { 'Normalized': 40 },
                                     'Confidence': 99,
                                     'Title': '[SecurityGroup.11] Security groups should not allow unrestricted access to Kibana (TCP 5601)',
                                     'Description': 'Security group ' + sgName + ' allows unrestricted access to Kibana (TCP 5601) on ' + ipProtocol + '. Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.',
@@ -1664,7 +1664,7 @@ def security_group_open_redis_check():
                                     'FirstObservedAt': iso8601Time,
                                     'CreatedAt': iso8601Time,
                                     'UpdatedAt': iso8601Time,
-                                    'Severity': { 'Normalized': 80 },
+                                    'Severity': { 'Normalized': 40 },
                                     'Confidence': 99,
                                     'Title': '[SecurityGroup.12] Security groups should not allow unrestricted Redis (TCP 6379) access',
                                     'Description': 'Security group ' + sgName + ' allows unrestricted Redis (TCP 6379) access on ' + ipProtocol + '. Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.',
@@ -1824,7 +1824,7 @@ def security_group_open_splunkd_check():
                                     'FirstObservedAt': iso8601Time,
                                     'CreatedAt': iso8601Time,
                                     'UpdatedAt': iso8601Time,
-                                    'Severity': { 'Normalized': 80 },
+                                    'Severity': { 'Normalized': 40 },
                                     'Confidence': 99,
                                     'Title': '[SecurityGroup.13] Security groups should not allow unrestricted Splunkd (TCP 8089) access',
                                     'Description': 'Security group ' + sgName + ' allows unrestricted Splunkd (TCP 8089) access on ' + ipProtocol + '. Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.',
@@ -1984,7 +1984,7 @@ def security_group_open_elasticsearch1_check():
                                     'FirstObservedAt': iso8601Time,
                                     'CreatedAt': iso8601Time,
                                     'UpdatedAt': iso8601Time,
-                                    'Severity': { 'Normalized': 80 },
+                                    'Severity': { 'Normalized': 40 },
                                     'Confidence': 99,
                                     'Title': '[SecurityGroup.14] Security groups should not allow unrestricted Elasticsearch (TCP 9200) access',
                                     'Description': 'Security group ' + sgName + ' allows unrestricted Elasticsearch (TCP 9200) access on ' + ipProtocol + '. Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.',
@@ -2116,7 +2116,7 @@ def security_group_open_elasticsearch2_check():
                                     'FirstObservedAt': iso8601Time,
                                     'CreatedAt': iso8601Time,
                                     'UpdatedAt': iso8601Time,
-                                    'Severity': { 'Normalized': 80 },
+                                    'Severity': { 'Normalized': 40 },
                                     'Confidence': 99,
                                     'Title': '[SecurityGroup.15] Security groups should not allow unrestricted Elasticsearch (TCP 9300) access',
                                     'Description': 'Security group ' + sgName + ' allows unrestricted Elasticsearch (TCP 9300) access on ' + ipProtocol + '. Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.',
@@ -2248,7 +2248,7 @@ def security_group_open_memcached_check():
                                     'FirstObservedAt': iso8601Time,
                                     'CreatedAt': iso8601Time,
                                     'UpdatedAt': iso8601Time,
-                                    'Severity': { 'Normalized': 80 },
+                                    'Severity': { 'Normalized': 40 },
                                     'Confidence': 99,
                                     'Title': '[SecurityGroup.16] Security groups should not allow unrestricted Memcached (UDP 11211) access',
                                     'Description': 'Security group ' + sgName + ' allows unrestricted Memcached (UDP 11211) access on ' + ipProtocol + '. Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.',
@@ -2363,6 +2363,138 @@ def security_group_open_memcached_check():
                 else:
                     pass
 
+def security_group_open_redshift_check():
+    for secgroup in mySgs:
+        sgName = str(secgroup['GroupName'])
+        sgId = str(secgroup['GroupId'])
+        sgArn = 'arn:aws:ec2:' + awsRegion + ':' + awsAccountId + ':security-group/' + sgId
+        for permissions in secgroup['IpPermissions']:
+            try:
+                fromPort = str(permissions['FromPort'])
+            except Exception as e:
+                if str(e) == "'FromPort'":
+                    pass
+                else:
+                    print(e)
+            try:
+                toPort = str(permissions['ToPort'])
+            except Exception as e:
+                if str(e) == "'ToPort'":
+                    pass
+                else:
+                    print(e)
+            try:
+                ipProtocol = str(permissions['IpProtocol'])
+            except Exception as e:
+                print(e)
+            ipRanges = permissions['IpRanges']
+            for cidrs in ipRanges:
+                cidrIpRange = str(cidrs['CidrIp'])
+                if toPort and fromPort == '5439' and cidrIpRange == '0.0.0.0/0':
+                    try:
+                        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                        response = securityhub.batch_import_findings(
+                            Findings=[
+                                {
+                                    'SchemaVersion': '2018-10-08',
+                                    'Id': sgArn + '/' + ipProtocol + '/security-group-redshift-open-check',
+                                    'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                    'GeneratorId': sgArn,
+                                    'AwsAccountId': awsAccountId,
+                                    'Types': [ 
+                                        'Software and Configuration Checks/AWS Security Best Practices',
+                                        'Effects/Data Exposure'
+                                    ],
+                                    'FirstObservedAt': iso8601Time,
+                                    'CreatedAt': iso8601Time,
+                                    'UpdatedAt': iso8601Time,
+                                    'Severity': { 'Normalized': 40 },
+                                    'Confidence': 99,
+                                    'Title': '[SecurityGroup.18] Security groups should not allow unrestricted Redshift (TCP 5439) access',
+                                    'Description': 'Security group ' + sgName + ' allows unrestricted Redshift (TCP 5439) access on ' + ipProtocol + '. Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.',
+                                    'Remediation': {
+                                        'Recommendation': {
+                                            'Text': 'For more information on modifying security group rules refer to the Adding, Removing, and Updating Rules section of the Amazon Virtual Private Cloud User Guide',
+                                            'Url': 'https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#AddRemoveRules'
+                                        }
+                                    },
+                                    'ProductFields': { 'Product Name': 'ElectricEye' },
+                                    'Resources': [
+                                        {
+                                            'Type': 'AwsEc2SecurityGroup',
+                                            'Id': sgArn,
+                                            'Partition': 'aws',
+                                            'Region': awsRegion,
+                                            'Details': {
+                                                'AwsEc2SecurityGroup': {
+                                                    'GroupName': sgName,
+                                                    'GroupId': sgId
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    'Compliance': { 'Status': 'FAILED' },
+                                    'RecordState': 'ACTIVE'
+                                }
+                            ]
+                        )
+                        print(response)
+                    except Exception as e:
+                        print(e)
+                elif toPort and fromPort == '5439' and cidrIpRange != '0.0.0.0/0':
+                    try:
+                        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                        response = securityhub.batch_import_findings(
+                            Findings=[
+                                {
+                                    'SchemaVersion': '2018-10-08',
+                                    'Id': sgArn + '/' + ipProtocol + '/security-group-redshift-open-check',
+                                    'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                    'GeneratorId': sgArn,
+                                    'AwsAccountId': awsAccountId,
+                                    'Types': [ 
+                                        'Software and Configuration Checks/AWS Security Best Practices',
+                                        'Effects/Data Exposure'
+                                    ],
+                                    'FirstObservedAt': iso8601Time,
+                                    'CreatedAt': iso8601Time,
+                                    'UpdatedAt': iso8601Time,
+                                    'Severity': { 'Normalized': 0 },
+                                    'Confidence': 99,
+                                    'Title': '[SecurityGroup.18] Security groups should not allow unrestricted Redshift (TCP 5439) access',
+                                    'Description': 'Security group ' + sgName + ' does not allow unrestricted Redshift (TCP 5439) access on ' + ipProtocol + '. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.',
+                                    'Remediation': {
+                                        'Recommendation': {
+                                            'Text': 'For more information on modifying security group rules refer to the Adding, Removing, and Updating Rules section of the Amazon Virtual Private Cloud User Guide',
+                                            'Url': 'https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#AddRemoveRules'
+                                        }
+                                    },
+                                    'ProductFields': { 'Product Name': 'ElectricEye' },
+                                    'Resources': [
+                                        {
+                                            'Type': 'AwsEc2SecurityGroup',
+                                            'Id': sgArn,
+                                            'Partition': 'aws',
+                                            'Region': awsRegion,
+                                            'Details': {
+                                                'AwsEc2SecurityGroup': {
+                                                    'GroupName': sgName,
+                                                    'GroupId': sgId
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    'Compliance': { 'Status': 'PASSED' },
+                                    'RecordState': 'ARCHIVED'
+                                }
+                            ]
+                        )
+                        print(response)
+                    except Exception as e:
+                        print(e)
+                else:
+                    pass
+
 def security_group_auditor():
     security_group_all_open_check()
     security_group_open_ftp_check()
@@ -2380,5 +2512,6 @@ def security_group_auditor():
     security_group_open_elasticsearch1_check()
     security_group_open_elasticsearch2_check()
     security_group_open_memcached_check()
+    security_group_open_redshift_check()
 
 security_group_auditor()
