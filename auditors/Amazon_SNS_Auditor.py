@@ -68,7 +68,12 @@ def sns_topic_encryption_check():
                                     'Type': 'AwsSnsTopic',
                                     'Id': topicarn,
                                     'Partition': 'aws',
-                                    'Region': awsRegion
+                                    'Region': awsRegion,
+                                    'Details': {
+                                        'AwsSnsTopic': {
+                                            'TopicName': topicName
+                                        }
+                                    }
                                 }
                             ],
                             'Compliance': { 'Status': 'PASSED' },
@@ -113,7 +118,12 @@ def sns_topic_encryption_check():
                                     'Type': 'AwsSnsTopic',
                                     'Id': topicarn,
                                     'Partition': 'aws',
-                                    'Region': awsRegion
+                                    'Region': awsRegion,
+                                    'Details': {
+                                        'AwsSnsTopic': {
+                                            'TopicName': topicName
+                                        }
+                                    }
                                 }
                             ],
                             'Compliance': { 'Status': 'FAILED' },
@@ -167,7 +177,12 @@ def sns_http_subscription_check():
                                         'Type': 'AwsSnsTopic',
                                         'Id': topicarn,
                                         'Partition': 'aws',
-                                        'Region': awsRegion
+                                        'Region': awsRegion,
+                                        'Details': {
+                                            'AwsSnsTopic': {
+                                                'TopicName': topicName
+                                            }
+                                        }
                                     }
                                 ],
                                 'Compliance': { 'Status': 'FAILED' },
@@ -212,7 +227,12 @@ def sns_http_subscription_check():
                                         'Type': 'AwsSnsTopic',
                                         'Id': topicarn,
                                         'Partition': 'aws',
-                                        'Region': awsRegion
+                                        'Region': awsRegion,
+                                        'Details': {
+                                            'AwsSnsTopic': {
+                                                'TopicName': topicName
+                                            }
+                                        }
                                     }
                                 ],
                                 'Compliance': { 'Status': 'PASSED' },

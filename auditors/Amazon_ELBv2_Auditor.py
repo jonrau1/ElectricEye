@@ -81,7 +81,7 @@ def elbv2_logging_check():
                                                         'Scheme': elbv2Scheme,
                                                         'Type': elbv2LbType,
                                                         'VpcId': elbv2VpcId
-                                                    },
+                                                    }
                                                 }
                                             }
                                         ],

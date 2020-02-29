@@ -71,6 +71,7 @@ Resources:
             - shield:CreateProtection
             - shield:GetSubscriptionState
             - shield:UpdateSubscription
+            - sns:SetTopicAttributes
             - ssm:SendCommand
             - ssm:StartAutomationExecution
             - rds:ModifyDBSnapshot
