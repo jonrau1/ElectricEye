@@ -27,128 +27,130 @@ awsAccountId = sts.get_caller_identity()['Account']
 response = elbv2.describe_load_balancers()
 myElbv2LoadBalancers = response['LoadBalancers']
 
-def elbv2_logging_check():
+def elbv2_alb_logging_check():
     for loadbalancers in myElbv2LoadBalancers:
         elbv2Arn = str(loadbalancers['LoadBalancerArn'])
         elbv2Name = str(loadbalancers['LoadBalancerName'])
         elbv2DnsName = str(loadbalancers['DNSName'])
-        elbv2LbType = str(loadbalancers['Type']) 
+        elbv2LbType = str(loadbalancers['Type'])
         elbv2Scheme = str(loadbalancers['Scheme']) 
         elbv2VpcId = str(loadbalancers['VpcId'])
         elbv2IpAddressType = str(loadbalancers['IpAddressType'])
-        try:
-            response = elbv2.describe_load_balancer_attributes(LoadBalancerArn=elbv2Arn)
-            elbv2Attributes = response['Attributes']
-            for attributes in elbv2Attributes:
-                if str(attributes['Key']) == 'access_logs.s3.enabled':
-                    elbv2LoggingCheck = str(attributes['Value'])
-                    if elbv2LoggingCheck == 'false':
-                        try:
-                            iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-                            response = securityhub.batch_import_findings(
-                                Findings=[
-                                    {
-                                        'SchemaVersion': '2018-10-08',
-                                        'Id': elbv2Arn + '/elbv2-logging-check',
-                                        'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
-                                        'GeneratorId': elbv2Arn,
-                                        'AwsAccountId': awsAccountId,
-                                        'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
-                                        'FirstObservedAt': iso8601Time,
-                                        'CreatedAt': iso8601Time,
-                                        'UpdatedAt': iso8601Time,
-                                        'Severity': { 'Normalized': 20 },
-                                        'Confidence': 99,
-                                        'Title': '[ELBv2.1] Application and Network Load Balancers should have access logging enabled',
-                                        'Description': 'ELB ' + elbv2LbType + ' load balancer ' + elbv2Name + ' does not have access logging enabled. Refer to the remediation instructions to remediate this behavior',
-                                        'Remediation': {
-                                            'Recommendation': {
-                                                'Text': 'For more information on ELBv2 Access Logging and how to configure it refer to the Access Logs for Your Application Load Balancer section of the Application Load Balancers User Guide. For Network Load Balancer logging please refer to the NLB User Guide',
-                                                'Url': 'https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html'
-                                            }
-                                        },
-                                        'ProductFields': { 'Product Name': 'ElectricEye' },
-                                        'Resources': [
-                                            {
-                                                'Type': 'AwsElbv2LoadBalancer',
-                                                'Id': elbv2Arn,
-                                                'Partition': 'aws',
-                                                'Region': awsRegion,
-                                                'Details': {
-                                                    'AwsElbv2LoadBalancer': {
-                                                        'DNSName': elbv2DnsName,
-                                                        'IpAddressType': elbv2IpAddressType,
-                                                        'Scheme': elbv2Scheme,
-                                                        'Type': elbv2LbType,
-                                                        'VpcId': elbv2VpcId
+        if elbv2LbType == 'application':
+            try:
+                response = elbv2.describe_load_balancer_attributes(LoadBalancerArn=elbv2Arn)
+                elbv2Attributes = response['Attributes']
+                for attributes in elbv2Attributes:
+                    if str(attributes['Key']) == 'access_logs.s3.enabled':
+                        elbv2LoggingCheck = str(attributes['Value'])
+                        if elbv2LoggingCheck == 'false':
+                            try:
+                                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                                response = securityhub.batch_import_findings(
+                                    Findings=[
+                                        {
+                                            'SchemaVersion': '2018-10-08',
+                                            'Id': elbv2Arn + '/elbv2-logging-check',
+                                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                            'GeneratorId': elbv2Arn,
+                                            'AwsAccountId': awsAccountId,
+                                            'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                                            'FirstObservedAt': iso8601Time,
+                                            'CreatedAt': iso8601Time,
+                                            'UpdatedAt': iso8601Time,
+                                            'Severity': { 'Normalized': 20 },
+                                            'Confidence': 99,
+                                            'Title': '[ELBv2.1] Application Load Balancers should have access logging enabled',
+                                            'Description': 'Application load balancer ' + elbv2Name + ' does not have access logging enabled. Refer to the remediation instructions to remediate this behavior',
+                                            'Remediation': {
+                                                'Recommendation': {
+                                                    'Text': 'For more information on ELBv2 Access Logging and how to configure it refer to the Access Logs for Your Application Load Balancer section of the Application Load Balancers User Guide.',
+                                                    'Url': 'https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html'
+                                                }
+                                            },
+                                            'ProductFields': { 'Product Name': 'ElectricEye' },
+                                            'Resources': [
+                                                {
+                                                    'Type': 'AwsElbv2LoadBalancer',
+                                                    'Id': elbv2Arn,
+                                                    'Partition': 'aws',
+                                                    'Region': awsRegion,
+                                                    'Details': {
+                                                        'AwsElbv2LoadBalancer': {
+                                                            'DNSName': elbv2DnsName,
+                                                            'IpAddressType': elbv2IpAddressType,
+                                                            'Scheme': elbv2Scheme,
+                                                            'Type': elbv2LbType,
+                                                            'VpcId': elbv2VpcId
+                                                        }
                                                     }
                                                 }
-                                            }
-                                        ],
-                                        'Compliance': { 'Status': 'FAILED' },
-                                        'RecordState': 'ACTIVE'
-                                    }
-                                ]
-                            )
-                            print(response)
-                        except Exception as e:
-                            print(e)
-                    else:
-                        try:
-                            iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-                            response = securityhub.batch_import_findings(
-                                Findings=[
-                                    {
-                                        'SchemaVersion': '2018-10-08',
-                                        'Id': elbv2Arn + '/elbv2-logging-check',
-                                        'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
-                                        'GeneratorId': elbv2Arn,
-                                        'AwsAccountId': awsAccountId,
-                                        'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
-                                        'FirstObservedAt': iso8601Time,
-                                        'CreatedAt': iso8601Time,
-                                        'UpdatedAt': iso8601Time,
-                                        'Severity': { 'Normalized': 0 },
-                                        'Confidence': 99,
-                                        'Title': '[ELBv2.1] Application and Network Load Balancers should have access logging enabled',
-                                        'Description': 'ELB ' + elbv2LbType + ' load balancer ' + elbv2Name + ' has access logging enabled.',
-                                        'Remediation': {
-                                            'Recommendation': {
-                                                'Text': 'For more information on ELBv2 Access Logging and how to configure it refer to the Access Logs for Your Application Load Balancer section of the Application Load Balancers User Guide. For Network Load Balancer logging please refer to the NLB User Guide',
-                                                'Url': 'https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html'
-                                            }
-                                        },
-                                        'ProductFields': { 'Product Name': 'ElectricEye' },
-                                        'Resources': [
-                                            {
-                                                'Type': 'AwsElbv2LoadBalancer',
-                                                'Id': elbv2Arn,
-                                                'Partition': 'aws',
-                                                'Region': awsRegion,
-                                                'Details': {
-                                                    'AwsElbv2LoadBalancer': {
-                                                        'DNSName': elbv2DnsName,
-                                                        'IpAddressType': elbv2IpAddressType,
-                                                        'Scheme': elbv2Scheme,
-                                                        'Type': elbv2LbType,
-                                                        'VpcId': elbv2VpcId
-                                                    },
+                                            ],
+                                            'Compliance': { 'Status': 'FAILED' },
+                                            'RecordState': 'ACTIVE'
+                                        }
+                                    ]
+                                )
+                                print(response)
+                            except Exception as e:
+                                print(e)
+                        else:
+                            try:
+                                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                                response = securityhub.batch_import_findings(
+                                    Findings=[
+                                        {
+                                            'SchemaVersion': '2018-10-08',
+                                            'Id': elbv2Arn + '/elbv2-logging-check',
+                                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                            'GeneratorId': elbv2Arn,
+                                            'AwsAccountId': awsAccountId,
+                                            'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                                            'FirstObservedAt': iso8601Time,
+                                            'CreatedAt': iso8601Time,
+                                            'UpdatedAt': iso8601Time,
+                                            'Severity': { 'Normalized': 0 },
+                                            'Confidence': 99,
+                                            'Title': '[ELBv2.1] Application and Network Load Balancers should have access logging enabled',
+                                            'Description': 'ELB ' + elbv2LbType + ' load balancer ' + elbv2Name + ' has access logging enabled.',
+                                            'Remediation': {
+                                                'Recommendation': {
+                                                    'Text': 'For more information on ELBv2 Access Logging and how to configure it refer to the Access Logs for Your Application Load Balancer section of the Application Load Balancers User Guide.',
+                                                    'Url': 'https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html'
                                                 }
-                                            }
-                                        ],
-                                        'Compliance': { 'Status': 'PASSED' },
-                                        'RecordState': 'ARCHIVED'
-                                    }
-                                ]
-                            )
-                            print(response)
-                        except Exception as e:
-                            print(e)
-                else:
-                    print('skipping non logging attribute')
-                    pass
-        except Exception as e:
-            print(e)
+                                            },
+                                            'ProductFields': { 'Product Name': 'ElectricEye' },
+                                            'Resources': [
+                                                {
+                                                    'Type': 'AwsElbv2LoadBalancer',
+                                                    'Id': elbv2Arn,
+                                                    'Partition': 'aws',
+                                                    'Region': awsRegion,
+                                                    'Details': {
+                                                        'AwsElbv2LoadBalancer': {
+                                                            'DNSName': elbv2DnsName,
+                                                            'IpAddressType': elbv2IpAddressType,
+                                                            'Scheme': elbv2Scheme,
+                                                            'Type': elbv2LbType,
+                                                            'VpcId': elbv2VpcId
+                                                        },
+                                                    }
+                                                }
+                                            ],
+                                            'Compliance': { 'Status': 'PASSED' },
+                                            'RecordState': 'ARCHIVED'
+                                        }
+                                    ]
+                                )
+                                print(response)
+                            except Exception as e:
+                                print(e)
+                    else:
+                        pass
+            except Exception as e:
+                print(e)
+        else:
+            pass
 
 def elbv2_deletion_protection_check():
     for loadbalancers in myElbv2LoadBalancers:
@@ -635,11 +637,146 @@ def elbv2_drop_invalid_header_check():
             else:
                 pass
 
+def elbv2_nlb_tls_logging_check():
+    for loadbalancers in myElbv2LoadBalancers:
+        elbv2Arn = str(loadbalancers['LoadBalancerArn'])
+        elbv2Name = str(loadbalancers['LoadBalancerName'])
+        elbv2DnsName = str(loadbalancers['DNSName'])
+        elbv2LbType = str(loadbalancers['Type'])
+        elbv2Scheme = str(loadbalancers['Scheme']) 
+        elbv2VpcId = str(loadbalancers['VpcId'])
+        elbv2IpAddressType = str(loadbalancers['IpAddressType'])
+        if elbv2LbType == 'network':
+            try:
+                response = elbv2.describe_listeners(LoadBalancerArn=elbv2Arn)
+                for listeners in response['Listeners']:
+                    protocolCheck = str(listeners['Protocol'])
+                    if protocolCheck == 'TLS':
+                        try:
+                            response = elbv2.describe_load_balancer_attributes(LoadBalancerArn=elbv2Arn)
+                            elbv2Attributes = response['Attributes']
+                            for attributes in elbv2Attributes:
+                                if str(attributes['Key']) == 'access_logs.s3.enabled':
+                                    elbv2LoggingCheck = str(attributes['Value'])
+                                    if elbv2LoggingCheck == 'false':
+                                        try:
+                                            iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                                            response = securityhub.batch_import_findings(
+                                                Findings=[
+                                                    {
+                                                        'SchemaVersion': '2018-10-08',
+                                                        'Id': elbv2Arn + '/tls-nlb-logging-check',
+                                                        'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                                        'GeneratorId': elbv2Arn,
+                                                        'AwsAccountId': awsAccountId,
+                                                        'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                                                        'FirstObservedAt': iso8601Time,
+                                                        'CreatedAt': iso8601Time,
+                                                        'UpdatedAt': iso8601Time,
+                                                        'Severity': { 'Normalized': 20 },
+                                                        'Confidence': 99,
+                                                        'Title': '[ELBv2.6] Network Load Balancers with TLS listeners should have access logging enabled',
+                                                        'Description': 'Network load balancer ' + elbv2Name + ' does not have access logging enabled. Refer to the remediation instructions to remediate this behavior',
+                                                        'Remediation': {
+                                                            'Recommendation': {
+                                                                'Text': 'For more information on Network Load Balancer Access Logging and how to configure it refer to the Access Logs for Your Network Load Balancer section of the Network Load Balancers User Guide.',
+                                                                'Url': 'https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-access-logs.html'
+                                                            }
+                                                        },
+                                                        'ProductFields': { 'Product Name': 'ElectricEye' },
+                                                        'Resources': [
+                                                            {
+                                                                'Type': 'AwsElbv2LoadBalancer',
+                                                                'Id': elbv2Arn,
+                                                                'Partition': 'aws',
+                                                                'Region': awsRegion,
+                                                                'Details': {
+                                                                    'AwsElbv2LoadBalancer': {
+                                                                        'DNSName': elbv2DnsName,
+                                                                        'IpAddressType': elbv2IpAddressType,
+                                                                        'Scheme': elbv2Scheme,
+                                                                        'Type': elbv2LbType,
+                                                                        'VpcId': elbv2VpcId
+                                                                    }
+                                                                }
+                                                            }
+                                                        ],
+                                                        'Compliance': { 'Status': 'FAILED' },
+                                                        'RecordState': 'ACTIVE'
+                                                    }
+                                                ]
+                                            )
+                                            print(response)
+                                        except Exception as e:
+                                            print(e)
+                                    else:
+                                        try:
+                                            iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                                            response = securityhub.batch_import_findings(
+                                                Findings=[
+                                                    {
+                                                        'SchemaVersion': '2018-10-08',
+                                                        'Id': elbv2Arn + '/tls-nlb-logging-check',
+                                                        'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                                        'GeneratorId': elbv2Arn,
+                                                        'AwsAccountId': awsAccountId,
+                                                        'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                                                        'FirstObservedAt': iso8601Time,
+                                                        'CreatedAt': iso8601Time,
+                                                        'UpdatedAt': iso8601Time,
+                                                        'Severity': { 'Normalized': 0 },
+                                                        'Confidence': 99,
+                                                        'Title': '[ELBv2.6] Network Load Balancers with TLS listeners should have access logging enabled',
+                                                        'Description': 'Network load balancer ' + elbv2Name + ' has access logging enabled.',
+                                                        'Remediation': {
+                                                            'Recommendation': {
+                                                                'Text': 'For more information on Network Load Balancer Access Logging and how to configure it refer to the Access Logs for Your Network Load Balancer section of the Network Load Balancers User Guide.',
+                                                                'Url': 'https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-access-logs.html'
+                                                            }
+                                                        },
+                                                        'ProductFields': { 'Product Name': 'ElectricEye' },
+                                                        'Resources': [
+                                                            {
+                                                                'Type': 'AwsElbv2LoadBalancer',
+                                                                'Id': elbv2Arn,
+                                                                'Partition': 'aws',
+                                                                'Region': awsRegion,
+                                                                'Details': {
+                                                                    'AwsElbv2LoadBalancer': {
+                                                                        'DNSName': elbv2DnsName,
+                                                                        'IpAddressType': elbv2IpAddressType,
+                                                                        'Scheme': elbv2Scheme,
+                                                                        'Type': elbv2LbType,
+                                                                        'VpcId': elbv2VpcId
+                                                                    }
+                                                                }
+                                                            }
+                                                        ],
+                                                        'Compliance': { 'Status': 'PASSED' },
+                                                        'RecordState': 'ARCHIVED'
+                                                    }
+                                                ]
+                                            )
+                                            print(response)
+                                        except Exception as e:
+                                            print(e)
+                                else:
+                                    pass
+                        except Exception as e:
+                            print(e)
+                    else:
+                        pass
+            except Exception as e:
+                print(e)
+        else:
+            pass
+
 def elbv2_auditor():
-    elbv2_logging_check()
+    elbv2_alb_logging_check()
     elbv2_deletion_protection_check()
     elbv2_internet_facing_secure_listeners_check()
     elbv2_tls12_listener_policy_check()
     elbv2_drop_invalid_header_check()
+    elbv2_nlb_tls_logging_check()
 
 elbv2_auditor()

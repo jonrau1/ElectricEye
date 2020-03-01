@@ -169,7 +169,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **153** checks supported across **49** AWS services / components using **35** Auditors. There are currently **49** supported response and remediation Playbooks with coverage across **26** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **154** checks supported across **49** AWS services / components using **35** Auditors. There are currently **49** supported response and remediation Playbooks with coverage across **26** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -226,7 +226,6 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_ECR_Auditor.py                  | ECR Repository                | Does the repository support<br>scan-on-push                           |
 | Amazon_ECR_Auditor.py                  | ECR Repository                | Is there an image lifecycle policy                                    |
 | Amazon_ECR_Auditor.py                  | ECR Repository                | Is there a repo access policy                                         |
-| Amazon_EFS_Auditor.py                  | EFS File System               | Are file systems encrypted                                            |
 | Amazon_EKS_Auditor.py                  | EKS Cluster                   | Is the API Server publicly<br>accessible                              |
 | Amazon_EKS_Auditor.py                  | EKS Cluster                   | Is K8s version 1.14 used                                              |
 | Amazon_Elasticache_Redis_Auditor.py    | Elasticache Redis Cluster     | Is an AUTH Token used                                                 |
@@ -244,11 +243,12 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_ELB_Auditor.py                  | ELB (Classic Load Balancer)   | Is cross zone load balancing enabled                                  |
 | Amazon_ELB_Auditor.py                  | ELB (Classic Load Balancer)   | Is connection draining enabled                                        |
 | Amazon_ELB_Auditor.py                  | ELB (Classic Load Balancer)   | Is access logging enabled                                             |
-| Amazon_ELBv2_Auditor.py                | ELBv2 (ALB/NLB)               | Is access logging enabled                                             |
+| Amazon_ELBv2_Auditor.py                | ELBv2 (ALB)                   | Is access logging enabled for ALBs                                    |
 | Amazon_ELBv2_Auditor.py                | ELBv2 (ALB/NLB)               | Is deletion protection enabled                                        |
 | Amazon_ELBv2_Auditor.py                | ELBv2 (ALB/NLB)               | Do internet facing ELBs have a <br>secure listener                    |
 | Amazon_ELBv2_Auditor.py                | ELBv2 (ALB/NLB)               | Do secure listeners enforce TLS 1.2                                   |
 | Amazon_ELBv2_Auditor.py                | ELBv2 (ALB/NLB)               | Are invalid HTTP headers dropped                                      |
+| Amazon_ELBv2_Auditor.py                | ELBv2 (NLB)                   | Do NLBs with TLS listeners have access<br>logging enabled             |
 | Amazon_Kinesis_Data_Streams_Auditor.py | Kinesis Data Stream           | Is stream encryption enabled                                          |
 | Amazon_Kinesis_Data_Streams_Auditor.py | Kinesis Data Stream           | Is enhanced monitoring enabled                                        |
 | Amazon_MSK_Auditor.py                  | MSK Cluster                   | Is inter-cluster encryption used                                      |
@@ -304,7 +304,6 @@ These are the following services and checks perform by each Auditor. There are c
 | AWS_Backup_Auditor.py                  | EBS Volume                    | Are EBS volumes backed up                                             |
 | AWS_Backup_Auditor.py                  | DynamoDB tables               | Are DynamoDB tables backed up                                         |
 | AWS_Backup_Auditor.py                  | RDS DB Instance               | Are RDS DB instances backed up                                        |
-| AWS_Backup_Auditor.py                  | EFS File System               | Are EFS file systems backed up                                        |
 | AWS_CloudFormation_Auditor.py          | CloudFormation Stack          | Is drift detection enabled                                            |
 | AWS_CloudFormation_Auditor.py          | CloudFormation Stack          | Are stacks monitored                                                  |
 | AWS_CloudTrail_Auditor.py              | CloudTrail                    | Is the trail multi-region                                             |
