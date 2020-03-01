@@ -40,12 +40,7 @@ Resources:
           - Effect: Allow
             Action:
             - backup:StartBackupJob
-            - kms:EnableKeyRotation
             - cloudtrail:UpdateTrail
-            - iam:UpdateAccessKey
-            - iam:ListAccessKeys
-            - iam:PassRole
-            - iam:UpdateAccountPasswordPolicy
             - ec2:CreateSnapshot
             - ec2:StopInstances
             - ec2:TerminateInstances
@@ -63,8 +58,18 @@ Resources:
             - ec2:RevokeSecurityGroupEgress
             - ec2:ModifyInstanceAttribute
             - ec2:EnableEbsEncryptionByDefault
+            - es:UpdateElasticsearchDomainConfig
             - elasticloadbalancing:ModifyLoadBalancerAttributes
+            - guardduty:GetFindings
+            - iam:UpdateAccessKey
+            - iam:ListAccessKeys
+            - iam:PassRole
+            - iam:UpdateAccountPasswordPolicy
             - kinesis:StartStreamEncryption
+            - kms:EnableKeyRotation
+            - logs:PutResourcePolicy
+            - logs:DescribeLogGroups
+            - logs:CreateLogGroup
             - securityhub:UpdateFindings
             - s3:PutBucketAcl
             - s3:PutLifecycleConfiguration
@@ -81,12 +86,11 @@ Resources:
             - rds:ModifyDBInstance
             - rds:ModifyDBSnapshotAttribute
             - redshift:ModifyCluster
-            - guardduty:GetFindings
-            - waf-regional:GetChangeToken
             - waf:UpdateIPSet
             - waf:GetChangeToken
-            - wafv2:ListIPSets
             - waf-regional:UpdateIPSet
+            - waf-regional:GetChangeToken
+            - wafv2:ListIPSets
             - wafv2:UpdateIPSet
             Resource: '*'
       AssumeRolePolicyDocument:
