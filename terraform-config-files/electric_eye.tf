@@ -200,6 +200,7 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "ec2:DescribeFlowLogs",
                 "sagemaker:DescribeNotebookInstance",
                 "sns:ListTopics",
+                "efs:DescribeFileSystems",
                 "apigateway:GET",
                 "rds:DescribeDBParameterGroups",
                 "s3:ListBucket",

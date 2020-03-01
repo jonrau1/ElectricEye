@@ -23,6 +23,7 @@ sts = boto3.client('sts')
 ec2 = boto3.client('ec2')
 dynamodb = boto3.client('dynamodb')
 rds = boto3.client('rds')
+efs = boto3.client('efs')
 backup = boto3.client('backup')
 # create env vars
 awsAccountId = sts.get_caller_identity()['Account']
@@ -506,12 +507,124 @@ def rds_backup_check():
                 print(response)
             except Exception as e:
                 print(e)
-        
+
+def efs_backup_check():
+    # loop through EFS file systems
+    response = efs.describe_file_systems()
+    myFileSys = response['FileSystems']
+    for filesys in myFileSys:
+        fileSysId = str(filesys['FileSystemId'])
+        fileSysArn = 'arn:aws:elasticfilesystem:' + awsRegion + ':' + awsAccountId + ':file-system/' + fileSysId
+        try:
+            # check if db instances are backed up
+            response = backup.describe_protected_resource(ResourceArn=fileSysArn)
+            try:
+                # ISO Time
+                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                # create Sec Hub finding
+                response = securityhub.batch_import_findings(
+                    Findings=[
+                        {
+                            'SchemaVersion': '2018-10-08',
+                            'Id': fileSysArn + '/efs-backups',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                            'GeneratorId': fileSysArn,
+                            'AwsAccountId': awsAccountId,
+                            'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                            'FirstObservedAt': iso8601Time,
+                            'CreatedAt': iso8601Time,
+                            'UpdatedAt': iso8601Time,
+                            'Severity': { 'Normalized': 0 },
+                            'Confidence': 99,
+                            'Title': '[Backup.5] EFS file systems should be protected by AWS Backup',
+                            'Description': 'EFS file system ' + fileSysId + ' is protected by AWS Backup.',
+                            'Remediation': {
+                                'Recommendation': {
+                                    'Text': 'For information on creating scheduled backups refer to the Assign Resources to a Backup Plan section of the AWS Backup Developer Guide',
+                                    'Url': 'https://docs.aws.amazon.com/aws-backup/latest/devguide/create-a-scheduled-backup.html#assign-resources-to-plan'
+                                }
+                            },
+                            'ProductFields': {
+                                'Product Name': 'ElectricEye'
+                            },
+                            'Resources': [
+                                {
+                                    'Type': 'Other',
+                                    'Id': fileSysArn,
+                                    'Partition': 'aws',
+                                    'Region': awsRegion,
+                                    'Details': {
+                                        'Other': {
+                                            'FileSystemId': fileSysId
+                                        }
+                                    }
+                                }
+                            ],
+                            'Compliance': { 'Status': 'PASSED' },
+                            'RecordState': 'ARCHIVED'
+                        }
+                    ]
+                )
+                print(response)
+            except Exception as e:
+                print(e)
+        except:
+            try:
+                # ISO Time
+                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                # create Sec Hub finding
+                response = securityhub.batch_import_findings(
+                    Findings=[
+                        {
+                            'SchemaVersion': '2018-10-08',
+                            'Id': fileSysArn + '/efs-backups',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                            'GeneratorId': fileSysArn,
+                            'AwsAccountId': awsAccountId,
+                            'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                            'FirstObservedAt': iso8601Time,
+                            'CreatedAt': iso8601Time,
+                            'UpdatedAt': iso8601Time,
+                            'Severity': { 'Normalized': 40 },
+                            'Confidence': 99,
+                            'Title': '[Backup.5] EFS file systems should be protected by AWS Backup',
+                            'Description': 'EFS file system ' + fileSysId + ' is not protected by AWS Backup. Refer to the remediation instructions for information on ensuring disaster recovery and business continuity requirements are fulfilled for EFS file systems.',
+                            'Remediation': {
+                                'Recommendation': {
+                                    'Text': 'For information on creating scheduled backups refer to the Assign Resources to a Backup Plan section of the AWS Backup Developer Guide',
+                                    'Url': 'https://docs.aws.amazon.com/aws-backup/latest/devguide/create-a-scheduled-backup.html#assign-resources-to-plan'
+                                }
+                            },
+                            'ProductFields': {
+                                'Product Name': 'ElectricEye'
+                            },
+                            'Resources': [
+                                {
+                                    'Type': 'Other',
+                                    'Id': fileSysArn,
+                                    'Partition': 'aws',
+                                    'Region': awsRegion,
+                                    'Details': {
+                                        'Other': {
+                                            'FileSystemId': fileSysId
+                                        }
+                                    }
+                                }
+                            ],
+                            'Compliance': { 'Status': 'FAILED' },
+                            'RecordState': 'ACTIVE'
+                        }
+                    ]
+                )
+                print(response)
+            except Exception as e:
+                print(e)
             
 def backup_auditor():
     ec2_backup_check()
     volume_backup_check()
     ddb_backup_check()
     rds_backup_check()
+    efs_backup_check
     
 backup_auditor()
