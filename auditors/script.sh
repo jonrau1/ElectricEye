@@ -31,6 +31,8 @@ python3 Amazon_EC2_SSM_Auditor.py
 sleep 2
 python3 Amazon_ECR_Auditor.py
 sleep 2
+python3 Amazon_EFS_Auditor.py
+sleep 2
 python3 Amazon_EKS_Auditor.py
 sleep 2
 python3 Amazon_Elasticache_Redis_Auditor.py
