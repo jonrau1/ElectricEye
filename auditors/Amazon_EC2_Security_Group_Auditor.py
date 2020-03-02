@@ -2495,6 +2495,138 @@ def security_group_open_redshift_check():
                 else:
                     pass
 
+def security_group_open_documentdb_check():
+    for secgroup in mySgs:
+        sgName = str(secgroup['GroupName'])
+        sgId = str(secgroup['GroupId'])
+        sgArn = 'arn:aws:ec2:' + awsRegion + ':' + awsAccountId + ':security-group/' + sgId
+        for permissions in secgroup['IpPermissions']:
+            try:
+                fromPort = str(permissions['FromPort'])
+            except Exception as e:
+                if str(e) == "'FromPort'":
+                    pass
+                else:
+                    print(e)
+            try:
+                toPort = str(permissions['ToPort'])
+            except Exception as e:
+                if str(e) == "'ToPort'":
+                    pass
+                else:
+                    print(e)
+            try:
+                ipProtocol = str(permissions['IpProtocol'])
+            except Exception as e:
+                print(e)
+            ipRanges = permissions['IpRanges']
+            for cidrs in ipRanges:
+                cidrIpRange = str(cidrs['CidrIp'])
+                if toPort and fromPort == '27017' and cidrIpRange == '0.0.0.0/0':
+                    try:
+                        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                        response = securityhub.batch_import_findings(
+                            Findings=[
+                                {
+                                    'SchemaVersion': '2018-10-08',
+                                    'Id': sgArn + '/' + ipProtocol + '/security-group-documentdb-open-check',
+                                    'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                    'GeneratorId': sgArn,
+                                    'AwsAccountId': awsAccountId,
+                                    'Types': [ 
+                                        'Software and Configuration Checks/AWS Security Best Practices',
+                                        'Effects/Data Exposure'
+                                    ],
+                                    'FirstObservedAt': iso8601Time,
+                                    'CreatedAt': iso8601Time,
+                                    'UpdatedAt': iso8601Time,
+                                    'Severity': { 'Normalized': 40 },
+                                    'Confidence': 99,
+                                    'Title': '[SecurityGroup.19] Security groups should not allow unrestricted DocumentDB (TCP 27017) access',
+                                    'Description': 'Security group ' + sgName + ' allows unrestricted DocumentDB (TCP 27017) access on ' + ipProtocol + '. Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.',
+                                    'Remediation': {
+                                        'Recommendation': {
+                                            'Text': 'For more information on modifying security group rules refer to the Adding, Removing, and Updating Rules section of the Amazon Virtual Private Cloud User Guide',
+                                            'Url': 'https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#AddRemoveRules'
+                                        }
+                                    },
+                                    'ProductFields': { 'Product Name': 'ElectricEye' },
+                                    'Resources': [
+                                        {
+                                            'Type': 'AwsEc2SecurityGroup',
+                                            'Id': sgArn,
+                                            'Partition': 'aws',
+                                            'Region': awsRegion,
+                                            'Details': {
+                                                'AwsEc2SecurityGroup': {
+                                                    'GroupName': sgName,
+                                                    'GroupId': sgId
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    'Compliance': { 'Status': 'FAILED' },
+                                    'RecordState': 'ACTIVE'
+                                }
+                            ]
+                        )
+                        print(response)
+                    except Exception as e:
+                        print(e)
+                elif toPort and fromPort == '27017' and cidrIpRange != '0.0.0.0/0':
+                    try:
+                        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                        response = securityhub.batch_import_findings(
+                            Findings=[
+                                {
+                                    'SchemaVersion': '2018-10-08',
+                                    'Id': sgArn + '/' + ipProtocol + '/security-group-documentdb-open-check',
+                                    'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                    'GeneratorId': sgArn,
+                                    'AwsAccountId': awsAccountId,
+                                    'Types': [ 
+                                        'Software and Configuration Checks/AWS Security Best Practices',
+                                        'Effects/Data Exposure'
+                                    ],
+                                    'FirstObservedAt': iso8601Time,
+                                    'CreatedAt': iso8601Time,
+                                    'UpdatedAt': iso8601Time,
+                                    'Severity': { 'Normalized': 0 },
+                                    'Confidence': 99,
+                                    'Title': '[SecurityGroup.19] Security groups should not allow unrestricted DocumentDB (TCP 27017) access',
+                                    'Description': 'Security group ' + sgName + ' allows unrestricted DocumentDB (TCP 27017) access on ' + ipProtocol + '. Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.',
+                                    'Remediation': {
+                                        'Recommendation': {
+                                            'Text': 'For more information on modifying security group rules refer to the Adding, Removing, and Updating Rules section of the Amazon Virtual Private Cloud User Guide',
+                                            'Url': 'https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#AddRemoveRules'
+                                        }
+                                    },
+                                    'ProductFields': { 'Product Name': 'ElectricEye' },
+                                    'Resources': [
+                                        {
+                                            'Type': 'AwsEc2SecurityGroup',
+                                            'Id': sgArn,
+                                            'Partition': 'aws',
+                                            'Region': awsRegion,
+                                            'Details': {
+                                                'AwsEc2SecurityGroup': {
+                                                    'GroupName': sgName,
+                                                    'GroupId': sgId
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    'Compliance': { 'Status': 'PASSED' },
+                                    'RecordState': 'ARCHIVED'
+                                }
+                            ]
+                        )
+                        print(response)
+                    except Exception as e:
+                        print(e)
+                else:
+                    pass
+
 def security_group_auditor():
     security_group_all_open_check()
     security_group_open_ftp_check()
@@ -2513,5 +2645,6 @@ def security_group_auditor():
     security_group_open_elasticsearch2_check()
     security_group_open_memcached_check()
     security_group_open_redshift_check()
+    security_group_open_documentdb_check()
 
 security_group_auditor()

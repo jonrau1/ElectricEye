@@ -204,21 +204,23 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_EBS_Auditor.py                  | EBS Snapshot                  | Is the Snapshot public                                                |
 | Amazon_EBS_Auditor.py                  | Account                       | Is account level encryption by<br>default enabled                     |
 | Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Are all ports (-1) open to the internet                               |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is FTP open to the internet                                           |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is TelNet open to the internet                                        |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is FTP (tcp20-21) open to the internet                                |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is TelNet (tcp23) open to the internet                                |
 | Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is WSDCOM-RPC (tcp135) open to the<br>internet                        |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is SMB open to the internet                                           |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is MSSQL open to the internet                                         |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is Oracle DB open to the internet                                     |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is MySQL/MariaDB open to the internet                                 |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is RDP open to the internet                                           |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is PostgreSQL open to the internet                                    |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is Kibana open to the internet                                        |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is Redis open to the internet                                         |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is Splunkd open to the internet                                       |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is Elasticsearch (tcp 9200) open to<br>the internet                   |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is Elasticsearch (tcp 9300) open to<br>the internet                   |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is Memcached open to the internet                                     |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is SMB (tcp445) open to the internet                                  |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is MSSQL (tcp1433) open to the internet                               |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is OracleDB (tcp1521) open to the internet                            |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is MySQL/MariaDB (tcp3306) open to <br>the internet                   |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is RDP (tcp3389) open to the internet                                 |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is PostgreSQL (tcp5432) open to the <br>internet                      |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is Kibana (tcp5601) open to the internet                              |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is Redis (tcp6379) open to the internet                               |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is Splunkd (tcp8089) open to the internet                             |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is Elasticsearch (tcp9200) open to<br>the internet                    |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is Elasticsearch (tcp9300) open to<br>the internet                    |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is Memcached (udp11211) open to the <br>internet                      |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is Redshift (tcp5439) open to the internet                            |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is DocDB (tcp27017) open to the internet                              |
 | Amazon_EC2_SSM_Auditor.py              | EC2 Instance                  | Is the instance managed by SSM                                        |
 | Amazon_EC2_SSM_Auditor.py              | EC2 Instance                  | Does the instance have a successful<br>SSM association                |
 | Amazon_EC2_SSM_Auditor.py              | EC2 Instance                  | Is the SSM Agent up to date                                           |
