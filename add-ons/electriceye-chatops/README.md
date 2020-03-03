@@ -1,13 +1,4 @@
-# ElectricEye (ElectricEye-ChatOps)
-Continuously monitor your AWS services for configurations that can lead to degradation of confidentiality, integrity or availability. All results will be sent to Security Hub for further aggregation and analysis.
-
-***Up here in space***<br/>
-***I'm looking down on you***<br/>
-***My lasers trace***<br/>
-***Everything you do***<br/>
-<sub>*Judas Priest, 1982*</sub>
-
-## Description
+# ElectricEye-ChatOps
 ElectricEye-ChatOps utilizes EventBridge / CloudWatch Event Rules to consume `HIGH` and `CRITICAL` severity findings created by ElectricEye from Security Hub and route them to a Lambda function. Lambda will parse out certain elements from the Security Hub finding, create a message and post it to a Slack App's webhook for consumption by your security engineers or other personnel in a Slack channel.
 
 **Important Note:** When deploying this solution you should consider both signal-to-noise ratios and cost implications. The easiest pattern is to run this from your Security Hub Master account so you get all findings from all member accounts. If you have dev/sandbox accounts your ChatOps processes may not care about, you should consider deploying this to high-danger/PROD/public/PII-laden accounts only.

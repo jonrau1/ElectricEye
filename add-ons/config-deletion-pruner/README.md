@@ -1,14 +1,5 @@
-# ElectricEye (config-deletion-pruner)
-Continuously monitor your AWS services for configurations that can lead to degradation of confidentiality, integrity or availability. All results will be sent to Security Hub for further aggregation and analysis.
-
-***Up here in space***<br/>
-***I'm looking down on you***<br/>
-***My lasers trace***<br/>
-***Everything you do***<br/>
-<sub>*Judas Priest, 1982*</sub>
-
-## Description
-ElectricEye `config-deletion-pruner` will auto-archived findings related to deleted resources in AWS Config. This functionality utilizes the AWS Config recorder, an Amazon CloudWatch Event rule and AWS Lambda function to parse out the ARN / ID of a resource that has been deleted and use the Security Hub `UpdateFindings` API to archive the deleted resource based on its ARN / ID.
+# Config Deletion Pruner
+ElectricEye `config-deletion-pruner` will auto-archive findings related to deleted resources in AWS Config. This functionality utilizes the AWS Config recorder, an Amazon CloudWatch Event rule and AWS Lambda function to parse out the ARN / ID of a resource that has been deleted and use the Security Hub `UpdateFindings` API to archive the deleted resource based on its ARN / ID.
 
 ## Solution Architecture
 ![ThePrunes](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/config-deletion-pruner/config-deletion-pruner.jpg)

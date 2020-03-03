@@ -1,11 +1,5 @@
-# ElectricEye (ElectricEye-Response)
-Continuously monitor your AWS services for configurations that can lead to degradation of confidentiality, integrity or availability. All results will be sent to Security Hub for further aggregation and analysis.
-
-***Up here in space***<br/>
-***I'm looking down on you***<br/>
-***My lasers trace***<br/>
-***Everything you do***<br/>
-<sub>*Judas Priest, 1982*</sub>
+# ElectricEye Response
+Pre-defined multi-account response and remediation Playbooks for Security Hub and ElectricEye.
 
 ## Table of Contents
 - [Description](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response/README.md#description)
@@ -133,6 +127,40 @@ There are currently **49** supported response and remediation Playbooks with cov
 - Security Hub Security Standards currently use a finding that is scoped to the `AwsAccount` resource in the ASFF to roll up all results and give you a pass/fail/not available score on the control. Due to this, you may encountere failures or exceptions in your CloudWatch logs from these findings.
 
 - As designed these playbooks will not consider any exceptions you may have. Please open a PR for this functionality, it may make sense to develop that as a Step Function state machine versus a Lambda function.
+
+## FAQ
+### 0. What are response and remediation playbooks and why should I use them?
+**Tl;dr** Playbooks let you rapidly take action on Security Hub findings from security standards and ElectricEye versus doing it all manually
+
+Response and remediation playbooks, for the purpose of this sub-module, are a collection of AWS services that automate actions based on inputs. Playbooks, and their usage, fall into a larger category called Security Orchestration, Automation and Response (SOAR). Traditionally your SecOps teams or Incident Response (IR) analysts maintain correlation rules and detections in your SIEM (or use Security Hub Insights to look at interesting aggregations), and when a potential incident is detected, they jump into action. These actions may involve rolling back your infrastructure to desired state (i.e. not having every port open on your security group), capturing logs, performing basic memory capture on an instance, creating a new rule in your WAF or anything else. These actions all take time, and sometimes happen too late (as is the case for detective controls + reactive security.)
+
+While SOAR (through the use of playbooks or otherwise) won't take the place of preventative controls, they drastically reduce your mean time to response (MTTR), free up your humans to perform more detailed investigations or remediation and serve as force multiplier for your security team. Instead of having to page someone, cut a ticket, and hope they were paying attention to that Kibana dashboard or CloudWatch alarm, you can have playbooks fire off for known bad events (open security group, no encryption, no backups) without a second thought. If you do not want these actions to be taken automatically you can take advantage of Security Hub Custom Actions to invoke the playbooks. Think of it as an a la carte menu of actions an analyst can quickly take, instead of writing long IR playbooks, they can print out the [Playbook Reference Repository](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response/README.md#playbook-reference-repository) section and choose which one to use based on event.
+
+If nothing else, listen to what `Smokey the SOAR Bear` has to say:
+![SmokeyTheSoarBear](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/smokey-the-soar-bear.jpg)
+
+### 1. What services make up a Playbook?
+ElectricEye-Response uses both CloudWatch / EventBridge Rules and Lambda functions as the primary mechanism in which to respond to (and potentially remediate) an incident (incident in this case being a Security Hub finding). Some other services may be layered in such as Security Hub Custom Actions and Systems Manager Automation or Command Documents. It goes without saying there are various types of IAM roles in use as well (Lambda execution roles, Event Target rules, assumed Roles, etc.)
+
+### 2. What happens if I invoke a Custom Action for the wrong finding?
+Likely nothing bad. If you kicked off a destory EBS volume playbook for a Neptune cluster it won't destory your Neptune cluster, you will just get an exception error in your logs. There are some Playbooks (account level ones, mostly) that are not focused on a resource, and will fire off regardless of what sort of finding you invoked it from. Using the example above, if you mistakenly select the EBS Account-level default encryption policy playbook for your Neptune cluster, it will apply that to whatever account owns the finding and the finding you choose will be updated.
+
+### 3. Will the usage of Playbooks make me compliant with (insert framework of some sort here)?
+No. If you wanted to use ElectricEye-Response to satisfy an audit, I would recommend you work closely with your GRC and Legal functions to determine if the implemented playbooks will legally satisfy the requirements of any compliance framework or regulations you need to comply with. I will only go as far to say that the **Respond** category of NIST CSF may kinda sorta fall into the spirit of this.
+
+That said, as in the core module, if you 1) work on behalf of an organization who can provide attestations that these playbooks satisfy the spirit of certain requirements in certain industry or regulatory standards and 2) would like to provide an attestation for the betterment of the community please email me to discuss.
+
+### 4. Can I scope fully-automatic Playbook invocations to only a certain resource or tag?
+Sorta. You can expand the CloudWatch / EventBridge Event Rule filter to have an array of Resource.Id's or any other field in the ASFF present. This becomes a "whitelist" style where you are choosing which resources SHOULD be in scope, Event rule filters (to my knowledge) do not have an *IS NOT* sort of boolean logic.
+
+### 5. Why don't you support (insert action here)?
+Loaded question. I likely will, if you really need the ability to create a new Neptune parameter set or something open an Issue and if it is relatively trivial I will take it on. Complex actions that need long wait conditions or need to run powershell or shell scripts on a host will require additional investigation and invesment.
+
+### 6. Why don't you use Systems Manager Automation Documents?
+I use managed Automation documents where they make sense. The time investment to learn another abstraction of invoking AWS APIs over relying on my core competencies is counter-intuitive to me, additionally, custom docs would need to be deployed via IAC to all member accounts and maintained which can add some problems. All that said, if you have a really awesome SSM Doc that you are 110% convinced should be included in ElectricEye-Response, please open an Issue and we can discuss the merits of inclusion.
+
+### 7. Why don' you use Step Functions?
+I do not know how to write them, let alone set them up via IAC. There are some Playbooks on the roadmap that will (theoretically) need to be implemented via Step Functions, so I will gain the profiency eventually. I won't accept PRs on any Step Function based playbooks for the time being.
 
 ## License
 This library is licensed under the GNU General Public License v3.0 (GPL-3.0) License. See the LICENSE file.
