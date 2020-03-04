@@ -30,7 +30,6 @@ Resources:
       ManagedPolicyArns: 
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
         - arn:aws:iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup
-        - arn:aws:iam::aws:policy/service-role/AWSBackupServiceRolePolicyForRestores
         - arn:aws:iam::aws:policy/service-role/AmazonSSMAutomationRole
       Policies:
       - PolicyName: XAccount-Sechub-LambdaPolicy
@@ -41,6 +40,7 @@ Resources:
             Action:
             - backup:StartBackupJob
             - cloudtrail:UpdateTrail
+            - cognito-idp:UpdateUserPool
             - ec2:CreateSnapshot
             - ec2:StopInstances
             - ec2:TerminateInstances
@@ -66,6 +66,7 @@ Resources:
             - iam:PassRole
             - iam:UpdateAccountPasswordPolicy
             - kinesis:StartStreamEncryption
+            - kms:Decrypt
             - kms:EnableKeyRotation
             - logs:PutResourcePolicy
             - logs:DescribeLogGroups
@@ -82,6 +83,8 @@ Resources:
             - sns:SetTopicAttributes
             - ssm:SendCommand
             - ssm:StartAutomationExecution
+            - ssm:GetParameter
+            - ssm:GetParameters
             - rds:ModifyDBCluster
             - rds:ModifyDBClusterSnapshotAttribute
             - rds:ModifyDBSnapshot
