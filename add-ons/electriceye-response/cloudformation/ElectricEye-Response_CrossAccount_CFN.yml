@@ -82,6 +82,8 @@ Resources:
             - sns:SetTopicAttributes
             - ssm:SendCommand
             - ssm:StartAutomationExecution
+            - rds:ModifyDBCluster
+            - rds:ModifyDBClusterSnapshotAttribute
             - rds:ModifyDBSnapshot
             - rds:ModifyDBInstance
             - rds:ModifyDBSnapshotAttribute
