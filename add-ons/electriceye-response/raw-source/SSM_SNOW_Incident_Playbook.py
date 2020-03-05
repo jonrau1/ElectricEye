@@ -20,7 +20,6 @@ def lambda_handler(event, context):
     sts = boto3.client('sts')
     securityhub = boto3.client('securityhub')
     # create env vars
-    awsRegion = os.environ['AWS_REGION']
     lambdaFunctionName = os.environ['AWS_LAMBDA_FUNCTION_NAME']
     masterAccountId = sts.get_caller_identity()['Account']
     # ServiceNow specific variables
@@ -41,7 +40,7 @@ def lambda_handler(event, context):
         elif findingSeverity == 'MEDIUM':
             snowImpact = str('Medium')
             snowUrgency = str('Medium')
-        elif findingSeverity == 'LOW' or 'INFORMATIONAL':
+        elif findingSeverity == 'LOW':
             snowImpact = str('Low')
             snowUrgency = str('Low')
         elif findingSeverity == 'INFORMATIONAL':
@@ -73,7 +72,7 @@ def lambda_handler(event, context):
                             'ServiceNowInstancePassword': [snowIncidentPassword],
                             'ServiceNowInstanceURL': [snowURL],
                             'ShortDescription': [resourceId + ' in account ' + findingOwner + ' has failed check ' + findingTitle],
-                            'Description': [resourceId + ' in account ' + findingOwner + ' has failed check ' + findingTitle + ' Security Hub description includes the following information ' + findingDesc],
+                            'Description': [resourceId + ' in account ' + findingOwner + ' has failed check ' + findingTitle + ' Security Hub description includes the following information: ' + findingDesc],
                             'Impact': [snowImpact],
                             'Urgency': [snowUrgency],
                             'AutomationAssumeRole': ['arn:aws:iam::' + findingOwner + ':role/XA-ElectricEye-Response']
@@ -104,7 +103,7 @@ def lambda_handler(event, context):
                             'ServiceNowInstancePassword': [snowIncidentPassword],
                             'ServiceNowInstanceURL': [snowURL],
                             'ShortDescription': [resourceId + ' in account ' + findingOwner + ' has failed check ' + findingTitle],
-                            'Description': [resourceId + ' in account ' + findingOwner + ' has failed check ' + findingTitle + ' Security Hub description includes the following information ' + findingDesc],
+                            'Description': [resourceId + ' in account ' + findingOwner + ' has failed check ' + findingTitle + ' Security Hub description includes the following information: ' + findingDesc],
                             'Impact': [snowImpact],
                             'Urgency': [snowUrgency]
                         },
