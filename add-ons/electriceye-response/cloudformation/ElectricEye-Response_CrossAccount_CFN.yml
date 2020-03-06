@@ -58,6 +58,7 @@ Resources:
             - ec2:RevokeSecurityGroupEgress
             - ec2:ModifyInstanceAttribute
             - ec2:EnableEbsEncryptionByDefault
+            - ecr:PutLifecyclePolicy
             - es:UpdateElasticsearchDomainConfig
             - elasticloadbalancing:ModifyLoadBalancerAttributes
             - guardduty:GetFindings

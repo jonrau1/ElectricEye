@@ -68,7 +68,7 @@ def lambda_handler(event, context):
             try:
                 response = securityhub.update_findings(
                     Filters={'Id': [{'Value': findingId,'Comparison': 'EQUALS'}]},
-                    Note={'Text': 'The finding was either kept ACTIVE or moved back to an ACTIVE state. This finding has been created in JIRA project ' + jiraProjectKey + ' as Issue ID ' + jiraIssueId,'UpdatedBy': lambdaFunctionName},
+                    Note={'Text': 'The finding was either kept ACTIVE or moved back to an ACTIVE state. This finding has been created in the JIRA project ' + jiraProjectKey + ' as Issue ID ' + jiraIssueId,'UpdatedBy': lambdaFunctionName},
                     RecordState='ACTIVE'
                 )
                 print(response)
