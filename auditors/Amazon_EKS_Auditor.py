@@ -24,7 +24,7 @@ securityhub = boto3.client('securityhub')
 awsAccountId = sts.get_caller_identity()['Account']
 awsRegion = os.environ['AWS_REGION']
 
-def public_access_check():
+def eks_public_endpoint_access_check():
     # loop through EKS clusters
     response = eks.list_clusters(maxResults=100)
     myEksClusters = response['clusters']
@@ -44,7 +44,7 @@ def public_access_check():
                         Findings=[
                             {
                                 'SchemaVersion': '2018-10-08',
-                                'Id': clusterArn + '/public-eks-endpoint',
+                                'Id': clusterArn + '/public-endpoint-access-check',
                                 'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
                                 'GeneratorId': clusterName,
                                 'AwsAccountId': awsAccountId,
@@ -66,7 +66,7 @@ def public_access_check():
                                     }
                                 },
                                 'ProductFields': {
-                                    'Product Name': 'Docker Compliance Machine Dont Stop'
+                                    'Product Name': 'ElectricEye'
                                 },
                                 'Resources': [
                                     {
@@ -96,7 +96,7 @@ def public_access_check():
                         Findings=[
                             {
                                 'SchemaVersion': '2018-10-08',
-                                'Id': clusterArn + '/public-eks-endpoint',
+                                'Id': clusterArn + '/public-endpoint-access-check',
                                 'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
                                 'GeneratorId': clusterName,
                                 'AwsAccountId': awsAccountId,
@@ -118,7 +118,7 @@ def public_access_check():
                                     }
                                 },
                                 'ProductFields': {
-                                    'Product Name': 'Docker Compliance Machine Dont Stop'
+                                    'Product Name': 'ElectricEye'
                                 },
                                 'Resources': [
                                     {
@@ -142,7 +142,7 @@ def public_access_check():
         except Exception as e:
             print(e)
 
-def k8s_latest_check():
+def eks_latest_k8s_version_check():
     # loop through EKS clusters
     response = eks.list_clusters(maxResults=100)
     myEksClusters = response['clusters']
@@ -162,7 +162,7 @@ def k8s_latest_check():
                         Findings=[
                             {
                                 'SchemaVersion': '2018-10-08',
-                                'Id': clusterArn + '/old-k8s-version',
+                                'Id': clusterArn + '/eks-latest-k8s-version-check',
                                 'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
                                 'GeneratorId': clusterName,
                                 'AwsAccountId': awsAccountId,
@@ -181,7 +181,7 @@ def k8s_latest_check():
                                     }
                                 },
                                 'ProductFields': {
-                                    'Product Name': 'Docker Compliance Machine Dont Stop'
+                                    'Product Name': 'ElectricEye'
                                 },
                                 'Resources': [
                                     {
@@ -211,7 +211,7 @@ def k8s_latest_check():
                         Findings=[
                             {
                                 'SchemaVersion': '2018-10-08',
-                                'Id': clusterArn + '/old-k8s-version',
+                                'Id': clusterArn + '/eks-latest-k8s-version-check',
                                 'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
                                 'GeneratorId': clusterName,
                                 'AwsAccountId': awsAccountId,
@@ -230,7 +230,7 @@ def k8s_latest_check():
                                     }
                                 },
                                 'ProductFields': {
-                                    'Product Name': 'Docker Compliance Machine Dont Stop'
+                                    'Product Name': 'ElectricEye'
                                 },
                                 'Resources': [
                                     {
@@ -254,8 +254,126 @@ def k8s_latest_check():
         except Exception as e:
             print(e)
 
+def eks_logging_audit_auth_check():
+    # loop through EKS clusters
+    response = eks.list_clusters(maxResults=100)
+    myEksClusters = response['clusters']
+    for clusters in myEksClusters:
+        cluster = str(clusters)
+        try:
+            response = eks.describe_cluster(name=cluster)
+            clusterName = str(response['cluster']['name'])
+            clusterArn = str(response['cluster']['arn'])
+            logInfo =  response['cluster']['logging']['clusterLogging']
+            for logs in logInfo:
+                logTypes = logs['types']
+                enableCheck = str(logs['enabled'])
+                if enableCheck == 'True':
+                    for logs in logTypes:
+                        if str(logs) is 'authenticator' and 'audit':
+                            try:
+                                # ISO Time
+                                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                                # create Sec Hub finding
+                                response = securityhub.batch_import_findings(
+                                    Findings=[
+                                        {
+                                            'SchemaVersion': '2018-10-08',
+                                            'Id': clusterArn + '/eks-logging-audit-auth-check',
+                                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                            'GeneratorId': clusterName,
+                                            'AwsAccountId': awsAccountId,
+                                            'Types': [ 'Software and Configuration Checks/AWS Security Best Practices', ],
+                                            'FirstObservedAt': iso8601Time,
+                                            'CreatedAt': iso8601Time,
+                                            'UpdatedAt': iso8601Time,
+                                            'Severity': { 'Normalized': 40 },
+                                            'Confidence': 99,
+                                            'Title': '[EKS.3] Elastic Kubernetes Service (EKS) clusters should have authenticator and/or audit logging enabled',
+                                            'Description': 'Elastic Kubernetes Service (EKS) cluster ' + clusterName + ' does not have authenticator or audit logging enabled. Refer to the remediation instructions if this configuration is not intended',
+                                            'Remediation': {
+                                                'Recommendation': {
+                                                    'Text': 'To enable logging for your cluster refer to the Amazon EKS Control Plane Logging section of the EKS user guide',
+                                                    'Url': 'https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html'
+                                                }
+                                            },
+                                            'ProductFields': {
+                                                'Product Name': 'ElectricEye'
+                                            },
+                                            'Resources': [
+                                                {
+                                                    'Type': 'Other',
+                                                    'Id': clusterArn,
+                                                    'Partition': 'aws',
+                                                    'Region': awsRegion,
+                                                    'Details': {
+                                                        'Other': { 'Cluster Name': clusterName }
+                                                    }
+                                                }
+                                            ],
+                                            'Compliance': { 'Status': 'FAILED' },
+                                            'RecordState': 'ACTIVE'
+                                        }
+                                    ]
+                                )
+                                print(response)
+                            except Exception as e:
+                                print(e)
+                        else:
+                            try:
+                                # ISO Time
+                                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                                # create Sec Hub finding
+                                response = securityhub.batch_import_findings(
+                                    Findings=[
+                                        {
+                                            'SchemaVersion': '2018-10-08',
+                                            'Id': clusterArn + '/eks-logging-audit-auth-check',
+                                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                            'GeneratorId': clusterName,
+                                            'AwsAccountId': awsAccountId,
+                                            'Types': [ 'Software and Configuration Checks/AWS Security Best Practices', ],
+                                            'FirstObservedAt': iso8601Time,
+                                            'CreatedAt': iso8601Time,
+                                            'UpdatedAt': iso8601Time,
+                                            'Severity': { 'Normalized': 40 },
+                                            'Confidence': 99,
+                                            'Title': '[EKS.3] Elastic Kubernetes Service (EKS) clusters should have authenticator and/or audit logging enabled',
+                                            'Description': 'Elastic Kubernetes Service (EKS) cluster ' + clusterName + ' does not have authenticator or audit logging enabled. Refer to the remediation instructions if this configuration is not intended',
+                                            'Remediation': {
+                                                'Recommendation': {
+                                                    'Text': 'To enable logging for your cluster refer to the Amazon EKS Control Plane Logging section of the EKS user guide',
+                                                    'Url': 'https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html'
+                                                }
+                                            },
+                                            'ProductFields': {
+                                                'Product Name': 'ElectricEye'
+                                            },
+                                            'Resources': [
+                                                {
+                                                    'Type': 'Other',
+                                                    'Id': clusterArn,
+                                                    'Partition': 'aws',
+                                                    'Region': awsRegion,
+                                                    'Details': {
+                                                        'Other': { 'Cluster Name': clusterName }
+                                                    }
+                                                }
+                                            ],
+                                            'Compliance': { 'Status': 'FAILED' },
+                                            'RecordState': 'ACTIVE'
+                                        }
+                                    ]
+                                )
+                                print(response)
+                            except Exception as e:
+                                print(e)
+        except Exception as e:
+            print(e)
+
 def eks_auditor():
-    public_access_check()
-    k8s_latest_check()
+    eks_public_endpoint_access_check()
+    eks_latest_k8s_version_check()
+    eks_logging_audit_auth_check()
 
 eks_auditor()
