@@ -67,7 +67,33 @@ In this section we will deploy CloudWatch Events and Lambda functions to the Sec
 
 All CLI commands are executed from an Ubuntu 18.04LTS [Cloud9 IDE](https://aws.amazon.com/cloud9/details/), modify them to fit your OS. Before starting [attach this IAM policy](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response/policies/electriceye-response-terraform-policy.json) to your [Instance Profile](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html) (if you are using Cloud9 or EC2).
 
-***WORK IN PROGRESS***
+1. Update your machine and install the dependencies for Terraform. **Note:** these configuration files are written for `v 0.11.x` and will not work with `v 0.12.x` Terraform installations and rewriting for that spec is not in the immediate roadmap.
+```bash
+sudo apt update
+sudo apt upgrade -y
+sudo apt install wget -y
+wget https://releases.hashicorp.com/terraform/0.11.14/terraform_0.11.14_linux_amd64.zip
+unzip terraform_0.11.14_linux_amd64.zip
+sudo mv terraform /usr/local/bin/
+terraform --version
+```
+
+2. Clone this repository, change directories to the `ElectricEye-Response` root folder and clone the contents of `lambda-packages` to `terraform`
+```bash
+git clone https://github.com/jonrau1/ElectricEye.git
+cd ElectricEye/add-ons/electriceye-response
+cp -a lambda-packages/. terraform/
+```
+
+3. Change directories and then initialize, plan and apply your state with Terraform.
+```bash
+cd terraform
+terraform init
+terraform plan
+terraform apply -auto-approve
+```
+
+That is all it takes to execute full auto response and remediation actions with ElectricEye-Response. As alluded to above, only a small subsection of actions across the CIS, PCI and ElectricEye Auditor checks are supported. If you want to add others, fork this repo and follow along `main.tf` to create other full auto playbooks.
 
 ## Playbook Reference Repository
 There are currently **59** supported response and remediation Playbooks with coverage across **31** AWS services / components supported by ElectricEye-Response.

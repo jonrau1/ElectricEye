@@ -1,3 +1,17 @@
+# This file is part of ElectricEye.
+
+# ElectricEye is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# ElectricEye is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License along with ElectricEye.  
+# If not, see https://github.com/jonrau1/ElectricEye/blob/master/LICENSE.
 resource "aws_iam_role" "Security_Hub_XAcct_Lambda_Role" {
   name = "${var.Cross_Account_Lambda_Role_Name}"
   description = "Role for ElectricEye full automatic cross-account response and remediation playbooks - Managed by Terraform"
@@ -101,7 +115,12 @@ resource "aws_cloudwatch_event_rule" "Deactivate_Old_Access_Key_Event_Rule" {
       "Title": [
         "1.3 Ensure credentials unused for 90 days or greater are disabled",
         "1.4 Ensure access keys are rotated every 90 days or less"
-      ]
+      ],
+      "Compliance": {
+        "Status": [
+          "FAILED"
+        ]
+      }
     }
   }
 }
@@ -149,7 +168,12 @@ resource "aws_cloudwatch_event_rule" "IAM_CIS_PW_Policy_Playbook_Event_Rule" {
         "1.9 Ensure IAM password policy requires minimum password length of 14 or greater",
         "1.10 Ensure IAM password policy prevents password reuse",
         "1.11 Ensure IAM password policy expires passwords within 90 days or less"
-      ]
+      ],
+      "Compliance": {
+        "Status": [
+          "FAILED"
+        ]
+      }
     }
   }
 }
@@ -192,7 +216,12 @@ resource "aws_cloudwatch_event_rule" "CloudTrail_FileValidation_Playbook_Event_R
       "Title": [
         "2.2 Ensure CloudTrail log file validation is enabled (Scored)",
         "PCI.CloudTrail.3 CloudTrail log file validation should be enabled"
-      ]
+      ],
+      "Compliance": {
+        "Status": [
+          "FAILED"
+        ]
+      }
     }
   }
 }
@@ -236,7 +265,12 @@ resource "aws_cloudwatch_event_rule" "S3_PrivateACL_Playbook_Event_Rule" {
         "2.3 Ensure the S3 bucket used to store CloudTrail logs is not publicly accessible (Scored)",
         "PCI.S3.1 S3 bucket should prohibit public write access",
         "PCI.S3.2 S3 bucket should prohibit public read access"
-      ]
+      ],
+      "Compliance": {
+        "Status": [
+          "FAILED"
+        ]
+      }
     }
   }
 }
@@ -279,7 +313,12 @@ resource "aws_cloudwatch_event_rule" "KMS_CMK_Rotation_Playbook_Event_Rule" {
       "Title": [
         "2.8 Ensure rotation for customer created CMKs is enabled",
         "PCI.KMS.1 Customer master key (CMK) rotation should be enabled"
-      ]
+      ],
+      "Compliance": {
+        "Status": [
+          "FAILED"
+        ]
+      }
     }
   }
 }
@@ -321,7 +360,12 @@ resource "aws_cloudwatch_event_rule" "Remove_Open_SSH_Playbook_Event_Rule" {
     "findings": {
       "Title": [
         "4.1 Ensure no security groups allow ingress from 0.0.0.0/0 to port 22"
-      ]
+      ],
+      "Compliance": {
+        "Status": [
+          "FAILED"
+        ]
+      }
     }
   }
 }
@@ -363,7 +407,12 @@ resource "aws_cloudwatch_event_rule" "Remove_Open_RDP_Playbook_Event_Rule" {
     "findings": {
       "Title": [
         "4.2 Ensure no security groups allow ingress from 0.0.0.0/0 to port 3389"
-      ]
+      ],
+      "Compliance": {
+        "Status": [
+          "FAILED"
+        ]
+      }
     }
   }
 }
@@ -406,7 +455,12 @@ resource "aws_cloudwatch_event_rule" "Remove_All_SG_Rules_Playbook_Event_Rule" {
       "Title": [
         "4.3 Ensure the default security group of every VPC restricts all traffic",
         "PCI.EC2.2 VPC default security group should prohibit inbound and outbound traffic"
-      ]
+      ],
+      "Compliance": {
+        "Status": [
+          "FAILED"
+        ]
+      }
     }
   }
 }
@@ -448,7 +502,12 @@ resource "aws_cloudwatch_event_rule" "S3_Encryption_Playbook_Event_Rule" {
     "findings": {
       "Title": [
         "PCI.S3.4 S3 buckets should have server-side encryption enabled"
-      ]
+      ],
+      "Compliance": {
+        "Status": [
+          "FAILED"
+        ]
+      }
     }
   }
 }
@@ -490,7 +549,12 @@ resource "aws_cloudwatch_event_rule" "RDS_Privatize_Snapshot_Playbook_Event_Rule
     "findings": {
       "Title": [
         "PCI.RDS.1 RDS snapshots should prohibit public access"
-      ]
+      ],
+      "Compliance": {
+        "Status": [
+          "FAILED"
+        ]
+      }
     }
   }
 }
@@ -532,7 +596,12 @@ resource "aws_cloudwatch_event_rule" "EBS_Privatize_Snapshot_Playbook_Event_Rule
     "findings": {
       "Title": [
         "PCI.EC2.1 EBS snapshots should not be publicly restorable"
-      ]
+      ],
+      "Compliance": {
+        "Status": [
+          "FAILED"
+        ]
+      }
     }
   }
 }
@@ -574,7 +643,12 @@ resource "aws_cloudwatch_event_rule" "RDS_Privatize_Instance_Playbook_Event_Rule
     "findings": {
       "Title": [
         "PCI.RDS.2 RDS DB Instances should prohibit public access"
-      ]
+      ],
+      "Compliance": {
+        "Status": [
+          "FAILED"
+        ]
+      }
     }
   }
 }
@@ -616,7 +690,12 @@ resource "aws_cloudwatch_event_rule" "Redshift_Privatize_Playbook_Event_Rule" {
     "findings": {
       "Title": [
         "PCI.Redshift.1 Redshift clusters should prohibit public access"
-      ]
+      ],
+      "Compliance": {
+        "Status": [
+          "FAILED"
+        ]
+      }
     }
   }
 }
@@ -658,7 +737,12 @@ resource "aws_cloudwatch_event_rule" "Release_SG_Playbook_Event_Rule" {
     "findings": {
       "Title": [
         "PCI.EC2.3 Unused EC2 security groups should be removed"
-      ]
+      ],
+      "Compliance": {
+        "Status": [
+          "FAILED"
+        ]
+      }
     }
   }
 }
@@ -700,7 +784,12 @@ resource "aws_cloudwatch_event_rule" "Release_EIP_Playbook_Event_Rule" {
     "findings": {
       "Title": [
         "PCI.EC2.4 Unused EC2 EIPs should be removed"
-      ]
+      ],
+      "Compliance": {
+        "Status": [
+          "FAILED"
+        ]
+      }
     }
   }
 }
@@ -742,7 +831,12 @@ resource "aws_cloudwatch_event_rule" "SSM_ApplyPatch_Playbook_Event_Rule" {
     "findings": {
       "Title": [
         "PCI.SSM.1 EC2 instances managed by Systems Manager should have a patch compliance status of COMPLIANT after a patch installation"
-      ]
+      ],
+      "Compliance": {
+        "Status": [
+          "FAILED"
+        ]
+      }
     }
   }
 }
