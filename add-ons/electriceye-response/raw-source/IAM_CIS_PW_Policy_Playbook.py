@@ -19,7 +19,6 @@ def lambda_handler(event, context):
     sts = boto3.client('sts')
     securityhub = boto3.client('securityhub')
     # create env vars
-    awsRegion = os.environ['AWS_REGION']
     lambdaFunctionName = os.environ['AWS_LAMBDA_FUNCTION_NAME']
     masterAccountId = sts.get_caller_identity()['Account']
     # parse Security Hub CWE
@@ -29,7 +28,7 @@ def lambda_handler(event, context):
         findingId =str(findings['Id'])
         # parse Account from SecHub Finding
         findingOwner = str(findings['AwsAccountId'])
-        if findingOwner != masterAcctId:
+        if findingOwner != masterAccountId:
             memberAcct = sts.assume_role(RoleArn='arn:aws:iam::' + findingOwner + ':role/XA-ElectricEye-Response',RoleSessionName='x_acct_sechub')
             # retrieve creds from member account
             xAcctAccessKey = memberAcct['Credentials']['AccessKeyId']

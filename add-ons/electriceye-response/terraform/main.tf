@@ -112,6 +112,11 @@ resource "aws_cloudwatch_event_rule" "Deactivate_Old_Access_Key_Event_Rule" {
   ],
   "detail": {
     "findings": {
+      "Resources": [
+        "Type": [
+          "AwsIamUser"
+        ]
+      ],
       "Title": [
         "1.3 Ensure credentials unused for 90 days or greater are disabled",
         "1.4 Ensure access keys are rotated every 90 days or less"
@@ -213,6 +218,11 @@ resource "aws_cloudwatch_event_rule" "CloudTrail_FileValidation_Playbook_Event_R
   ],
   "detail": {
     "findings": {
+      "Resources": [
+        "Type": [
+          "AwsCloudTrailTrail"
+        ]
+      ],
       "Title": [
         "2.2 Ensure CloudTrail log file validation is enabled (Scored)",
         "PCI.CloudTrail.3 CloudTrail log file validation should be enabled"
@@ -261,6 +271,11 @@ resource "aws_cloudwatch_event_rule" "S3_PrivateACL_Playbook_Event_Rule" {
   ],
   "detail": {
     "findings": {
+      "Resources": [
+        "Type": [
+          "AwsS3Bucket"
+        ]
+      ],
       "Title": [
         "2.3 Ensure the S3 bucket used to store CloudTrail logs is not publicly accessible (Scored)",
         "PCI.S3.1 S3 bucket should prohibit public write access",
@@ -310,6 +325,11 @@ resource "aws_cloudwatch_event_rule" "KMS_CMK_Rotation_Playbook_Event_Rule" {
   ],
   "detail": {
     "findings": {
+      "Resources": [
+        "Type": [
+          "AwsKmsKey"
+        ]
+      ],
       "Title": [
         "2.8 Ensure rotation for customer created CMKs is enabled",
         "PCI.KMS.1 Customer master key (CMK) rotation should be enabled"
@@ -358,6 +378,11 @@ resource "aws_cloudwatch_event_rule" "Remove_Open_SSH_Playbook_Event_Rule" {
   ],
   "detail": {
     "findings": {
+      "Resources": [
+        "Type": [
+          "AwsEc2SecurityGroup"
+        ]
+      ],
       "Title": [
         "4.1 Ensure no security groups allow ingress from 0.0.0.0/0 to port 22"
       ],
@@ -405,6 +430,11 @@ resource "aws_cloudwatch_event_rule" "Remove_Open_RDP_Playbook_Event_Rule" {
   ],
   "detail": {
     "findings": {
+      "Resources": [
+        "Type": [
+          "AwsEc2SecurityGroup"
+        ]
+      ],
       "Title": [
         "4.2 Ensure no security groups allow ingress from 0.0.0.0/0 to port 3389"
       ],
@@ -452,6 +482,11 @@ resource "aws_cloudwatch_event_rule" "Remove_All_SG_Rules_Playbook_Event_Rule" {
   ],
   "detail": {
     "findings": {
+      "Resources": [
+        "Type": [
+          "AwsEc2SecurityGroup"
+        ]
+      ],
       "Title": [
         "4.3 Ensure the default security group of every VPC restricts all traffic",
         "PCI.EC2.2 VPC default security group should prohibit inbound and outbound traffic"
@@ -500,6 +535,11 @@ resource "aws_cloudwatch_event_rule" "S3_Encryption_Playbook_Event_Rule" {
   ],
   "detail": {
     "findings": {
+      "Resources": [
+        "Type": [
+          "AwsS3Bucket"
+        ]
+      ],
       "Title": [
         "PCI.S3.4 S3 buckets should have server-side encryption enabled"
       ],
@@ -547,6 +587,11 @@ resource "aws_cloudwatch_event_rule" "RDS_Privatize_Snapshot_Playbook_Event_Rule
   ],
   "detail": {
     "findings": {
+      "Resources": [
+        "Type": [
+          "AwsRdsDBSnapshot"
+        ]
+      ],
       "Title": [
         "PCI.RDS.1 RDS snapshots should prohibit public access"
       ],
@@ -594,6 +639,11 @@ resource "aws_cloudwatch_event_rule" "EBS_Privatize_Snapshot_Playbook_Event_Rule
   ],
   "detail": {
     "findings": {
+      "Resources": [
+        "Type": [
+          "AwsEc2Snapshot"
+        ]
+      ],
       "Title": [
         "PCI.EC2.1 EBS snapshots should not be publicly restorable"
       ],
@@ -641,6 +691,11 @@ resource "aws_cloudwatch_event_rule" "RDS_Privatize_Instance_Playbook_Event_Rule
   ],
   "detail": {
     "findings": {
+      "Resources": [
+        "Type": [
+          "AwsRdsDbInstance"
+        ]
+      ],
       "Title": [
         "PCI.RDS.2 RDS DB Instances should prohibit public access"
       ],
@@ -688,6 +743,11 @@ resource "aws_cloudwatch_event_rule" "Redshift_Privatize_Playbook_Event_Rule" {
   ],
   "detail": {
     "findings": {
+      "Resources": [
+        "Type": [
+          "AwsRedshiftCluster"
+        ]
+      ],
       "Title": [
         "PCI.Redshift.1 Redshift clusters should prohibit public access"
       ],
@@ -735,6 +795,11 @@ resource "aws_cloudwatch_event_rule" "Release_SG_Playbook_Event_Rule" {
   ],
   "detail": {
     "findings": {
+      "Resources": [
+        "Type": [
+          "AwsEc2SecurityGroup"
+        ]
+      ],
       "Title": [
         "PCI.EC2.3 Unused EC2 security groups should be removed"
       ],
@@ -782,6 +847,11 @@ resource "aws_cloudwatch_event_rule" "Release_EIP_Playbook_Event_Rule" {
   ],
   "detail": {
     "findings": {
+      "Resources": [
+        "Type": [
+          "AwsEc2Eip"
+        ]
+      ],
       "Title": [
         "PCI.EC2.4 Unused EC2 EIPs should be removed"
       ],
@@ -828,6 +898,11 @@ resource "aws_cloudwatch_event_rule" "SSM_ApplyPatch_Playbook_Event_Rule" {
     "Security Hub Findings - Imported"
   ],
   "detail": {
+    "Resources": [
+        "Type": [
+          "AwsSsmPatchCompliance"
+        ]
+      ],
     "findings": {
       "Title": [
         "PCI.SSM.1 EC2 instances managed by Systems Manager should have a patch compliance status of COMPLIANT after a patch installation"
@@ -854,11 +929,11 @@ resource "aws_lambda_permission" "SSM_ApplyPatch_Playbook_CWE_Lambda_Permission"
   source_arn    = "${aws_cloudwatch_event_rule.SSM_ApplyPatch_Playbook_Event_Rule.arn}"
 }
 resource "aws_lambda_function" "SSM_ApplyPatch_Playbook_XAcct_Function" {
-  filename      = "./SSM_ApplyPatch_Playbook.zip"
+  filename      = "./PCI_Edition_SSM_ApplyPatch_Playbook.zip"
   function_name = "${var.SSM_ApplyPatch_Playbook_XAcct_Function_Name}"
   description   = "After exeuction will invoke a SSM Command Document to apply security patches to an instance - Managed by Terraform"
   role          = "${aws_iam_role.Security_Hub_XAcct_Lambda_Role.arn}"
-  handler       = "SSM_ApplyPatch_Playbook.lambda_handler"
+  handler       = "PCI_Edition_SSM_ApplyPatch_Playbook.lambda_handler"
   runtime       = "python3.8"
   memory_size   = 256
   timeout       = 181
