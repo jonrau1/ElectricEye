@@ -153,7 +153,7 @@ def eks_latest_k8s_version_check():
             clusterName = str(response['cluster']['name'])
             clusterArn = str(response['cluster']['arn'])
             k8sVersionCheck = str(response['cluster']['version'])
-            if k8sVersionCheck != '1.14':
+            if k8sVersionCheck != '1.14' or '1.15':
                 try:
                     # ISO Time
                     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
