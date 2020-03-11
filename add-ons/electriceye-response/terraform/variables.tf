@@ -66,3 +66,9 @@ variable "Release_EIP_Playbook_XAcct_Function_Name" {
 variable "SSM_ApplyPatch_Playbook_XAcct_Function_Name" {
   default = "XAcct-ApplyPatch-Playbook"
 }
+variable "DocDB_Privatize_Snapshot_Playbook_XAcct_Function_Name" {
+  default = "XAcct-DocDb-Private-Snapshot-Playbook"
+}
+variable "S3_Put_Lifecycle_Playbook_XAcct_Function_Name" {
+  default = "XAcct-S3-Lifecycle-Playbook"
+}

@@ -938,3 +938,97 @@ resource "aws_lambda_function" "SSM_ApplyPatch_Playbook_XAcct_Function" {
   memory_size   = 256
   timeout       = 181
 }
+resource "aws_cloudwatch_event_rule" "DocDB_Privatize_Snapshot_Playbook_Event_Rule" {
+  name        = "x-acct-privatize-docdb-snapshot-rule"
+  description = "After exeuction will remove public access to the DocDB Cluster snapshot - Managed by Terraform"
+  event_pattern = <<PATTERN
+	{
+  "source": [
+    "aws.securityhub"
+  ],
+  "detail-type": [
+    "Security Hub Findings - Imported"
+  ],
+  "detail": {
+    "findings": {
+      "Title": [
+        "[DocDb.9] DocumentDB cluster snapshots should not be publicly shared"
+      ],
+      "Compliance": {
+        "Status": [
+          "FAILED"
+        ]
+      }
+    }
+  }
+}
+PATTERN
+}
+resource "aws_cloudwatch_event_target" "DocDB_Privatize_Snapshot_Playbook_Event_Rule_Lambda_Target" {
+  rule      = "${aws_cloudwatch_event_rule.DocDB_Privatize_Snapshot_Playbook_Event_Rule.name}"
+  arn       = "${aws_lambda_function.DocDB_Privatize_Snapshot_Playbook_XAcct_Function.arn}"
+}
+resource "aws_lambda_permission" "DocDB_Privatize_Snapshot_Playbook_CWE_Lambda_Permission" {
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = "${aws_lambda_function.DocDB_Privatize_Snapshot_Playbook_XAcct_Function.function_name}"
+  principal     = "events.amazonaws.com"
+  source_arn    = "${aws_cloudwatch_event_rule.DocDB_Privatize_Snapshot_Playbook_Event_Rule.arn}"
+}
+resource "aws_lambda_function" "DocDB_Privatize_Snapshot_Playbook_XAcct_Function" {
+  filename      = "./DocDB_Privatize_Snapshot_Playbook.zip"
+  function_name = "${var.DocDB_Privatize_Snapshot_Playbook_XAcct_Function_Name}"
+  description   = "After exeuction will remove public access to the DocDB Cluster snapshot - Managed by Terraform"
+  role          = "${aws_iam_role.Security_Hub_XAcct_Lambda_Role.arn}"
+  handler       = "DocDB_Privatize_Snapshot_Playbook.lambda_handler"
+  runtime       = "python3.8"
+  memory_size   = 256
+  timeout       = 181
+}
+resource "aws_cloudwatch_event_rule" "S3_Put_Lifecycle_Playbook_Event_Rule" {
+  name        = "x-acct-s3-lifecycle-rule"
+  description = "After exeuction will apply a basic lifecycle configuration policy on an S3 bucket to move old files to cheaper storage - Managed by Terraform"
+  event_pattern = <<PATTERN
+	{
+  "source": [
+    "aws.securityhub"
+  ],
+  "detail-type": [
+    "Security Hub Findings - Imported"
+  ],
+  "detail": {
+    "findings": {
+      "Title": [
+        "[S3.2] S3 Buckets should implement lifecycle policies for data archival and recovery operations"
+      ],
+      "Compliance": {
+        "Status": [
+          "FAILED"
+        ]
+      }
+    }
+  }
+}
+PATTERN
+}
+resource "aws_cloudwatch_event_target" "S3_Put_Lifecycle_Playbook_Event_Rule_Lambda_Target" {
+  rule      = "${aws_cloudwatch_event_rule.S3_Put_Lifecycle_Playbook_Event_Rule.name}"
+  arn       = "${aws_lambda_function.S3_Put_Lifecycle_Playbook_XAcct_Function.arn}"
+}
+resource "aws_lambda_permission" "S3_Put_Lifecycle_Playbook_CWE_Lambda_Permission" {
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = "${aws_lambda_function.S3_Put_Lifecycle_Playbook_XAcct_Function.function_name}"
+  principal     = "events.amazonaws.com"
+  source_arn    = "${aws_cloudwatch_event_rule.S3_Put_Lifecycle_Playbook_Event_Rule.arn}"
+}
+resource "aws_lambda_function" "S3_Put_Lifecycle_Playbook_XAcct_Function" {
+  filename      = "./S3_Put_Lifecycle_Playbook.zip"
+  function_name = "${var.S3_Put_Lifecycle_Playbook_XAcct_Function_Name}"
+  description   = "After exeuction will apply a basic lifecycle configuration policy on an S3 bucket to move old files to cheaper storage - Managed by Terraform"
+  role          = "${aws_iam_role.Security_Hub_XAcct_Lambda_Role.arn}"
+  handler       = "S3_Put_Lifecycle_Playbook.lambda_handler"
+  runtime       = "python3.8"
+  memory_size   = 256
+  timeout       = 181
+}

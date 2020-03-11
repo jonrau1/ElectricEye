@@ -51,7 +51,7 @@ def lambda_handler(event, context):
                     try:
                         response = securityhub.update_findings(
                             Filters={'Id': [{'Value': findingId,'Comparison': 'EQUALS'}]},
-                            Note={'Text': 'DocumentDB Cluster has had deletion protection enabled and the finding was archived. Review the cluster to identify any other misconfigurations','UpdatedBy': lambdaFunctionName},
+                            Note={'Text': 'DocumentDB Cluster snapshot had all public access removed and the finding was archived. Review your clusters and snapshots to ensure you did not leak any sensitive data.','UpdatedBy': lambdaFunctionName},
                             RecordState='ARCHIVED'
                         )
                         print(response)
@@ -72,7 +72,7 @@ def lambda_handler(event, context):
                     try:
                         response = securityhub.update_findings(
                             Filters={'Id': [{'Value': findingId,'Comparison': 'EQUALS'}]},
-                            Note={'Text': 'DocumentDB Cluster has had deletion protection enabled and the finding was archived. Review the cluster to identify any other misconfigurations','UpdatedBy': lambdaFunctionName},
+                            Note={'Text': 'DocumentDB Cluster snapshot had all public access removed and the finding was archived. Review your clusters and snapshots to ensure you did not leak any sensitive data.','UpdatedBy': lambdaFunctionName},
                             RecordState='ARCHIVED'
                         )
                         print(response)
