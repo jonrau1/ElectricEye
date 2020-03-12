@@ -8,6 +8,8 @@ Pre-defined multi-account response and remediation Playbooks for Security Hub an
 - [Setting Up](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response/README.md#setting-up)
   - [Deploying ElectricEye-Response Cross-Account Role via StackSets](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response/README.md#deploying-electriceye-response-cross-account-role-via-stacksets)
   - [Semi-Auto ElectricEye-Response with CloudFormation](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response/README.md#semi-auto-electriceye-response-with-cloudformation)
+    - [Extras](https://github.com/jonrau1/ElectricEye/tree/master/add-ons/electriceye-response/extras)
+  - [Full-Auto ElectricEye-Response with CloudFormation](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response/README.md#full-auto-electriceye-response-with-cloudformation)
   - [Full-Auto ElectricEye-Response with Terraform](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response/README.md#full-auto-electriceye-response-with-terraform)
 - [Playbook Reference Repository](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response/README.md#playbook-reference-repository)
 - [Known Issues and Limitations](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response/README.md#known-issues-and-limitations)
@@ -70,7 +72,7 @@ cd ElectricEye/add-ons/electriceye-response/lambda-packages
 aws s3 sync . s3://[MY-BUCKET-NAME-HERE]
 ```
 
-2. Download the CloudFormation template, it is named `ElectricEye-Response_SemiAutoPlaybooks_CFN.yml` and create a Stack. Enter a name and values for the Parameters. If you do not use WAF, ServiceNow or JIRA you can leave their values as `placeholder`, the only parameter you need is the S3 bucket created in Step 1 as shown below. For information on creating the ServiceNow or JIRA parameters refer to the Extras Readme.
+2. Download the CloudFormation template, it is named `ElectricEye-Response_SemiAutoPlaybooks_CFN.yml` and create a Stack. Enter a name and values for the Parameters. If you do not use WAF, ServiceNow or JIRA you can leave their values as `placeholder`, the only parameter you need is the S3 bucket created in Step 1 as shown below. For information on creating the ServiceNow or JIRA parameters refer to the [Extras Readme](https://github.com/jonrau1/ElectricEye/tree/master/add-ons/electriceye-response/extras).
 ![SemiAutoParams](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/electriceye-response-semi-auto-CFN-params.jpg)
 
 3. Once the Stack finishes creating you will be able launch these semi-automatic response and remediation Playbooks using Security Hub custom actions. Select the **Findings** tab in the Security Hub console, select any finding and choose the **Actions** menu to be presented with a view as shown below.
