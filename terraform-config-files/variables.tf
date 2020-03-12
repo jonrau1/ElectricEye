@@ -33,7 +33,7 @@ variable "Electric_Eye_Docker_Image_URI" {
   description = "URI of the ElectricEye Docker image from ECR" 
 }
 variable "Shodan_API_Key_SSM_Parameter" {
-  default =     "placeholder" # you should change me
+  default =     "placeholder"
   description = "The SSM Secure String Parameter containing your Shodan API key. Leave the default value if you will not be using Shodan"
 }
 variable "Electric_Eye_Schedule_Task_Expression" {

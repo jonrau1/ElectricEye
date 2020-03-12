@@ -28,9 +28,10 @@ resource "aws_s3_bucket" "Electric_Eye_Security_Artifact_Bucket" {
   }
 }
 resource "aws_ssm_parameter" "Electric_Eye_Bucket_Parameter" {
-  name  = "electriceye-bucket"
-  type  = "String"
-  value = "${aws_s3_bucket.Electric_Eye_Security_Artifact_Bucket.id}"
+  name       = "electriceye-bucket"
+  type        = "String"
+  value       = "${aws_s3_bucket.Electric_Eye_Security_Artifact_Bucket.id}"
+  description = "Contains the location of the S3 bucket with ElectricEye Auditor files"
 }
 resource "aws_cloudwatch_log_group" "Electric_Eye_ECS_Task_Definition_CW_Logs_Group" {
   name = "/ecs/${var.Electric_Eye_ECS_Resources_Name}"
@@ -52,7 +53,12 @@ resource "aws_ecs_task_definition" "Electric_Eye_ECS_Task_Definition" {
     "memory": 4096,
     "memoryReservation": 4096,
     "essential": true,
-    "environment": [],
+    "environment": [
+      {
+        "value": "${var.Shodan_API_Key_SSM_Parameter}",
+        "name": "SHODAN_API_KEY_PARAM"
+      }
+    ],
     "name": "${var.Electric_Eye_ECS_Resources_Name}",
     "networkMode": "awsvpc",
     "logConfiguration": {
@@ -70,10 +76,6 @@ resource "aws_ecs_task_definition" "Electric_Eye_ECS_Task_Definition" {
     "secrets": [
       {
         "valueFrom": "${aws_ssm_parameter.Electric_Eye_Bucket_Parameter.arn}",
-        "name": "SH_SCRIPTS_BUCKET"
-      },
-      {
-        "valueFrom": "${var.Shodan_API_Key_SSM_Parameter}",
         "name": "SH_SCRIPTS_BUCKET"
       }
     ]
@@ -178,6 +180,8 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "codebuild:ListProjects",
                 "workspaces:DescribeWorkspaces",
                 "ecr:GetLifecyclePolicy",
+                "kms:Decrypt",
+                "kms:DescribeKey",
                 "sns:ListSubscriptionsByTopic",
                 "rds:DescribeDBSnapshots",
                 "ec2:DescribeSnapshotAttribute",
@@ -204,8 +208,10 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "ec2:DescribeFlowLogs",
                 "sagemaker:DescribeNotebookInstance",
                 "sns:ListTopics",
-                "efs:DescribeFileSystems",
+                "elasticfilesystem:DescribeFileSystems",
                 "apigateway:GET",
+                "ssm:GetParameter",
+                "ssm:GetParameters",
                 "rds:DescribeDBParameterGroups",
                 "s3:ListBucket",
                 "backup:DescribeProtectedResource",

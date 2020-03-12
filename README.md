@@ -49,7 +49,8 @@ Personas who can make use of this tool are DevOps/DevSecOps engineers, SecOps an
 Refer to the [Supported Services and Checks](https://github.com/jonrau1/ElectricEye#supported-services-and-checks) section for an up-to-date list of supported services and checks performed by the Auditors.
 
 ## Setting Up
-These steps are split across their relevant sections. All CLI commands are executed from an Ubuntu 18.04LTS [Cloud9 IDE](https://aws.amazon.com/cloud9/details/), modify them to fit your OS.
+These steps are split across their relevant sections. All CLI commands are executed from an Ubuntu 18.04LTS [Cloud9 IDE](https://aws.amazon.com/cloud9/details/), modify them to fit your OS. If you do use Cloud9, navigate to Settings (represented by a Gear icon) > AWS Settings and **unmark** the selection for `AWS managed temporary credentials` (move the toggle to your left-hand side) as shown below. If you do not, you instance profile will not apply properly.
+![Cloud9TempCred](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/cloud9-temp-creds.JPG)
 
 **Note:** Ensure AWS Security Hub is enabled in the region you are attempting to run ElectricEye
 
@@ -105,12 +106,12 @@ sudo mv terraform /usr/local/bin/
 terraform --version
 ```
 
-2. Change directories, and modify the `variables.tf` config file to include the URI of your Docker image as shown in the screenshot below
+2. Change directories, and modify the `variables.tf` config file to include the URI of your Docker image as shown in the screenshot below. Optionally replace the value of the Shodan API Key parameter with yours if you created it in the previous optional step.
 ```bash
 cd terraform-config-files
 nano variables.tf
 ```
-![Variables.tf modification](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/variables-tf-uri-modification.JPG)
+![Variables.tf modification](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/variables-tf-uri-modification.jpg)
 
 3. Initialize, plan and apply your state with Terraform, this step should not take too long.
 ```bash
@@ -361,6 +362,8 @@ The following are optional add-on's to ElectricEye that will extend its function
 
 ## Known Issues & Limitations
 This section is likely to wax and wane depending on future releases, PRs and changes to AWS APIs.
+
+- If you choose to build and run ElectricEye without the IAC on your own and use an existing VPC or, in the future, decide to build internet-facing services in the ElectricEye VPC you may run into Shodan.io false positives. The `socket` python module will use the DNS servers available to them; getting the IPv4 address for a DNS name (from RDS or ES endpoints for example) in your VPC will return the private IP address and lead to false positives with Shodan
 
 - No way to dynamically change Severity. All Severity Label's in Security Hub come from a conversion of `Severity.Normalized` which ranges from 1-100, to modify these values you will need to fork and modify to fit your organization's definition of severity based on threat modeling and risk appetite for certain configurations.
 

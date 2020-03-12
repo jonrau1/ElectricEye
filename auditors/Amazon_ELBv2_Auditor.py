@@ -270,7 +270,6 @@ def elbv2_deletion_protection_check():
                         except Exception as e:
                             print(e)
                 else:
-                    print('skipping non logging attribute')
                     pass
         except Exception as e:
             print(e)
@@ -513,7 +512,6 @@ def elbv2_tls12_listener_policy_check():
                         except Exception as e:
                             print(e)
                 else:
-                    print('This load balancer doesnt have a secure listener')
                     pass
         except Exception as e:
             print(e)

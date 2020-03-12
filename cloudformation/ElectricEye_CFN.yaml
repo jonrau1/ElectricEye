@@ -144,107 +144,108 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       Policies:
-      - PolicyName: ElectricEyeTaskRole-Policy
+      - PolicyName: electriceyetaskpolicy
         PolicyDocument:
           Version: 2012-10-17
           Statement:
           - Effect: Allow
             Action:
-              - access-analyzer:ListAnalyzers
-              - apigateway:GET
-              - appstream:DescribeFleets
-              - appstream:DescribeImages
-              - appstream:DescribeUsers
-              - backup:DescribeProtectedResource
-              - cloudformation:DescribeStacks
-              - cloudfront:ListDistributions
-              - cloudtrail:DescribeTrails
-              - cloudtrail:ListTrails
-              - codebuild:BatchGetProjects
-              - codebuild:ListProjects
-              - cognito-idp:DescribeUserPool
-              - cognito-idp:ListUserPools
-              - dms:DescribeReplicationInstances
-              - ds:DescribeDirectories
-              - ds:ListLogSubscriptions
-              - dynamodb:DescribeTable
-              - dynamodb:ListTables
-              - ec2:DescribeAddresses
-              - ec2:DescribeFlowLogs
-              - ec2:DescribeImageAttribute
-              - ec2:DescribeImages
-              - ec2:DescribeInstanceAttribute
-              - ec2:DescribeInstances
-              - ec2:DescribeSecurityGroupReferences
-              - ec2:DescribeSecurityGroups
-              - ec2:DescribeSnapshotAttribute
-              - ec2:DescribeSnapshots
-              - ec2:DescribeVolumes
-              - ec2:DescribeVpcs
-              - ec2:GetEbsDefaultKmsKeyId
-              - ec2:GetEbsEncryptionByDefault
-              - ecr:DescribeRepositories
-              - ecr:GetLifecyclePolicy
-              - ecr:GetRepositoryPolicy
-              - efs:DescribeFileSystems
-              - eks:DescribeCluster
-              - eks:ListClusters
-              - elasticache:DescribeCacheClusters
-              - elasticloadbalancing:DescribeListeners
-              - elasticloadbalancing:DescribeLoadBalancerAttributes
-              - elasticloadbalancing:DescribeLoadBalancers
-              - es:DescribeElasticsearchDomain
-              - es:ListDomainNames
-              - guardduty:ListDetectors
-              - kafka:DescribeCluster
-              - kafka:ListClusters
-              - kinesis:DescribeStream
-              - kinesis:ListStreams
-              - kms:Decrypt
-              - kms:DescribeKey
-              - rds:DescribeDBClusterParameterGroups
-              - rds:DescribeDBClusterParameters
-              - rds:DescribeDBClusters
-              - rds:DescribeDBClusterSnapshotAttributes
-              - rds:DescribeDBClusterSnapshots
-              - rds:DescribeDBInstances
-              - rds:DescribeDBParameterGroups
-              - rds:DescribeDBParameters
-              - rds:DescribeDBSnapshotAttributes
-              - rds:DescribeDBSnapshots
-              - redshift:DescribeClusters
-              - redshift:DescribeLoggingStatus
-              - route53:ListHostedZones
-              - s3:GetAccountPublicAccessBlock
-              - s3:GetEncryptionConfiguration
-              - s3:GetLifecycleConfiguration
-              - s3:GetObject
-              - s3:ListAllMyBuckets
-              - s3:ListBucket
-              - sagemaker:DescribeEndpoint
-              - sagemaker:DescribeModel
-              - sagemaker:DescribeNotebookInstance
-              - sagemaker:ListEndpoints
-              - sagemaker:ListModels
-              - sagemaker:ListNotebookInstances
-              - secretsmanager:ListSecrets
-              - securityhub:BatchImportFindings
-              - securityhub:GetFindings
-              - shield:DescribeDRTAccess
-              - shield:DescribeProtection
-              - shield:DescribeSubscription
-              - sns:GetTopicAttributes
-              - sns:ListSubscriptions
-              - sns:ListSubscriptionsByTopic
-              - sns:ListTopics
-              - ssm:GetParameter
-              - ssm:DescribeInstanceAssociationsStatus
-              - ssm:DescribeInstanceInformation
-              - ssm:DescribeInstancePatches
-              - ssm:DescribeInstancePatchStates
-              - ssm:DescribeInstanceProperties
-              - workspaces:DescribeWorkspaceDirectories
-              - workspaces:DescribeWorkspaces              
+            - access-analyzer:ListAnalyzers
+            - apigateway:GET
+            - appstream:DescribeFleets
+            - appstream:DescribeImages
+            - appstream:DescribeUsers
+            - backup:DescribeProtectedResource
+            - cloudformation:DescribeStacks
+            - cloudfront:ListDistributions
+            - cloudtrail:DescribeTrails
+            - cloudtrail:ListTrails
+            - codebuild:BatchGetProjects
+            - codebuild:ListProjects
+            - cognito-idp:DescribeUserPool
+            - cognito-idp:ListUserPools
+            - dms:DescribeReplicationInstances
+            - ds:DescribeDirectories
+            - ds:ListLogSubscriptions
+            - dynamodb:DescribeTable
+            - dynamodb:ListTables
+            - ec2:DescribeAddresses
+            - ec2:DescribeFlowLogs
+            - ec2:DescribeImageAttribute
+            - ec2:DescribeImages
+            - ec2:DescribeInstanceAttribute
+            - ec2:DescribeInstances
+            - ec2:DescribeSecurityGroupReferences
+            - ec2:DescribeSecurityGroups
+            - ec2:DescribeSnapshotAttribute
+            - ec2:DescribeSnapshots
+            - ec2:DescribeVolumes
+            - ec2:DescribeVpcs
+            - ec2:GetEbsDefaultKmsKeyId
+            - ec2:GetEbsEncryptionByDefault
+            - ecr:DescribeRepositories
+            - ecr:GetLifecyclePolicy
+            - ecr:GetRepositoryPolicy
+            - eks:DescribeCluster
+            - eks:ListClusters
+            - elasticfilesystem:DescribeFileSystems
+            - elasticache:DescribeCacheClusters
+            - elasticloadbalancing:DescribeListeners
+            - elasticloadbalancing:DescribeLoadBalancerAttributes
+            - elasticloadbalancing:DescribeLoadBalancers
+            - es:DescribeElasticsearchDomain
+            - es:ListDomainNames
+            - guardduty:ListDetectors
+            - kafka:DescribeCluster
+            - kafka:ListClusters
+            - kinesis:DescribeStream
+            - kinesis:ListStreams
+            - kms:Decrypt
+            - kms:DescribeKey
+            - rds:DescribeDBClusterParameterGroups
+            - rds:DescribeDBClusterParameters
+            - rds:DescribeDBClusters
+            - rds:DescribeDBClusterSnapshotAttributes
+            - rds:DescribeDBClusterSnapshots
+            - rds:DescribeDBInstances
+            - rds:DescribeDBParameterGroups
+            - rds:DescribeDBParameters
+            - rds:DescribeDBSnapshotAttributes
+            - rds:DescribeDBSnapshots
+            - redshift:DescribeClusters
+            - redshift:DescribeLoggingStatus
+            - route53:ListHostedZones
+            - s3:GetAccountPublicAccessBlock
+            - s3:GetEncryptionConfiguration
+            - s3:GetLifecycleConfiguration
+            - s3:GetObject
+            - s3:ListAllMyBuckets
+            - s3:ListBucket
+            - sagemaker:DescribeEndpoint
+            - sagemaker:DescribeModel
+            - sagemaker:DescribeNotebookInstance
+            - sagemaker:ListEndpoints
+            - sagemaker:ListModels
+            - sagemaker:ListNotebookInstances
+            - secretsmanager:ListSecrets
+            - securityhub:BatchImportFindings
+            - securityhub:GetFindings
+            - shield:DescribeDRTAccess
+            - shield:DescribeProtection
+            - shield:DescribeSubscription
+            - sns:GetTopicAttributes
+            - sns:ListSubscriptions
+            - sns:ListSubscriptionsByTopic
+            - sns:ListTopics
+            - ssm:GetParameter
+            - ssm:GetParameters
+            - ssm:DescribeInstanceAssociationsStatus
+            - ssm:DescribeInstanceInformation
+            - ssm:DescribeInstancePatches
+            - ssm:DescribeInstancePatchStates
+            - ssm:DescribeInstanceProperties
+            - workspaces:DescribeWorkspaceDirectories
+            - workspaces:DescribeWorkspaces              
             Resource: "*"
       AssumeRolePolicyDocument:
         Version: 2012-10-17
@@ -257,7 +258,7 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       Policies:
-      - PolicyName: ElectricEyeExecutionRole-Policy
+      - PolicyName: electriceyeexecpolicy
         PolicyDocument:
           Version: 2012-10-17
           Statement:
@@ -310,8 +311,9 @@ Resources:
           Secrets:
             - Name: SH_SCRIPTS_BUCKET
               ValueFrom: !Ref ElectricEyeBucketParameter
+          Environment:
             - Name: SHODAN_API_KEY_PARAM
-              ValueFrom: !Ref ShodanApiKeySSMParam
+              Value: !Ref ShodanApiKeySSMParam
           LogConfiguration:
             LogDriver: awslogs
             Options:

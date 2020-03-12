@@ -51,7 +51,7 @@
                 "ec2:DescribeFlowLogs",
                 "sagemaker:DescribeNotebookInstance",
                 "sns:ListTopics",
-                "efs:DescribeFileSystems",
+                "elasticfilesystem:DescribeFileSystems",
                 "apigateway:GET",
                 "rds:DescribeDBParameterGroups",
                 "s3:ListBucket",

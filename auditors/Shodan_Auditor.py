@@ -295,7 +295,6 @@ def public_rds_shodan_check():
             if publicCheck == 'True':
                 # use Socket to do a DNS lookup and retrieve the IP address
                 rdsIp = socket.gethostbyname(rdsDns)
-                print(rdsIp)
                 # use requests Library to check the Shodan index for your host
                 r = requests.get(url = shodanUrl + rdsIp + '?key=' + shodanApiKey)
                 data = r.json()
