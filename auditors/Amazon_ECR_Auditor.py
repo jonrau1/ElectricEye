@@ -64,7 +64,7 @@ def ecr_repo_vuln_scan_check():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsEcrRepository',
                                     'Id': repoArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
@@ -113,7 +113,7 @@ def ecr_repo_vuln_scan_check():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsEcrRepository',
                                     'Id': repoArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
@@ -169,7 +169,7 @@ def ecr_repo_image_lifecycle_policy_check():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsEcrRepository',
                                     'Id': repoArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
@@ -218,7 +218,7 @@ def ecr_repo_image_lifecycle_policy_check():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsEcrRepository',
                                     'Id': repoArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
@@ -274,7 +274,7 @@ def ecr_repo_permission_policy():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsEcrRepository',
                                     'Id': repoArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
@@ -323,7 +323,7 @@ def ecr_repo_permission_policy():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsEcrRepository',
                                     'Id': repoArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,

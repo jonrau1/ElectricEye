@@ -70,7 +70,7 @@ def eks_public_endpoint_access_check():
                                 },
                                 'Resources': [
                                     {
-                                        'Type': 'Other',
+                                        'Type': 'AwsEksCluster',
                                         'Id': clusterArn,
                                         'Partition': 'aws',
                                         'Region': awsRegion,
@@ -122,7 +122,7 @@ def eks_public_endpoint_access_check():
                                 },
                                 'Resources': [
                                     {
-                                        'Type': 'Other',
+                                        'Type': 'AwsEksCluster',
                                         'Id': clusterArn,
                                         'Partition': 'aws',
                                         'Region': awsRegion,
@@ -185,7 +185,7 @@ def eks_latest_k8s_version_check():
                                 },
                                 'Resources': [
                                     {
-                                        'Type': 'Other',
+                                        'Type': 'AwsEksCluster',
                                         'Id': clusterArn,
                                         'Partition': 'aws',
                                         'Region': awsRegion,
@@ -234,7 +234,7 @@ def eks_latest_k8s_version_check():
                                 },
                                 'Resources': [
                                     {
-                                        'Type': 'Other',
+                                        'Type': 'AwsEksCluster',
                                         'Id': clusterArn,
                                         'Partition': 'aws',
                                         'Region': awsRegion,
@@ -302,7 +302,7 @@ def eks_logging_audit_auth_check():
                                             },
                                             'Resources': [
                                                 {
-                                                    'Type': 'Other',
+                                                    'Type': 'AwsEksCluster',
                                                     'Id': clusterArn,
                                                     'Partition': 'aws',
                                                     'Region': awsRegion,
@@ -351,7 +351,7 @@ def eks_logging_audit_auth_check():
                                             },
                                             'Resources': [
                                                 {
-                                                    'Type': 'Other',
+                                                    'Type': 'AwsEksCluster',
                                                     'Id': clusterArn,
                                                     'Partition': 'aws',
                                                     'Region': awsRegion,

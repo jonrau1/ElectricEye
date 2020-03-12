@@ -64,7 +64,7 @@ def inter_cluster_encryption_in_transit_check():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsManagedKafkaCluster',
                                     'Id': clusterArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
@@ -113,7 +113,7 @@ def inter_cluster_encryption_in_transit_check():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsManagedKafkaCluster',
                                     'Id': clusterArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
@@ -168,7 +168,7 @@ def client_broker_encryption_in_transit_check():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsManagedKafkaCluster',
                                     'Id': clusterArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
@@ -217,7 +217,7 @@ def client_broker_encryption_in_transit_check():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsManagedKafkaCluster',
                                     'Id': clusterArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
@@ -272,7 +272,7 @@ def client_authentication_check():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsManagedKafkaCluster',
                                     'Id': clusterArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
@@ -321,7 +321,7 @@ def client_authentication_check():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsManagedKafkaCluster',
                                     'Id': clusterArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
@@ -376,7 +376,7 @@ def cluster_enhanced_monitoring_check():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsManagedKafkaCluster',
                                     'Id': clusterArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
@@ -425,7 +425,7 @@ def cluster_enhanced_monitoring_check():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsManagedKafkaCluster',
                                     'Id': clusterArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,

@@ -65,7 +65,7 @@ def workspaces_user_volume_encryption_check():
                                 'ProductFields': { 'Product Name': 'ElectricEye' },
                                 'Resources': [
                                     {
-                                        'Type': 'Other',
+                                        'Type': 'AwsWorkspacesWorkspace',
                                         'Id': workspaceArn,
                                         'Partition': 'aws',
                                         'Region': awsRegion,
@@ -116,7 +116,7 @@ def workspaces_user_volume_encryption_check():
                                 'ProductFields': { 'Product Name': 'ElectricEye' },
                                 'Resources': [
                                     {
-                                        'Type': 'Other',
+                                        'Type': 'AwsWorkspacesWorkspace',
                                         'Id': workspaceArn,
                                         'Partition': 'aws',
                                         'Region': awsRegion,
@@ -176,7 +176,7 @@ def workspaces_root_volume_encryption_check():
                                 'ProductFields': { 'Product Name': 'ElectricEye' },
                                 'Resources': [
                                     {
-                                        'Type': 'Other',
+                                        'Type': 'AwsWorkspacesWorkspace',
                                         'Id': workspaceArn,
                                         'Partition': 'aws',
                                         'Region': awsRegion,
@@ -227,7 +227,7 @@ def workspaces_root_volume_encryption_check():
                                 'ProductFields': { 'Product Name': 'ElectricEye' },
                                 'Resources': [
                                     {
-                                        'Type': 'Other',
+                                        'Type': 'AwsWorkspacesWorkspace',
                                         'Id': workspaceArn,
                                         'Partition': 'aws',
                                         'Region': awsRegion,
@@ -283,7 +283,7 @@ def workspaces_running_mode_check():
                             'ProductFields': { 'Product Name': 'ElectricEye' },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsWorkspacesWorkspace',
                                     'Id': workspaceArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
@@ -331,7 +331,7 @@ def workspaces_running_mode_check():
                             'ProductFields': { 'Product Name': 'ElectricEye' },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsWorkspacesWorkspace',
                                     'Id': workspaceArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
