@@ -64,7 +64,7 @@ def kinesis_stream_encryption_check():
                             'ProductFields': { 'Product Name': 'ElectricEye' },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsKinesisStream',
                                     'Id': streamArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
@@ -114,7 +114,7 @@ def kinesis_stream_encryption_check():
                             'ProductFields': { 'Product Name': 'ElectricEye' },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsKinesisStream',
                                     'Id': streamArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
@@ -170,7 +170,7 @@ def kinesis_enhanced_monitoring_check():
                                 'ProductFields': { 'Product Name': 'ElectricEye' },
                                 'Resources': [
                                     {
-                                        'Type': 'Other',
+                                        'Type': 'AwsKinesisStream',
                                         'Id': streamArn,
                                         'Partition': 'aws',
                                         'Region': awsRegion,
@@ -217,7 +217,7 @@ def kinesis_enhanced_monitoring_check():
                                 'ProductFields': { 'Product Name': 'ElectricEye' },
                                 'Resources': [
                                     {
-                                        'Type': 'Other',
+                                        'Type': 'AwsKinesisStream',
                                         'Id': streamArn,
                                         'Partition': 'aws',
                                         'Region': awsRegion,

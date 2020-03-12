@@ -342,6 +342,8 @@ The following are optional add-on's to ElectricEye that will extend its function
   - ElectricEye-Response is a multi-account automation framework for response and remediation actions heavily influenced by [work I did when employed by AWS](https://aws.amazon.com/blogs/security/automated-response-and-remediation-with-aws-security-hub/). From your Security Hub Master, you can launch response and remediation actions by using CloudWatch Event rules, Lambda functions, Security Token Service (STS) and downstream services (such as Systems Manager Automation or Run Command). You can run these in a targetted manner (using Custom Actions) or fully automatically (using the CloudWatch detail type of `Security Hub Findings - Imported`).
 - [ElectricEye-ChatOps](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-chatops)
   - ElectricEye-ChatOps utilizes EventBridge / CloudWatch Event Rules to consume `HIGH` and `CRITICAL` severity findings created by ElectricEye from Security Hub and route them to a Lambda function. Lambda will parse out certain elements from the Security Hub finding, create a message and post it to a Slack App's webhook for consumption by your security engineers or other personnel in a Slack channel.
+- [ElectricEye-Reports](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-reports)
+  - ***EXPERIMENTAL***: ElectricEye-Reports is a fully serverless solution that extends Security Hub and ElectricEye by sending select finding information to [Amazon QuickSight](https://aws.amazon.com/quicksight/) via services such as Amazon Kinesis and Amazon DynamoDB. From QuickSight, you can create rich and detailed graphics that can be shared, embedded in your enterprise applications and analyzed for purposes such as gamification of security compliance, executive reporting, business line reporting, risk assessments, audit reports, etc.
 
 ## Known Issues & Limitations
 This section is likely to wax and wane depending on future releases, PRs and changes to AWS APIs.
@@ -350,7 +352,7 @@ This section is likely to wax and wane depending on future releases, PRs and cha
 
 - No tag-based scoping or exemption process out of the box. You will need to manually archive these, remove checks not pertinent to you and/or create your own automation to automatically archive findings for resources that shouldn't be in-scope.
 
-- Some resources, such as Elasticsearch Service, cannot be changed after creation for some checks and will continue to show as non-compliant until you manually migrate them, or create automation to auto-archive these findings.
+- Some resources, such as Elasticsearch Service or Elastic File System, cannot be changed after creation for some checks and will continue to show as non-compliant until you manually migrate them, or create automation to auto-archive these findings.
 
 - CloudFormation checks are noisy, consider deleting the `AWS_CloudFormation_Auditor.py` file unless your organization mandates the usage of Drift detection and Alarm based monitoring for stack rollbacks.
 
