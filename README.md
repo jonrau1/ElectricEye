@@ -12,7 +12,7 @@ Continuously monitor your AWS services for configurations that can lead to degra
 - [Solution Architecture](https://github.com/jonrau1/ElectricEye#solution-architecture)
 - [Setting Up](https://github.com/jonrau1/ElectricEye#setting-up)
   - [Build and push the Docker image](https://github.com/jonrau1/ElectricEye#build-and-push-the-docker-image)
-  - optional step
+  - [(OPTIONAL) Setup Shodan.io API Key](https://github.com/jonrau1/ElectricEye#optional-setup-shodanio-api-key)
   - [Setup baseline infrastructure via Terraform](https://github.com/jonrau1/ElectricEye#setup-baseline-infrastructure-via-terraform)
   - [Setup baseline infrastructure via AWS CloudFormation](https://github.com/jonrau1/ElectricEye#setup-baseline-infrastructure-via-aws-cloudformation)
   - [Manually execute the ElectricEye ECS Task](https://github.com/jonrau1/ElectricEye#manually-execute-the-electriceye-ecs-task-you-only-need-to-do-this-once)
