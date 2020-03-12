@@ -1,0 +1,2098 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  This template will create semi-auto versions of the ElectricEye-Response
+  playbooks and use a Custom Resource to provision Security Hub Custom Actions
+Metadata:
+  License: GPL-3.0
+Parameters:
+  PlaybookPackageS3Bucket:
+    Type: String
+    Description: S3 Bucket where the ElectricEye-Response zipped Lambda packages are uploaded
+  JiraUrl:
+    Type: String
+    Default: placeholder
+    Description: URL of your JIRA instance to send Issues to
+  JiraIssueCreatorUsername:
+    Type: String
+    Default: placeholder
+    Description: JIRA User Name which will be used to create issues by ElectricEye-Response
+  JiraApiKeySSMParameter:
+    Type: String
+    Default: placeholder
+    Description: The SSM Secure String Parameter containing your JIRA API Key
+  JiraProjectKey:
+    Type: String
+    Default: placeholder
+    Description: Your JIRA Project Key or Project ID to create Issues in
+  ServiceNowIncidentCreator:
+    Type: String
+    Default: placeholder
+    Description: The name of the ServiceNow User which will be used by ElectricEye-Response to create Incidents
+  IncidentCreatorPasswordSSMParameter:
+    Type: String
+    Default: placeholder
+    Description: The SSM Secure String Parameter containing the Password of the ServiceNow Incident Creator User
+  ServicenowUrl:
+    Type: String
+    Default: placeholder
+    Description: URL of your ServiceNow instance to send Incidents to
+  WAFv1IpSetId:
+    Type: String
+    Default: placeholder
+    Description: The ID of your WAFv1 IP Set you want to have GuardDuty port probe scanners added to
+Resources:
+  CreateActionTargetLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: CreateActionTarget
+      Description: Custom resource to create an action target in Security Hub
+      Handler: index.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt CreateActionTargetLambdaRole.Arn
+      Runtime: python3.7
+      Timeout: 60
+      Code:
+        ZipFile: |
+          import boto3
+          import cfnresponse
+          import os
+          def lambda_handler(event, context):
+              try:
+                  properties = event['ResourceProperties']
+                  region = os.environ['AWS_REGION']
+                  client = boto3.client('securityhub', region_name=region)
+                  responseData = {}
+                  if event['RequestType'] == 'Create':
+                      response = client.create_action_target(
+                          Name=properties['Name'],
+                          Description=properties['Description'],
+                          Id=properties['Id']
+                      )
+                      responseData['Arn'] = response['ActionTargetArn']
+                  elif event['RequestType'] == 'Delete':
+                      account_id = context.invoked_function_arn.split(":")[4]
+                      client.delete_action_target(
+                          ActionTargetArn=f"arn:aws:securityhub:{region}:{account_id}:action/custom/{properties['Id']}"
+                      )
+                  cfnresponse.send(event, context, cfnresponse.SUCCESS, responseData)
+              except Exception as e:
+                  print(e)
+                  cfnresponse.send(event, context, cfnresponse.FAILED, {})
+  CreateActionTargetLambdaRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      Policies:
+        - PolicyName: CreateActionTarget-LambdaPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'cloudwatch:PutMetricData'
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - 'securityhub:CreateActionTarget'
+                  - 'securityhub:DeleteActionTarget'
+                Resource: '*'
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+  ElectricEyeResponseIAMRole:
+    Type: AWS::IAM::Role
+    Properties: 
+      RoleName: MasterAccount-ElectricEye-Response
+      Description: Allows ElectricEye to perform response and remediation actions in the Security Hub Master Account
+      ManagedPolicyArns: 
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup
+        - arn:aws:iam::aws:policy/service-role/AmazonSSMAutomationRole
+      Policies:
+      - PolicyName: XAccount-Sechub-LambdaPolicy
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+          - Effect: Allow
+            Action:
+            - backup:StartBackupJob
+            - cloudtrail:UpdateTrail
+            - cognito-idp:UpdateUserPool
+            - ec2:CreateSnapshot
+            - ec2:StopInstances
+            - ec2:TerminateInstances
+            - ec2:DescribeSecurityGroups
+            - ec2:UpdateSecurityGroupRuleDescriptionsIngress
+            - ec2:RevokeSecurityGroupIngress
+            - ec2:DescribeSecurityGroupReferences
+            - ec2:ReleaseAddress
+            - ec2:ModifySnapshotAttribute
+            - ec2:UpdateSecurityGroupRuleDescriptionsEgress
+            - ec2:RevokeSecurityGroupEgress
+            - ec2:DeleteSecurityGroup
+            - ec2:DescribeInstances
+            - ec2:CreateSecurityGroup
+            - ec2:RevokeSecurityGroupEgress
+            - ec2:ModifyInstanceAttribute
+            - ec2:EnableEbsEncryptionByDefault
+            - ecr:PutLifecyclePolicy
+            - es:UpdateElasticsearchDomainConfig
+            - elasticloadbalancing:ModifyLoadBalancerAttributes
+            - guardduty:GetFindings
+            - iam:UpdateAccessKey
+            - iam:ListAccessKeys
+            - iam:PassRole
+            - iam:UpdateAccountPasswordPolicy
+            - kinesis:StartStreamEncryption
+            - kms:Decrypt
+            - kms:EnableKeyRotation
+            - logs:PutResourcePolicy
+            - logs:DescribeLogGroups
+            - logs:CreateLogGroup
+            - securityhub:UpdateFindings
+            - s3:PutBucketAcl
+            - s3:PutLifecycleConfiguration
+            - s3:PutEncryptionConfiguration
+            - s3:PutAccountPublicAccessBlock
+            - s3:PutBucketPublicAccessBlock
+            - shield:CreateProtection
+            - shield:GetSubscriptionState
+            - shield:UpdateSubscription
+            - sns:SetTopicAttributes
+            - ssm:SendCommand
+            - ssm:StartAutomationExecution
+            - ssm:GetParameter
+            - ssm:GetParameters
+            - sts:AssumeRole
+            - rds:ModifyDBCluster
+            - rds:ModifyDBClusterSnapshotAttribute
+            - rds:ModifyDBSnapshot
+            - rds:ModifyDBInstance
+            - rds:ModifyDBSnapshotAttribute
+            - redshift:ModifyCluster
+            - waf:UpdateIPSet
+            - waf:GetChangeToken
+            - waf-regional:UpdateIPSet
+            - waf-regional:GetChangeToken
+            - wafv2:ListIPSets
+            - wafv2:UpdateIPSet
+            Resource: '*'
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+  DisableExpiredAccessKeyPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: DisableExpiredAccessKeyPlaybook
+      Description: After execution will look for IAM access keys over 90 days old and deactivate them - Managed by CloudFormation
+      Handler: Disable_Expired_Access_Key_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: Disable_Expired_Access_Key_Playbook.zip
+  DisableExpiredAccessKeyPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Disable Access Key
+      Description: After execution will look for IAM access keys over 90 days old and deactivate them - Managed by CloudFormation
+      Id: DisableAccessKey
+  DisableExpiredAccessKeyPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: DisableExpiredAccessKeyPlaybookCWE
+      Description: After execution will look for IAM access keys over 90 days old and deactivate them - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt DisableExpiredAccessKeyPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - DisableExpiredAccessKeyPlaybookLambdaFunction
+              - Arn
+          Id: DisableExpiredAccessKeyPlaybook
+  DisableExpiredAccessKeyPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: DisableExpiredAccessKeyPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - DisableExpiredAccessKeyPlaybookEventRule
+          - Arn
+  CloudTrailFileValidationPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: CloudTrailFileValidationPlaybook
+      Description: After execution will re-enable CloudTrail log file validation - Managed by CloudFormation
+      Handler: CloudTrail_FileValidation_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: CloudTrail_FileValidation_Playbook.zip
+  CloudTrailFileValidationPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: CT File Validation
+      Description: After execution will re-enable CloudTrail log file validation - Managed by CloudFormation
+      Id: CTFileValidation
+  CloudTrailFileValidationPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: CloudTrailFileValidationPlaybookCWE
+      Description: After execution will re-enable CloudTrail log file validation - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt CloudTrailFileValidationPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - CloudTrailFileValidationPlaybookLambdaFunction
+              - Arn
+          Id: CloudTrailFileValidationPlaybook
+  CloudTrailFileValidationPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: CloudTrailFileValidationPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - CloudTrailFileValidationPlaybookEventRule
+          - Arn
+  CognitoUserPoolCISPWPolicyPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: CognitoUserPoolCISPWPolicyPlaybook
+      Description: After execution will configure the Cognito User Pool password policy to align with CIS AWS Foundations Benchmark - Managed by CloudFormation
+      Handler: Cognito_UserPool_CIS_PW_Policy_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: Cognito_UserPool_CIS_PW_Policy_Playbook.zip
+  CognitoUserPoolCISPWPolicyPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Cognito CIS PW Pol
+      Description: After execution will configure the Cognito User Pool password policy to align with CIS AWS Foundations Benchmark - Managed by CloudFormation
+      Id: CognitoCISPWPol
+  CognitoUserPoolCISPWPolicyPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: CognitoUserPoolCISPWPolicyPlaybookCWE
+      Description: After execution will configure the Cognito User Pool password policy to align with CIS AWS Foundations Benchmark - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt CognitoUserPoolCISPWPolicyPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - CognitoUserPoolCISPWPolicyPlaybookLambdaFunction
+              - Arn
+          Id: CognitoUserPoolCISPWPolicyPlaybook
+  CognitoUserPoolCISPWPolicyPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: CognitoUserPoolCISPWPolicyPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - CognitoUserPoolCISPWPolicyPlaybookEventRule
+          - Arn
+  CognitoUserPoolTempPWPolicyPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: CognitoUserPoolTempPWPolicyPlaybook
+      Description: After execution will configure the Cognito User Pool password policy to expire temp passwords after 24 hours - Managed by CloudFormation
+      Handler: Cognito_UserPool_Temp_PW_Policy_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: Cognito_UserPool_Temp_PW_Policy_Playbook.zip
+  CognitoUserPoolTempPWPolicyPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Cognito Temp PW Pol
+      Description: After execution will configure the Cognito User Pool password policy to expire temp passwords after 24 hours - Managed by CloudFormation
+      Id: CognitoTempPWPol
+  CognitoUserPoolTempPWPolicyPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: CognitoUserPoolTempPWPolicyPlaybookCWE
+      Description: After execution will configure the Cognito User Pool password policy to expire temp passwords after 24 hours - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt CognitoUserPoolTempPWPolicyPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - CognitoUserPoolTempPWPolicyPlaybookLambdaFunction
+              - Arn
+          Id: CognitoUserPoolTempPWPolicyPlaybook
+  CognitoUserPoolTempPWPolicyPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: CognitoUserPoolTempPWPolicyPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - CognitoUserPoolTempPWPolicyPlaybookEventRule
+          - Arn
+  DocDBClusterDelProtPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: DocDBClusterDelProtPlaybook
+      Description: After execution will enable DocDB Cluster deletion protection - Managed by CloudFormation
+      Handler: DocDB_Cluster_DelProt_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: DocDB_Cluster_DelProt_Playbook.zip
+  DocDBClusterDelProtPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: DocDB Del Prot
+      Description: After execution will enable DocDB Cluster deletion protection - Managed by CloudFormation
+      Id: DocDBDelProt
+  DocDBClusterDelProtPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: DocDBClusterDelProtPlaybookCWE
+      Description: After execution will enable DocDB Cluster deletion protection - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt DocDBClusterDelProtPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - DocDBClusterDelProtPlaybookLambdaFunction
+              - Arn
+          Id: DocDBClusterDelProtPlaybook
+  DocDBClusterDelProtPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: DocDBClusterDelProtPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - DocDBClusterDelProtPlaybookEventRule
+          - Arn
+  DocDBPrivatizeSnapshotPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: DocDBPrivatizeSnapshotPlaybook
+      Description: After execution will remove all public access from DocDB Snapshot - Managed by CloudFormation
+      Handler: DocDB_Privatize_Snapshot_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: DocDB_Privatize_Snapshot_Playbook.zip
+  DocDBPrivatizeSnapshotPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: DocDB Priv Snapshot
+      Description: After execution will remove all public access from DocDB Snapshot - Managed by CloudFormation
+      Id: DocDBPrivSnapshot
+  DocDBPrivatizeSnapshotPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: DocDBPrivatizeSnapshotPlaybookCWE
+      Description: After execution will remove all public access from DocDB Snapshot - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt DocDBPrivatizeSnapshotPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - DocDBPrivatizeSnapshotPlaybookLambdaFunction
+              - Arn
+          Id: DocDBPrivatizeSnapshotPlaybook
+  DocDBPrivatizeSnapshotPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: DocDBPrivatizeSnapshotPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - DocDBPrivatizeSnapshotPlaybookEventRule
+          - Arn
+  EBSEncryptionPolicyPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: EBSEncryptionPolicyPlaybook
+      Description: After execution will apply an account level EBS encryption policy - Managed by CloudFormation
+      Handler: EBS_Encryption_Policy_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: EBS_Encryption_Policy_Playbook.zip
+  EBSEncryptionPolicyPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: EBS Encrypt Policy
+      Description: After execution will apply an account level EBS encryption policy - Managed by CloudFormation
+      Id: EBSEncryptPolicy
+  EBSEncryptionPolicyPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: EBSEncryptionPolicyPlaybookCWE
+      Description: After execution will apply an account level EBS encryption policy - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt EBSEncryptionPolicyPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - EBSEncryptionPolicyPlaybookLambdaFunction
+              - Arn
+          Id: EBSEncryptionPolicyPlaybook
+  EBSEncryptionPolicyPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: EBSEncryptionPolicyPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - EBSEncryptionPolicyPlaybookEventRule
+          - Arn
+  EBSPrivatizeSnapshotPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: EBSPrivatizeSnapshotPlaybook
+      Description: After execution will remove public access to EBS Snapshot - Managed by CloudFormation
+      Handler: EBS_Privatize_Snapshot_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: EBS_Privatize_Snapshot_Playbook.zip
+  EBSPrivatizeSnapshotPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: EBS Priv Snapshot
+      Description: After execution will remove public access to EBS Snapshot - Managed by CloudFormation
+      Id: EBSPrivSnapshot
+  EBSPrivatizeSnapshotPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: EBSPrivatizeSnapshotPlaybookCWE
+      Description: After execution will remove public access to EBS Snapshot - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt EBSPrivatizeSnapshotPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - EBSPrivatizeSnapshotPlaybookLambdaFunction
+              - Arn
+          Id: EBSPrivatizeSnapshotPlaybook
+  EBSPrivatizeSnapshotPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: EBSPrivatizeSnapshotPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - EBSPrivatizeSnapshotPlaybookEventRule
+          - Arn
+  EC2IsolationPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: EC2IsolationPlaybook
+      Description: After execution will create and attach a SG with no rules to the instance to isolate it - Managed by CloudFormation
+      Handler: EC2_Isolation_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: EC2_Isolation_Playbook.zip
+  EC2IsolationPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Isolate EC2
+      Description: After execution will create and attach a SG with no rules to the instance to isolate it - Managed by CloudFormation
+      Id: IsolateEC2
+  EC2IsolationPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: EC2IsolationPlaybookCWE
+      Description: After execution will create and attach a SG with no rules to the instance to isolate it - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt EC2IsolationPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - EC2IsolationPlaybookLambdaFunction
+              - Arn
+          Id: EC2IsolationPlaybook
+  EC2IsolationPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: EC2IsolationPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - EC2IsolationPlaybookEventRule
+          - Arn
+  EC2SnapNDestoryPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: EC2SnapNDestoryPlaybook
+      Description: After execution will stop snapshot and terminate the EC2 instance - Managed by CloudFormation
+      Handler: EC2_SnapNDestory_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: EC2_SnapNDestory_Playbook.zip
+  EC2SnapNDestoryPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: EC2 SnapNDestory
+      Description: After execution will stop snapshot and terminate the EC2 instance - Managed by CloudFormation
+      Id: EC2SnapNDestory
+  EC2SnapNDestoryPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: EC2SnapNDestoryPlaybookCWE
+      Description: After execution will stop snapshot and terminate the EC2 instance - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt EC2SnapNDestoryPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - EC2SnapNDestoryPlaybookLambdaFunction
+              - Arn
+          Id: EC2SnapNDestoryPlaybook
+  EC2SnapNDestoryPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: EC2SnapNDestoryPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - EC2SnapNDestoryPlaybookEventRule
+          - Arn
+  EC2StopNSnapPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: EC2StopNSnapPlaybook
+      Description: After execution will stop and snapshot the EC2 instance - Managed by CloudFormation
+      Handler: EC2_StopNSnap_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: EC2_StopNSnap_Playbook.zip
+  EC2StopNSnapPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: EC2 StopNSnap
+      Description: After execution will stop and snapshot the EC2 instance - Managed by CloudFormation
+      Id: EC2StopNSnap
+  EC2StopNSnapPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: EC2StopNSnapPlaybookCWE
+      Description: After execution will stop and snapshot the EC2 instance - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt EC2StopNSnapPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - EC2StopNSnapPlaybookLambdaFunction
+              - Arn
+          Id: EC2StopNSnapPlaybook
+  EC2StopNSnapPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: EC2StopNSnapPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - EC2StopNSnapPlaybookEventRule
+          - Arn
+  ECRLifecyclePolicyPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: ECRLifecyclePolicyPlaybook
+      Description: After execution will create a simple ECR lifecycle policy to delete untagged images over 2 - Managed by CloudFormation
+      Handler: ECR_Lifecycle_Policy_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: ECR_Lifecycle_Policy_Playbook.zip
+  ECRLifecyclePolicyPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: ECR Lifecycle Pol
+      Description: After execution will create a simple ECR lifecycle policy to delete untagged images over 2 - Managed by CloudFormation
+      Id: ECRLifecyclePolicy
+  ECRLifecyclePolicyPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: ECRLifecyclePolicyPlaybookCWE
+      Description: After execution will create a simple ECR lifecycle policy to delete untagged images over 2 - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt ECRLifecyclePolicyPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - ECRLifecyclePolicyPlaybookLambdaFunction
+              - Arn
+          Id: ECRLifecyclePolicyPlaybook
+  ECRLifecyclePolicyPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: ECRLifecyclePolicyPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - ECRLifecyclePolicyPlaybookEventRule
+          - Arn
+  ESHTTPSTLS12PlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: ESHTTPSTLS12Playbook
+      Description: After execution will put a TLS 1.2 HTTPS-only Policy on the domain - Managed by CloudFormation
+      Handler: ES_HTTPS_TLS12_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: ES_HTTPS_TLS12_Playbook.zip
+  ESHTTPSTLS12PlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: ES TLS 1.2 Policy
+      Description: After execution will put a TLS 1.2 HTTPS-only Policy on the domain - Managed by CloudFormation
+      Id: ESHTTPSTLS12Policy
+  ESHTTPSTLS12PlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: ESHTTPSTLS12PlaybookCWE
+      Description: After execution will put a TLS 1.2 HTTPS-only Policy on the domain - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt ESHTTPSTLS12PlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - ESHTTPSTLS12PlaybookLambdaFunction
+              - Arn
+          Id: ESHTTPSTLS12Playbook
+  ESHTTPSTLS12PlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: ESHTTPSTLS12PlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - ESHTTPSTLS12PlaybookEventRule
+          - Arn
+  IAMCISPWPolicyPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: IAMCISPWPolicyPlaybook
+      Description: After execution will apply an IAM CIS compliant password policy - Managed by CloudFormation
+      Handler: IAM_CIS_PW_Policy_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: IAM_CIS_PW_Policy_Playbook.zip
+  IAMCISPWPolicyPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: CIS IAM PW Policy
+      Description: After execution will apply an IAM CIS compliant password policy - Managed by CloudFormation
+      Id: CISIAMPWPolicy
+  IAMCISPWPolicyPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: IAMCISPWPolicyPlaybookCWE
+      Description: After execution will apply an IAM CIS compliant password policy - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt IAMCISPWPolicyPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - IAMCISPWPolicyPlaybookLambdaFunction
+              - Arn
+          Id: IAMCISPWPolicyPlaybook
+  IAMCISPWPolicyPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: IAMCISPWPolicyPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - IAMCISPWPolicyPlaybookEventRule
+          - Arn
+  KDSApplyEncryptionPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: KDSApplyEncryptionPlaybook
+      Description: After execution will apply the default KMS key to Kinesis Streams - Managed by CloudFormation
+      Handler: KDS_Apply_Encryption_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: KDS_Apply_Encryption_Playbook.zip
+  KDSApplyEncryptionPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: KDS Encryption
+      Description: After execution will apply the default KMS key to Kinesis Streams - Managed by CloudFormation
+      Id: KDSEncryption
+  KDSApplyEncryptionPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: KDSApplyEncryptionPlaybookCWE
+      Description: After execution will apply the default KMS key to Kinesis Streams - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt KDSApplyEncryptionPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - KDSApplyEncryptionPlaybookLambdaFunction
+              - Arn
+          Id: KDSApplyEncryptionPlaybook
+  KDSApplyEncryptionPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: KDSApplyEncryptionPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - KDSApplyEncryptionPlaybookEventRule
+          - Arn
+  KMSCMKRotationPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: KMSCMKRotationPlaybook
+      Description: After execution will enable rotation on the KMS CMK - Managed by CloudFormation
+      Handler: KMS_CMK_Rotation_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: KMS_CMK_Rotation_Playbook.zip
+  KMSCMKRotationPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: KMS CMK Rotation
+      Description: After execution will enable rotation on the KMS CMK - Managed by CloudFormation
+      Id: KMSCMKRotation
+  KMSCMKRotationPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: KMSCMKRotationPlaybookCWE
+      Description: After execution will enable rotation on the KMS CMK - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt KMSCMKRotationPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - KMSCMKRotationPlaybookLambdaFunction
+              - Arn
+          Id: KMSCMKRotationPlaybook
+  KMSCMKRotationPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: KMSCMKRotationPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - KMSCMKRotationPlaybookEventRule
+          - Arn
+  PCIEditionSSMApplyPatchPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: PCIEditionSSMApplyPatchPlaybook
+      Description: PCI-DSS ONLY. After execution will invoke SSM Command Document to Apply patches to instance - Managed by CloudFormation
+      Handler: PCI_Edition_SSM_ApplyPatch_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: PCI_Edition_SSM_ApplyPatch_Playbook.zip
+  PCIEditionSSMApplyPatchPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: PCI-DSS Apply Patch
+      Description: PCI-DSS ONLY. After execution will invoke SSM Command Document to Apply patches to instance - Managed by CloudFormation
+      Id: PCIApplyPatch
+  PCIEditionSSMApplyPatchPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: PCIEditionSSMApplyPatchPlaybookCWE
+      Description: PCI-DSS ONLY. After execution will invoke SSM Command Document to Apply patches to instance - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt PCIEditionSSMApplyPatchPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - PCIEditionSSMApplyPatchPlaybookLambdaFunction
+              - Arn
+          Id: PCIEditionSSMApplyPatchPlaybook
+  PCIEditionSSMApplyPatchPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: PCIEditionSSMApplyPatchPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - PCIEditionSSMApplyPatchPlaybookEventRule
+          - Arn
+  RDSDelProtPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: RDSDelProtPlaybook
+      Description: After execution will apply Deletion Protection to RDS instance - Managed by CloudFormation
+      Handler: RDS_DelProt_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: RDS_DelProt_Playbook.zip
+  RDSDelProtPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: RDS Deletion Prot
+      Description: After execution will apply Deletion Protection to RDS instance - Managed by CloudFormation
+      Id: RDSDeletionProt
+  RDSDelProtPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: RDSDelProtPlaybookCWE
+      Description: After execution will apply Deletion Protection to RDS instance - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt RDSDelProtPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - RDSDelProtPlaybookLambdaFunction
+              - Arn
+          Id: RDSDelProtPlaybook
+  RDSDelProtPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: RDSDelProtPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - RDSDelProtPlaybookEventRule
+          - Arn
+  RDSMultiAZPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: RDSMultiAZPlaybook
+      Description: After execution will configure the RDS instance to be Multi-AZ - Managed by CloudFormation
+      Handler: RDS_Multi_AZ_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: RDS_Multi_AZ_Playbook.zip
+  RDSMultiAZPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: RDS Multi AZ
+      Description: After execution will configure the RDS instance to be Multi-AZ - Managed by CloudFormation
+      Id: RDSMultiAZ
+  RDSMultiAZPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: RDSMultiAZPlaybookCWE
+      Description: After execution will configure the RDS instance to be Multi-AZ - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt RDSMultiAZPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - RDSMultiAZPlaybookLambdaFunction
+              - Arn
+          Id: RDSMultiAZPlaybook
+  RDSMultiAZPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: RDSMultiAZPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - RDSMultiAZPlaybookEventRule
+          - Arn
+  RDSPrivatizeInstancePlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: RDSPrivatizeInstancePlaybook
+      Description: After execution will remove Public Access from the RDS Instance - Managed by CloudFormation
+      Handler: RDS_Privatize_Instance_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: RDS_Privatize_Instance_Playbook.zip
+  RDSPrivatizeInstancePlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: RDS Priv Instance
+      Description: After execution will remove Public Access from the RDS Instance - Managed by CloudFormation
+      Id: RDSPrivatizeInstance
+  RDSPrivatizeInstancePlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: RDSPrivatizeInstancePlaybookCWE
+      Description: After execution will remove Public Access from the RDS Instance - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt RDSPrivatizeInstancePlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - RDSPrivatizeInstancePlaybookLambdaFunction
+              - Arn
+          Id: RDSPrivatizeInstancePlaybook
+  RDSPrivatizeInstancePlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: RDSPrivatizeInstancePlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - RDSPrivatizeInstancePlaybookEventRule
+          - Arn
+  RDSPrivatizeSnapshotPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: RDSPrivatizeSnapshotPlaybook
+      Description: After execution will remove all public access to the RDS Snapshot - Managed by CloudFormation
+      Handler: RDS_Privatize_Snapshot_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: RDS_Privatize_Snapshot_Playbook.zip
+  RDSPrivatizeSnapshotPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: RDS Priv Snapshot
+      Description: After execution will remove all public access to the RDS Snapshot - Managed by CloudFormation
+      Id: RDSPrivatizeSnapshot
+  RDSPrivatizeSnapshotPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: RDSPrivatizeSnapshotPlaybookCWE
+      Description: After execution will remove all public access to the RDS Snapshot - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt RDSPrivatizeSnapshotPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - RDSPrivatizeSnapshotPlaybookLambdaFunction
+              - Arn
+          Id: RDSPrivatizeSnapshotPlaybook
+  RDSPrivatizeSnapshotPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: RDSPrivatizeSnapshotPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - RDSPrivatizeSnapshotPlaybookEventRule
+          - Arn
+  RedshiftEncryptionPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: RedshiftEncryptionPlaybook
+      Description: After execution will apply the default AWS KMS key to the Redshift cluster - Managed by CloudFormation
+      Handler: Redshift_Encryption_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: Redshift_Encryption_Playbook.zip
+  RedshiftEncryptionPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Redshift Encryption
+      Description: After execution will apply the default AWS KMS key to the Redshift cluster - Managed by CloudFormation
+      Id: RedshiftEncryption
+  RedshiftEncryptionPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: RedshiftEncryptionPlaybookCWE
+      Description: After execution will apply the default AWS KMS key to the Redshift cluster - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt RedshiftEncryptionPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - RedshiftEncryptionPlaybookLambdaFunction
+              - Arn
+          Id: RedshiftEncryptionPlaybook
+  RedshiftEncryptionPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: RedshiftEncryptionPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - RedshiftEncryptionPlaybookEventRule
+          - Arn
+  RedshiftPrivatizePlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: RedshiftPrivatizePlaybook
+      Description: After execution will remove public access from the Redshift cluster - Managed by CloudFormation
+      Handler: Redshift_Privatize_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: Redshift_Privatize_Playbook.zip
+  RedshiftPrivatizePlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Privatize Redshift
+      Description: After execution will remove public access from the Redshift cluster - Managed by CloudFormation
+      Id: PrivatizeRedshift
+  RedshiftPrivatizePlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: RedshiftPrivatizePlaybookCWE
+      Description: After execution will remove public access from the Redshift cluster - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt RedshiftPrivatizePlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - RedshiftPrivatizePlaybookLambdaFunction
+              - Arn
+          Id: RedshiftPrivatizePlaybook
+  RedshiftPrivatizePlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: RedshiftPrivatizePlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - RedshiftPrivatizePlaybookEventRule
+          - Arn
+  ReleaseEIPPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: ReleaseEIPPlaybook
+      Description: After execution will release unallocated Elastic IP - Managed by CloudFormation
+      Handler: Release_EIP_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: Release_EIP_Playbook.zip
+  ReleaseEIPPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Release EIP
+      Description: After execution will release unallocated Elastic IP - Managed by CloudFormation
+      Id: ReleaseEIP
+  ReleaseEIPPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: ReleaseEIPPlaybookCWE
+      Description: After execution will release unallocated Elastic IP - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt ReleaseEIPPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - ReleaseEIPPlaybookLambdaFunction
+              - Arn
+          Id: ReleaseEIPPlaybook
+  ReleaseEIPPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: ReleaseEIPPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - ReleaseEIPPlaybookEventRule
+          - Arn
+  ReleaseSGPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: ReleaseSGPlaybook
+      Description: After execution will delete the unused Security Group - Managed by CloudFormation
+      Handler: Release_SG_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: Release_SG_Playbook.zip
+  ReleaseSGPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Delete Unused SG
+      Description: After execution will delete the unused Security Group - Managed by CloudFormation
+      Id: DeleteUnusedSG
+  ReleaseSGPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: ReleaseSGPlaybookCWE
+      Description: After execution will delete the unused Security Group - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt ReleaseSGPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - ReleaseSGPlaybookLambdaFunction
+              - Arn
+          Id: ReleaseSGPlaybook
+  ReleaseSGPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: ReleaseSGPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - ReleaseSGPlaybookEventRule
+          - Arn
+  RemoveAllSGRulesPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: RemoveAllSGRulesPlaybook
+      Description: After execution will delete all ingress and egress rules from the Security Group - Managed by CloudFormation
+      Handler: Remove_All_SG_Rules_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: Remove_All_SG_Rules_Playbook.zip
+  RemoveAllSGRulesPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Remove All SG Rules
+      Description: After execution will delete all ingress and egress rules from the Security Group - Managed by CloudFormation
+      Id: RemoveAllSGRules
+  RemoveAllSGRulesPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: RemoveAllSGRulesPlaybookCWE
+      Description: After execution will delete all ingress and egress rules from the Security Group - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt RemoveAllSGRulesPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - RemoveAllSGRulesPlaybookLambdaFunction
+              - Arn
+          Id: RemoveAllSGRulesPlaybook
+  RemoveAllSGRulesPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: RemoveAllSGRulesPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - RemoveAllSGRulesPlaybookEventRule
+          - Arn
+  S3EncryptionPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: S3EncryptionPlaybook
+      Description: After execution will apply default SSE-S3 encryption to the bucket - Managed by CloudFormation
+      Handler: S3_Encryption_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: S3_Encryption_Playbook.zip
+  S3EncryptionPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: SSE-S3 Encryption
+      Description: After execution will apply default SSE-S3 encryption to the bucket - Managed by CloudFormation
+      Id: SSES3Encryption
+  S3EncryptionPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: S3EncryptionPlaybookCWE
+      Description: After execution will apply default SSE-S3 encryption to the bucket - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt S3EncryptionPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - S3EncryptionPlaybookLambdaFunction
+              - Arn
+          Id: S3EncryptionPlaybook
+  S3EncryptionPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: S3EncryptionPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - S3EncryptionPlaybookEventRule
+          - Arn
+  S3PrivateACLPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: S3PrivateACLPlaybook
+      Description: After execution will put a Private ACL on the bucket - Managed by CloudFormation
+      Handler: S3_PrivateACL_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: S3_PrivateACL_Playbook.zip
+  S3PrivateACLPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Put S3 Private ACL
+      Description: After execution will put a Private ACL on the bucket - Managed by CloudFormation
+      Id: S3PrivateACL
+  S3PrivateACLPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: S3PrivateACLPlaybookCWE
+      Description: After execution will put a Private ACL on the bucket - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt S3PrivateACLPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - S3PrivateACLPlaybookLambdaFunction
+              - Arn
+          Id: S3PrivateACLPlaybook
+  S3PrivateACLPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: S3PrivateACLPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - S3PrivateACLPlaybookEventRule
+          - Arn
+  S3PublicAccessPolicyPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: S3PublicAccessPolicyPlaybook
+      Description: After execution will apply an account-level public access block on all S3 buckets - Managed by CloudFormation
+      Handler: S3_Public_Access_Policy_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: S3_Public_Access_Policy_Playbook.zip
+  S3PublicAccessPolicyPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Public S3 Acct Block
+      Description: After execution will apply an account-level public access block on all S3 buckets - Managed by CloudFormation
+      Id: S3PublicAccessPolicy
+  S3PublicAccessPolicyPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: S3PublicAccessPolicyPlaybookCWE
+      Description: After execution will apply an account-level public access block on all S3 buckets - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt S3PublicAccessPolicyPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - S3PublicAccessPolicyPlaybookLambdaFunction
+              - Arn
+          Id: S3PublicAccessPolicyPlaybook
+  S3PublicAccessPolicyPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: S3PublicAccessPolicyPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - S3PublicAccessPolicyPlaybookEventRule
+          - Arn
+  ShieldAdvProtectionPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: ShieldAdvProtectionPlaybook
+      Description: After execution will apply Shield Advanced Protection to supported resources - Managed by CloudFormation
+      Handler: ShieldAdv_Protection_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: ShieldAdv_Protection_Playbook.zip
+  ShieldAdvProtectionPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: ShieldAdv Protection
+      Description: After execution will apply Shield Advanced Protection to supported resources - Managed by CloudFormation
+      Id: ShieldAdvProtection
+  ShieldAdvProtectionPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: ShieldAdvProtectionPlaybookCWE
+      Description: After execution will apply Shield Advanced Protection to supported resources - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt ShieldAdvProtectionPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - ShieldAdvProtectionPlaybookLambdaFunction
+              - Arn
+          Id: ShieldAdvProtectionPlaybook
+  ShieldAdvProtectionPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: ShieldAdvProtectionPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - ShieldAdvProtectionPlaybookEventRule
+          - Arn
+  SNSDefaultEncryptionPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: SNSDefaultEncryptionPlaybook
+      Description: After execution will apply AWS managed KMS encryption to the SNS topic - Managed by CloudFormation
+      Handler: SNS_Default_Encryption_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: SNS_Default_Encryption_Playbook.zip
+  SNSDefaultEncryptionPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: SNS Encryption
+      Description: After execution will apply AWS managed KMS encryption to the SNS topic - Managed by CloudFormation
+      Id: SNSDefaultEncryption
+  SNSDefaultEncryptionPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: SNSDefaultEncryptionPlaybookCWE
+      Description: After execution will apply AWS managed KMS encryption to the SNS topic - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt SNSDefaultEncryptionPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - SNSDefaultEncryptionPlaybookLambdaFunction
+              - Arn
+          Id: SNSDefaultEncryptionPlaybook
+  SNSDefaultEncryptionPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: SNSDefaultEncryptionPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - SNSDefaultEncryptionPlaybookEventRule
+          - Arn
+  SSMApplyPatchPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: SSMApplyPatchPlaybook
+      Description: After execution will invoke the SSM Command Document AWS-ApplyPatchBaseline to the instance - Managed by CloudFormation
+      Handler: SSM_ApplyPatch_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: SSM_ApplyPatch_Playbook.zip
+  SSMApplyPatchPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: SSM Apply Patch
+      Description: After execution will invoke the SSM Command Document AWS-ApplyPatchBaseline to the instance - Managed by CloudFormation
+      Id: SSMApplyPatch
+  SSMApplyPatchPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: SSMApplyPatchPlaybookCWE
+      Description: After execution will invoke the SSM Command Document AWS-ApplyPatchBaseline to the instance - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt SSMApplyPatchPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - SSMApplyPatchPlaybookLambdaFunction
+              - Arn
+          Id: SSMApplyPatchPlaybook
+  SSMApplyPatchPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: SSMApplyPatchPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - SSMApplyPatchPlaybookEventRule
+          - Arn
+  StartBackupPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: StartBackupPlaybook
+      Description: After execution will create a one-time backup using AWS Backup for supported resources in the default Vault - Managed by CloudFormation
+      Handler: Start_Backup_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: Start_Backup_Playbook.zip
+  StartBackupPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Create 1-Time Backup
+      Description: After execution will create a one-time backup using AWS Backup for supported resources in the default Vault - Managed by CloudFormation
+      Id: StartBackup
+  StartBackupPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: StartBackupPlaybookCWE
+      Description: After execution will create a one-time backup using AWS Backup for supported resources in the default Vault - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt StartBackupPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - StartBackupPlaybookLambdaFunction
+              - Arn
+          Id: StartBackupPlaybook
+  StartBackupPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: StartBackupPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - StartBackupPlaybookEventRule
+          - Arn
+  CreateJIRAIssuePlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: CreateJIRAIssuePlaybook
+      Description: After execution will create a JIRA Bug based on elements from the Security Hub finding - Managed by CloudFormation
+      Handler: Create_JIRA_Issue_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Environment:
+        Variables:
+          JIRA_URL : !Ref JiraUrl
+          JIRA_ISSUE_CREATOR_USERNAME : !Ref JiraIssueCreatorUsername
+          JIRA_APIKEY_SSM_PARAM : !Ref JiraApiKeySSMParameter
+          JIRA_PROJECT_KEY : !Ref JiraProjectKey
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: Create_JIRA_Issue_Playbook.zip
+  CreateJIRAIssuePlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Create JIRA Issue
+      Description: After execution will create a JIRA Bug based on elements from the Security Hub finding - Managed by CloudFormation
+      Id: CreateJIRAIssue
+  CreateJIRAIssuePlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: CreateJIRAIssuePlaybookCWE
+      Description: After execution will create a JIRA Bug based on elements from the Security Hub finding - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt CreateJIRAIssuePlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - CreateJIRAIssuePlaybookLambdaFunction
+              - Arn
+          Id: CreateJIRAIssuePlaybook
+  CreateJIRAIssuePlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: CreateJIRAIssuePlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - CreateJIRAIssuePlaybookEventRule
+          - Arn
+  CreateSnowIncidentPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: CreateSnowIncidentPlaybook
+      Description: After execution will create a ServiceNow Incident based on elements from the Security Hub finding using the SSM Automation Document AWS-CreateServiceNowIncident - Managed by CloudFormation
+      Handler: SSM_SNOW_Incident_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Environment:
+        Variables:
+          SERVICENOW_INCIDENT_CREATOR : !Ref ServiceNowIncidentCreator
+          SERVICENOW_INCIDENT_CREATOR_PW_PARAM : !Ref IncidentCreatorPasswordSSMParameter
+          SERVICENOW_URL : !Ref ServicenowUrl
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: SSM_SNOW_Incident_Playbook.zip
+  CreateSnowIncidentPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Create SNOW Incident
+      Description: After execution will create a ServiceNow Incident based on elements from the Security Hub finding using the SSM Automation Document AWS-CreateServiceNowIncident - Managed by CloudFormation
+      Id: CreateSnowIncident
+  CreateSnowIncidentPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: CreateSnowIncidentPlaybookCWE
+      Description: After execution will create a ServiceNow Incident based on elements from the Security Hub finding using the SSM Automation Document AWS-CreateServiceNowIncident - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt CreateSnowIncidentPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - CreateSnowIncidentPlaybookLambdaFunction
+              - Arn
+          Id: CreateSnowIncidentPlaybook
+  CreateSnowIncidentPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: CreateSnowIncidentPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - CreateSnowIncidentPlaybookEventRule
+          - Arn
+  WAFv1GuardDutyProbeUpdateIPSetPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: WAFv1GuardDutyProbeUpdateIPSetPlaybook
+      Description: After execution the source GuardDuty IP Probe finding will have all IP addresses parsed out and added to the WAFv1 IP Set - Managed by CloudFormation
+      Handler: WAFv1_GuardDutyProbe_UpdateIPSet_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Environment:
+        Variables:
+          WAFV1_IPSET: !Ref WAFv1IpSetId
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: WAFv1_GuardDutyProbe_UpdateIPSet_Playbook.zip
+  WAFv1GuardDutyProbeUpdateIPSetPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Block GD IPv4 WAFv1
+      Description: After execution the source GuardDuty IP Probe finding will have all IP addresses parsed out and added to the WAFv1 IP Set - Managed by CloudFormation
+      Id: BlockGDIPv4WAFv1
+  WAFv1GuardDutyProbeUpdateIPSetPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: WAFv1GuardDutyProbeUpdateIPSetPlaybookCWE
+      Description: After execution the source GuardDuty IP Probe finding will have all IP addresses parsed out and added to the WAFv1 IP Set - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt WAFv1GuardDutyProbeUpdateIPSetPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - WAFv1GuardDutyProbeUpdateIPSetPlaybookLambdaFunction
+              - Arn
+          Id: WAFv1GuardDutyProbeUpdateIPSetPlaybook
+  WAFv1GuardDutyProbeUpdateIPSetPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: WAFv1GuardDutyProbeUpdateIPSetPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - WAFv1GuardDutyProbeUpdateIPSetPlaybookEventRule
+          - Arn
+  WAFv2GuardDutyProbeUpdateIPSetPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: WAFv2GuardDutyProbeUpdateIPSetPlaybook
+      Description: After execution the source GuardDuty IP Probe finding will have all IP addresses parsed out and added to the WAFv2 IP Set - Managed by CloudFormation
+      Handler: WAFv2_GuardDutyProbe_UpdateIPSet_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt ElectricEyeResponseIAMRole.Arn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: WAFv2_GuardDutyProbe_UpdateIPSet_Playbook.zip
+  WAFv2GuardDutyProbeUpdateIPSetPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Block GD IPv4 WAFv2
+      Description: After execution the source GuardDuty IP Probe finding will have all IP addresses parsed out and added to the WAFv2 IP Set - Managed by CloudFormation
+      Id: BlockGDIPv4WAFv2
+  WAFv2GuardDutyProbeUpdateIPSetPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: WAFv2GuardDutyProbeUpdateIPSetPlaybookCWE
+      Description: After execution the source GuardDuty IP Probe finding will have all IP addresses parsed out and added to the WAFv2 IP Set - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt WAFv2GuardDutyProbeUpdateIPSetPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - WAFv2GuardDutyProbeUpdateIPSetPlaybookLambdaFunction
+              - Arn
+          Id: WAFv2GuardDutyProbeUpdateIPSetPlaybook
+  WAFv2GuardDutyProbeUpdateIPSetPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: WAFv2GuardDutyProbeUpdateIPSetPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - WAFv2GuardDutyProbeUpdateIPSetPlaybookEventRule
+          - Arn

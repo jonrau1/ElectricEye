@@ -60,6 +60,23 @@ In this stage we will use CloudFormation Stack Sets to deploy the multi-account 
 ### Semi-Auto ElectricEye-Response with CloudFormation
 In this section we will deploy Custom Actions, CloudWatch Events and Lambda functions to the Security Hub Master using a CloudFormation template.
 
+**Important Note:** The maximum account limit for Custom Actions is 50 per Region per Account for Security Hub, there is also a 200 max resource limit per CloudFormation Stack and for that reason there are two templates, we will only be using the first one. You can side-step this by setting up some actions as a mix of Full-Auto and Semi-Auto based on your organizational policies, but then you will be using both CFN and Terraform to deploy these. 
+
+1. Create a S3 bucket, clone this repository and upload the contents of `lambda-packages` to your S3 bucket. Take note of your S3 bucket name as you will need it as a parameter in the CloudFormation stack
+```bash
+aws s3 mb s3://[MY-BUCKET-NAME-HERE]
+git clone https://github.com/jonrau1/ElectricEye.git
+cd ElectricEye/add-ons/electriceye-response/lambda-packages
+aws s3 sync . s3://[MY-BUCKET-NAME-HERE]
+```
+
+2. Download the CloudFormation template, it is named `ElectricEye-Response_SemiAutoPlaybooks_CFN.yml` and create a Stack. Enter a name and values for the Parameters. If you do not use WAF, ServiceNow or JIRA you can leave their values as `placeholder`, the only parameter you need is the S3 bucket created in Step 1 as shown below. For information on creating the ServiceNow or JIRA parameters refer to the Extras Readme.
+![SemiAutoParams](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/electriceye-response-semi-auto-CFN-params.jpg)
+
+3. Once the Stack finishes creating you will be able launch these semi-automatic response and remediation Playbooks using Security Hub custom actions. Select the **Findings** tab in the Security Hub console, select any finding and choose the **Actions** menu to be presented with a view as shown below.
+![SemiAutoActions](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/electriceye-response-semi-auto-dropdown.jpg)
+
+### Full-Auto ElectricEye-Response with CloudFormation
 ***WORK IN PROGRESS***
 
 ### Full-Auto ElectricEye-Response with Terraform
