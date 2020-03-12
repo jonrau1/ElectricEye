@@ -81,6 +81,8 @@ python3 AWS_Secrets_Manager_Auditor.py
 sleep 2
 python3 AWS_Security_Services_Auditor.py
 sleep 2
+python3 Shodan_Auditor.py
+sleep 2
 python3 AWS_Security_Hub_Auditor.py
 echo "All scans complete, exiting"
 exit 1

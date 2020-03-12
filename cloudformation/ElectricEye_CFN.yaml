@@ -18,6 +18,10 @@ Description: This Template will create the supporting infrastructure for Electri
 Metadata:
   License: GPL-3.0
 Parameters:
+  ShodanApiKeySSMParam:
+    Type: String
+    Description: The SSM Secure String Parameter containing your Shodan API key. Leave the default value if you will not be using Shodan
+    Default: placeholder
   ElectricEyeClusterName:
     Type: String
     Description: Name of the ECS Cluster that the ElectricEye Fargate Task will run in
@@ -196,6 +200,8 @@ Resources:
               - kafka:ListClusters
               - kinesis:DescribeStream
               - kinesis:ListStreams
+              - kms:Decrypt
+              - kms:DescribeKey
               - rds:DescribeDBClusterParameterGroups
               - rds:DescribeDBClusterParameters
               - rds:DescribeDBClusters
@@ -231,6 +237,7 @@ Resources:
               - sns:ListSubscriptions
               - sns:ListSubscriptionsByTopic
               - sns:ListTopics
+              - ssm:GetParameter
               - ssm:DescribeInstanceAssociationsStatus
               - ssm:DescribeInstanceInformation
               - ssm:DescribeInstancePatches
@@ -260,6 +267,8 @@ Resources:
             - ecr:BatchCheckLayerAvailability
             - ecr:GetDownloadUrlForLayer
             - ecr:BatchGetImage
+            - kms:Decrypt
+            - kms:DescribeKey
             - logs:CreateLogStream
             - logs:PutLogEvents
             - ssm:GetParameter
@@ -301,6 +310,8 @@ Resources:
           Secrets:
             - Name: SH_SCRIPTS_BUCKET
               ValueFrom: !Ref ElectricEyeBucketParameter
+            - Name: SHODAN_API_KEY_PARAM
+              ValueFrom: !Ref ShodanApiKeySSMParam
           LogConfiguration:
             LogDriver: awslogs
             Options:

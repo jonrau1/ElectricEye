@@ -12,6 +12,7 @@ Continuously monitor your AWS services for configurations that can lead to degra
 - [Solution Architecture](https://github.com/jonrau1/ElectricEye#solution-architecture)
 - [Setting Up](https://github.com/jonrau1/ElectricEye#setting-up)
   - [Build and push the Docker image](https://github.com/jonrau1/ElectricEye#build-and-push-the-docker-image)
+  - optional step
   - [Setup baseline infrastructure via Terraform](https://github.com/jonrau1/ElectricEye#setup-baseline-infrastructure-via-terraform)
   - [Setup baseline infrastructure via AWS CloudFormation](https://github.com/jonrau1/ElectricEye#setup-baseline-infrastructure-via-aws-cloudformation)
   - [Manually execute the ElectricEye ECS Task](https://github.com/jonrau1/ElectricEye#manually-execute-the-electriceye-ecs-task-you-only-need-to-do-this-once)
@@ -79,6 +80,15 @@ sudo docker push <ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/<REPO_NAME>:lat
 ```
 
 4. Navigate to the ECR console and copy the `URI` of your Docker image. It will be in the format of `<ACCOUNT_ID>.dkr.ecr.<AWS_REGION.amazonaws.com/<REPO_NAME>:latest`. Save this as you will need it when configuring Terraform or CloudFormation.
+
+### (OPTIONAL) Setup Shodan.io API Key
+This is an optional step to setup a Shodan.io API key to determine if you internet-facing resources have been indexed. This is not an exact science as a lot of abstracted services (ES, RDS, ELB) share IP space with other resources and AWS addresses (non-EIP / BYOIP) are semi-ephemeral and always change. You may end up having indexed resources that were indexed when someone else was using the IP space, you should still review it either way just to make sure.
+
+1. Create a Shodan account and retrieve your Shodan.io API Key [from here](https://developer.shodan.io/dashboard).
+
+2. Create a Systems Manager Parameter Store `SecureString` parameter for this API key: `aws ssm put-parameter --name electriceye-shodan-api-key --description 'Shodan.io API Key' --type SecureString --value <API-KEY-HERE>`
+
+In both the Terraform config files and CloudFormation templates the value for this key is prepopulated with the value `placeholder`, overwrite them with this parameter you just created to be able to use the Shodan checks.
 
 ### Setup baseline infrastructure via Terraform
 Before starting [attach this IAM policy](https://github.com/jonrau1/ElectricEye/blob/master/policies/Instance_Profile_IAM_Policy.json) to your [Instance Profile](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html) (if you are using Cloud9 or EC2).
@@ -170,7 +180,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **156** checks supported across **49** AWS services / components using **35** Auditors. There are currently **60** supported response and remediation Playbooks with coverage across **31** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **160** checks supported across **49** AWS services / components using **36** Auditors. There are currently **60** supported response and remediation Playbooks with coverage across **31** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -332,6 +342,10 @@ These are the following services and checks perform by each Auditor. There are c
 | AWS_Security_Hub_Auditor.py            | Security Hub (Account)        | Are there active high or critical<br>findings in Security Hub         |
 | AWS_Security_Services_Auditor.py       | IAM Access Analyzer (Account) | Is IAM Access Analyzer enabled                                        |
 | AWS_Security_Services_Auditor.py       | GuardDuty (Account)           | Is GuardDuty enabled                                                  |
+| Shodan_Auditor.py                      | EC2 Instance                  | Are EC2 instances w/ public IPs indexed                               |
+| Shodan_Auditor.py                      | ELBv2 (ALB)                   | Are internet-facing ALBs indexed                                      |
+| Shodan_Auditor.py                      | RDS Instance                  | Are public accessible RDS instances indexed                           |
+| Shodan_Auditor.py                      | Elasticsearch Domain          | Are ES Domains outside a VPC indexed                                  |
 
 ## Add-on Modules
 The following are optional add-on's to ElectricEye that will extend its functionality via reporting, alerting, enrichment and/or finding lifecycle management.
@@ -498,7 +512,8 @@ If you are working on another project whether open-source or commercial and want
 ### To-Do
 - [] Create an ElectricEye Logo
 - [] Investigate publishing ASFF schema to SQS>Lambda>BIF API for scale/throttle handling
-- [] Add in Shodan.io checks for internet-facing resources (RDS, Redshift, DocDB, Elasticsearch, EC2, ELBv2, etc)
+- [X] Add in Shodan.io checks for internet-facing resources (RDS, Redshift, DocDB, Elasticsearch, EC2, ELBv2, etc)
+  - Need to test out DocDB, Redshift and MSK
 - [X] Upload response and remediation playbooks and IAC for them - Custom Action Version (Semi Auto)
 - [X] Upload response and remediation playbooks and IAC for them - Imported Findings (Full Auto)
 - [X] Create an Alerting framework with ~~ChatBot~~ Slack for Critical findings

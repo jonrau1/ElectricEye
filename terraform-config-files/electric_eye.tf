@@ -71,6 +71,10 @@ resource "aws_ecs_task_definition" "Electric_Eye_ECS_Task_Definition" {
       {
         "valueFrom": "${aws_ssm_parameter.Electric_Eye_Bucket_Parameter.arn}",
         "name": "SH_SCRIPTS_BUCKET"
+      },
+      {
+        "valueFrom": "${var.Shodan_API_Key_SSM_Parameter}",
+        "name": "SH_SCRIPTS_BUCKET"
       }
     ]
   }
