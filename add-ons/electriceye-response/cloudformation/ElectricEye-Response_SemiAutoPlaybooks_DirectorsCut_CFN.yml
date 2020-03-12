@@ -1,0 +1,1117 @@
+# This file is part of ElectricEye.
+
+# ElectricEye is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# ElectricEye is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License along with ElectricEye.  
+# If not, see https://github.com/jonrau1/ElectricEye/blob/master/LICENSE.
+
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  This template will create semi-auto versions of the ElectricEye-Response
+  playbooks and use a Custom Resource to provision Security Hub Custom Actions
+Metadata:
+  License: GPL-3.0
+Parameters:
+  ElectricEyeResponseIAMRoleArn:
+    Type: String
+    Description: The ARN of the ElectricEye-Response role created by the first Semi-Auto Template
+  PlaybookPackageS3Bucket:
+    Type: String
+    Description: S3 Bucket where the ElectricEye-Response zipped Lambda packages are uploaded
+Resources:
+  CreateActionTargetLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: CreateActionTarget-Secondary
+      Description: Custom resource to create an action target in Security Hub
+      Handler: index.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt CreateActionTargetLambdaRole.Arn
+      Runtime: python3.7
+      Timeout: 60
+      Code:
+        ZipFile: |
+          import boto3
+          import cfnresponse
+          import os
+          def lambda_handler(event, context):
+              try:
+                  properties = event['ResourceProperties']
+                  region = os.environ['AWS_REGION']
+                  client = boto3.client('securityhub', region_name=region)
+                  responseData = {}
+                  if event['RequestType'] == 'Create':
+                      response = client.create_action_target(
+                          Name=properties['Name'],
+                          Description=properties['Description'],
+                          Id=properties['Id']
+                      )
+                      responseData['Arn'] = response['ActionTargetArn']
+                  elif event['RequestType'] == 'Delete':
+                      account_id = context.invoked_function_arn.split(":")[4]
+                      client.delete_action_target(
+                          ActionTargetArn=f"arn:aws:securityhub:{region}:{account_id}:action/custom/{properties['Id']}"
+                      )
+                  cfnresponse.send(event, context, cfnresponse.SUCCESS, responseData)
+              except Exception as e:
+                  print(e)
+                  cfnresponse.send(event, context, cfnresponse.FAILED, {})
+  CreateActionTargetLambdaRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      Policies:
+        - PolicyName: CreateActionTarget-LambdaPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'cloudwatch:PutMetricData'
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - 'securityhub:CreateActionTarget'
+                  - 'securityhub:DeleteActionTarget'
+                Resource: '*'
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+  SSMInspectorAgentPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: SSMInspectorAgentPlaybook
+      Description: After execution will invoke the SSM Command Document AmazonInspector-ManageAWSAgent to update the Inspector agent on the instance - Managed by CloudFormation
+      Handler: SSM_InspectorAgent_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !Ref ElectricEyeResponseIAMRoleArn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: SSM_InspectorAgent_Playbook.zip
+  SSMInspectorAgentPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Updt Inspector Agent
+      Description: After execution will invoke the SSM Command Document AmazonInspector-ManageAWSAgent to update the Inspector agent on the instance - Managed by CloudFormation
+      Id: SSMInspectorAgent
+  SSMInspectorAgentPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: SSMInspectorAgentPlaybookCWE
+      Description: After execution will invoke the SSM Command Document AmazonInspector-ManageAWSAgent to update the Inspector agent on the instance - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt SSMInspectorAgentPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - SSMInspectorAgentPlaybookLambdaFunction
+              - Arn
+          Id: SSMInspectorAgentPlaybook
+  SSMInspectorAgentPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: SSMInspectorAgentPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - SSMInspectorAgentPlaybookEventRule
+          - Arn
+  SSMRefreshAssocPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: SSMRefreshAssocPlaybook
+      Description: After execution will invoke the SSM Command Document AWS-RefreshAssociation on the instance - Managed by CloudFormation
+      Handler: SSM_RefreshAssoc_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !Ref ElectricEyeResponseIAMRoleArn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: SSM_RefreshAssoc_Playbook.zip
+  SSMRefreshAssocPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: SSM Refresh Assoc
+      Description: After execution will invoke the SSM Command Document AWS-RefreshAssociation on the instance - Managed by CloudFormation
+      Id: SSMRefreshAssoc
+  SSMRefreshAssocPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: SSMRefreshAssocPlaybookCWE
+      Description: After execution will invoke the SSM Command Document AWS-RefreshAssociation on the instance - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt SSMRefreshAssocPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - SSMRefreshAssocPlaybookLambdaFunction
+              - Arn
+          Id: SSMRefreshAssocPlaybook
+  SSMRefreshAssocPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: SSMRefreshAssocPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - SSMRefreshAssocPlaybookEventRule
+          - Arn
+  SSMUpdateAgentPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: SSMUpdateAgentPlaybook
+      Description: After execution will invoke the SSM Command Document AWS-UpdateSSMAgent on the instance - Managed by CloudFormation
+      Handler: SSM_UpdateAgent_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !Ref ElectricEyeResponseIAMRoleArn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: SSM_UpdateAgent_Playbook.zip
+  SSMUpdateAgentPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Update SSM Agent
+      Description: After execution will invoke the SSM Command Document AWS-UpdateSSMAgent on the instance - Managed by CloudFormation
+      Id: SSMUpdateAgent
+  SSMUpdateAgentPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: SSMUpdateAgentPlaybookCWE
+      Description: After execution will invoke the SSM Command Document AWS-UpdateSSMAgent on the instance - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt SSMUpdateAgentPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - SSMUpdateAgentPlaybookLambdaFunction
+              - Arn
+          Id: SSMUpdateAgentPlaybook
+  SSMUpdateAgentPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: SSMUpdateAgentPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - SSMUpdateAgentPlaybookEventRule
+          - Arn
+  RemoveOpenDocDBPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: RemoveOpenDocDBPlaybook
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to DocDB from the Security Group - Managed by CloudFormation
+      Handler: Remove_Open_DocDB_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !Ref ElectricEyeResponseIAMRoleArn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: Remove_Open_DocDB_Playbook.zip
+  RemoveOpenDocDBPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Revoke DocDB SG
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to DocDB from the Security Group - Managed by CloudFormation
+      Id: RevokeDocDBIngress
+  RemoveOpenDocDBPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: RemoveOpenDocDBPlaybookCWE
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to DocDB from the Security Group - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt RemoveOpenDocDBPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - RemoveOpenDocDBPlaybookLambdaFunction
+              - Arn
+          Id: RemoveOpenDocDBPlaybook
+  RemoveOpenDocDBPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: RemoveOpenDocDBPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - RemoveOpenDocDBPlaybookEventRule
+          - Arn
+  RemoveOpenKibanaPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: RemoveOpenKibanaPlaybook
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to Kibana from the Security Group - Managed by CloudFormation
+      Handler: Remove_Open_Kibana_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !Ref ElectricEyeResponseIAMRoleArn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: Remove_Open_Kibana_Playbook.zip
+  RemoveOpenKibanaPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Revoke Kibana SG
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to Kibana from the Security Group - Managed by CloudFormation
+      Id: RevokeKibanaIngress
+  RemoveOpenKibanaPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: RemoveOpenKibanaPlaybookCWE
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to Kibana from the Security Group - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt RemoveOpenKibanaPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - RemoveOpenKibanaPlaybookLambdaFunction
+              - Arn
+          Id: RemoveOpenKibanaPlaybook
+  RemoveOpenKibanaPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: RemoveOpenKibanaPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - RemoveOpenKibanaPlaybookEventRule
+          - Arn
+  RemoveOpenMemcachedPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: RemoveOpenMemcachedPlaybook
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to Memcached from the Security Group - Managed by CloudFormation
+      Handler: Remove_Open_Memcached_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !Ref ElectricEyeResponseIAMRoleArn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: Remove_Open_Memcached_Playbook.zip
+  RemoveOpenMemcachedPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Revoke MCached SG
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to Memcached from the Security Group - Managed by CloudFormation
+      Id: RevokeMCachedIngress
+  RemoveOpenMemcachedPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: RemoveOpenMemcachedPlaybookCWE
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to Memcached from the Security Group - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt RemoveOpenMemcachedPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - RemoveOpenMemcachedPlaybookLambdaFunction
+              - Arn
+          Id: RemoveOpenMemcachedPlaybook
+  RemoveOpenMemcachedPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: RemoveOpenMemcachedPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - RemoveOpenMemcachedPlaybookEventRule
+          - Arn
+  RemoveOpenMSSQLPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: RemoveOpenMSSQLPlaybook
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to MSSQL from the Security Group - Managed by CloudFormation
+      Handler: Remove_Open_MSSQL_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !Ref ElectricEyeResponseIAMRoleArn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: Remove_Open_MSSQL_Playbook.zip
+  RemoveOpenMSSQLPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Revoke MSSQL SG
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to MSSQL from the Security Group - Managed by CloudFormation
+      Id: RevokeMSSQLIngress
+  RemoveOpenMSSQLPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: RemoveOpenMSSQLPlaybookCWE
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to MSSQL from the Security Group - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt RemoveOpenMSSQLPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - RemoveOpenMSSQLPlaybookLambdaFunction
+              - Arn
+          Id: RemoveOpenMSSQLPlaybook
+  RemoveOpenMSSQLPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: RemoveOpenMSSQLPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - RemoveOpenMSSQLPlaybookEventRule
+          - Arn
+  RemoveOpenMySQLPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: RemoveOpenMySQLPlaybook
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to MySQL from the Security Group - Managed by CloudFormation
+      Handler: Remove_Open_MySQL_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !Ref ElectricEyeResponseIAMRoleArn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: Remove_Open_MySQL_Playbook.zip
+  RemoveOpenMySQLPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Revoke MySQL SG
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to MySQL from the Security Group - Managed by CloudFormation
+      Id: RevokeMySQLIngress
+  RemoveOpenMySQLPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: RemoveOpenMySQLPlaybookCWE
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to MySQL from the Security Group - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt RemoveOpenMySQLPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - RemoveOpenMySQLPlaybookLambdaFunction
+              - Arn
+          Id: RemoveOpenMySQLPlaybook
+  RemoveOpenMySQLPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: RemoveOpenMySQLPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - RemoveOpenMySQLPlaybookEventRule
+          - Arn
+  RemoveOpenOraclePlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: RemoveOpenOraclePlaybook
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to Oracle from the Security Group - Managed by CloudFormation
+      Handler: Remove_Open_Oracle_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !Ref ElectricEyeResponseIAMRoleArn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: Remove_Open_Oracle_Playbook.zip
+  RemoveOpenOraclePlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Revoke Oracle SG
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to Oracle from the Security Group - Managed by CloudFormation
+      Id: RevokeOracleIngress
+  RemoveOpenOraclePlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: RemoveOpenOraclePlaybookCWE
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to Oracle from the Security Group - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt RemoveOpenOraclePlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - RemoveOpenOraclePlaybookLambdaFunction
+              - Arn
+          Id: RemoveOpenOraclePlaybook
+  RemoveOpenOraclePlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: RemoveOpenOraclePlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - RemoveOpenOraclePlaybookEventRule
+          - Arn
+  RemoveOpenPostgreSQLPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: RemoveOpenPostgreSQLPlaybook
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to PostgreSQL from the Security Group - Managed by CloudFormation
+      Handler: Remove_Open_PostgreSQL_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !Ref ElectricEyeResponseIAMRoleArn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: Remove_Open_PostgreSQL_Playbook.zip
+  RemoveOpenPostgreSQLPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Revoke PostgreSQL SG
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to PostgreSQL from the Security Group - Managed by CloudFormation
+      Id: RevokePostgreSQLIngr
+  RemoveOpenPostgreSQLPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: RemoveOpenPostgreSQLPlaybookCWE
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to PostgreSQL from the Security Group - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt RemoveOpenPostgreSQLPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - RemoveOpenPostgreSQLPlaybookLambdaFunction
+              - Arn
+          Id: RemoveOpenPostgreSQLPlaybook
+  RemoveOpenPostgreSQLPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: RemoveOpenPostgreSQLPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - RemoveOpenPostgreSQLPlaybookEventRule
+          - Arn
+  RemoveOpenRDPPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: RemoveOpenRDPPlaybook
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to RDP from the Security Group - Managed by CloudFormation
+      Handler: Remove_Open_RDP_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !Ref ElectricEyeResponseIAMRoleArn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: Remove_Open_RDP_Playbook.zip
+  RemoveOpenRDPPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Revoke RDP SG
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to RDP from the Security Group - Managed by CloudFormation
+      Id: RevokeRDPIngress
+  RemoveOpenRDPPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: RemoveOpenRDPPlaybookCWE
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to RDP from the Security Group - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt RemoveOpenRDPPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - RemoveOpenRDPPlaybookLambdaFunction
+              - Arn
+          Id: RemoveOpenRDPPlaybook
+  RemoveOpenRDPPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: RemoveOpenRDPPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - RemoveOpenRDPPlaybookEventRule
+          - Arn
+  RemoveOpenRedisPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: RemoveOpenRedisPlaybook
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to Redis from the Security Group - Managed by CloudFormation
+      Handler: Remove_Open_Redis_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !Ref ElectricEyeResponseIAMRoleArn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: Remove_Open_Redis_Playbook.zip
+  RemoveOpenRedisPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Revoke Redis SG
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to Redis from the Security Group - Managed by CloudFormation
+      Id: RevokeRedisIngress
+  RemoveOpenRedisPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: RemoveOpenRedisPlaybookCWE
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to Redis from the Security Group - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt RemoveOpenRedisPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - RemoveOpenRedisPlaybookLambdaFunction
+              - Arn
+          Id: RemoveOpenRedisPlaybook
+  RemoveOpenRedisPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: RemoveOpenRedisPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - RemoveOpenRedisPlaybookEventRule
+          - Arn
+  RemoveOpenRedshiftPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: RemoveOpenRedshiftPlaybook
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to Redshift from the Security Group - Managed by CloudFormation
+      Handler: Remove_Open_Redshift_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !Ref ElectricEyeResponseIAMRoleArn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: Remove_Open_Redshift_Playbook.zip
+  RemoveOpenRedshiftPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Revoke Redshift SG
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to Redshift from the Security Group - Managed by CloudFormation
+      Id: RevokeRedshiftIngres
+  RemoveOpenRedshiftPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: RemoveOpenRedshiftPlaybookCWE
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to Redshift from the Security Group - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt RemoveOpenRedshiftPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - RemoveOpenRedshiftPlaybookLambdaFunction
+              - Arn
+          Id: RemoveOpenRedshiftPlaybook
+  RemoveOpenRedshiftPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: RemoveOpenRedshiftPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - RemoveOpenRedshiftPlaybookEventRule
+          - Arn
+  RemoveOpenSMBPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: RemoveOpenSMBPlaybook
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to SMB from the Security Group - Managed by CloudFormation
+      Handler: Remove_Open_SMB_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !Ref ElectricEyeResponseIAMRoleArn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: Remove_Open_SMB_Playbook.zip
+  RemoveOpenSMBPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Revoke SMB SG
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to SMB from the Security Group - Managed by CloudFormation
+      Id: RevokeSMBIngress
+  RemoveOpenSMBPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: RemoveOpenSMBPlaybookCWE
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to SMB from the Security Group - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt RemoveOpenSMBPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - RemoveOpenSMBPlaybookLambdaFunction
+              - Arn
+          Id: RemoveOpenSMBPlaybook
+  RemoveOpenSMBPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: RemoveOpenSMBPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - RemoveOpenSMBPlaybookEventRule
+          - Arn
+  RemoveOpenSSHPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: RemoveOpenSSHPlaybook
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to SSH from the Security Group - Managed by CloudFormation
+      Handler: Remove_Open_SSH_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !Ref ElectricEyeResponseIAMRoleArn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: Remove_Open_SSH_Playbook.zip
+  RemoveOpenSSHPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Revoke SSH SG
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to SSH from the Security Group - Managed by CloudFormation
+      Id: RevokeSSHIngress
+  RemoveOpenSSHPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: RemoveOpenSSHPlaybookCWE
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to SSH from the Security Group - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt RemoveOpenSSHPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - RemoveOpenSSHPlaybookLambdaFunction
+              - Arn
+          Id: RemoveOpenSSHPlaybook
+  RemoveOpenSSHPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: RemoveOpenSSHPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - RemoveOpenSSHPlaybookEventRule
+          - Arn
+  RemoveOpenTelnetPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: RemoveOpenTelnetPlaybook
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to Telnet from the Security Group - Managed by CloudFormation
+      Handler: Remove_Open_Telnet_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !Ref ElectricEyeResponseIAMRoleArn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: Remove_Open_Telnet_Playbook.zip
+  RemoveOpenTelnetPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Revoke Telnet SG
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to Telnet from the Security Group - Managed by CloudFormation
+      Id: RevokeTelnetIngress
+  RemoveOpenTelnetPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: RemoveOpenTelnetPlaybookCWE
+      Description: After execution will delete all ingress rules open to 0.0.0.0/0 to Telnet from the Security Group - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt RemoveOpenTelnetPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - RemoveOpenTelnetPlaybookLambdaFunction
+              - Arn
+          Id: RemoveOpenTelnetPlaybook
+  RemoveOpenTelnetPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: RemoveOpenTelnetPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - RemoveOpenTelnetPlaybookEventRule
+          - Arn
+  S3PutLifecyclePlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: S3PutLifecyclePlaybook
+      Description: After execution will apply a basic lifecycle configuration on the S3 bucket to move objects to cheap storage and delete failed multi-part uploads - Managed by CloudFormation
+      Handler: S3_Put_Lifecycle_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !Ref ElectricEyeResponseIAMRoleArn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: S3_Put_Lifecycle_Playbook.zip
+  S3PutLifecyclePlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: S3 Lifecycle Policy
+      Description: After execution will apply a basic lifecycle configuration on the S3 bucket to move objects to cheap storage and delete failed multi-part uploads - Managed by CloudFormation
+      Id: S3PutLifecycle
+  S3PutLifecyclePlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: S3PutLifecyclePlaybookCWE
+      Description: After execution will apply a basic lifecycle configuration on the S3 bucket to move objects to cheap storage and delete failed multi-part uploads - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt S3PutLifecyclePlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - S3PutLifecyclePlaybookLambdaFunction
+              - Arn
+          Id: S3PutLifecyclePlaybook
+  S3PutLifecyclePlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: S3PutLifecyclePlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - S3PutLifecyclePlaybookEventRule
+          - Arn
+  S3VersioningPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: S3VersioningPlaybook
+      Description: After execution will versioning to the S3 bucket - Managed by CloudFormation
+      Handler: S3_Versioning_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !Ref ElectricEyeResponseIAMRoleArn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: S3_Versioning_Playbook.zip
+  S3VersioningPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: S3 Versioning
+      Description: After execution will versioning to the S3 bucket - Managed by CloudFormation
+      Id: S3Versioning
+  S3VersioningPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: S3VersioningPlaybookCWE
+      Description: After execution will versioning to the S3 bucket - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt S3VersioningPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - S3VersioningPlaybookLambdaFunction
+              - Arn
+          Id: S3VersioningPlaybook
+  S3VersioningPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: S3VersioningPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - S3VersioningPlaybookEventRule
+          - Arn
+  ShieldAdvAutoRenewPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: ShieldAdvAutoRenewPlaybook
+      Description: After execution will configure the Shield Adv subscription to auto-renew - Managed by CloudFormation
+      Handler: ShieldAdv_AutoRenew_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !Ref ElectricEyeResponseIAMRoleArn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: ShieldAdv_AutoRenew_Playbook.zip
+  ShieldAdvAutoRenewPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: ShieldAdv AutoRenew
+      Description: After execution will configure the Shield Adv subscription to auto-renew - Managed by CloudFormation
+      Id: ShieldAdvAutoRenew
+  ShieldAdvAutoRenewPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: ShieldAdvAutoRenewPlaybookCWE
+      Description: After execution will configure the Shield Adv subscription to auto-renew - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt ShieldAdvAutoRenewPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - ShieldAdvAutoRenewPlaybookLambdaFunction
+              - Arn
+          Id: ShieldAdvAutoRenewPlaybook
+  ShieldAdvAutoRenewPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: ShieldAdvAutoRenewPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - ShieldAdvAutoRenewPlaybookEventRule
+          - Arn
+  SSMDeleteEC2PlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: SSMDeleteEC2Playbook
+      Description: After execution will invoke the SSM Automation Document AWS-TerminateEC2Instance to delete the instance - Managed by CloudFormation
+      Handler: SSM_DeleteEC2_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !Ref ElectricEyeResponseIAMRoleArn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: SSM_DeleteEC2_Playbook.zip
+  SSMDeleteEC2PlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: SSM Terminate EC2
+      Description: After execution will invoke the SSM Automation Document AWS-TerminateEC2Instance to delete the instance - Managed by CloudFormation
+      Id: SSMDeleteEC2
+  SSMDeleteEC2PlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: SSMDeleteEC2PlaybookCWE
+      Description: After execution will invoke the SSM Automation Document AWS-TerminateEC2Instance to delete the instance - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt SSMDeleteEC2PlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - SSMDeleteEC2PlaybookLambdaFunction
+              - Arn
+          Id: SSMDeleteEC2Playbook
+  SSMDeleteEC2PlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: SSMDeleteEC2PlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - SSMDeleteEC2PlaybookEventRule
+          - Arn

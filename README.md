@@ -20,6 +20,7 @@ Continuously monitor your AWS services for configurations that can lead to degra
   - [Config Findings Pruner](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/config-deletion-pruner)
   - [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response)
   - [ElectricEye-ChatOps](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-chatops)
+  - [ElectricEye-Reports](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-reports)
 - [Known Issues & Limitiations](https://github.com/jonrau1/ElectricEye#known-issues--limitations)
 - [FAQ](https://github.com/jonrau1/ElectricEye#faq)
   - [13. How much does this solution cost to run?](https://github.com/jonrau1/ElectricEye#13-how-much-does-this-solution-cost-to-run)
@@ -487,14 +488,20 @@ I am very happy to accept PR's for the following:
 - Adding Terraform `v0.12.x` support
 - My to-do list
 
+If you are working on another project whether open-source or commercial and want to include parts of ElectricEye (or the full thing) in your product / project, please contact me and at least give me credit. If it is a commercial offering that you'll be charging for, the GPL-3.0 says you should make it fully obvious that the customers can get it for free here.
+
+### Contributors
+- Alpha Testing: [Mark Yancey](https://www.linkedin.com/in/mark-yancey-jr-aspiring-cloud-security-professional-a52bb9126/)
+
 ### To-Do
 - [] Create an ElectricEye Logo
 - [] Investigate publishing ASFF schema to SQS>Lambda>BIF API for scale/throttle handling
 - [] Add in Shodan.io checks for internet-facing resources (RDS, Redshift, DocDB, Elasticsearch, EC2, ELBv2, etc)
-- [X] Upload response and remediation playbooks and IAC for them - Custom Action Version
-- [X] Upload response and remediation playbooks and IAC for them - Title II Version (Full auto, that is)
-- [X] Create an Alerting framework with ChatBot for Critical findings / whatever
+- [X] Upload response and remediation playbooks and IAC for them - Custom Action Version (Semi Auto)
+- [X] Upload response and remediation playbooks and IAC for them - Imported Findings (Full Auto)
+- [X] Create an Alerting framework with ~~ChatBot~~ Slack for Critical findings
 - [] Create a Reporting module for use with QuickSight
+  - An **EXPERIMENTAL** take is located here: [ElectricEye-Reports](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-reports)
 - [] Localization of ReadMe in: Spanish, Arabic, German, Italian, French, Japenese, etc.
 
 ## License

@@ -62,7 +62,7 @@ In this stage we will use CloudFormation Stack Sets to deploy the multi-account 
 ### Semi-Auto ElectricEye-Response with CloudFormation
 In this section we will deploy Custom Actions, CloudWatch Events and Lambda functions to the Security Hub Master using a CloudFormation template.
 
-**Important Note:** The maximum account limit for Custom Actions is 50 per Region per Account for Security Hub, there is also a 200 max resource limit per CloudFormation Stack and for that reason there are two templates, we will only be using the first one. You can side-step this by setting up some actions as a mix of Full-Auto and Semi-Auto based on your organizational policies, but then you will be using both CFN and Terraform to deploy these. 
+**Important Note:** The maximum account limit for Custom Actions is 50 per Region per Account for Security Hub, there is also a 200 max resource limit per CloudFormation Stack and for that reason there are two templates (the second template is named `ElectricEye-Response_SemiAutoPlaybooks_DirectorsCut_CFN.yml` it has other Playbooks that the main Template does not if you wanted to copy & paste between them), we will only be using the first one. You can side-step this by setting up some actions as a mix of Full-Auto and Semi-Auto based on your organizational policies, but then you will be using both CFN and Terraform to deploy these. 
 
 1. Create a S3 bucket, clone this repository and upload the contents of `lambda-packages` to your S3 bucket. Take note of your S3 bucket name as you will need it as a parameter in the CloudFormation stack
 ```bash

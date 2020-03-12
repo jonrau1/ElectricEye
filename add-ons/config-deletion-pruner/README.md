@@ -17,3 +17,6 @@ The following steps should be performed in the AWS Management Console.
 
 5. As resources that are recorded by AWS Config are deleted, all related findings will be set to an `ARCHIVED` record state in Security Hub and a `Note` will be added to the finding as shown below.
 ![PrunerNote](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/config-deletion-pruner/config-pruner-finding-note.jpg)
+
+## License
+This library is licensed under the GNU General Public License v3.0 (GPL-3.0) License. See the LICENSE file.

@@ -66,3 +66,6 @@ You can optionally remove the High severity findings, these can get noisy if you
 
 ### Deploy ElectricEye-ChatOps with Terraform
 ***Coming Soon***
+
+## License
+This library is licensed under the GNU General Public License v3.0 (GPL-3.0) License. See the LICENSE file.
