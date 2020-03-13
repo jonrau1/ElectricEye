@@ -12,7 +12,7 @@ Continuously monitor your AWS services for configurations that can lead to degra
 - [Solution Architecture](https://github.com/jonrau1/ElectricEye#solution-architecture)
 - [Setting Up](https://github.com/jonrau1/ElectricEye#setting-up)
   - [Build and push the Docker image](https://github.com/jonrau1/ElectricEye#build-and-push-the-docker-image)
-  - [(OPTIONAL) Setup Shodan.io API Key](https://github.com/jonrau1/ElectricEye/tree/shodan-auditor#optional-setup-shodanio-api-key)
+  - [(OPTIONAL) Setup Shodan.io API Key](https://github.com/jonrau1/ElectricEye#optional-setup-shodanio-api-key)
   - [Setup baseline infrastructure via Terraform](https://github.com/jonrau1/ElectricEye#setup-baseline-infrastructure-via-terraform)
   - [Setup baseline infrastructure via AWS CloudFormation](https://github.com/jonrau1/ElectricEye#setup-baseline-infrastructure-via-aws-cloudformation)
   - [Manually execute the ElectricEye ECS Task](https://github.com/jonrau1/ElectricEye#manually-execute-the-electriceye-ecs-task-you-only-need-to-do-this-once)
@@ -49,13 +49,17 @@ Personas who can make use of this tool are DevOps/DevSecOps engineers, SecOps an
 Refer to the [Supported Services and Checks](https://github.com/jonrau1/ElectricEye#supported-services-and-checks) section for an up-to-date list of supported services and checks performed by the Auditors.
 
 ## Setting Up
-These steps are split across their relevant sections. All CLI commands are executed from an Ubuntu 18.04LTS [Cloud9 IDE](https://aws.amazon.com/cloud9/details/), modify them to fit your OS. If you do use Cloud9, navigate to Settings (represented by a Gear icon) > AWS Settings and **unmark** the selection for `AWS managed temporary credentials` (move the toggle to your left-hand side) as shown below. If you do not, you instance profile will not apply properly.
+These steps are split across their relevant sections. All CLI commands are executed from an Ubuntu 18.04LTS [Cloud9 IDE](https://aws.amazon.com/cloud9/details/), modify them to fit your OS. 
+
+**Note:** If you do use Cloud9, navigate to Settings (represented by a Gear icon) > AWS Settings and **unmark** the selection for `AWS managed temporary credentials` (move the toggle to your left-hand side) as shown below. If you do not, you instance profile will not apply properly.
 ![Cloud9TempCred](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/cloud9-temp-creds.JPG)
 
-**Note:** Ensure AWS Security Hub is enabled in the region you are attempting to run ElectricEye
+**Note 2:** Ensure AWS Security Hub is enabled in the region you are attempting to run ElectricEye
+
+**Note 3:** If you have never used ECS before you'll likely run into a problem with the service-linked role (SLR), or lack thereof, and you should follow the [instructions here](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using-service-linked-roles.html#service-linked-role-permissions) to have it created first
 
 ### Build and push the Docker image
-**Note:** You must have [permissions to push images](https://docs.aws.amazon.com/AmazonECR/latest/userguide/docker-push-ecr-image.html) to ECR before performing this step.
+**Note:** You must have [permissions to push images](https://docs.aws.amazon.com/AmazonECR/latest/userguide/docker-push-ecr-image.html) to ECR before performing this step. These permissions are not included in the instance profile example.
 
 1. Update your machine and clone this repository
 ```bash
@@ -136,12 +140,12 @@ cd insights
 python3 electriceye-insights.py
 ```
 
-In the next stage your will run the ElectricEye ECS task manually, after Terraform deploys this solution it will automatically run and it will fail due to a lack of auditors in the S3 bucket. You can skip the next section if you intend to have ElectricEye run automatically.
+In the next stage you will launch the ElectricEye ECS task manually because after Terraform deploys this solution it will automatically run and it will fail due to a lack of Auditor scripts in the S3 bucket.
 
 ### Setup baseline infrastructure via AWS CloudFormation
 1. Download the [CloudFormation template](https://github.com/jonrau1/ElectricEye/blob/master/cloudformation/ElectricEye_CFN.yaml) and create a Stack. Refer to the [Get Started](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/GettingStarted.Walkthrough.html) section of the *AWS CloudFormation User Guide* if you have not done this before.
 
-2. Enter the URI of the Docker image in the space for the parameter **ElectricEyeContainerInfo**. Leave all other parameters as the default value, unless you already used `10.77.0.0/16` as the CIDR for one of your VPCs and plan to attach this VPC to your [T-Gateway](https://aws.amazon.com/transit-gateway/). Then create your stack.
+2. Enter the URI of the Docker image in the space for the parameter **ElectricEyeContainerInfo**. Leave all other parameters as the default value, unless you already used `10.77.0.0/16` as the CIDR for one of your VPCs and plan to attach this VPC to your [T-Gateway](https://aws.amazon.com/transit-gateway/). Optionally replace the value of the Shodan API Key parameter with yours if you created it in the previous optional step and then create your stack.
 ![Run task dropdown](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/cfn-parameter-uri-modification.JPG)
 
 3. Navigate to the S3 console and locate the name of the S3 bucket created by CloudFormation for the next step. It should be in the format of `electric-eye-artifact-bucket--(AWS_REGION)-(ACCOUNT-NUMBER)`
@@ -509,10 +513,26 @@ I am very happy to accept PR's for the following:
 
 If you are working on another project whether open-source or commercial and want to include parts of ElectricEye (or the full thing) in your product / project, please contact me and at least give me credit. If it is a commercial offering that you'll be charging for, the GPL-3.0 says you should make it fully obvious that the customers can get it for free here.
 
-### Contributors
-- Alpha Testing: [Mark Yancey](https://www.linkedin.com/in/mark-yancey-jr-aspiring-cloud-security-professional-a52bb9126/)
+### Early Contributors
+Quick shout-outs to the folks who answered the call early to test out ElectricEye and make it not-a-shit-sandwich.
+
+##### Alpha Testing: 
+- [Mark Yancey](https://www.linkedin.com/in/mark-yancey-jr-aspiring-cloud-security-professional-a52bb9126/)
+
+##### Beta Testing:
+- [Martin Klie](https://www.linkedin.com/in/martin-klie-0600845/)
+- [Joel Castillo](https://www.linkedin.com/in/joelbcastillo/)
+- [Juhi Gupta](https://www.linkedin.com/in/juhi-gupta-09/)
+- [Bulent Yidliz](https://www.linkedin.com/in/bulent-yildiz/)
+- [Guillermo Ojeda](https://www.linkedin.com/in/guillermoojeda/)
+- [Dhilip Anand Shivaji](https://www.linkedin.com/in/dhilipanand/)
+- [Arek Bar](https://www.linkedin.com/in/arkadiuszbar/)
+- [Ryan Russel](https://www.linkedin.com/in/pioneerrussell/)
+- [Jonathan Nguyen](https://www.linkedin.com/in/jonanguyen/)
 
 ### To-Do
+As of 12 MAR 2020, most of these items will be tracked on the [roadmap project board](https://github.com/jonrau1/ElectricEye/projects/1)
+
 - [] Create an ElectricEye Logo
 - [] Investigate publishing ASFF schema to SQS>Lambda>BIF API for scale/throttle handling
 - [X] Add in Shodan.io checks for internet-facing resources (RDS, Redshift, DocDB, Elasticsearch, EC2, ELBv2, etc)

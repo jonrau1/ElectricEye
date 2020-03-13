@@ -213,10 +213,22 @@ Sorta. You can expand the CloudWatch / EventBridge Event Rule filter to have an 
 ### 5. Why don't you support (insert action here)?
 Loaded question. I likely will, if you really need the ability to create a new Neptune parameter set or something open an Issue and if it is relatively trivial I will take it on. Complex actions that need long wait conditions or need to run powershell or shell scripts on a host will require additional investigation and invesment.
 
-### 6. Why don't you use Systems Manager Automation Documents?
+### 6. How quickly do the playbooks remediate the resource?
+From invocation it should only take a few seconds for the resource to be brought back into a compliant state. If you send a large group of findings at a time, that may only slightly increase. It is important to note that the time from when a resource moves into a non-compliant state and gets sent to Security Hub greatly depends on many factors. For instance, a lot of the Security Hub security standards are powered by configuration change-triggered rules from Config, but it can still take up to 15 minutes for the Config event to be translated to ASFF, batched and sent to Security Hub. These timetables are similar for native integrations as well (GuardDuty, Inspector, etc.) and ElectricEye is totally periodic so the time variance can be very large.
+
+### 7. How many findings can I select to invoke a Custom Action? Does that work?
+Yes, it does work. You can send up to 20 findings (or 240kb) to CloudWatch Events / EventBridge from Security Hub (also why only 20 results show in the Findings page, I imagine). The receiving Lambda function will loop through the various findings and various `Resources` arrays to perform remediation and update the note using the `UpdateFindings` API.
+
+### 8. From my Security Hub Master, can I select findings belonging to different accounts and invoke a Custom Action?
+Yes. There is logic in the Python code to differentiate if the Master or a Member account owns the finding. If the Member(s) own the finding, the code will loop through as normal, assume the cross-account role and execute the remediation and call the `UpdateFindings` API. The same limitation applies as in FAQ #7, you can only send up to 20 findings or 240kb worth to CloudWatch Events / EventBridge.
+
+### 9. I am getting exception errors with from the Playbooks related to permissions but I deployed your resources, what is happening?
+You likely have a resource-based policy on the resource you are attempting to remediate that is preventing the assumed role from remediating it. Services such as S3, SNS, SQS, CloudFront, ECR, Elasticsearch Service and others support additional access policies which can prevent you from taking action. Permissions Boundaries and Service Control Policies (SCPs) can also prevent certain actions from happening. You should work with the resource owner to allow access from the ElectricEye-Response IAM roles or educate them in not creating vulnerable or non-compliant infrastructure services.
+
+### 10. Why don't you use Systems Manager Automation Documents?
 I use managed Automation documents where they make sense. The time investment to learn another abstraction of invoking AWS APIs over relying on my core competencies is counter-intuitive to me, additionally, custom docs would need to be deployed via IAC to all member accounts and maintained which can add some problems. All that said, if you have a really awesome SSM Doc that you are 110% convinced should be included in ElectricEye-Response, please open an Issue and we can discuss the merits of inclusion.
 
-### 7. Why don't you use Step Functions?
+### 11. Why don't you use Step Functions?
 I do not know how to write them, let alone set them up via IAC. There are some Playbooks on the roadmap that will (theoretically) need to be implemented via Step Functions, so I will gain the profiency eventually. I won't accept PRs on any Step Function based playbooks for the time being.
 
 ## License
