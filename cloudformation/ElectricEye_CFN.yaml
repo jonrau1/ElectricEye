@@ -114,6 +114,24 @@ Resources:
     Properties:
       RouteTableId: !Ref PublicRouteTable
       SubnetId: !Ref ElectricEyeScheduledSubnet2
+  ElectricEyeS3VpcEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcEndpointType: Gateway
+      RouteTableIds:
+        - !Ref PublicRouteTable
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.s3
+      VpcId: !Ref VPC
+  ElectricEyeEcrDkrEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcEndpointType: Interface
+      PrivateDnsEnabled: true
+      SubnetIds:
+        - !Ref ElectricEyeScheduledSubnet1
+        - !Ref ElectricEyeScheduledSubnet2
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.ecr.dkr
+      VpcId: !Ref VPC
   ElectricEyeSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -140,6 +158,9 @@ Resources:
     Type: AWS::ECS::Cluster
     Properties: 
       ClusterName: !Ref ElectricEyeClusterName
+      ClusterSettings:
+        - Name: containerInsights
+          Value: enabled
   ElectricEyeTaskRole:
     Type: AWS::IAM::Role
     Properties:

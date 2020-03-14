@@ -28,6 +28,10 @@ variable "Network_Resource_Count" {
 variable "Electric_Eye_ECS_Resources_Name" {
   default = "electriceye"
 }
+variable "Electric_Eye_ECR_Repository_Name" {
+  default     = ""
+  description = "ECR Repo name for ElectricEye this will be used to place a resource policy allowing access from only the ElectricEye roles"
+}
 variable "Electric_Eye_Docker_Image_URI" {
   default     = ""
   description = "URI of the ElectricEye Docker image from ECR" 
