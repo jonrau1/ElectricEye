@@ -270,7 +270,7 @@ def eks_logging_audit_auth_check():
                 enableCheck = str(logs['enabled'])
                 if enableCheck == 'True':
                     for logs in logTypes:
-                        if str(logs) is 'authenticator' and 'audit':
+                        if str(logs) == 'authenticator' and 'audit':
                             try:
                                 # ISO Time
                                 iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()

@@ -1,20 +1,8 @@
-# This file is part of ElectricEye.
+FROM alpine:latest
 
-# ElectricEye is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-
-# ElectricEye is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-
-# You should have received a copy of the GNU General Public License along with ElectricEye.  
-# If not, see https://github.com/jonrau1/ElectricEye/blob/master/LICENSE.
-
-FROM ubuntu:latest
-
+# This hack is widely applied to avoid python printing issues in docker containers.
+# See: https://github.com/Docker-Hub-frolvlad/docker-alpine-python3/pull/13
+ENV PYTHONUNBUFFERED=1
 ENV SH_SCRIPTS_BUCKET=SH_SCRIPTS_BUCKET
 ENV SHODAN_API_KEY_PARAM=SHODAN_API_KEY_PARAM
 
@@ -24,9 +12,13 @@ LABEL maintainer="https://github.com/jonrau1" \
       description="Continuously monitor your AWS services for configurations that can lead to degradation of confidentiality, integrity or availability. All results will be sent to Security Hub for further aggregation and analysis."
 
 RUN \
-    apt-get update && \
-    apt-get install python3 -y && \
-    apt-get install python3-pip -y && \
+    apk update && \
+    apk upgrade && \
+    apk add bash && \
+    apk add --no-cache python3 && \
+    python3 -m ensurepip && \
+    rm -r /usr/lib/python*/ensurepip && \
+    pip3 install --no-cache --upgrade pip setuptools wheel && \
     pip3 install awscli && \
     pip3 install requests && \
     pip3 install boto3
