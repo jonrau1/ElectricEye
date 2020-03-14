@@ -15,6 +15,45 @@
 
 resource "aws_ecs_cluster" "Electric_Eye_ECS_Cluster" {
   name = "${var.Electric_Eye_VPC_Name_Tag}-ecs-cluster"
+  capacity_providers = ["FARGATE"]
+  default_capacity_provider_strategy = {
+    capacity_provider = "FARGATE"
+  }
+  setting = {
+    name  = "containerInsights"
+    value = "enabled"
+  }
+}
+resource "aws_ecr_repository_policy" "foopolicy" {
+  repository = "${var.Electric_Eye_ECR_Repository_Name}"
+  policy = <<EOF
+{
+  "Version": "2008-10-17",
+  "Statement": [
+    {
+      "Sid": "new statement",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": [
+          "${aws_iam_role.Electric_Eye_ECS_Task_Execution_Role.arn}",
+          "${aws_iam_role.Electric_Eye_ECS_Task_Role.arn}"
+        ],
+        "Service": "ecs-tasks.amazonaws.com"
+      },
+      "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:DescribeImages",
+        "ecr:DescribeRepositories",
+        "ecr:GetAuthorizationToken",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:GetRepositoryPolicy",
+        "ecr:ListImages"
+      ]
+    }
+  ]
+}
+EOF
 }
 resource "aws_s3_bucket" "Electric_Eye_Security_Artifact_Bucket" {
   bucket = "${var.Electric_Eye_ECS_Resources_Name}-artifact-bucket-${var.AWS_Region}-${data.aws_caller_identity.current.account_id}"

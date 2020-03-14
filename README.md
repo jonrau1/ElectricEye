@@ -7,6 +7,8 @@ Continuously monitor your AWS services for configurations that can lead to degra
 ***Everything you do***<br/>
 <sub>*Judas Priest, 1982*</sub>
 
+[![DepShield Badge](https://depshield.sonatype.org/badges/jonrau1/ElectricEye/depshield.svg)](https://depshield.github.io)
+
 ## Table of Contents
 - [Description](https://github.com/jonrau1/ElectricEye#description)
 - [Solution Architecture](https://github.com/jonrau1/ElectricEye#solution-architecture)
@@ -39,12 +41,12 @@ Personas who can make use of this tool are DevOps/DevSecOps engineers, SecOps an
 
 ## Solution Architecture
 ![Architecture](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/Architecture.jpg)
-1. A [time-based CloudWatch Event](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html) starts up an ElectricEye task every 12 hours (or whatever time period you set)
-2. The name of S3 bucket containing the ElectricEye scripts is saved as a [Systems Manager Parameter](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html) which is passed to the ElectricEye Task as an [environmental variable](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#container_definition_environment)
-3. The ElectricEye Docker image is pulled from [Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/) when the task runs
-4. Using the bucket name from SSM Parameter Store, the Task will [download](https://docs.aws.amazon.com/cli/latest/reference/s3/cp.html) all scripts from S3
-5. ElectricEye executes the scripts to scan your AWS infrastructure for both compliant and non-compliant configurations
-6. All findings are sent to Security Hub using the [BatchImportFindings API](https://docs.aws.amazon.com/securityhub/1.0/APIReference/API_BatchImportFindings.html), findings about compliant resources are automatically [archived](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-concepts.html).
+1. A [time-based CloudWatch Event](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html) starts up an ElectricEye task every 12 hours (or whatever time period you set)
+2. The ElectricEye Task will pull the Docker image from [Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/) via a VPC Interface Endpoint (**Note**: The endpoint `com.amazonaws.region.ecr.dkr` also needs the S3 Gateway Endpoint under the covers as Docker image layers are stored in S3, it serves a dual purpose to download the auditor scripts as well)
+3. Systems Manager Parameter Store parameters are provided to the ElectricEye Task, these store values such as the S3 bucket containing the Auditor scripts and your Shodan.io API key (if used). These allow you to not have to hardcode these values in the environment variables of ECS or in the codebase
+4. The ElectricEye task will download all Auditor scripts from S3 via the VPC endpoint
+5. ElectricEye executes the scripts to scan your AWS infrastructure for both compliant and non-compliant configurations
+6. All findings are sent to Security Hub using the [BatchImportFindings API](https://docs.aws.amazon.com/securityhub/1.0/APIReference/API_BatchImportFindings.html), findings about compliant resources are automatically [archived](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-concepts.html).
 
 Refer to the [Supported Services and Checks](https://github.com/jonrau1/ElectricEye#supported-services-and-checks) section for an up-to-date list of supported services and checks performed by the Auditors.
 
@@ -110,7 +112,7 @@ sudo mv terraform /usr/local/bin/
 terraform --version
 ```
 
-2. Change directories, and modify the `variables.tf` config file to include the URI of your Docker image as shown in the screenshot below. Optionally replace the value of the Shodan API Key parameter with yours if you created it in the previous optional step.
+2. Change directories, and modify the `variables.tf` config file to include the URI of your Docker image and the name of your ECR Repository as shown in the screenshot below. Optionally replace the value of the Shodan API Key parameter with yours if you created it in the previous optional step.
 ```bash
 cd terraform-config-files
 nano variables.tf
@@ -147,6 +149,43 @@ In the next stage you will launch the ElectricEye ECS task manually because afte
 
 2. Enter the URI of the Docker image in the space for the parameter **ElectricEyeContainerInfo**. Leave all other parameters as the default value, unless you already used `10.77.0.0/16` as the CIDR for one of your VPCs and plan to attach this VPC to your [T-Gateway](https://aws.amazon.com/transit-gateway/). Optionally replace the value of the Shodan API Key parameter with yours if you created it in the previous optional step and then create your stack.
 ![Run task dropdown](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/cfn-parameter-uri-modification.JPG)
+
+**NOTE**: The Terraform implementation applies a resource-based repository policy that only allows access to the ElectricEye ECS IAM Roles (Execution & Task), if you want to apply something similar for CloudFormation you will need to issue the following ECR CLI command:
+```bash
+aws ecr set-repository-policy \
+    --repository-name <ECR_REPO_NAME> \
+    --policy-text file://my-policy.json
+```
+
+You can create `my-policy.json` with the below example, replace the values for `<Task_Execution_Role_ARN>` and `<Task_Role.arn>` as needed.
+```json
+{
+  "Version": "2008-10-17",
+  "Statement": [
+    {
+      "Sid": "new statement",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": [
+          "<Task_Execution_Role_ARN>",
+          "<Task_Role.arn>"
+        ],
+        "Service": "ecs-tasks.amazonaws.com"
+      },
+      "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:DescribeImages",
+        "ecr:DescribeRepositories",
+        "ecr:GetAuthorizationToken",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:GetRepositoryPolicy",
+        "ecr:ListImages"
+      ]
+    }
+  ]
+}
+```
 
 3. Navigate to the S3 console and locate the name of the S3 bucket created by CloudFormation for the next step. It should be in the format of `electric-eye-artifact-bucket--(AWS_REGION)-(ACCOUNT-NUMBER)`
 
@@ -185,7 +224,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **160** checks supported across **49** AWS services / components using **36** Auditors. There are currently **60** supported response and remediation Playbooks with coverage across **31** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **162** checks supported across **50** AWS services / components using **37** Auditors. There are currently **60** supported response and remediation Playbooks with coverage across **31** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -244,6 +283,8 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_ECR_Auditor.py                  | ECR Repository                | Does the repository support<br>scan-on-push                           |
 | Amazon_ECR_Auditor.py                  | ECR Repository                | Is there an image lifecycle policy                                    |
 | Amazon_ECR_Auditor.py                  | ECR Repository                | Is there a repo access policy                                         |
+| Amazon_ECS_Auditor.py                  | ECS Cluster                   | Is container insights enabled                                         |
+| Amazon_ECS_Auditor.py                  | ECS Cluster                   | Is a default cluster provider configured                              |
 | Amazon_EFS_Auditor.py                  | EFS File System               | Are file systems encrypted                                            |
 | Amazon_EKS_Auditor.py                  | EKS Cluster                   | Is the API Server publicly<br>accessible                              |
 | Amazon_EKS_Auditor.py                  | EKS Cluster                   | Is K8s version 1.14 used                                              |
@@ -498,6 +539,10 @@ You should consider taking a look at all of these:
 - [Mordor](https://github.com/hunters-forge/mordor)
 #### Misc
 - [LambdaGuard](https://github.com/Skyscanner/LambdaGuard)
+
+### 15. Why did you swap the Dockerfile to being Alpine Linux-based?
+The original (V1.0) Dockerfile used the `ubuntu:latest` image as its base image and was pretty chunky (~450MB) where the Alpine image is a tiny bit under a 10th of that (41.95MB). It is also much faster to create and push the image since `apk` adds only what is needed and isn't bloated by the Ubuntu dependencies from `apt` or that come prepackaged. Lastly, the build logs are a lot less chatty with the (hacky) ENV value set for Python and Pip related logs. Oh, and as of 13 MARCH 2020 there are no vulns in this image. (Reminder for me to periodically update and confirm this)
+![AlpineVulns](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/alpine-ecr-vulns.JPG)
 
 ## Contributing
 I am very happy to accept PR's for the following:

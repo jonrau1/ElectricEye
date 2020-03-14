@@ -48,6 +48,26 @@ resource "aws_route_table" "Electric_Eye_Public_RTB" {
     Name = "${var.Electric_Eye_VPC_Name_Tag}-PUB-RTB-${element(aws_subnet.Electric_Eye_Public_Subnets.*.id, count.index)}"
   }
 }
+resource "aws_vpc_endpoint" "Electric_Eye_Gateway_S3" {
+  vpc_id            = "${aws_vpc.Electric_Eye_VPC.id}"
+  service_name      = "com.amazonaws.${var.AWS_Region}.s3"
+  vpc_endpoint_type = "Gateway"
+  route_table_ids   = ["${aws_route_table.Electric_Eye_Public_RTB.*.id}"]
+  tags = {
+      Name = "${var.Electric_Eye_VPC_Name_Tag}-S3-Endpoint"
+  }
+}
+resource "aws_vpc_endpoint" "Electric_Eye_Interface_Interface_ECR-DKR" {
+  vpc_id              = "${aws_vpc.Electric_Eye_VPC.id}"
+  service_name        = "com.amazonaws.${var.AWS_Region}.ecr.dkr"
+  vpc_endpoint_type   = "Interface"
+  subnet_ids          = ["${aws_subnet.Electric_Eye_Public_Subnets.*.id}"]
+  security_group_ids  = ["${aws_security_group.Electric_Eye_Sec_Group.id}"]
+  private_dns_enabled = true
+  tags = {
+      Name = "${var.Electric_Eye_VPC_Name_Tag}-ECR-DKR-Endpoint"
+  }
+}
 resource "aws_route_table_association" "Public_Subnet_Association" {
   count          = "${var.Network_Resource_Count}"
   subnet_id      = "${element(aws_subnet.Electric_Eye_Public_Subnets.*.id, count.index)}"
