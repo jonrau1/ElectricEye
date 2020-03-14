@@ -127,6 +127,8 @@ Resources:
     Properties:
       VpcEndpointType: Interface
       PrivateDnsEnabled: true
+      SecurityGroupIds:
+        - !Ref ElectricEyeSecurityGroup
       SubnetIds:
         - !Ref ElectricEyeScheduledSubnet1
         - !Ref ElectricEyeScheduledSubnet2
