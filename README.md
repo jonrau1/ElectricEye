@@ -391,7 +391,7 @@ Or, you could just not do security at all and look like pic below:
 ### 1. Why should I use this tool?
 Primarily because it is free to *use* (you still need to pay for the infrastructure). This tool will also help cover services not currently covered by AWS Config rules or AWS Security Hub security standards. This tool is also natively integrated with Security Hub, no need to create additional services to perform translation into the AWS Security Finding Format and call the `BatchImportFindings` API to send findings to Security Hub.
 
-There is logic that will auto-archive findings as they move in and out of compliance, there are also other add-ons such as multi-account response & remediation, Kibana support, QuickSight support, ChatBot integration and other goodies to be able to drop this into your cloud security team and get at least some use out of it.
+There is logic that will auto-archive findings as they move in and out of compliance, there are also other add-ons such as multi-account response & remediation playbooks, Config Recorder integration, Shodan integration, Slack integration and others that even if you do not use ElectricEye you can get some usage from the other stuff. Or just, you know, steal the code?
 
 Finally, you can look like the GIF below, where your security team is Jacob Trouba (New York Rangers #8 in white) laying sick open-ice hits on pesky security violations represented by Dal Colle (New York Islanders #28 in that ugly uniform).
 ![OpenIceHit](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/old-school-hockey-trouba.gif)
@@ -529,6 +529,11 @@ Quick shout-outs to the folks who answered the call early to test out ElectricEy
 - [Arek Bar](https://www.linkedin.com/in/arkadiuszbar/)
 - [Ryan Russel](https://www.linkedin.com/in/pioneerrussell/)
 - [Jonathan Nguyen](https://www.linkedin.com/in/jonanguyen/)
+- [Jody Brazil](https://www.linkedin.com/in/jodybrazil/)
+- [Dylan Shields](https://www.linkedin.com/in/dylan-shields-6802b1168/)
+- [Manuel Leos Rivas](https://www.linkedin.com/in/manuel-lr/)
+- [Andrew Alaniz](https://www.linkedin.com/in/andrewdalaniz/)
+- [Christopher Childers](https://www.linkedin.com/in/christopher-childers-28950537/)
 
 ### To-Do
 As of 12 MAR 2020, most of these items will be tracked on the [roadmap project board](https://github.com/jonrau1/ElectricEye/projects/1)

@@ -65,7 +65,81 @@ EventPattern:
 You can optionally remove the High severity findings, these can get noisy if you have a lot of encryption-missing related findings.
 
 ### Deploy ElectricEye-ChatOps with Terraform
-***Coming Soon***
+This section will deploy the ElectricEye-ChatOps solution with Terraform.
+
+1. Update your machine and install the dependencies for Terraform. **Note:** these configuration files are written for `v 0.11.x` and will not work with `v 0.12.x` Terraform installations and rewriting for that spec is not in the immediate roadmap.
+
+```bash
+sudo apt update
+sudo apt upgrade -y
+sudo apt install wget -y
+wget https://releases.hashicorp.com/terraform/0.11.14/terraform_0.11.14_linux_amd64.zip
+unzip terraform_0.11.14_linux_amd64.zip
+sudo mv terraform /usr/local/bin/
+terraform --version
+```
+
+2. Clone this repository, change directories and then edit the `variables.tf` config file to add your SSM Parameter and (optionally) change the default value of the ARN for the Python3 Lambda Layer for Requests. You can refer to the [Klayers Repo](https://github.com/keithrozario/Klayers/tree/master/deployments/python3.8/arns) or provide your own Lambda Layer that has the Python3 `requests` library and supports `Python3.7` / `Python3.8` runtimes.
+![ChatOpsTFParams](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/chatops-tf-params.jpg)
+
+```bash
+git clone https://github.com/jonrau1/ElectricEye.git
+cd ElectricEye/add-ons/electriceye-chatops/terraform
+nano variables.tf
+```
+
+3. Initialize, plan and apply your state with Terraform.
+```bash
+terraform init
+terraform plan
+terraform apply -auto-approve
+```
+
+You can swap the Event Pattern to the below if you want only Critical findings
+```json
+{
+  "source": [
+    "aws.securityhub"
+  ],
+  "detail-type": [
+    "Security Hub Findings - Imported"
+  ],
+  "detail": {
+    "findings": {
+      "ProductFields": {
+        "Product Name": [
+          "ElectricEye"
+        ],
+        "aws/securityhub/SeverityLabel": [
+          "CRITICAL"
+        ]
+      }
+    }
+  }
+}
+```
+
+Or, you can swap the Event Pattern to the below if you want Critical and High findings from all products
+```json
+{
+  "source": [
+    "aws.securityhub"
+  ],
+  "detail-type": [
+    "Security Hub Findings - Imported"
+  ],
+  "detail": {
+    "findings": {
+      "ProductFields": {
+        "aws/securityhub/SeverityLabel": [
+          "CRITICAL",
+          "HIGH"
+        ]
+      }
+    }
+  }
+}
+```
 
 ## License
 This library is licensed under the GNU General Public License v3.0 (GPL-3.0) License. See the LICENSE file.
