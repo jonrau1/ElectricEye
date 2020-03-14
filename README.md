@@ -7,6 +7,8 @@ Continuously monitor your AWS services for configurations that can lead to degra
 ***Everything you do***<br/>
 <sub>*Judas Priest, 1982*</sub>
 
+[![DepShield Badge](https://depshield.sonatype.org/badges/jonrau1/ElectricEye/depshield.svg)](https://depshield.github.io)
+
 ## Table of Contents
 - [Description](https://github.com/jonrau1/ElectricEye#description)
 - [Solution Architecture](https://github.com/jonrau1/ElectricEye#solution-architecture)
