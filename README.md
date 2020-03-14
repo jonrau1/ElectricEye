@@ -536,6 +536,10 @@ You should consider taking a look at all of these:
 #### Misc
 - [LambdaGuard](https://github.com/Skyscanner/LambdaGuard)
 
+### 15. Why did you swap the Dockerfile to being Alpine Linux-based?
+The original (V1.0) Dockerfile used the `ubuntu:latest` image as its base image and was pretty chunky (~450MB) where the Alpine image is a tiny bit under a 10th of that (41.95MB). It is also much faster to create and push the image since `apk` adds only what is needed and isn't bloated by the Ubuntu dependencies from `apt` or that come prepackaged. Lastly, the build logs are a lot less chatty with the (hacky) ENV value set for Python and Pip related logs. Oh, and as of 13 MARCH 2020 there are no vulns in this image. (Reminder for me to periodically update and confirm this)
+![AlpineVulns](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/alpine-ecr-vulns.JPG)
+
 ## Contributing
 I am very happy to accept PR's for the following:
 - Adding new Auditors
