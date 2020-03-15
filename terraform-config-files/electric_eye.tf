@@ -208,6 +208,8 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "ec2:GetEbsEncryptionByDefault",
                 "ssm:DescribeInstancePatches",
                 "ec2:DescribeSnapshots",
+                "ecs:ListClusters",
+                "ecs:DescribeClusters",
                 "elasticloadbalancing:DescribeLoadBalancers",
                 "kinesis:ListStreams",
                 "cognito-idp:DescribeUserPool",

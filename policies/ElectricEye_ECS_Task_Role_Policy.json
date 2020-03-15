@@ -14,6 +14,8 @@
                 "ec2:GetEbsEncryptionByDefault",
                 "ssm:DescribeInstancePatches",
                 "ec2:DescribeSnapshots",
+                "ecs:ListClusters",
+                "ecs:DescribeClusters",
                 "elasticloadbalancing:DescribeLoadBalancers",
                 "kinesis:ListStreams",
                 "cognito-idp:DescribeUserPool",

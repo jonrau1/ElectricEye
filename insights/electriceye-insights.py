@@ -40,6 +40,7 @@ try:
     print(activeInsight)
 except Exception as e:
     print(e)
+
 try:
     remediatedInsight = securityhub.create_insight(
         Name='ElectricEye Remediated Findings',
@@ -61,5 +62,35 @@ try:
         GroupByAttribute='ResourceType'
     )
     print(remediatedInsight)
+except Exception as e:
+    print(e)
+
+try:
+    shodanInsight = securityhub.create_insight(
+        Name='ElectricEye Shodan Findings',
+        Filters={
+            'ProductFields': [
+                {
+                    'Key': 'Product Name',
+                    'Value': 'ElectricEye',
+                    'Comparison': 'EQUALS'
+                },
+            ],
+            'ThreatIntelIndicatorSource': [
+                {
+                    'Value': 'Shodan.io',
+                    'Comparison': 'EQUALS'
+                }
+            ],
+            'RecordState': [
+                {
+                    'Value': 'ACTIVE',
+                    'Comparison': 'EQUALS'
+                },
+            ]
+        },
+        GroupByAttribute='ResourceType'
+    )
+    print(shodanInsight)
 except Exception as e:
     print(e)

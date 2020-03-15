@@ -206,6 +206,8 @@ Resources:
             - ec2:DescribeVpcs
             - ec2:GetEbsDefaultKmsKeyId
             - ec2:GetEbsEncryptionByDefault
+            - ecs:ListClusters
+            - ecs:DescribeClusters
             - ecr:DescribeRepositories
             - ecr:GetLifecyclePolicy
             - ecr:GetRepositoryPolicy
