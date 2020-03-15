@@ -40,7 +40,7 @@ ElectricEye runs on AWS Fargate, which is a serverless container orchestration s
 Personas who can make use of this tool are DevOps/DevSecOps engineers, SecOps analysts, Cloud Center-of-Excellence personnel, Site Relability Engineers (SREs), Internal Audit and/or Compliance Analysts.
 
 ## Solution Architecture
-![Architecture](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/Architecture.jpg)
+![Architecture](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/ElectricEye-Architecture.jpg)
 1. A [time-based CloudWatch Event](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html) starts up an ElectricEye task every 12 hours (or whatever time period you set)
 2. The ElectricEye Task will pull the Docker image from [Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/) via a VPC Interface Endpoint (**Note**: The endpoint `com.amazonaws.region.ecr.dkr` also needs the S3 Gateway Endpoint under the covers as Docker image layers are stored in S3, it serves a dual purpose to download the auditor scripts as well)
 3. Systems Manager Parameter Store parameters are provided to the ElectricEye Task, these store values such as the S3 bucket containing the Auditor scripts and your Shodan.io API key (if used). These allow you to not have to hardcode these values in the environment variables of ECS or in the codebase
