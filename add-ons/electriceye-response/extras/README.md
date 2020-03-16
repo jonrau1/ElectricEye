@@ -25,7 +25,7 @@ This section walks through generating or getting the information needed for the 
 
 - **JiraApiKeySSMParameter**:
     1. Navigate to the [Atlassian account management](https://id.atlassian.com/manage/api-tokens) page, log in and select **Create API Token**
-    2. Enter a **Label**, select **Create** and select **Copy to clipboard** - you should paste this somewhere safe on your local machine as we will use it for the parameter and the password of our Issue Creator PQML03vep1yzommy7holD21F
+    2. Enter a **Label**, select **Create** and select **Copy to clipboard** - you should paste this somewhere safe on your local machine as we will use it for the parameter and the password of our Issue Creator, it will look something like this: `PQML03vep1yzommy7holD21F`
     3. Create a SSM Secure String Parameter: `aws ssm put-parameter --name electriceye-response-jira-api-key --description 'API Key for the Create JIRA Issue Playbook' --type SecureString --value <API-KEY-HERE>`
 
 - **JiraIssueCreatorUsername**:
