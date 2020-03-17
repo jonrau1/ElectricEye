@@ -62,7 +62,7 @@ def internet_facing_clb_https_listener_check():
                                     'ProductFields': { 'Product Name': 'ElectricEye' },
                                     'Resources': [
                                         {
-                                            'Type': 'Other',
+                                            'Type': 'AwsElbLoadBalancer',
                                             'Id': clbArn,
                                             'Partition': 'aws',
                                             'Region': awsRegion,
@@ -107,7 +107,7 @@ def internet_facing_clb_https_listener_check():
                                     'ProductFields': { 'Product Name': 'ElectricEye' },
                                     'Resources': [
                                         {
-                                            'Type': 'Other',
+                                            'Type': 'AwsElbLoadBalancer',
                                             'Id': clbArn,
                                             'Partition': 'aws',
                                             'Region': awsRegion,
@@ -167,7 +167,7 @@ def clb_https_listener_tls12_policy_check():
                                 'ProductFields': { 'Product Name': 'ElectricEye' },
                                 'Resources': [
                                     {
-                                        'Type': 'Other',
+                                        'Type': 'AwsElbLoadBalancer',
                                         'Id': clbArn,
                                         'Partition': 'aws',
                                         'Region': awsRegion,
@@ -212,7 +212,7 @@ def clb_https_listener_tls12_policy_check():
                                 'ProductFields': { 'Product Name': 'ElectricEye' },
                                 'Resources': [
                                     {
-                                        'Type': 'Other',
+                                        'Type': 'AwsElbLoadBalancer',
                                         'Id': clbArn,
                                         'Partition': 'aws',
                                         'Region': awsRegion,
@@ -266,7 +266,7 @@ def clb_cross_zone_balancing_check():
                             'ProductFields': { 'Product Name': 'ElectricEye' },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsElbLoadBalancer',
                                     'Id': clbArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
@@ -311,7 +311,7 @@ def clb_cross_zone_balancing_check():
                             'ProductFields': { 'Product Name': 'ElectricEye' },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsElbLoadBalancer',
                                     'Id': clbArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
@@ -365,7 +365,7 @@ def clb_connection_draining_check():
                             'ProductFields': { 'Product Name': 'ElectricEye' },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsElbLoadBalancer',
                                     'Id': clbArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
@@ -410,7 +410,7 @@ def clb_connection_draining_check():
                             'ProductFields': { 'Product Name': 'ElectricEye' },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsElbLoadBalancer',
                                     'Id': clbArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
@@ -464,7 +464,7 @@ def clb_access_logging_check():
                             'ProductFields': { 'Product Name': 'ElectricEye' },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsElbLoadBalancer',
                                     'Id': clbArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
@@ -509,7 +509,7 @@ def clb_access_logging_check():
                             'ProductFields': { 'Product Name': 'ElectricEye' },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsElbLoadBalancer',
                                     'Id': clbArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,

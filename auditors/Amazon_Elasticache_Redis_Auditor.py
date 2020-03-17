@@ -74,7 +74,7 @@ def redis_auth_check():
                                 },
                                 'Resources': [
                                     {
-                                        'Type': 'Other',
+                                        'Type': 'AwsElastiCacheCacheCluster',
                                         'Id': 'arn:aws:elasticache:' + awsRegion + ':' + awsAccountId + ':cluster:' + clusterId,
                                         'Partition': 'aws',
                                         'Region': awsRegion,
@@ -126,7 +126,7 @@ def redis_auth_check():
                                 },
                                 'Resources': [
                                     {
-                                        'Type': 'Other',
+                                        'Type': 'AwsElastiCacheCacheCluster',
                                         'Id': 'arn:aws:elasticache:' + awsRegion + ':' + awsAccountId + ':cluster:' + clusterId,
                                         'Partition': 'aws',
                                         'Region': awsRegion,
@@ -194,7 +194,7 @@ def encryption_at_rest_check():
                                 },
                                 'Resources': [
                                     {
-                                        'Type': 'Other',
+                                        'Type': 'AwsElastiCacheCacheCluster',
                                         'Id': 'arn:aws:elasticache:' + awsRegion + ':' + awsAccountId + ':cluster:' + clusterId,
                                         'Partition': 'aws',
                                         'Region': awsRegion,
@@ -246,7 +246,7 @@ def encryption_at_rest_check():
                                 },
                                 'Resources': [
                                     {
-                                        'Type': 'Other',
+                                        'Type': 'AwsElastiCacheCacheCluster',
                                         'Id': 'arn:aws:elasticache:' + awsRegion + ':' + awsAccountId + ':cluster:' + clusterId,
                                         'Partition': 'aws',
                                         'Region': awsRegion,
@@ -314,7 +314,7 @@ def encryption_in_transit_check():
                                 },
                                 'Resources': [
                                     {
-                                        'Type': 'Other',
+                                        'Type': 'AwsElastiCacheCacheCluster',
                                         'Id': 'arn:aws:elasticache:' + awsRegion + ':' + awsAccountId + ':cluster:' + clusterId,
                                         'Partition': 'aws',
                                         'Region': awsRegion,
@@ -366,7 +366,7 @@ def encryption_in_transit_check():
                                 },
                                 'Resources': [
                                     {
-                                        'Type': 'Other',
+                                        'Type': 'AwsElastiCacheCacheCluster',
                                         'Id': 'arn:aws:elasticache:' + awsRegion + ':' + awsAccountId + ':cluster:' + clusterId,
                                         'Partition': 'aws',
                                         'Region': awsRegion,

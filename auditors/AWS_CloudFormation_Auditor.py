@@ -66,7 +66,7 @@ def cfn_drift_check():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsCloudFormationStack',
                                     'Id': stackArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
@@ -115,7 +115,7 @@ def cfn_drift_check():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsCloudFormationStack',
                                     'Id': stackArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
@@ -171,7 +171,7 @@ def cfn_monitoring_check():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsCloudFormationStack',
                                     'Id': stackArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
@@ -220,7 +220,7 @@ def cfn_monitoring_check():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsCloudFormationStack',
                                     'Id': stackArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,

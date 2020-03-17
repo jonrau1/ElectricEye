@@ -65,7 +65,7 @@ def default_internet_access_check():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsAppStreamFleet',
                                     'Id': fleetArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
@@ -116,7 +116,7 @@ def default_internet_access_check():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsAppStreamFleet',
                                     'Id': fleetArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,

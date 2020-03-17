@@ -53,7 +53,7 @@ def api_gateway_stage_metrics_enabled_check():
                                 },
                                 'Resources': [
                                     {
-                                        'Type': 'Other',
+                                        'Type': 'AwsApiGatewayRestApi',
                                         'Id': apiStageArn,
                                         'Partition': 'aws',
                                         'Region': awsRegion,
@@ -104,7 +104,7 @@ def api_gateway_stage_metrics_enabled_check():
                                 },
                                 'Resources': [
                                     {
-                                        'Type': 'Other',
+                                        'Type': 'AwsApiGatewayRestApi',
                                         'Id': apiStageArn,
                                         'Partition': 'aws',
                                         'Region': awsRegion,
@@ -166,7 +166,7 @@ def api_gateway_stage_logging_check():
                                 },
                                 'Resources': [
                                     {
-                                        'Type': 'Other',
+                                        'Type': 'AwsApiGatewayRestApi',
                                         'Id': apiStageArn,
                                         'Partition': 'aws',
                                         'Region': awsRegion,
@@ -217,7 +217,7 @@ def api_gateway_stage_logging_check():
                                 },
                                 'Resources': [
                                     {
-                                        'Type': 'Other',
+                                        'Type': 'AwsApiGatewayRestApi',
                                         'Id': apiStageArn,
                                         'Partition': 'aws',
                                         'Region': awsRegion,
@@ -279,7 +279,7 @@ def api_gateway_stage_caching_enabled_check():
                                 },
                                 'Resources': [
                                     {
-                                        'Type': 'Other',
+                                        'Type': 'AwsApiGatewayRestApi',
                                         'Id': apiStageArn,
                                         'Partition': 'aws',
                                         'Region': awsRegion,
@@ -330,7 +330,7 @@ def api_gateway_stage_caching_enabled_check():
                                 },
                                 'Resources': [
                                     {
-                                        'Type': 'Other',
+                                        'Type': 'AwsApiGatewayRestApi',
                                         'Id': apiStageArn,
                                         'Partition': 'aws',
                                         'Region': awsRegion,
@@ -395,7 +395,7 @@ def api_gateway_stage_cache_encryption_check():
                                 },
                                 'Resources': [
                                     {
-                                        'Type': 'Other',
+                                        'Type': 'AwsApiGatewayRestApi',
                                         'Id': apiStageArn,
                                         'Partition': 'aws',
                                         'Region': awsRegion,
@@ -449,7 +449,7 @@ def api_gateway_stage_cache_encryption_check():
                                 },
                                 'Resources': [
                                     {
-                                        'Type': 'Other',
+                                        'Type': 'AwsApiGatewayRestApi',
                                         'Id': apiStageArn,
                                         'Partition': 'aws',
                                         'Region': awsRegion,
@@ -511,7 +511,7 @@ def api_gateway_stage_xray_tracing_check():
                                 },
                                 'Resources': [
                                     {
-                                        'Type': 'Other',
+                                        'Type': 'AwsApiGatewayRestApi',
                                         'Id': apiStageArn,
                                         'Partition': 'aws',
                                         'Region': awsRegion,
@@ -562,7 +562,7 @@ def api_gateway_stage_xray_tracing_check():
                                 },
                                 'Resources': [
                                     {
-                                        'Type': 'Other',
+                                        'Type': 'AwsApiGatewayRestApi',
                                         'Id': apiStageArn,
                                         'Partition': 'aws',
                                         'Region': awsRegion,
@@ -628,7 +628,7 @@ def api_gateway_stage_waf_check_check():
                                 },
                                 'Resources': [
                                     {
-                                        'Type': 'Other',
+                                        'Type': 'AwsApiGatewayRestApi',
                                         'Id': apiStageArn,
                                         'Partition': 'aws',
                                         'Region': awsRegion,
@@ -683,7 +683,7 @@ def api_gateway_stage_waf_check_check():
                                     },
                                     'Resources': [
                                         {
-                                            'Type': 'Other',
+                                            'Type': 'AwsApiGatewayRestApi',
                                             'Id': apiStageArn,
                                             'Partition': 'aws',
                                             'Region': awsRegion,

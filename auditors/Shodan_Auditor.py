@@ -12,6 +12,8 @@ ec2 = boto3.client('ec2')
 elbv2 = boto3.client('elbv2')
 rds = boto3.client('rds')
 elasticsearch = boto3.client('es')
+elb = boto3.client('elb')
+dms = boto3.client('dms')
 securityhub = boto3.client('securityhub')
 
 # create env vars
@@ -63,7 +65,6 @@ def public_ec2_shodan_check():
                                         'Severity': { 'Normalized': 0 },
                                         'Title': '[Shodan.EC2.1] EC2 instances with public IP addresses should be monitored for being indexed by Shodan',
                                         'Description': 'EC2 instance ' + ec2Id + ' has not been indexed by Shodan.',
-                                        'SourceUrl': 'https://www.shodan.io/host/' + ec2PublicIp,
                                         'ProductFields': {
                                             'Product Name': 'ElectricEye'
                                         },
@@ -192,7 +193,6 @@ def public_alb_shodan_check():
                                     'Severity': { 'Normalized': 0 },
                                     'Title': '[Shodan.ELBv2.1] Internet-facing Application Load Balancers should be monitored for being indexed by Shodan',
                                     'Description': 'ALB ' + elbv2Name + ' has not been indexed by Shodan.',
-                                    'SourceUrl': 'https://www.shodan.io/host/' + elbv2Ip,
                                     'ProductFields': {
                                         'Product Name': 'ElectricEye'
                                     },
@@ -317,7 +317,6 @@ def public_rds_shodan_check():
                                     'Severity': { 'Normalized': 0 },
                                     'Title': '[Shodan.RDS.1] Public accessible RDS instances should be monitored for being indexed by Shodan',
                                     'Description': 'RDS instance ' + rdsInstanceId + ' has not been indexed by Shodan.',
-                                    'SourceUrl': 'https://www.shodan.io/host/' + rdsIp,
                                     'ProductFields': {
                                         'Product Name': 'ElectricEye'
                                     },
@@ -446,10 +445,9 @@ def public_es_domain_shodan_check():
                                             'Types': ['Effects/Data Exposure'],
                                             'CreatedAt': iso8601time,
                                             'UpdatedAt': iso8601time,
-                                            'Severity': { 'Normalized': 40 },
+                                            'Severity': { 'Normalized': 0 },
                                             'Title': '[Shodan.Elasticsearch.1] ElasticSearch Service domains outside of a VPC should be monitored for being indexed by Shodan',
                                             'Description': 'ElasticSearch Service domain ' + esDomainName + ' has not been indexed by Shodan.',
-                                            'SourceUrl': 'https://www.shodan.io/host/' + esDomainIp,
                                             'ProductFields': {
                                                 'Product Name': 'ElectricEye'
                                             },
@@ -539,10 +537,234 @@ def public_es_domain_shodan_check():
     except Exception as e:
         print(e)
 
+def public_clb_shodan_check():
+    try:
+        response = elb.describe_load_balancers()
+        for clbs in response['LoadBalancerDescriptions']:
+            clbName = str(clbs['LoadBalancerName'])
+            clbArn = 'arn:aws:elasticloadbalancing:' + awsRegion + ':' + awsAccountId + ':loadbalancer/' + clbName
+            clbDnsName = str(clbs['DNSName'])
+            clbScheme = str(clbs['Scheme'])
+            if clbScheme == 'internet-facing':
+                # use Socket to do a DNS lookup and retrieve the IP address
+                clbIp = socket.gethostbyname(clbDnsName)
+                # use requests Library to check the Shodan index for your host
+                r = requests.get(url = shodanUrl + clbIp + '?key=' + shodanApiKey)
+                data = r.json()
+                shodanOutput = str(data)
+                if shodanOutput == "{'error': 'No information available for that IP.'}":
+                    # this is a passing check
+                    try:
+                        iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                        response = securityhub.batch_import_findings(
+                            Findings=[
+                                {
+                                    'SchemaVersion': '2018-10-08',
+                                    'Id': clbArn + '/' + clbDnsName + '/classic-load-balancer-shodan-index-check',
+                                    'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                    'GeneratorId': clbArn,
+                                    'AwsAccountId': awsAccountId,
+                                    'Types': ['Effects/Data Exposure'],
+                                    'CreatedAt': iso8601time,
+                                    'UpdatedAt': iso8601time,
+                                    'Severity': { 'Normalized': 0 },
+                                    'Title': '[Shodan.ELB.1] Internet-facing Classic Load Balancers should be monitored for being indexed by Shodan',
+                                    'Description': 'ElasticSearch Service domain ' + clbName + ' has not been indexed by Shodan.',
+                                    'ProductFields': {
+                                        'Product Name': 'ElectricEye'
+                                    },
+                                    'Resources': [
+                                        {
+                                            'Type': 'AwsElbLoadBalancer',
+                                            'Id': clbArn,
+                                            'Partition': 'aws',
+                                            'Region': awsRegion,
+                                            'Details': {
+                                                'Other': {
+                                                    'LoadBalancerName': clbName
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    'Compliance': { 'Status': 'PASSED' },
+                                    'RecordState': 'ARCHIVED'
+                                }
+                            ]
+                        )
+                        print(response)
+                    except Exception as e:
+                        print(e)
+                else:
+                    try:
+                        iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                        response = securityhub.batch_import_findings(
+                            Findings=[
+                                {
+                                    'SchemaVersion': '2018-10-08',
+                                    'Id': clbArn + '/' + clbDnsName + '/classic-load-balancer-shodan-index-check',
+                                    'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                    'GeneratorId': clbArn,
+                                    'AwsAccountId': awsAccountId,
+                                    'Types': ['Effects/Data Exposure'],
+                                    'CreatedAt': iso8601time,
+                                    'UpdatedAt': iso8601time,
+                                    'Severity': { 'Normalized': 40 },
+                                    'Title': '[Shodan.ELB.1] Internet-facing Classic Load Balancers should be monitored for being indexed by Shodan',
+                                    'Description': 'CLB ' + clbName + ' has been indexed by Shodan on IP address ' + clbIp + ' from DNS name ' + clbDnsName + '. Review the Shodan.io host information in the SourceUrl or ThreatIntelIndicators.SourceUrl fields for information about what ports and services are exposed and then take action to reduce exposure and harden your load balancer.',
+                                    'SourceUrl': 'https://www.shodan.io/host/' + clbIp,
+                                    'ProductFields': {
+                                        'Product Name': 'ElectricEye'
+                                    },
+                                    'ThreatIntelIndicators': [
+                                        {
+                                            'Type': 'IPV4_ADDRESS',
+                                            'Category': 'EXPLOIT_SITE',
+                                            'Value': clbIp,
+                                            'LastObservedAt': iso8601time,
+                                            'Source': 'Shodan.io',
+                                            'SourceUrl': 'https://www.shodan.io/host/' + clbIp
+                                        },
+                                    ],
+                                    'Resources': [
+                                        {
+                                            'Type': 'AwsElbLoadBalancer',
+                                            'Id': clbArn,
+                                            'Partition': 'aws',
+                                            'Region': awsRegion,
+                                            'Details': {
+                                                'Other': {
+                                                    'LoadBalancerName': clbName
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    'Compliance': { 'Status': 'FAILED' },
+                                    'RecordState': 'ACTIVE'
+                                }
+                            ]
+                        )
+                        print(response)
+                    except Exception as e:
+                        print(e)
+            else:
+                pass
+    except Exception as e:
+        print(e)
+
+def public_dms_replication_instance_shodan_check():
+    try:
+        response = dms.describe_replication_instances()
+        for repinstances in response['ReplicationInstances']:
+            dmsInstanceId = str(repinstances['ReplicationInstanceIdentifier'])
+            dmsInstanceArn = str(repinstances['ReplicationInstanceArn'])
+            publicAccessCheck = str(repinstances['PubliclyAccessible'])
+            if publicAccessCheck == 'True':
+                dmsPublicIp = str(repinstances['ReplicationInstancePublicIpAddress'])
+                # use requests Library to check the Shodan index for your host
+                r = requests.get(url = shodanUrl + dmsPublicIp + '?key=' + shodanApiKey)
+                data = r.json()
+                shodanOutput = str(data)
+                if shodanOutput == "{'error': 'No information available for that IP.'}":
+                    # this is a passing check
+                    try:
+                        iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                        response = securityhub.batch_import_findings(
+                            Findings=[
+                                {
+                                    'SchemaVersion': '2018-10-08',
+                                    'Id': dmsInstanceArn + '/' + dmsPublicIp + '/dms-replication-instance-shodan-index-check',
+                                    'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                    'GeneratorId': dmsInstanceArn,
+                                    'AwsAccountId': awsAccountId,
+                                    'Types': ['Effects/Data Exposure'],
+                                    'CreatedAt': iso8601time,
+                                    'UpdatedAt': iso8601time,
+                                    'Severity': { 'Normalized': 0 },
+                                    'Title': '[Shodan.DMS.1] Publicly accessible Database Migration Service (DMS) Replication Instances should be monitored for being indexed by Shodan',
+                                    'Description': 'DMS Replication Instance ' + dmsInstanceId + ' has not been indexed by Shodan.',
+                                    'ProductFields': {
+                                        'Product Name': 'ElectricEye'
+                                    },
+                                    'Resources': [
+                                        {
+                                            'Type': 'AwsDmsReplicationInstance',
+                                            'Id': dmsInstanceArn,
+                                            'Partition': 'aws',
+                                            'Region': awsRegion,
+                                            'Details': {
+                                                'Other': { 'ReplicationInstanceId': dmsInstanceId }
+                                            }
+                                        }
+                                    ],
+                                    'Compliance': { 'Status': 'PASSED' },
+                                    'RecordState': 'ARCHIVED'
+                                }
+                            ]
+                        )
+                        print(response)
+                    except Exception as e:
+                        print(e)
+                else:
+                    try:
+                        iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                        response = securityhub.batch_import_findings(
+                            Findings=[
+                                {
+                                    'SchemaVersion': '2018-10-08',
+                                    'Id': dmsInstanceArn + '/' + dmsPublicIp + '/dms-replication-instance-shodan-index-check',
+                                    'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                    'GeneratorId': dmsInstanceArn,
+                                    'AwsAccountId': awsAccountId,
+                                    'Types': ['Effects/Data Exposure'],
+                                    'CreatedAt': iso8601time,
+                                    'UpdatedAt': iso8601time,
+                                    'Severity': { 'Normalized': 40 },
+                                    'Title': '[Shodan.DMS.1] Publicly accessible Database Migration Service (DMS) Replication Instances should be monitored for being indexed by Shodan',
+                                    'Description': 'DMS Replication Instance ' + dmsInstanceId + ' has been indexed on IP address ' + dmsInstanceId + ' . Review the Shodan.io host information in the SourceUrl or ThreatIntelIndicators.SourceUrl fields for information about what ports and services are exposed and then take action to reduce exposure and harden your replication instance.',
+                                    'SourceUrl': 'https://www.shodan.io/host/' + clbIp,
+                                    'ProductFields': {
+                                        'Product Name': 'ElectricEye'
+                                    },
+                                    'ThreatIntelIndicators': [
+                                        {
+                                            'Type': 'IPV4_ADDRESS',
+                                            'Category': 'EXPLOIT_SITE',
+                                            'Value': clbIp,
+                                            'LastObservedAt': iso8601time,
+                                            'Source': 'Shodan.io',
+                                            'SourceUrl': 'https://www.shodan.io/host/' + clbIp
+                                        },
+                                    ],
+                                    'Resources': [
+                                        {
+                                            'Type': 'AwsDmsReplicationInstance',
+                                            'Id': dmsInstanceArn,
+                                            'Partition': 'aws',
+                                            'Region': awsRegion,
+                                            'Details': {
+                                                'Other': { 'ReplicationInstanceId': dmsInstanceId }
+                                            }
+                                        }
+                                    ],
+                                    'Compliance': { 'Status': 'PASSED' },
+                                    'RecordState': 'ARCHIVED'
+                                }
+                            ]
+                        )
+                        print(response)
+                    except Exception as e:
+                        print(e)
+            else:
+                pass
+    except Exception as e:
+        print(e)
+
 def electriceye_shodan_auditor():
     public_ec2_shodan_check()
     public_alb_shodan_check()
     public_rds_shodan_check()
     public_es_domain_shodan_check()
+    public_clb_shodan_check()
+    public_dms_replication_instance_shodan_check()
 
 electriceye_shodan_auditor()

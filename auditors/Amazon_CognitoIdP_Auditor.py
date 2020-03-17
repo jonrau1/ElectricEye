@@ -70,7 +70,7 @@ def cognitoidp_cis_password_check():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsCognitoUserPool',
                                     'Id': userPoolArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
@@ -119,7 +119,7 @@ def cognitoidp_cis_password_check():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsCognitoUserPool',
                                     'Id': userPoolArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
@@ -179,7 +179,7 @@ def cognitoidp_temp_password_check():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsCognitoUserPool',
                                     'Id': userPoolArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
@@ -228,7 +228,7 @@ def cognitoidp_temp_password_check():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsCognitoUserPool',
                                     'Id': userPoolArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
@@ -287,7 +287,7 @@ def cognitoidp_mfa_check():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsCognitoUserPool',
                                     'Id': userPoolArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
@@ -336,7 +336,7 @@ def cognitoidp_mfa_check():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsCognitoUserPool',
                                     'Id': userPoolArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
