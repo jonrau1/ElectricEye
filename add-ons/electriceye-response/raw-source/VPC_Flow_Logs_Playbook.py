@@ -136,6 +136,15 @@ def lambda_handler(event, context):
                         MaxAggregationInterval=60
                     )
                     print(response)
+                    try:
+                        response = securityhub.update_findings(
+                            Filters={'Id': [{'Value': findingId,'Comparison': 'EQUALS'}]},
+                            Note={'Text': 'A new CloudWatch logs group and IAM role was created for the VPC and flow logs are enabled and being sent to ' + logGroupName + ' and the finding was archived.','UpdatedBy': lambdaFunctionName},
+                            RecordState='ARCHIVED'
+                        )
+                        print(response)
+                    except Exception as e:
+                        print(e)
                 except Exception as e:
                     print(e)
                     raise
@@ -233,6 +242,15 @@ def lambda_handler(event, context):
                         MaxAggregationInterval=60
                     )
                     print(response)
+                    try:
+                        response = securityhub.update_findings(
+                            Filters={'Id': [{'Value': findingId,'Comparison': 'EQUALS'}]},
+                            Note={'Text': 'A new CloudWatch logs group and IAM role was created for the VPC and flow logs are enabled and being sent to ' + logGroupName + ' and the finding was archived.','UpdatedBy': lambdaFunctionName},
+                            RecordState='ARCHIVED'
+                        )
+                        print(response)
+                    except Exception as e:
+                        print(e)
                 except Exception as e:
                     print(e)
                     raise
