@@ -22,6 +22,7 @@
                 "dynamodb:DescribeTable",
                 "shield:DescribeSubscription",
                 "ec2:DescribeVolumes",
+                "ecr:DescribeImages",
                 "ec2:GetEbsDefaultKmsKeyId",
                 "securityhub:GetFindings",
                 "codebuild:ListProjects",

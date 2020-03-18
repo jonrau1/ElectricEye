@@ -208,6 +208,7 @@ Resources:
             - ec2:GetEbsEncryptionByDefault
             - ecs:ListClusters
             - ecs:DescribeClusters
+            - ecr:DescribeImages
             - ecr:DescribeRepositories
             - ecr:GetLifecyclePolicy
             - ecr:GetRepositoryPolicy

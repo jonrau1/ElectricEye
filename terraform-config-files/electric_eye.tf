@@ -222,6 +222,7 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "workspaces:DescribeWorkspaces",
                 "ecr:GetLifecyclePolicy",
                 "kms:Decrypt",
+                "ecr:DescribeImages",
                 "kms:DescribeKey",
                 "sns:ListSubscriptionsByTopic",
                 "rds:DescribeDBSnapshots",

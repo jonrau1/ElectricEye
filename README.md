@@ -224,7 +224,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **164** checks supported across **50** AWS services / components using **37** Auditors. There are currently **60** supported response and remediation Playbooks with coverage across **31** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **165** checks supported across **51** AWS services / components using **37** Auditors. There are currently **61** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -283,6 +283,7 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_ECR_Auditor.py                  | ECR Repository                | Does the repository support<br>scan-on-push                           |
 | Amazon_ECR_Auditor.py                  | ECR Repository                | Is there an image lifecycle policy                                    |
 | Amazon_ECR_Auditor.py                  | ECR Repository                | Is there a repo access policy                                         |
+| Amazon_ECR_Auditor.py                  | Image (Container)             | Does the latest container have any vulns                              |
 | Amazon_ECS_Auditor.py                  | ECS Cluster                   | Is container insights enabled                                         |
 | Amazon_ECS_Auditor.py                  | ECS Cluster                   | Is a default cluster provider configured                              |
 | Amazon_EFS_Auditor.py                  | EFS File System               | Are file systems encrypted                                            |
@@ -512,15 +513,18 @@ You should consider taking a look at all of these:
 #### Secrets Scanning
 - [truffleHog](https://github.com/dxa4481/truffleHog)
 - [git-secrets](https://github.com/awslabs/git-secrets)
+- [detect-secrets](https://github.com/Yelp/detect-secrets)
 #### SAST
 - [Bandit](https://github.com/PyCQA/bandit) (for Python)
 - [GoSec](https://github.com/securego/gosec) (for Golang)
 - [NodeJsScan](https://github.com/ajinabraham/NodeJsScan) (for NodeJS)
-- [tfsec](https://github.com/liamg/tfsec) (for Terraform "SAST")
+- [tfsec](https://github.com/liamg/tfsec) (for Terraform SCA)
+- [terrascan](https://github.com/cesar-rodriguez/terrascan) (another Terraform SCA)
 #### Linters
 - [hadolint](https://github.com/hadolint/hadolint) (for Docker)
 - [cfn-python-lint](https://github.com/aws-cloudformation/cfn-python-lint) (for CloudFormation)
 - [cfn-nag](https://github.com/stelligent/cfn_nag) (for CloudFormation)
+- [terraform-kitchen](https://github.com/newcontext-oss/kitchen-terraform) (InSpec tests against Terraform - part linter/part SCA)
 #### DAST
 - [Zed Attack Proxy (ZAP)](https://owasp.org/www-project-zap/)
 #### AV
@@ -536,12 +540,33 @@ You should consider taking a look at all of these:
 - [Loki](https://github.com/Neo23x0/Loki) (Python-based IOC scanner w/ Yara)
 - [GRR Rapid Response](https://github.com/google/grr) (Python agent-based IR)
 - this one is deprecated but... [MIG](http://mozilla.github.io/mig/)
+#### TVM
+- [DefectDojo](https://github.com/DefectDojo/django-DefectDojo)
+- [OpenVAS](https://www.openvas.org/)
+- [Trivy](https://github.com/aquasecurity/trivy) (container vuln scanning)
 #### Threat Hunting
 - [ThreatHunter-Playbook](https://github.com/hunters-forge/ThreatHunter-Playbook)
 - [Mordor](https://github.com/hunters-forge/mordor)
+#### Kubernetes / Container Security Tools
+- [Istio](https://istio.io/docs/setup/getting-started/) (microservices service mesh, mTLS, etc.)
+- [Calico](https://www.projectcalico.org/#getstarted) (K8s network policy)
+- [Envoy](https://www.envoyproxy.io/) (microservices proxy services, underpins AWS AppMesh)
+- [Falco](https://sysdig.com/opensource/falco/) (a metric shitload of awesome k8s/container security features)
+- [Goldilocks](https://github.com/FairwindsOps/goldilocks) (K8s cluster right-sizing)
+- [Polaris](https://github.com/FairwindsOps/polaris) (K8s best practices, YAML SCA/linting)
+- [kube-bench](https://github.com/aquasecurity/kube-bench) (K8s CIS Benchmark assessment)
+- [kube-hunter](https://github.com/aquasecurity/kube-hunter) (K8s attacker-eye-view of K8s clusters)
+#### CCM Tools
+- [Prowler](https://github.com/toniblyx/prowler)
+  - [Prowler SecHub Integration](https://aws.amazon.com/blogs/security/use-aws-fargate-prowler-send-security-configuration-findings-about-aws-services-security-hub/)
+- [PacBot](https://github.com/tmobile/pacbot)
+- [Cloud Inquisitor](https://github.com/RiotGames/cloud-inquisitor)
+- [Scout2](https://github.com/nccgroup/ScoutSuite)
+- [Cloud Custodian](https://cloudcustodian.io/docs/index.html)
 #### Misc
 - [LambdaGuard](https://github.com/Skyscanner/LambdaGuard)
 - [SecHub SOC Inna Box](https://github.com/aws-samples/aws-security-services-with-terraform/tree/master/aws-security-hub-boostrap-and-operationalization)
+- [OPA](https://github.com/open-policy-agent/opa) (open policy enforcement tool - works with K8s, TF, Docker, SSH, etc.)
 
 ### 15. Why did you swap the Dockerfile to being Alpine Linux-based?
 The original (V1.0) Dockerfile used the `ubuntu:latest` image as its base image and was pretty chunky (~450MB) where the Alpine image is a tiny bit under a 10th of that (41.95MB). It is also much faster to create and push the image since `apk` adds only what is needed and isn't bloated by the Ubuntu dependencies from `apt` or that come prepackaged. Lastly, the build logs are a lot less chatty with the (hacky) ENV value set for Python and Pip related logs. Oh, and as of 13 MARCH 2020 there are no vulns in this image. (Reminder for me to periodically update and confirm this)

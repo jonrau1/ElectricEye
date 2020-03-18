@@ -341,9 +341,149 @@ def ecr_repo_permission_policy():
             except Exception as e:
                 print(e)
 
+def ecr_latest_image_vuln_check():
+    for repo in myRepos:
+        repoArn = str(repo['repositoryArn'])
+        repoName = str(repo['repositoryName'])
+        scanningConfig = str(repo['imageScanningConfiguration']['scanOnPush'])
+        if scanningConfig == 'True':
+            try:
+                response = ecr.describe_images(repositoryName=repoName,filter={'tagStatus':'TAGGED'},maxResults=1000)
+                for images in response['imageDetails']:
+                    imageDigest = str(images['imageDigest'])
+                    # use the first tag only as we need it to create the canonical ID for the Resource.Id in the ASFF for the Container Resource.Type
+                    imageTag = str(images['imageTags'][0])
+                    imageVulnCheck = str(images['imageScanFindingsSummary']['findingSeverityCounts'])
+                    if imageVulnCheck != '{}':
+                        vulnDeepLink = 'https://console.aws.amazon.com/ecr/repositories/' + repoName + '/image/' + imageDigest + '/scan-results?region=' + awsRegion
+                        try:
+                            # ISO Time
+                            iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                            # create Sec Hub finding
+                            response = securityhub.batch_import_findings(
+                                Findings=[
+                                    {
+                                        'SchemaVersion': '2018-10-08',
+                                        'Id': repoName + '/' + imageDigest + '/ecr-latest-image-vuln-check',
+                                        'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
+                                        'GeneratorId': imageDigest,
+                                        'AwsAccountId': awsAccount,
+                                        'Types': [ 
+                                            'Software and Configuration Checks/Vulnerabilities/CVE',
+                                            'Software and Configuration Checks/AWS Security Best Practices' 
+                                        ],
+                                        'FirstObservedAt': iso8601Time,
+                                        'CreatedAt': iso8601Time,
+                                        'UpdatedAt': iso8601Time,
+                                        'Severity': { 'Label': 'MEDIUM' },
+                                        'Confidence': 99,
+                                        'Title': '[ECR.4] The latest image in an ECR Repository should not have any vulnerabilities',
+                                        'Description': 'The latest image in the ECR repository ' + repoName + ' has the following vulnerabilities reported: ' + imageVulnCheck + '. Refer to the SourceUrl or Remediation.Recommendation.Url to review the specific vulnerabilities and remediation information from ECR.',
+                                        'Remediation': {
+                                            'Recommendation': {
+                                                'Text': 'Click here to navigate to the ECR Vulnerability console for this image',
+                                                'Url': vulnDeepLink
+                                            }
+                                        },
+                                        'SourceUrl': vulnDeepLink,
+                                        'ProductFields': {
+                                            'Product Name': 'ElectricEye'
+                                        },
+                                        'Resources': [
+                                            {
+                                                'Type': 'Container',
+                                                'Id': repoName + ':' + imageTag,
+                                                'Partition': 'aws',
+                                                'Region': awsRegion,
+                                                'Details': {
+                                                    'Container': {
+                                                        'Name': repoName + ':' + imageTag,
+                                                        'ImageId': imageDigest
+                                                    },
+                                                    'Other': {
+                                                        'RepositoryName': repoName,
+                                                        'RepositoryArn': repoArn
+                                                    }
+                                                }
+                                            }
+                                        ],
+                                        'Compliance': { 'Status': 'FAILED' },
+                                        'RecordState': 'ACTIVE'
+                                    }
+                                ]
+                            )
+                            print(response)
+                        except Exception as e:
+                            print(e)
+                    else:
+                        try:
+                            # ISO Time
+                            iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                            # create Sec Hub finding
+                            response = securityhub.batch_import_findings(
+                                Findings=[
+                                    {
+                                        'SchemaVersion': '2018-10-08',
+                                        'Id': repoName + '/' + imageDigest + '/ecr-latest-image-vuln-check',
+                                        'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
+                                        'GeneratorId': imageDigest,
+                                        'AwsAccountId': awsAccount,
+                                        'Types': [ 
+                                            'Software and Configuration Checks/Vulnerabilities/CVE',
+                                            'Software and Configuration Checks/AWS Security Best Practices' 
+                                        ],
+                                        'FirstObservedAt': iso8601Time,
+                                        'CreatedAt': iso8601Time,
+                                        'UpdatedAt': iso8601Time,
+                                        'Severity': { 'Label': 'INFORMATIONAL' },
+                                        'Confidence': 99,
+                                        'Title': '[ECR.4] The latest image in an ECR Repository should not have any vulnerabilities',
+                                        'Description': 'The latest image in the ECR repository ' + repoName + ' does not have any vulnerabilities reported.',
+                                        'Remediation': {
+                                            'Recommendation': {
+                                                'Text': 'Click here to navigate to the ECR Vulnerability console for this image',
+                                                'Url': vulnDeepLink
+                                            }
+                                        },
+                                        'SourceUrl': vulnDeepLink,
+                                        'ProductFields': {
+                                            'Product Name': 'ElectricEye'
+                                        },
+                                        'Resources': [
+                                            {
+                                                'Type': 'Container',
+                                                'Id': repoName + ':' + imageTag,
+                                                'Partition': 'aws',
+                                                'Region': awsRegion,
+                                                'Details': {
+                                                    'Container': {
+                                                        'Name': repoName + ':' + imageTag,
+                                                        'ImageId': imageDigest
+                                                    },
+                                                    'Other': {
+                                                        'RepositoryName': repoName,
+                                                        'RepositoryArn': repoArn
+                                                    }
+                                                }
+                                            }
+                                        ],
+                                        'Compliance': { 'Status': 'PASSED' },
+                                        'RecordState': 'ARCHIVED'
+                                    }
+                                ]
+                            )
+                            print(response)
+                        except Exception as e:
+                            print(e)
+            except Exception as e:
+                print(e)
+        else:
+            pass
+
 def ecr_auditor():
     ecr_repo_vuln_scan_check()
     ecr_repo_image_lifecycle_policy_check()
     ecr_repo_permission_policy()
+    ecr_latest_image_vuln_check()
 
 ecr_auditor()

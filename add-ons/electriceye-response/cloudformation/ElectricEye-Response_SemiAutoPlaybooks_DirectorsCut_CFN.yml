@@ -1115,3 +1115,54 @@ Resources:
         'Fn::GetAtt':
           - SSMDeleteEC2PlaybookEventRule
           - Arn
+  VPCFlowLoggingPlaybookLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: VPCFlowLoggingPlaybook
+      Description: After execution will create a new VPC flow log CloudWatch Log Group and IAM role and use them to enable flow logging - Managed by CloudFormation
+      Handler: VPC_Flow_Logs_Playbook.lambda_handler
+      MemorySize: 256
+      Role: !Ref ElectricEyeResponseIAMRoleArn
+      Runtime: python3.8
+      Timeout: 60
+      Code:
+        S3Bucket: !Ref PlaybookPackageS3Bucket
+        S3Key: VPC_Flow_Logs_Playbook.zip
+  VPCFlowLoggingPlaybookActionTarget:
+    Type: 'Custom::ActionTarget'
+    Version: 1
+    Properties:
+      ServiceToken: !GetAtt CreateActionTargetLambdaFunction.Arn
+      Name: Enable Flow Logs
+      Description: After execution will create a new VPC flow log CloudWatch Log Group and IAM role and use them to enable flow logging - Managed by CloudFormation
+      Id: VPCFlowLogging
+  VPCFlowLoggingPlaybookEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: VPCFlowLoggingPlaybookCWE
+      Description: After execution will create a new VPC flow log CloudWatch Log Group and IAM role and use them to enable flow logging - Managed by CloudFormation
+      EventPattern:
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Custom Action
+        resources:
+          - !GetAtt VPCFlowLoggingPlaybookActionTarget.Arn
+      State: ENABLED
+      Targets:
+        - Arn:
+            'Fn::GetAtt':
+              - VPCFlowLoggingPlaybookLambdaFunction
+              - Arn
+          Id: VPCFlowLoggingPlaybook
+  VPCFlowLoggingPlaybookCWEPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: VPCFlowLoggingPlaybookLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        'Fn::GetAtt':
+          - VPCFlowLoggingPlaybookEventRule
+          - Arn
