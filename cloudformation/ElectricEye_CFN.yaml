@@ -241,6 +241,10 @@ Resources:
             - redshift:DescribeClusters
             - redshift:DescribeLoggingStatus
             - route53:ListHostedZones
+            - s3:GetBucketLogging
+            - s3:GetBucketPolicy
+            - s3:GetBucketPolicyStatus
+            - s3:GetBucketVersioning
             - s3:GetAccountPublicAccessBlock
             - s3:GetEncryptionConfiguration
             - s3:GetLifecycleConfiguration

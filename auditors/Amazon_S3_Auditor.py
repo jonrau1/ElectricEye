@@ -54,7 +54,7 @@ def bucket_encryption_check():
                                 'FirstObservedAt': iso8601Time,
                                 'CreatedAt': iso8601Time,
                                 'UpdatedAt': iso8601Time,
-                                'Severity': { 'Normalized': 0 },
+                                'Severity': { 'Label': 'INFORMATIONAL' },
                                 'Confidence': 99,
                                 'Title': '[S3.1] S3 Buckets should be encrypted',
                                 'Description': 'S3 bucket ' + bucketName + ' is encrypted using ' + sseType + '.',
@@ -100,7 +100,7 @@ def bucket_encryption_check():
                                 'FirstObservedAt': iso8601Time,
                                 'CreatedAt': iso8601Time,
                                 'UpdatedAt': iso8601Time,
-                                'Severity': { 'Normalized': 80 },
+                                'Severity': { 'Label': 'HIGH' },
                                 'Confidence': 99,
                                 'Title': '[S3.1] S3 Buckets should be encrypted',
                                 'Description': 'S3 bucket ' + bucketName + ' is not encrypted. Refer to the remediation instructions to remediate this behavior',
@@ -151,7 +151,7 @@ def bucket_lifecycle_check():
                             'FirstObservedAt': iso8601Time,
                             'CreatedAt': iso8601Time,
                             'UpdatedAt': iso8601Time,
-                            'Severity': { 'Normalized': 0 },
+                            'Severity': { 'Label': 'INFORMATIONAL' },
                             'Confidence': 99,
                             'Title': '[S3.2] S3 Buckets should implement lifecycle policies for data archival and recovery operations',
                             'Description': 'S3 bucket ' + bucketName + ' has a lifecycle policy configured.',
@@ -194,7 +194,7 @@ def bucket_lifecycle_check():
                                 'FirstObservedAt': iso8601Time,
                                 'CreatedAt': iso8601Time,
                                 'UpdatedAt': iso8601Time,
-                                'Severity': { 'Normalized': 20 },
+                                'Severity': { 'Label': 'LOW' },
                                 'Confidence': 99,
                                 'Title': '[S3.2] S3 Buckets should implement lifecycle policies for data archival and recovery operations',
                                 'Description': 'S3 bucket ' + bucketName + ' does not have a lifecycle policy configured. Refer to the remediation instructions to remediate this behavior',
@@ -202,6 +202,397 @@ def bucket_lifecycle_check():
                                     'Recommendation': {
                                         'Text': 'For more information on Lifecycle policies and how to configure it refer to the How Do I Create a Lifecycle Policy for an S3 Bucket? section of the Amazon Simple Storage Service Developer Guide',
                                         'Url': 'https://docs.aws.amazon.com/AmazonS3/latest/user-guide/create-lifecycle.html'
+                                    }
+                                },
+                                'ProductFields': { 'Product Name': 'ElectricEye' },
+                                'Resources': [
+                                    {
+                                        'Type': 'AwsS3Bucket',
+                                        'Id': s3Arn,
+                                        'Partition': 'aws',
+                                        'Region': awsRegion
+                                    }
+                                ],
+                                'Compliance': { 'Status': 'FAILED' },
+                                'RecordState': 'ACTIVE'
+                            }
+                        ]
+                    )
+                    print(response)
+                except Exception as e:
+                    print(e)
+            else:
+                print(e)
+
+def bucket_versioning_check():
+    for buckets in myS3Buckets:
+        bucketName = str(buckets['Name'])
+        s3Arn = 'arn:aws:s3:::' + bucketName
+        try:
+            response = s3.get_bucket_versioning(Bucket=bucketName)
+            versioningCheck = str(response['Status'])
+            print(versioningCheck)
+            try:
+                # this is a passing check
+                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                response = securityhub.batch_import_findings(
+                    Findings=[
+                        {
+                            'SchemaVersion': '2018-10-08',
+                            'Id': s3Arn + '/s3-bucket-versioning-check',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                            'GeneratorId': s3Arn,
+                            'AwsAccountId': awsAccountId,
+                            'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                            'FirstObservedAt': iso8601Time,
+                            'CreatedAt': iso8601Time,
+                            'UpdatedAt': iso8601Time,
+                            'Severity': { 'Label': 'INFORMATIONAL' },
+                            'Confidence': 99,
+                            'Title': '[S3.3] S3 Buckets should have versioning enabled',
+                            'Description': 'S3 bucket ' + bucketName + ' has versioning enabled. Refer to the remediation instructions to remediate this behavior',
+                            'Remediation': {
+                                'Recommendation': {
+                                    'Text': 'For more information on Bucket Versioning and how to configure it refer to the Using Versioning section of the Amazon Simple Storage Service Developer Guide',
+                                    'Url': 'https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html'
+                                }
+                            },
+                            'ProductFields': { 'Product Name': 'ElectricEye' },
+                            'Resources': [
+                                {
+                                    'Type': 'AwsS3Bucket',
+                                    'Id': s3Arn,
+                                    'Partition': 'aws',
+                                    'Region': awsRegion
+                                }
+                            ],
+                            'Compliance': { 'Status': 'PASSED' },
+                            'RecordState': 'ARCHIVED'
+                        }
+                    ]
+                )
+                print(response)
+            except Exception as e:
+                print(e)
+        except Exception as e:
+            if str(e) == "'Status'":
+                try:
+                    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                    response = securityhub.batch_import_findings(
+                        Findings=[
+                            {
+                                'SchemaVersion': '2018-10-08',
+                                'Id': s3Arn + '/s3-bucket-versioning-check',
+                                'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                'GeneratorId': s3Arn,
+                                'AwsAccountId': awsAccountId,
+                                'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                                'FirstObservedAt': iso8601Time,
+                                'CreatedAt': iso8601Time,
+                                'UpdatedAt': iso8601Time,
+                                'Severity': { 'Label': 'LOW' },
+                                'Confidence': 99,
+                                'Title': '[S3.3] S3 Buckets should have versioning enabled',
+                                'Description': 'S3 bucket ' + bucketName + ' does not have versioning enabled. Refer to the remediation instructions to remediate this behavior',
+                                'Remediation': {
+                                    'Recommendation': {
+                                        'Text': 'For more information on Bucket Versioning and how to configure it refer to the Using Versioning section of the Amazon Simple Storage Service Developer Guide',
+                                        'Url': 'https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html'
+                                    }
+                                },
+                                'ProductFields': { 'Product Name': 'ElectricEye' },
+                                'Resources': [
+                                    {
+                                        'Type': 'AwsS3Bucket',
+                                        'Id': s3Arn,
+                                        'Partition': 'aws',
+                                        'Region': awsRegion
+                                    }
+                                ],
+                                'Compliance': { 'Status': 'FAILED' },
+                                'RecordState': 'ACTIVE'
+                            }
+                        ]
+                    )
+                    print(response)
+                except Exception as e:
+                    print(e)
+            else:
+                print(e)
+
+def bucket_policy_allows_public_access_check():
+    for buckets in myS3Buckets:
+        bucketName = str(buckets['Name'])
+        s3Arn = 'arn:aws:s3:::' + bucketName
+        try:
+            response = s3.get_bucket_policy(Bucket=bucketName)
+            try:
+                response = s3.get_bucket_policy_status(Bucket=bucketName)
+                publicBucketPolicyCheck = str(response['PolicyStatus']['IsPublic'])
+                if publicBucketPolicyCheck != 'False':
+                    try:
+                        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                        response = securityhub.batch_import_findings(
+                            Findings=[
+                                {
+                                    'SchemaVersion': '2018-10-08',
+                                    'Id': s3Arn + '/s3-bucket-policy-allows-public-access-check',
+                                    'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                    'GeneratorId': s3Arn,
+                                    'AwsAccountId': awsAccountId,
+                                    'Types': [ 
+                                        'Software and Configuration Checks/AWS Security Best Practices',
+                                        'Effects/Data Exposure' 
+                                    ],
+                                    'FirstObservedAt': iso8601Time,
+                                    'CreatedAt': iso8601Time,
+                                    'UpdatedAt': iso8601Time,
+                                    'Severity': { 'Label': 'CRITICAL' },
+                                    'Confidence': 99,
+                                    'Title': '[S3.4] S3 Bucket Policies should not allow public access to the bucket',
+                                    'Description': 'S3 bucket ' + bucketName + ' has a bucket policy attached that allows public access. Refer to the remediation instructions to remediate this behavior',
+                                    'Remediation': {
+                                        'Recommendation': {
+                                            'Text': 'For more information on Bucket Policies and how to configure it refer to the Bucket Policy Examples section of the Amazon Simple Storage Service Developer Guide',
+                                            'Url': 'https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html'
+                                        }
+                                    },
+                                    'ProductFields': { 'Product Name': 'ElectricEye' },
+                                    'Resources': [
+                                        {
+                                            'Type': 'AwsS3Bucket',
+                                            'Id': s3Arn,
+                                            'Partition': 'aws',
+                                            'Region': awsRegion
+                                        }
+                                    ],
+                                    'Compliance': { 'Status': 'FAILED' },
+                                    'RecordState': 'ACTIVE'
+                                }
+                            ]
+                        )
+                        print(response)
+                    except Exception as e:
+                        print(e)
+                else:
+                    try:
+                        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                        response = securityhub.batch_import_findings(
+                            Findings=[
+                                {
+                                    'SchemaVersion': '2018-10-08',
+                                    'Id': s3Arn + '/s3-bucket-policy-allows-public-access-check',
+                                    'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                    'GeneratorId': s3Arn,
+                                    'AwsAccountId': awsAccountId,
+                                    'Types': [ 
+                                        'Software and Configuration Checks/AWS Security Best Practices',
+                                        'Effects/Data Exposure' 
+                                    ],
+                                    'FirstObservedAt': iso8601Time,
+                                    'CreatedAt': iso8601Time,
+                                    'UpdatedAt': iso8601Time,
+                                    'Severity': { 'Label': 'INFORMATIONAL' },
+                                    'Confidence': 99,
+                                    'Title': '[S3.4] S3 Bucket Policies should not allow public access to the bucket',
+                                    'Description': 'S3 bucket ' + bucketName + ' has a bucket policy attached and it does not allow public access.',
+                                    'Remediation': {
+                                        'Recommendation': {
+                                            'Text': 'For more information on Bucket Policies and how to configure it refer to the Bucket Policy Examples section of the Amazon Simple Storage Service Developer Guide',
+                                            'Url': 'https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html'
+                                        }
+                                    },
+                                    'ProductFields': { 'Product Name': 'ElectricEye' },
+                                    'Resources': [
+                                        {
+                                            'Type': 'AwsS3Bucket',
+                                            'Id': s3Arn,
+                                            'Partition': 'aws',
+                                            'Region': awsRegion
+                                        }
+                                    ],
+                                    'Compliance': { 'Status': 'PASSED' },
+                                    'RecordState': 'ARCHIVED'
+                                }
+                            ]
+                        )
+                        print(response)
+                    except Exception as e:
+                        print(e)
+            except Exception as e:
+                print(e)
+        except Exception as e:
+            print('This bucket does not have a bucket policy and the status cannot be checked')
+            pass
+
+def bucket_policy_check():
+    for buckets in myS3Buckets:
+        bucketName = str(buckets['Name'])
+        s3Arn = 'arn:aws:s3:::' + bucketName
+        try:
+            response = s3.get_bucket_policy(Bucket=bucketName)
+            print('This bucket has a policy but we wont be printing that in the logs lol')
+            # this is a passing check
+            try:
+                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                response = securityhub.batch_import_findings(
+                    Findings=[
+                        {
+                            'SchemaVersion': '2018-10-08',
+                            'Id': s3Arn + '/s3-bucket-policy-exists-check',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                            'GeneratorId': s3Arn,
+                            'AwsAccountId': awsAccountId,
+                            'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                            'FirstObservedAt': iso8601Time,
+                            'CreatedAt': iso8601Time,
+                            'UpdatedAt': iso8601Time,
+                            'Severity': { 'Label': 'INFORMATIONAL' },
+                            'Confidence': 99,
+                            'Title': '[S3.5] S3 Buckets should have a bucket policy configured',
+                            'Description': 'S3 bucket ' + bucketName + ' has a bucket policy configured.',
+                            'Remediation': {
+                                'Recommendation': {
+                                    'Text': 'For more information on Bucket Policies and how to configure it refer to the Bucket Policy Examples section of the Amazon Simple Storage Service Developer Guide',
+                                    'Url': 'https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html'
+                                }
+                            },
+                            'ProductFields': { 'Product Name': 'ElectricEye' },
+                            'Resources': [
+                                {
+                                    'Type': 'AwsS3Bucket',
+                                    'Id': s3Arn,
+                                    'Partition': 'aws',
+                                    'Region': awsRegion
+                                }
+                            ],
+                            'Compliance': { 'Status': 'PASSED' },
+                            'RecordState': 'ARCHIVED'
+                        }
+                    ]
+                )
+                print(response)
+            except Exception as e:
+                print(e)
+        except Exception as e:
+            if str(e) == 'An error occurred (NoSuchBucketPolicy) when calling the GetBucketPolicy operation: The bucket policy does not exist':
+                try:
+                    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                    response = securityhub.batch_import_findings(
+                        Findings=[
+                            {
+                                'SchemaVersion': '2018-10-08',
+                                'Id': s3Arn + '/s3-bucket-policy-exists-check',
+                                'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                'GeneratorId': s3Arn,
+                                'AwsAccountId': awsAccountId,
+                                'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                                'FirstObservedAt': iso8601Time,
+                                'CreatedAt': iso8601Time,
+                                'UpdatedAt': iso8601Time,
+                                'Severity': { 'Label': 'MEDIUM' },
+                                'Confidence': 99,
+                                'Title': '[S3.5] S3 Buckets should have a bucket policy configured',
+                                'Description': 'S3 bucket ' + bucketName + ' does not have a bucket policy configured. Refer to the remediation instructions to remediate this behavior',
+                                'Remediation': {
+                                    'Recommendation': {
+                                        'Text': 'For more information on Bucket Policies and how to configure it refer to the Bucket Policy Examples section of the Amazon Simple Storage Service Developer Guide',
+                                        'Url': 'https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html'
+                                    }
+                                },
+                                'ProductFields': { 'Product Name': 'ElectricEye' },
+                                'Resources': [
+                                    {
+                                        'Type': 'AwsS3Bucket',
+                                        'Id': s3Arn,
+                                        'Partition': 'aws',
+                                        'Region': awsRegion
+                                    }
+                                ],
+                                'Compliance': { 'Status': 'FAILED' },
+                                'RecordState': 'ACTIVE'
+                            }
+                        ]
+                    )
+                    print(response)
+                except Exception as e:
+                    print(e)
+            else:
+                print(e)
+
+def bucket_access_logging_check():
+    for buckets in myS3Buckets:
+        bucketName = str(buckets['Name'])
+        s3Arn = 'arn:aws:s3:::' + bucketName
+        try:
+            response = s3.get_bucket_logging(Bucket=bucketName)
+            accessLoggingCheck = str(response['LoggingEnabled'])
+            # this is a passing check
+            try:
+                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                response = securityhub.batch_import_findings(
+                    Findings=[
+                        {
+                            'SchemaVersion': '2018-10-08',
+                            'Id': s3Arn + '/s3-bucket-server-access-logging-check',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                            'GeneratorId': s3Arn,
+                            'AwsAccountId': awsAccountId,
+                            'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                            'FirstObservedAt': iso8601Time,
+                            'CreatedAt': iso8601Time,
+                            'UpdatedAt': iso8601Time,
+                            'Severity': { 'Label': 'INFORMATIONAL' },
+                            'Confidence': 99,
+                            'Title': '[S3.6] S3 Buckets should have server access logging enabled',
+                            'Description': 'S3 bucket ' + bucketName + ' does not have server access logging enabled. Refer to the remediation instructions to remediate this behavior',
+                            'Remediation': {
+                                'Recommendation': {
+                                    'Text': 'For more information on Bucket Policies and how to configure it refer to the Amazon S3 Server Access Logging section of the Amazon Simple Storage Service Developer Guide',
+                                    'Url': 'https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerLogs.html'
+                                }
+                            },
+                            'ProductFields': { 'Product Name': 'ElectricEye' },
+                            'Resources': [
+                                {
+                                    'Type': 'AwsS3Bucket',
+                                    'Id': s3Arn,
+                                    'Partition': 'aws',
+                                    'Region': awsRegion
+                                }
+                            ],
+                            'Compliance': { 'Status': 'PASSED' },
+                            'RecordState': 'ARCHIVED'
+                        }
+                    ]
+                )
+                print(response)
+            except Exception as e:
+                print(e)
+        except Exception as e:
+            if str(e) == "'LoggingEnabled'":
+                try:
+                    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                    response = securityhub.batch_import_findings(
+                        Findings=[
+                            {
+                                'SchemaVersion': '2018-10-08',
+                                'Id': s3Arn + '/s3-bucket-server-access-logging-check',
+                                'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                'GeneratorId': s3Arn,
+                                'AwsAccountId': awsAccountId,
+                                'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                                'FirstObservedAt': iso8601Time,
+                                'CreatedAt': iso8601Time,
+                                'UpdatedAt': iso8601Time,
+                                'Severity': { 'Label': 'MEDIUM' },
+                                'Confidence': 99,
+                                'Title': '[S3.6] S3 Buckets should have server access logging enabled',
+                                'Description': 'S3 bucket ' + bucketName + ' does not have server access logging enabled. Refer to the remediation instructions to remediate this behavior',
+                                'Remediation': {
+                                    'Recommendation': {
+                                        'Text': 'For more information on Bucket Policies and how to configure it refer to the Amazon S3 Server Access Logging section of the Amazon Simple Storage Service Developer Guide',
+                                        'Url': 'https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerLogs.html'
                                     }
                                 },
                                 'ProductFields': { 'Product Name': 'ElectricEye' },
@@ -249,9 +640,9 @@ def s3_account_level_block():
                         'FirstObservedAt': iso8601Time,
                         'CreatedAt': iso8601Time,
                         'UpdatedAt': iso8601Time,
-                        'Severity': { 'Normalized': 0 },
+                        'Severity': { 'Label': 'INFORMATIONAL' },
                         'Confidence': 99,
-                        'Title': '[S3.3] Account-level S3 public access block should be configured',
+                        'Title': '[S3.7] Account-level S3 public access block should be configured',
                         'Description': 'Account-level S3 public access block for account ' + awsAccountId + ' is enabled',
                         'Remediation': {
                             'Recommendation': {
@@ -294,9 +685,9 @@ def s3_account_level_block():
                         'FirstObservedAt': iso8601Time,
                         'CreatedAt': iso8601Time,
                         'UpdatedAt': iso8601Time,
-                        'Severity': { 'Normalized': 40 },
+                        'Severity': { 'Label': 'MEDIUM' },
                         'Confidence': 99,
-                        'Title': '[S3.3] Account-level S3 public access block should be configured',
+                        'Title': '[S3.7] Account-level S3 public access block should be configured',
                         'Description': 'Account-level S3 public access block for account ' + awsAccountId + ' is either inactive or is not block all possible scenarios. Refer to the remediation instructions to remediate this behavior',
                         'Remediation': {
                             'Recommendation': {
@@ -325,6 +716,10 @@ def s3_account_level_block():
 def s3_bucket_auditor():
     bucket_encryption_check()
     bucket_lifecycle_check()
+    bucket_versioning_check()
+    bucket_policy_allows_public_access_check()
+    bucket_policy_check()
+    bucket_access_logging_check()
     s3_account_level_block()
 
 s3_bucket_auditor()

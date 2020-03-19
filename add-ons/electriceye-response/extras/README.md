@@ -33,6 +33,10 @@ This section walks through generating or getting the information needed for the 
     2. Select **Create user** and enter out the required information, paste the value of the API key as your password
     3. Select the **User actions** (represented by an ellipsis on the far right) menu, choose **Edit user groups** and place this user in a Group that allows the creation of Issues (Adminstrators, or otherwise)
 
+- **JiraLambdaLayerArn**:
+    1. Download the [JIRA Lambda Layer](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response/lambda-layers/jira_lambda_layer.zip) and create a new Layer. For more information see [AWS Lambda Layers](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html)
+    2. Retrieve the ARN of this layer to include the version number and paste it in for this parameter, such as: `arn:aws:lambda:<REGION>:<ACCT#>:layer:JiraPython:1`
+
 ## SSM_SNOW_Incident_Playbook
 This playbook uses the Systems Manager Automation Document `AWS-CreateServiceNowIncident` to create an Incident in ServiceNow using a user of your choosing. If you do not have a ServiceNow instance and are interested in creating one you can find out more about [Personal Developer Instances (PDIs) here](https://developer.servicenow.com/app.do#!/training/article/app_store_learnv2_buildmyfirstapp_orlando_servicenow_basics/app_store_learnv2_buildmyfirstapp_orlando_personal_developer_instances?v=orlando).
 
@@ -60,3 +64,26 @@ This section walks through generating or getting the information needed for the 
 
 - **IncidentCreatorPasswordSSMParameter**
     1. Create a SSM Secure String Parameter: `aws ssm put-parameter --name electriceye-response-servicenow --description 'Password for the ServiceNow Incident Manager user' --type SecureString --value <PASSWORD-HERE>`
+
+## AzureDevOps_WorkItem_Playbook
+This playbook uses the Azure DevOps Workitem API via the Python `requests` library to create an Issue in your Azure DevOps' Project board. If you do not use Azure DevOps but are interested in having a (relatively) cheap alternative to JIRA or other issue management software, you can learn more at [Azure Boards](https://azure.microsoft.com/en-us/services/devops/boards/).
+
+### Architecture
+![ADOPlaybookArchitecture](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/azure-devops-issue-playbook-architecture.jpg)
+1. Security Hub Custom Action for the Create JIRA Issue playbook is selected
+2. A CloudWatch Event / EventBridge Rule triggers a corresponding Lambda function
+3. Lambda retrieves and decrypts the Azure DevOps Personal Access Token (PAT) from Systems Manager Parameter Store
+4. Information from the Security Hub finding(s) are parsed and an `Issue` is created by the PAT's owner (you MSFT Identity) in the specified Project's Board
+
+### How-to
+This section walks through generating or getting the information needed for the Azure DevOps Playbook parameters for the ElectricEye-Response semi-auto CFN template.
+
+- **AzureDevOpsProject**:
+    1. This is simply the name of your Azure DevOps project. You can learn more at [Create a project in Azure DevOps and TFS](https://docs.microsoft.com/en-us/azure/devops/organizations/projects/create-project?view=azure-devops&tabs=preview-page).
+
+- **AzureDevOpsOrg**:
+    1. This is the name of your Azure DevOps organization. To learn more see this [Quickstart guide](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/create-organization?toc=%2Fazure%2Fdevops%2Forganizations%2Ftoc.json&bc=%2Fazure%2Fdevops%2Forganizations%2Fbreadcrumb%2Ftoc.json&view=azure-devops).
+
+- **AzureDevOpsPATPArameter**:
+    1. Create a Personal Access Token in Azure DevOps by following [this guide](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&viewFallbackFrom=vsts&tabs=preview-page).
+    2. Create a `SecureString` Systems Manager parameter for this PAT: `aws ssm put-parameter --name azure-devops-pat --description 'Azure DevOps Project Personal Access Token' --type SecureString --value <PAT-HERE>`
