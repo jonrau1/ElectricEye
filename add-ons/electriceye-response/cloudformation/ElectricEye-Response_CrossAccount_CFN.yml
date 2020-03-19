@@ -41,6 +41,7 @@ Resources:
             - backup:StartBackupJob
             - cloudtrail:UpdateTrail
             - cognito-idp:UpdateUserPool
+            - ec2:CreateFlowLogs
             - ec2:CreateSnapshot
             - ec2:StopInstances
             - ec2:TerminateInstances
@@ -62,6 +63,9 @@ Resources:
             - es:UpdateElasticsearchDomainConfig
             - elasticloadbalancing:ModifyLoadBalancerAttributes
             - guardduty:GetFindings
+            - iam:AttachRolePolicy
+            - iam:CreatePolicy
+            - iam:CreateRole
             - iam:UpdateAccessKey
             - iam:ListAccessKeys
             - iam:PassRole

@@ -10,6 +10,7 @@ Continuously monitor your AWS services for configurations that can lead to degra
 [![DepShield Badge](https://depshield.sonatype.org/badges/jonrau1/ElectricEye/depshield.svg)](https://depshield.github.io)
 
 ## Table of Contents
+- [Synopsis](https://github.com/jonrau1/ElectricEye#synopsis)
 - [Description](https://github.com/jonrau1/ElectricEye#description)
 - [Solution Architecture](https://github.com/jonrau1/ElectricEye#solution-architecture)
 - [Setting Up](https://github.com/jonrau1/ElectricEye#setting-up)
@@ -32,10 +33,19 @@ Continuously monitor your AWS services for configurations that can lead to degra
   - [ToDo](https://github.com/jonrau1/ElectricEye#to-do)
 - [License](https://github.com/jonrau1/ElectricEye#license)
 
+## Synopsis
+- 100% native Security Hub integration & 100% serverless
+- 160+ security & best practice detections not covered by Security Hub nor Config (AppStream, Cognito, EKS, ECR, DocDB, etc.)
+- 60+ multi-account SOAR playbooks
+- CloudFormation & Terraform support
+- 3rd Party Integrations: Config Recorder, Slack, ServiceNow, JIRA, Azure DevOps, Shodan with more on the way
+
 ## Description
 ElectricEye is a set of Python scripts (affectionately called **Auditors**) that continuously monitor your AWS infrastructure looking for configurations related to confidentiality, integrity and availability that do not align with AWS best practices. All findings from these scans will be sent to AWS Security Hub where you can perform basic correlation against other AWS and 3rd Party services that send findings to Security Hub. Security Hub also provides a centralized view from which account owners and other responsible parties can view and take action on findings.
 
 ElectricEye runs on AWS Fargate, which is a serverless container orchestration service. On a schedule, Fargate will download all of the auditor scripts from a S3 bucket, run the checks and send results to Security Hub. All infrastructure will be deployed via CloudFormation or Terraform to help you apply this solution to many accounts and/or regions. All findings (passed or failed) will contain AWS documentation references in the `Remediation.Recommendation` section of the ASFF (and the **Remediation** section of the Security Hub UI) to further educate yourself and others on.
+
+ElectricEye comes with several add-on modules to extend the core model which provides dozens of detection-based controls. ElectricEye-Response provides a multi-account response and remediation platform (also known as SOAR), ElectricEye-ChatOps integrates with Slack and ElectricEye-Reports integrates with QuickSight (experimental) and the Config-Deletion-Pruner will auto-archive findings as Config-supported resources are deleted. All add-ons are supported by both CloudFormation and Terraform and can also be used independly of the core module itself.
 
 Personas who can make use of this tool are DevOps/DevSecOps engineers, SecOps analysts, Cloud Center-of-Excellence personnel, Site Relability Engineers (SREs), Internal Audit and/or Compliance Analysts.
 
@@ -89,7 +99,7 @@ sudo docker push <ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/<REPO_NAME>:lat
 4. Navigate to the ECR console and copy the `URI` of your Docker image. It will be in the format of `<ACCOUNT_ID>.dkr.ecr.<AWS_REGION.amazonaws.com/<REPO_NAME>:latest`. Save this as you will need it when configuring Terraform or CloudFormation.
 
 ### (OPTIONAL) Setup Shodan.io API Key
-This is an optional step to setup a Shodan.io API key to determine if you internet-facing resources have been indexed. This is not an exact science as a lot of abstracted services (ES, RDS, ELB) share IP space with other resources and AWS addresses (non-EIP / BYOIP) are semi-ephemeral and always change. You may end up having indexed resources that were indexed when someone else was using the IP space, you should still review it either way just to make sure.
+This is an optional step to setup a Shodan.io API key to determine if your internet-facing resources have been indexed. This is not an exact science as a lot of abstracted services (ES, RDS, ELB) share IP space with other resources and AWS addresses (non-EIP / BYOIP) are always change (such as when you have an EC2 instance shutoff for a prolonged period of time). You may end up having indexed resources that were indexed when someone else was using the IP space, you should still review it either way just to make sure.
 
 1. Create a Shodan account and retrieve your Shodan.io API Key [from here](https://developer.shodan.io/dashboard).
 
@@ -224,7 +234,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **164** checks supported across **50** AWS services / components using **37** Auditors. There are currently **60** supported response and remediation Playbooks with coverage across **31** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **169** checks supported across **51** AWS services / components using **37** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -283,6 +293,7 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_ECR_Auditor.py                  | ECR Repository                | Does the repository support<br>scan-on-push                           |
 | Amazon_ECR_Auditor.py                  | ECR Repository                | Is there an image lifecycle policy                                    |
 | Amazon_ECR_Auditor.py                  | ECR Repository                | Is there a repo access policy                                         |
+| Amazon_ECR_Auditor.py                  | Image (Container)             | Does the latest container have any vulns                              |
 | Amazon_ECS_Auditor.py                  | ECS Cluster                   | Is container insights enabled                                         |
 | Amazon_ECS_Auditor.py                  | ECS Cluster                   | Is a default cluster provider configured                              |
 | Amazon_EFS_Auditor.py                  | EFS File System               | Are file systems encrypted                                            |
@@ -337,6 +348,10 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_Redshift_Auditor.py             | Redshift cluster              | Is cluster audit logging enabled                                      |
 | Amazon_S3_Auditor.py                   | S3 Bucket                     | Is bucket encryption enabled                                          |
 | Amazon_S3_Auditor.py                   | S3 Bucket                     | Is a bucket lifecycle enabled                                         |
+| Amazon_S3_Auditor.py                   | S3 Bucket                     | Is bucket versioning enabled                                          |
+| Amazon_S3_Auditor.py                   | S3 Bucket                     | Does the bucket policy allow public access                            |
+| Amazon_S3_Auditor.py                   | S3 Bucket                     | Does the bucket have a policy                                         |
+| Amazon_S3_Auditor.py                   | S3 Bucket                     | Is server access logging enabled                                      |
 | Amazon_S3_Auditor.py                   | Account                       | Is account level public access block<br>configured                    |
 | Amazon_SageMaker_Auditor.py            | SageMaker Notebook            | Is notebook encryption enabled                                        |
 | Amazon_SageMaker_Auditor.py            | SageMaker Notebook            | Is notebook direct internet access<br>enabled                         |
@@ -412,7 +427,7 @@ This section is likely to wax and wane depending on future releases, PRs and cha
 
 - If you choose to build and run ElectricEye without the IAC on your own and use an existing VPC or, in the future, decide to build internet-facing services in the ElectricEye VPC you may run into Shodan.io false positives. The `socket` python module will use the DNS servers available to them; getting the IPv4 address for a DNS name (from RDS or ES endpoints for example) in your VPC will return the private IP address and lead to false positives with Shodan
 
-- No way to dynamically change Severity. All Severity Label's in Security Hub come from a conversion of `Severity.Normalized` which ranges from 1-100, to modify these values you will need to fork and modify to fit your organization's definition of severity based on threat modeling and risk appetite for certain configurations.
+- No way to dynamically change Severity. All Severity Label's in Security Hub come from a conversion of `Severity.Normalized` which ranges from 1-100, to modify these values you will need to fork and modify to fit your organization's definition of severity based on threat modeling and risk appetite for certain configurations. As of 12 MAR 2020, `Severity.Label` was introduced to make the labeling easier, but there is still no way to change this.
 
 - No tag-based scoping or exemption process out of the box. You will need to manually archive these, remove checks not pertinent to you and/or create your own automation to automatically archive findings for resources that shouldn't be in-scope.
 
@@ -512,15 +527,18 @@ You should consider taking a look at all of these:
 #### Secrets Scanning
 - [truffleHog](https://github.com/dxa4481/truffleHog)
 - [git-secrets](https://github.com/awslabs/git-secrets)
+- [detect-secrets](https://github.com/Yelp/detect-secrets)
 #### SAST
 - [Bandit](https://github.com/PyCQA/bandit) (for Python)
 - [GoSec](https://github.com/securego/gosec) (for Golang)
 - [NodeJsScan](https://github.com/ajinabraham/NodeJsScan) (for NodeJS)
-- [tfsec](https://github.com/liamg/tfsec) (for Terraform "SAST")
+- [tfsec](https://github.com/liamg/tfsec) (for Terraform SCA)
+- [terrascan](https://github.com/cesar-rodriguez/terrascan) (another Terraform SCA)
 #### Linters
 - [hadolint](https://github.com/hadolint/hadolint) (for Docker)
 - [cfn-python-lint](https://github.com/aws-cloudformation/cfn-python-lint) (for CloudFormation)
 - [cfn-nag](https://github.com/stelligent/cfn_nag) (for CloudFormation)
+- [terraform-kitchen](https://github.com/newcontext-oss/kitchen-terraform) (InSpec tests against Terraform - part linter/part SCA)
 #### DAST
 - [Zed Attack Proxy (ZAP)](https://owasp.org/www-project-zap/)
 #### AV
@@ -536,12 +554,35 @@ You should consider taking a look at all of these:
 - [Loki](https://github.com/Neo23x0/Loki) (Python-based IOC scanner w/ Yara)
 - [GRR Rapid Response](https://github.com/google/grr) (Python agent-based IR)
 - this one is deprecated but... [MIG](http://mozilla.github.io/mig/)
+#### TVM
+- [DefectDojo](https://github.com/DefectDojo/django-DefectDojo)
+- [OpenVAS](https://www.openvas.org/)
+- [Trivy](https://github.com/aquasecurity/trivy) (container vuln scanning)
+- [Scuba](https://www.imperva.com/lg/lgw_trial.asp?pid=213) (database vuln scanning)
 #### Threat Hunting
 - [ThreatHunter-Playbook](https://github.com/hunters-forge/ThreatHunter-Playbook)
 - [Mordor](https://github.com/hunters-forge/mordor)
+#### Kubernetes / Container Security Tools
+- [Istio](https://istio.io/docs/setup/getting-started/) (microservices service mesh, mTLS, etc.)
+- [Calico](https://www.projectcalico.org/#getstarted) (K8s network policy)
+- [Envoy](https://www.envoyproxy.io/) (microservices proxy services, underpins AWS AppMesh)
+- [Falco](https://sysdig.com/opensource/falco/) (a metric shitload of awesome k8s/container security features)
+- [Goldilocks](https://github.com/FairwindsOps/goldilocks) (K8s cluster right-sizing)
+- [Polaris](https://github.com/FairwindsOps/polaris) (K8s best practices, YAML SCA/linting)
+- [kube-bench](https://github.com/aquasecurity/kube-bench) (K8s CIS Benchmark assessment)
+- [kube-hunter](https://github.com/aquasecurity/kube-hunter) (K8s attacker-eye-view of K8s clusters)
+#### CCM Tools
+- [Prowler](https://github.com/toniblyx/prowler)
+  - [Prowler SecHub Integration](https://aws.amazon.com/blogs/security/use-aws-fargate-prowler-send-security-configuration-findings-about-aws-services-security-hub/)
+- [PacBot](https://github.com/tmobile/pacbot)
+- [Cloud Inquisitor](https://github.com/RiotGames/cloud-inquisitor)
+- [Scout2](https://github.com/nccgroup/ScoutSuite)
+- [Cloud Custodian](https://cloudcustodian.io/docs/index.html)
 #### Misc
 - [LambdaGuard](https://github.com/Skyscanner/LambdaGuard)
 - [SecHub SOC Inna Box](https://github.com/aws-samples/aws-security-services-with-terraform/tree/master/aws-security-hub-boostrap-and-operationalization)
+- [OPA](https://github.com/open-policy-agent/opa) (open policy enforcement tool - works with K8s, TF, Docker, SSH, etc.)
+- [SecHub InSpec Integration](https://aws.amazon.com/blogs/security/continuous-compliance-monitoring-with-chef-inspec-and-aws-security-hub/)
 
 ### 15. Why did you swap the Dockerfile to being Alpine Linux-based?
 The original (V1.0) Dockerfile used the `ubuntu:latest` image as its base image and was pretty chunky (~450MB) where the Alpine image is a tiny bit under a 10th of that (41.95MB). It is also much faster to create and push the image since `apk` adds only what is needed and isn't bloated by the Ubuntu dependencies from `apt` or that come prepackaged. Lastly, the build logs are a lot less chatty with the (hacky) ENV value set for Python and Pip related logs. Oh, and as of 13 MARCH 2020 there are no vulns in this image. (Reminder for me to periodically update and confirm this)
