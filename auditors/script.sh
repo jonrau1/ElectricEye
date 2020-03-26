@@ -69,6 +69,8 @@ python3 Amazon_WorkSpaces_Auditor.py
 sleep 2
 python3 AMI_Auditor.py
 sleep 2
+python3 AWS_AppMesh_Auditor.py
+sleep 2
 python3 AWS_Backup_Auditor.py
 sleep 2
 python3 AWS_CloudFormation_Auditor.py
@@ -78,6 +80,8 @@ sleep 2
 python3 AWS_Directory_Service_Auditor.py
 sleep 2
 python3 AWS_DMS_Auditor.py
+sleep 2
+python3 AWS_License_Manager_Auditor.py
 sleep 2
 python3 AWS_Secrets_Manager_Auditor.py
 sleep 2
