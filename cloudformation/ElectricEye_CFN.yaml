@@ -175,6 +175,10 @@ Resources:
             Action:
             - access-analyzer:ListAnalyzers
             - apigateway:GET
+            - appmesh:DescribeMesh
+            - appmesh:DescribeVirtualNode
+            - appmesh:ListMeshes
+            - appmesh:ListVirtualNodes
             - appstream:DescribeFleets
             - appstream:DescribeImages
             - appstream:DescribeUsers
@@ -219,6 +223,10 @@ Resources:
             - elasticloadbalancing:DescribeListeners
             - elasticloadbalancing:DescribeLoadBalancerAttributes
             - elasticloadbalancing:DescribeLoadBalancers
+            - elasticmapreduce:DescribeCluster
+            - elasticmapreduce:DescribeSecurityConfiguration
+            - elasticmapreduce:GetBlockPublicAccessConfiguration
+            - elasticmapreduce:ListClusters
             - es:DescribeElasticsearchDomain
             - es:ListDomainNames
             - guardduty:ListDetectors
@@ -228,6 +236,8 @@ Resources:
             - kinesis:ListStreams
             - kms:Decrypt
             - kms:DescribeKey
+            - license-manager:GetLicenseConfiguration
+            - license-manager:ListLicenseConfigurations
             - rds:DescribeDBClusterParameterGroups
             - rds:DescribeDBClusterParameters
             - rds:DescribeDBClusters
