@@ -45,6 +45,8 @@ python3 Amazon_ELB_Auditor.py
 sleep 2
 python3 Amazon_ELBv2_Auditor.py
 sleep 2
+python3 Amazon_EMR_Auditor.py
+sleep 2
 python3 Amazon_Kinesis_Data_Streams_Auditor.py
 sleep 2
 python3 Amazon_MSK_Auditor.py

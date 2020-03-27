@@ -35,10 +35,10 @@ Continuously monitor your AWS services for configurations that can lead to degra
 
 ## Synopsis
 - 100% native Security Hub integration & 100% serverless
-- 160+ security & best practice detections including services covered by Security Hub nor Config (AppStream, Cognito, EKS, ECR, DocDB, etc.)
+- 160+ security & best practice detections including services not covered by Security Hub/Config (AppStream, Cognito, EKS, ECR, DocDB, etc.)
 - 60+ multi-account SOAR playbooks
 - CloudFormation & Terraform support
-- 3rd Party Integrations: Config Recorder, Slack, ServiceNow, JIRA, Azure DevOps, Shodan with more on the way
+- AWS & 3rd Party Integrations: Config Recorder, Slack, ServiceNow, JIRA, Azure DevOps, Shodan with more on the way
 
 ## Description
 ElectricEye is a set of Python scripts (affectionately called **Auditors**) that continuously monitor your AWS infrastructure looking for configurations related to confidentiality, integrity and availability that do not align with AWS best practices. All findings from these scans will be sent to AWS Security Hub where you can perform basic correlation against other AWS and 3rd Party services that send findings to Security Hub. Security Hub also provides a centralized view from which account owners and other responsible parties can view and take action on findings.
@@ -234,7 +234,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **174** checks supported across **54** AWS services / components using **39** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **182** checks supported across **55** AWS services / components using **40** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -321,6 +321,14 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_ELBv2_Auditor.py                | ELBv2 (ALB/NLB)               | Do secure listeners enforce TLS 1.2                                                 |
 | Amazon_ELBv2_Auditor.py                | ELBv2 (ALB/NLB)               | Are invalid HTTP headers dropped                                                    |
 | Amazon_ELBv2_Auditor.py                | ELBv2 (NLB)                   | Do NLBs with TLS listeners have access<br>logging enabled                           |
+| Amazon_EMR_Auditor.py                  | EMR Cluster                   | Do clusters have a sec configuration attached                                       |
+| Amazon_EMR_Auditor.py                  | EMR Cluster                   | Do cluster sec configs enforce encryption<br>in transit                             |
+| Amazon_EMR_Auditor.py                  | EMR Cluster                   | Do cluster sec configs enforce encryption <br>at rest for EMRFS                     |
+| Amazon_EMR_Auditor.py                  | EMR Cluster                   | Do cluster sec configs enforce encryption at<br>rest for EBS                        |
+| Amazon_EMR_Auditor.py                  | EMR Cluster                   | Do cluster sec configs enforce Kerberos<br>authN                                    |
+| Amazon_EMR_Auditor.py                  | EMR Cluster                   | Is cluster termination protection enabled                                           |
+| Amazon_EMR_Auditor.py                  | EMR Cluster                   | Is cluster logging enabled                                                          |
+| Amazon_EMR_Auditor.py                  | AWS Account                   | Is EMR public SG block configured for the<br>Account in the region                  |
 | Amazon_Kinesis_Data_Streams_Auditor.py | Kinesis Data Stream           | Is stream encryption enabled                                                        |
 | Amazon_Kinesis_Data_Streams_Auditor.py | Kinesis Data Stream           | Is enhanced monitoring enabled                                                      |
 | Amazon_MSK_Auditor.py                  | MSK Cluster                   | Is inter-cluster encryption used                                                    |
