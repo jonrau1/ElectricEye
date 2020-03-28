@@ -14,6 +14,7 @@ rds = boto3.client('rds')
 elasticsearch = boto3.client('es')
 elb = boto3.client('elb')
 dms = boto3.client('dms')
+amzmq = boto3.client('mq')
 securityhub = boto3.client('securityhub')
 
 # create env vars
@@ -759,6 +760,116 @@ def public_dms_replication_instance_shodan_check():
     except Exception as e:
         print(e)
 
+def public_amazonmq_broker_shodan_check():
+    try:
+        response = amzmq.list_brokers(MaxResults=100)
+        myBrokers = response['BrokerSummaries']
+        for brokers in myBrokers:
+            brokerName = str(brokers['BrokerName'])
+            try:
+                response = amzmq.describe_broker(BrokerId=brokerName)
+                brokerArn = str(response['BrokerArn'])
+                brokerId = str(response['BrokerId'])
+                publicAccessCheck = str(response['PubliclyAccessible'])
+                if publicAccessCheck == 'True':
+                    mqInstances = response['BrokerInstances']
+                    for instance in mqInstances:
+                        mqBrokerIpv4 = str(instance['IpAddress'])
+                        r = requests.get(url = shodanUrl + mqBrokerIpv4 + '?key=' + shodanApiKey)
+                        data = r.json()
+                        shodanOutput = str(data)
+                        if shodanOutput == "{'error': 'No information available for that IP.'}":
+                            # this is a passing check
+                            try:
+                                iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                                response = securityhub.batch_import_findings(
+                                    Findings=[
+                                        {
+                                            'SchemaVersion': '2018-10-08',
+                                            'Id': brokerArn + '/' + mqBrokerIpv4 + '/amazon-mq-broker-shodan-index-check',
+                                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                            'GeneratorId': brokerArn,
+                                            'AwsAccountId': awsAccountId,
+                                            'Types': ['Effects/Data Exposure'],
+                                            'CreatedAt': iso8601time,
+                                            'UpdatedAt': iso8601time,
+                                            'Severity': { 'Label': 'INFORMATIONAL' },
+                                            'Title': '[Shodan.AmazonMQ.1] Publicly accessible Amazon MQ message brokers should be monitored for being indexed by Shodan',
+                                            'Description': 'Amazon MQ message brokers ' + brokerName + ' has not been indexed by Shodan.',
+                                            'ProductFields': {
+                                                'Product Name': 'ElectricEye'
+                                            },
+                                            'Resources': [
+                                                {
+                                                    'Type': 'AwsMqMessageBroker',
+                                                    'Id': brokerArn,
+                                                    'Partition': 'aws',
+                                                    'Region': awsRegion,
+                                                    'Details': {
+                                                        'Other': { 
+                                                            'brokerName': brokerName,
+                                                            'brokerId': brokerId
+                                                        }
+                                                    }
+                                                }
+                                            ],
+                                            'Compliance': { 'Status': 'PASSED' },
+                                            'RecordState': 'ARCHIVED'
+                                        }
+                                    ]
+                                )
+                                print(response)
+                            except Exception as e:
+                                print(e)
+                        else:
+                            try:
+                                iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                                response = securityhub.batch_import_findings(
+                                    Findings=[
+                                        {
+                                            'SchemaVersion': '2018-10-08',
+                                            'Id': brokerArn + '/' + mqBrokerIpv4 + '/amazon-mq-broker-shodan-index-check',
+                                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                                            'GeneratorId': brokerArn,
+                                            'AwsAccountId': awsAccountId,
+                                            'Types': ['Effects/Data Exposure'],
+                                            'CreatedAt': iso8601time,
+                                            'UpdatedAt': iso8601time,
+                                            'Severity': { 'Label': 'MEDIUM' },
+                                            'Title': '[Shodan.AmazonMQ.1] Publicly accessible Amazon MQ message brokers should be monitored for being indexed by Shodan',
+                                            'Description': 'Amazon MQ message brokers ' + brokerName + ' has been indexed by Shodan on IP address ' + mqBrokerIpv4 + '.',
+                                            'ProductFields': {
+                                                'Product Name': 'ElectricEye'
+                                            },
+                                            'Resources': [
+                                                {
+                                                    'Type': 'AwsMqMessageBroker',
+                                                    'Id': brokerArn,
+                                                    'Partition': 'aws',
+                                                    'Region': awsRegion,
+                                                    'Details': {
+                                                        'Other': { 
+                                                            'brokerName': brokerName,
+                                                            'brokerId': brokerId
+                                                        }
+                                                    }
+                                                }
+                                            ],
+                                            'Compliance': { 'Status': 'FAILED' },
+                                            'RecordState': 'ACTIVE'
+                                        }
+                                    ]
+                                )
+                                print(response)
+                            except Exception as e:
+                                print(e)
+                else:
+                    pass
+            except Exception as e:
+                print(e)
+    except Exception as e:
+        print(e)
+
 def electriceye_shodan_auditor():
     public_ec2_shodan_check()
     public_alb_shodan_check()
@@ -766,5 +877,6 @@ def electriceye_shodan_auditor():
     public_es_domain_shodan_check()
     public_clb_shodan_check()
     public_dms_replication_instance_shodan_check()
+    public_amazonmq_broker_shodan_check()
 
 electriceye_shodan_auditor()
