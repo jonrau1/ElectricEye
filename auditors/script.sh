@@ -49,6 +49,8 @@ python3 Amazon_EMR_Auditor.py
 sleep 2
 python3 Amazon_Kinesis_Data_Streams_Auditor.py
 sleep 2
+python3 Amazon_MQ_Auditor.py
+sleep 2
 python3 Amazon_MSK_Auditor.py
 sleep 2
 python3 Amazon_Neptune_Auditor.py
@@ -82,6 +84,8 @@ sleep 2
 python3 AWS_Directory_Service_Auditor.py
 sleep 2
 python3 AWS_DMS_Auditor.py
+sleep 2
+python3 AWS_IAM_Auditor.py
 sleep 2
 python3 AWS_License_Manager_Auditor.py
 sleep 2

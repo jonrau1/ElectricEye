@@ -39,55 +39,7 @@ def cognitoidp_cis_password_check():
         numberCheck = str(cognitoPwPolicy['RequireNumbers'])
         symbolCheck = str(cognitoPwPolicy['RequireSymbols'])
         if minLengthCheck >= 14 and uppercaseCheck == 'True' and lowercaseCheck == 'True' and numberCheck == 'True' and symbolCheck == 'True':
-            try:
-                # ISO Time
-                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-                # create Sec Hub finding
-                response = securityhub.batch_import_findings(
-                    Findings=[
-                        {
-                            'SchemaVersion': '2018-10-08',
-                            'Id': userPoolArn + '/cognito-user-pool-password-policy',
-                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
-                            'GeneratorId': userPoolId,
-                            'AwsAccountId': awsAccount,
-                            'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
-                            'FirstObservedAt': iso8601Time,
-                            'CreatedAt': iso8601Time,
-                            'UpdatedAt': iso8601Time,
-                            'Severity': { 'Label': 'MEDIUM' },
-                            'Confidence': 99,
-                            'Title': '[Cognito-IdP.1] Cognito user pools should have a password policy that meets or exceed AWS CIS Foundations Benchmark standards',
-                            'Description': 'Cognito user pool ' + userPoolArn + ' does not meet the password guidelines. Refer to the remediation instructions to remediate this behavior',
-                            'Remediation': {
-                                'Recommendation': {
-                                    'Text': 'To ensure you Cognito user pools have a password policy that meets or exceed AWS CIS Foundations Benchmark standards refer to the Adding User Pool Password Requirements section of the Amazon Cognito Developer Guide',
-                                    'Url': 'https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-policies.html'
-                                }
-                            },
-                            'ProductFields': {
-                                'Product Name': 'ElectricEye'
-                            },
-                            'Resources': [
-                                {
-                                    'Type': 'AwsCognitoUserPool',
-                                    'Id': userPoolArn,
-                                    'Partition': 'aws',
-                                    'Region': awsRegion,
-                                    'Details': {
-                                        'Other': { 'UserPoolId': userPoolId }
-                                    }
-                                }
-                            ],
-                            'Compliance': { 'Status': 'FAILED' },
-                            'RecordState': 'ACTIVE'
-                        }
-                    ]
-                )
-                print(response)
-            except Exception as e:
-                print(e)
-        else:
+            # this is a passing check
             try:
                 # ISO Time
                 iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -130,6 +82,55 @@ def cognitoidp_cis_password_check():
                             ],
                             'Compliance': { 'Status': 'PASSED' },
                             'RecordState': 'ARCHIVED'
+                        }
+                    ]
+                )
+                print(response)
+            except Exception as e:
+                print(e)
+        else:
+            try:
+                # ISO Time
+                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                # create Sec Hub finding
+                response = securityhub.batch_import_findings(
+                    Findings=[
+                        {
+                            'SchemaVersion': '2018-10-08',
+                            'Id': userPoolArn + '/cognito-user-pool-password-policy',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccount + ':product/' + awsAccount + '/default',
+                            'GeneratorId': userPoolId,
+                            'AwsAccountId': awsAccount,
+                            'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                            'FirstObservedAt': iso8601Time,
+                            'CreatedAt': iso8601Time,
+                            'UpdatedAt': iso8601Time,
+                            'Severity': { 'Label': 'MEDIUM' },
+                            'Confidence': 99,
+                            'Title': '[Cognito-IdP.1] Cognito user pools should have a password policy that meets or exceed AWS CIS Foundations Benchmark standards',
+                            'Description': 'Cognito user pool ' + userPoolArn + ' does not meet the password guidelines. Refer to the remediation instructions to remediate this behavior',
+                            'Remediation': {
+                                'Recommendation': {
+                                    'Text': 'To ensure you Cognito user pools have a password policy that meets or exceed AWS CIS Foundations Benchmark standards refer to the Adding User Pool Password Requirements section of the Amazon Cognito Developer Guide',
+                                    'Url': 'https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-policies.html'
+                                }
+                            },
+                            'ProductFields': {
+                                'Product Name': 'ElectricEye'
+                            },
+                            'Resources': [
+                                {
+                                    'Type': 'AwsCognitoUserPool',
+                                    'Id': userPoolArn,
+                                    'Partition': 'aws',
+                                    'Region': awsRegion,
+                                    'Details': {
+                                        'Other': { 'UserPoolId': userPoolId }
+                                    }
+                                }
+                            ],
+                            'Compliance': { 'Status': 'FAILED' },
+                            'RecordState': 'ACTIVE'
                         }
                     ]
                 )

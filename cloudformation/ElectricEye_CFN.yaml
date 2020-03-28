@@ -230,6 +230,13 @@ Resources:
             - es:DescribeElasticsearchDomain
             - es:ListDomainNames
             - guardduty:ListDetectors
+            - iam:GetAccountPasswordPolicy
+            - iam:ListUsers
+            - iam:ListAccessKeys
+            - iam:ListMfaDevices
+            - iam:ListUserPolicies
+            - iam:ListAttachedUserPolicies
+            - iam:ListServerCertificates
             - kafka:DescribeCluster
             - kafka:ListClusters
             - kinesis:DescribeStream
@@ -238,6 +245,8 @@ Resources:
             - kms:DescribeKey
             - license-manager:GetLicenseConfiguration
             - license-manager:ListLicenseConfigurations
+            - mq:DescribeBroker
+            - mq:ListBrokers
             - rds:DescribeDBClusterParameterGroups
             - rds:DescribeDBClusterParameters
             - rds:DescribeDBClusters
