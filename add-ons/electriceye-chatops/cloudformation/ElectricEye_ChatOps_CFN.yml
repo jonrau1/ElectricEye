@@ -29,7 +29,7 @@ Resources:
     Type: AWS::Lambda::Function
     Properties:
       FunctionName: ElectricEye-ChatOps-Slack
-      Description: Sends the results of high-severity ElectricEye findings to a Slack Channel
+      Description: Sends the results of high-severity ElectricEye findings to a Slack Channel - Managed by CloudFormation
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt ElectricEyeChatOpsExecRole.Arn
@@ -93,7 +93,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties: 
       Name: ElectricEye-ChatOps-CWE
-      Description: "Sends the results of high-severity ElectricEye findings to a Slack Channel via Lambda"
+      Description: "Sends the results of high-severity ElectricEye findings to a Slack Channel via Lambda - Managed by CloudFormation"
       EventPattern: 
         source: 
           - aws.securityhub

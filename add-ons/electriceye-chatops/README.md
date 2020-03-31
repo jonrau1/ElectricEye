@@ -20,6 +20,8 @@ If you decide to roll this from your Master that is rockin' the full 1000 accoun
 ## Setting Up
 These steps are split across 3 sections. All CLI commands are executed from an Ubuntu 18.04LTS [Cloud9 IDE](https://aws.amazon.com/cloud9/details/), modify them to fit your OS.
 
+**Note**: If you want to use Microsoft Teams instead of Slack [go here](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-chatops/microsoft-teams)
+
 ### Create a Slack App
 It goes without saying your should have a Slack Workspace. If you don't, [check out this Slack help center article](https://slack.com/help/articles/206845317-Create-a-Slack-workspace)
 

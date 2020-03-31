@@ -24,6 +24,7 @@ Continuously monitor your AWS services for configurations that can lead to degra
   - [Config Findings Pruner](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/config-deletion-pruner)
   - [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response)
   - [ElectricEye-ChatOps](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-chatops)
+  - [ElectricEye-Pagerduty-Integration](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-pagerduty-integration)
   - [ElectricEye-Reports](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-reports)
 - [Known Issues & Limitiations](https://github.com/jonrau1/ElectricEye#known-issues--limitations)
 - [FAQ](https://github.com/jonrau1/ElectricEye#faq)
@@ -38,7 +39,7 @@ Continuously monitor your AWS services for configurations that can lead to degra
 - 160+ security & best practice detections including services not covered by Security Hub/Config (AppStream, Cognito, EKS, ECR, DocDB, etc.)
 - 60+ multi-account SOAR playbooks
 - CloudFormation & Terraform support
-- AWS & 3rd Party Integrations: Config Recorder, Slack, ServiceNow, JIRA, Azure DevOps, Shodan with more on the way
+- AWS & 3rd Party Integrations: Config Recorder, Pagerduty, Slack, ServiceNow Incident Management, Jira, Azure DevOps, Shodan with more on the way
 
 ## Description
 ElectricEye is a set of Python scripts (affectionately called **Auditors**) that continuously monitor your AWS infrastructure looking for configurations related to confidentiality, integrity and availability that do not align with AWS best practices. All findings from these scans will be sent to AWS Security Hub where you can perform basic correlation against other AWS and 3rd Party services that send findings to Security Hub. Security Hub also provides a centralized view from which account owners and other responsible parties can view and take action on findings.
@@ -64,7 +65,7 @@ Refer to the [Supported Services and Checks](https://github.com/jonrau1/Electric
 ## Setting Up
 These steps are split across their relevant sections. All CLI commands are executed from an Ubuntu 18.04LTS [Cloud9 IDE](https://aws.amazon.com/cloud9/details/), modify them to fit your OS. 
 
-**Note:** If you do use Cloud9, navigate to Settings (represented by a Gear icon) > AWS Settings and **unmark** the selection for `AWS managed temporary credentials` (move the toggle to your left-hand side) as shown below. If you do not, you instance profile will not apply properly.
+**Note 1:** If you do use Cloud9, navigate to Settings (represented by a Gear icon) > AWS Settings and **unmark** the selection for `AWS managed temporary credentials` (move the toggle to your left-hand side) as shown below. If you do not, you instance profile will not apply properly.
 ![Cloud9TempCred](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/cloud9-temp-creds.JPG)
 
 **Note 2:** Ensure AWS Security Hub is enabled in the region you are attempting to run ElectricEye
@@ -448,6 +449,8 @@ The following are optional add-on's to ElectricEye that will extend its function
   - ElectricEye-ChatOps utilizes EventBridge / CloudWatch Event Rules to consume `HIGH` and `CRITICAL` severity findings created by ElectricEye from Security Hub and route them to a Lambda function. Lambda will parse out certain elements from the Security Hub finding, create a message and post it to a Slack App's webhook for consumption by your security engineers or other personnel in a Slack channel.
 - [ElectricEye-Reports](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-reports)
   - ***EXPERIMENTAL***: ElectricEye-Reports is a fully serverless solution that extends Security Hub and ElectricEye by sending select finding information to [Amazon QuickSight](https://aws.amazon.com/quicksight/) via services such as Amazon Kinesis and Amazon DynamoDB. From QuickSight, you can create rich and detailed graphics that can be shared, embedded in your enterprise applications and analyzed for purposes such as gamification of security compliance, executive reporting, business line reporting, risk assessments, audit reports, etc.
+- [ElectricEye-Pagerduty-Integration](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-pagerduty-integration)
+  - The Pagerduty integration for ElectricEye, similar to ElectricEye-ChatOps, utilizes EventBridge / CloudWatch Event Rules to consume `HIGH` and `CRITICAL` severity findings created by ElectricEye from Security Hub and route them to a Lambda function. Lambda will parse out certain elements from the Security Hub finding such as the title, remediation information and resource information and to form a Pagerduty Incident to be sent using the EventsV2 API. Pagerduty is an on-call management / incident management tool that has built-in intelligence and automation to route escalations, age-off incidents and can be integrated downstream with other tools.
 
 ## Known Issues & Limitations
 This section is likely to wax and wane depending on future releases, PRs and changes to AWS APIs.
@@ -463,6 +466,16 @@ This section is likely to wax and wane depending on future releases, PRs and cha
 - CloudFormation checks are noisy, consider deleting the `AWS_CloudFormation_Auditor.py` file unless your organization mandates the usage of Drift detection and Alarm based monitoring for stack rollbacks.
 
 - AppStream 2.0 Image checks are noisy, there is not a way to differentiate between AWS and customer-owned AS 2.0 images and you will get at least a dozen failed findings because of this coming from AWS-managed instances.
+
+- If Shodan is not working you may be getting throttled, the free tier is supposed to be 1 TPS (I've definitely hit closer to 20 TPS without issue), but it may happen. Or, you didn't rebuild the Docker image which has included `requests` since 12 MAR 2020. Pass a `--no-cache` flag if you're rebuilding on the same machine.
+
+- Sometimes copy and pasting the Auditors and `script.sh` to a S3 bucket via console from a Windows machine will carry over the bad line endings I sometimes accidently include from my own dirty Windows machine. Use the AWS CLI to copy over the files after a cloning / pulling this repo to avoid that, if you've already cloned do this:
+```bash
+cd ElectricEye
+git pull
+cd auditors
+aws s3 sync . s3://<my-bucket-full-o-auditors>
+```
 
 ## FAQ
 ### 0. Why is continuous compliance monitoring (CCM) important?
@@ -555,12 +568,18 @@ You should consider taking a look at all of these:
 - [truffleHog](https://github.com/dxa4481/truffleHog)
 - [git-secrets](https://github.com/awslabs/git-secrets)
 - [detect-secrets](https://github.com/Yelp/detect-secrets)
-#### SAST
+#### SAST / SCA
 - [Bandit](https://github.com/PyCQA/bandit) (for Python)
 - [GoSec](https://github.com/securego/gosec) (for Golang)
 - [NodeJsScan](https://github.com/ajinabraham/NodeJsScan) (for NodeJS)
 - [tfsec](https://github.com/liamg/tfsec) (for Terraform SCA)
 - [terrascan](https://github.com/cesar-rodriguez/terrascan) (another Terraform SCA)
+- [Checkov](https://github.com/bridgecrewio/checkov) (Terraform & CFN SCA)
+- [cfripper](https://github.com/Skyscanner/cfripper) (CloudFormation SCA)
+- [codewarrior](https://github.com/CoolerVoid/codewarrior) (multi-language manual SAST tool)
+- [brakeman](https://github.com/presidentbeef/brakeman) (Ruby on Rails SAST)
+- [security-code-scan](https://github.com/security-code-scan/security-code-scan) (NET/netcore SAST tool)
+- [dlint](https://github.com/dlint-py/dlint/) (another Python SAST / Linter tool for CI)
 #### Linters
 - [hadolint](https://github.com/hadolint/hadolint) (for Docker)
 - [cfn-python-lint](https://github.com/aws-cloudformation/cfn-python-lint) (for CloudFormation)
@@ -568,6 +587,7 @@ You should consider taking a look at all of these:
 - [terraform-kitchen](https://github.com/newcontext-oss/kitchen-terraform) (InSpec tests against Terraform - part linter/part SCA)
 #### DAST
 - [Zed Attack Proxy (ZAP)](https://owasp.org/www-project-zap/)
+- [Nikto](https://github.com/sullo/nikto) (web server scanner)
 #### AV
 - [ClamAV](https://www.clamav.net/documents/clamav-development)
 - [aws-s3-virusscan](https://github.com/widdix/aws-s3-virusscan) (for S3 buckets, obviously)
@@ -589,7 +609,11 @@ You should consider taking a look at all of these:
 #### Threat Hunting
 - [ThreatHunter-Playbook](https://github.com/hunters-forge/ThreatHunter-Playbook)
 - [Mordor](https://github.com/hunters-forge/mordor)
-#### Kubernetes / Container Security Tools
+#### Red Team Toolbox
+- [Pacu](https://github.com/RhinoSecurityLabs/pacu) (AWS exploitation framework)
+- [LeakLooker](https://github.com/woj-ciech/LeakLooker) (Python-based finder of open databases / buckets)
+- [aws_consoler](https://github.com/NetSPI/aws_consoler) (not a purpose built exploitation tool, but if your recon got you keys use this to turn it into console access)
+#### ~~Kubernetes / Container~~ Microservices(?) Security Tools
 - [Istio](https://istio.io/docs/setup/getting-started/) (microservices service mesh, mTLS, etc.)
 - [Calico](https://www.projectcalico.org/#getstarted) (K8s network policy)
 - [Envoy](https://www.envoyproxy.io/) (microservices proxy services, underpins AWS AppMesh)
@@ -605,11 +629,13 @@ You should consider taking a look at all of these:
 - [Cloud Inquisitor](https://github.com/RiotGames/cloud-inquisitor)
 - [Scout2](https://github.com/nccgroup/ScoutSuite)
 - [Cloud Custodian](https://cloudcustodian.io/docs/index.html)
-#### Misc
+#### Misc / Specialized
+- [ContrastCE](https://www.contrastsecurity.com/contrast-community-edition) (open edition for Contrast Security IAST/SCA/RASP for Java and .NET)
 - [LambdaGuard](https://github.com/Skyscanner/LambdaGuard)
 - [SecHub SOC Inna Box](https://github.com/aws-samples/aws-security-services-with-terraform/tree/master/aws-security-hub-boostrap-and-operationalization)
 - [OPA](https://github.com/open-policy-agent/opa) (open policy enforcement tool - works with K8s, TF, Docker, SSH, etc.)
 - [SecHub InSpec Integration](https://aws.amazon.com/blogs/security/continuous-compliance-monitoring-with-chef-inspec-and-aws-security-hub/)
+- [OpenDLP](https://code.google.com/archive/p/opendlp/) (open-source data loss protection tool)
 
 ### 15. Why did you swap the Dockerfile to being Alpine Linux-based?
 The original (V1.0) Dockerfile used the `ubuntu:latest` image as its base image and was pretty chunky (~450MB) where the Alpine image is a tiny bit under a 10th of that (41.95MB). It is also much faster to create and push the image since `apk` adds only what is needed and isn't bloated by the Ubuntu dependencies from `apt` or that come prepackaged. Lastly, the build logs are a lot less chatty with the (hacky) ENV value set for Python and Pip related logs. Oh, and as of 13 MARCH 2020 there are no vulns in this image. (Reminder for me to periodically update and confirm this)
