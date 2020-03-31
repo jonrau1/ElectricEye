@@ -85,6 +85,8 @@ python3 AWS_Directory_Service_Auditor.py
 sleep 2
 python3 AWS_DMS_Auditor.py
 sleep 2
+python3 AWS_Glue_Auditor.py
+sleep 2
 python3 AWS_IAM_Auditor.py
 sleep 2
 python3 AWS_License_Manager_Auditor.py

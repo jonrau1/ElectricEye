@@ -229,6 +229,11 @@ Resources:
             - elasticmapreduce:ListClusters
             - es:DescribeElasticsearchDomain
             - es:ListDomainNames
+            - glue:GetSecurityConfiguration
+            - glue:GetResourcePolicy
+            - glue:GetCrawler
+            - glue:GetDataCatalogEncryptionSettings
+            - glue:ListCrawlers
             - guardduty:ListDetectors
             - iam:GetAccountPasswordPolicy
             - iam:ListUsers

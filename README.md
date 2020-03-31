@@ -236,7 +236,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **195** checks supported across **58** AWS services / components using **42** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **201** checks supported across **60** AWS services / components using **43** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -417,6 +417,12 @@ These are the following services and checks perform by each Auditor. There are c
 | AWS_DMS_Auditor.py                     | DMS Replication Instance      | Are DMS instances publicly accessible                                                  |
 | AWS_DMS_Auditor.py                     | DMS Replication Instance      | Is DMS multi-az configured                                                             |
 | AWS_DMS_Auditor.py                     | DMS Replication Instance      | Are minor version updates configured                                                   |
+| AWS_Glue_Auditor.py                    | Glue Crawler                  | Is S3 encryption configured for the crawler                                            |
+| AWS_Glue_Auditor.py                    | Glue Crawler                  | Is CWL encryption configured for the crawler                                           |
+| AWS_Glue_Auditor.py                    | Glue Crawler                  | Is job bookmark encryption configured for the <br>crawler                              |
+| AWS_Glue_Auditor.py                    | Glue Data Catalog             | Is data catalog encryption configured                                                  |
+| AWS_Glue_Auditor.py                    | Glue Data Catalog             | Is connection password encryption configured                                           |
+| AWS_Glue_Auditor.py                    | Glue Data Catalog             | Is a resource policy configured                                                        |
 | AWS_IAM_Auditor.py                     | IAM Access Key                | Are access keys over 90 days old                                                       |
 | AWS_IAM_Auditor.py                     | IAM User                      | Do users have permissions boundaries                                                   |
 | AWS_IAM_Auditor.py                     | IAM User                      | Do users have MFA                                                                      |
