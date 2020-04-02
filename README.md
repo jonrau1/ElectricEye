@@ -35,11 +35,10 @@ Continuously monitor your AWS services for configurations that can lead to degra
 - [License](https://github.com/jonrau1/ElectricEye#license)
 
 ## Synopsis
-- 100% native Security Hub integration & 100% serverless
-- 160+ security & best practice detections including services not covered by Security Hub/Config (AppStream, Cognito, EKS, ECR, DocDB, etc.)
+- 100% native Security Hub integration & 100% serverless with full CloudFormation & Terraform support
+- 200+ security & best practice detections including services not covered by Security Hub/Config (AppStream, Cognito, EKS, ECR, DocDB, etc.)
 - 60+ multi-account SOAR playbooks
-- CloudFormation & Terraform support
-- AWS & 3rd Party Integrations: Config Recorder, Pagerduty, Slack, ServiceNow Incident Management, Jira, Azure DevOps, Shodan with more on the way
+- AWS & 3rd Party Integrations: Config Recorder, Pagerduty, Slack, ServiceNow Incident Management, Jira, Azure DevOps, Shodan and Microsoft Teams
 
 ## Description
 ElectricEye is a set of Python scripts (affectionately called **Auditors**) that continuously monitor your AWS infrastructure looking for configurations related to confidentiality, integrity and availability that do not align with AWS best practices. All findings from these scans will be sent to AWS Security Hub where you can perform basic correlation against other AWS and 3rd Party services that send findings to Security Hub. Security Hub also provides a centralized view from which account owners and other responsible parties can view and take action on findings.
