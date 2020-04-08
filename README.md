@@ -235,7 +235,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **201** checks supported across **60** AWS services / components using **43** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **206** checks supported across **62** AWS services / components using **45** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -269,6 +269,7 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_EBS_Auditor.py                  | EBS Snapshot                  | Is the Snapshot encrypted                                                              |
 | Amazon_EBS_Auditor.py                  | EBS Snapshot                  | Is the Snapshot public                                                                 |
 | Amazon_EBS_Auditor.py                  | Account                       | Is account level encryption by<br>default enabled                                      |
+| Amazon_EC2_Auditor.py                  | EC2 Instance                  | Is IMDSv2 enabled                                                                      |
 | Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Are all ports (-1) open to the internet                                                |
 | Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is FTP (tcp20-21) open to the internet                                                 |
 | Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is TelNet (tcp23) open to the internet                                                 |
@@ -287,6 +288,8 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is Memcached (udp11211) open to the <br>internet                                       |
 | Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is Redshift (tcp5439) open to the internet                                             |
 | Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is DocDB (tcp27017) open to the internet                                               |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is Cassandra (tcp9142) open to the internet                                            |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is Kafka (tcp9092) open to the internet                                                |
 | Amazon_EC2_SSM_Auditor.py              | EC2 Instance                  | Is the instance managed by SSM                                                         |
 | Amazon_EC2_SSM_Auditor.py              | EC2 Instance                  | Does the instance have a successful<br>SSM association                                 |
 | Amazon_EC2_SSM_Auditor.py              | EC2 Instance                  | Is the SSM Agent up to date                                                            |
@@ -330,8 +333,9 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_EMR_Auditor.py                  | EMR Cluster                   | Is cluster termination protection enabled                                              |
 | Amazon_EMR_Auditor.py                  | EMR Cluster                   | Is cluster logging enabled                                                             |
 | Amazon_EMR_Auditor.py                  | AWS Account                   | Is EMR public SG block configured for the<br>Account in the region                     |
-| Amazon_Kinesis_Data_Streams_Auditor.py | Kinesis Data Stream           | Is stream encryption enabled                                                           |
-| Amazon_Kinesis_Data_Streams_Auditor.py | Kinesis Data Stream           | Is enhanced monitoring enabled                                                         |
+| Amazon_Kinesis_Data_Streams_Auditor.py | Kinesis data stream           | Is stream encryption enabled                                                           |
+| Amazon_Kinesis_Data_Streams_Auditor.py | Kinesis data stream           | Is enhanced monitoring enabled                                                         |
+| Amazon_Kinesis_Firehose_Auditor.py     | Firehose delivery stream      | Is delivery stream encryption enabled                                                  |
 | Amazon_MQ_Auditor.py                   | Amazon MQ message broker      | Message brokers should be encrypted with<br>customer-managed KMS CMKs                  |
 | Amazon_MQ_Auditor.py                   | Amazon MQ message broker      | Message brokers should have audit logging<br>enabled                                   |
 | Amazon_MQ_Auditor.py                   | Amazon MQ message broker      | Message brokers should have general logging<br>enabled                                 |
@@ -435,6 +439,7 @@ These are the following services and checks perform by each Auditor. There are c
 | AWS_Security_Hub_Auditor.py            | Security Hub (Account)        | Are there active high or critical<br>findings in Security Hub                          |
 | AWS_Security_Services_Auditor.py       | IAM Access Analyzer (Account) | Is IAM Access Analyzer enabled                                                         |
 | AWS_Security_Services_Auditor.py       | GuardDuty (Account)           | Is GuardDuty enabled                                                                   |
+| AWS_Security_Services_Auditor.py       | Detective (Account)           | Is Detective enabled                                                                   |
 | Shodan_Auditor.py                      | EC2 Instance                  | Are EC2 instances w/ public IPs indexed                                                |
 | Shodan_Auditor.py                      | ELBv2 (ALB)                   | Are internet-facing ALBs indexed                                                       |
 | Shodan_Auditor.py                      | RDS Instance                  | Are public accessible RDS instances indexed                                            |
@@ -585,6 +590,9 @@ You should consider taking a look at all of these:
 - [brakeman](https://github.com/presidentbeef/brakeman) (Ruby on Rails SAST)
 - [security-code-scan](https://github.com/security-code-scan/security-code-scan) (NET/netcore SAST tool)
 - [dlint](https://github.com/dlint-py/dlint/) (another Python SAST / Linter tool for CI)
+- [terraform_validate](https://github.com/elmundio87/terraform_validate) (Another Terraform SCA/Policy-as-Code tool, supports 0.11.x)
+- [sKan](https://github.com/alcideio/skan) (K8s resource file / helm chart security scanner / linter by Alcide.io)
+- [solgraph](https://github.com/raineorshine/solgraph) (Solidity smart contract SCA / control flow viz)
 #### Linters
 - [hadolint](https://github.com/hadolint/hadolint) (for Docker)
 - [cfn-python-lint](https://github.com/aws-cloudformation/cfn-python-lint) (for CloudFormation)
@@ -609,8 +617,8 @@ You should consider taking a look at all of these:
 #### TVM
 - [DefectDojo](https://github.com/DefectDojo/django-DefectDojo)
 - [OpenVAS](https://www.openvas.org/)
-- [Trivy](https://github.com/aquasecurity/trivy) (container vuln scanning)
-- [Scuba](https://www.imperva.com/lg/lgw_trial.asp?pid=213) (database vuln scanning)
+- [Trivy](https://github.com/aquasecurity/trivy) (container vuln scanning from Aqua Security)
+- [Scuba](https://www.imperva.com/lg/lgw_trial.asp?pid=213) (database vuln scanning from Imperva)
 #### Threat Hunting
 - [ThreatHunter-Playbook](https://github.com/hunters-forge/ThreatHunter-Playbook)
 - [Mordor](https://github.com/hunters-forge/mordor)
@@ -622,11 +630,12 @@ You should consider taking a look at all of these:
 - [Istio](https://istio.io/docs/setup/getting-started/) (microservices service mesh, mTLS, etc.)
 - [Calico](https://www.projectcalico.org/#getstarted) (K8s network policy)
 - [Envoy](https://www.envoyproxy.io/) (microservices proxy services, underpins AWS AppMesh)
-- [Falco](https://sysdig.com/opensource/falco/) (a metric shitload of awesome k8s/container security features)
-- [Goldilocks](https://github.com/FairwindsOps/goldilocks) (K8s cluster right-sizing)
-- [Polaris](https://github.com/FairwindsOps/polaris) (K8s best practices, YAML SCA/linting)
-- [kube-bench](https://github.com/aquasecurity/kube-bench) (K8s CIS Benchmark assessment)
-- [kube-hunter](https://github.com/aquasecurity/kube-hunter) (K8s attacker-eye-view of K8s clusters)
+- [Falco](https://sysdig.com/opensource/falco/) (a metric shitload of awesome k8s/container security features from Sysdig)
+- [Goldilocks](https://github.com/FairwindsOps/goldilocks) (K8s cluster right-sizing from Fairwinds)
+- [Polaris](https://github.com/FairwindsOps/polaris) (K8s best practices, YAML SCA/linting from Fairwinds)
+- [kube-bench](https://github.com/aquasecurity/kube-bench) (K8s CIS Benchmark assessment from Aqua Security)
+- [kube-hunter](https://github.com/aquasecurity/kube-hunter) (K8s attacker-eye-view of K8s clusters from Aqua Security)
+- [rbac-tool](https://github.com/alcideio/rbac-tool) (K8s RBAC visualization tool from Alcide.io)
 #### CCM Tools
 - [Prowler](https://github.com/toniblyx/prowler)
   - [Prowler SecHub Integration](https://aws.amazon.com/blogs/security/use-aws-fargate-prowler-send-security-configuration-findings-about-aws-services-security-hub/)
@@ -634,6 +643,11 @@ You should consider taking a look at all of these:
 - [Cloud Inquisitor](https://github.com/RiotGames/cloud-inquisitor)
 - [Scout2](https://github.com/nccgroup/ScoutSuite)
 - [Cloud Custodian](https://cloudcustodian.io/docs/index.html)
+#### Threat Intel Tools
+- [MISP](https://github.com/MISP/MISP) (Threat intel sharing platform, formerly Malware Information Sharing Platform)
+  - [PyMISP](https://github.com/MISP/PyMISP) (Python implementation of MISP APIs)
+- [STAXX](https://www.anomali.com/community/staxx) (Community edition threat intel platform from Anomali)
+- [TCOpen](https://threatconnect.com/free/) (Community edition of ThreatConnect's platform)
 #### Misc / Specialized
 - [ContrastCE](https://www.contrastsecurity.com/contrast-community-edition) (open edition for Contrast Security IAST/SCA/RASP for Java and .NET)
 - [LambdaGuard](https://github.com/Skyscanner/LambdaGuard)
