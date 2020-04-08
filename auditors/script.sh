@@ -25,6 +25,8 @@ python3 Amazon_DocumentDB_Auditor.py
 sleep 2
 python3 Amazon_EBS_Auditor.py
 sleep 2
+python3 Amazon_EC2_Auditor.py
+sleep 2
 python3 Amazon_EC2_Security_Group_Auditor.py
 sleep 2
 python3 Amazon_EC2_SSM_Auditor.py
@@ -48,6 +50,8 @@ sleep 2
 python3 Amazon_EMR_Auditor.py
 sleep 2
 python3 Amazon_Kinesis_Data_Streams_Auditor.py
+sleep 2
+python3 Amazon_Kinesis_Firehose_Auditor.py
 sleep 2
 python3 Amazon_MQ_Auditor.py
 sleep 2
@@ -84,6 +88,8 @@ sleep 2
 python3 AWS_Directory_Service_Auditor.py
 sleep 2
 python3 AWS_DMS_Auditor.py
+sleep 2
+python3 AWS_Glue_Auditor.py
 sleep 2
 python3 AWS_IAM_Auditor.py
 sleep 2

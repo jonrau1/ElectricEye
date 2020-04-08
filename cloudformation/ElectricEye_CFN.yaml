@@ -191,6 +191,7 @@ Resources:
             - codebuild:ListProjects
             - cognito-idp:DescribeUserPool
             - cognito-idp:ListUserPools
+            - detective:ListGraphs
             - dms:DescribeReplicationInstances
             - ds:DescribeDirectories
             - ds:ListLogSubscriptions
@@ -229,6 +230,13 @@ Resources:
             - elasticmapreduce:ListClusters
             - es:DescribeElasticsearchDomain
             - es:ListDomainNames
+            - firehose:DescribeDeliveryStream
+            - firehose:ListDeliveryStreams
+            - glue:GetSecurityConfiguration
+            - glue:GetResourcePolicy
+            - glue:GetCrawler
+            - glue:GetDataCatalogEncryptionSettings
+            - glue:ListCrawlers
             - guardduty:ListDetectors
             - iam:GetAccountPasswordPolicy
             - iam:ListUsers
