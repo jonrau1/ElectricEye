@@ -53,6 +53,8 @@ python3 Amazon_Kinesis_Data_Streams_Auditor.py
 sleep 2
 python3 Amazon_Kinesis_Firehose_Auditor.py
 sleep 2
+python3 Amazon_Managed_Blockchain_Auditor.py
+sleep 2
 python3 Amazon_MQ_Auditor.py
 sleep 2
 python3 Amazon_MSK_Auditor.py

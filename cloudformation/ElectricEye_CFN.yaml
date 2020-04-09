@@ -253,6 +253,12 @@ Resources:
             - kms:DescribeKey
             - license-manager:GetLicenseConfiguration
             - license-manager:ListLicenseConfigurations
+            - managedblockchain:GetNetwork
+            - managedblockchain:ListMembers
+            - managedblockchain:ListNetworks
+            - managedblockchain:GetNode
+            - managedblockchain:GetMember
+            - managedblockchain:ListNodes
             - mq:DescribeBroker
             - mq:ListBrokers
             - rds:DescribeDBClusterParameterGroups
