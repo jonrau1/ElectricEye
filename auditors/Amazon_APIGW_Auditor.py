@@ -56,7 +56,7 @@ def api_gateway_stage_metrics_enabled_check():
                                 'Severity': { 'Label': 'LOW' },
                                 'Confidence': 99,
                                 'Title': '[APIGateway.1] API Gateway Rest API Stages should have CloudWatch Metrics enabled',
-                                'Description': 'API Gateway stage ' + apiStageName + ' for Rest API ' + apiGwApiName + ' does not have CloudWatch metrics enabled. Refer to the remediation instructions if this configuration is not intended',
+                                'Description': 'API Gateway stage ' + apiStageName + ' for Rest API ' + apiGwApiName + ' does not have CloudWatch metrics enabled. You can monitor API execution by using CloudWatch, which collects and processes raw data from API Gateway into readable, near-real-time metrics. These statistics are recorded for a period of 15 months so you can access historical information and gain a better perspective on how your web application or service is performing. Refer to the remediation instructions if this configuration is not intended',
                                 'Remediation': {
                                     'Recommendation': {
                                         'Text': 'If your API Gateway stage should have CloudWatch Metrics enabled refer to the Monitor API Execution with Amazon CloudWatch section of the Amazon API Gateway Developer Guide',
@@ -80,7 +80,19 @@ def api_gateway_stage_metrics_enabled_check():
                                         }
                                     }
                                 ],
-                                'Compliance': { 'Status': 'FAILED' },
+                                'Compliance': { 
+                                    'Status': 'FAILED',
+                                    'RelatedRequirements': [
+                                        'NIST CSF ID.AM-3', 
+                                        'NIST CSF PR.PT-1',
+                                        'NIST CSF DE.AE-1',
+                                        'NIST CSF DE.AE-3',
+                                        'NIST CSF DE.CM-1'
+                                    ]
+                                },
+                                'Workflow': {
+                                    'Status': 'NEW'
+                                },
                                 'RecordState': 'ACTIVE'
                             }
                         ]
@@ -131,7 +143,19 @@ def api_gateway_stage_metrics_enabled_check():
                                         }
                                     }
                                 ],
-                                'Compliance': { 'Status': 'PASSED' },
+                                'Compliance': { 
+                                    'Status': 'PASSED',
+                                    'RelatedRequirements': [
+                                        'NIST CSF ID.AM-3', 
+                                        'NIST CSF PR.PT-1',
+                                        'NIST CSF DE.AE-1',
+                                        'NIST CSF DE.AE-3',
+                                        'NIST CSF DE.CM-1'
+                                    ]
+                                },
+                                'Workflow': {
+                                    'Status': 'RESOLVED'
+                                },
                                 'RecordState': 'ARCHIVED'
                             }
                         ]
@@ -169,7 +193,7 @@ def api_gateway_stage_logging_check():
                                 'Severity': { 'Label': 'LOW' },
                                 'Confidence': 99,
                                 'Title': '[APIGateway.2] API Gateway Rest API Stages should have CloudWatch API Logging enabled',
-                                'Description': 'API Gateway stage ' + apiStageName + ' for Rest API ' + apiGwApiName + ' does not have CloudWatch API Logging enabled. Refer to the remediation instructions if this configuration is not intended',
+                                'Description': 'API Gateway stage ' + apiStageName + ' for Rest API ' + apiGwApiName + ' does not have CloudWatch API Logging enabled. To help debug issues related to request execution or client access to your API, you can enable Amazon CloudWatch Logs to log API calls. The logged data includes errors or execution traces (such as request or response parameter values or payloads), data used by Lambda authorizers (formerly known as custom authorizers), whether API keys are required, whether usage plans are enabled, and so on. Refer to the remediation instructions if this configuration is not intended.',
                                 'Remediation': {
                                     'Recommendation': {
                                         'Text': 'If your API Gateway stage should have CloudWatch API Logging enabled refer to the Set Up CloudWatch API Logging in API Gateway section of the Amazon API Gateway Developer Guide',
@@ -193,7 +217,19 @@ def api_gateway_stage_logging_check():
                                         }
                                     }
                                 ],
-                                'Compliance': { 'Status': 'FAILED' },
+                                'Compliance': { 
+                                    'Status': 'FAILED',
+                                    'RelatedRequirements': [
+                                        'NIST CSF ID.AM-3', 
+                                        'NIST CSF PR.PT-1',
+                                        'NIST CSF DE.AE-1',
+                                        'NIST CSF DE.AE-3',
+                                        'NIST CSF DE.CM-1'
+                                    ]
+                                },
+                                'Workflow': {
+                                    'Status': 'NEW'
+                                },
                                 'RecordState': 'ACTIVE'
                             }
                         ]
@@ -244,7 +280,19 @@ def api_gateway_stage_logging_check():
                                         }
                                     }
                                 ],
-                                'Compliance': { 'Status': 'PASSED' },
+                                'Compliance': { 
+                                    'Status': 'PASSED',
+                                    'RelatedRequirements': [
+                                        'NIST CSF ID.AM-3', 
+                                        'NIST CSF PR.PT-1',
+                                        'NIST CSF DE.AE-1',
+                                        'NIST CSF DE.AE-3',
+                                        'NIST CSF DE.CM-1'
+                                    ]
+                                },
+                                'Workflow': {
+                                    'Status': 'RESOLVED'
+                                },
                                 'RecordState': 'ARCHIVED'
                             }
                         ]
@@ -282,7 +330,7 @@ def api_gateway_stage_caching_enabled_check():
                                 'Severity': { 'Label': 'LOW' },
                                 'Confidence': 99,
                                 'Title': '[APIGateway.3] API Gateway Rest API Stages should have Caching enabled',
-                                'Description': 'API Gateway stage ' + apiStageName + ' for Rest API ' + apiGwApiName + ' does not have Caching enabled. Refer to the remediation instructions if this configuration is not intended',
+                                'Description': 'API Gateway stage ' + apiStageName + ' for Rest API ' + apiGwApiName + ' does not have Caching enabled. You can enable API caching in Amazon API Gateway to cache your endpoints responses. With caching, you can reduce the number of calls made to your endpoint and also improve the latency of requests to your API. Refer to the remediation instructions if this configuration is not intended',
                                 'Remediation': {
                                     'Recommendation': {
                                         'Text': 'If your API Gateway stage should have caching enabled refer to the Enable API Caching to Enhance Responsiveness section of the Amazon API Gateway Developer Guide',
@@ -306,7 +354,16 @@ def api_gateway_stage_caching_enabled_check():
                                         }
                                     }
                                 ],
-                                'Compliance': { 'Status': 'FAILED' },
+                                'Compliance': { 
+                                    'Status': 'FAILED',
+                                    'RelatedRequirements': [
+                                        'NIST CSF ID.BE-5', 
+                                        'NIST CSF PR.PT-5'
+                                    ]
+                                },
+                                'Workflow': {
+                                    'Status': 'NEW'
+                                },
                                 'RecordState': 'ACTIVE'
                             }
                         ]
@@ -357,7 +414,16 @@ def api_gateway_stage_caching_enabled_check():
                                         }
                                     }
                                 ],
-                                'Compliance': { 'Status': 'PASSED' },
+                                'Compliance': { 
+                                    'Status': 'PASSED',
+                                    'RelatedRequirements': [
+                                        'NIST CSF ID.BE-5', 
+                                        'NIST CSF PR.PT-5'
+                                    ]
+                                },
+                                'Workflow': {
+                                    'Status': 'RESOLVED'
+                                },
                                 'RecordState': 'ARCHIVED'
                             }
                         ]
@@ -398,7 +464,7 @@ def api_gateway_stage_cache_encryption_check():
                                 'Severity': { 'Label': 'HIGH' },
                                 'Confidence': 99,
                                 'Title': '[APIGateway.4] API Gateway Rest API Stages should have cache encryption enabled',
-                                'Description': 'API Gateway stage ' + apiStageName + ' for Rest API ' + apiGwApiName + ' does not have cache encryption enabled. Refer to the remediation instructions if this configuration is not intended',
+                                'Description': 'API Gateway stage ' + apiStageName + ' for Rest API ' + apiGwApiName + ' does not have cache encryption enabled. If you choose to enable caching for a REST API, you can enable cache encryption. Refer to the remediation instructions if this configuration is not intended',
                                 'Remediation': {
                                     'Recommendation': {
                                         'Text': 'If your API Gateway stage should have caching encryption enabled refer to the Override API Gateway Stage-Level Caching for Method Caching section of the Amazon API Gateway Developer Guide',
@@ -422,7 +488,16 @@ def api_gateway_stage_cache_encryption_check():
                                         }
                                     }
                                 ],
-                                'Compliance': { 'Status': 'FAILED' },
+                                'Compliance': { 
+                                    'Status': 'FAILED',
+                                    'RelatedRequirements': [
+                                        'NIST CSF PR.DS-1', 
+                                        'NIST CSF PR.DS-5'
+                                    ]
+                                },
+                                'Workflow': {
+                                    'Status': 'NEW'
+                                },
                                 'RecordState': 'ACTIVE'
                             }
                         ]
@@ -476,7 +551,16 @@ def api_gateway_stage_cache_encryption_check():
                                         }
                                     }
                                 ],
-                                'Compliance': { 'Status': 'PASSED' },
+                                'Compliance': { 
+                                    'Status': 'PASSED',
+                                    'RelatedRequirements': [
+                                        'NIST CSF PR.DS-1', 
+                                        'NIST CSF PR.DS-5'
+                                    ]
+                                },
+                                'Workflow': {
+                                    'Status': 'RESOLVED'
+                                },
                                 'RecordState': 'ARCHIVED'
                             }
                         ]
@@ -514,7 +598,7 @@ def api_gateway_stage_xray_tracing_check():
                                 'Severity': { 'Label': 'LOW' },
                                 'Confidence': 99,
                                 'Title': '[APIGateway.5] API Gateway Rest API Stages should have tracing enabled',
-                                'Description': 'API Gateway stage ' + apiStageName + ' for Rest API ' + apiGwApiName + ' does not have tracing enabled. Refer to the remediation instructions if this configuration is not intended',
+                                'Description': 'API Gateway stage ' + apiStageName + ' for Rest API ' + apiGwApiName + ' does not have tracing enabled. Because X-Ray gives you an end-to-end view of an entire request, you can analyze latencies in your APIs and their backend services. You can use an X-Ray service map to view the latency of an entire request and that of the downstream services that are integrated with X-Ray. Refer to the remediation instructions if this configuration is not intended',
                                 'Remediation': {
                                     'Recommendation': {
                                         'Text': 'If your API Gateway stage should have tracing enabled refer to the Set Up X-Ray Tracing in API Gateway section of the Amazon API Gateway Developer Guide',
@@ -538,7 +622,19 @@ def api_gateway_stage_xray_tracing_check():
                                         }
                                     }
                                 ],
-                                'Compliance': { 'Status': 'FAILED' },
+                                'Compliance': { 
+                                    'Status': 'FAILED',
+                                    'RelatedRequirements': [
+                                        'NIST CSF ID.AM-3', 
+                                        'NIST CSF PR.PT-1',
+                                        'NIST CSF DE.AE-1',
+                                        'NIST CSF DE.AE-3',
+                                        'NIST CSF DE.CM-1'
+                                    ]
+                                },
+                                'Workflow': {
+                                    'Status': 'NEW'
+                                },
                                 'RecordState': 'ACTIVE'
                             }
                         ]
@@ -589,7 +685,19 @@ def api_gateway_stage_xray_tracing_check():
                                         }
                                     }
                                 ],
-                                'Compliance': { 'Status': 'PASSED' },
+                                'Compliance': { 
+                                    'Status': 'PASSED',
+                                    'RelatedRequirements': [
+                                        'NIST CSF ID.AM-3', 
+                                        'NIST CSF PR.PT-1',
+                                        'NIST CSF DE.AE-1',
+                                        'NIST CSF DE.AE-3',
+                                        'NIST CSF DE.CM-1'
+                                    ]
+                                },
+                                'Workflow': {
+                                    'Status': 'RESOLVED'
+                                },
                                 'RecordState': 'ARCHIVED'
                             }
                         ]
@@ -655,7 +763,16 @@ def api_gateway_stage_waf_check_check():
                                         }
                                     }
                                 ],
-                                'Compliance': { 'Status': 'PASSED' },
+                                'Compliance': { 
+                                    'Status': 'PASSED',
+                                    'RelatedRequirements': [
+                                        'NIST CSF PR.DS-5',
+                                        'NIST CSF PR.PT-4'
+                                    ]
+                                },
+                                'Workflow': {
+                                    'Status': 'RESOLVED'
+                                },
                                 'RecordState': 'ARCHIVED'
                             }
                         ]
@@ -686,7 +803,7 @@ def api_gateway_stage_waf_check_check():
                                     'Severity': { 'Label': 'HIGH' },
                                     'Confidence': 99,
                                     'Title': '[APIGateway.6] API Gateway Rest API Stages should be protected by an AWS WAF Web ACL',
-                                    'Description': 'API Gateway stage ' + apiStageName + ' for Rest API ' + apiGwApiName + ' is not protected by an AWS WAF Web ACL. Refer to the remediation instructions if this configuration is not intended',
+                                    'Description': 'API Gateway stage ' + apiStageName + ' for Rest API ' + apiGwApiName + ' is not protected by an AWS WAF Web ACL. You can use AWS WAF to protect your API Gateway API from common web exploits, such as SQL injection and cross-site scripting (XSS) attacks. These could affect API availability and performance, compromise security, or consume excessive resources. Refer to the remediation instructions if this configuration is not intended',
                                     'Remediation': {
                                         'Recommendation': {
                                             'Text': 'If your API Gateway stage should be protected by WAF refer to the Set Up AWS WAF in API Gateway section of the Amazon API Gateway Developer Guide',
@@ -710,7 +827,16 @@ def api_gateway_stage_waf_check_check():
                                             }
                                         }
                                     ],
-                                    'Compliance': { 'Status': 'FAILED' },
+                                    'Compliance': { 
+                                        'Status': 'FAILED',
+                                        'RelatedRequirements': [
+                                            'NIST CSF PR.DS-5',
+                                            'NIST CSF PR.PT-4'
+                                        ]
+                                    },
+                                    'Workflow': {
+                                        'Status': 'NEW'
+                                    },
                                     'RecordState': 'ACTIVE'
                                 }
                             ]
