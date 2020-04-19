@@ -89,25 +89,13 @@ def public_ec2_shodan_check():
                                         'Compliance': { 
                                             'Status': 'PASSED',
                                             'RelatedRequirements': [
-                                                'NIST CSF ID.RA-2',
-                                                'NIST CSF ID.RA-3',
-                                                'NIST CSF DE.AE-2',
-                                                'NIST CSF RS.AN-1',
-                                                'NIST 800-53 SI-5',
-                                                'NIST 800-53 PM-15',
-                                                'NIST 800-53 PM-16',
-                                                'NIST 800-53 RA-3',
-                                                'NIST 800-53 SI-5',
-                                                'NIST 800-53 PM-12',
-                                                'NIST 800-53 AU-6',
-                                                'NIST 800-53 CA-7',
-                                                'NIST 800-53 IR-4',
-                                                'NIST 800-53 SI-4',
-                                                'NIST 800-53 IR-5', 
-                                                'NIST 800-53 PE-6',
-                                                'AICPA TSC CC3.2',
-                                                'AICPA TSC CC7.2',
-                                                'AICPA TSC CC7.2'
+                                                'ISO 27001:2013 Clause 6.1.2',
+                                                'ISO 27001:2013 A.6.1.4',
+                                                'ISO 27001:2013 A.12.4.1',
+                                                'ISO 27001:2013 A.12.4.3',
+                                                'ISO 27001:2013 A.16.1.1',
+                                                'ISO 27001:2013 A.16.1.4',
+                                                'ISO 27001:2013 A.16.1.5'
                                             ]
                                         },
                                         'Workflow': {
@@ -171,25 +159,13 @@ def public_ec2_shodan_check():
                                         'Compliance': { 
                                             'Status': 'FAILED',
                                             'RelatedRequirements': [
-                                                'NIST CSF ID.RA-2',
-                                                'NIST CSF ID.RA-3',
-                                                'NIST CSF DE.AE-2',
-                                                'NIST CSF RS.AN-1',
-                                                'NIST 800-53 SI-5',
-                                                'NIST 800-53 PM-15',
-                                                'NIST 800-53 PM-16',
-                                                'NIST 800-53 RA-3',
-                                                'NIST 800-53 SI-5',
-                                                'NIST 800-53 PM-12',
-                                                'NIST 800-53 AU-6',
-                                                'NIST 800-53 CA-7',
-                                                'NIST 800-53 IR-4',
-                                                'NIST 800-53 SI-4',
-                                                'NIST 800-53 IR-5', 
-                                                'NIST 800-53 PE-6',
-                                                'AICPA TSC CC3.2',
-                                                'AICPA TSC CC7.2',
-                                                'AICPA TSC CC7.2'
+                                                'ISO 27001:2013 Clause 6.1.2',
+                                                'ISO 27001:2013 A.6.1.4',
+                                                'ISO 27001:2013 A.12.4.1',
+                                                'ISO 27001:2013 A.12.4.3',
+                                                'ISO 27001:2013 A.16.1.1',
+                                                'ISO 27001:2013 A.16.1.4',
+                                                'ISO 27001:2013 A.16.1.5'
                                             ]
                                         },
                                         'Workflow': {
@@ -268,25 +244,13 @@ def public_alb_shodan_check():
                                     'Compliance': { 
                                         'Status': 'PASSED',
                                         'RelatedRequirements': [
-                                            'NIST CSF ID.RA-2',
-                                            'NIST CSF ID.RA-3',
-                                            'NIST CSF DE.AE-2',
-                                            'NIST CSF RS.AN-1',
-                                            'NIST 800-53 SI-5',
-                                            'NIST 800-53 PM-15',
-                                            'NIST 800-53 PM-16',
-                                            'NIST 800-53 RA-3',
-                                            'NIST 800-53 SI-5',
-                                            'NIST 800-53 PM-12',
-                                            'NIST 800-53 AU-6',
-                                            'NIST 800-53 CA-7',
-                                            'NIST 800-53 IR-4',
-                                            'NIST 800-53 SI-4',
-                                            'NIST 800-53 IR-5', 
-                                            'NIST 800-53 PE-6',
-                                            'AICPA TSC CC3.2',
-                                            'AICPA TSC CC7.2',
-                                            'AICPA TSC CC7.2'
+                                            'ISO 27001:2013 Clause 6.1.2',
+                                            'ISO 27001:2013 A.6.1.4',
+                                            'ISO 27001:2013 A.12.4.1',
+                                            'ISO 27001:2013 A.12.4.3',
+                                            'ISO 27001:2013 A.16.1.1',
+                                            'ISO 27001:2013 A.16.1.4',
+                                            'ISO 27001:2013 A.16.1.5'
                                         ]
                                     },
                                     'Workflow': {
@@ -349,25 +313,13 @@ def public_alb_shodan_check():
                                     'Compliance': { 
                                         'Status': 'FAILED',
                                         'RelatedRequirements': [
-                                            'NIST CSF ID.RA-2',
-                                            'NIST CSF ID.RA-3',
-                                            'NIST CSF DE.AE-2',
-                                            'NIST CSF RS.AN-1',
-                                            'NIST 800-53 SI-5',
-                                            'NIST 800-53 PM-15',
-                                            'NIST 800-53 PM-16',
-                                            'NIST 800-53 RA-3',
-                                            'NIST 800-53 SI-5',
-                                            'NIST 800-53 PM-12',
-                                            'NIST 800-53 AU-6',
-                                            'NIST 800-53 CA-7',
-                                            'NIST 800-53 IR-4',
-                                            'NIST 800-53 SI-4',
-                                            'NIST 800-53 IR-5', 
-                                            'NIST 800-53 PE-6',
-                                            'AICPA TSC CC3.2',
-                                            'AICPA TSC CC7.2',
-                                            'AICPA TSC CC7.2'
+                                            'ISO 27001:2013 Clause 6.1.2',
+                                            'ISO 27001:2013 A.6.1.4',
+                                            'ISO 27001:2013 A.12.4.1',
+                                            'ISO 27001:2013 A.12.4.3',
+                                            'ISO 27001:2013 A.16.1.1',
+                                            'ISO 27001:2013 A.16.1.4',
+                                            'ISO 27001:2013 A.16.1.5'
                                         ]
                                     },
                                     'Workflow': {
@@ -445,25 +397,13 @@ def public_rds_shodan_check():
                                     'Compliance': { 
                                         'Status': 'PASSED',
                                         'RelatedRequirements': [
-                                            'NIST CSF ID.RA-2',
-                                            'NIST CSF ID.RA-3',
-                                            'NIST CSF DE.AE-2',
-                                            'NIST CSF RS.AN-1',
-                                            'NIST 800-53 SI-5',
-                                            'NIST 800-53 PM-15',
-                                            'NIST 800-53 PM-16',
-                                            'NIST 800-53 RA-3',
-                                            'NIST 800-53 SI-5',
-                                            'NIST 800-53 PM-12',
-                                            'NIST 800-53 AU-6',
-                                            'NIST 800-53 CA-7',
-                                            'NIST 800-53 IR-4',
-                                            'NIST 800-53 SI-4',
-                                            'NIST 800-53 IR-5', 
-                                            'NIST 800-53 PE-6',
-                                            'AICPA TSC CC3.2',
-                                            'AICPA TSC CC7.2',
-                                            'AICPA TSC CC7.2'
+                                            'ISO 27001:2013 Clause 6.1.2',
+                                            'ISO 27001:2013 A.6.1.4',
+                                            'ISO 27001:2013 A.12.4.1',
+                                            'ISO 27001:2013 A.12.4.3',
+                                            'ISO 27001:2013 A.16.1.1',
+                                            'ISO 27001:2013 A.16.1.4',
+                                            'ISO 27001:2013 A.16.1.5'
                                         ]
                                     },
                                     'Workflow': {
@@ -527,25 +467,13 @@ def public_rds_shodan_check():
                                     'Compliance': { 
                                         'Status': 'FAILED',
                                         'RelatedRequirements': [
-                                            'NIST CSF ID.RA-2',
-                                            'NIST CSF ID.RA-3',
-                                            'NIST CSF DE.AE-2',
-                                            'NIST CSF RS.AN-1',
-                                            'NIST 800-53 SI-5',
-                                            'NIST 800-53 PM-15',
-                                            'NIST 800-53 PM-16',
-                                            'NIST 800-53 RA-3',
-                                            'NIST 800-53 SI-5',
-                                            'NIST 800-53 PM-12',
-                                            'NIST 800-53 AU-6',
-                                            'NIST 800-53 CA-7',
-                                            'NIST 800-53 IR-4',
-                                            'NIST 800-53 SI-4',
-                                            'NIST 800-53 IR-5', 
-                                            'NIST 800-53 PE-6',
-                                            'AICPA TSC CC3.2',
-                                            'AICPA TSC CC7.2',
-                                            'AICPA TSC CC7.2'
+                                            'ISO 27001:2013 Clause 6.1.2',
+                                            'ISO 27001:2013 A.6.1.4',
+                                            'ISO 27001:2013 A.12.4.1',
+                                            'ISO 27001:2013 A.12.4.3',
+                                            'ISO 27001:2013 A.16.1.1',
+                                            'ISO 27001:2013 A.16.1.4',
+                                            'ISO 27001:2013 A.16.1.5'
                                         ]
                                     },
                                     'Workflow': {
@@ -627,25 +555,13 @@ def public_es_domain_shodan_check():
                                             'Compliance': { 
                                                 'Status': 'PASSED',
                                                 'RelatedRequirements': [
-                                                    'NIST CSF ID.RA-2',
-                                                    'NIST CSF ID.RA-3',
-                                                    'NIST CSF DE.AE-2',
-                                                    'NIST CSF RS.AN-1',
-                                                    'NIST 800-53 SI-5',
-                                                    'NIST 800-53 PM-15',
-                                                    'NIST 800-53 PM-16',
-                                                    'NIST 800-53 RA-3',
-                                                    'NIST 800-53 SI-5',
-                                                    'NIST 800-53 PM-12',
-                                                    'NIST 800-53 AU-6',
-                                                    'NIST 800-53 CA-7',
-                                                    'NIST 800-53 IR-4',
-                                                    'NIST 800-53 SI-4',
-                                                    'NIST 800-53 IR-5', 
-                                                    'NIST 800-53 PE-6',
-                                                    'AICPA TSC CC3.2',
-                                                    'AICPA TSC CC7.2',
-                                                    'AICPA TSC CC7.2'
+                                                    'ISO 27001:2013 Clause 6.1.2',
+                                                    'ISO 27001:2013 A.6.1.4',
+                                                    'ISO 27001:2013 A.12.4.1',
+                                                    'ISO 27001:2013 A.12.4.3',
+                                                    'ISO 27001:2013 A.16.1.1',
+                                                    'ISO 27001:2013 A.16.1.4',
+                                                    'ISO 27001:2013 A.16.1.5'
                                                 ]
                                             },
                                             'Workflow': {
@@ -708,25 +624,13 @@ def public_es_domain_shodan_check():
                                             'Compliance': { 
                                                 'Status': 'FAILED',
                                                 'RelatedRequirements': [
-                                                    'NIST CSF ID.RA-2',
-                                                    'NIST CSF ID.RA-3',
-                                                    'NIST CSF DE.AE-2',
-                                                    'NIST CSF RS.AN-1',
-                                                    'NIST 800-53 SI-5',
-                                                    'NIST 800-53 PM-15',
-                                                    'NIST 800-53 PM-16',
-                                                    'NIST 800-53 RA-3',
-                                                    'NIST 800-53 SI-5',
-                                                    'NIST 800-53 PM-12',
-                                                    'NIST 800-53 AU-6',
-                                                    'NIST 800-53 CA-7',
-                                                    'NIST 800-53 IR-4',
-                                                    'NIST 800-53 SI-4',
-                                                    'NIST 800-53 IR-5', 
-                                                    'NIST 800-53 PE-6',
-                                                    'AICPA TSC CC3.2',
-                                                    'AICPA TSC CC7.2',
-                                                    'AICPA TSC CC7.2'
+                                                    'ISO 27001:2013 Clause 6.1.2',
+                                                    'ISO 27001:2013 A.6.1.4',
+                                                    'ISO 27001:2013 A.12.4.1',
+                                                    'ISO 27001:2013 A.12.4.3',
+                                                    'ISO 27001:2013 A.16.1.1',
+                                                    'ISO 27001:2013 A.16.1.4',
+                                                    'ISO 27001:2013 A.16.1.5'
                                                 ]
                                             },
                                             'Workflow': {
@@ -798,25 +702,13 @@ def public_clb_shodan_check():
                                     'Compliance': { 
                                         'Status': 'PASSED',
                                         'RelatedRequirements': [
-                                            'NIST CSF ID.RA-2',
-                                            'NIST CSF ID.RA-3',
-                                            'NIST CSF DE.AE-2',
-                                            'NIST CSF RS.AN-1',
-                                            'NIST 800-53 SI-5',
-                                            'NIST 800-53 PM-15',
-                                            'NIST 800-53 PM-16',
-                                            'NIST 800-53 RA-3',
-                                            'NIST 800-53 SI-5',
-                                            'NIST 800-53 PM-12',
-                                            'NIST 800-53 AU-6',
-                                            'NIST 800-53 CA-7',
-                                            'NIST 800-53 IR-4',
-                                            'NIST 800-53 SI-4',
-                                            'NIST 800-53 IR-5', 
-                                            'NIST 800-53 PE-6',
-                                            'AICPA TSC CC3.2',
-                                            'AICPA TSC CC7.2',
-                                            'AICPA TSC CC7.2'
+                                            'ISO 27001:2013 Clause 6.1.2',
+                                            'ISO 27001:2013 A.6.1.4',
+                                            'ISO 27001:2013 A.12.4.1',
+                                            'ISO 27001:2013 A.12.4.3',
+                                            'ISO 27001:2013 A.16.1.1',
+                                            'ISO 27001:2013 A.16.1.4',
+                                            'ISO 27001:2013 A.16.1.5'
                                         ]
                                     },
                                     'Workflow': {
@@ -876,25 +768,13 @@ def public_clb_shodan_check():
                                     'Compliance': { 
                                         'Status': 'FAILED',
                                         'RelatedRequirements': [
-                                            'NIST CSF ID.RA-2',
-                                            'NIST CSF ID.RA-3',
-                                            'NIST CSF DE.AE-2',
-                                            'NIST CSF RS.AN-1',
-                                            'NIST 800-53 SI-5',
-                                            'NIST 800-53 PM-15',
-                                            'NIST 800-53 PM-16',
-                                            'NIST 800-53 RA-3',
-                                            'NIST 800-53 SI-5',
-                                            'NIST 800-53 PM-12',
-                                            'NIST 800-53 AU-6',
-                                            'NIST 800-53 CA-7',
-                                            'NIST 800-53 IR-4',
-                                            'NIST 800-53 SI-4',
-                                            'NIST 800-53 IR-5', 
-                                            'NIST 800-53 PE-6',
-                                            'AICPA TSC CC3.2',
-                                            'AICPA TSC CC7.2',
-                                            'AICPA TSC CC7.2'
+                                            'ISO 27001:2013 Clause 6.1.2',
+                                            'ISO 27001:2013 A.6.1.4',
+                                            'ISO 27001:2013 A.12.4.1',
+                                            'ISO 27001:2013 A.12.4.3',
+                                            'ISO 27001:2013 A.16.1.1',
+                                            'ISO 27001:2013 A.16.1.4',
+                                            'ISO 27001:2013 A.16.1.5'
                                         ]
                                     },
                                     'Workflow': {
@@ -960,25 +840,13 @@ def public_dms_replication_instance_shodan_check():
                                     'Compliance': { 
                                         'Status': 'PASSED',
                                         'RelatedRequirements': [
-                                            'NIST CSF ID.RA-2',
-                                            'NIST CSF ID.RA-3',
-                                            'NIST CSF DE.AE-2',
-                                            'NIST CSF RS.AN-1',
-                                            'NIST 800-53 SI-5',
-                                            'NIST 800-53 PM-15',
-                                            'NIST 800-53 PM-16',
-                                            'NIST 800-53 RA-3',
-                                            'NIST 800-53 SI-5',
-                                            'NIST 800-53 PM-12',
-                                            'NIST 800-53 AU-6',
-                                            'NIST 800-53 CA-7',
-                                            'NIST 800-53 IR-4',
-                                            'NIST 800-53 SI-4',
-                                            'NIST 800-53 IR-5', 
-                                            'NIST 800-53 PE-6',
-                                            'AICPA TSC CC3.2',
-                                            'AICPA TSC CC7.2',
-                                            'AICPA TSC CC7.2'
+                                            'ISO 27001:2013 Clause 6.1.2',
+                                            'ISO 27001:2013 A.6.1.4',
+                                            'ISO 27001:2013 A.12.4.1',
+                                            'ISO 27001:2013 A.12.4.3',
+                                            'ISO 27001:2013 A.16.1.1',
+                                            'ISO 27001:2013 A.16.1.4',
+                                            'ISO 27001:2013 A.16.1.5'
                                         ]
                                     },
                                     'Workflow': {
@@ -1036,25 +904,13 @@ def public_dms_replication_instance_shodan_check():
                                     'Compliance': { 
                                         'Status': 'FAILED',
                                         'RelatedRequirements': [
-                                            'NIST CSF ID.RA-2',
-                                            'NIST CSF ID.RA-3',
-                                            'NIST CSF DE.AE-2',
-                                            'NIST CSF RS.AN-1',
-                                            'NIST 800-53 SI-5',
-                                            'NIST 800-53 PM-15',
-                                            'NIST 800-53 PM-16',
-                                            'NIST 800-53 RA-3',
-                                            'NIST 800-53 SI-5',
-                                            'NIST 800-53 PM-12',
-                                            'NIST 800-53 AU-6',
-                                            'NIST 800-53 CA-7',
-                                            'NIST 800-53 IR-4',
-                                            'NIST 800-53 SI-4',
-                                            'NIST 800-53 IR-5', 
-                                            'NIST 800-53 PE-6',
-                                            'AICPA TSC CC3.2',
-                                            'AICPA TSC CC7.2',
-                                            'AICPA TSC CC7.2'
+                                            'ISO 27001:2013 Clause 6.1.2',
+                                            'ISO 27001:2013 A.6.1.4',
+                                            'ISO 27001:2013 A.12.4.1',
+                                            'ISO 27001:2013 A.12.4.3',
+                                            'ISO 27001:2013 A.16.1.1',
+                                            'ISO 27001:2013 A.16.1.4',
+                                            'ISO 27001:2013 A.16.1.5'
                                         ]
                                     },
                                     'Workflow': {
@@ -1128,25 +984,13 @@ def public_amazonmq_broker_shodan_check():
                                             'Compliance': { 
                                                 'Status': 'PASSED',
                                                 'RelatedRequirements': [
-                                                    'NIST CSF ID.RA-2',
-                                                    'NIST CSF ID.RA-3',
-                                                    'NIST CSF DE.AE-2',
-                                                    'NIST CSF RS.AN-1',
-                                                    'NIST 800-53 SI-5',
-                                                    'NIST 800-53 PM-15',
-                                                    'NIST 800-53 PM-16',
-                                                    'NIST 800-53 RA-3',
-                                                    'NIST 800-53 SI-5',
-                                                    'NIST 800-53 PM-12',
-                                                    'NIST 800-53 AU-6',
-                                                    'NIST 800-53 CA-7',
-                                                    'NIST 800-53 IR-4',
-                                                    'NIST 800-53 SI-4',
-                                                    'NIST 800-53 IR-5', 
-                                                    'NIST 800-53 PE-6',
-                                                    'AICPA TSC CC3.2',
-                                                    'AICPA TSC CC7.2',
-                                                    'AICPA TSC CC7.2'
+                                                    'ISO 27001:2013 Clause 6.1.2',
+                                                    'ISO 27001:2013 A.6.1.4',
+                                                    'ISO 27001:2013 A.12.4.1',
+                                                    'ISO 27001:2013 A.12.4.3',
+                                                    'ISO 27001:2013 A.16.1.1',
+                                                    'ISO 27001:2013 A.16.1.4',
+                                                    'ISO 27001:2013 A.16.1.5'
                                                 ]
                                             },
                                             'Workflow': {
@@ -1196,25 +1040,13 @@ def public_amazonmq_broker_shodan_check():
                                             'Compliance': { 
                                                 'Status': 'FAILED',
                                                 'RelatedRequirements': [
-                                                    'NIST CSF ID.RA-2',
-                                                    'NIST CSF ID.RA-3',
-                                                    'NIST CSF DE.AE-2',
-                                                    'NIST CSF RS.AN-1',
-                                                    'NIST 800-53 SI-5',
-                                                    'NIST 800-53 PM-15',
-                                                    'NIST 800-53 PM-16',
-                                                    'NIST 800-53 RA-3',
-                                                    'NIST 800-53 SI-5',
-                                                    'NIST 800-53 PM-12',
-                                                    'NIST 800-53 AU-6',
-                                                    'NIST 800-53 CA-7',
-                                                    'NIST 800-53 IR-4',
-                                                    'NIST 800-53 SI-4',
-                                                    'NIST 800-53 IR-5', 
-                                                    'NIST 800-53 PE-6',
-                                                    'AICPA TSC CC3.2',
-                                                    'AICPA TSC CC7.2',
-                                                    'AICPA TSC CC7.2'
+                                                    'ISO 27001:2013 Clause 6.1.2',
+                                                    'ISO 27001:2013 A.6.1.4',
+                                                    'ISO 27001:2013 A.12.4.1',
+                                                    'ISO 27001:2013 A.12.4.3',
+                                                    'ISO 27001:2013 A.16.1.1',
+                                                    'ISO 27001:2013 A.16.1.4',
+                                                    'ISO 27001:2013 A.16.1.5'
                                                 ]
                                             },
                                             'Workflow': {

@@ -104,35 +104,8 @@ if str(getFindings['Findings']) == '[]':
                             'Region': awsRegion
                         }
                     ],
-                    'Compliance': { 
-                        'Status': 'PASSED',
-                        'RelatedRequirements': [
-                            'NIST CSF PR.DS-5', 
-                            'NIST CSF DE.AE-2',
-                            'NIST CSF DE.AE-4',
-                            'NIST 800-53 AC-4', 
-                            'NIST 800-53 AC-5', 
-                            'NIST 800-53 AC-6', 
-                            'NIST 800-53 AU-6', 
-                            'NIST 800-53 CA-7',
-                            'NIST 800-53 CP-2',
-                            'NIST 800-53 IR-4',
-                            'NIST 800-53 PE-19', 
-                            'NIST 800-53 PS-3',
-                            'NIST 800-53 PS-6',
-                            'NIST 800-53 RA-3',
-                            'NIST 800-53 SC-7', 
-                            'NIST 800-53 SC-8',
-                            'NIST 800-53 SC-13',
-                            'NIST 800-53 SC-31', 
-                            'NIST 800-53 SI-4',
-                            'AICPA TSC CC6.6',
-                            'AICPA TSC CC7.2',
-                            'AICPA TSC CC7.3'
-                        ]
-                    },
-                    'Workflow': {
-                        'Status': 'RESOLVED'
+                    'Compliance': {
+                        'Status': 'PASSED'
                     },
                     'RecordState': 'ARCHIVED'
                 }
@@ -171,35 +144,8 @@ else:
                             'Region': awsRegion
                         }
                     ],
-                    'Compliance': { 
-                        'Status': 'FAILED',
-                        'RelatedRequirements': [
-                            'NIST CSF PR.DS-5', 
-                            'NIST CSF DE.AE-2',
-                            'NIST CSF DE.AE-4',
-                            'NIST 800-53 AC-4', 
-                            'NIST 800-53 AC-5', 
-                            'NIST 800-53 AC-6', 
-                            'NIST 800-53 AU-6', 
-                            'NIST 800-53 CA-7',
-                            'NIST 800-53 CP-2',
-                            'NIST 800-53 IR-4',
-                            'NIST 800-53 PE-19', 
-                            'NIST 800-53 PS-3',
-                            'NIST 800-53 PS-6',
-                            'NIST 800-53 RA-3',
-                            'NIST 800-53 SC-7', 
-                            'NIST 800-53 SC-8',
-                            'NIST 800-53 SC-13',
-                            'NIST 800-53 SC-31', 
-                            'NIST 800-53 SI-4',
-                            'AICPA TSC CC6.6',
-                            'AICPA TSC CC7.2',
-                            'AICPA TSC CC7.3'
-                        ]
-                    },
-                    'Workflow': {
-                        'Status': 'NEW'
+                    'Compliance': {
+                        'Status': 'FAILED'
                     },
                     'RecordState': 'ACTIVE'
                 }

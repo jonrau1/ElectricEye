@@ -37,6 +37,7 @@ Continuously monitor your AWS services for configurations that can lead to degra
 ## Synopsis
 - 100% native Security Hub integration & 100% serverless with full CloudFormation & Terraform support
 - 200+ security & best practice detections including services not covered by Security Hub/Config (AppStream, Cognito, EKS, ECR, DocDB, etc.)
+- Detections aligned to NIST CSF, NIST 800-53, AICPA TSC and ISO 27001:2013 using the `Compliance.RelatedRequirements` field.
 - 60+ multi-account SOAR playbooks
 - AWS & 3rd Party Integrations: Config Recorder, Pagerduty, Slack, ServiceNow Incident Management, Jira, Azure DevOps, Shodan and Microsoft Teams
 
@@ -470,7 +471,7 @@ This section is likely to wax and wane depending on future releases, PRs and cha
 
 - If you choose to build and run ElectricEye without the IAC on your own and use an existing VPC or, in the future, decide to build internet-facing services in the ElectricEye VPC you may run into Shodan.io false positives. The `socket` python module will use the DNS servers available to them; getting the IPv4 address for a DNS name (from RDS or ES endpoints for example) in your VPC will return the private IP address and lead to false positives with Shodan
 
-- No way to dynamically change Severity. All Severity Label's in Security Hub come from a conversion of `Severity.Normalized` which ranges from 1-100, to modify these values you will need to fork and modify to fit your organization's definition of severity based on threat modeling and risk appetite for certain configurations. As of 12 MAR 2020, `Severity.Label` was introduced to make the labeling easier, but there is still no way to change this.
+- ~~No way to dynamically change Severity. All Severity Label's in Security Hub come from a conversion of `Severity.Normalized` which ranges from 1-100, to modify these values you will need to fork and modify to fit your organization's definition of severity based on threat modeling and risk appetite for certain configurations. As of 12 MAR 2020, `Severity.Label` was introduced to make the labeling easier, but there is still no way to change this.~~ You can now use the `BatchUpdateFindings` API to create rules to dynamically change your finding's severity among other values.
 
 - No tag-based scoping or exemption process out of the box. You will need to manually archive these, remove checks not pertinent to you and/or create your own automation to automatically archive findings for resources that shouldn't be in-scope.
 
@@ -508,9 +509,13 @@ Finally, you can look like the GIF below, where your security team is Jacob Trou
 ![OpenIceHit](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/old-school-hockey-trouba.gif)
 
 ### 2. Will this tool help me become compliant with (insert framework of some sort here)?
-No. If you wanted to use this tool to satisfy an audit, I would recommend you work closely with your GRC and Legal functions to determine if the checks performed by ElectricEye will legally satisfy the requirements of any compliance framework or regulations you need to comply with. If you find that it does, you can use the `Compliance.RelatedRequirements` array within the ASFF to denote those. I would recommend forking and modifying the code for that purpose. 
+No, it still won't. If you wanted to use this tool to satisfy an audit, I would recommend you work closely with your GRC and Legal functions to determine if the checks performed by ElectricEye will legally satisfy the requirements of any compliance framework or regulations you need to comply with. 
 
-However, if you 1) work on behalf of an organization who can provide attestations that these technical controls satisfy the spirit of certain requirements in certain industry or regulatory standards and 2) would like to provide an attestation for the betterment of the community please email me to discuss.
+~If you find that it does, you can use the `Compliance.RelatedRequirements` array within the ASFF to denote those. I would recommend forking and modifying the code for that purpose.~~
+
+~~However, if you 1) work on behalf of an organization who can provide attestations that these technical controls satisfy the spirit of certain requirements in certain industry or regulatory standards and 2) would like to provide an attestation for the betterment of the community please email me to discuss.~~
+
+**Refer to new FAQ's starting at #16 for information on the new `Compliance.RelatedRequirements` additions**
 
 ### 3. Can this be the primary tool I use for AWS security assessments?
 Only you can make that determination. More is always better, there are far more mature projects that exist such as [Prowler](https://github.com/toniblyx/prowler), [PacBot](https://github.com/tmobile/pacbot), [Cloud Inquisitor](https://github.com/RiotGames/cloud-inquisitor) and [Scout2](https://github.com/nccgroup/ScoutSuite). You should perform a detailed analysis about which tools support what services, what checks, what your ultimate downstream tool will be for taking actions or analyzing findings (Splunk, Kibana, Security Hub, Demisto, Phantom, QuickSight, etc.) and how many false-positives or false-negatives are created by what tool. Some of those tools also do other things, and that is not to mention the endless list of logging, monitoring, tracing and AppSec related tools you will also need to use. There are additional tools listed in [FAQ #14](https://github.com/jonrau1/ElectricEye#14-what-are-those-other-tools-you-mentioned) below.
@@ -662,6 +667,49 @@ You should consider taking a look at all of these:
 ### 15. Why did you swap the Dockerfile to being Alpine Linux-based?
 The original (V1.0) Dockerfile used the `ubuntu:latest` image as its base image and was pretty chunky (~450MB) where the Alpine image is a tiny bit under a 10th of that (41.95MB). It is also much faster to create and push the image since `apk` adds only what is needed and isn't bloated by the Ubuntu dependencies from `apt` or that come prepackaged. Lastly, the build logs are a lot less chatty with the (hacky) ENV value set for Python and Pip related logs. Oh, and as of 13 MARCH 2020 there are no vulns in this image. (Reminder for me to periodically update and confirm this)
 ![AlpineVulns](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/alpine-ecr-vulns.JPG)
+
+### 16. I thought you said that ElectricEye will not help me pass an audit!?
+In short: it won't. I picked frameworks that are really guidance for best practices, while some are backed by a governing organization and will need a qualified 3rd Party Assessment Organization (3PAO) (yes I know that's a FedRAMP term) to audit you anyway. Frameworks such as NIST CSF and NIST SP 800-53 are guidelines that map well into other larger compliance frameworks. I am just one person, albeit with a background in this stuff, that did all of the mappings into NIST CSF and then cross-mapped from there. This falls well into the territory of "checkbox compliance" so I would do the following things if you are planning to use an ElectricEye-based audit:
+
+1) Get your Internal Audit, GRC and Legal teams on-board with this crazy idea
+2) Get your CISO onboard with this crazy idea
+3) Get a 3PAO to audit that these mappings make sense
+4) Do your audit
+
+As you can see from #3 you still end up getting an external party to verify (and take your money) that the controls are mapped in a way that will help you pass your SOC Report or ISO27K1/2 audit. 
+
+### 17. At a high-level, how did you map the ElectricEye Auditors into these compliance frameworks?
+I am most familiar with NIST CSF so I mapped all checks that I felt satisfied the spirit of a NIST CSF Subcategory, some are very easy like `NIST CSF PR.DS-1: Data-at-rest is protected`, others are a bit more nuanced. Within the NIST CSF Excel workbook there are mappings that NIST did themselves into ISO/IEC 27001 and NIST SP 800-53 so I just used those as-is without touching either the SP or the ISO stnadard. The American Institute of Certified Public Accountants (AICPA) who is the governing body for SOC Reports and the Trust Services Criteria (TSC) also provide a mapping from TSC/COSO "points of focus" to NIST CSF which I mapped in reverse. 
+
+**Note**: A SOC 2 or SOC 3 Report is a lot more nuanced than just slapping some TSC "points of focus" onto a document and calling it done, as lightly touched upon in FAQ#16 the intent was to cover broad frameworks that almost everyone may use at least one of.
+
+### 18. What is the NIST CSF? Is that the same as NIST SP 800-53?
+The National Institue of Standards and Technology (NIST) ![Cybersecurity Framework](https://www.nist.gov/cyberframework/new-framework) (CSF) is "...voluntary guidance, based on existing standards, guidelines, and practices for organizations to better manage and reduce cybersecurity risk. In addition to helping organizations manage and reduce risks, it was designed to foster risk and cybersecurity management communications amongst both internal and external organizational stakeholders." The CSF is organized into 5 functions which consist of 104 outcome-based, risk-aligned activities and requirements to help managed cyber security risk.
+
+It is not to be confused with ![NIST Special Publication (SP) 800-53 revision 4](https://www.nist.gov/cyberframework/new-framework) which is "...a catalog of security and privacy controls for federal information systems and organizations and a process for selecting controls to protect organizational operations (including mission, functions, image, and reputation), organizational assets, individuals, other organizations, and the Nation from a diverse set of threats including hostile cyber attacks, natural disasters, structural failures, and human errors (both intentional and unintentional)." The controls in 800-53 are related to ![FedRAMP Moderate & High SSPs](https://www.fedramp.gov/developing-a-system-security-plan/), the ![Government of Canada's ITSG-33](https://cyber.gc.ca/en/path-enterprise-security) and other international frameworks and are regarded as a standard of which to base a cybersecurity program off of.
+
+### 19. What is ISO 27001?
+**IMPORTANT NOTE ON ISO 27001 MAPPINGS**: Due to how many controls from ISO 27001:2013 can be mapped into from NIST CSF Subcategories these were put into a different set of Auditors. The `Compliance.RelatedRequirements` array only accepts up to 32 strings, so any situation in which it ran over the limit the controls were pared down. The full list of possible mappings in contained in *to-do add hyperlink*
+
+"ISO 27001 (formally known as ISO/IEC 27001:2013) is a specification for an information security management system (ISMS). An ISMS is a framework of policies and procedures that includes all legal, physical and technical controls involved in an organisation's information risk management processes." Like other ISO standards, NIST CSF and NIST SP 800-53, it is a top-down and technology agnostic way of performing an information security risk assessment. 27001 does not have any true technical controls, those are in ![ISO 27002:2013](https://www.iso.org/standard/54533.html), and audits are conducted as risk assessments by qualified 3rd party assessors to give you an accredited certification against ISO 27001.
+
+There are a lot of purported benefits to ISO 27001 (and other framework compliance) but the long and short of it is a lot of organizations (your suppliers, your customers, your partners) require it for contractual and regulatory obligations so you are going to be stuck doing one at one point or another. As noted in FAQ#1, I took what NIST provided for these mappings, I did not pay for the Standard nor do I intend to take a look. Be **DOUBLE** sure you get buy-in from folks in your org that have experience with this if you are the brave soul using my tool to pass an Audit for your AWS environment.
+
+### 20. What is the AICPA TSC? Is that the same as SOC 2 or SOC 3?
+From AICPA: "The TSC are control criteria for use in attestation or consulting engagements to evaluate and report on controls over information and systems (a) across an entire entity; (b) at a subsidiary, division, or operating unit level; (c) within a function relevant to the entity's operational, reporting, or compliance objectives; or (d) for a particular type of information used by the entity." These criteria are broken into 5 different categories and aligned with COSO Principles which provided "points of focus" which are things that are important to the criteria, akin to NIST CSF Subcategories in a way.
+
+These are not the same as SOC 2 or SOC 3, those are reports that an organization will do to give business partners, auditors and other external parties with information about how you manage data relative to 5 different Principles. SOC 2 is pretty different than something rigid like ISO27002 or PCI-DSS in that your organization has to pick crtieria and related controls that meet the spirit of the SOC2 categories before being audited against it. The TSC can help in that matter (AFAIK the security criteria always has to be included), you will go through a formal audit against it and to make this for of a headache SOC2 comes in two different types. SOC 2 Type I details your system and design specs relative to the 5 Principles where Type II details the operational effectiveness of your systems.
+
+Just like with ISO27001, I did not bother reading much through the AICPA's doc on the TSC or changes. There are a lot of blogs like ![this one from Imperva](https://www.imperva.com/learn/data-security/soc-2-compliance/) and ![this one from CLA](https://www.claconnect.com/resources/articles/2018/new-soc-report-framework-addresses-emerging-risks) that go into detail about TSC, TSP, SOCs and all of that fun stuff. Since you have to back your Report, it may be appropiate to bring in ElectricEye mappings since you can decide to do a SOC 2 Type I report against a specific information system or environment as detailed by AICPA.
+
+### 21. Why didn't you do PCI-DSS or HITRUST CSF or HIPAA or GDPR or...?
+Don't wish that evil on me. If you want PCI-DSS, I would use the Security Hub security standard for it, I helped work on that when I was at AWS and it was no joke an almost year-long affair. PCI-DSS is an industry regulation that has its own governing board and certification process to become a Qualified Security Assessor (QSA) and the audits only go in scope to you Cardholder Data Environments (CDE) which would be inappropiate to bundle with all other checks. I will not be doing that even if I somehow became a QSA.
+
+HITRUST is much the same way, it is an amalgamation of stuff from the HIPAA Security and Privacy Rules, ISO, and even things like NYDFS that consists of 600+ controls and also has its own multi-day, on-site assessor training course. I have not attended it, I have a lot of experience with it but it is a massive control framework and the last thing you want to do as a HCLS company on the AWS Cloud is use my stupid ass mappings to pass that audit.
+
+As far as things the the NIST Privacy Framework, the CCPA, GDPR and other Privacy regimes I will not be touching them either. They delve into stuff like privacy-by-design, privacy engineering, how you handle data and prevent disclosures and lack in technical controls. HIPAA only has a few sections that go into what they call "technical safeguards", the whole Act (along with HITECH and the Omnibus) was originally 5 Titles of which Title II delved into what became known as the Security Rule, the Privacy Rule and the Breach Notification Rule. The HHS has issued tons of guidance about it, it has the Safe Harbor act for it and even combined the relevant sections from 45 CFR for a sort-of easy read on the aforementioned 'Rules'. It is highly slim on details (other than encryption) and you are better suited with HITRUST and I am definitely not a lawyer and won't be touching that.
+
+Before you ask, no, I won't be doing any Government stuff (DOD-ILA, FedRAMP, FISMA) or non-US stuff (ITSG-33, IRAP, C5, etc.) because I am a combination of unqualified and unknowledgable.
 
 ## Contributing
 I am very happy to accept PR's for the following:
