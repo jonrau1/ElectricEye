@@ -74,11 +74,19 @@ def ebs_volume_attachment_check():
                                         'Partition': 'aws',
                                         'Region': awsRegion,
                                         'Details': {
-                                            'Other': { 'VolumeId': ebsVolumeId }
+                                            'Other': { 'volumeId': ebsVolumeId }
                                         }
                                     }
                                 ],
-                                'Compliance': { 'Status': 'FAILED' },
+                                'Compliance': { 
+                                    'Status': 'FAILED',
+                                    'RelatedRequirements': [
+                                        'NIST CSF ID.AM-2'
+                                    ]
+                                },
+                                'Workflow': {
+                                    'Status': 'NEW'
+                                },
                                 'RecordState': 'ACTIVE'
                             }
                         ]
@@ -123,11 +131,19 @@ def ebs_volume_attachment_check():
                                         'Partition': 'aws',
                                         'Region': awsRegion,
                                         'Details': {
-                                            'Other': { 'VolumeId': ebsVolumeId }
+                                            'Other': { 'volumeId': ebsVolumeId }
                                         }
                                     }
                                 ],
-                                'Compliance': { 'Status': 'PASSED' },
+                                'Compliance': { 
+                                    'Status': 'PASSED',
+                                    'RelatedRequirements': [
+                                        'NIST CSF ID.AM-2'
+                                    ]
+                                },
+                                'Workflow': {
+                                    'Status': 'RESOLVED'
+                                },
                                 'RecordState': 'ARCHIVED'
                             }
                         ]
@@ -180,11 +196,19 @@ def ebs_volume_delete_on_termination_check():
                                         'Partition': 'aws',
                                         'Region': awsRegion,
                                         'Details': {
-                                            'Other': { 'VolumeId': ebsVolumeId }
+                                            'Other': { 'volumeId': ebsVolumeId }
                                         }
                                     }
                                 ],
-                                'Compliance': { 'Status': 'FAILED' },
+                                'Compliance': { 
+                                    'Status': 'FAILED',
+                                    'RelatedRequirements': [
+                                        'NIST CSF ID.AM-2'
+                                    ]
+                                },
+                                'Workflow': {
+                                    'Status': 'NEW'
+                                },
                                 'RecordState': 'ACTIVE'
                             }
                         ]
@@ -229,11 +253,19 @@ def ebs_volume_delete_on_termination_check():
                                         'Partition': 'aws',
                                         'Region': awsRegion,
                                         'Details': {
-                                            'Other': { 'VolumeId': ebsVolumeId }
+                                            'Other': { 'volumeId': ebsVolumeId }
                                         }
                                     }
                                 ],
-                                'Compliance': { 'Status': 'PASSED' },
+                                'Compliance': { 
+                                    'Status': 'PASSED',
+                                    'RelatedRequirements': [
+                                        'NIST CSF ID.AM-2'
+                                    ]
+                                },
+                                'Workflow': {
+                                    'Status': 'RESOLVED'
+                                },
                                 'RecordState': 'ARCHIVED'
                             }
                         ]
@@ -287,11 +319,20 @@ def ebs_volume_encryption_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'VolumeId': ebsVolumeId }
+                                        'Other': { 'volumeId': ebsVolumeId }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'FAILED' },
+                            'Compliance': { 
+                                'Status': 'FAILED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.DS-1',
+                                    'NIST CSF PR.DS-5'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'NEW'
+                            },
                             'RecordState': 'ACTIVE'
                         }
                     ]
@@ -339,11 +380,20 @@ def ebs_volume_encryption_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'VolumeId': ebsVolumeId }
+                                        'Other': { 'volumeId': ebsVolumeId }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'PASSED' },
+                            'Compliance': { 
+                                'Status': 'PASSED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.DS-1',
+                                    'NIST CSF PR.DS-5'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'RESOLVED'
+                            },
                             'RecordState': 'ARCHIVED'
                         }
                     ]
@@ -397,11 +447,20 @@ def ebs_snapshot_encryption_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'SnapshotId': snapshotId }
+                                        'Other': { 'snapshotId': snapshotId }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'FAILED' },
+                            'Compliance': { 
+                                'Status': 'FAILED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.DS-1',
+                                    'NIST CSF PR.DS-5'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'NEW'
+                            },
                             'RecordState': 'ACTIVE'
                         }
                     ]
@@ -449,11 +508,20 @@ def ebs_snapshot_encryption_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'SnapshotId': snapshotId }
+                                        'Other': { 'snapshotId': snapshotId }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'PASSED' },
+                            'Compliance': { 
+                                'Status': 'PASSED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.DS-1',
+                                    'NIST CSF PR.DS-5'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'RESOLVED'
+                            },
                             'RecordState': 'ARCHIVED'
                         }
                     ]
@@ -507,11 +575,20 @@ def ebs_snapshot_public_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'SnapshotId': snapshotId }
+                                        'Other': { 'snapshotId': snapshotId }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'PASSED' },
+                            'Compliance': { 
+                                'Status': 'PASSED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.DS-3',
+                                    'NIST CSF PR.DS-5'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'RESOLVED'
+                            },
                             'RecordState': 'ARCHIVED'
                         }
                     ]
@@ -563,11 +640,20 @@ def ebs_snapshot_public_check():
                                             'Partition': 'aws',
                                             'Region': awsRegion,
                                             'Details': {
-                                                'Other': { 'SnapshotId': snapshotId }
+                                                'Other': { 'snapshotId': snapshotId }
                                             }
                                         }
                                     ],
-                                    'Compliance': { 'Status': 'FAILED' },
+                                    'Compliance': { 
+                                        'Status': 'FAILED',
+                                        'RelatedRequirements': [
+                                            'NIST CSF PR.DS-3',
+                                            'NIST CSF PR.DS-5'
+                                        ]
+                                    },
+                                    'Workflow': {
+                                        'Status': 'NEW'
+                                    },
                                     'RecordState': 'ACTIVE'
                                 }
                             ]
@@ -668,7 +754,16 @@ def ebs_account_encryption_by_default_check():
                                 'Region': awsRegion
                             }
                         ],
-                        'Compliance': { 'Status': 'FAILED' },
+                        'Compliance': { 
+                            'Status': 'FAILED',
+                            'RelatedRequirements': [
+                                'NIST CSF PR.DS-1',
+                                'NIST CSF PR.DS-5'
+                            ]
+                        },
+                        'Workflow': {
+                            'Status': 'NEW'
+                        },
                         'RecordState': 'ACTIVE'
                     }
                 ]
@@ -714,7 +809,16 @@ def ebs_account_encryption_by_default_check():
                                 'Region': awsRegion
                             }
                         ],
-                        'Compliance': { 'Status': 'PASSED' },
+                        'Compliance': { 
+                            'Status': 'PASSED',
+                            'RelatedRequirements': [
+                                'NIST CSF PR.DS-1',
+                                'NIST CSF PR.DS-5'
+                            ]
+                        },
+                        'Workflow': {
+                            'Status': 'RESOLVED'
+                        },
                         'RecordState': 'ARCHIVED'
                     }
                 ]

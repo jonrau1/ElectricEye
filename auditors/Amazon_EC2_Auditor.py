@@ -86,7 +86,15 @@ def ec2_imdsv2_check():
                                                 }
                                             }
                                         ],
-                                        'Compliance': { 'Status': 'FAILED' },
+                                        'Compliance': { 
+                                            'Status': 'FAILED',
+                                            'RelatedRequirements': [
+                                                'NIST CSF PR.PT-3'
+                                            ]
+                                        },
+                                        'Workflow': {
+                                            'Status': 'NEW'
+                                        },
                                         'RecordState': 'ACTIVE'
                                     }
                                 ]
@@ -141,7 +149,15 @@ def ec2_imdsv2_check():
                                                 }
                                             }
                                         ],
-                                        'Compliance': { 'Status': 'PASSED' },
+                                        'Compliance': { 
+                                            'Status': 'PASSED',
+                                            'RelatedRequirements': [
+                                                'NIST CSF PR.PT-3'
+                                            ]
+                                        },
+                                        'Workflow': {
+                                            'Status': 'RESOLVED'
+                                        },
                                         'RecordState': 'ARCHIVED'
                                     }
                                 ]
