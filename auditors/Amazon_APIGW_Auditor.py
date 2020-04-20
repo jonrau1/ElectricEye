@@ -83,11 +83,16 @@ def api_gateway_stage_metrics_enabled_check():
                                 'Compliance': { 
                                     'Status': 'FAILED',
                                     'RelatedRequirements': [
-                                        'NIST CSF ID.AM-3', 
-                                        'NIST CSF PR.PT-1',
-                                        'NIST CSF DE.AE-1',
                                         'NIST CSF DE.AE-3',
-                                        'NIST CSF DE.CM-1'
+                                        'NIST SP 800-53 AU-6',
+                                        'NIST SP 800-53 CA-7',
+                                        'NIST SP 800-53 IR-4',
+                                        'NIST SP 800-53 IR-5',
+                                        'NIST SP 800-53 IR-8', 
+                                        'NIST SP 800-53 SI-4',
+                                        'AICPA TSC CC7.2',
+                                        'ISO 27001:2013 A.12.4.1',
+                                        'ISO 27001:2013 A.16.1.7'
                                     ]
                                 },
                                 'Workflow': {
@@ -146,11 +151,16 @@ def api_gateway_stage_metrics_enabled_check():
                                 'Compliance': { 
                                     'Status': 'PASSED',
                                     'RelatedRequirements': [
-                                        'NIST CSF ID.AM-3', 
-                                        'NIST CSF PR.PT-1',
-                                        'NIST CSF DE.AE-1',
                                         'NIST CSF DE.AE-3',
-                                        'NIST CSF DE.CM-1'
+                                        'NIST SP 800-53 AU-6',
+                                        'NIST SP 800-53 CA-7',
+                                        'NIST SP 800-53 IR-4',
+                                        'NIST SP 800-53 IR-5',
+                                        'NIST SP 800-53 IR-8', 
+                                        'NIST SP 800-53 SI-4',
+                                        'AICPA TSC CC7.2',
+                                        'ISO 27001:2013 A.12.4.1',
+                                        'ISO 27001:2013 A.16.1.7'
                                     ]
                                 },
                                 'Workflow': {
@@ -220,11 +230,16 @@ def api_gateway_stage_logging_check():
                                 'Compliance': { 
                                     'Status': 'FAILED',
                                     'RelatedRequirements': [
-                                        'NIST CSF ID.AM-3', 
-                                        'NIST CSF PR.PT-1',
-                                        'NIST CSF DE.AE-1',
                                         'NIST CSF DE.AE-3',
-                                        'NIST CSF DE.CM-1'
+                                        'NIST SP 800-53 AU-6',
+                                        'NIST SP 800-53 CA-7',
+                                        'NIST SP 800-53 IR-4',
+                                        'NIST SP 800-53 IR-5',
+                                        'NIST SP 800-53 IR-8', 
+                                        'NIST SP 800-53 SI-4',
+                                        'AICPA TSC CC7.2',
+                                        'ISO 27001:2013 A.12.4.1',
+                                        'ISO 27001:2013 A.16.1.7'
                                     ]
                                 },
                                 'Workflow': {
@@ -283,11 +298,16 @@ def api_gateway_stage_logging_check():
                                 'Compliance': { 
                                     'Status': 'PASSED',
                                     'RelatedRequirements': [
-                                        'NIST CSF ID.AM-3', 
-                                        'NIST CSF PR.PT-1',
-                                        'NIST CSF DE.AE-1',
                                         'NIST CSF DE.AE-3',
-                                        'NIST CSF DE.CM-1'
+                                        'NIST SP 800-53 AU-6',
+                                        'NIST SP 800-53 CA-7',
+                                        'NIST SP 800-53 IR-4',
+                                        'NIST SP 800-53 IR-5',
+                                        'NIST SP 800-53 IR-8', 
+                                        'NIST SP 800-53 SI-4',
+                                        'AICPA TSC CC7.2',
+                                        'ISO 27001:2013 A.12.4.1',
+                                        'ISO 27001:2013 A.16.1.7'
                                     ]
                                 },
                                 'Workflow': {
@@ -358,7 +378,17 @@ def api_gateway_stage_caching_enabled_check():
                                     'Status': 'FAILED',
                                     'RelatedRequirements': [
                                         'NIST CSF ID.BE-5', 
-                                        'NIST CSF PR.PT-5'
+                                        'NIST CSF PR.PT-5',
+                                        'NIST SP 800-53 CP-2',
+                                        'NIST SP 800-53 CP-11',
+                                        'NIST SP 800-53 SA-13',
+                                        'NIST SP 800-53 SA14',
+                                        'AICPA TSC CC3.1',
+                                        'AICPA TSC A1.2',
+                                        'ISO 27001:2013 A.11.1.4',
+                                        'ISO 27001:2013 A.17.1.1',
+                                        'ISO 27001:2013 A.17.1.2',
+                                        'ISO 27001:2013 A.17.2.1'
                                     ]
                                 },
                                 'Workflow': {
@@ -418,7 +448,17 @@ def api_gateway_stage_caching_enabled_check():
                                     'Status': 'PASSED',
                                     'RelatedRequirements': [
                                         'NIST CSF ID.BE-5', 
-                                        'NIST CSF PR.PT-5'
+                                        'NIST CSF PR.PT-5',
+                                        'NIST SP 800-53 CP-2',
+                                        'NIST SP 800-53 CP-11',
+                                        'NIST SP 800-53 SA-13',
+                                        'NIST SP 800-53 SA14',
+                                        'AICPA TSC CC3.1',
+                                        'AICPA TSC A1.2',
+                                        'ISO 27001:2013 A.11.1.4',
+                                        'ISO 27001:2013 A.17.1.1',
+                                        'ISO 27001:2013 A.17.1.2',
+                                        'ISO 27001:2013 A.17.2.1'
                                     ]
                                 },
                                 'Workflow': {
@@ -492,7 +532,11 @@ def api_gateway_stage_cache_encryption_check():
                                     'Status': 'FAILED',
                                     'RelatedRequirements': [
                                         'NIST CSF PR.DS-1', 
-                                        'NIST CSF PR.DS-5'
+                                        'NIST SP 800-53 MP-8',
+                                        'NIST SP 800-53 SC-12',
+                                        'NIST SP 800-53 SC-28',
+                                        'AICPA TSC CC6.1',
+                                        'ISO 27001:2013 A.8.2.3'
                                     ]
                                 },
                                 'Workflow': {
@@ -555,7 +599,11 @@ def api_gateway_stage_cache_encryption_check():
                                     'Status': 'PASSED',
                                     'RelatedRequirements': [
                                         'NIST CSF PR.DS-1', 
-                                        'NIST CSF PR.DS-5'
+                                        'NIST SP 800-53 MP-8',
+                                        'NIST SP 800-53 SC-12',
+                                        'NIST SP 800-53 SC-28',
+                                        'AICPA TSC CC6.1',
+                                        'ISO 27001:2013 A.8.2.3'
                                     ]
                                 },
                                 'Workflow': {
@@ -625,11 +673,16 @@ def api_gateway_stage_xray_tracing_check():
                                 'Compliance': { 
                                     'Status': 'FAILED',
                                     'RelatedRequirements': [
-                                        'NIST CSF ID.AM-3', 
-                                        'NIST CSF PR.PT-1',
-                                        'NIST CSF DE.AE-1',
                                         'NIST CSF DE.AE-3',
-                                        'NIST CSF DE.CM-1'
+                                        'NIST SP 800-53 AU-6',
+                                        'NIST SP 800-53 CA-7',
+                                        'NIST SP 800-53 IR-4',
+                                        'NIST SP 800-53 IR-5',
+                                        'NIST SP 800-53 IR-8', 
+                                        'NIST SP 800-53 SI-4',
+                                        'AICPA TSC CC7.2',
+                                        'ISO 27001:2013 A.12.4.1',
+                                        'ISO 27001:2013 A.16.1.7'
                                     ]
                                 },
                                 'Workflow': {
@@ -688,11 +741,16 @@ def api_gateway_stage_xray_tracing_check():
                                 'Compliance': { 
                                     'Status': 'PASSED',
                                     'RelatedRequirements': [
-                                        'NIST CSF ID.AM-3', 
-                                        'NIST CSF PR.PT-1',
-                                        'NIST CSF DE.AE-1',
                                         'NIST CSF DE.AE-3',
-                                        'NIST CSF DE.CM-1'
+                                        'NIST SP 800-53 AU-6',
+                                        'NIST SP 800-53 CA-7',
+                                        'NIST SP 800-53 IR-4',
+                                        'NIST SP 800-53 IR-5',
+                                        'NIST SP 800-53 IR-8', 
+                                        'NIST SP 800-53 SI-4',
+                                        'AICPA TSC CC7.2',
+                                        'ISO 27001:2013 A.12.4.1',
+                                        'ISO 27001:2013 A.16.1.7'
                                     ]
                                 },
                                 'Workflow': {
@@ -766,8 +824,15 @@ def api_gateway_stage_waf_check_check():
                                 'Compliance': { 
                                     'Status': 'PASSED',
                                     'RelatedRequirements': [
-                                        'NIST CSF PR.DS-5',
-                                        'NIST CSF PR.PT-4'
+                                        'NIST CSF DE.AE-2',
+                                        'NIST SP 800-53 AU-6',
+                                        'NIST SP 800-53 CA-7',
+                                        'NIST SP 800-53 IR-4',
+                                        'NIST SP 800-53 SI-4',
+                                        'AICPA TSC CC7.2',
+                                        'ISO 27001:2013 A.12.4.1',
+                                        'ISO 27001:2013 A.16.1.1',
+                                        'ISO 27001:2013 A.16.1.4'
                                     ]
                                 },
                                 'Workflow': {
@@ -830,8 +895,15 @@ def api_gateway_stage_waf_check_check():
                                     'Compliance': { 
                                         'Status': 'FAILED',
                                         'RelatedRequirements': [
-                                            'NIST CSF PR.DS-5',
-                                            'NIST CSF PR.PT-4'
+                                            'NIST CSF DE.AE-2',
+                                            'NIST SP 800-53 AU-6',
+                                            'NIST SP 800-53 CA-7',
+                                            'NIST SP 800-53 IR-4',
+                                            'NIST SP 800-53 SI-4',
+                                            'AICPA TSC CC7.2',
+                                            'ISO 27001:2013 A.12.4.1',
+                                            'ISO 27001:2013 A.16.1.1',
+                                            'ISO 27001:2013 A.16.1.4'
                                         ]
                                     },
                                     'Workflow': {
