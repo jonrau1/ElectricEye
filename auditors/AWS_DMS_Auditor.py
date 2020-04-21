@@ -64,11 +64,30 @@ def dms_replication_instance_public_access_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'ReplicationInstanceId': dmsInstanceId }
+                                        'Other': { 'replicationInstanceId': dmsInstanceId }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'FAILED' },
+                            'Compliance': { 
+                                'Status': 'FAILED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.AC-3',
+                                    'NIST SP 800-53 AC-1',
+                                    'NIST SP 800-53 AC-17',
+                                    'NIST SP 800-53 AC-19',
+                                    'NIST SP 800-53 AC-20',
+                                    'NIST SP 800-53 SC-15',
+                                    'AICPA TSC CC6.6',
+                                    'ISO 27001:2013 A.6.2.1',
+                                    'ISO 27001:2013 A.6.2.2',
+                                    'ISO 27001:2013 A.11.2.6',
+                                    'ISO 27001:2013 A.13.1.1',
+                                    'ISO 27001:2013 A.13.2.1'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'NEW'
+                            },
                             'RecordState': 'ACTIVE'
                         }
                     ]
@@ -109,11 +128,30 @@ def dms_replication_instance_public_access_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'ReplicationInstanceId': dmsInstanceId }
+                                        'Other': { 'replicationInstanceId': dmsInstanceId }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'PASSED' },
+                            'Compliance': { 
+                                'Status': 'PASSED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.AC-3',
+                                    'NIST SP 800-53 AC-1',
+                                    'NIST SP 800-53 AC-17',
+                                    'NIST SP 800-53 AC-19',
+                                    'NIST SP 800-53 AC-20',
+                                    'NIST SP 800-53 SC-15',
+                                    'AICPA TSC CC6.6',
+                                    'ISO 27001:2013 A.6.2.1',
+                                    'ISO 27001:2013 A.6.2.2',
+                                    'ISO 27001:2013 A.11.2.6',
+                                    'ISO 27001:2013 A.13.1.1',
+                                    'ISO 27001:2013 A.13.2.1'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'RESOLVED'
+                            },
                             'RecordState': 'ARCHIVED'
                         }
                     ]
@@ -162,11 +200,30 @@ def dms_replication_instance_multi_az_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'ReplicationInstanceId': dmsInstanceId }
+                                        'Other': { 'replicationInstanceId': dmsInstanceId }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'FAILED' },
+                            'Compliance': { 
+                                'Status': 'FAILED',
+                                'RelatedRequirements': [
+                                    'NIST CSF ID.BE-5', 
+                                    'NIST CSF PR.PT-5',
+                                    'NIST SP 800-53 CP-2',
+                                    'NIST SP 800-53 CP-11',
+                                    'NIST SP 800-53 SA-13',
+                                    'NIST SP 800-53 SA14',
+                                    'AICPA TSC CC3.1',
+                                    'AICPA TSC A1.2',
+                                    'ISO 27001:2013 A.11.1.4',
+                                    'ISO 27001:2013 A.17.1.1',
+                                    'ISO 27001:2013 A.17.1.2',
+                                    'ISO 27001:2013 A.17.2.1'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'NEW'
+                            },
                             'RecordState': 'ACTIVE'
                         }
                     ]
@@ -207,11 +264,30 @@ def dms_replication_instance_multi_az_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'ReplicationInstanceId': dmsInstanceId }
+                                        'Other': { 'replicationInstanceId': dmsInstanceId }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'PASSED' },
+                            'Compliance': { 
+                                'Status': 'PASSED',
+                                'RelatedRequirements': [
+                                    'NIST CSF ID.BE-5', 
+                                    'NIST CSF PR.PT-5',
+                                    'NIST SP 800-53 CP-2',
+                                    'NIST SP 800-53 CP-11',
+                                    'NIST SP 800-53 SA-13',
+                                    'NIST SP 800-53 SA14',
+                                    'AICPA TSC CC3.1',
+                                    'AICPA TSC A1.2',
+                                    'ISO 27001:2013 A.11.1.4',
+                                    'ISO 27001:2013 A.17.1.1',
+                                    'ISO 27001:2013 A.17.1.2',
+                                    'ISO 27001:2013 A.17.2.1'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'RESOLVED'
+                            },
                             'RecordState': 'ARCHIVED'
                         }
                     ]
@@ -260,11 +336,28 @@ def dms_replication_instance_minor_version_update_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'ReplicationInstanceId': dmsInstanceId }
+                                        'Other': { 'replicationInstanceId': dmsInstanceId }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'FAILED' },
+                            'Compliance': { 
+                                'Status': 'FAILED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.MA-1',
+                                    'NIST SP 800-53 MA-2',
+                                    'NIST SP 800-53 MA-3',
+                                    'NIST SP 800-53 MA-5',
+                                    'NIST SP 800-53 MA-6',
+                                    'AICPA TSC CC8.1',
+                                    'ISO 27001:2013 A.11.1.2',
+                                    'ISO 27001:2013 A.11.2.4',
+                                    'ISO 27001:2013 A.11.2.5',
+                                    'ISO 27001:2013 A.11.2.6'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'NEW'
+                            },
                             'RecordState': 'ACTIVE'
                         }
                     ]
@@ -305,11 +398,28 @@ def dms_replication_instance_minor_version_update_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'ReplicationInstanceId': dmsInstanceId }
+                                        'Other': { 'replicationInstanceId': dmsInstanceId }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'PASSED' },
+                            'Compliance': { 
+                                'Status': 'PASSED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.MA-1',
+                                    'NIST SP 800-53 MA-2',
+                                    'NIST SP 800-53 MA-3',
+                                    'NIST SP 800-53 MA-5',
+                                    'NIST SP 800-53 MA-6',
+                                    'AICPA TSC CC8.1',
+                                    'ISO 27001:2013 A.11.1.2',
+                                    'ISO 27001:2013 A.11.2.4',
+                                    'ISO 27001:2013 A.11.2.5',
+                                    'ISO 27001:2013 A.11.2.6'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'RESOLVED'
+                            },
                             'RecordState': 'ARCHIVED'
                         }
                     ]

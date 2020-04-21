@@ -66,13 +66,13 @@ def efs_filesys_encryption_check():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsElasticFileSystem',
                                     'Id': fileSysArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
                                         'Other': { 
-                                            'FileSystemId': fileSysId
+                                            'fileSystemId': fileSysId
                                         }
                                     }
                                 }
@@ -132,13 +132,13 @@ def efs_filesys_encryption_check():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsElasticFileSystem',
                                     'Id': fileSysArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
                                         'Other': { 
-                                            'FileSystemId': fileSysId
+                                            'fileSystemId': fileSysId
                                         }
                                     }
                                 }

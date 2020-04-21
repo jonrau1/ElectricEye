@@ -74,11 +74,30 @@ def public_ami_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'AMI Id': imageId, 'AMI CreatedAt': imageCreatedDate }
+                                        'Other': { 'imageId': imageId, 'imageCreatedDate': imageCreatedDate }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'FAILED' },
+                            'Compliance': { 
+                                'Status': 'FAILED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.AC-3',
+                                    'NIST SP 800-53 AC-1',
+                                    'NIST SP 800-53 AC-17',
+                                    'NIST SP 800-53 AC-19',
+                                    'NIST SP 800-53 AC-20',
+                                    'NIST SP 800-53 SC-15',
+                                    'AICPA TSC CC6.6',
+                                    'ISO 27001:2013 A.6.2.1',
+                                    'ISO 27001:2013 A.6.2.2',
+                                    'ISO 27001:2013 A.11.2.6',
+                                    'ISO 27001:2013 A.13.1.1',
+                                    'ISO 27001:2013 A.13.2.1'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'NEW'
+                            },
                             'RecordState': 'ACTIVE'
                         }
                     ]
@@ -126,11 +145,30 @@ def public_ami_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'AMI Id': imageId, 'AMI CreatedAt': imageCreatedDate }
+                                        'Other': { 'imageId': imageId, 'imageCreatedDate': imageCreatedDate }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'PASSED' },
+                            'Compliance': { 
+                                'Status': 'PASSED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.AC-3',
+                                    'NIST SP 800-53 AC-1',
+                                    'NIST SP 800-53 AC-17',
+                                    'NIST SP 800-53 AC-19',
+                                    'NIST SP 800-53 AC-20',
+                                    'NIST SP 800-53 SC-15',
+                                    'AICPA TSC CC6.6',
+                                    'ISO 27001:2013 A.6.2.1',
+                                    'ISO 27001:2013 A.6.2.2',
+                                    'ISO 27001:2013 A.11.2.6',
+                                    'ISO 27001:2013 A.13.1.1',
+                                    'ISO 27001:2013 A.13.2.1'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'REVOKED'
+                            },
                             'RecordState': 'ARCHIVED'
                         }
                     ]
@@ -188,11 +226,24 @@ def encrypted_ami_check():
                                         'Partition': 'aws',
                                         'Region': awsRegion,
                                         'Details': {
-                                            'Other': { 'AMI Id': imageId, 'AMI CreatedAt': imageCreatedDate }
+                                            'Other': { 'imageId': imageId, 'imageCreatedDate': imageCreatedDate }
                                         }
                                     }
                                 ],
-                                'Compliance': { 'Status': 'FAILED' },
+                                'Compliance': { 
+                                    'Status': 'FAILED',
+                                    'RelatedRequirements': [
+                                        'NIST CSF PR.DS-1', 
+                                        'NIST SP 800-53 MP-8',
+                                        'NIST SP 800-53 SC-12',
+                                        'NIST SP 800-53 SC-28',
+                                        'AICPA TSC CC6.1',
+                                        'ISO 27001:2013 A.8.2.3'
+                                    ]
+                                },
+                                'Workflow': {
+                                    'Status': 'NEW'
+                                },
                                 'RecordState': 'ACTIVE'
                             }
                         ]
@@ -240,11 +291,24 @@ def encrypted_ami_check():
                                         'Partition': 'aws',
                                         'Region': awsRegion,
                                         'Details': {
-                                            'Other': { 'AMI Id': imageId, 'AMI CreatedAt': imageCreatedDate }
+                                            'Other': { 'imageId': imageId, 'imageCreatedDate': imageCreatedDate }
                                         }
                                     }
                                 ],
-                                'Compliance': { 'Status': 'PASSED' },
+                                'Compliance': { 
+                                    'Status': 'PASSED',
+                                    'RelatedRequirements': [
+                                        'NIST CSF PR.DS-1', 
+                                        'NIST SP 800-53 MP-8',
+                                        'NIST SP 800-53 SC-12',
+                                        'NIST SP 800-53 SC-28',
+                                        'AICPA TSC CC6.1',
+                                        'ISO 27001:2013 A.8.2.3'
+                                    ]
+                                },
+                                'Workflow': {
+                                    'Status': 'RESOLVED'
+                                },
                                 'RecordState': 'ARCHIVED'
                             }
                         ]

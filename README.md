@@ -683,6 +683,8 @@ I am most familiar with NIST CSF so I mapped all checks that I felt satisfied th
 
 The `Compliance.RelatedRequiremens` JSON list only accepts up to 32 strings so with that in mind I was not very aggressive in my mappings to NIST CSF to avoid running over that hard limit that would be caused by ISO 27001:2013, that compliance framework has a ton of mapped controls from the CSF. To that effect you may miss out on some larger mappings hence why you should do your own analysis on this. I also did not do any mapping into the Respond or Recover functions, the subcategories are very vague in those areas and I cannot assure that you actually analyze and respond to threats so you can map that on your own if need be.
 
+The mappings list is ![located here](https://github.com/jonrau1/ElectricEye/blob/master/compliance-mapping/electriceye-auditor-compliance-mapping.xlsx)
+
 ### 18. What is the NIST CSF? Is that the same as NIST SP 800-53?
 The National Institue of Standards and Technology (NIST) ![Cybersecurity Framework](https://www.nist.gov/cyberframework/new-framework) (CSF) is "...voluntary guidance, based on existing standards, guidelines, and practices for organizations to better manage and reduce cybersecurity risk. In addition to helping organizations manage and reduce risks, it was designed to foster risk and cybersecurity management communications amongst both internal and external organizational stakeholders." The CSF is organized into 5 functions which consist of 104 outcome-based, risk-aligned activities and requirements to help managed cyber security risk.
 

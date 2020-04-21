@@ -71,11 +71,42 @@ def secret_age_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'Secret Name': secretName }
+                                        'Other': { 'secretName': secretName }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'FAILED' },
+                            'Compliance': { 
+                                'Status': 'FAILED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.AC-1',
+                                    'NIST SP 800-53 AC-1',
+                                    'NIST SP 800-53 AC-2',
+                                    'NIST SP 800-53 IA-1',
+                                    'NIST SP 800-53 IA-2',
+                                    'NIST SP 800-53 IA-3',
+                                    'NIST SP 800-53 IA-4',
+                                    'NIST SP 800-53 IA-5',
+                                    'NIST SP 800-53 IA-6',
+                                    'NIST SP 800-53 IA-7',
+                                    'NIST SP 800-53 IA-8',
+                                    'NIST SP 800-53 IA-9',
+                                    'NIST SP 800-53 IA-10',
+                                    'NIST SP 800-53 IA-11',
+                                    'AICPA TSC CC6.1',
+                                    'AICPA TSC CC6.2',
+                                    'ISO 27001:2013 A.9.2.1',
+                                    'ISO 27001:2013 A.9.2.2',
+                                    'ISO 27001:2013 A.9.2.3',
+                                    'ISO 27001:2013 A.9.2.4',
+                                    'ISO 27001:2013 A.9.2.6',
+                                    'ISO 27001:2013 A.9.3.1',
+                                    'ISO 27001:2013 A.9.4.2',
+                                    'ISO 27001:2013 A.9.4.3'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'NEW'
+                            },
                             'RecordState': 'ACTIVE'
                         }
                     ]
@@ -120,11 +151,42 @@ def secret_age_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'Secret Name': secretName }
+                                        'Other': { 'secretName': secretName }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'PASSED' },
+                            'Compliance': { 
+                                'Status': 'PASSED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.AC-1',
+                                    'NIST SP 800-53 AC-1',
+                                    'NIST SP 800-53 AC-2',
+                                    'NIST SP 800-53 IA-1',
+                                    'NIST SP 800-53 IA-2',
+                                    'NIST SP 800-53 IA-3',
+                                    'NIST SP 800-53 IA-4',
+                                    'NIST SP 800-53 IA-5',
+                                    'NIST SP 800-53 IA-6',
+                                    'NIST SP 800-53 IA-7',
+                                    'NIST SP 800-53 IA-8',
+                                    'NIST SP 800-53 IA-9',
+                                    'NIST SP 800-53 IA-10',
+                                    'NIST SP 800-53 IA-11',
+                                    'AICPA TSC CC6.1',
+                                    'AICPA TSC CC6.2',
+                                    'ISO 27001:2013 A.9.2.1',
+                                    'ISO 27001:2013 A.9.2.2',
+                                    'ISO 27001:2013 A.9.2.3',
+                                    'ISO 27001:2013 A.9.2.4',
+                                    'ISO 27001:2013 A.9.2.6',
+                                    'ISO 27001:2013 A.9.3.1',
+                                    'ISO 27001:2013 A.9.4.2',
+                                    'ISO 27001:2013 A.9.4.3'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'RESOLVED'
+                            },
                             'RecordState': 'ARCHIVED'
                         }
                     ]
@@ -176,11 +238,42 @@ def secret_changed_in_last_90_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'Secret Name': secretName }
+                                        'Other': { 'secretName': secretName }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'PASSED' },
+                            'Compliance': { 
+                                'Status': 'PASSED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.AC-1',
+                                    'NIST SP 800-53 AC-1',
+                                    'NIST SP 800-53 AC-2',
+                                    'NIST SP 800-53 IA-1',
+                                    'NIST SP 800-53 IA-2',
+                                    'NIST SP 800-53 IA-3',
+                                    'NIST SP 800-53 IA-4',
+                                    'NIST SP 800-53 IA-5',
+                                    'NIST SP 800-53 IA-6',
+                                    'NIST SP 800-53 IA-7',
+                                    'NIST SP 800-53 IA-8',
+                                    'NIST SP 800-53 IA-9',
+                                    'NIST SP 800-53 IA-10',
+                                    'NIST SP 800-53 IA-11',
+                                    'AICPA TSC CC6.1',
+                                    'AICPA TSC CC6.2',
+                                    'ISO 27001:2013 A.9.2.1',
+                                    'ISO 27001:2013 A.9.2.2',
+                                    'ISO 27001:2013 A.9.2.3',
+                                    'ISO 27001:2013 A.9.2.4',
+                                    'ISO 27001:2013 A.9.2.6',
+                                    'ISO 27001:2013 A.9.3.1',
+                                    'ISO 27001:2013 A.9.4.2',
+                                    'ISO 27001:2013 A.9.4.3'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'RESOLVED'
+                            },
                             'RecordState': 'ARCHIVED'
                         }
                     ]
@@ -225,11 +318,42 @@ def secret_changed_in_last_90_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'Secret Name': secretName }
+                                        'Other': { 'secretName': secretName }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'FAILED' },
+                            'Compliance': { 
+                                'Status': 'FAILED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.AC-1',
+                                    'NIST SP 800-53 AC-1',
+                                    'NIST SP 800-53 AC-2',
+                                    'NIST SP 800-53 IA-1',
+                                    'NIST SP 800-53 IA-2',
+                                    'NIST SP 800-53 IA-3',
+                                    'NIST SP 800-53 IA-4',
+                                    'NIST SP 800-53 IA-5',
+                                    'NIST SP 800-53 IA-6',
+                                    'NIST SP 800-53 IA-7',
+                                    'NIST SP 800-53 IA-8',
+                                    'NIST SP 800-53 IA-9',
+                                    'NIST SP 800-53 IA-10',
+                                    'NIST SP 800-53 IA-11',
+                                    'AICPA TSC CC6.1',
+                                    'AICPA TSC CC6.2',
+                                    'ISO 27001:2013 A.9.2.1',
+                                    'ISO 27001:2013 A.9.2.2',
+                                    'ISO 27001:2013 A.9.2.3',
+                                    'ISO 27001:2013 A.9.2.4',
+                                    'ISO 27001:2013 A.9.2.6',
+                                    'ISO 27001:2013 A.9.3.1',
+                                    'ISO 27001:2013 A.9.4.2',
+                                    'ISO 27001:2013 A.9.4.3'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'NEW'
+                            },
                             'RecordState': 'ACTIVE'
                         }
                     ]
