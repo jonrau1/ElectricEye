@@ -80,7 +80,38 @@ def cognitoidp_cis_password_check():
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'PASSED' },
+                            'Compliance': { 
+                                'Status': 'PASSED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.AC-1',
+                                    'NIST SP 800-53 AC-1',
+                                    'NIST SP 800-53 AC-2',
+                                    'NIST SP 800-53 IA-1',
+                                    'NIST SP 800-53 IA-2',
+                                    'NIST SP 800-53 IA-3',
+                                    'NIST SP 800-53 IA-4',
+                                    'NIST SP 800-53 IA-5',
+                                    'NIST SP 800-53 IA-6',
+                                    'NIST SP 800-53 IA-7',
+                                    'NIST SP 800-53 IA-8',
+                                    'NIST SP 800-53 IA-9',
+                                    'NIST SP 800-53 IA-10',
+                                    'NIST SP 800-53 IA-11',
+                                    'AICPA TSC CC6.1',
+                                    'AICPA TSC CC6.2',
+                                    'ISO 27001:2013 A.9.2.1',
+                                    'ISO 27001:2013 A.9.2.2',
+                                    'ISO 27001:2013 A.9.2.3',
+                                    'ISO 27001:2013 A.9.2.4',
+                                    'ISO 27001:2013 A.9.2.6',
+                                    'ISO 27001:2013 A.9.3.1',
+                                    'ISO 27001:2013 A.9.4.2',
+                                    'ISO 27001:2013 A.9.4.3'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'RESOLVED'
+                            },
                             'RecordState': 'ARCHIVED'
                         }
                     ]
@@ -108,7 +139,7 @@ def cognitoidp_cis_password_check():
                             'Severity': { 'Label': 'MEDIUM' },
                             'Confidence': 99,
                             'Title': '[Cognito-IdP.1] Cognito user pools should have a password policy that meets or exceed AWS CIS Foundations Benchmark standards',
-                            'Description': 'Cognito user pool ' + userPoolArn + ' does not meet the password guidelines. Refer to the remediation instructions to remediate this behavior',
+                            'Description': 'Cognito user pool ' + userPoolArn + ' does not meet the password guidelines. Password policies, in part, enforce password complexity requirements, setting a password complexity policy increases account resiliency against brute force login attempts. Refer to the remediation instructions to remediate this behavior',
                             'Remediation': {
                                 'Recommendation': {
                                     'Text': 'To ensure you Cognito user pools have a password policy that meets or exceed AWS CIS Foundations Benchmark standards refer to the Adding User Pool Password Requirements section of the Amazon Cognito Developer Guide',
@@ -129,7 +160,38 @@ def cognitoidp_cis_password_check():
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'FAILED' },
+                            'Compliance': { 
+                                'Status': 'FAILED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.AC-1',
+                                    'NIST SP 800-53 AC-1',
+                                    'NIST SP 800-53 AC-2',
+                                    'NIST SP 800-53 IA-1',
+                                    'NIST SP 800-53 IA-2',
+                                    'NIST SP 800-53 IA-3',
+                                    'NIST SP 800-53 IA-4',
+                                    'NIST SP 800-53 IA-5',
+                                    'NIST SP 800-53 IA-6',
+                                    'NIST SP 800-53 IA-7',
+                                    'NIST SP 800-53 IA-8',
+                                    'NIST SP 800-53 IA-9',
+                                    'NIST SP 800-53 IA-10',
+                                    'NIST SP 800-53 IA-11',
+                                    'AICPA TSC CC6.1',
+                                    'AICPA TSC CC6.2',
+                                    'ISO 27001:2013 A.9.2.1',
+                                    'ISO 27001:2013 A.9.2.2',
+                                    'ISO 27001:2013 A.9.2.3',
+                                    'ISO 27001:2013 A.9.2.4',
+                                    'ISO 27001:2013 A.9.2.6',
+                                    'ISO 27001:2013 A.9.3.1',
+                                    'ISO 27001:2013 A.9.4.2',
+                                    'ISO 27001:2013 A.9.4.3'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'NEW'
+                            },
                             'RecordState': 'ACTIVE'
                         }
                     ]
@@ -168,7 +230,7 @@ def cognitoidp_temp_password_check():
                             'Severity': { 'Label': 'MEDIUM' },
                             'Confidence': 99,
                             'Title': '[Cognito-IdP.2] Cognito user pools should not allow temporary passwords to stay valid beyond 24 hours',
-                            'Description': 'Cognito user pool ' + userPoolArn + ' allows temporary passwords to stay valid beyond 24 hours. Refer to the remediation instructions if this configuration is not intended',
+                            'Description': 'Cognito user pool ' + userPoolArn + ' allows temporary passwords to stay valid beyond 24 hours. Password policies, in part, enforce password complexity requirements, setting a password complexity policy increases account resiliency against brute force login attempts. Refer to the remediation instructions if this configuration is not intended',
                             'Remediation': {
                                 'Recommendation': {
                                     'Text': 'To modify your Cognito user pool temporary password policy refer to the Authentication Flow for Users Created by Administrators or Developers section of the Amazon Cognito Developer Guide',
@@ -189,7 +251,38 @@ def cognitoidp_temp_password_check():
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'FAILED' },
+                            'Compliance': { 
+                                'Status': 'FAILED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.AC-1',
+                                    'NIST SP 800-53 AC-1',
+                                    'NIST SP 800-53 AC-2',
+                                    'NIST SP 800-53 IA-1',
+                                    'NIST SP 800-53 IA-2',
+                                    'NIST SP 800-53 IA-3',
+                                    'NIST SP 800-53 IA-4',
+                                    'NIST SP 800-53 IA-5',
+                                    'NIST SP 800-53 IA-6',
+                                    'NIST SP 800-53 IA-7',
+                                    'NIST SP 800-53 IA-8',
+                                    'NIST SP 800-53 IA-9',
+                                    'NIST SP 800-53 IA-10',
+                                    'NIST SP 800-53 IA-11',
+                                    'AICPA TSC CC6.1',
+                                    'AICPA TSC CC6.2',
+                                    'ISO 27001:2013 A.9.2.1',
+                                    'ISO 27001:2013 A.9.2.2',
+                                    'ISO 27001:2013 A.9.2.3',
+                                    'ISO 27001:2013 A.9.2.4',
+                                    'ISO 27001:2013 A.9.2.6',
+                                    'ISO 27001:2013 A.9.3.1',
+                                    'ISO 27001:2013 A.9.4.2',
+                                    'ISO 27001:2013 A.9.4.3'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'NEW'
+                            },
                             'RecordState': 'ACTIVE'
                         }
                     ]
@@ -238,7 +331,38 @@ def cognitoidp_temp_password_check():
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'PASSED' },
+                            'Compliance': { 
+                                'Status': 'PASSED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.AC-1',
+                                    'NIST SP 800-53 AC-1',
+                                    'NIST SP 800-53 AC-2',
+                                    'NIST SP 800-53 IA-1',
+                                    'NIST SP 800-53 IA-2',
+                                    'NIST SP 800-53 IA-3',
+                                    'NIST SP 800-53 IA-4',
+                                    'NIST SP 800-53 IA-5',
+                                    'NIST SP 800-53 IA-6',
+                                    'NIST SP 800-53 IA-7',
+                                    'NIST SP 800-53 IA-8',
+                                    'NIST SP 800-53 IA-9',
+                                    'NIST SP 800-53 IA-10',
+                                    'NIST SP 800-53 IA-11',
+                                    'AICPA TSC CC6.1',
+                                    'AICPA TSC CC6.2',
+                                    'ISO 27001:2013 A.9.2.1',
+                                    'ISO 27001:2013 A.9.2.2',
+                                    'ISO 27001:2013 A.9.2.3',
+                                    'ISO 27001:2013 A.9.2.4',
+                                    'ISO 27001:2013 A.9.2.6',
+                                    'ISO 27001:2013 A.9.3.1',
+                                    'ISO 27001:2013 A.9.4.2',
+                                    'ISO 27001:2013 A.9.4.3'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'RESOLVED'
+                            },
                             'RecordState': 'ARCHIVED'
                         }
                     ]
@@ -276,7 +400,7 @@ def cognitoidp_mfa_check():
                             'Severity': { 'Label': 'HIGH' },
                             'Confidence': 99,
                             'Title': '[Cognito-IdP.3] Cognito user pools should enforce multi factor authentication (MFA)',
-                            'Description': 'Cognito user pool ' + userPoolArn + ' does not enforce multi factor authentication (MFA). Refer to the remediation instructions to remediate this behavior',
+                            'Description': 'Cognito user pool ' + userPoolArn + ' does not enforce multi factor authentication (MFA). AWS recommends enabling MFA for all accounts that have a console password. Enabling MFA provides increased security for console access because it requires the authenticating principal to possess a device that emits a time-sensitive key and have knowledge of a credential. Refer to the remediation instructions to remediate this behavior',
                             'Remediation': {
                                 'Recommendation': {
                                     'Text': 'To ensure you Cognito user pools enforce MFA refer to the Adding Multi-Factor Authentication (MFA) to a User Pool section of the Amazon Cognito Developer Guide',
@@ -297,7 +421,38 @@ def cognitoidp_mfa_check():
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'FAILED' },
+                            'Compliance': { 
+                                'Status': 'FAILED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.AC-1',
+                                    'NIST SP 800-53 AC-1',
+                                    'NIST SP 800-53 AC-2',
+                                    'NIST SP 800-53 IA-1',
+                                    'NIST SP 800-53 IA-2',
+                                    'NIST SP 800-53 IA-3',
+                                    'NIST SP 800-53 IA-4',
+                                    'NIST SP 800-53 IA-5',
+                                    'NIST SP 800-53 IA-6',
+                                    'NIST SP 800-53 IA-7',
+                                    'NIST SP 800-53 IA-8',
+                                    'NIST SP 800-53 IA-9',
+                                    'NIST SP 800-53 IA-10',
+                                    'NIST SP 800-53 IA-11',
+                                    'AICPA TSC CC6.1',
+                                    'AICPA TSC CC6.2',
+                                    'ISO 27001:2013 A.9.2.1',
+                                    'ISO 27001:2013 A.9.2.2',
+                                    'ISO 27001:2013 A.9.2.3',
+                                    'ISO 27001:2013 A.9.2.4',
+                                    'ISO 27001:2013 A.9.2.6',
+                                    'ISO 27001:2013 A.9.3.1',
+                                    'ISO 27001:2013 A.9.4.2',
+                                    'ISO 27001:2013 A.9.4.3'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'NEW'
+                            },
                             'RecordState': 'ACTIVE'
                         }
                     ]
@@ -346,7 +501,38 @@ def cognitoidp_mfa_check():
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'PASSED' },
+                            'Compliance': { 
+                                'Status': 'PASSED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.AC-1',
+                                    'NIST SP 800-53 AC-1',
+                                    'NIST SP 800-53 AC-2',
+                                    'NIST SP 800-53 IA-1',
+                                    'NIST SP 800-53 IA-2',
+                                    'NIST SP 800-53 IA-3',
+                                    'NIST SP 800-53 IA-4',
+                                    'NIST SP 800-53 IA-5',
+                                    'NIST SP 800-53 IA-6',
+                                    'NIST SP 800-53 IA-7',
+                                    'NIST SP 800-53 IA-8',
+                                    'NIST SP 800-53 IA-9',
+                                    'NIST SP 800-53 IA-10',
+                                    'NIST SP 800-53 IA-11',
+                                    'AICPA TSC CC6.1',
+                                    'AICPA TSC CC6.2',
+                                    'ISO 27001:2013 A.9.2.1',
+                                    'ISO 27001:2013 A.9.2.2',
+                                    'ISO 27001:2013 A.9.2.3',
+                                    'ISO 27001:2013 A.9.2.4',
+                                    'ISO 27001:2013 A.9.2.6',
+                                    'ISO 27001:2013 A.9.3.1',
+                                    'ISO 27001:2013 A.9.4.2',
+                                    'ISO 27001:2013 A.9.4.3'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'RESOLVED'
+                            },
                             'RecordState': 'ARCHIVED'
                         }
                     ]

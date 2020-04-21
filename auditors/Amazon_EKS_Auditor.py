@@ -55,7 +55,7 @@ def eks_public_endpoint_access_check():
                                 'FirstObservedAt': iso8601Time,
                                 'CreatedAt': iso8601Time,
                                 'UpdatedAt': iso8601Time,
-                                'Severity': { 'Label': 'HIGH' },
+                                'Severity': { 'Label': 'CRITICAL' },
                                 'Confidence': 99,
                                 'Title': '[EKS.1] Elastic Kubernetes Service (EKS) cluster API servers should not be accessible from the internet',
                                 'Description': 'Elastic Kubernetes Service (EKS) cluster ' + clusterName + ' API server is accessible from the internet. Refer to the remediation instructions if this configuration is not intended',
@@ -79,7 +79,26 @@ def eks_public_endpoint_access_check():
                                         }
                                     }
                                 ],
-                                'Compliance': { 'Status': 'FAILED' },
+                                'Compliance': { 
+                                    'Status': 'FAILED',
+                                    'RelatedRequirements': [
+                                        'NIST CSF PR.AC-3',
+                                        'NIST SP 800-53 AC-1',
+                                        'NIST SP 800-53 AC-17',
+                                        'NIST SP 800-53 AC-19',
+                                        'NIST SP 800-53 AC-20',
+                                        'NIST SP 800-53 SC-15',
+                                        'AICPA TSC CC6.6',
+                                        'ISO 27001:2013 A.6.2.1',
+                                        'ISO 27001:2013 A.6.2.2',
+                                        'ISO 27001:2013 A.11.2.6',
+                                        'ISO 27001:2013 A.13.1.1',
+                                        'ISO 27001:2013 A.13.2.1'
+                                    ]
+                                },
+                                'Workflow': {
+                                    'Status': 'NEW'
+                                },
                                 'RecordState': 'ACTIVE'
                             }
                         ]
@@ -131,7 +150,26 @@ def eks_public_endpoint_access_check():
                                         }
                                     }
                                 ],
-                                'Compliance': { 'Status': 'PASSED' },
+                                'Compliance': { 
+                                    'Status': 'PASSED',
+                                    'RelatedRequirements': [
+                                        'NIST CSF PR.AC-3',
+                                        'NIST SP 800-53 AC-1',
+                                        'NIST SP 800-53 AC-17',
+                                        'NIST SP 800-53 AC-19',
+                                        'NIST SP 800-53 AC-20',
+                                        'NIST SP 800-53 SC-15',
+                                        'AICPA TSC CC6.6',
+                                        'ISO 27001:2013 A.6.2.1',
+                                        'ISO 27001:2013 A.6.2.2',
+                                        'ISO 27001:2013 A.11.2.6',
+                                        'ISO 27001:2013 A.13.1.1',
+                                        'ISO 27001:2013 A.13.2.1'
+                                    ]
+                                },
+                                'Workflow': {
+                                    'Status': 'RESOLVED'
+                                },
                                 'RecordState': 'ARCHIVED'
                             }
                         ]
@@ -194,7 +232,22 @@ def eks_latest_k8s_version_check():
                                         }
                                     }
                                 ],
-                                'Compliance': { 'Status': 'FAILED' },
+                                'Compliance': { 
+                                    'Status': 'FAILED',
+                                    'RelatedRequirements': [
+                                        'NIST CSF ID.AM-2',
+                                        'NIST SP 800-53 CM-8',
+                                        'NIST SP 800-53 PM-5',
+                                        'AICPA TSC CC3.2',
+                                        'AICPA TSC CC6.1',
+                                        'ISO 27001:2013 A.8.1.1',
+                                        'ISO 27001:2013 A.8.1.2',
+                                        'ISO 27001:2013 A.12.5.1'
+                                    ]
+                                },
+                                'Workflow': {
+                                    'Status': 'NEW'
+                                },
                                 'RecordState': 'ACTIVE'
                             }
                         ]
@@ -243,7 +296,22 @@ def eks_latest_k8s_version_check():
                                         }
                                     }
                                 ],
-                                'Compliance': { 'Status': 'PASSED' },
+                                'Compliance': { 
+                                    'Status': 'PASSED',
+                                    'RelatedRequirements': [
+                                        'NIST CSF ID.AM-2',
+                                        'NIST SP 800-53 CM-8',
+                                        'NIST SP 800-53 PM-5',
+                                        'AICPA TSC CC3.2',
+                                        'AICPA TSC CC6.1',
+                                        'ISO 27001:2013 A.8.1.1',
+                                        'ISO 27001:2013 A.8.1.2',
+                                        'ISO 27001:2013 A.12.5.1'
+                                    ]
+                                },
+                                'Workflow': {
+                                    'Status': 'RESOLVED'
+                                },
                                 'RecordState': 'ARCHIVED'
                             }
                         ]
@@ -290,7 +358,7 @@ def eks_logging_audit_auth_check():
                                             'Severity': { 'Label': 'INFORMATIONAL' },
                                             'Confidence': 99,
                                             'Title': '[EKS.3] Elastic Kubernetes Service (EKS) clusters should have authenticator and/or audit logging enabled',
-                                            'Description': 'Elastic Kubernetes Service (EKS) cluster ' + clusterName + ' does not have authenticator or audit logging enabled. Refer to the remediation instructions if this configuration is not intended',
+                                            'Description': 'Elastic Kubernetes Service (EKS) cluster ' + clusterName + ' has authenticator and audit logging enabled.',
                                             'Remediation': {
                                                 'Recommendation': {
                                                     'Text': 'To enable logging for your cluster refer to the Amazon EKS Control Plane Logging section of the EKS user guide',
@@ -311,7 +379,24 @@ def eks_logging_audit_auth_check():
                                                     }
                                                 }
                                             ],
-                                            'Compliance': { 'Status': 'FAILED' },
+                                            'Compliance': { 
+                                                'Status': 'PASSED',
+                                                'RelatedRequirements': [
+                                                    'NIST CSF DE.AE-3',
+                                                    'NIST SP 800-53 AU-6',
+                                                    'NIST SP 800-53 CA-7',
+                                                    'NIST SP 800-53 IR-4',
+                                                    'NIST SP 800-53 IR-5',
+                                                    'NIST SP 800-53 IR-8', 
+                                                    'NIST SP 800-53 SI-4',
+                                                    'AICPA TSC CC7.2',
+                                                    'ISO 27001:2013 A.12.4.1',
+                                                    'ISO 27001:2013 A.16.1.7'
+                                                ]
+                                            },
+                                            'Workflow': {
+                                                'Status': 'RESOLVED'
+                                            },
                                             'RecordState': 'ACTIVE'
                                         }
                                     ]
@@ -360,7 +445,24 @@ def eks_logging_audit_auth_check():
                                                     }
                                                 }
                                             ],
-                                            'Compliance': { 'Status': 'FAILED' },
+                                            'Compliance': { 
+                                                'Status': 'FAILED',
+                                                'RelatedRequirements': [
+                                                    'NIST CSF DE.AE-3',
+                                                    'NIST SP 800-53 AU-6',
+                                                    'NIST SP 800-53 CA-7',
+                                                    'NIST SP 800-53 IR-4',
+                                                    'NIST SP 800-53 IR-5',
+                                                    'NIST SP 800-53 IR-8', 
+                                                    'NIST SP 800-53 SI-4',
+                                                    'AICPA TSC CC7.2',
+                                                    'ISO 27001:2013 A.12.4.1',
+                                                    'ISO 27001:2013 A.16.1.7'
+                                                ]
+                                            },
+                                            'Workflow': {
+                                                'Status': 'NEW'
+                                            },
                                             'RecordState': 'ACTIVE'
                                         }
                                     ]

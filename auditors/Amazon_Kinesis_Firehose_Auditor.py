@@ -82,7 +82,20 @@ def firehose_delivery_stream_encryption_check():
                                         }
                                     }
                                 ],
-                                'Compliance': { 'Status': 'FAILED' },
+                                'Compliance': { 
+                                    'Status': 'FAILED',
+                                    'RelatedRequirements': [
+                                        'NIST CSF PR.DS-1', 
+                                        'NIST SP 800-53 MP-8',
+                                        'NIST SP 800-53 SC-12',
+                                        'NIST SP 800-53 SC-28',
+                                        'AICPA TSC CC6.1',
+                                        'ISO 27001:2013 A.8.2.3'
+                                    ]
+                                },
+                                'Workflow': {
+                                    'Status': 'NEW'
+                                },
                                 'RecordState': 'ACTIVE'
                             }
                         ]
@@ -135,7 +148,20 @@ def firehose_delivery_stream_encryption_check():
                                         }
                                     }
                                 ],
-                                'Compliance': { 'Status': 'PASSED' },
+                                'Compliance': { 
+                                    'Status': 'PASSED',
+                                    'RelatedRequirements': [
+                                        'NIST CSF PR.DS-1', 
+                                        'NIST SP 800-53 MP-8',
+                                        'NIST SP 800-53 SC-12',
+                                        'NIST SP 800-53 SC-28',
+                                        'AICPA TSC CC6.1',
+                                        'ISO 27001:2013 A.8.2.3'
+                                    ]
+                                },
+                                'Workflow': {
+                                    'Status': 'RESOLVED'
+                                },
                                 'RecordState': 'ARCHIVED'
                             }
                         ]

@@ -86,7 +86,29 @@ def public_ec2_shodan_check():
                                                 }
                                             }
                                         ],
-                                        'Compliance': { 'Status': 'PASSED' },
+                                        'Compliance': { 
+                                            'Status': 'PASSED',
+                                            'RelatedRequirements': [
+                                                'NIST CSF ID.RA-2',
+                                                'NIST CSF DE.AE-2',
+                                                'NIST SP 800-53 AU-6',
+                                                'NIST SP 800-53 CA-7',
+                                                'NIST SP 800-53 IR-4',
+                                                'NIST SP 800-53 PM-15',
+                                                'NIST SP 800-53 PM-16',
+                                                'NIST SP 800-53 SI-4',
+                                                'NIST SP 800-53 SI-5',
+                                                'AIPCA TSC CC3.2',
+                                                'AIPCA TSC CC7.2',
+                                                'ISO 27001:2013 A.6.1.4',
+                                                'ISO 27001:2013 A.12.4.1',
+                                                'ISO 27001:2013 A.16.1.1',
+                                                'ISO 27001:2013 A.16.1.4'
+                                            ]
+                                        },
+                                        'Workflow': {
+                                            'Status': 'RESOLVED'
+                                        },
                                         'RecordState': 'ARCHIVED'
                                     }
                                 ]
@@ -142,7 +164,29 @@ def public_ec2_shodan_check():
                                                 }
                                             }
                                         ],
-                                        'Compliance': { 'Status': 'FAILED' },
+                                        'Compliance': { 
+                                            'Status': 'FAILED',
+                                            'RelatedRequirements': [
+                                                'NIST CSF ID.RA-2',
+                                                'NIST CSF DE.AE-2',
+                                                'NIST SP 800-53 AU-6',
+                                                'NIST SP 800-53 CA-7',
+                                                'NIST SP 800-53 IR-4',
+                                                'NIST SP 800-53 PM-15',
+                                                'NIST SP 800-53 PM-16',
+                                                'NIST SP 800-53 SI-4',
+                                                'NIST SP 800-53 SI-5',
+                                                'AIPCA TSC CC3.2',
+                                                'AIPCA TSC CC7.2',
+                                                'ISO 27001:2013 A.6.1.4',
+                                                'ISO 27001:2013 A.12.4.1',
+                                                'ISO 27001:2013 A.16.1.1',
+                                                'ISO 27001:2013 A.16.1.4'
+                                            ]
+                                        },
+                                        'Workflow': {
+                                            'Status': 'NEW'
+                                        },
                                         'RecordState': 'ACTIVE'
                                     }
                                 ]
@@ -213,7 +257,29 @@ def public_alb_shodan_check():
                                             }
                                         }
                                     ],
-                                    'Compliance': { 'Status': 'PASSED' },
+                                    'Compliance': { 
+                                        'Status': 'PASSED',
+                                        'RelatedRequirements': [
+                                            'NIST CSF ID.RA-2',
+                                            'NIST CSF DE.AE-2',
+                                            'NIST SP 800-53 AU-6',
+                                            'NIST SP 800-53 CA-7',
+                                            'NIST SP 800-53 IR-4',
+                                            'NIST SP 800-53 PM-15',
+                                            'NIST SP 800-53 PM-16',
+                                            'NIST SP 800-53 SI-4',
+                                            'NIST SP 800-53 SI-5',
+                                            'AIPCA TSC CC3.2',
+                                            'AIPCA TSC CC7.2',
+                                            'ISO 27001:2013 A.6.1.4',
+                                            'ISO 27001:2013 A.12.4.1',
+                                            'ISO 27001:2013 A.16.1.1',
+                                            'ISO 27001:2013 A.16.1.4'
+                                        ]
+                                    },
+                                    'Workflow': {
+                                        'Status': 'RESOLVED'
+                                    },
                                     'RecordState': 'ARCHIVED'
                                 }
                             ]
@@ -268,7 +334,29 @@ def public_alb_shodan_check():
                                             }
                                         }
                                     ],
-                                    'Compliance': { 'Status': 'FAILED' },
+                                    'Compliance': { 
+                                        'Status': 'FAILED',
+                                        'RelatedRequirements': [
+                                            'NIST CSF ID.RA-2',
+                                            'NIST CSF DE.AE-2',
+                                            'NIST SP 800-53 AU-6',
+                                            'NIST SP 800-53 CA-7',
+                                            'NIST SP 800-53 IR-4',
+                                            'NIST SP 800-53 PM-15',
+                                            'NIST SP 800-53 PM-16',
+                                            'NIST SP 800-53 SI-4',
+                                            'NIST SP 800-53 SI-5',
+                                            'AIPCA TSC CC3.2',
+                                            'AIPCA TSC CC7.2',
+                                            'ISO 27001:2013 A.6.1.4',
+                                            'ISO 27001:2013 A.12.4.1',
+                                            'ISO 27001:2013 A.16.1.1',
+                                            'ISO 27001:2013 A.16.1.4'
+                                        ]
+                                    },
+                                    'Workflow': {
+                                        'Status': 'NEW'
+                                    },
                                     'RecordState': 'ACTIVE'
                                 }
                             ]
@@ -338,7 +426,29 @@ def public_rds_shodan_check():
                                             }
                                         }
                                     ],
-                                    'Compliance': { 'Status': 'PASSED' },
+                                    'Compliance': { 
+                                        'Status': 'PASSED',
+                                        'RelatedRequirements': [
+                                            'NIST CSF ID.RA-2',
+                                            'NIST CSF DE.AE-2',
+                                            'NIST SP 800-53 AU-6',
+                                            'NIST SP 800-53 CA-7',
+                                            'NIST SP 800-53 IR-4',
+                                            'NIST SP 800-53 PM-15',
+                                            'NIST SP 800-53 PM-16',
+                                            'NIST SP 800-53 SI-4',
+                                            'NIST SP 800-53 SI-5',
+                                            'AIPCA TSC CC3.2',
+                                            'AIPCA TSC CC7.2',
+                                            'ISO 27001:2013 A.6.1.4',
+                                            'ISO 27001:2013 A.12.4.1',
+                                            'ISO 27001:2013 A.16.1.1',
+                                            'ISO 27001:2013 A.16.1.4'
+                                        ]
+                                    },
+                                    'Workflow': {
+                                        'Status': 'RESOLVED'
+                                    },
                                     'RecordState': 'ARCHIVED'
                                 }
                             ]
@@ -394,7 +504,29 @@ def public_rds_shodan_check():
                                             }
                                         }
                                     ],
-                                    'Compliance': { 'Status': 'FAILED' },
+                                    'Compliance': { 
+                                        'Status': 'FAILED',
+                                        'RelatedRequirements': [
+                                            'NIST CSF ID.RA-2',
+                                            'NIST CSF DE.AE-2',
+                                            'NIST SP 800-53 AU-6',
+                                            'NIST SP 800-53 CA-7',
+                                            'NIST SP 800-53 IR-4',
+                                            'NIST SP 800-53 PM-15',
+                                            'NIST SP 800-53 PM-16',
+                                            'NIST SP 800-53 SI-4',
+                                            'NIST SP 800-53 SI-5',
+                                            'AIPCA TSC CC3.2',
+                                            'AIPCA TSC CC7.2',
+                                            'ISO 27001:2013 A.6.1.4',
+                                            'ISO 27001:2013 A.12.4.1',
+                                            'ISO 27001:2013 A.16.1.1',
+                                            'ISO 27001:2013 A.16.1.4'
+                                        ]
+                                    },
+                                    'Workflow': {
+                                        'Status': 'NEW'
+                                    },
                                     'RecordState': 'ACTIVE'
                                 }
                             ]
@@ -468,7 +600,29 @@ def public_es_domain_shodan_check():
                                                     }
                                                 }
                                             ],
-                                            'Compliance': { 'Status': 'PASSED' },
+                                            'Compliance': { 
+                                                'Status': 'PASSED',
+                                                'RelatedRequirements': [
+                                                    'NIST CSF ID.RA-2',
+                                                    'NIST CSF DE.AE-2',
+                                                    'NIST SP 800-53 AU-6',
+                                                    'NIST SP 800-53 CA-7',
+                                                    'NIST SP 800-53 IR-4',
+                                                    'NIST SP 800-53 PM-15',
+                                                    'NIST SP 800-53 PM-16',
+                                                    'NIST SP 800-53 SI-4',
+                                                    'NIST SP 800-53 SI-5',
+                                                    'AIPCA TSC CC3.2',
+                                                    'AIPCA TSC CC7.2',
+                                                    'ISO 27001:2013 A.6.1.4',
+                                                    'ISO 27001:2013 A.12.4.1',
+                                                    'ISO 27001:2013 A.16.1.1',
+                                                    'ISO 27001:2013 A.16.1.4'
+                                                ]
+                                            },
+                                            'Workflow': {
+                                                'Status': 'RESOLVED'
+                                            },
                                             'RecordState': 'ARCHIVED'
                                         }
                                     ]
@@ -523,7 +677,29 @@ def public_es_domain_shodan_check():
                                                     }
                                                 }
                                             ],
-                                            'Compliance': { 'Status': 'FAILED' },
+                                            'Compliance': { 
+                                                'Status': 'FAILED',
+                                                'RelatedRequirements': [
+                                                    'NIST CSF ID.RA-2',
+                                                    'NIST CSF DE.AE-2',
+                                                    'NIST SP 800-53 AU-6',
+                                                    'NIST SP 800-53 CA-7',
+                                                    'NIST SP 800-53 IR-4',
+                                                    'NIST SP 800-53 PM-15',
+                                                    'NIST SP 800-53 PM-16',
+                                                    'NIST SP 800-53 SI-4',
+                                                    'NIST SP 800-53 SI-5',
+                                                    'AIPCA TSC CC3.2',
+                                                    'AIPCA TSC CC7.2',
+                                                    'ISO 27001:2013 A.6.1.4',
+                                                    'ISO 27001:2013 A.12.4.1',
+                                                    'ISO 27001:2013 A.16.1.1',
+                                                    'ISO 27001:2013 A.16.1.4'
+                                                ]
+                                            },
+                                            'Workflow': {
+                                                'Status': 'NEW'
+                                            },
                                             'RecordState': 'ACTIVE'
                                         }
                                     ]
@@ -587,7 +763,29 @@ def public_clb_shodan_check():
                                             }
                                         }
                                     ],
-                                    'Compliance': { 'Status': 'PASSED' },
+                                    'Compliance': { 
+                                        'Status': 'PASSED',
+                                        'RelatedRequirements': [
+                                            'NIST CSF ID.RA-2',
+                                            'NIST CSF DE.AE-2',
+                                            'NIST SP 800-53 AU-6',
+                                            'NIST SP 800-53 CA-7',
+                                            'NIST SP 800-53 IR-4',
+                                            'NIST SP 800-53 PM-15',
+                                            'NIST SP 800-53 PM-16',
+                                            'NIST SP 800-53 SI-4',
+                                            'NIST SP 800-53 SI-5',
+                                            'AIPCA TSC CC3.2',
+                                            'AIPCA TSC CC7.2',
+                                            'ISO 27001:2013 A.6.1.4',
+                                            'ISO 27001:2013 A.12.4.1',
+                                            'ISO 27001:2013 A.16.1.1',
+                                            'ISO 27001:2013 A.16.1.4'
+                                        ]
+                                    },
+                                    'Workflow': {
+                                        'Status': 'RESOLVED'
+                                    },
                                     'RecordState': 'ARCHIVED'
                                 }
                             ]
@@ -639,7 +837,29 @@ def public_clb_shodan_check():
                                             }
                                         }
                                     ],
-                                    'Compliance': { 'Status': 'FAILED' },
+                                    'Compliance': { 
+                                        'Status': 'FAILED',
+                                        'RelatedRequirements': [
+                                            'NIST CSF ID.RA-2',
+                                            'NIST CSF DE.AE-2',
+                                            'NIST SP 800-53 AU-6',
+                                            'NIST SP 800-53 CA-7',
+                                            'NIST SP 800-53 IR-4',
+                                            'NIST SP 800-53 PM-15',
+                                            'NIST SP 800-53 PM-16',
+                                            'NIST SP 800-53 SI-4',
+                                            'NIST SP 800-53 SI-5',
+                                            'AIPCA TSC CC3.2',
+                                            'AIPCA TSC CC7.2',
+                                            'ISO 27001:2013 A.6.1.4',
+                                            'ISO 27001:2013 A.12.4.1',
+                                            'ISO 27001:2013 A.16.1.1',
+                                            'ISO 27001:2013 A.16.1.4'
+                                        ]
+                                    },
+                                    'Workflow': {
+                                        'Status': 'NEW'
+                                    },
                                     'RecordState': 'ACTIVE'
                                 }
                             ]
@@ -697,7 +917,29 @@ def public_dms_replication_instance_shodan_check():
                                             }
                                         }
                                     ],
-                                    'Compliance': { 'Status': 'PASSED' },
+                                    'Compliance': { 
+                                        'Status': 'PASSED',
+                                        'RelatedRequirements': [
+                                            'NIST CSF ID.RA-2',
+                                            'NIST CSF DE.AE-2',
+                                            'NIST SP 800-53 AU-6',
+                                            'NIST SP 800-53 CA-7',
+                                            'NIST SP 800-53 IR-4',
+                                            'NIST SP 800-53 PM-15',
+                                            'NIST SP 800-53 PM-16',
+                                            'NIST SP 800-53 SI-4',
+                                            'NIST SP 800-53 SI-5',
+                                            'AIPCA TSC CC3.2',
+                                            'AIPCA TSC CC7.2',
+                                            'ISO 27001:2013 A.6.1.4',
+                                            'ISO 27001:2013 A.12.4.1',
+                                            'ISO 27001:2013 A.16.1.1',
+                                            'ISO 27001:2013 A.16.1.4'
+                                        ]
+                                    },
+                                    'Workflow': {
+                                        'Status': 'RESOLVED'
+                                    },
                                     'RecordState': 'ARCHIVED'
                                 }
                             ]
@@ -722,7 +964,7 @@ def public_dms_replication_instance_shodan_check():
                                     'Severity': { 'Label': 'MEDIUM' },
                                     'Title': '[Shodan.DMS.1] Publicly accessible Database Migration Service (DMS) Replication Instances should be monitored for being indexed by Shodan',
                                     'Description': 'DMS Replication Instance ' + dmsInstanceId + ' has been indexed on IP address ' + dmsInstanceId + ' . Review the Shodan.io host information in the SourceUrl or ThreatIntelIndicators.SourceUrl fields for information about what ports and services are exposed and then take action to reduce exposure and harden your replication instance.',
-                                    'SourceUrl': 'https://www.shodan.io/host/' + clbIp,
+                                    'SourceUrl': 'https://www.shodan.io/host/' + dmsPublicIp,
                                     'ProductFields': {
                                         'Product Name': 'ElectricEye'
                                     },
@@ -730,10 +972,10 @@ def public_dms_replication_instance_shodan_check():
                                         {
                                             'Type': 'IPV4_ADDRESS',
                                             'Category': 'EXPLOIT_SITE',
-                                            'Value': clbIp,
+                                            'Value': dmsPublicIp,
                                             'LastObservedAt': iso8601time,
                                             'Source': 'Shodan.io',
-                                            'SourceUrl': 'https://www.shodan.io/host/' + clbIp
+                                            'SourceUrl': 'https://www.shodan.io/host/' + dmsPublicIp
                                         },
                                     ],
                                     'Resources': [
@@ -747,8 +989,30 @@ def public_dms_replication_instance_shodan_check():
                                             }
                                         }
                                     ],
-                                    'Compliance': { 'Status': 'PASSED' },
-                                    'RecordState': 'ARCHIVED'
+                                    'Compliance': { 
+                                        'Status': 'FAILED',
+                                        'RelatedRequirements': [
+                                            'NIST CSF ID.RA-2',
+                                            'NIST CSF DE.AE-2',
+                                            'NIST SP 800-53 AU-6',
+                                            'NIST SP 800-53 CA-7',
+                                            'NIST SP 800-53 IR-4',
+                                            'NIST SP 800-53 PM-15',
+                                            'NIST SP 800-53 PM-16',
+                                            'NIST SP 800-53 SI-4',
+                                            'NIST SP 800-53 SI-5',
+                                            'AIPCA TSC CC3.2',
+                                            'AIPCA TSC CC7.2',
+                                            'ISO 27001:2013 A.6.1.4',
+                                            'ISO 27001:2013 A.12.4.1',
+                                            'ISO 27001:2013 A.16.1.1',
+                                            'ISO 27001:2013 A.16.1.4'
+                                        ]
+                                    },
+                                    'Workflow': {
+                                        'Status': 'NEW'
+                                    },
+                                    'RecordState': 'ACTIVE'
                                 }
                             ]
                         )
@@ -813,7 +1077,29 @@ def public_amazonmq_broker_shodan_check():
                                                     }
                                                 }
                                             ],
-                                            'Compliance': { 'Status': 'PASSED' },
+                                            'Compliance': { 
+                                                'Status': 'PASSED',
+                                                'RelatedRequirements': [
+                                                    'NIST CSF ID.RA-2',
+                                                    'NIST CSF DE.AE-2',
+                                                    'NIST SP 800-53 AU-6',
+                                                    'NIST SP 800-53 CA-7',
+                                                    'NIST SP 800-53 IR-4',
+                                                    'NIST SP 800-53 PM-15',
+                                                    'NIST SP 800-53 PM-16',
+                                                    'NIST SP 800-53 SI-4',
+                                                    'NIST SP 800-53 SI-5',
+                                                    'AIPCA TSC CC3.2',
+                                                    'AIPCA TSC CC7.2',
+                                                    'ISO 27001:2013 A.6.1.4',
+                                                    'ISO 27001:2013 A.12.4.1',
+                                                    'ISO 27001:2013 A.16.1.1',
+                                                    'ISO 27001:2013 A.16.1.4'
+                                                ]
+                                            },
+                                            'Workflow': {
+                                                'Status': 'RESOLVED'
+                                            },
                                             'RecordState': 'ARCHIVED'
                                         }
                                     ]
@@ -855,7 +1141,29 @@ def public_amazonmq_broker_shodan_check():
                                                     }
                                                 }
                                             ],
-                                            'Compliance': { 'Status': 'FAILED' },
+                                            'Compliance': { 
+                                                'Status': 'FAILED',
+                                                'RelatedRequirements': [
+                                                    'NIST CSF ID.RA-2',
+                                                    'NIST CSF DE.AE-2',
+                                                    'NIST SP 800-53 AU-6',
+                                                    'NIST SP 800-53 CA-7',
+                                                    'NIST SP 800-53 IR-4',
+                                                    'NIST SP 800-53 PM-15',
+                                                    'NIST SP 800-53 PM-16',
+                                                    'NIST SP 800-53 SI-4',
+                                                    'NIST SP 800-53 SI-5',
+                                                    'AIPCA TSC CC3.2',
+                                                    'AIPCA TSC CC7.2',
+                                                    'ISO 27001:2013 A.6.1.4',
+                                                    'ISO 27001:2013 A.12.4.1',
+                                                    'ISO 27001:2013 A.16.1.1',
+                                                    'ISO 27001:2013 A.16.1.4'
+                                                ]
+                                            },
+                                            'Workflow': {
+                                                'Status': 'NEW'
+                                            },
                                             'RecordState': 'ACTIVE'
                                         }
                                     ]

@@ -54,7 +54,7 @@ def efs_filesys_encryption_check():
                             'Severity': { 'Label': 'HIGH' },
                             'Confidence': 99,
                             'Title': '[EFS.1] EFS File Systems should have encryption enabled',
-                            'Description': 'EFS file system ' + fileSysId + '  does not have encryption enabled. EFS file systems cannot be encrypted after creation, consider backing up data and creating a new encrypted file system.',
+                            'Description': 'EFS file system ' + fileSysId + ' does not have encryption enabled. EFS file systems cannot be encrypted after creation, consider backing up data and creating a new encrypted file system.',
                             'Remediation': {
                                 'Recommendation': {
                                     'Text': 'For EFS encryption information refer to the Data Encryption in EFS section of the Amazon Elastic File System User Guide',
@@ -66,18 +66,31 @@ def efs_filesys_encryption_check():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsElasticFileSystem',
                                     'Id': fileSysArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
                                         'Other': { 
-                                            'FileSystemId': fileSysId
+                                            'fileSystemId': fileSysId
                                         }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'FAILED' },
+                            'Compliance': { 
+                                'Status': 'FAILED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.DS-1', 
+                                    'NIST SP 800-53 MP-8',
+                                    'NIST SP 800-53 SC-12',
+                                    'NIST SP 800-53 SC-28',
+                                    'AICPA TSC CC6.1',
+                                    'ISO 27001:2013 A.8.2.3'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'NEW'
+                            },
                             'RecordState': 'ACTIVE'
                         }
                     ]
@@ -107,7 +120,7 @@ def efs_filesys_encryption_check():
                             'Severity': { 'Label': 'INFORMATIONAL' },
                             'Confidence': 99,
                             'Title': '[EFS.1] EFS File Systems should have encryption enabled',
-                            'Description': 'EFS file system ' + fileSysId + '  has encryption enabled.',
+                            'Description': 'EFS file system ' + fileSysId + ' has encryption enabled.',
                             'Remediation': {
                                 'Recommendation': {
                                     'Text': 'For EFS encryption information refer to the Data Encryption in EFS section of the Amazon Elastic File System User Guide',
@@ -119,18 +132,31 @@ def efs_filesys_encryption_check():
                             },
                             'Resources': [
                                 {
-                                    'Type': 'Other',
+                                    'Type': 'AwsElasticFileSystem',
                                     'Id': fileSysArn,
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
                                         'Other': { 
-                                            'FileSystemId': fileSysId
+                                            'fileSystemId': fileSysId
                                         }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'PASSED' },
+                            'Compliance': { 
+                                'Status': 'PASSED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.DS-1', 
+                                    'NIST SP 800-53 MP-8',
+                                    'NIST SP 800-53 SC-12',
+                                    'NIST SP 800-53 SC-28',
+                                    'AICPA TSC CC6.1',
+                                    'ISO 27001:2013 A.8.2.3'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'RESOLVED'
+                            },
                             'RecordState': 'ARCHIVED'
                         }
                     ]

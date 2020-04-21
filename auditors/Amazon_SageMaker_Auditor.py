@@ -72,12 +72,25 @@ def sagemaker_notebook_encryption_check():
                                     'Region': awsRegion,
                                     'Details': {
                                         'Other': {
-                                            'Notebook Name': notebookName
+                                            'notebookName': notebookName
                                         }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'PASSED' },
+                            'Compliance': { 
+                                'Status': 'PASSED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.DS-1', 
+                                    'NIST SP 800-53 MP-8',
+                                    'NIST SP 800-53 SC-12',
+                                    'NIST SP 800-53 SC-28',
+                                    'AICPA TSC CC6.1',
+                                    'ISO 27001:2013 A.8.2.3'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'RESOLVED'
+                            },
                             'RecordState': 'ARCHIVED'
                         }
                     ]
@@ -122,12 +135,25 @@ def sagemaker_notebook_encryption_check():
                                     'Region': awsRegion,
                                     'Details': {
                                         'Other': {
-                                            'Notebook Name': notebookName
+                                            'notebookName': notebookName
                                         }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'FAILED' },
+                            'Compliance': { 
+                                'Status': 'FAILED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.DS-1', 
+                                    'NIST SP 800-53 MP-8',
+                                    'NIST SP 800-53 SC-12',
+                                    'NIST SP 800-53 SC-28',
+                                    'AICPA TSC CC6.1',
+                                    'ISO 27001:2013 A.8.2.3'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'NEW'
+                            },
                             'RecordState': 'ACTIVE'
                         }
                     ]
@@ -182,12 +208,29 @@ def sagemaker_notebook_direct_internet_access_check():
                                     'Region': awsRegion,
                                     'Details': {
                                         'Other': {
-                                            'Notebook Name': notebookName
+                                            'notebookName': notebookName
                                         }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'FAILED' },
+                            'Compliance': { 
+                                'Status': 'FAILED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.AC-5',
+                                    'NIST SP 800-53 AC-4',
+                                    'NIST SP 800-53 AC-10',
+                                    'NIST SP 800-53 SC-7',
+                                    'AICPA TSC CC6.1',
+                                    'ISO 27001:2013 A.13.1.1',
+                                    'ISO 27001:2013 A.13.1.3',
+                                    'ISO 27001:2013 A.13.2.1',
+                                    'ISO 27001:2013 A.14.1.2',
+                                    'ISO 27001:2013 A.14.1.3'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'NEW'
+                            },
                             'RecordState': 'ACTIVE'
                         }
                     ]
@@ -232,12 +275,29 @@ def sagemaker_notebook_direct_internet_access_check():
                                     'Region': awsRegion,
                                     'Details': {
                                         'Other': {
-                                            'Notebook Name': notebookName
+                                            'notebookName': notebookName
                                         }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'PASSED' },
+                            'Compliance': { 
+                                'Status': 'PASSED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.AC-5',
+                                    'NIST SP 800-53 AC-4',
+                                    'NIST SP 800-53 AC-10',
+                                    'NIST SP 800-53 SC-7',
+                                    'AICPA TSC CC6.1',
+                                    'ISO 27001:2013 A.13.1.1',
+                                    'ISO 27001:2013 A.13.1.3',
+                                    'ISO 27001:2013 A.13.2.1',
+                                    'ISO 27001:2013 A.14.1.2',
+                                    'ISO 27001:2013 A.14.1.3'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'RESOLVED'
+                            },
                             'RecordState': 'ARCHIVED'
                         }
                     ]
@@ -293,12 +353,29 @@ def sagemaker_notebook_in_vpc_check():
                                     'Region': awsRegion,
                                     'Details': {
                                         'Other': {
-                                            'Notebook Name': notebookName
+                                            'notebookName': notebookName
                                         }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'FAILED' },
+                            'Compliance': { 
+                                'Status': 'FAILED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.AC-5',
+                                    'NIST SP 800-53 AC-4',
+                                    'NIST SP 800-53 AC-10',
+                                    'NIST SP 800-53 SC-7',
+                                    'AICPA TSC CC6.1',
+                                    'ISO 27001:2013 A.13.1.1',
+                                    'ISO 27001:2013 A.13.1.3',
+                                    'ISO 27001:2013 A.13.2.1',
+                                    'ISO 27001:2013 A.14.1.2',
+                                    'ISO 27001:2013 A.14.1.3'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'NEW'
+                            },
                             'RecordState': 'ACTIVE'
                         }
                     ]
@@ -343,12 +420,29 @@ def sagemaker_notebook_in_vpc_check():
                                     'Region': awsRegion,
                                     'Details': {
                                         'Other': {
-                                            'Notebook Name': notebookName
+                                            'notebookName': notebookName
                                         }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'PASSED' },
+                            'Compliance': { 
+                                'Status': 'PASSED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.AC-5',
+                                    'NIST SP 800-53 AC-4',
+                                    'NIST SP 800-53 AC-10',
+                                    'NIST SP 800-53 SC-7',
+                                    'AICPA TSC CC6.1',
+                                    'ISO 27001:2013 A.13.1.1',
+                                    'ISO 27001:2013 A.13.1.3',
+                                    'ISO 27001:2013 A.13.2.1',
+                                    'ISO 27001:2013 A.14.1.2',
+                                    'ISO 27001:2013 A.14.1.3'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'RESOLVED'
+                            },
                             'RecordState': 'ARCHIVED'
                         }
                     ]
@@ -405,12 +499,25 @@ def sagemaker_endpoint_encryption_check():
                                     'Region': awsRegion,
                                     'Details': {
                                         'Other': {
-                                            'Endpoint Name': endpointName
+                                            'endpointName': endpointName
                                         }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'PASSED' },
+                            'Compliance': { 
+                                'Status': 'PASSED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.DS-1', 
+                                    'NIST SP 800-53 MP-8',
+                                    'NIST SP 800-53 SC-12',
+                                    'NIST SP 800-53 SC-28',
+                                    'AICPA TSC CC6.1',
+                                    'ISO 27001:2013 A.8.2.3'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'RESOLVED'
+                            },
                             'RecordState': 'ARCHIVED'
                         }
                     ]
@@ -455,12 +562,25 @@ def sagemaker_endpoint_encryption_check():
                                     'Region': awsRegion,
                                     'Details': {
                                         'Other': {
-                                            'Endpoint Name': endpointName
+                                            'endpointName': endpointName
                                         }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'FAILED' },
+                            'Compliance': { 
+                                'Status': 'FAILED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.DS-1', 
+                                    'NIST SP 800-53 MP-8',
+                                    'NIST SP 800-53 SC-12',
+                                    'NIST SP 800-53 SC-28',
+                                    'AICPA TSC CC6.1',
+                                    'ISO 27001:2013 A.8.2.3'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'NEW'
+                            },
                             'RecordState': 'ACTIVE'
                         }
                     ]
@@ -515,12 +635,29 @@ def sagemaker_model_network_isolation_check():
                                     'Region': awsRegion,
                                     'Details': {
                                         'Other': {
-                                            'Model Name': modelName
+                                            'modelName': modelName
                                         }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'FAILED' },
+                            'Compliance': { 
+                                'Status': 'FAILED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.AC-5',
+                                    'NIST SP 800-53 AC-4',
+                                    'NIST SP 800-53 AC-10',
+                                    'NIST SP 800-53 SC-7',
+                                    'AICPA TSC CC6.1',
+                                    'ISO 27001:2013 A.13.1.1',
+                                    'ISO 27001:2013 A.13.1.3',
+                                    'ISO 27001:2013 A.13.2.1',
+                                    'ISO 27001:2013 A.14.1.2',
+                                    'ISO 27001:2013 A.14.1.3'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'NEW'
+                            },
                             'RecordState': 'ACTIVE'
                         }
                     ]
@@ -565,12 +702,29 @@ def sagemaker_model_network_isolation_check():
                                     'Region': awsRegion,
                                     'Details': {
                                         'Other': {
-                                            'Model Name': modelName
+                                            'modelName': modelName
                                         }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'PASSED' },
+                            'Compliance': { 
+                                'Status': 'PASSED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.AC-5',
+                                    'NIST SP 800-53 AC-4',
+                                    'NIST SP 800-53 AC-10',
+                                    'NIST SP 800-53 SC-7',
+                                    'AICPA TSC CC6.1',
+                                    'ISO 27001:2013 A.13.1.1',
+                                    'ISO 27001:2013 A.13.1.3',
+                                    'ISO 27001:2013 A.13.2.1',
+                                    'ISO 27001:2013 A.14.1.2',
+                                    'ISO 27001:2013 A.14.1.3'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'RESOLVED'
+                            },
                             'RecordState': 'ARCHIVED'
                         }
                     ]

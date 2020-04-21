@@ -74,11 +74,26 @@ def ebs_volume_attachment_check():
                                         'Partition': 'aws',
                                         'Region': awsRegion,
                                         'Details': {
-                                            'Other': { 'VolumeId': ebsVolumeId }
+                                            'Other': { 'volumeId': ebsVolumeId }
                                         }
                                     }
                                 ],
-                                'Compliance': { 'Status': 'FAILED' },
+                                'Compliance': { 
+                                    'Status': 'FAILED',
+                                    'RelatedRequirements': [
+                                        'NIST CSF ID.AM-2',
+                                        'NIST SP 800-53 CM-8',
+                                        'NIST SP 800-53 PM-5',
+                                        'AICPA TSC CC3.2',
+                                        'AICPA TSC CC6.1',
+                                        'ISO 27001:2013 A.8.1.1',
+                                        'ISO 27001:2013 A.8.1.2',
+                                        'ISO 27001:2013 A.12.5.1'
+                                    ]
+                                },
+                                'Workflow': {
+                                    'Status': 'NEW'
+                                },
                                 'RecordState': 'ACTIVE'
                             }
                         ]
@@ -123,11 +138,26 @@ def ebs_volume_attachment_check():
                                         'Partition': 'aws',
                                         'Region': awsRegion,
                                         'Details': {
-                                            'Other': { 'VolumeId': ebsVolumeId }
+                                            'Other': { 'volumeId': ebsVolumeId }
                                         }
                                     }
                                 ],
-                                'Compliance': { 'Status': 'PASSED' },
+                                'Compliance': { 
+                                    'Status': 'PASSED',
+                                    'RelatedRequirements': [
+                                        'NIST CSF ID.AM-2',
+                                        'NIST SP 800-53 CM-8',
+                                        'NIST SP 800-53 PM-5',
+                                        'AICPA TSC CC3.2',
+                                        'AICPA TSC CC6.1',
+                                        'ISO 27001:2013 A.8.1.1',
+                                        'ISO 27001:2013 A.8.1.2',
+                                        'ISO 27001:2013 A.12.5.1'
+                                    ]
+                                },
+                                'Workflow': {
+                                    'Status': 'RESOLVED'
+                                },
                                 'RecordState': 'ARCHIVED'
                             }
                         ]
@@ -180,11 +210,26 @@ def ebs_volume_delete_on_termination_check():
                                         'Partition': 'aws',
                                         'Region': awsRegion,
                                         'Details': {
-                                            'Other': { 'VolumeId': ebsVolumeId }
+                                            'Other': { 'volumeId': ebsVolumeId }
                                         }
                                     }
                                 ],
-                                'Compliance': { 'Status': 'FAILED' },
+                                'Compliance': { 
+                                    'Status': 'FAILED',
+                                    'RelatedRequirements': [
+                                        'NIST CSF ID.AM-2',
+                                        'NIST SP 800-53 CM-8',
+                                        'NIST SP 800-53 PM-5',
+                                        'AICPA TSC CC3.2',
+                                        'AICPA TSC CC6.1',
+                                        'ISO 27001:2013 A.8.1.1',
+                                        'ISO 27001:2013 A.8.1.2',
+                                        'ISO 27001:2013 A.12.5.1'
+                                    ]
+                                },
+                                'Workflow': {
+                                    'Status': 'NEW'
+                                },
                                 'RecordState': 'ACTIVE'
                             }
                         ]
@@ -229,11 +274,26 @@ def ebs_volume_delete_on_termination_check():
                                         'Partition': 'aws',
                                         'Region': awsRegion,
                                         'Details': {
-                                            'Other': { 'VolumeId': ebsVolumeId }
+                                            'Other': { 'volumeId': ebsVolumeId }
                                         }
                                     }
                                 ],
-                                'Compliance': { 'Status': 'PASSED' },
+                                'Compliance': { 
+                                    'Status': 'PASSED',
+                                    'RelatedRequirements': [
+                                        'NIST CSF ID.AM-2',
+                                        'NIST SP 800-53 CM-8',
+                                        'NIST SP 800-53 PM-5',
+                                        'AICPA TSC CC3.2',
+                                        'AICPA TSC CC6.1',
+                                        'ISO 27001:2013 A.8.1.1',
+                                        'ISO 27001:2013 A.8.1.2',
+                                        'ISO 27001:2013 A.12.5.1'
+                                    ]
+                                },
+                                'Workflow': {
+                                    'Status': 'RESOLVED'
+                                },
                                 'RecordState': 'ARCHIVED'
                             }
                         ]
@@ -287,11 +347,24 @@ def ebs_volume_encryption_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'VolumeId': ebsVolumeId }
+                                        'Other': { 'volumeId': ebsVolumeId }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'FAILED' },
+                            'Compliance': { 
+                                'Status': 'FAILED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.DS-1', 
+                                    'NIST SP 800-53 MP-8',
+                                    'NIST SP 800-53 SC-12',
+                                    'NIST SP 800-53 SC-28',
+                                    'AICPA TSC CC6.1',
+                                    'ISO 27001:2013 A.8.2.3'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'NEW'
+                            },
                             'RecordState': 'ACTIVE'
                         }
                     ]
@@ -339,11 +412,24 @@ def ebs_volume_encryption_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'VolumeId': ebsVolumeId }
+                                        'Other': { 'volumeId': ebsVolumeId }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'PASSED' },
+                            'Compliance': { 
+                                'Status': 'PASSED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.DS-1', 
+                                    'NIST SP 800-53 MP-8',
+                                    'NIST SP 800-53 SC-12',
+                                    'NIST SP 800-53 SC-28',
+                                    'AICPA TSC CC6.1',
+                                    'ISO 27001:2013 A.8.2.3'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'RESOLVED'
+                            },
                             'RecordState': 'ARCHIVED'
                         }
                     ]
@@ -397,11 +483,24 @@ def ebs_snapshot_encryption_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'SnapshotId': snapshotId }
+                                        'Other': { 'snapshotId': snapshotId }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'FAILED' },
+                            'Compliance': { 
+                                'Status': 'FAILED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.DS-1', 
+                                    'NIST SP 800-53 MP-8',
+                                    'NIST SP 800-53 SC-12',
+                                    'NIST SP 800-53 SC-28',
+                                    'AICPA TSC CC6.1',
+                                    'ISO 27001:2013 A.8.2.3'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'NEW'
+                            },
                             'RecordState': 'ACTIVE'
                         }
                     ]
@@ -449,11 +548,24 @@ def ebs_snapshot_encryption_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'SnapshotId': snapshotId }
+                                        'Other': { 'snapshotId': snapshotId }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'PASSED' },
+                            'Compliance': { 
+                                'Status': 'PASSED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.DS-1', 
+                                    'NIST SP 800-53 MP-8',
+                                    'NIST SP 800-53 SC-12',
+                                    'NIST SP 800-53 SC-28',
+                                    'AICPA TSC CC6.1',
+                                    'ISO 27001:2013 A.8.2.3'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'RESOLVED'
+                            },
                             'RecordState': 'ARCHIVED'
                         }
                     ]
@@ -507,11 +619,30 @@ def ebs_snapshot_public_check():
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 'SnapshotId': snapshotId }
+                                        'Other': { 'snapshotId': snapshotId }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'PASSED' },
+                            'Compliance': { 
+                                'Status': 'PASSED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.AC-3',
+                                    'NIST SP 800-53 AC-1',
+                                    'NIST SP 800-53 AC-17',
+                                    'NIST SP 800-53 AC-19',
+                                    'NIST SP 800-53 AC-20',
+                                    'NIST SP 800-53 SC-15',
+                                    'AICPA TSC CC6.6',
+                                    'ISO 27001:2013 A.6.2.1',
+                                    'ISO 27001:2013 A.6.2.2',
+                                    'ISO 27001:2013 A.11.2.6',
+                                    'ISO 27001:2013 A.13.1.1',
+                                    'ISO 27001:2013 A.13.2.1'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'RESOLVED'
+                            },
                             'RecordState': 'ARCHIVED'
                         }
                     ]
@@ -563,11 +694,30 @@ def ebs_snapshot_public_check():
                                             'Partition': 'aws',
                                             'Region': awsRegion,
                                             'Details': {
-                                                'Other': { 'SnapshotId': snapshotId }
+                                                'Other': { 'snapshotId': snapshotId }
                                             }
                                         }
                                     ],
-                                    'Compliance': { 'Status': 'FAILED' },
+                                    'Compliance': { 
+                                        'Status': 'FAILED',
+                                        'RelatedRequirements': [
+                                            'NIST CSF PR.AC-3',
+                                            'NIST SP 800-53 AC-1',
+                                            'NIST SP 800-53 AC-17',
+                                            'NIST SP 800-53 AC-19',
+                                            'NIST SP 800-53 AC-20',
+                                            'NIST SP 800-53 SC-15',
+                                            'AICPA TSC CC6.6',
+                                            'ISO 27001:2013 A.6.2.1',
+                                            'ISO 27001:2013 A.6.2.2',
+                                            'ISO 27001:2013 A.11.2.6',
+                                            'ISO 27001:2013 A.13.1.1',
+                                            'ISO 27001:2013 A.13.2.1'
+                                        ]
+                                    },
+                                    'Workflow': {
+                                        'Status': 'NEW'
+                                    },
                                     'RecordState': 'ACTIVE'
                                 }
                             ]
@@ -619,7 +769,26 @@ def ebs_snapshot_public_check():
                                             }
                                         }
                                     ],
-                                    'Compliance': { 'Status': 'PASSED' },
+                                    'Compliance': { 
+                                        'Status': 'PASSED',
+                                        'RelatedRequirements': [
+                                            'NIST CSF PR.AC-3',
+                                            'NIST SP 800-53 AC-1',
+                                            'NIST SP 800-53 AC-17',
+                                            'NIST SP 800-53 AC-19',
+                                            'NIST SP 800-53 AC-20',
+                                            'NIST SP 800-53 SC-15',
+                                            'AICPA TSC CC6.6',
+                                            'ISO 27001:2013 A.6.2.1',
+                                            'ISO 27001:2013 A.6.2.2',
+                                            'ISO 27001:2013 A.11.2.6',
+                                            'ISO 27001:2013 A.13.1.1',
+                                            'ISO 27001:2013 A.13.2.1'
+                                        ]
+                                    },
+                                    'Workflow': {
+                                        'Status': 'NEW'
+                                    },
                                     'RecordState': 'ACTIVE'
                                 }
                             ]
@@ -668,7 +837,20 @@ def ebs_account_encryption_by_default_check():
                                 'Region': awsRegion
                             }
                         ],
-                        'Compliance': { 'Status': 'FAILED' },
+                        'Compliance': { 
+                            'Status': 'FAILED',
+                            'RelatedRequirements': [
+                                'NIST CSF PR.DS-1', 
+                                'NIST SP 800-53 MP-8',
+                                'NIST SP 800-53 SC-12',
+                                'NIST SP 800-53 SC-28',
+                                'AICPA TSC CC6.1',
+                                'ISO 27001:2013 A.8.2.3'
+                            ]
+                        },
+                        'Workflow': {
+                            'Status': 'NEW'
+                        },
                         'RecordState': 'ACTIVE'
                     }
                 ]
@@ -714,7 +896,20 @@ def ebs_account_encryption_by_default_check():
                                 'Region': awsRegion
                             }
                         ],
-                        'Compliance': { 'Status': 'PASSED' },
+                        'Compliance': { 
+                            'Status': 'PASSED',
+                            'RelatedRequirements': [
+                                'NIST CSF PR.DS-1', 
+                                'NIST SP 800-53 MP-8',
+                                'NIST SP 800-53 SC-12',
+                                'NIST SP 800-53 SC-28',
+                                'AICPA TSC CC6.1',
+                                'ISO 27001:2013 A.8.2.3'
+                            ]
+                        },
+                        'Workflow': {
+                            'Status': 'RESOLVED'
+                        },
                         'RecordState': 'ARCHIVED'
                     }
                 ]

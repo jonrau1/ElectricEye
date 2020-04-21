@@ -53,7 +53,7 @@ def default_internet_access_check():
                             'Severity': { 'Label': 'MEDIUM' },
                             'Confidence': 99,
                             'Title': '[AppStream.1] AppStream 2.0 fleets should not provide default internet access',
-                            'Description': 'AppStream 2.0 fleet ' + fleetName + ' is configured to provide default internet access. Refer to the remediation instructions if this configuration is not intended',
+                            'Description': 'AppStream 2.0 fleet ' + fleetName + ' is configured to provide default internet access. If you use the Default Internet Access option for enabling internet access, the NAT configuration is not limited to 100 fleet instances. If your deployment must support more than 100 concurrent users, use this configuration. Refer to the remediation instructions if this configuration is not intended',
                             'Remediation': {
                                 'Recommendation': {
                                     'Text': 'If your fleet should not have default internet access refer to the instructions in the Amazon AppStream 2.0 Administration Guide',
@@ -71,12 +71,29 @@ def default_internet_access_check():
                                     'Region': awsRegion,
                                     'Details': {
                                         'Other': { 
-                                            'Fleet Name': fleetName 
+                                            'fleetName': fleetName 
                                         }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'FAILED' },
+                            'Compliance': { 
+                                'Status': 'FAILED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.AC-5',
+                                    'NIST SP 800-53 AC-4',
+                                    'NIST SP 800-53 AC-10',
+                                    'NIST SP 800-53 SC-7',
+                                    'AICPA TSC CC6.1',
+                                    'ISO 27001:2013 A.13.1.1',
+                                    'ISO 27001:2013 A.13.1.3',
+                                    'ISO 27001:2013 A.13.2.1',
+                                    'ISO 27001:2013 A.14.1.2',
+                                    'ISO 27001:2013 A.14.1.3'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'NEW'
+                            },
                             'RecordState': 'ACTIVE'
                         }
                     ]
@@ -104,7 +121,7 @@ def default_internet_access_check():
                             'Severity': { 'Label': 'INFORMATIONAL' },
                             'Confidence': 99,
                             'Title': '[AppStream.1] AppStream 2.0 fleets should not provide default internet access',
-                            'Description': 'AppStream 2.0 fleet ' + fleetName + ' is not configured to provide default internet access. Refer to the remediation instructions if this configuration is not intended',
+                            'Description': 'AppStream 2.0 fleet ' + fleetName + ' is not configured to provide default internet access.',
                             'Remediation': {
                                 'Recommendation': {
                                     'Text': 'If your fleet should not have default internet access refer to the instructions in the Amazon AppStream 2.0 Administration Guide',
@@ -122,12 +139,29 @@ def default_internet_access_check():
                                     'Region': awsRegion,
                                     'Details': {
                                         'Other': { 
-                                            'Fleet Name': fleetName 
+                                            'fleetName': fleetName 
                                         }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'PASSED' },
+                            'Compliance': { 
+                                'Status': 'PASSED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.AC-5',
+                                    'NIST SP 800-53 AC-4',
+                                    'NIST SP 800-53 AC-10',
+                                    'NIST SP 800-53 SC-7',
+                                    'AICPA TSC CC6.1',
+                                    'ISO 27001:2013 A.13.1.1',
+                                    'ISO 27001:2013 A.13.1.3',
+                                    'ISO 27001:2013 A.13.2.1',
+                                    'ISO 27001:2013 A.14.1.2',
+                                    'ISO 27001:2013 A.14.1.3'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'RESOLVED'
+                            },
                             'RecordState': 'ARCHIVED'
                         }
                     ]
@@ -165,7 +199,7 @@ def public_image_check():
                         'Severity': { 'Label': 'MEDIUM' },
                         'Confidence': 99,
                         'Title': '[AppStream.2] AppStream 2.0 images you build should not be publicly accessible',
-                        'Description': 'AppStream 2.0 image ' + imageName + ' is publicly accessible. Refer to the remediation instructions if this configuration is not intended. Note that AWS managed AppStream 2.0 images will always be publicly accessible',
+                        'Description': 'AppStream 2.0 image ' + imageName + ' is publicly accessible. Permissions set on images that are shared with you may limit what you can do with those images. Refer to the remediation instructions if this configuration is not intended. Note that AWS managed AppStream 2.0 images will always be publicly accessible',
                         'Remediation': {
                             'Recommendation': {
                                 'Text': 'If your image should not be publicly accessible refer to the instructions in the Amazon AppStream 2.0 Administration Guide',
@@ -186,7 +220,26 @@ def public_image_check():
                                 }
                             }
                         ],
-                        'Compliance': { 'Status': 'FAILED' },
+                        'Compliance': { 
+                            'Status': 'FAILED',
+                            'RelatedRequirements': [
+                                'NIST CSF PR.AC-3',
+                                'NIST SP 800-53 AC-1',
+                                'NIST SP 800-53 AC-17',
+                                'NIST SP 800-53 AC-19',
+                                'NIST SP 800-53 AC-20',
+                                'NIST SP 800-53 SC-15',
+                                'AICPA TSC CC6.6',
+                                'ISO 27001:2013 A.6.2.1',
+                                'ISO 27001:2013 A.6.2.2',
+                                'ISO 27001:2013 A.11.2.6',
+                                'ISO 27001:2013 A.13.1.1',
+                                'ISO 27001:2013 A.13.2.1'
+                            ]
+                        },
+                        'Workflow': {
+                            'Status': 'NEW'
+                        },
                         'RecordState': 'ACTIVE'
                     }
                 ]
@@ -226,7 +279,7 @@ def compromised_appstream_user_check():
                             'Severity': { 'Label': 'CRITICAL' },
                             'Confidence': 99,
                             'Title': '[AppStream.3] AppStream 2.0 users should be monitored for signs of compromise',
-                            'Description': 'AppStream 2.0 user ' + userName + ' is compromised. Refer to the remediation instructions for information on how to remove them',
+                            'Description': 'AppStream 2.0 user ' + userName + ' is compromised. COMPROMISED – The user is disabled because of a potential security threat. Refer to the remediation instructions for information on how to remove them',
                             'Remediation': {
                                 'Recommendation': {
                                     'Text': 'To disable and remove compromised users refer to the instructions in the User Pool Administration section of the Amazon AppStream 2.0 Administration Guide',
@@ -244,12 +297,39 @@ def compromised_appstream_user_check():
                                     'Region': awsRegion,
                                     'Details': {
                                         'Other': { 
-                                            'User Name': userName
+                                            'userName': userName
                                         }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'FAILED' },
+                            'Compliance': { 
+                                'Status': 'FAILED',
+                                'RelatedRequirements': [
+                                    'NIST CSF ID.RA-3',
+                                    'NIST CSF DE.CM-7',
+                                    'NIST SP 800-53 AU-12',
+                                    'NIST SP 800-53 CA-7',
+                                    'NIST SP 800-53 CM-3',
+                                    'NIST SP 800-53 CM-8',
+                                    'NIST SP 800-53 PE-3',
+                                    'NIST SP 800-53 PE-6',
+                                    'NIST SP 800-53 PE-20',
+                                    'NIST SP 800-53 PM-12',
+                                    'NIST SP 800-53 PM-16',
+                                    'NIST SP 800-53 RA-3',
+                                    'NIST SP 800-53 SI-4',
+                                    'NIST SP 800-53 SI-5'
+                                    'AICPA TSC CC3.2',
+                                    'AICPA TSC CC7.2',
+                                    'ISO 27001:2013 Clause 6.1.2',
+                                    'ISO 27001:2013 A.12.4.1',
+                                    'ISO 27001:2013 A.14.2.7',
+                                    'ISO 27001:2013 A.15.2.1'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'NEW'
+                            },
                             'RecordState': 'ACTIVE'
                         }
                     ]
@@ -298,12 +378,39 @@ def compromised_appstream_user_check():
                                     'Region': awsRegion,
                                     'Details': {
                                         'Other': { 
-                                            'User Name': userName
+                                            'userName': userName
                                         }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'PASSED' },
+                            'Compliance': { 
+                                'Status': 'PASSED',
+                                'RelatedRequirements': [
+                                    'NIST CSF ID.RA-3',
+                                    'NIST CSF DE.CM-7',
+                                    'NIST SP 800-53 AU-12',
+                                    'NIST SP 800-53 CA-7',
+                                    'NIST SP 800-53 CM-3',
+                                    'NIST SP 800-53 CM-8',
+                                    'NIST SP 800-53 PE-3',
+                                    'NIST SP 800-53 PE-6',
+                                    'NIST SP 800-53 PE-20',
+                                    'NIST SP 800-53 PM-12',
+                                    'NIST SP 800-53 PM-16',
+                                    'NIST SP 800-53 RA-3',
+                                    'NIST SP 800-53 SI-4',
+                                    'NIST SP 800-53 SI-5'
+                                    'AICPA TSC CC3.2',
+                                    'AICPA TSC CC7.2',
+                                    'ISO 27001:2013 Clause 6.1.2',
+                                    'ISO 27001:2013 A.12.4.1',
+                                    'ISO 27001:2013 A.14.2.7',
+                                    'ISO 27001:2013 A.15.2.1'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'RESOLVED'
+                            },
                             'RecordState': 'ARCHIVED'
                         }
                     ]
@@ -344,7 +451,7 @@ def userpool_auth_check():
                             'Severity': { 'Label': 'MEDIUM' },
                             'Confidence': 99,
                             'Title': '[AppStream.4] AppStream 2.0 users should be configured to authenticate using SAML',
-                            'Description': 'AppStream 2.0 user ' + userName + ' is not configured to authenticate using SAML. Refer to the remediation instructions for information on how to remove them',
+                            'Description': 'AppStream 2.0 user ' + userName + ' is not configured to authenticate using SAML. This feature offers your users the convenience of one-click access to their AppStream 2.0 applications using their existing identity credentials. You also have the security benefit of identity authentication by your IdP. By using your IdP, you can control which users have access to a particular AppStream 2.0 stack. Refer to the remediation instructions for information on how to remove them',
                             'Remediation': {
                                 'Recommendation': {
                                     'Text': 'For information on setting up SAML refer to the Setting Up SAML section of the Amazon AppStream 2.0 Administration Guide',
@@ -362,12 +469,36 @@ def userpool_auth_check():
                                     'Region': awsRegion,
                                     'Details': {
                                         'Other': { 
-                                            'User Name': userName
+                                            'userName': userName
                                         }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'FAILED' },
+                            'Compliance': { 
+                                'Status': 'FAILED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.AC-6',
+                                    'NIST SP 800-53 AC-1',
+                                    'NIST SP 800-53 AC-2',
+                                    'NIST SP 800-53 AC-3',
+                                    'NIST SP 800-53 AC-16',
+                                    'NIST SP 800-53 AC-19',
+                                    'NIST SP 800-53 AC-24',
+                                    'NIST SP 800-53 IA-1',
+                                    'NIST SP 800-53 IA-2',
+                                    'NIST SP 800-53 IA-4',
+                                    'NIST SP 800-53 IA-5',
+                                    'NIST SP 800-53 IA-8',
+                                    'NIST SP 800-53 PE-2',
+                                    'NIST SP 800-53 PS-3',
+                                    'AICPA TSC CC6.1',
+                                    'ISO 27001:2013 A.7.1.1',
+                                    'ISO 27001:2013 A.9.2.1'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'NEW'
+                            },
                             'RecordState': 'ACTIVE'
                         }
                     ]
@@ -415,12 +546,36 @@ def userpool_auth_check():
                                     'Region': awsRegion,
                                     'Details': {
                                         'Other': { 
-                                            'User Name': userName
+                                            'userName': userName
                                         }
                                     }
                                 }
                             ],
-                            'Compliance': { 'Status': 'PASSED' },
+                            'Compliance': { 
+                                'Status': 'PASSED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.AC-6',
+                                    'NIST SP 800-53 AC-1',
+                                    'NIST SP 800-53 AC-2',
+                                    'NIST SP 800-53 AC-3',
+                                    'NIST SP 800-53 AC-16',
+                                    'NIST SP 800-53 AC-19',
+                                    'NIST SP 800-53 AC-24',
+                                    'NIST SP 800-53 IA-1',
+                                    'NIST SP 800-53 IA-2',
+                                    'NIST SP 800-53 IA-4',
+                                    'NIST SP 800-53 IA-5',
+                                    'NIST SP 800-53 IA-8',
+                                    'NIST SP 800-53 PE-2',
+                                    'NIST SP 800-53 PS-3',
+                                    'AICPA TSC CC6.1',
+                                    'ISO 27001:2013 A.7.1.1',
+                                    'ISO 27001:2013 A.9.2.1'
+                                ]
+                            },
+                            'Workflow': {
+                                'Status': 'RESOLVED'
+                            },
                             'RecordState': 'ARCHIVED'
                         }
                     ]
