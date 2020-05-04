@@ -35,14 +35,14 @@ Continuously monitor your AWS services for configurations that can lead to degra
 - [License](https://github.com/jonrau1/ElectricEye#license)
 
 ## Synopsis
-- 100% native Security Hub integration & 100% serverless with full CloudFormation & Terraform support
+- 100% native Security Hub integration & 100% serverless with full CloudFormation & Terraform support in AWS Commercial and GovCloud Regions
 - 200+ security & best practice detections including services not covered by Security Hub/Config (AppStream, Cognito, EKS, ECR, DocDB, etc.)
 - Detections aligned to NIST CSF, NIST 800-53, AICPA TSC and ISO 27001:2013 using the `Compliance.RelatedRequirements` field.
 - 60+ multi-account SOAR playbooks
 - AWS & 3rd Party Integrations: Config Recorder, Pagerduty, Slack, ServiceNow Incident Management, Jira, Azure DevOps, Shodan and Microsoft Teams
 
 ## Description
-ElectricEye is a set of Python scripts (affectionately called **Auditors**) that continuously monitor your AWS infrastructure looking for configurations related to confidentiality, integrity and availability that do not align with AWS best practices. All findings from these scans will be sent to AWS Security Hub where you can perform basic correlation against other AWS and 3rd Party services that send findings to Security Hub. Security Hub also provides a centralized view from which account owners and other responsible parties can view and take action on findings.
+ElectricEye is a set of Python scripts (affectionately called **Auditors**) that continuously monitor your AWS infrastructure looking for configurations related to confidentiality, integrity and availability that do not align with AWS best practices. All findings from these scans will be sent to AWS Security Hub where you can perform basic correlation against other AWS and 3rd Party services that send findings to Security Hub. Security Hub also provides a centralized view from which account owners and other responsible parties can view and take action on findings. ElectricEye supports both AWS commercial and GovCloud Regions, however, Auditors for services not supported in GovCloud were not removed. Running these scans in Fargate will not fail the entire task if a service is not supported in GovCloud, in those cases they will fail gracefully.
 
 ElectricEye runs on AWS Fargate, which is a serverless container orchestration service. On a schedule, Fargate will download all of the auditor scripts from a S3 bucket, run the checks and send results to Security Hub. All infrastructure will be deployed via CloudFormation or Terraform to help you apply this solution to many accounts and/or regions. All findings (passed or failed) will contain AWS documentation references in the `Remediation.Recommendation` section of the ASFF (and the **Remediation** section of the Security Hub UI) to further educate yourself and others on.
 
@@ -72,6 +72,8 @@ These steps are split across their relevant sections. All CLI commands are execu
 
 **Note 3:** If you have never used ECS before you'll likely run into a problem with the service-linked role (SLR), or lack thereof, and you should follow the [instructions here](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using-service-linked-roles.html#service-linked-role-permissions) to have it created first
 
+**Note 4:** I do not have a GovCloud Account and did not test any Terraform, CloudFormation, add-on's or the new `govcloud-auditors` there. I willfully did *not* remove auditors that did not have support in GovCloud out of sheer laziness in the event that they become available at a later date. YMMV when using this tool in GovCloud.
+
 ### Build and push the Docker image
 **Note:** You must have [permissions to push images](https://docs.aws.amazon.com/AmazonECR/latest/userguide/docker-push-ecr-image.html) to ECR before performing this step. These permissions are not included in the instance profile example.
 
@@ -90,6 +92,8 @@ aws ecr create-repository --repository-name <REPO_NAME>
 ```
 
 3. Build and push the ElectricEye Docker image. Be sure to replace the values for your region, Account ID and name of the ECR repository
+**Note**: If you are in GovCloud these commands are likely very different, please review for consistency (and open a PR if there is a better option for GovCloud)
+
 ```bash
 cd ElectricEye
 sudo $(aws ecr get-login --no-include-email --region <AWS_REGION>)
@@ -146,6 +150,8 @@ cd -
 cd auditors
 aws s3 sync . s3://<your-bucket-name>
 ```
+
+**Note**: If you are in GovCloud use the `govcloud-auditors` folder
 
 6. Navigate to the `insights` directory and execute the Python script to have Security Hub Insights created. Insights are saved searches that can also be used as quick-view dashboards (though no where near the sophsication of a QuickSight dashboard)
 ```bash
