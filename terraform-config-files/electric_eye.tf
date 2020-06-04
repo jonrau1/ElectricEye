@@ -336,7 +336,9 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "rds:DescribeDBClusters",
                 "sagemaker:ListEndpoints",
                 "ecr:GetRepositoryPolicy",
-                "rds:DescribeDBClusterParameterGroups"
+                "rds:DescribeDBClusterParameterGroups",
+                "lambda:ListFunctions",
+                "cloudwatch:GetMetricData"
             ],
             "Resource": "*"
         }
