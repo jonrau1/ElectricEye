@@ -242,7 +242,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **209** checks supported across **64** AWS services / components using **46** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **210** checks supported across **65** AWS services / components using **47** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -443,6 +443,7 @@ These are the following services and checks perform by each Auditor. There are c
 | AWS_IAM_Auditor.py                     | IAM User                      | Do users have managed policies attached                                                |
 | AWS_IAM_Auditor.py                     | Password policy (Account)     | Does the IAM password policy meet or exceed<br>AWS CIS Foundations Benchmark standards |
 | AWS_IAM_Auditor.py                     | Server certs (Account)        | Are they any Server certificates stored by IAM                                         |
+| AWS_Lambda_Auditor.py                  | Lambda Function               |Has function been used or updated in the last 30 days                           |
 | AWS_License_Manager_Auditor            | License Manager configuration | Do LM configurations enforce a hard limit on<br>license consumption                    |
 | AWS_Secrets_Manager_Auditor.py         | Secrets Manager secret        | Is the secret over 90 days old                                                         |
 | AWS_Secrets_Manager_Auditor.py         | Secrets Manager secret        | Is secret auto-rotation enabled                                                        |

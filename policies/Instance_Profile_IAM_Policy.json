@@ -229,7 +229,9 @@
                 "s3:PutBucketPolicy",
                 "ec2:AttachNetworkInterface",
                 "s3:GetBucketLocation",
-                "ecr:GetRepositoryPolicy"
+                "ecr:GetRepositoryPolicy",
+                "lambda:ListFunctions",
+                "cloudwatch:GetMetricData"
             ],
             "Resource": "*"
         }
