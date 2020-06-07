@@ -5,6 +5,7 @@ from botocore.stub import Stubber, ANY
 from auditors.AWS_Lambda_Auditor import FunctionUnusedCheck
 
 os.environ["AWS_REGION"] = "us-east-1"
+os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
 
 sts_response = {
     "Account": "012345678901",
