@@ -187,6 +187,7 @@ Resources:
             - cloudfront:ListDistributions
             - cloudtrail:DescribeTrails
             - cloudtrail:ListTrails
+            - cloudwatch:GetMetricData
             - codebuild:BatchGetProjects
             - codebuild:ListProjects
             - cognito-idp:DescribeUserPool
@@ -251,6 +252,7 @@ Resources:
             - kinesis:ListStreams
             - kms:Decrypt
             - kms:DescribeKey
+            - lambda:ListFunctions
             - license-manager:GetLicenseConfiguration
             - license-manager:ListLicenseConfigurations
             - managedblockchain:GetNetwork
