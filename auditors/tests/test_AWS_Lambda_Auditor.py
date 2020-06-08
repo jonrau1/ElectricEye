@@ -2,9 +2,16 @@ import datetime
 import os
 import pytest
 from botocore.stub import Stubber, ANY
-from auditors.AWS_Lambda_Auditor import FunctionUnusedCheck
+from auditors.AWS_Lambda_Auditor import (
+    FunctionUnusedCheck,
+    sts,
+    lambda_client,
+    cloudwatch,
+)
 
+# not available in local testing without ECS
 os.environ["AWS_REGION"] = "us-east-1"
+# for local testing, don't assume default profile exists
 os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
 
 sts_response = {
@@ -55,7 +62,7 @@ get_metric_data_response = {
 
 @pytest.fixture(scope="function")
 def sts_stubber():
-    sts_stubber = Stubber(FunctionUnusedCheck.sts)
+    sts_stubber = Stubber(sts)
     sts_stubber.activate()
     yield sts_stubber
     sts_stubber.deactivate()
@@ -63,7 +70,7 @@ def sts_stubber():
 
 @pytest.fixture(scope="function")
 def lambda_stubber():
-    lambda_stubber = Stubber(FunctionUnusedCheck.lambda_client)
+    lambda_stubber = Stubber(lambda_client)
     lambda_stubber.activate()
     yield lambda_stubber
     lambda_stubber.deactivate()
@@ -71,7 +78,7 @@ def lambda_stubber():
 
 @pytest.fixture(scope="function")
 def cloudwatch_stubber():
-    cloudwatch_stubber = Stubber(FunctionUnusedCheck.cloudwatch)
+    cloudwatch_stubber = Stubber(cloudwatch)
     cloudwatch_stubber.activate()
     yield cloudwatch_stubber
     cloudwatch_stubber.deactivate()

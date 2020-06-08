@@ -1,3 +1,19 @@
+"""Auditor plugin manager
+
+This module implements a plugin manager for ElectricEye auditors.  It consists of two parts:
+    The base Auditor class that ever auditor check must inherit from
+    The AuditorCollection that loads the plugins from the plugin directory
+
+Example usage:
+    Create a list of auditor checks by passing the relative package name where the plugins reside:
+        auditors = AuditorCollection("auditors") 
+    This will return a list of dictionaries:
+        {
+            "check": <class object>,
+            "auditor": <module_name>
+        }
+"""
+
 import inspect
 import os
 import pkgutil
@@ -10,7 +26,7 @@ class Auditor(object):
     """
 
     def __init__(self):
-        self.description = 'UNKNOWN'
+        self.description = "UNKNOWN"
         self.name = self.__class__.__name__
 
     def execute(self, *args, **kwargs):
@@ -22,7 +38,7 @@ class Auditor(object):
 
 class AuditorCollection(object):
     """Upon creation, this class will read the plugins package for modules
-    that contain a class definition that is inheriting from the Plugin class
+    that contain a class definition that is inheriting from the Auditor class
     """
 
     def __init__(self, plugin_package):
@@ -37,26 +53,25 @@ class AuditorCollection(object):
         provided plugin package to load all available plugins
         """
         self.plugins = []
-        self.seen_paths = []
-        # print()
-        # print(f'Looking for plugins under package {self.plugin_package}')
         self.walk_package(self.plugin_package)
 
-
     def walk_package(self, package):
-        """Recursively walk the supplied package to retrieve all plugins
+        """Load all modules in package to retrieve all plugins
         """
         imported_package = __import__(package)
 
-        for _, pluginname, ispkg in pkgutil.iter_modules(imported_package.__path__, imported_package.__name__ + '.'):
+        for _, pluginname, ispkg in pkgutil.iter_modules(
+            imported_package.__path__, imported_package.__name__ + "."
+        ):
             try:
                 if not ispkg:
                     plugin_module = importlib.import_module(pluginname)
                     clsmembers = inspect.getmembers(plugin_module, inspect.isclass)
                     for (_, c) in clsmembers:
-                        # Only add classes that are a sub class of Plugin, but NOT Plugin itself
+                        # Only add classes that are a sub class of Auditor, but NOT Auditor itself
                         if issubclass(c, Auditor) & (c is not Auditor):
-                            # print(f'    Found plugin class: {c.__module__}.{c.__name__}')
-                            self.plugins.append(c())
+                            self.plugins.append(
+                                {"check": c(), "auditor": pluginname,}
+                            )
             except Exception as e:
-                print(f'failed to load {pluginname} with error {e}')
+                print(f"failed to load {pluginname} with error {e}")

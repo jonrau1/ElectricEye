@@ -19,22 +19,22 @@ import os
 from dateutil import parser
 from auditors.Auditor import Auditor
 
+lambda_client = boto3.client("lambda")
+cloudwatch = boto3.client("cloudwatch")
+sts = boto3.client("sts")
+
 
 class FunctionUnusedCheck(Auditor):
-    lambda_client = boto3.client("lambda")
-    cloudwatch = boto3.client("cloudwatch")
-    sts = boto3.client("sts")
-
     def execute(self):
-        response = self.lambda_client.list_functions()
+        response = lambda_client.list_functions()
         functions = response["Functions"]
         # create env vars
-        awsAccountId = self.sts.get_caller_identity()["Account"]
+        awsAccountId = sts.get_caller_identity()["Account"]
         awsRegion = os.environ["AWS_REGION"]
         for function in functions:
             functionName = str(function["FunctionName"])
             lambdaArn = str(function["FunctionArn"])
-            metricResponse = self.cloudwatch.get_metric_data(
+            metricResponse = cloudwatch.get_metric_data(
                 MetricDataQueries=[
                     {
                         "Id": "m1",
@@ -57,7 +57,6 @@ class FunctionUnusedCheck(Auditor):
                 modify_date = parser.parse(function["LastModified"])
                 date_delta = datetime.datetime.now(datetime.timezone.utc) - modify_date
                 iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-                print(f"delta = {date_delta.days}")
                 if len(metric["Values"]) > 0 or date_delta.days < 30:
                     try:
                         finding = {
