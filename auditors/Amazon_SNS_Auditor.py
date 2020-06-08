@@ -376,6 +376,7 @@ def sns_cross_account_check():
                                     "AwsAccountId": awsAccountId,
                                     "Types": [
                                         "Software and Configuration Checks/AWS Security Best Practices",
+                                        "Effects/Data Exposure",
                                     ],
                                     "FirstObservedAt": iso8601Time,
                                     "CreatedAt": iso8601Time,
@@ -436,6 +437,7 @@ def sns_cross_account_check():
                                     "AwsAccountId": awsAccountId,
                                     "Types": [
                                         "Software and Configuration Checks/AWS Security Best Practices",
+                                        "Effects/Data Exposure",
                                     ],
                                     "FirstObservedAt": iso8601Time,
                                     "CreatedAt": iso8601Time,
