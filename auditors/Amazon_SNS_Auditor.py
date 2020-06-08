@@ -376,7 +376,7 @@ def sns_public_access_check():
                             'UpdatedAt': iso8601Time,
                             'Severity': { 'Label': 'INFORMATIONAL' },
                             'Confidence': 75,  # The Condition may not effectively limit access
-                            'Title': '[SNS.4] SNS topics should not have public access',
+                            'Title': '[SNS.3] SNS topics should not have public access',
                             'Description': 'SNS topic ' + topicName + ' does not have public access or limited by a Condition. Refer to the remediation instructions to review sns access policy',
                             'Remediation': {
                                 'Recommendation': {
@@ -431,7 +431,7 @@ def sns_public_access_check():
                             'UpdatedAt': iso8601Time,
                             'Severity': { 'Label': 'HIGH'},
                             'Confidence': 99,
-                            'Title': '[SNS.4] SNS topics should not have public access',
+                            'Title': '[SNS.3] SNS topics should not have public access',
                             'Description': 'SNS topic ' + topicName + ' has public access. Refer to the remediation instructions to remediate this behavior',
                             'Remediation': {
                                 'Recommendation': {
@@ -512,7 +512,7 @@ def sns_cross_account_check():
                                     "UpdatedAt": iso8601Time,
                                     "Severity": {"Label": "INFORMATIONAL"},
                                     "Confidence": 99,
-                                    "Title": "[SNS.3] SNS topics should not allow cross-account access",
+                                    "Title": "[SNS.4] SNS topics should not allow cross-account access",
                                     "Description": "SNS topic "
                                     + topicName
                                     + " does not have cross-account access.",
@@ -573,7 +573,7 @@ def sns_cross_account_check():
                                     "UpdatedAt": iso8601Time,
                                     "Severity": {"Label": "Low"},
                                     "Confidence": 99,
-                                    "Title": "[SNS.3] SNS topics should not allow cross-account access",
+                                    "Title": "[SNS.4] SNS topics should not allow cross-account access",
                                     "Description": "SNS topic "
                                     + topicName
                                     + " has cross-account access.",
