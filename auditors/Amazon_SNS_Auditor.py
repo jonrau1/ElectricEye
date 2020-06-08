@@ -338,6 +338,135 @@ def sns_http_subscription_check():
                 except Exception as e:
                     print(e)
 
+def sns_public_access_check():
+    for topic in mySnsTopics:
+        topicarn = str(topic['TopicArn'])
+        topicName = topicarn.replace(
+            'arn:aws:sns:' + awsRegion + ':' + awsAccountId + ':', ''
+        )
+        response = sns.get_topic_attributes(TopicArn=topicarn)
+        statement_json = response["Attributes"]["Policy"]
+        statement = json.loads(statement_json)
+        fail = False
+        # this results in one finding per topic instead of one finding per statement
+        for sid in statement["Statement"]:
+            access = sid["Principal"]['AWS']
+            if access != '*' or (access == '*' and "Condition" in sid):
+                continue
+            else:
+                fail = True
+                break
+        if not fail:
+            try:
+                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                response = securityhub.batch_import_findings(
+                    Findings=[
+                        {
+                            'SchemaVersion': '2018-10-08',
+                            'Id': topicarn + '/sns-public-access-check',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                            'GeneratorId': topicarn,
+                            'AwsAccountId': awsAccountId,
+                            'Types': [ 
+                                'Software and Configuration Checks/AWS Security Best Practices',
+                                'Effects/Data Exposure'
+                            ],
+                            'FirstObservedAt': iso8601Time,
+                            'CreatedAt': iso8601Time,
+                            'UpdatedAt': iso8601Time,
+                            'Severity': { 'Label': 'INFORMATIONAL' },
+                            'Confidence': 75,  # The Condition may not effectively limit access
+                            'Title': '[SNS.4] SNS topics should not have public access',
+                            'Description': 'SNS topic ' + topicName + ' does not have public access or limited by a Condition. Refer to the remediation instructions to review sns access policy',
+                            'Remediation': {
+                                'Recommendation': {
+                                    'Text': 'For more information on SNS Access Policy Best Practices refer to Amazons Best Practice rules for Amazon SNS.',
+                                    'Url': 'https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#ensure-topics-not-publicly-accessible'
+                                }
+                            },
+                            'ProductFields': { 'Product Name': 'ElectricEye' },
+                            'Resources': [
+                                {
+                                    'Type': 'AwsSnsTopic',
+                                    'Id': topicarn,
+                                    'Partition': 'aws',
+                                    'Region': awsRegion,
+                                    'Details': {
+                                        'AwsSnsTopic': {
+                                            'TopicName': topicName
+                                        }
+                                    }
+                                }
+                            ],
+                            'Compliance': { 
+                                'Status': 'PASSED'
+                            },
+                            'Workflow': {
+                                'Status': 'RESOLVED'
+                            },
+                            'RecordState': 'ARCHIVED'
+                        }
+                    ]
+                )
+                print(response)
+            except Exception as e:
+                print(e)
+        else:
+            try:
+                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                response = securityhub.batch_import_findings(
+                    Findings=[
+                        {
+                            'SchemaVersion': '2018-10-08',
+                            'Id': topicarn + '/sns-public-access-check',
+                            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                            'GeneratorId': topicarn,
+                            'AwsAccountId': awsAccountId,
+                            'Types': [ 
+                                'Software and Configuration Checks/AWS Security Best Practices',
+                                'Effects/Data Exposure'
+                            ],
+                            'FirstObservedAt': iso8601Time,
+                            'CreatedAt': iso8601Time,
+                            'UpdatedAt': iso8601Time,
+                            'Severity': { 'Label': 'HIGH'},
+                            'Confidence': 99,
+                            'Title': '[SNS.4] SNS topics should not have public access',
+                            'Description': 'SNS topic ' + topicName + ' has public access. Refer to the remediation instructions to remediate this behavior',
+                            'Remediation': {
+                                'Recommendation': {
+                                    'Text': 'For more information on SNS Access Policy Best Practices refer to Amazons Best Practice rules for Amazon SNS.',
+                                    'Url': 'https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#ensure-topics-not-publicly-accessible'
+                                }
+                            },
+                            'ProductFields': { 'Product Name': 'ElectricEye' },
+                            'Resources': [
+                                {
+                                    'Type': 'AwsSnsTopic',
+                                    'Id': topicarn,
+                                    'Partition': 'aws',
+                                    'Region': awsRegion,
+                                    'Details': {
+                                        'AwsSnsTopic': {
+                                            'TopicName': topicName
+                                        }
+                                    }
+                                }
+                            ],
+                            'Compliance': { 
+                                'Status': 'FAILED'
+                            },
+                            'Workflow': {
+                                'Status': 'NEW'
+                            },
+                            'RecordState': 'ACTIVE'
+                        }
+                    ]
+                )
+                print(response)
+            except Exception as e:
+                print(e)
+                
 
 def sns_cross_account_check():
     for topic in mySnsTopics:
@@ -480,6 +609,7 @@ def sns_cross_account_check():
 def sns_auditor():
     sns_topic_encryption_check()
     sns_http_subscription_check()
+    sns_public_access_check()
     sns_cross_account_check()
 
 
