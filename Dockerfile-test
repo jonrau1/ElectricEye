@@ -12,8 +12,6 @@ COPY requirements.txt /tmp/
 COPY requirements-dev.txt /tmp/
 COPY audit_controller.py .
 
-ADD auditors /auditors/ 
-
 RUN pip3 install -r /tmp/requirements-dev.txt
 
 CMD pytest auditors
