@@ -231,7 +231,8 @@
                 "s3:GetBucketLocation",
                 "ecr:GetRepositoryPolicy",
                 "lambda:ListFunctions",
-                "cloudwatch:GetMetricData"
+                "cloudwatch:GetMetricData",
+                "sns:GetTopicAttributes"
             ],
             "Resource": "*"
         }

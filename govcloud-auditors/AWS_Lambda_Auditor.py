@@ -59,7 +59,7 @@ def function_unused_check():
                             {
                                 "SchemaVersion": "2018-10-08",
                                 "Id": lambdaArn + "/lambda-function-unused-check",
-                                "ProductArn": "arn:aws:securityhub:"
+                                "ProductArn": "arn:aws-us-gov:securityhub:"
                                 + awsRegion
                                 + ":"
                                 + awsAccountId
@@ -91,7 +91,7 @@ def function_unused_check():
                                     {
                                         "Type": "AwsLambda",
                                         "Id": lambdaArn,
-                                        "Partition": "aws",
+                                        "Partition": "aws-us-gov",
                                         "Region": awsRegion,
                                     }
                                 ],
@@ -116,7 +116,7 @@ def function_unused_check():
                             {
                                 "SchemaVersion": "2018-10-08",
                                 "Id": lambdaArn + "/lambda-function-unused-check",
-                                "ProductArn": "arn:aws:securityhub:"
+                                "ProductArn": "arn:aws-us-gov:securityhub:"
                                 + awsRegion
                                 + ":"
                                 + awsAccountId
@@ -148,7 +148,7 @@ def function_unused_check():
                                     {
                                         "Type": "AwsLambda",
                                         "Id": lambdaArn,
-                                        "Partition": "aws",
+                                        "Partition": "aws-us-gov",
                                         "Region": awsRegion,
                                     }
                                 ],
