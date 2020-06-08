@@ -396,6 +396,9 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_Shield_Advanced_Auditor.py      | Account (Shield subscription) | Is Shield Adv subscription on auto <br>renew                                           |
 | Amazon_SNS_Auditor.py                  | SNS Topic                     | Is the topic encrypted                                                                 |
 | Amazon_SNS_Auditor.py                  | SNS Topic                     | Does the topic have plaintext (HTTP)<br>subscriptions                                  |
+| Amazon_SNS_Auditor.py                  | SNS Topic                    |
+Does the topic have public 
+access                                            |
 | Amazon_VPC_Auditor.py                  | VPC                           | Is the default VPC out and about                                                       |
 | Amazon_VPC_Auditor.py                  | VPC                           | Is flow logging enabled                                                                |
 | Amazon_WorkSpaces_Auditor.py           | Workspace                     | Is user volume encrypted                                                               |
