@@ -1,4 +1,5 @@
 import datetime
+import json
 import os
 import pytest
 from botocore.stub import Stubber, ANY
@@ -20,3 +21,43 @@ sts_response = {
     "Account": "012345678901",
     "Arn": "arn:aws:iam::012345678901:user/user",
 }
+
+list_topics_response = {
+    "Topics": [{"TopicArn": "arn:aws:sns:us-east-1:012345678901:MyTopic"},],
+}
+
+get_topic_attributes_response = {
+    "Attributes": {
+        "Policy": '{"Statement":[{"Principal":{"AWS":"arn:aws:iam::012345678901:root"},"Condition":{"StringEquals":{"AWS:SourceOwner":"012345678901"}}}]}',
+    }
+}
+
+
+@pytest.fixture(scope="function")
+def sts_stubber():
+    sts_stubber = Stubber(sts)
+    sts_stubber.activate()
+    yield sts_stubber
+    sts_stubber.deactivate()
+
+
+@pytest.fixture(scope="function")
+def sns_stubber():
+    sns_stubber = Stubber(sns)
+    sns_stubber.activate()
+    yield sns_stubber
+    sns_stubber.deactivate()
+
+
+def test_principal_is_id_sns(sns_stubber, sts_stubber):
+    sts_stubber.add_response("get_caller_identity", sts_response)
+    sns_stubber.add_response("list_topics", list_topics_response)
+    sns_stubber.add_response("get_topic_attributes", get_topic_attributes_response)
+    check = SNSCrossAccountCheck()
+    results = check.execute()
+    for result in results:
+        if "MyTopic" in result["Id"]:
+            assert result["RecordState"] == "ARCHIVED"
+        else:
+            assert False
+    sns_stubber.assert_no_pending_responses()
