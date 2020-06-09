@@ -4,9 +4,12 @@ import os
 import pytest
 from botocore.stub import Stubber, ANY
 from auditors.Amazon_SNS_Auditor import (
-    CrossAccountCheck,
+    SNSTopicEncryptionCheck,
+    SNSHTTPEncryptionCheck,
+    SNSPublicAccessCheck,
+    SNSCrossAccountCheck,
     sts,
-    sns_client,
+    sns,
 )
 
 # not available in local testing without ECS
@@ -25,7 +28,7 @@ list_topics_response = {
 
 get_topic_attributes_response = {
     "Attributes": {
-        "Policy": '{"Statement":[{"Principal":{"AWS":"arn:aws:iam::012345678901:root"},"Condition":{"StringEquals":{"AWS:SourceOwner":"805574742241"}}}]}',
+        "Policy": '{"Statement":[{"Principal":{"AWS":"arn:aws:iam::012345678901:root"},"Condition":{"StringEquals":{"AWS:SourceOwner":"012345678901"}}}]}',
     }
 }
 
@@ -40,20 +43,20 @@ def sts_stubber():
 
 @pytest.fixture(scope="function")
 def sns_stubber():
-    sns_stubber = Stubber(sns_client)
+    sns_stubber = Stubber(sns)
     sns_stubber.activate()
     yield sns_stubber
     sns_stubber.deactivate()
 
 
-def test_principal_is_id_sns(sns_stubber, cloudwatch_stubber, sts_stubber):
+def test_principal_is_id_sns(sns_stubber, sts_stubber):
     sts_stubber.add_response("get_caller_identity", sts_response)
     sns_stubber.add_response("list_topics", list_topics_response)
     sns_stubber.add_response("get_topic_attributes", get_topic_attributes_response)
-    check = CrossAccountCheck()
+    check = SNSCrossAccountCheck()
     results = check.execute()
     for result in results:
-        if "012345678901" in json.loads(result)["Statement"]["Principal"]["AWS"]:
+        if "MyTopic" in result["Id"]:
             assert result["RecordState"] == "ARCHIVED"
         else:
             assert False
