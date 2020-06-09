@@ -363,7 +363,21 @@ def sns_public_access_check():
                                 }
                             ],
                             'Compliance': { 
-                                'Status': 'PASSED'
+                                'Status': 'PASSED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.AC-3',
+                                    'NIST SP 800-53 AC-1',
+                                    'NIST SP 800-53 AC-17',
+                                    'NIST SP 800-53 AC-19',
+                                    'NIST SP 800-53 AC-20',
+                                    'NIST SP 800-53 SC-15',
+                                    'AICPA TSC CC6.6',
+                                    'ISO 27001:2013 A.6.2.1',
+                                    'ISO 27001:2013 A.6.2.2',
+                                    'ISO 27001:2013 A.11.2.6',
+                                    'ISO 27001:2013 A.13.1.1',
+                                    'ISO 27001:2013 A.13.2.1'
+                                ]
                             },
                             'Workflow': {
                                 'Status': 'RESOLVED'
@@ -418,7 +432,21 @@ def sns_public_access_check():
                                 }
                             ],
                             'Compliance': { 
-                                'Status': 'FAILED'
+                                'Status': 'FAILED',
+                                'RelatedRequirements': [
+                                    'NIST CSF PR.AC-3',
+                                    'NIST SP 800-53 AC-1',
+                                    'NIST SP 800-53 AC-17',
+                                    'NIST SP 800-53 AC-19',
+                                    'NIST SP 800-53 AC-20',
+                                    'NIST SP 800-53 SC-15',
+                                    'AICPA TSC CC6.6',
+                                    'ISO 27001:2013 A.6.2.1',
+                                    'ISO 27001:2013 A.6.2.2',
+                                    'ISO 27001:2013 A.11.2.6',
+                                    'ISO 27001:2013 A.13.1.1',
+                                    'ISO 27001:2013 A.13.2.1'
+                                ]
                             },
                             'Workflow': {
                                 'Status': 'NEW'
@@ -498,7 +526,23 @@ def sns_cross_account_check():
                                             },
                                         }
                                     ],
-                                    "Compliance": {"Status": "PASSED"},
+                                    "Compliance": { 
+                                        "Status": "PASSED",
+                                        "RelatedRequirements": [
+                                            "NIST CSF PR.AC-3",
+                                            "NIST SP 800-53 AC-1",
+                                            "NIST SP 800-53 AC-17",
+                                            "NIST SP 800-53 AC-19",
+                                            "NIST SP 800-53 AC-20",
+                                            "NIST SP 800-53 SC-15",
+                                            "AICPA TSC CC6.6",
+                                            "ISO 27001:2013 A.6.2.1",
+                                            "ISO 27001:2013 A.6.2.2",
+                                            "ISO 27001:2013 A.11.2.6",
+                                            "ISO 27001:2013 A.13.1.1",
+                                            "ISO 27001:2013 A.13.2.1"
+                                        ]
+                                    },
                                     "Workflow": {"Status": "RESOLVED"},
                                     "RecordState": "ARCHIVED",
                                 }
@@ -559,9 +603,25 @@ def sns_cross_account_check():
                                             },
                                         }
                                     ],
-                                    "Compliance": {"Status": "Failed"},
-                                    "Workflow": {"Status": "New"},
-                                    "RecordState": "Active",
+                                    "Compliance": { 
+                                        "Status": "FAILED",
+                                        "RelatedRequirements": [
+                                            "NIST CSF PR.AC-3",
+                                            "NIST SP 800-53 AC-1",
+                                            "NIST SP 800-53 AC-17",
+                                            "NIST SP 800-53 AC-19",
+                                            "NIST SP 800-53 AC-20",
+                                            "NIST SP 800-53 SC-15",
+                                            "AICPA TSC CC6.6",
+                                            "ISO 27001:2013 A.6.2.1",
+                                            "ISO 27001:2013 A.6.2.2",
+                                            "ISO 27001:2013 A.11.2.6",
+                                            "ISO 27001:2013 A.13.1.1",
+                                            "ISO 27001:2013 A.13.2.1"
+                                        ]
+                                    },
+                                    "Workflow": {"Status": "NEW"},
+                                    "RecordState": "ACTIVE",
                                 }
                             ]
                         )

@@ -1,3 +1,18 @@
+# This file is part of ElectricEye.
+
+# ElectricEye is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# ElectricEye is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License along with ElectricEye.  
+# If not, see https://github.com/jonrau1/ElectricEye/blob/master/LICENSE.
+
 import boto3
 import datetime
 import os
@@ -95,9 +110,21 @@ def function_unused_check():
                                         "Region": awsRegion,
                                     }
                                 ],
-                                "Compliance": {"Status": "PASSED"},
+                                "Compliance": { 
+                                    "Status": "PASSED",
+                                    "RelatedRequirements": [
+                                        "NIST CSF ID.AM-2",
+                                        "NIST SP 800-53 CM-8",
+                                        "NIST SP 800-53 PM-5",
+                                        "AICPA TSC CC3.2",
+                                        "AICPA TSC CC6.1",
+                                        "ISO 27001:2013 A.8.1.1",
+                                        "ISO 27001:2013 A.8.1.2",
+                                        "ISO 27001:2013 A.12.5.1"
+                                    ]
+                                },
                                 "Workflow": {"Status": "RESOLVED"},
-                                "RecordState": "ARCHIVED",
+                                "RecordState": "ARCHIVED"
                             }
                         ]
                     )
@@ -152,15 +179,26 @@ def function_unused_check():
                                         "Region": awsRegion,
                                     }
                                 ],
-                                "Compliance": {"Status": "FAILED"},
+                                "Compliance": { 
+                                    "Status": "FAILED",
+                                    "RelatedRequirements": [
+                                        "NIST CSF ID.AM-2",
+                                        "NIST SP 800-53 CM-8",
+                                        "NIST SP 800-53 PM-5",
+                                        "AICPA TSC CC3.2",
+                                        "AICPA TSC CC6.1",
+                                        "ISO 27001:2013 A.8.1.1",
+                                        "ISO 27001:2013 A.8.1.2",
+                                        "ISO 27001:2013 A.12.5.1"
+                                    ]
+                                },
                                 "Workflow": {"Status": "NEW"},
-                                "RecordState": "ACTIVE",
+                                "RecordState": "ACTIVE"
                             }
                         ]
                     )
                     print(response)
                 except Exception as e:
                     print(e)
-
 
 function_unused_check()

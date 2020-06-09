@@ -396,10 +396,8 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_Shield_Advanced_Auditor.py      | Account (Shield subscription) | Is Shield Adv subscription on auto <br>renew                                           |
 | Amazon_SNS_Auditor.py                  | SNS Topic                     | Is the topic encrypted                                                                 |
 | Amazon_SNS_Auditor.py                  | SNS Topic                     | Does the topic have plaintext (HTTP)<br>subscriptions                                  |
-| Amazon_SNS_Auditor.py                  | SNS Topic                    |
-Does the topic have public 
-access                                            |
-| Amazon_SNS_Auditor.py                  | SNS Topic                     | Does the topic have cross-account access                                               |
+| Amazon_SNS_Auditor.py                  | SNS Topic                     | Does the topic allow public access                                                     |
+| Amazon_SNS_Auditor.py                  | SNS Topic                     | Does the   topic allow cross-account access                                            |
 | Amazon_VPC_Auditor.py                  | VPC                           | Is the default VPC out and about                                                       |
 | Amazon_VPC_Auditor.py                  | VPC                           | Is flow logging enabled                                                                |
 | Amazon_WorkSpaces_Auditor.py           | Workspace                     | Is user volume encrypted                                                               |
@@ -447,7 +445,7 @@ access                                            |
 | AWS_IAM_Auditor.py                     | IAM User                      | Do users have managed policies attached                                                |
 | AWS_IAM_Auditor.py                     | Password policy (Account)     | Does the IAM password policy meet or exceed<br>AWS CIS Foundations Benchmark standards |
 | AWS_IAM_Auditor.py                     | Server certs (Account)        | Are they any Server certificates stored by IAM                                         |
-| AWS_Lambda_Auditor.py                  | Lambda Function               | Has function been used or updated in the last 30 days                                  |
+| AWS_Lambda_Auditor.py                  | Lambda function               | Has function been used or updated in the last<br>30 days                               |
 | AWS_License_Manager_Auditor            | License Manager configuration | Do LM configurations enforce a hard limit on<br>license consumption                    |
 | AWS_Secrets_Manager_Auditor.py         | Secrets Manager secret        | Is the secret over 90 days old                                                         |
 | AWS_Secrets_Manager_Auditor.py         | Secrets Manager secret        | Is secret auto-rotation enabled                                                        |
