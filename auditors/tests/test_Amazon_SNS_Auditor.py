@@ -31,6 +31,17 @@ get_topic_attributes_response = {
         "Policy": '{"Statement":[{"Principal":{"AWS":"arn:aws:iam::012345678901:root"},"Condition":{"StringEquals":{"AWS:SourceOwner":"012345678901"}}}]}',
     }
 }
+get_topic_attributes_only_id_response = {
+    "Attributes": {
+        "Policy": '{"Statement":[{"Principal":{"AWS":"012345678901"},"Condition":{"StringEquals":{"AWS:SourceOwner":"012345678901"}}}]}',
+    }
+}
+
+get_topic_attributes_wrong_id_response = {
+    "Attributes": {
+        "Policy": '{"Statement":[{"Principal":{"AWS":"arn:aws:iam::012345678902:root"},"Condition":{"StringEquals":{"AWS:SourceOwner":"012345678901"}}}]}',
+    }
+}
 
 
 @pytest.fixture(scope="function")
@@ -49,7 +60,7 @@ def sns_stubber():
     sns_stubber.deactivate()
 
 
-def test_principal_is_id_sns(sns_stubber, sts_stubber):
+def test_id_arn_is_principal(sns_stubber, sts_stubber):
     sts_stubber.add_response("get_caller_identity", sts_response)
     sns_stubber.add_response("list_topics", list_topics_response)
     sns_stubber.add_response("get_topic_attributes", get_topic_attributes_response)
@@ -57,7 +68,42 @@ def test_principal_is_id_sns(sns_stubber, sts_stubber):
     results = check.execute()
     for result in results:
         if "MyTopic" in result["Id"]:
+            print(result["Id"])
             assert result["RecordState"] == "ARCHIVED"
+        else:
+            assert False
+    sns_stubber.assert_no_pending_responses()
+
+
+def test_id_is_principal(sns_stubber, sts_stubber):
+    sts_stubber.add_response("get_caller_identity", sts_response)
+    sns_stubber.add_response("list_topics", list_topics_response)
+    sns_stubber.add_response(
+        "get_topic_attributes", get_topic_attributes_only_id_response
+    )
+    check = SNSCrossAccountCheck()
+    results = check.execute()
+    for result in results:
+        if "MyTopic" in result["Id"]:
+            print(result["Id"])
+            assert result["RecordState"] == "ARCHIVED"
+        else:
+            assert False
+    sns_stubber.assert_no_pending_responses()
+
+
+def test_id_not_principal(sns_stubber, sts_stubber):
+    sts_stubber.add_response("get_caller_identity", sts_response)
+    sns_stubber.add_response("list_topics", list_topics_response)
+    sns_stubber.add_response(
+        "get_topic_attributes", get_topic_attributes_wrong_id_response
+    )
+    check = SNSCrossAccountCheck()
+    results = check.execute()
+    for result in results:
+        if "MyTopic" in result["Id"]:
+            print(result["Id"])
+            assert result["RecordState"] == "ACTIVE"
         else:
             assert False
     sns_stubber.assert_no_pending_responses()

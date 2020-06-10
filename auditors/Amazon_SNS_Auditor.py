@@ -22,16 +22,16 @@ from auditors.Auditor import Auditor
 # import boto3 clients
 sns = boto3.client("sns")
 sts = boto3.client("sts")
-# create account id & region variables
-awsAccountId = sts.get_caller_identity()["Account"]
+# create region variable
 awsRegion = os.environ["AWS_REGION"]
-# loop through SNS topics
-response = sns.list_topics()
-mySnsTopics = response["Topics"]
 
 
 class SNSTopicEncryptionCheck(Auditor):
     def execute(self):
+        awsAccountId = sts.get_caller_identity()["Account"]
+        # loop through SNS topics
+        response = sns.list_topics()
+        mySnsTopics = response["Topics"]
         for topic in mySnsTopics:
             topicarn = str(topic["TopicArn"])
             topicName = topicarn.replace(
@@ -161,6 +161,10 @@ class SNSTopicEncryptionCheck(Auditor):
 
 class SNSHTTPEncryptionCheck(Auditor):
     def execute(self):
+        awsAccountId = sts.get_caller_identity()["Account"]
+        # loop through SNS topics
+        response = sns.list_topics()
+        mySnsTopics = response["Topics"]
         for topic in mySnsTopics:
             topicarn = str(topic["TopicArn"])
             topicName = topicarn.replace(
@@ -297,6 +301,10 @@ class SNSHTTPEncryptionCheck(Auditor):
 
 class SNSPublicAccessCheck(Auditor):
     def execute(self):
+        awsAccountId = sts.get_caller_identity()["Account"]
+        # loop through SNS topics
+        response = sns.list_topics()
+        mySnsTopics = response["Topics"]
         for topic in mySnsTopics:
             topicarn = str(topic["TopicArn"])
             topicName = topicarn.replace(
@@ -449,6 +457,10 @@ class SNSPublicAccessCheck(Auditor):
 
 class SNSCrossAccountCheck(Auditor):
     def execute(self):
+        awsAccountId = sts.get_caller_identity()["Account"]
+        # loop through SNS topics
+        response = sns.list_topics()
+        mySnsTopics = response["Topics"]
         for topic in mySnsTopics:
             topicarn = str(topic["TopicArn"])
             topicName = topicarn.replace(
