@@ -16,6 +16,7 @@
 import boto3
 import os
 import datetime
+from auditors.Auditor import Auditor
 
 # import boto3 clients
 sts = boto3.client("sts")
@@ -29,7 +30,7 @@ response = ec2.describe_security_groups()
 mySgs = response["SecurityGroups"]
 
 
-class SecurityGroupAllOpenCheck:
+class SecurityGroupAllOpenCheck(Auditor):
     def execute(self):
         for secgroup in mySgs:
             sgName = str(secgroup["GroupName"])
@@ -215,7 +216,7 @@ class SecurityGroupAllOpenCheck:
                         pass
 
 
-class SecurityGroupOpenFtpCheck:
+class SecurityGroupOpenFtpCheck(Auditor):
     def execute(self):
         for secgroup in mySgs:
             sgName = str(secgroup["GroupName"])
@@ -413,7 +414,7 @@ class SecurityGroupOpenFtpCheck:
                         pass
 
 
-class SecurityGroupOpenTelnetCheck:
+class SecurityGroupOpenTelnetCheck(Auditor):
     def execute(self):
         for secgroup in mySgs:
             sgName = str(secgroup["GroupName"])
@@ -603,7 +604,7 @@ class SecurityGroupOpenTelnetCheck:
                         pass
 
 
-class SecurityGroupOpenDcomRpcCheck:
+class SecurityGroupOpenDcomRpcCheck(Auditor):
     def execute(self):
         for secgroup in mySgs:
             sgName = str(secgroup["GroupName"])
@@ -809,7 +810,7 @@ class SecurityGroupOpenDcomRpcCheck:
                         pass
 
 
-class SecurityGroupOpenSmbCheck:
+class SecurityGroupOpenSmbCheck(Auditor):
     def execute(self):
         for secgroup in mySgs:
             sgName = str(secgroup["GroupName"])
@@ -1027,7 +1028,7 @@ class SecurityGroupOpenSmbCheck:
                         pass
 
 
-class SecurityGroupOpenMssqlCheck:
+class SecurityGroupOpenMssqlCheck(Auditor):
     def execute(self):
         for secgroup in mySgs:
             sgName = str(secgroup["GroupName"])
@@ -1257,7 +1258,7 @@ class SecurityGroupOpenMssqlCheck:
                         pass
 
 
-class SecurityGroupOpenOracleCheck:
+class SecurityGroupOpenOracleCheck(Auditor):
     def execute(self):
         for secgroup in mySgs:
             sgName = str(secgroup["GroupName"])
@@ -1447,7 +1448,7 @@ class SecurityGroupOpenOracleCheck:
                         pass
 
 
-class SecurityGroupOpenMysqlMariadbCheck:
+class SecurityGroupOpenMysqlMariadbCheck(Auditor):
     def execute(self):
         for secgroup in mySgs:
             sgName = str(secgroup["GroupName"])
@@ -1637,7 +1638,7 @@ class SecurityGroupOpenMysqlMariadbCheck:
                         pass
 
 
-class SecurityGroupOpenRdpCheck:
+class SecurityGroupOpenRdpCheck(Auditor):
     def execute(self):
         for secgroup in mySgs:
             sgName = str(secgroup["GroupName"])
@@ -1855,7 +1856,7 @@ class SecurityGroupOpenRdpCheck:
                         pass
 
 
-class SecurityGroupOpenPostgresqlCheck:
+class SecurityGroupOpenPostgresqlCheck(Auditor):
     def execute(self):
         for secgroup in mySgs:
             sgName = str(secgroup["GroupName"])
@@ -2045,7 +2046,7 @@ class SecurityGroupOpenPostgresqlCheck:
                         pass
 
 
-class SecurityGroupOpenKibanaCheck:
+class SecurityGroupOpenKibanaCheck(Auditor):
     def execute(self):
         for secgroup in mySgs:
             sgName = str(secgroup["GroupName"])
@@ -2263,7 +2264,7 @@ class SecurityGroupOpenKibanaCheck:
                         pass
 
 
-class SecurityGroupOpenRedisCheck:
+class SecurityGroupOpenRedisCheck(Auditor):
     def execute(self):
         for secgroup in mySgs:
             sgName = str(secgroup["GroupName"])
@@ -2481,7 +2482,7 @@ class SecurityGroupOpenRedisCheck:
                         pass
 
 
-class SecurityGroupOpenSplunkdCheck:
+class SecurityGroupOpenSplunkdCheck(Auditor):
     def execute(self):
         for secgroup in mySgs:
             sgName = str(secgroup["GroupName"])
@@ -2699,7 +2700,7 @@ class SecurityGroupOpenSplunkdCheck:
                         pass
 
 
-class SecurityGroupOpenElasticsearch1Check:
+class SecurityGroupOpenElasticsearch1Check(Auditor):
     def execute(self):
         for secgroup in mySgs:
             sgName = str(secgroup["GroupName"])
@@ -2889,7 +2890,7 @@ class SecurityGroupOpenElasticsearch1Check:
                         pass
 
 
-class SecurityGroupOpenElasticsearch2Check:
+class SecurityGroupOpenElasticsearch2Check(Auditor):
     def execute(self):
         for secgroup in mySgs:
             sgName = str(secgroup["GroupName"])
@@ -3079,7 +3080,7 @@ class SecurityGroupOpenElasticsearch2Check:
                         pass
 
 
-class SecurityGroupOpenMemcachedCheck:
+class SecurityGroupOpenMemcachedCheck(Auditor):
     def execute(self):
         for secgroup in mySgs:
             sgName = str(secgroup["GroupName"])
@@ -3307,7 +3308,7 @@ class SecurityGroupOpenMemcachedCheck:
                         pass
 
 
-class SecurityGroupOpenRedshiftCheck:
+class SecurityGroupOpenRedshiftCheck(Auditor):
     def execute(self):
         for secgroup in mySgs:
             sgName = str(secgroup["GroupName"])
@@ -3497,7 +3498,7 @@ class SecurityGroupOpenRedshiftCheck:
                         pass
 
 
-class SecurityGroupOpenDocumentdbCheck:
+class SecurityGroupOpenDocumentdbCheck(Auditor):
     def execute(self):
         for secgroup in mySgs:
             sgName = str(secgroup["GroupName"])
@@ -3687,7 +3688,7 @@ class SecurityGroupOpenDocumentdbCheck:
                         pass
 
 
-class SecurityGroupOpenCassandraCheck:
+class SecurityGroupOpenCassandraCheck(Auditor):
     def execute(self):
         for secgroup in mySgs:
             sgName = str(secgroup["GroupName"])
@@ -3877,7 +3878,7 @@ class SecurityGroupOpenCassandraCheck:
                         pass
 
 
-class SecurityGroupOpenKafkaCheck:
+class SecurityGroupOpenKafkaCheck(Auditor):
     def execute(self):
         for secgroup in mySgs:
             sgName = str(secgroup["GroupName"])

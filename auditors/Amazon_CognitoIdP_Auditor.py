@@ -16,6 +16,7 @@
 import boto3
 import datetime
 import os
+from auditors.Auditor import Auditor
 
 # import boto3 clients
 securityhub = boto3.client("securityhub")
@@ -26,7 +27,7 @@ awsAccount = sts.get_caller_identity()["Account"]
 awsRegion = os.environ["AWS_REGION"]
 
 
-class CisPasswordCheck:
+class CognitoidpCisPasswordCheck(Auditor):
     def execute(self):
         response = cognitoidp.list_user_pools(MaxResults=60)
         myCognitoUserPools = response["UserPools"]
@@ -206,7 +207,7 @@ class CisPasswordCheck:
                 yield finding
 
 
-class TempPasswordCheck:
+class CognitoidpTempPasswordCheck(Auditor):
     def execute(self):
         response = cognitoidp.list_user_pools(MaxResults=60)
         myCognitoUserPools = response["UserPools"]
@@ -374,7 +375,7 @@ class TempPasswordCheck:
                 yield finding
 
 
-class MfaCheck:
+class CognitoidpMfaCheck(Auditor):
     def execute(self):
         response = cognitoidp.list_user_pools(MaxResults=60)
         myCognitoUserPools = response["UserPools"]
