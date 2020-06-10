@@ -122,6 +122,7 @@ def test_id_not_principal(sns_stubber, sts_stubber):
         if "MyTopic" in result["Id"]:
             print(result["Id"])
             assert result["RecordState"] == "ACTIVE"
+    sns_stubber.assert_no_pending_responses()
 
 
 def test_no_access(sts_stubber, sns_stubber):
