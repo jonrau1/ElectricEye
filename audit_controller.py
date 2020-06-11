@@ -28,7 +28,9 @@ from auditors.Auditor import Auditor, AuditorCollection
 # Return nested dictionary values by passing in dictionary and keys separated by "."
 def deep_get(dictionary, keys):
     return reduce(
-        lambda d, key: d.get(key) if isinstance(d, dict) else None, keys.split("."), dictionary,
+        lambda d, key: d.get(key) if isinstance(d, dict) else None,
+        keys.split("."),
+        dictionary,
     )
 
 
@@ -43,8 +45,14 @@ def csv_output(output_file, findings):
         {"name": "Description", "path": "Description"},
         {"name": "RecordState", "path": "RecordState"},
         {"name": "Compliance Status", "path": "Compliance.Status"},
-        {"name": "Remediation Recommendation", "path": "Remediation.Recommendation.Text"},
-        {"name": "Remediation Recommendation Link", "path": "Remediation.Recommendation.Url"},
+        {
+            "name": "Remediation Recommendation",
+            "path": "Remediation.Recommendation.Text",
+        },
+        {
+            "name": "Remediation Recommendation Link",
+            "path": "Remediation.Recommendation.Url",
+        },
     ]
     csv_file = output_file
     try:
@@ -99,14 +107,14 @@ def main(argv):
         try:
             # if user specifies a specific auditor on CLI, skip all other auditors
             if auditor_name:
-                if "auditors." + auditor_name != plugin.get("auditors"):
+                if "auditors." + auditor_name != plugin.get("auditor"):
                     continue
             check = plugin.get("check")
             # if user specifies a specific check on CLI, skip all other checks
             if check_name:
                 if check.name != check_name:
                     continue
-            print(f"Executing auditor: {check.name}")
+            print(f"Executing check: {check.name}")
             for finding in check.execute():
                 # It would be possible to collect these fidnings and batch them up before sending.
                 # This current implementation has the advantage of a small memory footprint, but
