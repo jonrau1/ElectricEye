@@ -696,6 +696,7 @@ class EbsSnapshotPublicCheck(Auditor):
                             "Workflow": {"Status": "NEW"},
                             "RecordState": "ACTIVE",
                         }
+                        yield finding
                     else:
                         finding = {
                             "SchemaVersion": "2018-10-08",
