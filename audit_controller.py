@@ -116,7 +116,7 @@ def main(argv):
                     continue
             print(f"Executing check: {check.name}")
             for finding in check.execute():
-                # It would be possible to collect these fidnings and batch them up before sending.
+                # It would be possible to collect these findings and batch them up before sending.
                 # This current implementation has the advantage of a small memory footprint, but
                 # could be a slight performance improvement to batch and make one securityhub
                 # call per check.
