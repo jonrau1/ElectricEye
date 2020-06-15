@@ -252,6 +252,10 @@ Resources:
             - kinesis:ListStreams
             - kms:Decrypt
             - kms:DescribeKey
+            - kms:GetKeyPolicy
+            - kms:GetKeyRotationStatus
+            - kms:ListAliases
+            - kms:ListKeys
             - lambda:ListFunctions
             - license-manager:GetLicenseConfiguration
             - license-manager:ListLicenseConfigurations

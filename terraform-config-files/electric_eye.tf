@@ -338,7 +338,11 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "ecr:GetRepositoryPolicy",
                 "rds:DescribeDBClusterParameterGroups",
                 "lambda:ListFunctions",
-                "cloudwatch:GetMetricData"
+                "cloudwatch:GetMetricData",
+                "kms:ListAliases",
+                "kms:GetKeyPolicy",
+                "kms:ListKeys",
+                "kms:GetKeyRotationStatus"
             ],
             "Resource": "*"
         }
