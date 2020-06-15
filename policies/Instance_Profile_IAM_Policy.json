@@ -232,7 +232,11 @@
                 "ecr:GetRepositoryPolicy",
                 "lambda:ListFunctions",
                 "cloudwatch:GetMetricData",
-                "sns:GetTopicAttributes"
+                "sns:GetTopicAttributes",
+                "kms:ListAliases",
+                "kms:GetKeyPolicy",
+                "kms:ListKeys",
+                "kms:GetKeyRotationStatus"
             ],
             "Resource": "*"
         }
