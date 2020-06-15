@@ -23,16 +23,16 @@ from auditors.Auditor import Auditor
 sts = boto3.client("sts")
 kms = boto3.client("kms")
 # create env vars
-awsAccountId = sts.get_caller_identity()["Account"]
 awsRegion = os.environ["AWS_REGION"]
 
 
 class KMSKeyRotationCheck(Auditor):
-    def execute(self):
+   def execute(self):
 
 
 class KMSKeyExposedCheck(Auditor):
     def execute(self):
+        awsAccountId = sts.get_caller_identity()["Account"]
         response = kms.list_aliases()
         aliasList = response["Aliases"]
         for alias in aliasList:
