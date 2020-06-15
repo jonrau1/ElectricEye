@@ -12,10 +12,11 @@ LABEL maintainer="https://github.com/jonrau1" \
     description="Continuously monitor your AWS services for configurations that can lead to degradation of confidentiality, integrity or availability. All results will be sent to Security Hub for further aggregation and analysis."
 
 COPY requirements.txt /tmp/requirements.txt
-COPY audit_controller.py .
+# NOTE: this will copy current auditors to container along with the required controller files
+COPY ./eeauditor/ ./
 
 RUN pip3 install -r /tmp/requirements.txt
 
 CMD \
     aws s3 cp s3://${SH_SCRIPTS_BUCKET}/ ./auditors --recursive && \
-    python audit_controller.py
+    python controller.py
