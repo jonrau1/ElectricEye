@@ -55,7 +55,6 @@ class EEAuditor(object):
         if plugin_name:
             try:
                 plugin = self.source.load_plugin(plugin_name)
-                plugin.setup(self)
             except Exception as e:
                 print(f"Failed to load plugin {plugin_name} with exception {e}")
         else:
