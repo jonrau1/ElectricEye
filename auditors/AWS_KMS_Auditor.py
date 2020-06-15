@@ -23,17 +23,18 @@ from auditors.Auditor import Auditor
 sts = boto3.client("sts")
 kms = boto3.client("kms")
 
+
 class KMSKeyRotationCheck(Auditor):
     def execute(self):
         awsAccountId = sts.get_caller_identity()["Account"]
         awsRegion = os.environ["AWS_REGION"]
         keys = kms.list_keys()
         my_keys = keys["Keys"]
+        iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
         for key in my_keys:
             keyid = key["KeyId"]
             keyarn = key["KeyArn"]
             key_rotation = kms.get_key_rotation_status(KeyId=keyid)
-            iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             if key_rotation["KeyRotationEnabled"] == True:
                 finding = {
                     "SchemaVersion": "2018-10-08",
@@ -75,57 +76,58 @@ class KMSKeyRotationCheck(Auditor):
                             "Details": {"AwsKmsKey": {"KeyId": keyid}},
                         }
                     ],
-                    "Compliance": {
-                        "Status": "PASSED"
-                    },
+                    "Compliance": {"Status": "PASSED"},
                     "Workflow": {"Status": "RESOLVED"},
                     "RecordState": "ARCHIVED",
                 }
                 yield finding
             else:
                 finding = {
-                    'SchemaVersion': '2018-10-08',
-                    'Id': keyarn + '/kms-key-rotation-check',
-                    'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
-                    'GeneratorId': keyarn,
-                    'AwsAccountId': awsAccountId,
-                    'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
-                    'FirstObservedAt': iso8601Time,
-                    'CreatedAt': iso8601Time,
-                    'UpdatedAt': iso8601Time,
-                    'Severity': { 'Label': 'MEDIUM' },
-                    'Confidence': 99,
-                    'Title': '[KMS.1] KMS keys should have key rotation enabled',
-                    'Description': 'KMS key ' + keyid + ' does not have key rotation enabled.',
-                    'Remediation': {
-                        'Recommendation': {
-                            'Text': 'For more information on KMS key rotation refer to the AWS KMS Developer Guide on Rotating Keys',
-                            'Url': 'https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html'
+                    "SchemaVersion": "2018-10-08",
+                    "Id": keyarn + "/kms-key-rotation-check",
+                    "ProductArn": "arn:aws:securityhub:"
+                    + awsRegion
+                    + ":"
+                    + awsAccountId
+                    + ":product/"
+                    + awsAccountId
+                    + "/default",
+                    "GeneratorId": keyarn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": [
+                        "Software and Configuration Checks/AWS Security Best Practices"
+                    ],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "MEDIUM"},
+                    "Confidence": 99,
+                    "Title": "[KMS.1] KMS keys should have key rotation enabled",
+                    "Description": "KMS key "
+                    + keyid
+                    + " does not have key rotation enabled.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on KMS key rotation refer to the AWS KMS Developer Guide on Rotating Keys",
+                            "Url": "https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html",
                         }
                     },
-                    'ProductFields': {
-                        'Product Name': 'ElectricEye'
-                    },
-                    'Resources': [
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
                         {
-                            'Type': 'AwsKmsKey',
-                            'Id': keyarn,
-                            'Partition': 'aws',
-                            'Region': awsRegion,
-                            'Details': {
-                                'AwsKmsKey': { 'KeyId': keyid }
-                            }
+                            "Type": "AwsKmsKey",
+                            "Id": keyarn,
+                            "Partition": "aws",
+                            "Region": awsRegion,
+                            "Details": {"AwsKmsKey": {"KeyId": keyid}},
                         }
                     ],
-                    'Compliance': { 
-                        'Status': 'FAILED'
-                    },
-                    'Workflow': {
-                        'Status': 'NEW'
-                    },
-                    'RecordState': 'ACTIVE'
+                    "Compliance": {"Status": "FAILED"},
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE",
                 }
                 yield finding
+
 
 class KMSKeyExposedCheck(Auditor):
     def execute(self):
@@ -133,6 +135,7 @@ class KMSKeyExposedCheck(Auditor):
         awsRegion = os.environ["AWS_REGION"]
         response = kms.list_aliases()
         aliasList = response["Aliases"]
+        iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
         for alias in aliasList:
             if "TargetKeyId" in alias:
                 aliasArn = alias["AliasArn"]
@@ -141,11 +144,6 @@ class KMSKeyExposedCheck(Auditor):
                 fail = False
                 policy_json = policyString["Policy"]
                 policy = json.loads(policy_json)
-                iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
-                )
                 for sid in policy["Statement"]:
                     access = sid["Principal"].get("AWS", None)
                     if access != "*" or (access == "*" and "Condition" in sid):
