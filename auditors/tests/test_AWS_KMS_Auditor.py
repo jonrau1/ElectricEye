@@ -1,9 +1,10 @@
+import datetime
 import json
 import os
 import pytest
 from botocore.stub import Stubber, ANY
 from auditors.AWS_KMS_Auditor import (
-    # KMSKeyRotationCheck,
+    KMSKeyRotationCheck,
     KMSKeyExposedCheck,
     sts,
     kms,
@@ -44,6 +45,22 @@ get_key_policy_no_AWS_response = {
     "Policy": '{"Version": "2012-10-17","Id": "KeyPolicy1568312239560","Statement": [{"Sid": "StmtID1672312238115","Effect": "Allow","Principal": {"Service": "cloudtrail.amazonaws.com"},"Action": "kms:*","Resource": "*","Condition": {"StringEquals": {"kms:CallerAccount": "012345678901","kms:ViaService": "sns.us-east-1.amazonaws.com"}}}]}'
 }
 
+list_keys_response = {
+    "Keys": [
+        {
+            "KeyId": "273e5d8e-4746-4ba9-be3a-4dce36783814",
+            "KeyArn": "arn:aws:kms:us-east-1:012345678901:key/273e5d8e-4746-4ba9-be3a-4dce36783814"
+        }
+    ]
+}
+
+get_key_rotation_status_response = {
+    "KeyRotationEnabled": True
+}
+
+get_key_rotation_status_response1 = {
+    "KeyRotationEnabled": False
+}
 
 @pytest.fixture(scope="function")
 def sts_stubber():
@@ -83,11 +100,25 @@ def test_no_public_key(kms_stubber, sts_stubber):
     results = check.execute()
     for result in results:
         if "s3" in result["Id"]:
+            print(result["Id"])
             assert result["RecordState"] == "ARCHIVED"
         else:
             assert False
     kms_stubber.assert_no_pending_responses()
 
+def test_key_rotation_enabled(sts_stubber, kms_stubber):
+    sts_stubber.add_response("get_caller_identity", sts_response)
+    kms_stubber.add_response("list_keys", list_keys_response)
+    kms_stubber.add_response("get_key_rotation_status", get_key_rotation_status_response)
+    check = KMSKeyRotationCheck()
+    results = check.execute()
+    for result in results:
+        if "273e5d8e-4746-4ba9-be3a-4dce36783814" in result["Id"]:
+            print(result["Id"])
+            assert result["RecordState"] == "ARCHIVED"
+        else:
+            assert False
+    kms_stubber.assert_no_pending_responses()
 
 def test_has_condition(kms_stubber, sts_stubber):
     sts_stubber.add_response("get_caller_identity", sts_response)
@@ -102,7 +133,6 @@ def test_has_condition(kms_stubber, sts_stubber):
             assert False
     kms_stubber.assert_no_pending_responses()
 
-
 def test_no_AWS(kms_stubber, sts_stubber):
     sts_stubber.add_response("get_caller_identity", sts_response)
     kms_stubber.add_response("list_aliases", list_aliases_response)
@@ -112,6 +142,20 @@ def test_no_AWS(kms_stubber, sts_stubber):
     for result in results:
         if "s3" in result["Id"]:
             assert result["RecordState"] == "ARCHIVED"
+        else:
+            assert False
+    kms_stubber.assert_no_pending_responses()
+    
+def test_key_rotation_not_enabled(sts_stubber, kms_stubber):
+    sts_stubber.add_response("get_caller_identity", sts_response)
+    kms_stubber.add_response("list_keys", list_keys_response)
+    kms_stubber.add_response("get_key_rotation_status", get_key_rotation_status_response1)
+    check = KMSKeyRotationCheck()
+    results = check.execute()
+    for result in results:
+        if "273e5d8e-4746-4ba9-be3a-4dce36783814" in result["Id"]:
+            print(result["Id"])
+            assert result["RecordState"] == "ACTIVE"
         else:
             assert False
     kms_stubber.assert_no_pending_responses()
