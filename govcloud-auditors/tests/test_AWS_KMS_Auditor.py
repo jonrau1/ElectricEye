@@ -77,6 +77,33 @@ def kms_stubber():
     yield kms_stubber
     kms_stubber.deactivate()
 
+def test_key_rotation_enabled(sts_stubber, kms_stubber):
+    sts_stubber.add_response("get_caller_identity", sts_response)
+    kms_stubber.add_response("list_keys", list_keys_response)
+    kms_stubber.add_response("get_key_rotation_status", get_key_rotation_status_response)
+    check = KMSKeyRotationCheck()
+    results = check.execute()
+    for result in results:
+        if "273e5d8e-4746-4ba9-be3a-4dce36783814" in result["Id"]:
+            print(result["Id"])
+            assert result["RecordState"] == "ARCHIVED"
+        else:
+            assert False
+    kms_stubber.assert_no_pending_responses()
+
+def test_key_rotation_not_enabled(sts_stubber, kms_stubber):
+    sts_stubber.add_response("get_caller_identity", sts_response)
+    kms_stubber.add_response("list_keys", list_keys_response)
+    kms_stubber.add_response("get_key_rotation_status", get_key_rotation_status_response1)
+    check = KMSKeyRotationCheck()
+    results = check.execute()
+    for result in results:
+        if "273e5d8e-4746-4ba9-be3a-4dce36783814" in result["Id"]:
+            print(result["Id"])
+            assert result["RecordState"] == "ACTIVE"
+        else:
+            assert False
+    kms_stubber.assert_no_pending_responses()
 
 def test_has_public_key(kms_stubber, sts_stubber):
     sts_stubber.add_response("get_caller_identity", sts_response)
@@ -91,7 +118,6 @@ def test_has_public_key(kms_stubber, sts_stubber):
             assert False
     kms_stubber.assert_no_pending_responses()
 
-
 def test_no_public_key(kms_stubber, sts_stubber):
     sts_stubber.add_response("get_caller_identity", sts_response)
     kms_stubber.add_response("list_aliases", list_aliases_response)
@@ -100,20 +126,6 @@ def test_no_public_key(kms_stubber, sts_stubber):
     results = check.execute()
     for result in results:
         if "s3" in result["Id"]:
-            print(result["Id"])
-            assert result["RecordState"] == "ARCHIVED"
-        else:
-            assert False
-    kms_stubber.assert_no_pending_responses()
-
-def test_key_rotation_enabled(sts_stubber, kms_stubber):
-    sts_stubber.add_response("get_caller_identity", sts_response)
-    kms_stubber.add_response("list_keys", list_keys_response)
-    kms_stubber.add_response("get_key_rotation_status", get_key_rotation_status_response)
-    check = KMSKeyRotationCheck()
-    results = check.execute()
-    for result in results:
-        if "273e5d8e-4746-4ba9-be3a-4dce36783814" in result["Id"]:
             print(result["Id"])
             assert result["RecordState"] == "ARCHIVED"
         else:
@@ -142,20 +154,6 @@ def test_no_AWS(kms_stubber, sts_stubber):
     for result in results:
         if "s3" in result["Id"]:
             assert result["RecordState"] == "ARCHIVED"
-        else:
-            assert False
-    kms_stubber.assert_no_pending_responses()
-    
-def test_key_rotation_not_enabled(sts_stubber, kms_stubber):
-    sts_stubber.add_response("get_caller_identity", sts_response)
-    kms_stubber.add_response("list_keys", list_keys_response)
-    kms_stubber.add_response("get_key_rotation_status", get_key_rotation_status_response1)
-    check = KMSKeyRotationCheck()
-    results = check.execute()
-    for result in results:
-        if "273e5d8e-4746-4ba9-be3a-4dce36783814" in result["Id"]:
-            print(result["Id"])
-            assert result["RecordState"] == "ACTIVE"
         else:
             assert False
     kms_stubber.assert_no_pending_responses()
