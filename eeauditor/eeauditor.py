@@ -42,7 +42,7 @@ class EEAuditor(object):
         # vendor specific credentials dictionary
         sts = boto3.client("sts")
         self.awsAccountId = sts.get_caller_identity()["Account"]
-        self.awsRegion = sts.meta.region_name
+        self.awsRegion = os.environ.get("AWS_REGION", sts.meta.region_name)
         # If there is a desire to add support for multiple clouds, this would be
         # a great place to implement it.
         self.source = self.plugin_base.make_plugin_source(
