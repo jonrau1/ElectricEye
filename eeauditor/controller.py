@@ -56,6 +56,7 @@ def main(argv):
             sechub = arg.lower() not in ["false", "False"]
     if profile_name:
         boto3.setup_default_session(profile_name=profile_name)
+        os.environ["AWS_REGION"] = boto3.DEFAULT_SESSION.region_name
 
     app = EEAuditor(name="AWS Auditor")
     app.load_plugins(plugin_name=auditor_name)
@@ -65,6 +66,6 @@ def main(argv):
 
 if __name__ == "__main__":
     # this is for local testing where the AWS_REGION is not liekly set
-    if not os.environ.get("AWS_REGION", None):
-        os.environ["AWS_REGION"] = "us-east-1"
+    # if not os.environ.get("AWS_REGION", None):
+    # os.environ["AWS_REGION"] = "us-east-1"
     main(sys.argv[1:])

@@ -21,9 +21,6 @@ import boto3
 from pluginbase import PluginBase
 from check_register import CheckRegister
 
-
-sts = boto3.client("sts")
-
 here = os.path.abspath(os.path.dirname(__file__))
 get_path = partial(os.path.join, here)
 
@@ -43,6 +40,7 @@ class EEAuditor(object):
         # to be discovered during plugin loading.
         self.registry = CheckRegister()
         # vendor specific credentials dictionary
+        sts = boto3.client("sts")
         self.awsAccountId = sts.get_caller_identity()["Account"]
         self.awsRegion = os.environ["AWS_REGION"]
         # If there is a desire to add support for multiple clouds, this would be
