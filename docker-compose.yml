@@ -1,9 +1,0 @@
-version: "3.7"
-
-services:
-  auditors:
-    build:
-      context: .
-      dockerfile: Dockerfile-test
-    volumes:
-      - "./auditors:/auditors"
