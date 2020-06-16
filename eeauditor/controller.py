@@ -56,7 +56,7 @@ def main(argv):
             sechub = arg.lower() not in ["false", "False"]
     if profile_name:
         boto3.setup_default_session(profile_name=profile_name)
-        os.environ["AWS_REGION"] = boto3.DEFAULT_SESSION.region_name
+    os.environ["AWS_REGION"] = boto3.DEFAULT_SESSION.region_name
 
     app = EEAuditor(name="AWS Auditor")
     app.load_plugins(plugin_name=auditor_name)
