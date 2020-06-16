@@ -106,11 +106,13 @@ class EEAuditor(object):
             print("]}", file=json_out)
         json_out.close()
         if sechub:
-            print("Writing results to SecurityHub")
             securityhub = boto3.client("securityhub")
             with open(json_out_location) as read_json_findings:
                 findings = json.load(read_json_findings)
-                securityhub.batch_import_findings(Findings=findings["Findings"])
+                findings_list = Findings = findings["Findings"]
+                print(f"Writing {len(findings_list)} results to SecurityHub")
+                if findings_list:
+                    securityhub.batch_import_findings(Findings=findings_list)
             read_json_findings.close()
         else:
             print("Not writing results to SecurityHub")
