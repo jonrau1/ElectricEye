@@ -36,7 +36,9 @@ class EEAuditor(object):
         Load and execute all auditor plugins.
     """
 
-    def __init__(self, name):
+    def __init__(self, name, search_path=None):
+        if not search_path:
+            search_path = "./auditors/aws"
         self.name = name
         self.plugin_base = PluginBase(package="electriceye")
         # each check must be decorated with the @registry.register_check("cache_name")
@@ -48,7 +50,7 @@ class EEAuditor(object):
         # If there is a desire to add support for multiple clouds, this would be
         # a great place to implement it.
         self.source = self.plugin_base.make_plugin_source(
-            searchpath=[get_path("./auditors/aws")], identifier=self.name
+            searchpath=[get_path(search_path)], identifier=self.name
         )
 
     def load_plugins(self, plugin_name):
@@ -93,13 +95,14 @@ def main(argv):
     auditor_name = ""
     check_name = ""
     output = False
+    sechub = True
     output_file = ""
     help_text = (
         "auditor.py [-p <profile_name> -a <auditor_name> -c <check_name> -o <output_file_name>]"
     )
     try:
         opts, args = getopt.getopt(
-            argv, "ho:p:a:c:", ["help", "output=", "profile=", "auditor=", "check="]
+            argv, "ho:p:a:c:s:", ["help", "output=", "profile=", "auditor=", "check=", "sechub="]
         )
     except getopt.GetoptError:
         print(help_text)
@@ -117,32 +120,43 @@ def main(argv):
             auditor_name = arg
         if opt in ("-c", "--check"):
             check_name = arg
+        if opt in ("-s", "--sechub"):
+            sechub = arg.lower() not in ["false", "False"]
     if profile_name:
         boto3.setup_default_session(profile_name=profile_name)
 
     app = EEAuditor(name="AWS Auditor")
     app.load_plugins(plugin_name=auditor_name)
+
+    # TODO: currently streaming all findings to a statically defined file on the file
+    # system.  Should support a custom file name.
+    # TODO: Consider removing up this file after execution if the user doesn't ask to
+    # persist the output as a json file.
     first = True
-    file_location = ""
-    with open("findings.json", "w") as f:
-        print('{"Findings":[', file=f)
-        file_location = os.path.abspath(f.name)
+    json_out_location = ""
+    with open("findings.json", "w") as json_out:
+        print('{"Findings":[', file=json_out)
+        json_out_location = os.path.abspath(json_out.name)
         for result in app.run_checks(requested_check_name=check_name):
             # print a comma separation between findings except before first finding
             if first:
                 first = False
             else:
-                print(",", file=f)
-            json.dump(result, f, indent=2)
-        print("]}", file=f)
-    f.close()
-    securityhub = boto3.client("securityhub")
-    with open(file_location) as f:
-        findings = json.load(f)
-        securityhub.batch_import_findings(Findings=findings["Findings"])
-    f.close()
+                print(",", file=json_out)
+            json.dump(result, json_out, indent=2)
+        print("]}", file=json_out)
+    json_out.close()
+    if sechub:
+        print("Writing results to SecurityHub")
+        securityhub = boto3.client("securityhub")
+        with open(json_out_location) as read_json_findings:
+            findings = json.load(read_json_findings)
+            securityhub.batch_import_findings(Findings=findings["Findings"])
+        read_json_findings.close()
+    else:
+        print("Not writing results to SecurityHub")
     if output:
-        report.csv_output(input_file=file_location, output_file=output_file)
+        report.csv_output(input_file=json_out_location, output_file=output_file)
     print("Done")
 
 
