@@ -89,7 +89,7 @@ class EEAuditor(object):
     def run(self, sechub=True, output=False, check_name=None):
         # TODO: currently streaming all findings to a statically defined file on the file
         # system.  Should support a custom file name.
-        # TODO: Consider removing up this file after execution if the user doesn't ask to
+        # TODO: Consider removing this file after execution if the user doesn't ask to
         # persist the output as a json file.
         first = True
         json_out_location = ""
