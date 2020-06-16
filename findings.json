@@ -1,0 +1,3878 @@
+{"Findings":[
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:kms:us-east-1:057637124865:key/050dcdf7-f55d-487a-a149-07bf9aaebb3e/kms-key-rotation-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:kms:us-east-1:057637124865:key/050dcdf7-f55d-487a-a149-07bf9aaebb3e",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:42.828096+00:00",
+  "CreatedAt": "2020-06-16T01:26:42.828096+00:00",
+  "UpdatedAt": "2020-06-16T01:26:42.828096+00:00",
+  "Severity": {
+    "Label": "MEDIUM"
+  },
+  "Confidence": 99,
+  "Title": "[KMS.1] KMS keys should have key rotation enabled",
+  "Description": "KMS key 050dcdf7-f55d-487a-a149-07bf9aaebb3e does not have key rotation enabled.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on KMS key rotation refer to the AWS KMS Developer Guide on Rotating Keys",
+      "Url": "https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsKmsKey",
+      "Id": "arn:aws:kms:us-east-1:057637124865:key/050dcdf7-f55d-487a-a149-07bf9aaebb3e",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "AwsKmsKey": {
+          "KeyId": "050dcdf7-f55d-487a-a149-07bf9aaebb3e"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED"
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:kms:us-east-1:057637124865:key/65b8c05f-7afd-456f-9834-7f18eb6cad26/kms-key-rotation-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:kms:us-east-1:057637124865:key/65b8c05f-7afd-456f-9834-7f18eb6cad26",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:42.828096+00:00",
+  "CreatedAt": "2020-06-16T01:26:42.828096+00:00",
+  "UpdatedAt": "2020-06-16T01:26:42.828096+00:00",
+  "Severity": {
+    "Label": "INFORMATIONAL"
+  },
+  "Confidence": 99,
+  "Title": "[KMS.1] KMS keys should have key rotation enabled",
+  "Description": "KMS Key 65b8c05f-7afd-456f-9834-7f18eb6cad26 does have key rotation enabled.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on KMS key rotation refer to the AWS KMS Developer Guide on Rotating Keys",
+      "Url": "https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsKmsKey",
+      "Id": "arn:aws:kms:us-east-1:057637124865:key/65b8c05f-7afd-456f-9834-7f18eb6cad26",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "AwsKmsKey": {
+          "KeyId": "65b8c05f-7afd-456f-9834-7f18eb6cad26"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "PASSED"
+  },
+  "Workflow": {
+    "Status": "RESOLVED"
+  },
+  "RecordState": "ARCHIVED"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:kms:us-east-1:057637124865:key/8a50be28-5ad1-4ed1-8fa8-0635b8dd28cb/kms-key-rotation-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:kms:us-east-1:057637124865:key/8a50be28-5ad1-4ed1-8fa8-0635b8dd28cb",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:42.828096+00:00",
+  "CreatedAt": "2020-06-16T01:26:42.828096+00:00",
+  "UpdatedAt": "2020-06-16T01:26:42.828096+00:00",
+  "Severity": {
+    "Label": "INFORMATIONAL"
+  },
+  "Confidence": 99,
+  "Title": "[KMS.1] KMS keys should have key rotation enabled",
+  "Description": "KMS Key 8a50be28-5ad1-4ed1-8fa8-0635b8dd28cb does have key rotation enabled.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on KMS key rotation refer to the AWS KMS Developer Guide on Rotating Keys",
+      "Url": "https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsKmsKey",
+      "Id": "arn:aws:kms:us-east-1:057637124865:key/8a50be28-5ad1-4ed1-8fa8-0635b8dd28cb",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "AwsKmsKey": {
+          "KeyId": "8a50be28-5ad1-4ed1-8fa8-0635b8dd28cb"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "PASSED"
+  },
+  "Workflow": {
+    "Status": "RESOLVED"
+  },
+  "RecordState": "ARCHIVED"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:kms:us-east-1:057637124865:alias/aws/lambda/kms-key-exposed-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:kms:us-east-1:057637124865:alias/aws/lambda",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:43.217368+00:00",
+  "CreatedAt": "2020-06-16T01:26:43.217368+00:00",
+  "UpdatedAt": "2020-06-16T01:26:43.217368+00:00",
+  "Severity": {
+    "Label": "INFORMATIONAL"
+  },
+  "Confidence": 75,
+  "Title": "[KMS.2] KMS keys should not have public access",
+  "Description": "KMS key 8a50be28-5ad1-4ed1-8fa8-0635b8dd28cb does not have public access or limited by a Condition. Refer to the remediation instructions to review kms access policy",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on AWS KMS key policies refer to Using key policies in AWS KMS section of the AWS KMS Developer Guide.",
+      "Url": "https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsKmsAlias",
+      "Id": "arn:aws:kms:us-east-1:057637124865:alias/aws/lambda",
+      "Partition": "aws",
+      "Region": "us-east-1"
+    }
+  ],
+  "Compliance": {
+    "Status": "PASSED"
+  },
+  "Workflow": {
+    "Status": "RESOLVED"
+  },
+  "RecordState": "ARCHIVED"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:kms:us-east-1:057637124865:alias/aws/sns/kms-key-exposed-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:kms:us-east-1:057637124865:alias/aws/sns",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:43.217368+00:00",
+  "CreatedAt": "2020-06-16T01:26:43.217368+00:00",
+  "UpdatedAt": "2020-06-16T01:26:43.217368+00:00",
+  "Severity": {
+    "Label": "INFORMATIONAL"
+  },
+  "Confidence": 75,
+  "Title": "[KMS.2] KMS keys should not have public access",
+  "Description": "KMS key 65b8c05f-7afd-456f-9834-7f18eb6cad26 does not have public access or limited by a Condition. Refer to the remediation instructions to review kms access policy",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on AWS KMS key policies refer to Using key policies in AWS KMS section of the AWS KMS Developer Guide.",
+      "Url": "https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsKmsAlias",
+      "Id": "arn:aws:kms:us-east-1:057637124865:alias/aws/sns",
+      "Partition": "aws",
+      "Region": "us-east-1"
+    }
+  ],
+  "Compliance": {
+    "Status": "PASSED"
+  },
+  "Workflow": {
+    "Status": "RESOLVED"
+  },
+  "RecordState": "ARCHIVED"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:kms:us-east-1:057637124865:alias/test-customer-kms-key/kms-key-exposed-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:kms:us-east-1:057637124865:alias/test-customer-kms-key",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:43.217368+00:00",
+  "CreatedAt": "2020-06-16T01:26:43.217368+00:00",
+  "UpdatedAt": "2020-06-16T01:26:43.217368+00:00",
+  "Severity": {
+    "Label": "INFORMATIONAL"
+  },
+  "Confidence": 75,
+  "Title": "[KMS.2] KMS keys should not have public access",
+  "Description": "KMS key 050dcdf7-f55d-487a-a149-07bf9aaebb3e does not have public access or limited by a Condition. Refer to the remediation instructions to review kms access policy",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on AWS KMS key policies refer to Using key policies in AWS KMS section of the AWS KMS Developer Guide.",
+      "Url": "https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsKmsAlias",
+      "Id": "arn:aws:kms:us-east-1:057637124865:alias/test-customer-kms-key",
+      "Partition": "aws",
+      "Region": "us-east-1"
+    }
+  ],
+  "Compliance": {
+    "Status": "PASSED"
+  },
+  "Workflow": {
+    "Status": "RESOLVED"
+  },
+  "RecordState": "ARCHIVED"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:lambda:us-east-1:057637124865:function:cacheMe/lambda-function-unused-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:lambda:us-east-1:057637124865:function:cacheMe",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:43.667609+00:00",
+  "CreatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "UpdatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "Severity": {
+    "Label": "LOW"
+  },
+  "Confidence": 99,
+  "Title": "[Lambda.1] Lambda functions should be deleted after 30 days of no use",
+  "Description": "Lambda function cacheMe has not been used or updated in the last 30 days.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on best practices for lambda functions refer to the Best Practices for Working with AWS Lambda Functions section of the Amazon Lambda Developer Guide",
+      "Url": "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html#function-configuration"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsLambda",
+      "Id": "arn:aws:lambda:us-east-1:057637124865:function:cacheMe",
+      "Partition": "aws",
+      "Region": "us-east-1"
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF ID.AM-2",
+      "NIST SP 800-53 CM-8",
+      "NIST SP 800-53 PM-5",
+      "AICPA TSC CC3.2",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.1.1",
+      "ISO 27001:2013 A.8.1.2",
+      "ISO 27001:2013 A.12.5.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:lambda:us-east-1:057637124865:function:workflow-callback/lambda-function-unused-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:lambda:us-east-1:057637124865:function:workflow-callback",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:43.667609+00:00",
+  "CreatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "UpdatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "Severity": {
+    "Label": "LOW"
+  },
+  "Confidence": 99,
+  "Title": "[Lambda.1] Lambda functions should be deleted after 30 days of no use",
+  "Description": "Lambda function workflow-callback has not been used or updated in the last 30 days.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on best practices for lambda functions refer to the Best Practices for Working with AWS Lambda Functions section of the Amazon Lambda Developer Guide",
+      "Url": "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html#function-configuration"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsLambda",
+      "Id": "arn:aws:lambda:us-east-1:057637124865:function:workflow-callback",
+      "Partition": "aws",
+      "Region": "us-east-1"
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF ID.AM-2",
+      "NIST SP 800-53 CM-8",
+      "NIST SP 800-53 PM-5",
+      "AICPA TSC CC3.2",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.1.1",
+      "ISO 27001:2013 A.8.1.2",
+      "ISO 27001:2013 A.12.5.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:lambda:us-east-1:057637124865:function:serverlessrepo-task-monit-dynamodbprocessstreampyt-1V5E6UO6SLJXB/lambda-function-unused-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:lambda:us-east-1:057637124865:function:serverlessrepo-task-monit-dynamodbprocessstreampyt-1V5E6UO6SLJXB",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:43.667609+00:00",
+  "CreatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "UpdatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "Severity": {
+    "Label": "LOW"
+  },
+  "Confidence": 99,
+  "Title": "[Lambda.1] Lambda functions should be deleted after 30 days of no use",
+  "Description": "Lambda function serverlessrepo-task-monit-dynamodbprocessstreampyt-1V5E6UO6SLJXB has not been used or updated in the last 30 days.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on best practices for lambda functions refer to the Best Practices for Working with AWS Lambda Functions section of the Amazon Lambda Developer Guide",
+      "Url": "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html#function-configuration"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsLambda",
+      "Id": "arn:aws:lambda:us-east-1:057637124865:function:serverlessrepo-task-monit-dynamodbprocessstreampyt-1V5E6UO6SLJXB",
+      "Partition": "aws",
+      "Region": "us-east-1"
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF ID.AM-2",
+      "NIST SP 800-53 CM-8",
+      "NIST SP 800-53 PM-5",
+      "AICPA TSC CC3.2",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.1.1",
+      "ISO 27001:2013 A.8.1.2",
+      "ISO 27001:2013 A.12.5.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:lambda:us-east-1:057637124865:function:test_async/lambda-function-unused-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:lambda:us-east-1:057637124865:function:test_async",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:43.667609+00:00",
+  "CreatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "UpdatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "Severity": {
+    "Label": "LOW"
+  },
+  "Confidence": 99,
+  "Title": "[Lambda.1] Lambda functions should be deleted after 30 days of no use",
+  "Description": "Lambda function test_async has not been used or updated in the last 30 days.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on best practices for lambda functions refer to the Best Practices for Working with AWS Lambda Functions section of the Amazon Lambda Developer Guide",
+      "Url": "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html#function-configuration"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsLambda",
+      "Id": "arn:aws:lambda:us-east-1:057637124865:function:test_async",
+      "Partition": "aws",
+      "Region": "us-east-1"
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF ID.AM-2",
+      "NIST SP 800-53 CM-8",
+      "NIST SP 800-53 PM-5",
+      "AICPA TSC CC3.2",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.1.1",
+      "ISO 27001:2013 A.8.1.2",
+      "ISO 27001:2013 A.12.5.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:lambda:us-east-1:057637124865:function:rules_engine/lambda-function-unused-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:lambda:us-east-1:057637124865:function:rules_engine",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:43.667609+00:00",
+  "CreatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "UpdatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "Severity": {
+    "Label": "LOW"
+  },
+  "Confidence": 99,
+  "Title": "[Lambda.1] Lambda functions should be deleted after 30 days of no use",
+  "Description": "Lambda function rules_engine has not been used or updated in the last 30 days.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on best practices for lambda functions refer to the Best Practices for Working with AWS Lambda Functions section of the Amazon Lambda Developer Guide",
+      "Url": "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html#function-configuration"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsLambda",
+      "Id": "arn:aws:lambda:us-east-1:057637124865:function:rules_engine",
+      "Partition": "aws",
+      "Region": "us-east-1"
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF ID.AM-2",
+      "NIST SP 800-53 CM-8",
+      "NIST SP 800-53 PM-5",
+      "AICPA TSC CC3.2",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.1.1",
+      "ISO 27001:2013 A.8.1.2",
+      "ISO 27001:2013 A.12.5.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:lambda:us-east-1:057637124865:function:kinesis_event_writer/lambda-function-unused-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:lambda:us-east-1:057637124865:function:kinesis_event_writer",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:43.667609+00:00",
+  "CreatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "UpdatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "Severity": {
+    "Label": "LOW"
+  },
+  "Confidence": 99,
+  "Title": "[Lambda.1] Lambda functions should be deleted after 30 days of no use",
+  "Description": "Lambda function kinesis_event_writer has not been used or updated in the last 30 days.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on best practices for lambda functions refer to the Best Practices for Working with AWS Lambda Functions section of the Amazon Lambda Developer Guide",
+      "Url": "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html#function-configuration"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsLambda",
+      "Id": "arn:aws:lambda:us-east-1:057637124865:function:kinesis_event_writer",
+      "Partition": "aws",
+      "Region": "us-east-1"
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF ID.AM-2",
+      "NIST SP 800-53 CM-8",
+      "NIST SP 800-53 PM-5",
+      "AICPA TSC CC3.2",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.1.1",
+      "ISO 27001:2013 A.8.1.2",
+      "ISO 27001:2013 A.12.5.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:lambda:us-east-1:057637124865:function:serverless-flask-dev-result_runner/lambda-function-unused-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:lambda:us-east-1:057637124865:function:serverless-flask-dev-result_runner",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:43.667609+00:00",
+  "CreatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "UpdatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "Severity": {
+    "Label": "LOW"
+  },
+  "Confidence": 99,
+  "Title": "[Lambda.1] Lambda functions should be deleted after 30 days of no use",
+  "Description": "Lambda function serverless-flask-dev-result_runner has not been used or updated in the last 30 days.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on best practices for lambda functions refer to the Best Practices for Working with AWS Lambda Functions section of the Amazon Lambda Developer Guide",
+      "Url": "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html#function-configuration"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsLambda",
+      "Id": "arn:aws:lambda:us-east-1:057637124865:function:serverless-flask-dev-result_runner",
+      "Partition": "aws",
+      "Region": "us-east-1"
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF ID.AM-2",
+      "NIST SP 800-53 CM-8",
+      "NIST SP 800-53 PM-5",
+      "AICPA TSC CC3.2",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.1.1",
+      "ISO 27001:2013 A.8.1.2",
+      "ISO 27001:2013 A.12.5.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:lambda:us-east-1:057637124865:function:lambda-runner/lambda-function-unused-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:lambda:us-east-1:057637124865:function:lambda-runner",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:43.667609+00:00",
+  "CreatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "UpdatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "Severity": {
+    "Label": "LOW"
+  },
+  "Confidence": 99,
+  "Title": "[Lambda.1] Lambda functions should be deleted after 30 days of no use",
+  "Description": "Lambda function lambda-runner has not been used or updated in the last 30 days.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on best practices for lambda functions refer to the Best Practices for Working with AWS Lambda Functions section of the Amazon Lambda Developer Guide",
+      "Url": "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html#function-configuration"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsLambda",
+      "Id": "arn:aws:lambda:us-east-1:057637124865:function:lambda-runner",
+      "Partition": "aws",
+      "Region": "us-east-1"
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF ID.AM-2",
+      "NIST SP 800-53 CM-8",
+      "NIST SP 800-53 PM-5",
+      "AICPA TSC CC3.2",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.1.1",
+      "ISO 27001:2013 A.8.1.2",
+      "ISO 27001:2013 A.12.5.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:lambda:us-east-1:057637124865:function:serverless-flask-dev-engine/lambda-function-unused-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:lambda:us-east-1:057637124865:function:serverless-flask-dev-engine",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:43.667609+00:00",
+  "CreatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "UpdatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "Severity": {
+    "Label": "LOW"
+  },
+  "Confidence": 99,
+  "Title": "[Lambda.1] Lambda functions should be deleted after 30 days of no use",
+  "Description": "Lambda function serverless-flask-dev-engine has not been used or updated in the last 30 days.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on best practices for lambda functions refer to the Best Practices for Working with AWS Lambda Functions section of the Amazon Lambda Developer Guide",
+      "Url": "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html#function-configuration"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsLambda",
+      "Id": "arn:aws:lambda:us-east-1:057637124865:function:serverless-flask-dev-engine",
+      "Partition": "aws",
+      "Region": "us-east-1"
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF ID.AM-2",
+      "NIST SP 800-53 CM-8",
+      "NIST SP 800-53 PM-5",
+      "AICPA TSC CC3.2",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.1.1",
+      "ISO 27001:2013 A.8.1.2",
+      "ISO 27001:2013 A.12.5.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:lambda:us-east-1:057637124865:function:rock-paper-scissors/lambda-function-unused-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:lambda:us-east-1:057637124865:function:rock-paper-scissors",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:43.667609+00:00",
+  "CreatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "UpdatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "Severity": {
+    "Label": "LOW"
+  },
+  "Confidence": 99,
+  "Title": "[Lambda.1] Lambda functions should be deleted after 30 days of no use",
+  "Description": "Lambda function rock-paper-scissors has not been used or updated in the last 30 days.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on best practices for lambda functions refer to the Best Practices for Working with AWS Lambda Functions section of the Amazon Lambda Developer Guide",
+      "Url": "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html#function-configuration"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsLambda",
+      "Id": "arn:aws:lambda:us-east-1:057637124865:function:rock-paper-scissors",
+      "Partition": "aws",
+      "Region": "us-east-1"
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF ID.AM-2",
+      "NIST SP 800-53 CM-8",
+      "NIST SP 800-53 PM-5",
+      "AICPA TSC CC3.2",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.1.1",
+      "ISO 27001:2013 A.8.1.2",
+      "ISO 27001:2013 A.12.5.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:lambda:us-east-1:057637124865:function:toSlack-dev-to_slack/lambda-function-unused-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:lambda:us-east-1:057637124865:function:toSlack-dev-to_slack",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:43.667609+00:00",
+  "CreatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "UpdatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "Severity": {
+    "Label": "LOW"
+  },
+  "Confidence": 99,
+  "Title": "[Lambda.1] Lambda functions should be deleted after 30 days of no use",
+  "Description": "Lambda function toSlack-dev-to_slack has not been used or updated in the last 30 days.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on best practices for lambda functions refer to the Best Practices for Working with AWS Lambda Functions section of the Amazon Lambda Developer Guide",
+      "Url": "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html#function-configuration"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsLambda",
+      "Id": "arn:aws:lambda:us-east-1:057637124865:function:toSlack-dev-to_slack",
+      "Partition": "aws",
+      "Region": "us-east-1"
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF ID.AM-2",
+      "NIST SP 800-53 CM-8",
+      "NIST SP 800-53 PM-5",
+      "AICPA TSC CC3.2",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.1.1",
+      "ISO 27001:2013 A.8.1.2",
+      "ISO 27001:2013 A.12.5.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:lambda:us-east-1:057637124865:function:serverless-flask-dev-lambda_runner/lambda-function-unused-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:lambda:us-east-1:057637124865:function:serverless-flask-dev-lambda_runner",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:43.667609+00:00",
+  "CreatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "UpdatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "Severity": {
+    "Label": "LOW"
+  },
+  "Confidence": 99,
+  "Title": "[Lambda.1] Lambda functions should be deleted after 30 days of no use",
+  "Description": "Lambda function serverless-flask-dev-lambda_runner has not been used or updated in the last 30 days.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on best practices for lambda functions refer to the Best Practices for Working with AWS Lambda Functions section of the Amazon Lambda Developer Guide",
+      "Url": "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html#function-configuration"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsLambda",
+      "Id": "arn:aws:lambda:us-east-1:057637124865:function:serverless-flask-dev-lambda_runner",
+      "Partition": "aws",
+      "Region": "us-east-1"
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF ID.AM-2",
+      "NIST SP 800-53 CM-8",
+      "NIST SP 800-53 PM-5",
+      "AICPA TSC CC3.2",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.1.1",
+      "ISO 27001:2013 A.8.1.2",
+      "ISO 27001:2013 A.12.5.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:lambda:us-east-1:057637124865:function:add/lambda-function-unused-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:lambda:us-east-1:057637124865:function:add",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:43.667609+00:00",
+  "CreatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "UpdatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "Severity": {
+    "Label": "INFORMATIONAL"
+  },
+  "Confidence": 99,
+  "Title": "[Lambda.1] Lambda functions should be deleted after 30 days of no use",
+  "Description": "Lambda function add has been used or updated in the last 30 days.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on best practices for lambda functions refer to the Best Practices for Working with AWS Lambda Functions section of the Amazon Lambda Developer Guide",
+      "Url": "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html#function-configuration"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsLambda",
+      "Id": "arn:aws:lambda:us-east-1:057637124865:function:add",
+      "Partition": "aws",
+      "Region": "us-east-1"
+    }
+  ],
+  "Compliance": {
+    "Status": "PASSED",
+    "RelatedRequirements": [
+      "NIST CSF ID.AM-2",
+      "NIST SP 800-53 CM-8",
+      "NIST SP 800-53 PM-5",
+      "AICPA TSC CC3.2",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.1.1",
+      "ISO 27001:2013 A.8.1.2",
+      "ISO 27001:2013 A.12.5.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "RESOLVED"
+  },
+  "RecordState": "ARCHIVED"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:lambda:us-east-1:057637124865:function:task-writer/lambda-function-unused-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:lambda:us-east-1:057637124865:function:task-writer",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:43.667609+00:00",
+  "CreatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "UpdatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "Severity": {
+    "Label": "LOW"
+  },
+  "Confidence": 99,
+  "Title": "[Lambda.1] Lambda functions should be deleted after 30 days of no use",
+  "Description": "Lambda function task-writer has not been used or updated in the last 30 days.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on best practices for lambda functions refer to the Best Practices for Working with AWS Lambda Functions section of the Amazon Lambda Developer Guide",
+      "Url": "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html#function-configuration"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsLambda",
+      "Id": "arn:aws:lambda:us-east-1:057637124865:function:task-writer",
+      "Partition": "aws",
+      "Region": "us-east-1"
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF ID.AM-2",
+      "NIST SP 800-53 CM-8",
+      "NIST SP 800-53 PM-5",
+      "AICPA TSC CC3.2",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.1.1",
+      "ISO 27001:2013 A.8.1.2",
+      "ISO 27001:2013 A.12.5.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:lambda:us-east-1:057637124865:function:reservedCurrency/lambda-function-unused-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:lambda:us-east-1:057637124865:function:reservedCurrency",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:43.667609+00:00",
+  "CreatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "UpdatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "Severity": {
+    "Label": "LOW"
+  },
+  "Confidence": 99,
+  "Title": "[Lambda.1] Lambda functions should be deleted after 30 days of no use",
+  "Description": "Lambda function reservedCurrency has not been used or updated in the last 30 days.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on best practices for lambda functions refer to the Best Practices for Working with AWS Lambda Functions section of the Amazon Lambda Developer Guide",
+      "Url": "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html#function-configuration"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsLambda",
+      "Id": "arn:aws:lambda:us-east-1:057637124865:function:reservedCurrency",
+      "Partition": "aws",
+      "Region": "us-east-1"
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF ID.AM-2",
+      "NIST SP 800-53 CM-8",
+      "NIST SP 800-53 PM-5",
+      "AICPA TSC CC3.2",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.1.1",
+      "ISO 27001:2013 A.8.1.2",
+      "ISO 27001:2013 A.12.5.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:lambda:us-east-1:057637124865:function:high-low/lambda-function-unused-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:lambda:us-east-1:057637124865:function:high-low",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:43.667609+00:00",
+  "CreatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "UpdatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "Severity": {
+    "Label": "LOW"
+  },
+  "Confidence": 99,
+  "Title": "[Lambda.1] Lambda functions should be deleted after 30 days of no use",
+  "Description": "Lambda function high-low has not been used or updated in the last 30 days.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on best practices for lambda functions refer to the Best Practices for Working with AWS Lambda Functions section of the Amazon Lambda Developer Guide",
+      "Url": "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html#function-configuration"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsLambda",
+      "Id": "arn:aws:lambda:us-east-1:057637124865:function:high-low",
+      "Partition": "aws",
+      "Region": "us-east-1"
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF ID.AM-2",
+      "NIST SP 800-53 CM-8",
+      "NIST SP 800-53 PM-5",
+      "AICPA TSC CC3.2",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.1.1",
+      "ISO 27001:2013 A.8.1.2",
+      "ISO 27001:2013 A.12.5.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:lambda:us-east-1:057637124865:function:stock-picker-dev-stock-picker/lambda-function-unused-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:lambda:us-east-1:057637124865:function:stock-picker-dev-stock-picker",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:43.667609+00:00",
+  "CreatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "UpdatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "Severity": {
+    "Label": "INFORMATIONAL"
+  },
+  "Confidence": 99,
+  "Title": "[Lambda.1] Lambda functions should be deleted after 30 days of no use",
+  "Description": "Lambda function stock-picker-dev-stock-picker has been used or updated in the last 30 days.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on best practices for lambda functions refer to the Best Practices for Working with AWS Lambda Functions section of the Amazon Lambda Developer Guide",
+      "Url": "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html#function-configuration"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsLambda",
+      "Id": "arn:aws:lambda:us-east-1:057637124865:function:stock-picker-dev-stock-picker",
+      "Partition": "aws",
+      "Region": "us-east-1"
+    }
+  ],
+  "Compliance": {
+    "Status": "PASSED",
+    "RelatedRequirements": [
+      "NIST CSF ID.AM-2",
+      "NIST SP 800-53 CM-8",
+      "NIST SP 800-53 PM-5",
+      "AICPA TSC CC3.2",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.1.1",
+      "ISO 27001:2013 A.8.1.2",
+      "ISO 27001:2013 A.12.5.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "RESOLVED"
+  },
+  "RecordState": "ARCHIVED"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:lambda:us-east-1:057637124865:function:workflow-dev-app/lambda-function-unused-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:lambda:us-east-1:057637124865:function:workflow-dev-app",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:43.667609+00:00",
+  "CreatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "UpdatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "Severity": {
+    "Label": "LOW"
+  },
+  "Confidence": 99,
+  "Title": "[Lambda.1] Lambda functions should be deleted after 30 days of no use",
+  "Description": "Lambda function workflow-dev-app has not been used or updated in the last 30 days.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on best practices for lambda functions refer to the Best Practices for Working with AWS Lambda Functions section of the Amazon Lambda Developer Guide",
+      "Url": "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html#function-configuration"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsLambda",
+      "Id": "arn:aws:lambda:us-east-1:057637124865:function:workflow-dev-app",
+      "Partition": "aws",
+      "Region": "us-east-1"
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF ID.AM-2",
+      "NIST SP 800-53 CM-8",
+      "NIST SP 800-53 PM-5",
+      "AICPA TSC CC3.2",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.1.1",
+      "ISO 27001:2013 A.8.1.2",
+      "ISO 27001:2013 A.12.5.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:lambda:us-east-1:057637124865:function:my-first-test/lambda-function-unused-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:lambda:us-east-1:057637124865:function:my-first-test",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:43.667609+00:00",
+  "CreatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "UpdatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "Severity": {
+    "Label": "INFORMATIONAL"
+  },
+  "Confidence": 99,
+  "Title": "[Lambda.1] Lambda functions should be deleted after 30 days of no use",
+  "Description": "Lambda function my-first-test has been used or updated in the last 30 days.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on best practices for lambda functions refer to the Best Practices for Working with AWS Lambda Functions section of the Amazon Lambda Developer Guide",
+      "Url": "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html#function-configuration"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsLambda",
+      "Id": "arn:aws:lambda:us-east-1:057637124865:function:my-first-test",
+      "Partition": "aws",
+      "Region": "us-east-1"
+    }
+  ],
+  "Compliance": {
+    "Status": "PASSED",
+    "RelatedRequirements": [
+      "NIST CSF ID.AM-2",
+      "NIST SP 800-53 CM-8",
+      "NIST SP 800-53 PM-5",
+      "AICPA TSC CC3.2",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.1.1",
+      "ISO 27001:2013 A.8.1.2",
+      "ISO 27001:2013 A.12.5.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "RESOLVED"
+  },
+  "RecordState": "ARCHIVED"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:lambda:us-east-1:057637124865:function:reddit-slackbot-dev-runner/lambda-function-unused-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:lambda:us-east-1:057637124865:function:reddit-slackbot-dev-runner",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:43.667609+00:00",
+  "CreatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "UpdatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "Severity": {
+    "Label": "INFORMATIONAL"
+  },
+  "Confidence": 99,
+  "Title": "[Lambda.1] Lambda functions should be deleted after 30 days of no use",
+  "Description": "Lambda function reddit-slackbot-dev-runner has been used or updated in the last 30 days.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on best practices for lambda functions refer to the Best Practices for Working with AWS Lambda Functions section of the Amazon Lambda Developer Guide",
+      "Url": "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html#function-configuration"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsLambda",
+      "Id": "arn:aws:lambda:us-east-1:057637124865:function:reddit-slackbot-dev-runner",
+      "Partition": "aws",
+      "Region": "us-east-1"
+    }
+  ],
+  "Compliance": {
+    "Status": "PASSED",
+    "RelatedRequirements": [
+      "NIST CSF ID.AM-2",
+      "NIST SP 800-53 CM-8",
+      "NIST SP 800-53 PM-5",
+      "AICPA TSC CC3.2",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.1.1",
+      "ISO 27001:2013 A.8.1.2",
+      "ISO 27001:2013 A.12.5.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "RESOLVED"
+  },
+  "RecordState": "ARCHIVED"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:lambda:us-east-1:057637124865:function:serverless-flask-dev-app/lambda-function-unused-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:lambda:us-east-1:057637124865:function:serverless-flask-dev-app",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:43.667609+00:00",
+  "CreatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "UpdatedAt": "2020-06-16T01:26:43.667609+00:00",
+  "Severity": {
+    "Label": "LOW"
+  },
+  "Confidence": 99,
+  "Title": "[Lambda.1] Lambda functions should be deleted after 30 days of no use",
+  "Description": "Lambda function serverless-flask-dev-app has not been used or updated in the last 30 days.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on best practices for lambda functions refer to the Best Practices for Working with AWS Lambda Functions section of the Amazon Lambda Developer Guide",
+      "Url": "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html#function-configuration"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsLambda",
+      "Id": "arn:aws:lambda:us-east-1:057637124865:function:serverless-flask-dev-app",
+      "Partition": "aws",
+      "Region": "us-east-1"
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF ID.AM-2",
+      "NIST SP 800-53 CM-8",
+      "NIST SP 800-53 PM-5",
+      "AICPA TSC CC3.2",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.1.1",
+      "ISO 27001:2013 A.8.1.2",
+      "ISO 27001:2013 A.12.5.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:apigateway:us-east-1::/restapis/5dq0gatjul/stages/dev/apigateway-stage-metrics-enabled-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:apigateway:us-east-1::/restapis/5dq0gatjul/stages/dev",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:46.542464+00:00",
+  "CreatedAt": "2020-06-16T01:26:46.542464+00:00",
+  "UpdatedAt": "2020-06-16T01:26:46.542464+00:00",
+  "Severity": {
+    "Label": "LOW"
+  },
+  "Confidence": 99,
+  "Title": "[APIGateway.1] API Gateway Rest API Stages should have CloudWatch Metrics enabled",
+  "Description": "API Gateway stage dev for Rest API dev-serverless-flask does not have CloudWatch metrics enabled. You can monitor API execution by using CloudWatch, which collects and processes raw data from API Gateway into readable, near-real-time metrics. These statistics are recorded for a period of 15 months so you can access historical information and gain a better perspective on how your web application or service is performing. Refer to the remediation instructions if this configuration is not intended",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "If your API Gateway stage should have CloudWatch Metrics enabled refer to the Monitor API Execution with Amazon CloudWatch section of the Amazon API Gateway Developer Guide",
+      "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/monitoring-cloudwatch.html"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsApiGatewayRestApi",
+      "Id": "arn:aws:apigateway:us-east-1::/restapis/5dq0gatjul/stages/dev",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "Other": {
+          "deploymentId": "l6m7kr",
+          "stageName": "dev"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF DE.AE-3",
+      "NIST SP 800-53 AU-6",
+      "NIST SP 800-53 CA-7",
+      "NIST SP 800-53 IR-4",
+      "NIST SP 800-53 IR-5",
+      "NIST SP 800-53 IR-8",
+      "NIST SP 800-53 SI-4",
+      "AICPA TSC CC7.2",
+      "ISO 27001:2013 A.12.4.1",
+      "ISO 27001:2013 A.16.1.7"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:apigateway:us-east-1::/restapis/9kb0qea893/stages/default/apigateway-stage-metrics-enabled-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:apigateway:us-east-1::/restapis/9kb0qea893/stages/default",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:46.542464+00:00",
+  "CreatedAt": "2020-06-16T01:26:46.542464+00:00",
+  "UpdatedAt": "2020-06-16T01:26:46.542464+00:00",
+  "Severity": {
+    "Label": "LOW"
+  },
+  "Confidence": 99,
+  "Title": "[APIGateway.1] API Gateway Rest API Stages should have CloudWatch Metrics enabled",
+  "Description": "API Gateway stage default for Rest API workflow-callback-API does not have CloudWatch metrics enabled. You can monitor API execution by using CloudWatch, which collects and processes raw data from API Gateway into readable, near-real-time metrics. These statistics are recorded for a period of 15 months so you can access historical information and gain a better perspective on how your web application or service is performing. Refer to the remediation instructions if this configuration is not intended",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "If your API Gateway stage should have CloudWatch Metrics enabled refer to the Monitor API Execution with Amazon CloudWatch section of the Amazon API Gateway Developer Guide",
+      "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/monitoring-cloudwatch.html"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsApiGatewayRestApi",
+      "Id": "arn:aws:apigateway:us-east-1::/restapis/9kb0qea893/stages/default",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "Other": {
+          "deploymentId": "bv4iij",
+          "stageName": "default"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF DE.AE-3",
+      "NIST SP 800-53 AU-6",
+      "NIST SP 800-53 CA-7",
+      "NIST SP 800-53 IR-4",
+      "NIST SP 800-53 IR-5",
+      "NIST SP 800-53 IR-8",
+      "NIST SP 800-53 SI-4",
+      "AICPA TSC CC7.2",
+      "ISO 27001:2013 A.12.4.1",
+      "ISO 27001:2013 A.16.1.7"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:apigateway:us-east-1::/restapis/9zcwbrpvza/stages/dev/apigateway-stage-metrics-enabled-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:apigateway:us-east-1::/restapis/9zcwbrpvza/stages/dev",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:46.542464+00:00",
+  "CreatedAt": "2020-06-16T01:26:46.542464+00:00",
+  "UpdatedAt": "2020-06-16T01:26:46.542464+00:00",
+  "Severity": {
+    "Label": "LOW"
+  },
+  "Confidence": 99,
+  "Title": "[APIGateway.1] API Gateway Rest API Stages should have CloudWatch Metrics enabled",
+  "Description": "API Gateway stage dev for Rest API dev-workflow does not have CloudWatch metrics enabled. You can monitor API execution by using CloudWatch, which collects and processes raw data from API Gateway into readable, near-real-time metrics. These statistics are recorded for a period of 15 months so you can access historical information and gain a better perspective on how your web application or service is performing. Refer to the remediation instructions if this configuration is not intended",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "If your API Gateway stage should have CloudWatch Metrics enabled refer to the Monitor API Execution with Amazon CloudWatch section of the Amazon API Gateway Developer Guide",
+      "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/monitoring-cloudwatch.html"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsApiGatewayRestApi",
+      "Id": "arn:aws:apigateway:us-east-1::/restapis/9zcwbrpvza/stages/dev",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "Other": {
+          "deploymentId": "k8x827",
+          "stageName": "dev"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF DE.AE-3",
+      "NIST SP 800-53 AU-6",
+      "NIST SP 800-53 CA-7",
+      "NIST SP 800-53 IR-4",
+      "NIST SP 800-53 IR-5",
+      "NIST SP 800-53 IR-8",
+      "NIST SP 800-53 SI-4",
+      "AICPA TSC CC7.2",
+      "ISO 27001:2013 A.12.4.1",
+      "ISO 27001:2013 A.16.1.7"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:apigateway:us-east-1::/restapis/5dq0gatjul/stages/dev/apigateway-stage-api-logging-enabled-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:apigateway:us-east-1::/restapis/5dq0gatjul/stages/dev",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:47.029170+00:00",
+  "CreatedAt": "2020-06-16T01:26:47.029170+00:00",
+  "UpdatedAt": "2020-06-16T01:26:47.029170+00:00",
+  "Severity": {
+    "Label": "LOW"
+  },
+  "Confidence": 99,
+  "Title": "[APIGateway.2] API Gateway Rest API Stages should have CloudWatch API Logging enabled",
+  "Description": "API Gateway stage dev for Rest API dev-serverless-flask does not have CloudWatch API Logging enabled. To help debug issues related to request execution or client access to your API, you can enable Amazon CloudWatch Logs to log API calls. The logged data includes errors or execution traces (such as request or response parameter values or payloads), data used by Lambda authorizers (formerly known as custom authorizers), whether API keys are required, whether usage plans are enabled, and so on. Refer to the remediation instructions if this configuration is not intended.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "If your API Gateway stage should have CloudWatch API Logging enabled refer to the Set Up CloudWatch API Logging in API Gateway section of the Amazon API Gateway Developer Guide",
+      "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsApiGatewayRestApi",
+      "Id": "arn:aws:apigateway:us-east-1::/restapis/5dq0gatjul/stages/dev",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "Other": {
+          "deploymentId": "l6m7kr",
+          "stageName": "dev"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF DE.AE-3",
+      "NIST SP 800-53 AU-6",
+      "NIST SP 800-53 CA-7",
+      "NIST SP 800-53 IR-4",
+      "NIST SP 800-53 IR-5",
+      "NIST SP 800-53 IR-8",
+      "NIST SP 800-53 SI-4",
+      "AICPA TSC CC7.2",
+      "ISO 27001:2013 A.12.4.1",
+      "ISO 27001:2013 A.16.1.7"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:apigateway:us-east-1::/restapis/9kb0qea893/stages/default/apigateway-stage-api-logging-enabled-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:apigateway:us-east-1::/restapis/9kb0qea893/stages/default",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:47.029170+00:00",
+  "CreatedAt": "2020-06-16T01:26:47.029170+00:00",
+  "UpdatedAt": "2020-06-16T01:26:47.029170+00:00",
+  "Severity": {
+    "Label": "LOW"
+  },
+  "Confidence": 99,
+  "Title": "[APIGateway.2] API Gateway Rest API Stages should have CloudWatch API Logging enabled",
+  "Description": "API Gateway stage default for Rest API workflow-callback-API does not have CloudWatch API Logging enabled. To help debug issues related to request execution or client access to your API, you can enable Amazon CloudWatch Logs to log API calls. The logged data includes errors or execution traces (such as request or response parameter values or payloads), data used by Lambda authorizers (formerly known as custom authorizers), whether API keys are required, whether usage plans are enabled, and so on. Refer to the remediation instructions if this configuration is not intended.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "If your API Gateway stage should have CloudWatch API Logging enabled refer to the Set Up CloudWatch API Logging in API Gateway section of the Amazon API Gateway Developer Guide",
+      "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsApiGatewayRestApi",
+      "Id": "arn:aws:apigateway:us-east-1::/restapis/9kb0qea893/stages/default",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "Other": {
+          "deploymentId": "bv4iij",
+          "stageName": "default"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF DE.AE-3",
+      "NIST SP 800-53 AU-6",
+      "NIST SP 800-53 CA-7",
+      "NIST SP 800-53 IR-4",
+      "NIST SP 800-53 IR-5",
+      "NIST SP 800-53 IR-8",
+      "NIST SP 800-53 SI-4",
+      "AICPA TSC CC7.2",
+      "ISO 27001:2013 A.12.4.1",
+      "ISO 27001:2013 A.16.1.7"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:apigateway:us-east-1::/restapis/9zcwbrpvza/stages/dev/apigateway-stage-api-logging-enabled-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:apigateway:us-east-1::/restapis/9zcwbrpvza/stages/dev",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:47.029170+00:00",
+  "CreatedAt": "2020-06-16T01:26:47.029170+00:00",
+  "UpdatedAt": "2020-06-16T01:26:47.029170+00:00",
+  "Severity": {
+    "Label": "LOW"
+  },
+  "Confidence": 99,
+  "Title": "[APIGateway.2] API Gateway Rest API Stages should have CloudWatch API Logging enabled",
+  "Description": "API Gateway stage dev for Rest API dev-workflow does not have CloudWatch API Logging enabled. To help debug issues related to request execution or client access to your API, you can enable Amazon CloudWatch Logs to log API calls. The logged data includes errors or execution traces (such as request or response parameter values or payloads), data used by Lambda authorizers (formerly known as custom authorizers), whether API keys are required, whether usage plans are enabled, and so on. Refer to the remediation instructions if this configuration is not intended.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "If your API Gateway stage should have CloudWatch API Logging enabled refer to the Set Up CloudWatch API Logging in API Gateway section of the Amazon API Gateway Developer Guide",
+      "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsApiGatewayRestApi",
+      "Id": "arn:aws:apigateway:us-east-1::/restapis/9zcwbrpvza/stages/dev",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "Other": {
+          "deploymentId": "k8x827",
+          "stageName": "dev"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF DE.AE-3",
+      "NIST SP 800-53 AU-6",
+      "NIST SP 800-53 CA-7",
+      "NIST SP 800-53 IR-4",
+      "NIST SP 800-53 IR-5",
+      "NIST SP 800-53 IR-8",
+      "NIST SP 800-53 SI-4",
+      "AICPA TSC CC7.2",
+      "ISO 27001:2013 A.12.4.1",
+      "ISO 27001:2013 A.16.1.7"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:apigateway:us-east-1::/restapis/5dq0gatjul/stages/dev/apigateway-stage-caching-enabled-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:apigateway:us-east-1::/restapis/5dq0gatjul/stages/dev",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:47.273278+00:00",
+  "CreatedAt": "2020-06-16T01:26:47.273278+00:00",
+  "UpdatedAt": "2020-06-16T01:26:47.273278+00:00",
+  "Severity": {
+    "Label": "LOW"
+  },
+  "Confidence": 99,
+  "Title": "[APIGateway.3] API Gateway Rest API Stages should have Caching enabled",
+  "Description": "API Gateway stage dev for Rest API dev-serverless-flask does not have Caching enabled. You can enable API caching in Amazon API Gateway to cache your endpoints responses. With caching, you can reduce the number of calls made to your endpoint and also improve the latency of requests to your API. Refer to the remediation instructions if this configuration is not intended",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "If your API Gateway stage should have caching enabled refer to the Enable API Caching to Enhance Responsiveness section of the Amazon API Gateway Developer Guide",
+      "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsApiGatewayRestApi",
+      "Id": "arn:aws:apigateway:us-east-1::/restapis/5dq0gatjul/stages/dev",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "Other": {
+          "deploymentId": "l6m7kr",
+          "stageName": "dev"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF ID.BE-5",
+      "NIST CSF PR.PT-5",
+      "NIST SP 800-53 CP-2",
+      "NIST SP 800-53 CP-11",
+      "NIST SP 800-53 SA-13",
+      "NIST SP 800-53 SA14",
+      "AICPA TSC CC3.1",
+      "AICPA TSC A1.2",
+      "ISO 27001:2013 A.11.1.4",
+      "ISO 27001:2013 A.17.1.1",
+      "ISO 27001:2013 A.17.1.2",
+      "ISO 27001:2013 A.17.2.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:apigateway:us-east-1::/restapis/9kb0qea893/stages/default/apigateway-stage-caching-enabled-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:apigateway:us-east-1::/restapis/9kb0qea893/stages/default",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:47.273278+00:00",
+  "CreatedAt": "2020-06-16T01:26:47.273278+00:00",
+  "UpdatedAt": "2020-06-16T01:26:47.273278+00:00",
+  "Severity": {
+    "Label": "LOW"
+  },
+  "Confidence": 99,
+  "Title": "[APIGateway.3] API Gateway Rest API Stages should have Caching enabled",
+  "Description": "API Gateway stage default for Rest API workflow-callback-API does not have Caching enabled. You can enable API caching in Amazon API Gateway to cache your endpoints responses. With caching, you can reduce the number of calls made to your endpoint and also improve the latency of requests to your API. Refer to the remediation instructions if this configuration is not intended",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "If your API Gateway stage should have caching enabled refer to the Enable API Caching to Enhance Responsiveness section of the Amazon API Gateway Developer Guide",
+      "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsApiGatewayRestApi",
+      "Id": "arn:aws:apigateway:us-east-1::/restapis/9kb0qea893/stages/default",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "Other": {
+          "deploymentId": "bv4iij",
+          "stageName": "default"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF ID.BE-5",
+      "NIST CSF PR.PT-5",
+      "NIST SP 800-53 CP-2",
+      "NIST SP 800-53 CP-11",
+      "NIST SP 800-53 SA-13",
+      "NIST SP 800-53 SA14",
+      "AICPA TSC CC3.1",
+      "AICPA TSC A1.2",
+      "ISO 27001:2013 A.11.1.4",
+      "ISO 27001:2013 A.17.1.1",
+      "ISO 27001:2013 A.17.1.2",
+      "ISO 27001:2013 A.17.2.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:apigateway:us-east-1::/restapis/9zcwbrpvza/stages/dev/apigateway-stage-caching-enabled-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:apigateway:us-east-1::/restapis/9zcwbrpvza/stages/dev",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:47.273278+00:00",
+  "CreatedAt": "2020-06-16T01:26:47.273278+00:00",
+  "UpdatedAt": "2020-06-16T01:26:47.273278+00:00",
+  "Severity": {
+    "Label": "LOW"
+  },
+  "Confidence": 99,
+  "Title": "[APIGateway.3] API Gateway Rest API Stages should have Caching enabled",
+  "Description": "API Gateway stage dev for Rest API dev-workflow does not have Caching enabled. You can enable API caching in Amazon API Gateway to cache your endpoints responses. With caching, you can reduce the number of calls made to your endpoint and also improve the latency of requests to your API. Refer to the remediation instructions if this configuration is not intended",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "If your API Gateway stage should have caching enabled refer to the Enable API Caching to Enhance Responsiveness section of the Amazon API Gateway Developer Guide",
+      "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsApiGatewayRestApi",
+      "Id": "arn:aws:apigateway:us-east-1::/restapis/9zcwbrpvza/stages/dev",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "Other": {
+          "deploymentId": "k8x827",
+          "stageName": "dev"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF ID.BE-5",
+      "NIST CSF PR.PT-5",
+      "NIST SP 800-53 CP-2",
+      "NIST SP 800-53 CP-11",
+      "NIST SP 800-53 SA-13",
+      "NIST SP 800-53 SA14",
+      "AICPA TSC CC3.1",
+      "AICPA TSC A1.2",
+      "ISO 27001:2013 A.11.1.4",
+      "ISO 27001:2013 A.17.1.1",
+      "ISO 27001:2013 A.17.1.2",
+      "ISO 27001:2013 A.17.2.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:apigateway:us-east-1::/restapis/5dq0gatjul/stages/dev/apigateway-stage-cache-encryption-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:apigateway:us-east-1::/restapis/5dq0gatjul/stages/dev",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:47.520852+00:00",
+  "CreatedAt": "2020-06-16T01:26:47.520852+00:00",
+  "UpdatedAt": "2020-06-16T01:26:47.520852+00:00",
+  "Severity": {
+    "Label": "HIGH"
+  },
+  "Confidence": 99,
+  "Title": "[APIGateway.4] API Gateway Rest API Stages should have cache encryption enabled",
+  "Description": "API Gateway stage dev for Rest API dev-serverless-flask does not have cache encryption enabled. If you choose to enable caching for a REST API, you can enable cache encryption. Refer to the remediation instructions if this configuration is not intended",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "If your API Gateway stage should have caching encryption enabled refer to the Override API Gateway Stage-Level Caching for Method Caching section of the Amazon API Gateway Developer Guide",
+      "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html#override-api-gateway-stage-cache-for-method-cache"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsApiGatewayRestApi",
+      "Id": "arn:aws:apigateway:us-east-1::/restapis/5dq0gatjul/stages/dev",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "Other": {
+          "deploymentId": "l6m7kr",
+          "stageName": "dev"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF PR.DS-1",
+      "NIST SP 800-53 MP-8",
+      "NIST SP 800-53 SC-12",
+      "NIST SP 800-53 SC-28",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.2.3"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:apigateway:us-east-1::/restapis/9kb0qea893/stages/default/apigateway-stage-cache-encryption-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:apigateway:us-east-1::/restapis/9kb0qea893/stages/default",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:47.520852+00:00",
+  "CreatedAt": "2020-06-16T01:26:47.520852+00:00",
+  "UpdatedAt": "2020-06-16T01:26:47.520852+00:00",
+  "Severity": {
+    "Label": "HIGH"
+  },
+  "Confidence": 99,
+  "Title": "[APIGateway.4] API Gateway Rest API Stages should have cache encryption enabled",
+  "Description": "API Gateway stage default for Rest API workflow-callback-API does not have cache encryption enabled. If you choose to enable caching for a REST API, you can enable cache encryption. Refer to the remediation instructions if this configuration is not intended",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "If your API Gateway stage should have caching encryption enabled refer to the Override API Gateway Stage-Level Caching for Method Caching section of the Amazon API Gateway Developer Guide",
+      "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html#override-api-gateway-stage-cache-for-method-cache"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsApiGatewayRestApi",
+      "Id": "arn:aws:apigateway:us-east-1::/restapis/9kb0qea893/stages/default",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "Other": {
+          "deploymentId": "bv4iij",
+          "stageName": "default"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF PR.DS-1",
+      "NIST SP 800-53 MP-8",
+      "NIST SP 800-53 SC-12",
+      "NIST SP 800-53 SC-28",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.2.3"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:apigateway:us-east-1::/restapis/9zcwbrpvza/stages/dev/apigateway-stage-cache-encryption-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:apigateway:us-east-1::/restapis/9zcwbrpvza/stages/dev",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:47.520852+00:00",
+  "CreatedAt": "2020-06-16T01:26:47.520852+00:00",
+  "UpdatedAt": "2020-06-16T01:26:47.520852+00:00",
+  "Severity": {
+    "Label": "HIGH"
+  },
+  "Confidence": 99,
+  "Title": "[APIGateway.4] API Gateway Rest API Stages should have cache encryption enabled",
+  "Description": "API Gateway stage dev for Rest API dev-workflow does not have cache encryption enabled. If you choose to enable caching for a REST API, you can enable cache encryption. Refer to the remediation instructions if this configuration is not intended",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "If your API Gateway stage should have caching encryption enabled refer to the Override API Gateway Stage-Level Caching for Method Caching section of the Amazon API Gateway Developer Guide",
+      "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html#override-api-gateway-stage-cache-for-method-cache"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsApiGatewayRestApi",
+      "Id": "arn:aws:apigateway:us-east-1::/restapis/9zcwbrpvza/stages/dev",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "Other": {
+          "deploymentId": "k8x827",
+          "stageName": "dev"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF PR.DS-1",
+      "NIST SP 800-53 MP-8",
+      "NIST SP 800-53 SC-12",
+      "NIST SP 800-53 SC-28",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.2.3"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:apigateway:us-east-1::/restapis/5dq0gatjul/stages/dev/apigateway-stage-xray-tracing-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:apigateway:us-east-1::/restapis/5dq0gatjul/stages/dev",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:47.790003+00:00",
+  "CreatedAt": "2020-06-16T01:26:47.790003+00:00",
+  "UpdatedAt": "2020-06-16T01:26:47.790003+00:00",
+  "Severity": {
+    "Label": "LOW"
+  },
+  "Confidence": 99,
+  "Title": "[APIGateway.5] API Gateway Rest API Stages should have tracing enabled",
+  "Description": "API Gateway stage dev for Rest API dev-serverless-flask does not have tracing enabled. Because X-Ray gives you an end-to-end view of an entire request, you can analyze latencies in your APIs and their backend services. You can use an X-Ray service map to view the latency of an entire request and that of the downstream services that are integrated with X-Ray. Refer to the remediation instructions if this configuration is not intended",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "If your API Gateway stage should have tracing enabled refer to the Set Up X-Ray Tracing in API Gateway section of the Amazon API Gateway Developer Guide",
+      "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-set-up-tracing.html"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsApiGatewayRestApi",
+      "Id": "arn:aws:apigateway:us-east-1::/restapis/5dq0gatjul/stages/dev",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "Other": {
+          "deploymentId": "l6m7kr",
+          "stageName": "dev"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF DE.AE-3",
+      "NIST SP 800-53 AU-6",
+      "NIST SP 800-53 CA-7",
+      "NIST SP 800-53 IR-4",
+      "NIST SP 800-53 IR-5",
+      "NIST SP 800-53 IR-8",
+      "NIST SP 800-53 SI-4",
+      "AICPA TSC CC7.2",
+      "ISO 27001:2013 A.12.4.1",
+      "ISO 27001:2013 A.16.1.7"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:apigateway:us-east-1::/restapis/9kb0qea893/stages/default/apigateway-stage-xray-tracing-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:apigateway:us-east-1::/restapis/9kb0qea893/stages/default",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:47.790003+00:00",
+  "CreatedAt": "2020-06-16T01:26:47.790003+00:00",
+  "UpdatedAt": "2020-06-16T01:26:47.790003+00:00",
+  "Severity": {
+    "Label": "LOW"
+  },
+  "Confidence": 99,
+  "Title": "[APIGateway.5] API Gateway Rest API Stages should have tracing enabled",
+  "Description": "API Gateway stage default for Rest API workflow-callback-API does not have tracing enabled. Because X-Ray gives you an end-to-end view of an entire request, you can analyze latencies in your APIs and their backend services. You can use an X-Ray service map to view the latency of an entire request and that of the downstream services that are integrated with X-Ray. Refer to the remediation instructions if this configuration is not intended",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "If your API Gateway stage should have tracing enabled refer to the Set Up X-Ray Tracing in API Gateway section of the Amazon API Gateway Developer Guide",
+      "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-set-up-tracing.html"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsApiGatewayRestApi",
+      "Id": "arn:aws:apigateway:us-east-1::/restapis/9kb0qea893/stages/default",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "Other": {
+          "deploymentId": "bv4iij",
+          "stageName": "default"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF DE.AE-3",
+      "NIST SP 800-53 AU-6",
+      "NIST SP 800-53 CA-7",
+      "NIST SP 800-53 IR-4",
+      "NIST SP 800-53 IR-5",
+      "NIST SP 800-53 IR-8",
+      "NIST SP 800-53 SI-4",
+      "AICPA TSC CC7.2",
+      "ISO 27001:2013 A.12.4.1",
+      "ISO 27001:2013 A.16.1.7"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:apigateway:us-east-1::/restapis/9zcwbrpvza/stages/dev/apigateway-stage-xray-tracing-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:apigateway:us-east-1::/restapis/9zcwbrpvza/stages/dev",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:47.790003+00:00",
+  "CreatedAt": "2020-06-16T01:26:47.790003+00:00",
+  "UpdatedAt": "2020-06-16T01:26:47.790003+00:00",
+  "Severity": {
+    "Label": "LOW"
+  },
+  "Confidence": 99,
+  "Title": "[APIGateway.5] API Gateway Rest API Stages should have tracing enabled",
+  "Description": "API Gateway stage dev for Rest API dev-workflow does not have tracing enabled. Because X-Ray gives you an end-to-end view of an entire request, you can analyze latencies in your APIs and their backend services. You can use an X-Ray service map to view the latency of an entire request and that of the downstream services that are integrated with X-Ray. Refer to the remediation instructions if this configuration is not intended",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "If your API Gateway stage should have tracing enabled refer to the Set Up X-Ray Tracing in API Gateway section of the Amazon API Gateway Developer Guide",
+      "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-set-up-tracing.html"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsApiGatewayRestApi",
+      "Id": "arn:aws:apigateway:us-east-1::/restapis/9zcwbrpvza/stages/dev",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "Other": {
+          "deploymentId": "k8x827",
+          "stageName": "dev"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF DE.AE-3",
+      "NIST SP 800-53 AU-6",
+      "NIST SP 800-53 CA-7",
+      "NIST SP 800-53 IR-4",
+      "NIST SP 800-53 IR-5",
+      "NIST SP 800-53 IR-8",
+      "NIST SP 800-53 SI-4",
+      "AICPA TSC CC7.2",
+      "ISO 27001:2013 A.12.4.1",
+      "ISO 27001:2013 A.16.1.7"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:apigateway:us-east-1::/restapis/5dq0gatjul/stages/dev/apigateway-stage-waf-protection-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:apigateway:us-east-1::/restapis/5dq0gatjul/stages/dev",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:48.037126+00:00",
+  "CreatedAt": "2020-06-16T01:26:48.037126+00:00",
+  "UpdatedAt": "2020-06-16T01:26:48.037126+00:00",
+  "Severity": {
+    "Label": "HIGH"
+  },
+  "Confidence": 99,
+  "Title": "[APIGateway.6] API Gateway Rest API Stages should be protected by an AWS WAF Web ACL",
+  "Description": "API Gateway stage dev for Rest API dev-serverless-flask is not protected by an AWS WAF Web ACL. You can use AWS WAF to protect your API Gateway API from common web exploits, such as SQL injection and cross-site scripting (XSS) attacks. These could affect API availability and performance, compromise security, or consume excessive resources. Refer to the remediation instructions if this configuration is not intended",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "If your API Gateway stage should be protected by WAF refer to the Set Up AWS WAF in API Gateway section of the Amazon API Gateway Developer Guide",
+      "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-setup-waf.html"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsApiGatewayRestApi",
+      "Id": "arn:aws:apigateway:us-east-1::/restapis/5dq0gatjul/stages/dev",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "Other": {
+          "deploymentId": "l6m7kr",
+          "stageName": "dev"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF DE.AE-2",
+      "NIST SP 800-53 AU-6",
+      "NIST SP 800-53 CA-7",
+      "NIST SP 800-53 IR-4",
+      "NIST SP 800-53 SI-4",
+      "AICPA TSC CC7.2",
+      "ISO 27001:2013 A.12.4.1",
+      "ISO 27001:2013 A.16.1.1",
+      "ISO 27001:2013 A.16.1.4"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:apigateway:us-east-1::/restapis/9kb0qea893/stages/default/apigateway-stage-waf-protection-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:apigateway:us-east-1::/restapis/9kb0qea893/stages/default",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:48.037126+00:00",
+  "CreatedAt": "2020-06-16T01:26:48.037126+00:00",
+  "UpdatedAt": "2020-06-16T01:26:48.037126+00:00",
+  "Severity": {
+    "Label": "HIGH"
+  },
+  "Confidence": 99,
+  "Title": "[APIGateway.6] API Gateway Rest API Stages should be protected by an AWS WAF Web ACL",
+  "Description": "API Gateway stage default for Rest API workflow-callback-API is not protected by an AWS WAF Web ACL. You can use AWS WAF to protect your API Gateway API from common web exploits, such as SQL injection and cross-site scripting (XSS) attacks. These could affect API availability and performance, compromise security, or consume excessive resources. Refer to the remediation instructions if this configuration is not intended",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "If your API Gateway stage should be protected by WAF refer to the Set Up AWS WAF in API Gateway section of the Amazon API Gateway Developer Guide",
+      "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-setup-waf.html"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsApiGatewayRestApi",
+      "Id": "arn:aws:apigateway:us-east-1::/restapis/9kb0qea893/stages/default",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "Other": {
+          "deploymentId": "bv4iij",
+          "stageName": "default"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF DE.AE-2",
+      "NIST SP 800-53 AU-6",
+      "NIST SP 800-53 CA-7",
+      "NIST SP 800-53 IR-4",
+      "NIST SP 800-53 SI-4",
+      "AICPA TSC CC7.2",
+      "ISO 27001:2013 A.12.4.1",
+      "ISO 27001:2013 A.16.1.1",
+      "ISO 27001:2013 A.16.1.4"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:apigateway:us-east-1::/restapis/9zcwbrpvza/stages/dev/apigateway-stage-waf-protection-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:apigateway:us-east-1::/restapis/9zcwbrpvza/stages/dev",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:48.037126+00:00",
+  "CreatedAt": "2020-06-16T01:26:48.037126+00:00",
+  "UpdatedAt": "2020-06-16T01:26:48.037126+00:00",
+  "Severity": {
+    "Label": "HIGH"
+  },
+  "Confidence": 99,
+  "Title": "[APIGateway.6] API Gateway Rest API Stages should be protected by an AWS WAF Web ACL",
+  "Description": "API Gateway stage dev for Rest API dev-workflow is not protected by an AWS WAF Web ACL. You can use AWS WAF to protect your API Gateway API from common web exploits, such as SQL injection and cross-site scripting (XSS) attacks. These could affect API availability and performance, compromise security, or consume excessive resources. Refer to the remediation instructions if this configuration is not intended",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "If your API Gateway stage should be protected by WAF refer to the Set Up AWS WAF in API Gateway section of the Amazon API Gateway Developer Guide",
+      "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-setup-waf.html"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsApiGatewayRestApi",
+      "Id": "arn:aws:apigateway:us-east-1::/restapis/9zcwbrpvza/stages/dev",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "Other": {
+          "deploymentId": "k8x827",
+          "stageName": "dev"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF DE.AE-2",
+      "NIST SP 800-53 AU-6",
+      "NIST SP 800-53 CA-7",
+      "NIST SP 800-53 IR-4",
+      "NIST SP 800-53 SI-4",
+      "AICPA TSC CC7.2",
+      "ISO 27001:2013 A.12.4.1",
+      "ISO 27001:2013 A.16.1.1",
+      "ISO 27001:2013 A.16.1.4"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:sns:us-east-1:057637124865:action_responses/sns-topic-encryption-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:sns:us-east-1:057637124865:action_responses",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:48.502433+00:00",
+  "CreatedAt": "2020-06-16T01:26:48.502433+00:00",
+  "UpdatedAt": "2020-06-16T01:26:48.502433+00:00",
+  "Severity": {
+    "Label": "HIGH"
+  },
+  "Confidence": 99,
+  "Title": "[SNS.1] SNS topics should be encrypted",
+  "Description": "SNS topic action_responses is not encrypted. Refer to the remediation instructions to remediate this behavior",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on SNS encryption at rest and how to configure it refer to the Encryption at Rest section of the Amazon Simple Notification Service Developer Guide.",
+      "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-server-side-encryption.html"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsSnsTopic",
+      "Id": "arn:aws:sns:us-east-1:057637124865:action_responses",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "AwsSnsTopic": {
+          "TopicName": "action_responses"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF PR.DS-1",
+      "NIST SP 800-53 MP-8",
+      "NIST SP 800-53 SC-12",
+      "NIST SP 800-53 SC-28",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.2.3"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:sns:us-east-1:057637124865:actions/sns-topic-encryption-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:sns:us-east-1:057637124865:actions",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:48.502433+00:00",
+  "CreatedAt": "2020-06-16T01:26:48.502433+00:00",
+  "UpdatedAt": "2020-06-16T01:26:48.502433+00:00",
+  "Severity": {
+    "Label": "HIGH"
+  },
+  "Confidence": 99,
+  "Title": "[SNS.1] SNS topics should be encrypted",
+  "Description": "SNS topic actions is not encrypted. Refer to the remediation instructions to remediate this behavior",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on SNS encryption at rest and how to configure it refer to the Encryption at Rest section of the Amazon Simple Notification Service Developer Guide.",
+      "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-server-side-encryption.html"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsSnsTopic",
+      "Id": "arn:aws:sns:us-east-1:057637124865:actions",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "AwsSnsTopic": {
+          "TopicName": "actions"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF PR.DS-1",
+      "NIST SP 800-53 MP-8",
+      "NIST SP 800-53 SC-12",
+      "NIST SP 800-53 SC-28",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.2.3"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:sns:us-east-1:057637124865:cloudtrail-sns/sns-topic-encryption-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:sns:us-east-1:057637124865:cloudtrail-sns",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:48.502433+00:00",
+  "CreatedAt": "2020-06-16T01:26:48.502433+00:00",
+  "UpdatedAt": "2020-06-16T01:26:48.502433+00:00",
+  "Severity": {
+    "Label": "HIGH"
+  },
+  "Confidence": 99,
+  "Title": "[SNS.1] SNS topics should be encrypted",
+  "Description": "SNS topic cloudtrail-sns is not encrypted. Refer to the remediation instructions to remediate this behavior",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on SNS encryption at rest and how to configure it refer to the Encryption at Rest section of the Amazon Simple Notification Service Developer Guide.",
+      "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-server-side-encryption.html"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsSnsTopic",
+      "Id": "arn:aws:sns:us-east-1:057637124865:cloudtrail-sns",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "AwsSnsTopic": {
+          "TopicName": "cloudtrail-sns"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF PR.DS-1",
+      "NIST SP 800-53 MP-8",
+      "NIST SP 800-53 SC-12",
+      "NIST SP 800-53 SC-28",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.2.3"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:sns:us-east-1:057637124865:core/sns-topic-encryption-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:sns:us-east-1:057637124865:core",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:48.502433+00:00",
+  "CreatedAt": "2020-06-16T01:26:48.502433+00:00",
+  "UpdatedAt": "2020-06-16T01:26:48.502433+00:00",
+  "Severity": {
+    "Label": "HIGH"
+  },
+  "Confidence": 99,
+  "Title": "[SNS.1] SNS topics should be encrypted",
+  "Description": "SNS topic core is not encrypted. Refer to the remediation instructions to remediate this behavior",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on SNS encryption at rest and how to configure it refer to the Encryption at Rest section of the Amazon Simple Notification Service Developer Guide.",
+      "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-server-side-encryption.html"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsSnsTopic",
+      "Id": "arn:aws:sns:us-east-1:057637124865:core",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "AwsSnsTopic": {
+          "TopicName": "core"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF PR.DS-1",
+      "NIST SP 800-53 MP-8",
+      "NIST SP 800-53 SC-12",
+      "NIST SP 800-53 SC-28",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.2.3"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:sns:us-east-1:057637124865:dynamodb/sns-topic-encryption-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:sns:us-east-1:057637124865:dynamodb",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:48.502433+00:00",
+  "CreatedAt": "2020-06-16T01:26:48.502433+00:00",
+  "UpdatedAt": "2020-06-16T01:26:48.502433+00:00",
+  "Severity": {
+    "Label": "HIGH"
+  },
+  "Confidence": 99,
+  "Title": "[SNS.1] SNS topics should be encrypted",
+  "Description": "SNS topic dynamodb is not encrypted. Refer to the remediation instructions to remediate this behavior",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on SNS encryption at rest and how to configure it refer to the Encryption at Rest section of the Amazon Simple Notification Service Developer Guide.",
+      "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-server-side-encryption.html"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsSnsTopic",
+      "Id": "arn:aws:sns:us-east-1:057637124865:dynamodb",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "AwsSnsTopic": {
+          "TopicName": "dynamodb"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF PR.DS-1",
+      "NIST SP 800-53 MP-8",
+      "NIST SP 800-53 SC-12",
+      "NIST SP 800-53 SC-28",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.2.3"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:sns:us-east-1:057637124865:pagerduty/sns-topic-encryption-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:sns:us-east-1:057637124865:pagerduty",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:48.502433+00:00",
+  "CreatedAt": "2020-06-16T01:26:48.502433+00:00",
+  "UpdatedAt": "2020-06-16T01:26:48.502433+00:00",
+  "Severity": {
+    "Label": "HIGH"
+  },
+  "Confidence": 99,
+  "Title": "[SNS.1] SNS topics should be encrypted",
+  "Description": "SNS topic pagerduty is not encrypted. Refer to the remediation instructions to remediate this behavior",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on SNS encryption at rest and how to configure it refer to the Encryption at Rest section of the Amazon Simple Notification Service Developer Guide.",
+      "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-server-side-encryption.html"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsSnsTopic",
+      "Id": "arn:aws:sns:us-east-1:057637124865:pagerduty",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "AwsSnsTopic": {
+          "TopicName": "pagerduty"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF PR.DS-1",
+      "NIST SP 800-53 MP-8",
+      "NIST SP 800-53 SC-12",
+      "NIST SP 800-53 SC-28",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.2.3"
+    ]
+  },
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:sns:us-east-1:057637124865:actions/sns-http-subscription-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:sns:us-east-1:057637124865:actions",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:48.852407+00:00",
+  "CreatedAt": "2020-06-16T01:26:48.852407+00:00",
+  "UpdatedAt": "2020-06-16T01:26:48.852407+00:00",
+  "Severity": {
+    "Label": "INFORMATIONAL"
+  },
+  "Confidence": 99,
+  "Title": "[SNS.2] SNS topics should not use HTTP subscriptions",
+  "Description": "SNS topic actions does not have a HTTP subscriber.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on SNS encryption in transit refer to the Enforce Encryption of Data in Transit section of the Amazon Simple Notification Service Developer Guide.",
+      "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsSnsTopic",
+      "Id": "arn:aws:sns:us-east-1:057637124865:actions",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "AwsSnsTopic": {
+          "TopicName": "actions"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "PASSED",
+    "RelatedRequirements": [
+      "NIST CSF ID.AM-2",
+      "NIST SP 800-53 CM-8",
+      "NIST SP 800-53 PM-5",
+      "AICPA TSC CC3.2",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.1.1",
+      "ISO 27001:2013 A.8.1.2",
+      "ISO 27001:2013 A.12.5.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "RESOLVED"
+  },
+  "RecordState": "ARCHIVED"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:sns:us-east-1:057637124865:cloudtrail-sns/sns-http-subscription-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:sns:us-east-1:057637124865:cloudtrail-sns",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:48.852407+00:00",
+  "CreatedAt": "2020-06-16T01:26:48.852407+00:00",
+  "UpdatedAt": "2020-06-16T01:26:48.852407+00:00",
+  "Severity": {
+    "Label": "INFORMATIONAL"
+  },
+  "Confidence": 99,
+  "Title": "[SNS.2] SNS topics should not use HTTP subscriptions",
+  "Description": "SNS topic cloudtrail-sns does not have a HTTP subscriber.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on SNS encryption in transit refer to the Enforce Encryption of Data in Transit section of the Amazon Simple Notification Service Developer Guide.",
+      "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsSnsTopic",
+      "Id": "arn:aws:sns:us-east-1:057637124865:cloudtrail-sns",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "AwsSnsTopic": {
+          "TopicName": "cloudtrail-sns"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "PASSED",
+    "RelatedRequirements": [
+      "NIST CSF ID.AM-2",
+      "NIST SP 800-53 CM-8",
+      "NIST SP 800-53 PM-5",
+      "AICPA TSC CC3.2",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.1.1",
+      "ISO 27001:2013 A.8.1.2",
+      "ISO 27001:2013 A.12.5.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "RESOLVED"
+  },
+  "RecordState": "ARCHIVED"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:sns:us-east-1:057637124865:core/sns-http-subscription-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:sns:us-east-1:057637124865:core",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:48.852407+00:00",
+  "CreatedAt": "2020-06-16T01:26:48.852407+00:00",
+  "UpdatedAt": "2020-06-16T01:26:48.852407+00:00",
+  "Severity": {
+    "Label": "INFORMATIONAL"
+  },
+  "Confidence": 99,
+  "Title": "[SNS.2] SNS topics should not use HTTP subscriptions",
+  "Description": "SNS topic core does not have a HTTP subscriber.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on SNS encryption in transit refer to the Enforce Encryption of Data in Transit section of the Amazon Simple Notification Service Developer Guide.",
+      "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsSnsTopic",
+      "Id": "arn:aws:sns:us-east-1:057637124865:core",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "AwsSnsTopic": {
+          "TopicName": "core"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "PASSED",
+    "RelatedRequirements": [
+      "NIST CSF ID.AM-2",
+      "NIST SP 800-53 CM-8",
+      "NIST SP 800-53 PM-5",
+      "AICPA TSC CC3.2",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.1.1",
+      "ISO 27001:2013 A.8.1.2",
+      "ISO 27001:2013 A.12.5.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "RESOLVED"
+  },
+  "RecordState": "ARCHIVED"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:sns:us-east-1:057637124865:pagerduty/sns-http-subscription-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:sns:us-east-1:057637124865:pagerduty",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:48.852407+00:00",
+  "CreatedAt": "2020-06-16T01:26:48.852407+00:00",
+  "UpdatedAt": "2020-06-16T01:26:48.852407+00:00",
+  "Severity": {
+    "Label": "INFORMATIONAL"
+  },
+  "Confidence": 99,
+  "Title": "[SNS.2] SNS topics should not use HTTP subscriptions",
+  "Description": "SNS topic pagerduty does not have a HTTP subscriber.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on SNS encryption in transit refer to the Enforce Encryption of Data in Transit section of the Amazon Simple Notification Service Developer Guide.",
+      "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsSnsTopic",
+      "Id": "arn:aws:sns:us-east-1:057637124865:pagerduty",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "AwsSnsTopic": {
+          "TopicName": "pagerduty"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "PASSED",
+    "RelatedRequirements": [
+      "NIST CSF ID.AM-2",
+      "NIST SP 800-53 CM-8",
+      "NIST SP 800-53 PM-5",
+      "AICPA TSC CC3.2",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.1.1",
+      "ISO 27001:2013 A.8.1.2",
+      "ISO 27001:2013 A.12.5.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "RESOLVED"
+  },
+  "RecordState": "ARCHIVED"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:sns:us-east-1:057637124865:pagerduty/sns-http-subscription-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:sns:us-east-1:057637124865:pagerduty",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:48.852407+00:00",
+  "CreatedAt": "2020-06-16T01:26:48.852407+00:00",
+  "UpdatedAt": "2020-06-16T01:26:48.852407+00:00",
+  "Severity": {
+    "Label": "INFORMATIONAL"
+  },
+  "Confidence": 99,
+  "Title": "[SNS.2] SNS topics should not use HTTP subscriptions",
+  "Description": "SNS topic pagerduty does not have a HTTP subscriber.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on SNS encryption in transit refer to the Enforce Encryption of Data in Transit section of the Amazon Simple Notification Service Developer Guide.",
+      "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsSnsTopic",
+      "Id": "arn:aws:sns:us-east-1:057637124865:pagerduty",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "AwsSnsTopic": {
+          "TopicName": "pagerduty"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "PASSED",
+    "RelatedRequirements": [
+      "NIST CSF ID.AM-2",
+      "NIST SP 800-53 CM-8",
+      "NIST SP 800-53 PM-5",
+      "AICPA TSC CC3.2",
+      "AICPA TSC CC6.1",
+      "ISO 27001:2013 A.8.1.1",
+      "ISO 27001:2013 A.8.1.2",
+      "ISO 27001:2013 A.12.5.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "RESOLVED"
+  },
+  "RecordState": "ARCHIVED"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:sns:us-east-1:057637124865:action_responses/sns-public-access-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:sns:us-east-1:057637124865:action_responses",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:49.205594+00:00",
+  "CreatedAt": "2020-06-16T01:26:49.205594+00:00",
+  "UpdatedAt": "2020-06-16T01:26:49.205594+00:00",
+  "Severity": {
+    "Label": "INFORMATIONAL"
+  },
+  "Confidence": 75,
+  "Title": "[SNS.3] SNS topics should not have public access",
+  "Description": "SNS topic action_responses does not have public access or limited by a Condition. Refer to the remediation instructions to review sns access policy",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on SNS Access Policy Best Practices refer to Amazons Best Practice rules for Amazon SNS.",
+      "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#ensure-topics-not-publicly-accessible"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsSnsTopic",
+      "Id": "arn:aws:sns:us-east-1:057637124865:action_responses",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "AwsSnsTopic": {
+          "TopicName": "action_responses"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "PASSED",
+    "RelatedRequirements": [
+      "NIST CSF PR.AC-3",
+      "NIST SP 800-53 AC-1",
+      "NIST SP 800-53 AC-17",
+      "NIST SP 800-53 AC-19",
+      "NIST SP 800-53 AC-20",
+      "NIST SP 800-53 SC-15",
+      "AICPA TSC CC6.6",
+      "ISO 27001:2013 A.6.2.1",
+      "ISO 27001:2013 A.6.2.2",
+      "ISO 27001:2013 A.11.2.6",
+      "ISO 27001:2013 A.13.1.1",
+      "ISO 27001:2013 A.13.2.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "RESOLVED"
+  },
+  "RecordState": "ARCHIVED"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:sns:us-east-1:057637124865:actions/sns-public-access-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:sns:us-east-1:057637124865:actions",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:49.205594+00:00",
+  "CreatedAt": "2020-06-16T01:26:49.205594+00:00",
+  "UpdatedAt": "2020-06-16T01:26:49.205594+00:00",
+  "Severity": {
+    "Label": "INFORMATIONAL"
+  },
+  "Confidence": 75,
+  "Title": "[SNS.3] SNS topics should not have public access",
+  "Description": "SNS topic actions does not have public access or limited by a Condition. Refer to the remediation instructions to review sns access policy",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on SNS Access Policy Best Practices refer to Amazons Best Practice rules for Amazon SNS.",
+      "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#ensure-topics-not-publicly-accessible"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsSnsTopic",
+      "Id": "arn:aws:sns:us-east-1:057637124865:actions",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "AwsSnsTopic": {
+          "TopicName": "actions"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "PASSED",
+    "RelatedRequirements": [
+      "NIST CSF PR.AC-3",
+      "NIST SP 800-53 AC-1",
+      "NIST SP 800-53 AC-17",
+      "NIST SP 800-53 AC-19",
+      "NIST SP 800-53 AC-20",
+      "NIST SP 800-53 SC-15",
+      "AICPA TSC CC6.6",
+      "ISO 27001:2013 A.6.2.1",
+      "ISO 27001:2013 A.6.2.2",
+      "ISO 27001:2013 A.11.2.6",
+      "ISO 27001:2013 A.13.1.1",
+      "ISO 27001:2013 A.13.2.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "RESOLVED"
+  },
+  "RecordState": "ARCHIVED"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:sns:us-east-1:057637124865:cloudtrail-sns/sns-public-access-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:sns:us-east-1:057637124865:cloudtrail-sns",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:49.205594+00:00",
+  "CreatedAt": "2020-06-16T01:26:49.205594+00:00",
+  "UpdatedAt": "2020-06-16T01:26:49.205594+00:00",
+  "Severity": {
+    "Label": "INFORMATIONAL"
+  },
+  "Confidence": 75,
+  "Title": "[SNS.3] SNS topics should not have public access",
+  "Description": "SNS topic cloudtrail-sns does not have public access or limited by a Condition. Refer to the remediation instructions to review sns access policy",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on SNS Access Policy Best Practices refer to Amazons Best Practice rules for Amazon SNS.",
+      "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#ensure-topics-not-publicly-accessible"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsSnsTopic",
+      "Id": "arn:aws:sns:us-east-1:057637124865:cloudtrail-sns",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "AwsSnsTopic": {
+          "TopicName": "cloudtrail-sns"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "PASSED",
+    "RelatedRequirements": [
+      "NIST CSF PR.AC-3",
+      "NIST SP 800-53 AC-1",
+      "NIST SP 800-53 AC-17",
+      "NIST SP 800-53 AC-19",
+      "NIST SP 800-53 AC-20",
+      "NIST SP 800-53 SC-15",
+      "AICPA TSC CC6.6",
+      "ISO 27001:2013 A.6.2.1",
+      "ISO 27001:2013 A.6.2.2",
+      "ISO 27001:2013 A.11.2.6",
+      "ISO 27001:2013 A.13.1.1",
+      "ISO 27001:2013 A.13.2.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "RESOLVED"
+  },
+  "RecordState": "ARCHIVED"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:sns:us-east-1:057637124865:core/sns-public-access-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:sns:us-east-1:057637124865:core",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:49.205594+00:00",
+  "CreatedAt": "2020-06-16T01:26:49.205594+00:00",
+  "UpdatedAt": "2020-06-16T01:26:49.205594+00:00",
+  "Severity": {
+    "Label": "INFORMATIONAL"
+  },
+  "Confidence": 75,
+  "Title": "[SNS.3] SNS topics should not have public access",
+  "Description": "SNS topic core does not have public access or limited by a Condition. Refer to the remediation instructions to review sns access policy",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on SNS Access Policy Best Practices refer to Amazons Best Practice rules for Amazon SNS.",
+      "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#ensure-topics-not-publicly-accessible"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsSnsTopic",
+      "Id": "arn:aws:sns:us-east-1:057637124865:core",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "AwsSnsTopic": {
+          "TopicName": "core"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "PASSED",
+    "RelatedRequirements": [
+      "NIST CSF PR.AC-3",
+      "NIST SP 800-53 AC-1",
+      "NIST SP 800-53 AC-17",
+      "NIST SP 800-53 AC-19",
+      "NIST SP 800-53 AC-20",
+      "NIST SP 800-53 SC-15",
+      "AICPA TSC CC6.6",
+      "ISO 27001:2013 A.6.2.1",
+      "ISO 27001:2013 A.6.2.2",
+      "ISO 27001:2013 A.11.2.6",
+      "ISO 27001:2013 A.13.1.1",
+      "ISO 27001:2013 A.13.2.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "RESOLVED"
+  },
+  "RecordState": "ARCHIVED"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:sns:us-east-1:057637124865:dynamodb/sns-public-access-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:sns:us-east-1:057637124865:dynamodb",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:49.205594+00:00",
+  "CreatedAt": "2020-06-16T01:26:49.205594+00:00",
+  "UpdatedAt": "2020-06-16T01:26:49.205594+00:00",
+  "Severity": {
+    "Label": "INFORMATIONAL"
+  },
+  "Confidence": 75,
+  "Title": "[SNS.3] SNS topics should not have public access",
+  "Description": "SNS topic dynamodb does not have public access or limited by a Condition. Refer to the remediation instructions to review sns access policy",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on SNS Access Policy Best Practices refer to Amazons Best Practice rules for Amazon SNS.",
+      "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#ensure-topics-not-publicly-accessible"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsSnsTopic",
+      "Id": "arn:aws:sns:us-east-1:057637124865:dynamodb",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "AwsSnsTopic": {
+          "TopicName": "dynamodb"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "PASSED",
+    "RelatedRequirements": [
+      "NIST CSF PR.AC-3",
+      "NIST SP 800-53 AC-1",
+      "NIST SP 800-53 AC-17",
+      "NIST SP 800-53 AC-19",
+      "NIST SP 800-53 AC-20",
+      "NIST SP 800-53 SC-15",
+      "AICPA TSC CC6.6",
+      "ISO 27001:2013 A.6.2.1",
+      "ISO 27001:2013 A.6.2.2",
+      "ISO 27001:2013 A.11.2.6",
+      "ISO 27001:2013 A.13.1.1",
+      "ISO 27001:2013 A.13.2.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "RESOLVED"
+  },
+  "RecordState": "ARCHIVED"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:sns:us-east-1:057637124865:pagerduty/sns-public-access-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:sns:us-east-1:057637124865:pagerduty",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:49.205594+00:00",
+  "CreatedAt": "2020-06-16T01:26:49.205594+00:00",
+  "UpdatedAt": "2020-06-16T01:26:49.205594+00:00",
+  "Severity": {
+    "Label": "INFORMATIONAL"
+  },
+  "Confidence": 75,
+  "Title": "[SNS.3] SNS topics should not have public access",
+  "Description": "SNS topic pagerduty does not have public access or limited by a Condition. Refer to the remediation instructions to review sns access policy",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on SNS Access Policy Best Practices refer to Amazons Best Practice rules for Amazon SNS.",
+      "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#ensure-topics-not-publicly-accessible"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsSnsTopic",
+      "Id": "arn:aws:sns:us-east-1:057637124865:pagerduty",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "AwsSnsTopic": {
+          "TopicName": "pagerduty"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "PASSED",
+    "RelatedRequirements": [
+      "NIST CSF PR.AC-3",
+      "NIST SP 800-53 AC-1",
+      "NIST SP 800-53 AC-17",
+      "NIST SP 800-53 AC-19",
+      "NIST SP 800-53 AC-20",
+      "NIST SP 800-53 SC-15",
+      "AICPA TSC CC6.6",
+      "ISO 27001:2013 A.6.2.1",
+      "ISO 27001:2013 A.6.2.2",
+      "ISO 27001:2013 A.11.2.6",
+      "ISO 27001:2013 A.13.1.1",
+      "ISO 27001:2013 A.13.2.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "RESOLVED"
+  },
+  "RecordState": "ARCHIVED"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:sns:us-east-1:057637124865:action_responses/sns-cross-account-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:sns:us-east-1:057637124865:action_responses",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:49.547625+00:00",
+  "CreatedAt": "2020-06-16T01:26:49.547625+00:00",
+  "UpdatedAt": "2020-06-16T01:26:49.547625+00:00",
+  "Severity": {
+    "Label": "INFORMATIONAL"
+  },
+  "Confidence": 99,
+  "Title": "[SNS.4] SNS topics should not allow cross-account access",
+  "Description": "SNS topic action_responses does not have cross-account access.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on SNS best practices refer to the Amazon SNS security best practices section of the Amazon Simple Notification Service Developer Guide.",
+      "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsSnsTopic",
+      "Id": "arn:aws:sns:us-east-1:057637124865:action_responses",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "AwsSnsTopic": {
+          "TopicName": "action_responses"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "PASSED",
+    "RelatedRequirements": [
+      "NIST CSF PR.AC-3",
+      "NIST SP 800-53 AC-1",
+      "NIST SP 800-53 AC-17",
+      "NIST SP 800-53 AC-19",
+      "NIST SP 800-53 AC-20",
+      "NIST SP 800-53 SC-15",
+      "AICPA TSC CC6.6",
+      "ISO 27001:2013 A.6.2.1",
+      "ISO 27001:2013 A.6.2.2",
+      "ISO 27001:2013 A.11.2.6",
+      "ISO 27001:2013 A.13.1.1",
+      "ISO 27001:2013 A.13.2.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "RESOLVED"
+  },
+  "RecordState": "ARCHIVED"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:sns:us-east-1:057637124865:actions/sns-cross-account-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:sns:us-east-1:057637124865:actions",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:49.547625+00:00",
+  "CreatedAt": "2020-06-16T01:26:49.547625+00:00",
+  "UpdatedAt": "2020-06-16T01:26:49.547625+00:00",
+  "Severity": {
+    "Label": "INFORMATIONAL"
+  },
+  "Confidence": 99,
+  "Title": "[SNS.4] SNS topics should not allow cross-account access",
+  "Description": "SNS topic actions does not have cross-account access.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on SNS best practices refer to the Amazon SNS security best practices section of the Amazon Simple Notification Service Developer Guide.",
+      "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsSnsTopic",
+      "Id": "arn:aws:sns:us-east-1:057637124865:actions",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "AwsSnsTopic": {
+          "TopicName": "actions"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "PASSED",
+    "RelatedRequirements": [
+      "NIST CSF PR.AC-3",
+      "NIST SP 800-53 AC-1",
+      "NIST SP 800-53 AC-17",
+      "NIST SP 800-53 AC-19",
+      "NIST SP 800-53 AC-20",
+      "NIST SP 800-53 SC-15",
+      "AICPA TSC CC6.6",
+      "ISO 27001:2013 A.6.2.1",
+      "ISO 27001:2013 A.6.2.2",
+      "ISO 27001:2013 A.11.2.6",
+      "ISO 27001:2013 A.13.1.1",
+      "ISO 27001:2013 A.13.2.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "RESOLVED"
+  },
+  "RecordState": "ARCHIVED"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:sns:us-east-1:057637124865:cloudtrail-sns/sns-cross-account-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:sns:us-east-1:057637124865:cloudtrail-sns",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:49.547625+00:00",
+  "CreatedAt": "2020-06-16T01:26:49.547625+00:00",
+  "UpdatedAt": "2020-06-16T01:26:49.547625+00:00",
+  "Severity": {
+    "Label": "INFORMATIONAL"
+  },
+  "Confidence": 99,
+  "Title": "[SNS.4] SNS topics should not allow cross-account access",
+  "Description": "SNS topic cloudtrail-sns does not have cross-account access.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on SNS best practices refer to the Amazon SNS security best practices section of the Amazon Simple Notification Service Developer Guide.",
+      "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsSnsTopic",
+      "Id": "arn:aws:sns:us-east-1:057637124865:cloudtrail-sns",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "AwsSnsTopic": {
+          "TopicName": "cloudtrail-sns"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "PASSED",
+    "RelatedRequirements": [
+      "NIST CSF PR.AC-3",
+      "NIST SP 800-53 AC-1",
+      "NIST SP 800-53 AC-17",
+      "NIST SP 800-53 AC-19",
+      "NIST SP 800-53 AC-20",
+      "NIST SP 800-53 SC-15",
+      "AICPA TSC CC6.6",
+      "ISO 27001:2013 A.6.2.1",
+      "ISO 27001:2013 A.6.2.2",
+      "ISO 27001:2013 A.11.2.6",
+      "ISO 27001:2013 A.13.1.1",
+      "ISO 27001:2013 A.13.2.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "RESOLVED"
+  },
+  "RecordState": "ARCHIVED"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:sns:us-east-1:057637124865:core/sns-cross-account-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:sns:us-east-1:057637124865:core",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:49.547625+00:00",
+  "CreatedAt": "2020-06-16T01:26:49.547625+00:00",
+  "UpdatedAt": "2020-06-16T01:26:49.547625+00:00",
+  "Severity": {
+    "Label": "INFORMATIONAL"
+  },
+  "Confidence": 99,
+  "Title": "[SNS.4] SNS topics should not allow cross-account access",
+  "Description": "SNS topic core does not have cross-account access.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on SNS best practices refer to the Amazon SNS security best practices section of the Amazon Simple Notification Service Developer Guide.",
+      "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsSnsTopic",
+      "Id": "arn:aws:sns:us-east-1:057637124865:core",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "AwsSnsTopic": {
+          "TopicName": "core"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "PASSED",
+    "RelatedRequirements": [
+      "NIST CSF PR.AC-3",
+      "NIST SP 800-53 AC-1",
+      "NIST SP 800-53 AC-17",
+      "NIST SP 800-53 AC-19",
+      "NIST SP 800-53 AC-20",
+      "NIST SP 800-53 SC-15",
+      "AICPA TSC CC6.6",
+      "ISO 27001:2013 A.6.2.1",
+      "ISO 27001:2013 A.6.2.2",
+      "ISO 27001:2013 A.11.2.6",
+      "ISO 27001:2013 A.13.1.1",
+      "ISO 27001:2013 A.13.2.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "RESOLVED"
+  },
+  "RecordState": "ARCHIVED"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:sns:us-east-1:057637124865:dynamodb/sns-cross-account-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:sns:us-east-1:057637124865:dynamodb",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:49.547625+00:00",
+  "CreatedAt": "2020-06-16T01:26:49.547625+00:00",
+  "UpdatedAt": "2020-06-16T01:26:49.547625+00:00",
+  "Severity": {
+    "Label": "INFORMATIONAL"
+  },
+  "Confidence": 99,
+  "Title": "[SNS.4] SNS topics should not allow cross-account access",
+  "Description": "SNS topic dynamodb does not have cross-account access.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on SNS best practices refer to the Amazon SNS security best practices section of the Amazon Simple Notification Service Developer Guide.",
+      "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsSnsTopic",
+      "Id": "arn:aws:sns:us-east-1:057637124865:dynamodb",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "AwsSnsTopic": {
+          "TopicName": "dynamodb"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "PASSED",
+    "RelatedRequirements": [
+      "NIST CSF PR.AC-3",
+      "NIST SP 800-53 AC-1",
+      "NIST SP 800-53 AC-17",
+      "NIST SP 800-53 AC-19",
+      "NIST SP 800-53 AC-20",
+      "NIST SP 800-53 SC-15",
+      "AICPA TSC CC6.6",
+      "ISO 27001:2013 A.6.2.1",
+      "ISO 27001:2013 A.6.2.2",
+      "ISO 27001:2013 A.11.2.6",
+      "ISO 27001:2013 A.13.1.1",
+      "ISO 27001:2013 A.13.2.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "RESOLVED"
+  },
+  "RecordState": "ARCHIVED"
+},
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:sns:us-east-1:057637124865:pagerduty/sns-cross-account-check",
+  "ProductArn": "arn:aws:securityhub:us-east-1:057637124865:product/057637124865/default",
+  "GeneratorId": "arn:aws:sns:us-east-1:057637124865:pagerduty",
+  "AwsAccountId": "057637124865",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices",
+    "Effects/Data Exposure"
+  ],
+  "FirstObservedAt": "2020-06-16T01:26:49.547625+00:00",
+  "CreatedAt": "2020-06-16T01:26:49.547625+00:00",
+  "UpdatedAt": "2020-06-16T01:26:49.547625+00:00",
+  "Severity": {
+    "Label": "INFORMATIONAL"
+  },
+  "Confidence": 99,
+  "Title": "[SNS.4] SNS topics should not allow cross-account access",
+  "Description": "SNS topic pagerduty does not have cross-account access.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "For more information on SNS best practices refer to the Amazon SNS security best practices section of the Amazon Simple Notification Service Developer Guide.",
+      "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit"
+    }
+  },
+  "ProductFields": {
+    "Product Name": "ElectricEye"
+  },
+  "Resources": [
+    {
+      "Type": "AwsSnsTopic",
+      "Id": "arn:aws:sns:us-east-1:057637124865:pagerduty",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "AwsSnsTopic": {
+          "TopicName": "pagerduty"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "PASSED",
+    "RelatedRequirements": [
+      "NIST CSF PR.AC-3",
+      "NIST SP 800-53 AC-1",
+      "NIST SP 800-53 AC-17",
+      "NIST SP 800-53 AC-19",
+      "NIST SP 800-53 AC-20",
+      "NIST SP 800-53 SC-15",
+      "AICPA TSC CC6.6",
+      "ISO 27001:2013 A.6.2.1",
+      "ISO 27001:2013 A.6.2.2",
+      "ISO 27001:2013 A.11.2.6",
+      "ISO 27001:2013 A.13.1.1",
+      "ISO 27001:2013 A.13.2.1"
+    ]
+  },
+  "Workflow": {
+    "Status": "RESOLVED"
+  },
+  "RecordState": "ARCHIVED"
+}]}

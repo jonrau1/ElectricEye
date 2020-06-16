@@ -13,9 +13,11 @@
 # You should have received a copy of the GNU General Public License along with ElectricEye.
 # If not, see https://github.com/jonrau1/ElectricEye/blob/master/LICENSE.
 
-import boto3
 import datetime
 from dateutil import parser
+
+import boto3
+
 from check_register import CheckRegister
 
 registry = CheckRegister()

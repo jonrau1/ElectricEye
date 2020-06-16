@@ -3,24 +3,16 @@ import json
 import os
 import pytest
 from botocore.stub import Stubber, ANY
-from auditors.Amazon_SNS_Auditor import (
-    SNSTopicEncryptionCheck,
-    SNSHTTPEncryptionCheck,
-    SNSPublicAccessCheck,
-    SNSCrossAccountCheck,
-    sts,
+
+from . import context
+from auditors.aws.Amazon_SNS_Auditor import (
+    sns_cross_account_check,
+    sns_http_encryption_check,
+    sns_public_access_check,
+    sns_topic_encryption_check,
     sns,
 )
 
-# not available in local testing without ECS
-os.environ["AWS_REGION"] = "us-east-1"
-# for local testing, don't assume default profile exists
-os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
-
-sts_response = {
-    "Account": "012345678901",
-    "Arn": "arn:aws:iam::012345678901:user/user",
-}
 
 list_topics_response = {
     "Topics": [{"TopicArn": "arn:aws:sns:us-east-1:012345678901:MyTopic"},],
@@ -69,14 +61,6 @@ get_topic_attributes_response3 = {
 
 
 @pytest.fixture(scope="function")
-def sts_stubber():
-    sts_stubber = Stubber(sts)
-    sts_stubber.activate()
-    yield sts_stubber
-    sts_stubber.deactivate()
-
-
-@pytest.fixture(scope="function")
 def sns_stubber():
     sns_stubber = Stubber(sns)
     sns_stubber.activate()
@@ -84,12 +68,10 @@ def sns_stubber():
     sns_stubber.deactivate()
 
 
-def test_id_arn_is_principal(sns_stubber, sts_stubber):
-    sts_stubber.add_response("get_caller_identity", sts_response)
+def test_id_arn_is_principal(sns_stubber):
     sns_stubber.add_response("list_topics", list_topics_response)
     sns_stubber.add_response("get_topic_attributes", get_topic_attributes_arn_response)
-    check = SNSCrossAccountCheck()
-    results = check.execute()
+    results = sns_cross_account_check(cache={}, awsAccountId="012345678901", awsRegion="us-east-1")
     for result in results:
         if "MyTopic" in result["Id"]:
             print(result["Id"])
@@ -99,14 +81,10 @@ def test_id_arn_is_principal(sns_stubber, sts_stubber):
     sns_stubber.assert_no_pending_responses()
 
 
-def test_id_is_principal(sns_stubber, sts_stubber):
-    sts_stubber.add_response("get_caller_identity", sts_response)
+def test_id_is_principal(sns_stubber):
     sns_stubber.add_response("list_topics", list_topics_response)
-    sns_stubber.add_response(
-        "get_topic_attributes", get_topic_attributes_only_id_response
-    )
-    check = SNSCrossAccountCheck()
-    results = check.execute()
+    sns_stubber.add_response("get_topic_attributes", get_topic_attributes_only_id_response)
+    results = sns_cross_account_check(cache={}, awsAccountId="012345678901", awsRegion="us-east-1")
     for result in results:
         if "MyTopic" in result["Id"]:
             print(result["Id"])
@@ -116,28 +94,21 @@ def test_id_is_principal(sns_stubber, sts_stubber):
     sns_stubber.assert_no_pending_responses()
 
 
-def test_id_not_principal(sns_stubber, sts_stubber):
-    sts_stubber.add_response("get_caller_identity", sts_response)
+def test_id_not_principal(sns_stubber):
     sns_stubber.add_response("list_topics", list_topics_response)
-    sns_stubber.add_response(
-        "get_topic_attributes", get_topic_attributes_wrong_id_response
-    )
-    check = SNSCrossAccountCheck()
-    results = check.execute()
+    sns_stubber.add_response("get_topic_attributes", get_topic_attributes_wrong_id_response)
+    results = sns_cross_account_check(cache={}, awsAccountId="012345678901", awsRegion="us-east-1")
     for result in results:
         if "MyTopic" in result["Id"]:
             print(result["Id"])
             assert result["RecordState"] == "ACTIVE"
     sns_stubber.assert_no_pending_responses()
 
-def test_no_AWS(sns_stubber, sts_stubber):
-    sts_stubber.add_response("get_caller_identity", sts_response)
+
+def test_no_AWS(sns_stubber):
     sns_stubber.add_response("list_topics", list_topics_response)
-    sns_stubber.add_response(
-        "get_topic_attributes", get_topic_attributes_no_AWS
-    )
-    check = SNSCrossAccountCheck()
-    results = check.execute()
+    sns_stubber.add_response("get_topic_attributes", get_topic_attributes_no_AWS)
+    results = sns_cross_account_check(cache={}, awsAccountId="012345678901", awsRegion="us-east-1")
     for result in results:
         if "MyTopic" in result["Id"]:
             assert result["RecordState"] == "ARCHIVED"
@@ -145,12 +116,11 @@ def test_no_AWS(sns_stubber, sts_stubber):
             assert False
     sns_stubber.assert_no_pending_responses()
 
-def test_no_access(sts_stubber, sns_stubber):
-    sts_stubber.add_response("get_caller_identity", sts_response)
+
+def test_no_access(sns_stubber):
     sns_stubber.add_response("list_topics", list_topics_response)
     sns_stubber.add_response("get_topic_attributes", get_topic_attributes_response1)
-    check = SNSPublicAccessCheck()
-    results = check.execute()
+    results = sns_public_access_check(cache={}, awsAccountId="012345678901", awsRegion="us-east-1")
     for result in results:
         if "MyTopic" in result["Id"]:
             assert result["RecordState"] == "ARCHIVED"
@@ -159,12 +129,10 @@ def test_no_access(sts_stubber, sns_stubber):
     sns_stubber.assert_no_pending_responses()
 
 
-def test_has_a_condition(sts_stubber, sns_stubber):
-    sts_stubber.add_response("get_caller_identity", sts_response)
+def test_has_a_condition(sns_stubber):
     sns_stubber.add_response("list_topics", list_topics_response)
     sns_stubber.add_response("get_topic_attributes", get_topic_attributes_response2)
-    check = SNSPublicAccessCheck()
-    results = check.execute()
+    results = sns_public_access_check(cache={}, awsAccountId="012345678901", awsRegion="us-east-1")
     for result in results:
         if "MyTopic" in result["Id"]:
             assert result["RecordState"] == "ARCHIVED"
@@ -173,12 +141,10 @@ def test_has_a_condition(sts_stubber, sns_stubber):
     sns_stubber.assert_no_pending_responses()
 
 
-def test_has_public_access(sts_stubber, sns_stubber):
-    sts_stubber.add_response("get_caller_identity", sts_response)
+def test_has_public_access(sns_stubber):
     sns_stubber.add_response("list_topics", list_topics_response)
     sns_stubber.add_response("get_topic_attributes", get_topic_attributes_response3)
-    check = SNSPublicAccessCheck()
-    results = check.execute()
+    results = sns_public_access_check(cache={}, awsAccountId="012345678901", awsRegion="us-east-1")
     for result in results:
         if "MyTopic" in result["Id"]:
             assert result["RecordState"] == "ACTIVE"
@@ -186,14 +152,11 @@ def test_has_public_access(sts_stubber, sns_stubber):
             assert False
     sns_stubber.assert_no_pending_responses()
 
-def test_no_AWS_Public(sns_stubber, sts_stubber):
-    sts_stubber.add_response("get_caller_identity", sts_response)
+
+def test_no_AWS_Public(sns_stubber):
     sns_stubber.add_response("list_topics", list_topics_response)
-    sns_stubber.add_response(
-        "get_topic_attributes", get_topic_attributes_no_AWS
-    )
-    check = SNSPublicAccessCheck()
-    results = check.execute()
+    sns_stubber.add_response("get_topic_attributes", get_topic_attributes_no_AWS)
+    results = sns_public_access_check(cache={}, awsAccountId="012345678901", awsRegion="us-east-1")
     for result in results:
         if "MyTopic" in result["Id"]:
             assert result["RecordState"] == "ARCHIVED"

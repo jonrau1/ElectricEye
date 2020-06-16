@@ -1,23 +1,18 @@
 import datetime
 import os
 import pytest
+import sys
+
 from botocore.stub import Stubber, ANY
-from auditors.AWS_Lambda_Auditor import (
-    FunctionUnusedCheck,
-    sts,
+
+from . import context
+from auditors.aws.AWS_Lambda_Auditor import (
+    unused_function_check,
     lambda_client,
     cloudwatch,
 )
 
-# not available in local testing without ECS
-os.environ["AWS_REGION"] = "us-east-1"
-# for local testing, don't assume default profile exists
-os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
-
-sts_response = {
-    "Account": "012345678901",
-    "Arn": "arn:aws:iam::012345678901:user/user",
-}
+print(sys.path)
 
 list_functions_response = {
     "Functions": [
@@ -61,14 +56,6 @@ get_metric_data_response = {
 
 
 @pytest.fixture(scope="function")
-def sts_stubber():
-    sts_stubber = Stubber(sts)
-    sts_stubber.activate()
-    yield sts_stubber
-    sts_stubber.deactivate()
-
-
-@pytest.fixture(scope="function")
 def lambda_stubber():
     lambda_stubber = Stubber(lambda_client)
     lambda_stubber.activate()
@@ -84,14 +71,12 @@ def cloudwatch_stubber():
     cloudwatch_stubber.deactivate()
 
 
-def test_recent_use_lambda(lambda_stubber, cloudwatch_stubber, sts_stubber):
-    sts_stubber.add_response("get_caller_identity", sts_response)
+def test_recent_use_lambda(lambda_stubber, cloudwatch_stubber):
     lambda_stubber.add_response("list_functions", list_functions_response)
     cloudwatch_stubber.add_response(
         "get_metric_data", get_metric_data_response, get_metric_data_params
     )
-    check = FunctionUnusedCheck()
-    results = check.execute()
+    results = unused_function_check(cache={}, awsAccountId="012345678901", awsRegion="us-east-1")
     for result in results:
         if "lambda-runner" in result["Id"]:
             assert result["RecordState"] == "ARCHIVED"
@@ -101,14 +86,12 @@ def test_recent_use_lambda(lambda_stubber, cloudwatch_stubber, sts_stubber):
     cloudwatch_stubber.assert_no_pending_responses()
 
 
-def test_no_activity_failure(lambda_stubber, cloudwatch_stubber, sts_stubber):
-    sts_stubber.add_response("get_caller_identity", sts_response)
+def test_no_activity_failure(lambda_stubber, cloudwatch_stubber):
     lambda_stubber.add_response("list_functions", list_functions_response)
     cloudwatch_stubber.add_response(
         "get_metric_data", get_metric_data_empty_response, get_metric_data_params
     )
-    check = FunctionUnusedCheck()
-    results = check.execute()
+    results = unused_function_check(cache={}, awsAccountId="012345678901", awsRegion="us-east-1")
     for result in results:
         if "lambda-runner" in result["Id"]:
             assert result["RecordState"] == "ACTIVE"
@@ -118,16 +101,14 @@ def test_no_activity_failure(lambda_stubber, cloudwatch_stubber, sts_stubber):
     cloudwatch_stubber.assert_no_pending_responses()
 
 
-def test_recently_updated(lambda_stubber, cloudwatch_stubber, sts_stubber):
-    sts_stubber.add_response("get_caller_identity", sts_response)
+def test_recently_updated(lambda_stubber, cloudwatch_stubber):
     list_functions_recent_update_response = {
         "Functions": [
             {
                 "FunctionName": "lambda-runner",
                 "FunctionArn": "arn:aws:lambda:us-east-1:012345678901:function:lambda-runner",
                 "LastModified": (
-                    datetime.datetime.now(datetime.timezone.utc)
-                    - datetime.timedelta(days=1)
+                    datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
                 ).isoformat(),
             },
         ],
@@ -136,8 +117,7 @@ def test_recently_updated(lambda_stubber, cloudwatch_stubber, sts_stubber):
     cloudwatch_stubber.add_response(
         "get_metric_data", get_metric_data_empty_response, get_metric_data_params
     )
-    check = FunctionUnusedCheck()
-    results = check.execute()
+    results = unused_function_check(cache={}, awsAccountId="012345678901", awsRegion="us-east-1")
     for result in results:
         if "lambda-runner" in result["Id"]:
             assert result["RecordState"] == "ARCHIVED"
