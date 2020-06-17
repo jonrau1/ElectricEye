@@ -30,16 +30,12 @@ def describe_users(cache):
 
 
 @registry.register_check("appstream")
-def default_internet_access_check(
-    cache: dict, awsAccountId: str, awsRegion: str
-) -> dict:
+def default_internet_access_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
     # loop through AppStream 2.0 fleets
     response = appstream.describe_fleets()
     myAppstreamFleets = response["Fleets"]
     for fleet in myAppstreamFleets:
-        iso8601Time = (
-            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        )
+        iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
         fleetArn = str(fleet["Arn"])
         fleetName = str(fleet["DisplayName"])
         # find fleets that are configured to provide default internet access
@@ -57,9 +53,7 @@ def default_internet_access_check(
                 + "/default",
                 "GeneratorId": fleetArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -118,9 +112,7 @@ def default_internet_access_check(
                 + "/default",
                 "GeneratorId": fleetArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -182,9 +174,7 @@ def public_image_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
         imageName = str(images["Name"])
         imageArn = str(images["Arn"])
         # ISO Time
-        iso8601Time = (
-            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        )
+        iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
         # create Sec Hub finding
         finding = {
             "SchemaVersion": "2018-10-08",
@@ -251,9 +241,7 @@ def public_image_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
 
 
 @registry.register_check("appstream")
-def compromise_appstream_user_check(
-    cache: dict, awsAccountId: str, awsRegion: str
-) -> dict:
+def compromise_appstream_user_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
     # loop through AppStream 2.0 users
     response = describe_users(cache)
     myAppStreamUsers = response["Users"]
@@ -261,9 +249,7 @@ def compromise_appstream_user_check(
         userArn = str(users["Arn"])
         userName = str(users["UserName"])
         userStatus = str(users["Status"])
-        iso8601Time = (
-            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        )
+        iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
         if userStatus == "COMPROMISED":
             # create Sec Hub finding
             finding = {
@@ -358,9 +344,7 @@ def compromise_appstream_user_check(
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[AppStream.3] AppStream 2.0 users should be monitored for signs of compromise",
-                "Description": "AppStream 2.0 user "
-                + userName
-                + " is not compromised.",
+                "Description": "AppStream 2.0 user " + userName + " is not compromised.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "To disable and remove compromised users refer to the instructions in the User Pool Administration section of the Amazon AppStream 2.0 Administration Guide",
@@ -413,9 +397,7 @@ def userpool_auth_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
     response = describe_users(cache)
     myAppStreamUsers = response["Users"]
     for users in myAppStreamUsers:
-        iso8601Time = (
-            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        )
+        iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
         userArn = str(users["Arn"])
         userName = str(users["UserName"])
         # find users that do not auth with SAML
@@ -434,9 +416,7 @@ def userpool_auth_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
                 + "/default",
                 "GeneratorId": userArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -501,9 +481,7 @@ def userpool_auth_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
                 + "/default",
                 "GeneratorId": userArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
