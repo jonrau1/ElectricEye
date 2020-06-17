@@ -21,7 +21,8 @@ def test_eeauditor_plugin_loader_named():
 
 def test_eeauditor_plugin_run_checks():
     app = EEAuditor(name="test controller", search_path="./tests/test_modules")
-    app.load_plugins(plugin_name="plugin1")
+    app.registry.checks = {}
+    app.load_plugins()
     for result in app.run_checks():
         assert result == {"SchemaVersion": "2018-10-08", "Id": "test-finding"}
 

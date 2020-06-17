@@ -29,6 +29,9 @@ cloudfront = boto3.client("cloudfront")
 # create env vars
 awsRegion = os.environ["AWS_REGION"]
 awsAccountId = sts.get_caller_identity()["Account"]
+
+#put conditional in each individual function
+
 if awsRegion != "us-east-1":
     print("Shield Advanced APIs are only available in North Virginia")
 else:
