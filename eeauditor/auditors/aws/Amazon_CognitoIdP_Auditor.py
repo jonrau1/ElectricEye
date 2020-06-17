@@ -15,7 +15,7 @@
 
 import boto3
 import datetime
-from check_register import CheckRegister
+from check_register import CheckRegister, accumulate_paged_results
 
 registry = CheckRegister()
 
@@ -26,14 +26,16 @@ def list_user_pools(cache):
     response = cache.get("list_user_pools")
     if response:
         return response
-    cache["list_user_pools"] = cognitoidp.list_user_pools(MaxResults=60)
+    paginator = cognitoidp.get_paginator("list_user_pools")
+    response_iterator = paginator.paginate(PaginationConfig={"PageSize": 60})
+    cache["list_user_pools"] = accumulate_paged_results(
+        page_iterator=response_iterator, key="UserPools"
+    )
     return cache["list_user_pools"]
 
 
 @registry.register_check("sns")
-def cognitoidp_cis_password_check(
-    cache: dict, awsAccountId: str, awsRegion: str
-) -> dict:
+def cognitoidp_cis_password_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
     response = list_user_pools(cache)
     myCognitoUserPools = response["UserPools"]
     for userpools in myCognitoUserPools:
@@ -48,9 +50,7 @@ def cognitoidp_cis_password_check(
         numberCheck = str(cognitoPwPolicy["RequireNumbers"])
         symbolCheck = str(cognitoPwPolicy["RequireSymbols"])
         # ISO Time
-        iso8601Time = (
-            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if (
             minLengthCheck >= 14
             and uppercaseCheck == "True"
@@ -72,9 +72,7 @@ def cognitoidp_cis_password_check(
                 + "/default",
                 "GeneratorId": userPoolId,
                 "awsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -147,9 +145,7 @@ def cognitoidp_cis_password_check(
                 + "/default",
                 "GeneratorId": userPoolId,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -211,9 +207,7 @@ def cognitoidp_cis_password_check(
 
 
 @registry.register_check("sns")
-def cognitoidp_temp_password_check(
-    cache: dict, awsAccountId: str, awsRegion: str
-) -> dict:
+def cognitoidp_temp_password_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
     response = list_user_pools(cache)
     myCognitoUserPools = response["UserPools"]
     for userpools in myCognitoUserPools:
@@ -224,9 +218,7 @@ def cognitoidp_temp_password_check(
         cognitoPwPolicy = response["UserPool"]["Policies"]["PasswordPolicy"]
         tempPwValidityCheck = int(cognitoPwPolicy["TemporaryPasswordValidityDays"])
         # ISO Time
-        iso8601Time = (
-            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if tempPwValidityCheck > 1:
             # create Sec Hub finding
             finding = {
@@ -241,9 +233,7 @@ def cognitoidp_temp_password_check(
                 + "/default",
                 "GeneratorId": userPoolId,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -315,9 +305,7 @@ def cognitoidp_temp_password_check(
                 + "/default",
                 "GeneratorId": userPoolId,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -389,9 +377,7 @@ def cognitoidp_mfa_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict
         userPoolId = str(response["UserPool"]["Id"])
         mfaCheck = str(response["UserPool"]["MfaConfiguration"])
         # ISO Time
-        iso8601Time = (
-            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if mfaCheck != "ON":
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -405,9 +391,7 @@ def cognitoidp_mfa_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict
                 + "/default",
                 "GeneratorId": userPoolId,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -479,9 +463,7 @@ def cognitoidp_mfa_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict
                 + "/default",
                 "GeneratorId": userPoolId,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
