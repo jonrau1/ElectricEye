@@ -1,11 +1,8 @@
 import json
-import os
 
 from . import context
 from eeauditor import EEAuditor
 from .test_modules.plugin1 import plugin_func_1
-
-os.environ["AWS_REGION"] = "us-east-1"
 
 
 def test_eeauditor_plugin_loader():
