@@ -65,6 +65,6 @@ def main(argv):
 
 if __name__ == "__main__":
     # this is for local testing where the AWS_REGION is not liekly set
-    if not os.environ.get("AWS_REGION", None):
-        os.environ["AWS_REGION"] = "us-east-1"
+    # if not os.environ.get("AWS_REGION", None):
+    # os.environ["AWS_REGION"] = "us-east-1"
     main(sys.argv[1:])

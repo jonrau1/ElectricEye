@@ -21,9 +21,6 @@ import boto3
 from pluginbase import PluginBase
 from check_register import CheckRegister
 
-
-sts = boto3.client("sts")
-
 here = os.path.abspath(os.path.dirname(__file__))
 get_path = partial(os.path.join, here)
 
@@ -43,8 +40,9 @@ class EEAuditor(object):
         # to be discovered during plugin loading.
         self.registry = CheckRegister()
         # vendor specific credentials dictionary
+        sts = boto3.client("sts")
         self.awsAccountId = sts.get_caller_identity()["Account"]
-        self.awsRegion = os.environ["AWS_REGION"]
+        self.awsRegion = os.environ.get("AWS_REGION", sts.meta.region_name)
         # If there is a desire to add support for multiple clouds, this would be
         # a great place to implement it.
         self.source = self.plugin_base.make_plugin_source(
@@ -106,11 +104,13 @@ class EEAuditor(object):
             print("]}", file=json_out)
         json_out.close()
         if sechub:
-            print("Writing results to SecurityHub")
             securityhub = boto3.client("securityhub")
             with open(json_out_location) as read_json_findings:
                 findings = json.load(read_json_findings)
-                securityhub.batch_import_findings(Findings=findings["Findings"])
+                findings_list = Findings = findings["Findings"]
+                print(f"Writing {len(findings_list)} results to SecurityHub")
+                if findings_list:
+                    securityhub.batch_import_findings(Findings=findings_list)
             read_json_findings.close()
         else:
             print("Not writing results to SecurityHub")
