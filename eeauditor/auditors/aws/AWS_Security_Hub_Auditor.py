@@ -16,16 +16,18 @@
 import boto3
 import datetime
 import os
-from auditors.Auditor import Auditor
+from check_register import CheckRegister
+
+registry = CheckRegister()
 # import boto3 clients
 securityhub = boto3.client('securityhub')
-sts = boto3.client('sts')
-# create aws account ID variable for filters
-awsAccountId = sts.get_caller_identity()['Account']
-awsRegion = os.environ['AWS_REGION']
-try:
-    # look for active high or critical findings from AWS products
-    getFindings = securityhub.get_findings(
+   
+
+def get_findings(cache, awsAccountId):
+    response = cache.get("get_findings")
+    if response:
+        return response
+    cache["get_findings"] = securityhub.get_findings(
         Filters={
             # look for findings that belong to current account
             # will help deconflict checks run in a master account
@@ -73,12 +75,12 @@ try:
             }
         ],
         MaxResults=100
-    )          
-except Exception as e:
-    print(e)
+    )
+    return cache["get_findings"]
 
-class HighCriticalFindings(Auditor):
-    def execute(self):
+@registry.register_check("security_hub")
+    def high_critical_findings(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+        getFindings = get_findings(cache=cache, awsAccountId=awsAccountId)
         generatorId = str(getFindings['ResponseMetadata']['RequestId'])
         # ISO Time
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
