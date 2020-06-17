@@ -17,6 +17,8 @@ elb = boto3.client("elb")
 dms = boto3.client("dms")
 amzmq = boto3.client("mq")
 
+#Get rid of try excepts
+
 # create env vars
 awsAccountId = sts.get_caller_identity()["Account"]
 awsRegion = os.environ["AWS_REGION"]

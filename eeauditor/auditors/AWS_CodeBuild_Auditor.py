@@ -14,17 +14,15 @@
 # If not, see https://github.com/jonrau1/ElectricEye/blob/master/LICENSE.
 
 import boto3
-import os
 import datetime
-from auditors.Auditor import Auditor
+from check_register import CheckRegister
 
+registry = CheckRegister()
 # import boto3 clients
-sts = boto3.client("sts")
 codebuild = boto3.client("codebuild")
-# create env vars
-awsAccountId = sts.get_caller_identity()["Account"]
-awsRegion = os.environ["AWS_REGION"]
 # loop through all CodeBuild projects and list their attributes
+
+#one cache for all to get to myCodeBuildProjects
 response = codebuild.list_projects()
 allCodebuildProjects = response["projects"]
 if allCodebuildProjects:
