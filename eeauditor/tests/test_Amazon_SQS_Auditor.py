@@ -15,11 +15,14 @@ from auditors.aws.Amazon_SQS_Auditor import (
 print(sys.path)
 
 list_queues_response = {
-    'QueueUrls': ['https://us-east-2.queue.amazonaws.com/805574742241/MyQueue']
+    "QueueUrls": ["https://us-east-2.queue.amazonaws.com/805574742241/MyQueue"]
 }
 
 get_queue_attributes_response = {
-    'Attributes': {'MessageRetentionPeriod': '345600', 'QueueArn': 'arn:aws:sqs:us-east-2:805574742241:MyQueue'}
+    "Attributes": {
+        "MessageRetentionPeriod": "345600",
+        "QueueArn": "arn:aws:sqs:us-east-2:805574742241:MyQueue",
+    }
 }
 
 get_metric_data_params = {
@@ -62,7 +65,7 @@ get_metric_data_pass_response = {
 }
 
 
-@ pytest.fixture(scope="function")
+@pytest.fixture(scope="function")
 def sqs_stubber():
     sqs_stubber = Stubber(sqs)
     sqs_stubber.activate()
@@ -70,7 +73,7 @@ def sqs_stubber():
     sqs_stubber.deactivate()
 
 
-@ pytest.fixture(scope="function")
+@pytest.fixture(scope="function")
 def cloudwatch_stubber():
     cloudwatch_stubber = Stubber(cloudwatch)
     cloudwatch_stubber.activate()
@@ -80,13 +83,13 @@ def cloudwatch_stubber():
 
 def test_no_values(sqs_stubber, cloudwatch_stubber):
     sqs_stubber.add_response("list_queues", list_queues_response)
-    sqs_stubber.add_response("get_queue_attributes",
-                             get_queue_attributes_response)
+    sqs_stubber.add_response("get_queue_attributes", get_queue_attributes_response)
     cloudwatch_stubber.add_response(
         "get_metric_data", get_metric_data_empty_response, get_metric_data_params
     )
     results = sqs_old_message_check(
-        cache={}, awsAccountId="012345678901", awsRegion="us-east-1")
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
+    )
     for result in results:
         if "MyQueue" in result["Id"]:
             assert result["RecordState"] == "ARCHIVED"
@@ -98,13 +101,13 @@ def test_no_values(sqs_stubber, cloudwatch_stubber):
 
 def test_fail(sqs_stubber, cloudwatch_stubber):
     sqs_stubber.add_response("list_queues", list_queues_response)
-    sqs_stubber.add_response("get_queue_attributes",
-                             get_queue_attributes_response)
+    sqs_stubber.add_response("get_queue_attributes", get_queue_attributes_response)
     cloudwatch_stubber.add_response(
         "get_metric_data", get_metric_data_fail_response, get_metric_data_params
     )
     results = sqs_old_message_check(
-        cache={}, awsAccountId="012345678901", awsRegion="us-east-1")
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
+    )
     for result in results:
         if "MyQueue" in result["Id"]:
             assert result["RecordState"] == "ACTIVE"
@@ -116,13 +119,13 @@ def test_fail(sqs_stubber, cloudwatch_stubber):
 
 def test_pass(sqs_stubber, cloudwatch_stubber):
     sqs_stubber.add_response("list_queues", list_queues_response)
-    sqs_stubber.add_response("get_queue_attributes",
-                             get_queue_attributes_response)
+    sqs_stubber.add_response("get_queue_attributes", get_queue_attributes_response)
     cloudwatch_stubber.add_response(
         "get_metric_data", get_metric_data_pass_response, get_metric_data_params
     )
     results = sqs_old_message_check(
-        cache={}, awsAccountId="012345678901", awsRegion="us-east-1")
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
+    )
     for result in results:
         if "MyQueue" in result["Id"]:
             assert result["RecordState"] == "ARCHIVED"

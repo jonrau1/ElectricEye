@@ -173,9 +173,7 @@ def shield_advanced_elb_protection_check(
         response = elbclassic.describe_load_balancers()
         for classicbalancer in response["LoadBalancerDescriptions"]:
             clbName = str(classicbalancer["LoadBalancerName"])
-            clbArn = (
-                f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
-            )
+            clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
             iso8601Time = (
                 datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
@@ -823,7 +821,7 @@ def shield_advanced_drt_access_check(
                 "Resources": [
                     {
                         "Type": "AwsAccount",
-                        f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }
@@ -860,128 +858,125 @@ def shield_advanced_drt_access_check(
 def shield_advanced_drt_s3_bucket_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
-    if awsRegion != "us-east-1":
-        print("Shield Advanced APIs are only available in North Virginia")
-    else:
-        response = shield.describe_drt_access()
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        try:
-            logBucketList = str(response["LogBucketList"])
-            print(logBucketList)
-            finding = {
-                "SchemaVersion": "2018-10-08",
-                "Id": awsAccountId + "/shield-adv-drt-s3bucket-access-check",
-                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": awsAccountId,
-                "AwsAccountId": awsAccountId,
-                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                "FirstObservedAt": iso8601Time,
-                "CreatedAt": iso8601Time,
-                "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "INFORMATIONAL"},
-                "Confidence": 99,
-                "Title": "[ShieldAdvanced.7] The DDoS Response Team (DRT) should be authorized to view your AWS Web Application Firewall (WAF) logging buckets",
-                "Description": "The Shield Advanced DRT is authorized to view one or more WAF log S3 buckets in "
-                + awsAccountId,
-                "Remediation": {
-                    "Recommendation": {
-                        "Text": "For information on authorizing the DRT refer to the Authorize the DDoS Response Team section of the AWS WAF, AWS Firewall Manager, and AWS Shield Advanced Developer Guide",
-                        "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/authorize-DRT.html",
-                    }
-                },
-                "ProductFields": {"Product Name": "ElectricEye"},
-                "Resources": [
-                    {
-                        "Type": "AwsAccount",
-                        f"{awsPartition.upper()}::::Account:{awsAccountId}",
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
-                    }
+    response = shield.describe_drt_access()
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    try:
+        logBucketList = str(response["LogBucketList"])
+        print(logBucketList)
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": awsAccountId + "/shield-adv-drt-s3bucket-access-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": awsAccountId,
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[ShieldAdvanced.7] The DDoS Response Team (DRT) should be authorized to view your AWS Web Application Firewall (WAF) logging buckets",
+            "Description": "The Shield Advanced DRT is authorized to view one or more WAF log S3 buckets in "
+            + awsAccountId,
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For information on authorizing the DRT refer to the Authorize the DDoS Response Team section of the AWS WAF, AWS Firewall Manager, and AWS Shield Advanced Developer Guide",
+                    "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/authorize-DRT.html",
+                }
+            },
+            "ProductFields": {"Product Name": "ElectricEye"},
+            "Resources": [
+                {
+                    "Type": "AwsAccount",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.AC-6",
+                    "NIST SP 800-53 AC-1",
+                    "NIST SP 800-53 AC-2",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 AC-16",
+                    "NIST SP 800-53 AC-19",
+                    "NIST SP 800-53 AC-24",
+                    "NIST SP 800-53 IA-1",
+                    "NIST SP 800-53 IA-2",
+                    "NIST SP 800-53 IA-4",
+                    "NIST SP 800-53 IA-5",
+                    "NIST SP 800-53 IA-8",
+                    "NIST SP 800-53 PE-2",
+                    "NIST SP 800-53 PS-3",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.7.1.1",
+                    "ISO 27001:2013 A.9.2.1",
                 ],
-                "Compliance": {
-                    "Status": "PASSED",
-                    "RelatedRequirements": [
-                        "NIST CSF PR.AC-6",
-                        "NIST SP 800-53 AC-1",
-                        "NIST SP 800-53 AC-2",
-                        "NIST SP 800-53 AC-3",
-                        "NIST SP 800-53 AC-16",
-                        "NIST SP 800-53 AC-19",
-                        "NIST SP 800-53 AC-24",
-                        "NIST SP 800-53 IA-1",
-                        "NIST SP 800-53 IA-2",
-                        "NIST SP 800-53 IA-4",
-                        "NIST SP 800-53 IA-5",
-                        "NIST SP 800-53 IA-8",
-                        "NIST SP 800-53 PE-2",
-                        "NIST SP 800-53 PS-3",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.7.1.1",
-                        "ISO 27001:2013 A.9.2.1",
-                    ],
-                },
-                "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
-            }
-            yield finding
-        except:
-            finding = {
-                "SchemaVersion": "2018-10-08",
-                "Id": awsAccountId + "/shield-adv-drt-s3bucket-access-check",
-                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": awsAccountId,
-                "AwsAccountId": awsAccountId,
-                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                "FirstObservedAt": iso8601Time,
-                "CreatedAt": iso8601Time,
-                "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "LOW"},
-                "Confidence": 99,
-                "Title": "[ShieldAdvanced.7] The DDoS Response Team (DRT) should be authorized to view your AWS Web Application Firewall (WAF) logging buckets",
-                "Description": "The Shield Advanced DRT is not authorized to view any WAF log S3 buckets in "
-                + awsAccountId
-                + " . Refer to the remediation instructions if this configuration is not intended.",
-                "Remediation": {
-                    "Recommendation": {
-                        "Text": "For information on authorizing the DRT refer to the Authorize the DDoS Response Team section of the AWS WAF, AWS Firewall Manager, and AWS Shield Advanced Developer Guide",
-                        "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/authorize-DRT.html",
-                    }
-                },
-                "ProductFields": {"Product Name": "ElectricEye"},
-                "Resources": [
-                    {
-                        "Type": "AwsAccount",
-                        f"{awsPartition.upper()}::::Account:{awsAccountId}",
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
-                    }
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED",
+        }
+        yield finding
+    except:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": awsAccountId + "/shield-adv-drt-s3bucket-access-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": awsAccountId,
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "LOW"},
+            "Confidence": 99,
+            "Title": "[ShieldAdvanced.7] The DDoS Response Team (DRT) should be authorized to view your AWS Web Application Firewall (WAF) logging buckets",
+            "Description": "The Shield Advanced DRT is not authorized to view any WAF log S3 buckets in "
+            + awsAccountId
+            + " . Refer to the remediation instructions if this configuration is not intended.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For information on authorizing the DRT refer to the Authorize the DDoS Response Team section of the AWS WAF, AWS Firewall Manager, and AWS Shield Advanced Developer Guide",
+                    "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/authorize-DRT.html",
+                }
+            },
+            "ProductFields": {"Product Name": "ElectricEye"},
+            "Resources": [
+                {
+                    "Type": "AwsAccount",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.AC-6",
+                    "NIST SP 800-53 AC-1",
+                    "NIST SP 800-53 AC-2",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 AC-16",
+                    "NIST SP 800-53 AC-19",
+                    "NIST SP 800-53 AC-24",
+                    "NIST SP 800-53 IA-1",
+                    "NIST SP 800-53 IA-2",
+                    "NIST SP 800-53 IA-4",
+                    "NIST SP 800-53 IA-5",
+                    "NIST SP 800-53 IA-8",
+                    "NIST SP 800-53 PE-2",
+                    "NIST SP 800-53 PS-3",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.7.1.1",
+                    "ISO 27001:2013 A.9.2.1",
                 ],
-                "Compliance": {
-                    "Status": "FAILED",
-                    "RelatedRequirements": [
-                        "NIST CSF PR.AC-6",
-                        "NIST SP 800-53 AC-1",
-                        "NIST SP 800-53 AC-2",
-                        "NIST SP 800-53 AC-3",
-                        "NIST SP 800-53 AC-16",
-                        "NIST SP 800-53 AC-19",
-                        "NIST SP 800-53 AC-24",
-                        "NIST SP 800-53 IA-1",
-                        "NIST SP 800-53 IA-2",
-                        "NIST SP 800-53 IA-4",
-                        "NIST SP 800-53 IA-5",
-                        "NIST SP 800-53 IA-8",
-                        "NIST SP 800-53 PE-2",
-                        "NIST SP 800-53 PS-3",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.7.1.1",
-                        "ISO 27001:2013 A.9.2.1",
-                    ],
-                },
-                "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
-            }
-            yield finding
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE",
+        }
+        yield finding
 
 
 @registry.register_check("shield")
@@ -1021,7 +1016,7 @@ def shield_advanced_subscription_autorenew_check(
                 "Resources": [
                     {
                         "Type": "AwsAccount",
-                        f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }
@@ -1070,7 +1065,7 @@ def shield_advanced_subscription_autorenew_check(
                 "Resources": [
                     {
                         "Type": "AwsAccount",
-                        f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }

@@ -76,7 +76,9 @@ def test_recent_use_lambda(lambda_stubber, cloudwatch_stubber):
     cloudwatch_stubber.add_response(
         "get_metric_data", get_metric_data_response, get_metric_data_params
     )
-    results = unused_function_check(cache={}, awsAccountId="012345678901", awsRegion="us-east-1")
+    results = unused_function_check(
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
+    )
     for result in results:
         if "lambda-runner" in result["Id"]:
             assert result["RecordState"] == "ARCHIVED"
@@ -91,7 +93,9 @@ def test_no_activity_failure(lambda_stubber, cloudwatch_stubber):
     cloudwatch_stubber.add_response(
         "get_metric_data", get_metric_data_empty_response, get_metric_data_params
     )
-    results = unused_function_check(cache={}, awsAccountId="012345678901", awsRegion="us-east-1")
+    results = unused_function_check(
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
+    )
     for result in results:
         if "lambda-runner" in result["Id"]:
             assert result["RecordState"] == "ACTIVE"
@@ -117,7 +121,9 @@ def test_recently_updated(lambda_stubber, cloudwatch_stubber):
     cloudwatch_stubber.add_response(
         "get_metric_data", get_metric_data_empty_response, get_metric_data_params
     )
-    results = unused_function_check(cache={}, awsAccountId="012345678901", awsRegion="us-east-1")
+    results = unused_function_check(
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
+    )
     for result in results:
         if "lambda-runner" in result["Id"]:
             assert result["RecordState"] == "ARCHIVED"

@@ -907,7 +907,7 @@ def cis_aws_foundation_benchmark_pw_policy_check(
                 "Resources": [
                     {
                         "Type": "AwsAccount",
-                        "Id": f"{awsPartition.upper()}::::Account:{awsAccount}"
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccount}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }
@@ -982,7 +982,7 @@ def server_certs_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartit
                 "Resources": [
                     {
                         "Type": "AwsAccount",
-                        "Id": f"{awsPartition.upper()}::::Account:{awsAccount}"
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccount}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }
@@ -1047,7 +1047,7 @@ def server_certs_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartit
                 "Resources": [
                     {
                         "Type": "AwsAccount",
-                        "Id": f"{awsPartition.upper()}::::Account:{awsAccount}"
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccount}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }

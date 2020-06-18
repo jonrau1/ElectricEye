@@ -40,7 +40,7 @@ def ec2_instance_ssm_managed_check(
         for instances in reservations["Instances"]:
             instanceId = str(instances["InstanceId"])
             instanceArn = (
-                f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}
+                f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}"
             )
             instanceType = str(instances["InstanceType"])
             instanceImage = str(instances["ImageId"])
@@ -187,7 +187,7 @@ def ssm_instace_agent_update_check(
         for instances in reservations["Instances"]:
             instanceId = str(instances["InstanceId"])
             instanceArn = (
-                "arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}
+                f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}"
             )
             instanceType = str(instances["InstanceType"])
             instanceImage = str(instances["ImageId"])
@@ -330,7 +330,7 @@ def ssm_instance_association_check(
         for instances in reservations["Instances"]:
             instanceId = str(instances["InstanceId"])
             instanceArn = (
-                "arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}
+                f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}"
             )
             instanceType = str(instances["InstanceType"])
             instanceImage = str(instances["ImageId"])
@@ -473,7 +473,7 @@ def ssm_instance_patch_state_state(
         for instances in reservations["Instances"]:
             instanceId = str(instances["InstanceId"])
             instanceArn = (
-                "arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}
+                f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}"
             )
             instanceType = str(instances["InstanceType"])
             instanceImage = str(instances["ImageId"])

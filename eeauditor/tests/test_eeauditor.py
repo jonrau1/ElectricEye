@@ -45,5 +45,6 @@ def test_eeauditor_run():
     with open(output_file) as f:
         findings_file = json.load(f)
         findings = findings_file["Findings"]
+        print(findings)
         assert findings == [{"SchemaVersion": "2018-10-08", "Id": "test-finding"}]
     f.close()

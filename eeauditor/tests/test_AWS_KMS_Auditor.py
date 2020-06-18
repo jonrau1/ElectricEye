@@ -62,7 +62,9 @@ def kms_stubber():
 def test_key_rotation_enabled(kms_stubber):
     kms_stubber.add_response("list_keys", list_keys_response)
     kms_stubber.add_response("get_key_rotation_status", get_key_rotation_status_response)
-    results = kms_key_rotation_check(cache={}, awsAccountId="012345678901", awsRegion="us-east-1")
+    results = kms_key_rotation_check(
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
+    )
     for result in results:
         assert "273e5d8e-4746-4ba9-be3a-4dce36783814" in result["Id"]
         assert result["RecordState"] == "ARCHIVED"
@@ -72,7 +74,9 @@ def test_key_rotation_enabled(kms_stubber):
 def test_key_rotation_not_enabled(kms_stubber):
     kms_stubber.add_response("list_keys", list_keys_response)
     kms_stubber.add_response("get_key_rotation_status", get_key_rotation_status_response1)
-    results = kms_key_rotation_check(cache={}, awsAccountId="012345678901", awsRegion="us-east-1")
+    results = kms_key_rotation_check(
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
+    )
     for result in results:
         assert "273e5d8e-4746-4ba9-be3a-4dce36783814" in result["Id"]
         assert result["RecordState"] == "ACTIVE"
@@ -82,7 +86,9 @@ def test_key_rotation_not_enabled(kms_stubber):
 def test_has_public_key(kms_stubber):
     kms_stubber.add_response("list_aliases", list_aliases_response)
     kms_stubber.add_response("get_key_policy", get_key_policy_public_response)
-    results = kms_key_exposed_check(cache={}, awsAccountId="012345678901", awsRegion="us-east-1")
+    results = kms_key_exposed_check(
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
+    )
     for result in results:
         assert "s3" in result["Id"]
         assert result["RecordState"] == "ACTIVE"
@@ -92,7 +98,9 @@ def test_has_public_key(kms_stubber):
 def test_no_public_key(kms_stubber):
     kms_stubber.add_response("list_aliases", list_aliases_response)
     kms_stubber.add_response("get_key_policy", get_key_policy_not_public_response)
-    results = kms_key_exposed_check(cache={}, awsAccountId="012345678901", awsRegion="us-east-1")
+    results = kms_key_exposed_check(
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
+    )
     for result in results:
         assert "s3" in result["Id"]
         assert result["RecordState"] == "ARCHIVED"
@@ -102,7 +110,9 @@ def test_no_public_key(kms_stubber):
 def test_has_condition(kms_stubber):
     kms_stubber.add_response("list_aliases", list_aliases_response)
     kms_stubber.add_response("get_key_policy", get_key_policy_has_condition_response)
-    results = kms_key_exposed_check(cache={}, awsAccountId="012345678901", awsRegion="us-east-1")
+    results = kms_key_exposed_check(
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
+    )
     for result in results:
         assert "s3" in result["Id"]
         assert result["RecordState"] == "ARCHIVED"
@@ -112,7 +122,9 @@ def test_has_condition(kms_stubber):
 def test_no_AWS(kms_stubber):
     kms_stubber.add_response("list_aliases", list_aliases_response)
     kms_stubber.add_response("get_key_policy", get_key_policy_no_AWS_response)
-    results = kms_key_exposed_check(cache={}, awsAccountId="012345678901", awsRegion="us-east-1")
+    results = kms_key_exposed_check(
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
+    )
     for result in results:
         assert "s3" in result["Id"]
         assert result["RecordState"] == "ARCHIVED"
