@@ -45,7 +45,7 @@ def sqs_old_message_check(cache: dict, awsAccountId: str, awsRegion: str) -> dic
                         "Metric": {
                             "Namespace": "AWS/SQS",
                             "MetricName": "ApproximateAgeOfOldestMessage",
-                            # "Dimensions": [{"Name": "QueueName", "Value": queueName}],
+                            "Dimensions": [{"Name": "QueueName", "Value": queueName}],
                         },
                         "Period": 3600,
                         "Stat": "Maximum",
@@ -53,20 +53,20 @@ def sqs_old_message_check(cache: dict, awsAccountId: str, awsRegion: str) -> dic
                     },
                 },
             ],
-            StartTime=(datetime.datetime.now() - datetime.timedelta(days=1)),
-            EndTime=datetime.datetime.now() + datetime.timedelta(days=1),
+            StartTime=datetime.datetime.now(
+                datetime.timezone.utc) - datetime.timedelta(days=1),
+            EndTime=datetime.datetime.now(datetime.timezone.utc),
         )
         metrics = metricResponse["MetricDataResults"]
-        print(metrics)
         counter = 0
         fail = False
-        # for value in metrics["Values"]:
-        #     if(counter > 2):
-        #         fail = True
-        #         break
-        #     if value > messageRetention * 0.8:
-        #         counter += 1
-
+        for metric in metrics:
+            for value in metric["Values"]:
+                if value > int(messageRetention) * 0.8:
+                    counter += 1
+                if(counter > 2):
+                    fail = True
+                    break
         if not fail:
             finding = {
                 "SchemaVersion": "2018-10-08",
