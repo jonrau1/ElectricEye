@@ -197,13 +197,7 @@ def ecs_cluster_default_provider_strategy_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": ecsClusterArn + "/ecs-cluster-default-provider-strategy-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": ecsClusterArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -253,13 +247,7 @@ def ecs_cluster_default_provider_strategy_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": ecsClusterArn + "/ecs-cluster-default-provider-strategy-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": ecsClusterArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],

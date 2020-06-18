@@ -428,13 +428,7 @@ def neptune_cluster_parameter_ssl_enforcement_check(
                         "SchemaVersion": "2018-10-08",
                         "Id": parameterGroupArn
                         + "/neptune-cluster-param-group-ssl-enforcement-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": parameterGroupArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -488,13 +482,7 @@ def neptune_cluster_parameter_ssl_enforcement_check(
                         "SchemaVersion": "2018-10-08",
                         "Id": parameterGroupArn
                         + "/neptune-cluster-param-group-ssl-enforcement-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": parameterGroupArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -570,13 +558,7 @@ def neptune_cluster_parameter_audit_log_check(
                         "SchemaVersion": "2018-10-08",
                         "Id": parameterGroupArn
                         + "/neptune-cluster-param-group-audit-logging-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": parameterGroupArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -629,13 +611,7 @@ def neptune_cluster_parameter_audit_log_check(
                         "SchemaVersion": "2018-10-08",
                         "Id": parameterGroupArn
                         + "/neptune-cluster-param-group-audit-logging-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": parameterGroupArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],

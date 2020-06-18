@@ -109,13 +109,7 @@ def shield_advanced_route_53_protection_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": hostedZoneArn + "/route53-shield-adv-protection-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": hostedZoneArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -254,13 +248,7 @@ def shield_advanced_elb_protection_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": clbArn + "/classiclb-shield-adv-protection-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": clbArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -407,13 +395,7 @@ def shield_advanced_elb_v2_protection_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": elbv2Arn + "/elbv2-shield-adv-protection-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": elbv2Arn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -558,13 +540,7 @@ def shield_advanced_eip_protection_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": eipAllocationArn + "/elasticip-shield-adv-protection-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": eipAllocationArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -700,13 +676,7 @@ def shield_advanced_cloudfront_protection_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": distroArn + "/cloudfront-shield-adv-protection-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": distroArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],

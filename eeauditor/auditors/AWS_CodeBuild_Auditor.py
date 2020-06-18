@@ -54,13 +54,7 @@ class ArtifactEncryptionCheck(Auditor):
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": buildProjectArn + "/unencrypted-artifacts",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": buildProjectArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -111,13 +105,7 @@ class ArtifactEncryptionCheck(Auditor):
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": buildProjectArn + "/unencrypted-artifacts",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": buildProjectArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [

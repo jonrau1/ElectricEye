@@ -61,13 +61,7 @@ def ec2_instance_ssm_managed_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": instanceArn + "/ec2-managed-by-ssm-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": instanceArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -125,13 +119,7 @@ def ec2_instance_ssm_managed_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": instanceArn + "/ec2-managed-by-ssm-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": instanceArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -218,13 +206,7 @@ def ssm_instace_agent_update_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": instanceArn + "/ec2-ssm-agent-latest-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": instanceArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -282,13 +264,7 @@ def ssm_instace_agent_update_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": instanceArn + "/ec2-ssm-agent-latest-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": instanceArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -373,13 +349,7 @@ def ssm_instance_association_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": instanceArn + "/ec2-ssm-association-success-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": instanceArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -437,13 +407,7 @@ def ssm_instance_association_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": instanceArn + "/ec2-ssm-association-success-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": instanceArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -529,13 +493,7 @@ def ssm_instance_patch_state_state(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": instanceArn + "/ec2-patch-manager-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": instanceArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],

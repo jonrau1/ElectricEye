@@ -773,13 +773,7 @@ def emr_security_config_kerberos_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": clusterArn + "/emr-kerberos-authn-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": clusterArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],

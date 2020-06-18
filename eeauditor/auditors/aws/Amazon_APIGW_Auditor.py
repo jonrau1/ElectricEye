@@ -61,13 +61,7 @@ def api_gateway_stage_metrics_enabled_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": apiStageArn + "/apigateway-stage-metrics-enabled-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": apiStageArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -129,13 +123,7 @@ def api_gateway_stage_metrics_enabled_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": apiStageArn + "/apigateway-stage-metrics-enabled-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": apiStageArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -224,13 +212,7 @@ def api_gateway_stage_logging_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": apiStageArn + "/apigateway-stage-api-logging-enabled-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": apiStageArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -292,13 +274,7 @@ def api_gateway_stage_logging_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": apiStageArn + "/apigateway-stage-api-logging-enabled-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": apiStageArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -387,13 +363,7 @@ def api_gateway_stage_cacheing_enabled_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": apiStageArn + "/apigateway-stage-caching-enabled-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": apiStageArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -457,13 +427,7 @@ def api_gateway_stage_cacheing_enabled_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": apiStageArn + "/apigateway-stage-caching-enabled-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": apiStageArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -555,13 +519,7 @@ def api_gateway_stage_cache_encryption_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": apiStageArn + "/apigateway-stage-cache-encryption-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": apiStageArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -622,13 +580,7 @@ def api_gateway_stage_cache_encryption_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": apiStageArn + "/apigateway-stage-cache-encryption-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": apiStageArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -712,13 +664,7 @@ def api_gateway_stage_xray_tracking_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": apiStageArn + "/apigateway-stage-xray-tracing-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": apiStageArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -780,13 +726,7 @@ def api_gateway_stage_xray_tracking_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": apiStageArn + "/apigateway-stage-xray-tracing-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": apiStageArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -872,13 +812,7 @@ def api_gateway_stage_waf_check_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": apiStageArn + "/apigateway-stage-waf-protection-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": apiStageArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [

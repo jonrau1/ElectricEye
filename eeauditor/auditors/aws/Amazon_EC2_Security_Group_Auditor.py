@@ -68,13 +68,7 @@ def security_group_all_open_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-all-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -133,13 +127,7 @@ def security_group_all_open_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-all-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -237,13 +225,7 @@ def security_group_open_ftp_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-ftp-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -304,13 +286,7 @@ def security_group_open_ftp_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-ftp-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -410,13 +386,7 @@ def security_group_open_telnet_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-telnet-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -477,13 +447,7 @@ def security_group_open_telnet_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-telnet-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -583,13 +547,7 @@ def security_group_open_dcom_rpc_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-telnet-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -658,13 +616,7 @@ def security_group_open_dcom_rpc_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-wsrpc-dcom-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -772,13 +724,7 @@ def security_group_open_smb_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-smb-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -853,13 +799,7 @@ def security_group_open_smb_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-smb-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -973,13 +913,7 @@ def security_group_open_mssql_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-mssql-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -1060,13 +994,7 @@ def security_group_open_mssql_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-mssql-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -1186,13 +1114,7 @@ def security_group_open_oracle_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-oracledb-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -1253,13 +1175,7 @@ def security_group_open_oracle_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-oracledb-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -1362,13 +1278,7 @@ def security_group_open_mysql_mariadb_check(
                         + "/"
                         + ipProtocol
                         + "/security-group-mysql-mariadb-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -1432,13 +1342,7 @@ def security_group_open_mysql_mariadb_check(
                         + "/"
                         + ipProtocol
                         + "/security-group-mysql-mariadb-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -1538,13 +1442,7 @@ def security_group_open_rdp_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-rdp-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -1619,13 +1517,7 @@ def security_group_open_rdp_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-rdp-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -1739,13 +1631,7 @@ def security_group_open_postgresql_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-postgresql-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -1806,13 +1692,7 @@ def security_group_open_postgresql_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-postgresql-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -1912,13 +1792,7 @@ def security_group_open_kibana_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-kibana-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -1993,13 +1867,7 @@ def security_group_open_kibana_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-kibana-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -2113,13 +1981,7 @@ def security_group_open_redis_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-redis-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -2194,13 +2056,7 @@ def security_group_open_redis_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-redis-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -2314,13 +2170,7 @@ def security_group_open_splunkd_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-splunkd-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -2395,13 +2245,7 @@ def security_group_open_splunkd_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-splunkd-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -2518,13 +2362,7 @@ def security_group_open_elasticsearch1_check(
                         + "/"
                         + ipProtocol
                         + "/security-group-elasticsearch-9200-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -2588,13 +2426,7 @@ def security_group_open_elasticsearch1_check(
                         + "/"
                         + ipProtocol
                         + "/security-group-elasticsearch-9200-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -2697,13 +2529,7 @@ def security_group_open_elasticsearch2_check(
                         + "/"
                         + ipProtocol
                         + "/security-group-elasticsearch-9300-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -2767,13 +2593,7 @@ def security_group_open_elasticsearch2_check(
                         + "/"
                         + ipProtocol
                         + "/security-group-elasticsearch-9300-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -2878,13 +2698,7 @@ def security_group_open_memcached_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-memcached-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -2964,13 +2778,7 @@ def security_group_open_memcached_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-memcached-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -3084,13 +2892,7 @@ def security_group_open_redshift_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-redshift-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -3151,13 +2953,7 @@ def security_group_open_redshift_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-redshift-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -3257,13 +3053,7 @@ def security_group_open_documentdb_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-documentdb-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -3324,13 +3114,7 @@ def security_group_open_documentdb_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-documentdb-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -3430,13 +3214,7 @@ def security_group_open_cassandra_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-cassandra-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -3497,13 +3275,7 @@ def security_group_open_cassandra_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-cassandra-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -3603,13 +3375,7 @@ def security_group_open_kafka_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-kafka-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -3670,13 +3436,7 @@ def security_group_open_kafka_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": sgArn + "/" + ipProtocol + "/security-group-kafka-open-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [

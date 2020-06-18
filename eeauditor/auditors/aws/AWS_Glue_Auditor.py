@@ -55,13 +55,7 @@ def crawler_s3_encryption_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": crawlerArn + "/glue-crawler-s3-encryption-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": crawlerArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -117,13 +111,7 @@ def crawler_s3_encryption_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": crawlerArn + "/glue-crawler-s3-encryption-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": crawlerArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -206,13 +194,7 @@ def crawler_cloudwatch_encryption_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": crawlerArn + "/glue-crawler-cloudwatch-encryption-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": crawlerArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -268,13 +250,7 @@ def crawler_cloudwatch_encryption_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": crawlerArn + "/glue-crawler-cloudwatch-encryption-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": crawlerArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -357,13 +333,7 @@ def crawler_job_bookmark_encryption_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": crawlerArn + "/glue-crawler-job-bookmark-encryption-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": crawlerArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -419,13 +389,7 @@ def crawler_job_bookmark_encryption_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": crawlerArn + "/glue-crawler-job-bookmark-encryption-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": crawlerArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [

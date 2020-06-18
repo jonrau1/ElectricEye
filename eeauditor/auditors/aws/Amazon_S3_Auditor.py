@@ -413,13 +413,7 @@ def bucket_policy_allows_public_access_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": s3Arn + "/s3-bucket-policy-allows-public-access-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": s3Arn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -475,13 +469,7 @@ def bucket_policy_allows_public_access_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": s3Arn + "/s3-bucket-policy-allows-public-access-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": s3Arn,
                         "AwsAccountId": awsAccountId,
                         "Types": [

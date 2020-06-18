@@ -227,13 +227,7 @@ def public_alb_shodan_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": elbv2Arn + "/" + elbv2Dns + "/alb-shodan-index-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": elbv2Arn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Effects/Data Exposure"],
@@ -287,13 +281,7 @@ def public_alb_shodan_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": elbv2Arn + "/" + elbv2Dns + "/alb-shodan-index-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": elbv2Arn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Effects/Data Exposure"],
@@ -396,13 +384,7 @@ def public_rds_shodan_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": rdsInstanceArn + "/" + rdsDns + "/rds-shodan-index-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": rdsInstanceArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Effects/Data Exposure"],
@@ -459,13 +441,7 @@ def public_rds_shodan_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": rdsInstanceArn + "/" + rdsDns + "/rds-shodan-index-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": rdsInstanceArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Effects/Data Exposure"],
@@ -759,13 +735,7 @@ def public_clb_shodan_check(
                         + "/"
                         + clbDnsName
                         + "/classic-load-balancer-shodan-index-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": clbArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Effects/Data Exposure"],
@@ -817,13 +787,7 @@ def public_clb_shodan_check(
                         + "/"
                         + clbDnsName
                         + "/classic-load-balancer-shodan-index-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": clbArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Effects/Data Exposure"],
@@ -916,13 +880,7 @@ def public_dms_replication_instance_shodan_check(
                         + "/"
                         + dmsPublicIp
                         + "/dms-replication-instance-shodan-index-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": dmsInstanceArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Effects/Data Exposure"],
@@ -974,13 +932,7 @@ def public_dms_replication_instance_shodan_check(
                         + "/"
                         + dmsPublicIp
                         + "/dms-replication-instance-shodan-index-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": dmsInstanceArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Effects/Data Exposure"],

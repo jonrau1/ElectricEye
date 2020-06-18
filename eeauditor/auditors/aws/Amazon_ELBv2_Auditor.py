@@ -405,13 +405,7 @@ def elbv2_internet_facing_secure_listeners_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": elbv2Arn + "/internet-facing-secure-listeners-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": elbv2Arn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -474,13 +468,7 @@ def elbv2_internet_facing_secure_listeners_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": elbv2Arn + "/internet-facing-secure-listeners-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": elbv2Arn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -748,13 +736,7 @@ def elbv2_drop_invalid_header_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": elbv2Arn + "/elbv2-drop-invalid-header-fields-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": elbv2Arn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -816,13 +798,7 @@ def elbv2_drop_invalid_header_check(
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": elbv2Arn + "/elbv2-drop-invalid-header-fields-check",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": elbv2Arn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
