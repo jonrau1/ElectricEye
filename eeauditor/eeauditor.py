@@ -74,7 +74,7 @@ class EEAuditor(object):
         while True:
             try:
                 results = ssm.get_parameters_by_path(
-                    Path="/aws/service/global-infrastructure/services/sqs/regions",
+                    Path="/aws/service/global-infrastructure/services/" + service + "/regions",
                     NextToken=results["NextToken"]
                 )
                 parameters += results["Parameters"]
@@ -86,12 +86,14 @@ class EEAuditor(object):
         return values
 
     def run_checks(self, requested_check_name=None):
+        self.awsPartition = 'aws'
         for cache_name, cache in self.registry.checks.items():
             if self.awsRegion not in self.get_regions(cache_name):
-                print(f"AWS region not supported for {cache_name}")
+                print(
+                    f"AWS region {self.awsRegion} not supported for {cache_name}")
                 break
-            # if self.awsRegion in ['us-gov-east-1', 'us-gov-west-1']:
-            #     #TODO: make check run on govcloud
+            if self.awsRegion in ['us-gov-east-1', 'us-gov-west-1']:
+                self.awsPartition = 'aws-us-gov'
             # a dictionary to be used by checks that share a common cache
             auditor_cache = {}
             for check_name, check in cache.items():
@@ -107,6 +109,7 @@ class EEAuditor(object):
                             cache=auditor_cache,
                             awsAccountId=self.awsAccountId,
                             awsRegion=self.awsRegion,
+                            # awsPartition=self.awsPartition
                         ):
                             yield finding
                     except Exception as e:
