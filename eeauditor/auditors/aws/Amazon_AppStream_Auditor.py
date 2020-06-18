@@ -169,13 +169,7 @@ def public_image_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartit
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": imageArn + "/appstream-public-image",
-            "ProductArn": "arn:aws:securityhub:"
-            + awsRegion
-            + ":"
-            + awsAccountId
-            + ":product/"
-            + awsAccountId
-            + "/default",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
             "GeneratorId": imageArn,
             "AwsAccountId": awsAccountId,
             "Types": [

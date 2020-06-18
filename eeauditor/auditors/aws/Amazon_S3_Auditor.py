@@ -796,13 +796,7 @@ def s3_account_level_block(
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": awsAccountId + "/s3-account-level-public-access-block-check",
-            "ProductArn": "arn:aws:securityhub:"
-            + awsRegion
-            + ":"
-            + awsAccountId
-            + ":product/"
-            + awsAccountId
-            + "/default",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
             "GeneratorId": awsAccountId,
             "AwsAccountId": awsAccountId,
             "Types": [
@@ -858,13 +852,7 @@ def s3_account_level_block(
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": awsAccountId + "/s3-account-level-public-access-block-check",
-            "ProductArn": "arn:aws:securityhub:"
-            + awsRegion
-            + ":"
-            + awsAccountId
-            + ":product/"
-            + awsAccountId
-            + "/default",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
             "GeneratorId": awsAccountId,
             "AwsAccountId": awsAccountId,
             "Types": [

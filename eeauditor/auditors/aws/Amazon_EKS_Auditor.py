@@ -315,13 +315,7 @@ def eks_logging_audit_auth_check(
                             finding = {
                                 "SchemaVersion": "2018-10-08",
                                 "Id": clusterArn + "/eks-logging-audit-auth-check",
-                                "ProductArn": "arn:aws:securityhub:"
-                                + awsRegion
-                                + ":"
-                                + awsAccountId
-                                + ":product/"
-                                + awsAccountId
-                                + "/default",
+                                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                                 "GeneratorId": clusterName,
                                 "AwsAccountId": awsAccountId,
                                 "Types": [
@@ -375,13 +369,7 @@ def eks_logging_audit_auth_check(
                             finding = {
                                 "SchemaVersion": "2018-10-08",
                                 "Id": clusterArn + "/eks-logging-audit-auth-check",
-                                "ProductArn": "arn:aws:securityhub:"
-                                + awsRegion
-                                + ":"
-                                + awsAccountId
-                                + ":product/"
-                                + awsAccountId
-                                + "/default",
+                                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                                 "GeneratorId": clusterName,
                                 "AwsAccountId": awsAccountId,
                                 "Types": [

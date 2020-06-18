@@ -695,13 +695,7 @@ def glue_data_catalog_resource_policy_check(
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": catalogArn + "/glue-data-catalog-resource-policy-check",
-            "ProductArn": "arn:aws:securityhub:"
-            + awsRegion
-            + ":"
-            + awsAccountId
-            + ":product/"
-            + awsAccountId
-            + "/default",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
             "GeneratorId": catalogArn,
             "AwsAccountId": awsAccountId,
             "Types": ["Software and Configuration Checks/AWS Security Best Practices"],

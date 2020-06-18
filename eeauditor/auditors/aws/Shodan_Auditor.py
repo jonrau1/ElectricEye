@@ -541,13 +541,7 @@ def public_es_domain_shodan_check(
                                 + "/"
                                 + esDomainEndpoint
                                 + "/elasticsearch-shodan-index-check",
-                                "ProductArn": "arn:aws:securityhub:"
-                                + awsRegion
-                                + ":"
-                                + awsAccountId
-                                + ":product/"
-                                + awsAccountId
-                                + "/default",
+                                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                                 "GeneratorId": esDomainArn,
                                 "AwsAccountId": awsAccountId,
                                 "Types": ["Effects/Data Exposure"],
@@ -606,13 +600,7 @@ def public_es_domain_shodan_check(
                                 + "/"
                                 + esDomainEndpoint
                                 + "/elasticsearch-shodan-index-check",
-                                "ProductArn": "arn:aws:securityhub:"
-                                + awsRegion
-                                + ":"
-                                + awsAccountId
-                                + ":product/"
-                                + awsAccountId
-                                + "/default",
+                                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                                 "GeneratorId": esDomainArn,
                                 "AwsAccountId": awsAccountId,
                                 "Types": ["Effects/Data Exposure"],
@@ -1018,13 +1006,7 @@ def public_amazon_mq_broker_shodan_check(
                                 + "/"
                                 + mqBrokerIpv4
                                 + "/amazon-mq-broker-shodan-index-check",
-                                "ProductArn": "arn:aws:securityhub:"
-                                + awsRegion
-                                + ":"
-                                + awsAccountId
-                                + ":product/"
-                                + awsAccountId
-                                + "/default",
+                                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                                 "GeneratorId": brokerArn,
                                 "AwsAccountId": awsAccountId,
                                 "Types": ["Effects/Data Exposure"],
@@ -1081,13 +1063,7 @@ def public_amazon_mq_broker_shodan_check(
                                 + "/"
                                 + mqBrokerIpv4
                                 + "/amazon-mq-broker-shodan-index-check",
-                                "ProductArn": "arn:aws:securityhub:"
-                                + awsRegion
-                                + ":"
-                                + awsAccountId
-                                + ":product/"
-                                + awsAccountId
-                                + "/default",
+                                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                                 "GeneratorId": brokerArn,
                                 "AwsAccountId": awsAccountId,
                                 "Types": ["Effects/Data Exposure"],

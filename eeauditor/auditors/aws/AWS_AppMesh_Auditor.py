@@ -252,13 +252,7 @@ def appmesh_virt_node_backed_default_tls_policy_check(
                             finding = {
                                 "SchemaVersion": "2018-10-08",
                                 "Id": nodeArn + "/appmesh-virtual-node-default-tls-policy-check",
-                                "ProductArn": "arn:aws:securityhub:"
-                                + awsRegion
-                                + ":"
-                                + awsAccountId
-                                + ":product/"
-                                + awsAccountId
-                                + "/default",
+                                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                                 "GeneratorId": nodeArn,
                                 "AwsAccountId": awsAccountId,
                                 "Types": [
@@ -320,13 +314,7 @@ def appmesh_virt_node_backed_default_tls_policy_check(
                             finding = {
                                 "SchemaVersion": "2018-10-08",
                                 "Id": nodeArn + "/appmesh-virtual-node-default-tls-policy-check",
-                                "ProductArn": "arn:aws:securityhub:"
-                                + awsRegion
-                                + ":"
-                                + awsAccountId
-                                + ":product/"
-                                + awsAccountId
-                                + "/default",
+                                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                                 "GeneratorId": nodeArn,
                                 "AwsAccountId": awsAccountId,
                                 "Types": [
@@ -419,13 +407,7 @@ def appmesh_virt_node_listener_strict_tls_check(
                                 "SchemaVersion": "2018-10-08",
                                 "Id": nodeArn
                                 + "/appmesh-virtual-node-listener-strict-tls-mode-check",
-                                "ProductArn": "arn:aws:securityhub:"
-                                + awsRegion
-                                + ":"
-                                + awsAccountId
-                                + ":product/"
-                                + awsAccountId
-                                + "/default",
+                                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                                 "GeneratorId": nodeArn,
                                 "AwsAccountId": awsAccountId,
                                 "Types": [
@@ -488,13 +470,7 @@ def appmesh_virt_node_listener_strict_tls_check(
                                 "SchemaVersion": "2018-10-08",
                                 "Id": nodeArn
                                 + "/appmesh-virtual-node-listener-strict-tls-mode-check",
-                                "ProductArn": "arn:aws:securityhub:"
-                                + awsRegion
-                                + ":"
-                                + awsAccountId
-                                + ":product/"
-                                + awsAccountId
-                                + "/default",
+                                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                                 "GeneratorId": nodeArn,
                                 "AwsAccountId": awsAccountId,
                                 "Types": [

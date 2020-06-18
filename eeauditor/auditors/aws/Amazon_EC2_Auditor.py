@@ -30,7 +30,7 @@ def ec2_imdsv2_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
             for i in r["Instances"]:
                 instanceId = str(i["InstanceId"])
                 instanceArn = (
-                    "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":instance/" + instanceId
+                    f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}"
                 )
                 instanceType = str(i["InstanceType"])
                 instanceImage = str(i["ImageId"])
@@ -52,13 +52,7 @@ def ec2_imdsv2_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                             finding = {
                                 "SchemaVersion": "2018-10-08",
                                 "Id": instanceArn + "/ec2-imdsv2-check",
-                                "ProductArn": "arn:aws:securityhub:"
-                                + awsRegion
-                                + ":"
-                                + awsAccountId
-                                + ":product/"
-                                + awsAccountId
-                                + "/default",
+                                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                                 "GeneratorId": instanceArn,
                                 "AwsAccountId": awsAccountId,
                                 "Types": [
@@ -136,13 +130,7 @@ def ec2_imdsv2_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                             finding = {
                                 "SchemaVersion": "2018-10-08",
                                 "Id": instanceArn + "/ec2-imdsv2-check",
-                                "ProductArn": "arn:aws:securityhub:"
-                                + awsRegion
-                                + ":"
-                                + awsAccountId
-                                + ":product/"
-                                + awsAccountId
-                                + "/default",
+                                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                                 "GeneratorId": instanceArn,
                                 "AwsAccountId": awsAccountId,
                                 "Types": [
