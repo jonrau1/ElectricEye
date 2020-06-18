@@ -70,7 +70,7 @@ def cloudtrail_multi_region_check(
                         {
                             "Type": "AwsCloudTrailTrail",
                             "Id": trailArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                         }
                     ],
@@ -119,7 +119,7 @@ def cloudtrail_multi_region_check(
                         {
                             "Type": "AwsCloudTrailTrail",
                             "Id": trailArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                         }
                     ],
@@ -186,7 +186,7 @@ def cloudtrail_cloudwatch_logging_check(
                         {
                             "Type": "AwsCloudTrailTrail",
                             "Id": trailArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                         }
                     ],
@@ -238,7 +238,7 @@ def cloudtrail_cloudwatch_logging_check(
                             {
                                 "Type": "AwsCloudTrailTrail",
                                 "Id": trailArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                             }
                         ],
@@ -308,7 +308,7 @@ def cloudtrail_encryption_check(
                         {
                             "Type": "AwsCloudTrailTrail",
                             "Id": trailArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                         }
                     ],
@@ -359,7 +359,7 @@ def cloudtrail_encryption_check(
                             {
                                 "Type": "AwsCloudTrailTrail",
                                 "Id": trailArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                             }
                         ],
@@ -423,7 +423,7 @@ def cloudtrail_global_services_check(
                         {
                             "Type": "AwsCloudTrailTrail",
                             "Id": trailArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                         }
                     ],
@@ -472,7 +472,7 @@ def cloudtrail_global_services_check(
                         {
                             "Type": "AwsCloudTrailTrail",
                             "Id": trailArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                         }
                     ],
@@ -538,7 +538,7 @@ def cloudtrail_log_file_validation_check(
                         {
                             "Type": "AwsCloudTrailTrail",
                             "Id": trailArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                         }
                     ],
@@ -588,7 +588,7 @@ def cloudtrail_log_file_validation_check(
                         {
                             "Type": "AwsCloudTrailTrail",
                             "Id": trailArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                         }
                     ],

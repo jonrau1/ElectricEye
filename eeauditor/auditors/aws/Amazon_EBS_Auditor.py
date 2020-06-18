@@ -84,7 +84,7 @@ def ebs_volume_attachment_check(
                         {
                             "Type": "AwsEc2Volume",
                             "Id": ebsVolumeArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"volumeId": ebsVolumeId}},
                         }
@@ -132,7 +132,7 @@ def ebs_volume_attachment_check(
                         {
                             "Type": "AwsEc2Volume",
                             "Id": ebsVolumeArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"volumeId": ebsVolumeId}},
                         }
@@ -200,7 +200,7 @@ def EbsVolumeDeleteOnTerminationCheck(
                         {
                             "Type": "AwsEc2Volume",
                             "Id": ebsVolumeArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"volumeId": ebsVolumeId}},
                         }
@@ -250,7 +250,7 @@ def EbsVolumeDeleteOnTerminationCheck(
                         {
                             "Type": "AwsEc2Volume",
                             "Id": ebsVolumeArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"volumeId": ebsVolumeId}},
                         }
@@ -317,7 +317,7 @@ def EbsVolumeEncryptionCheck(
                     {
                         "Type": "AwsEc2Volume",
                         "Id": ebsVolumeArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"volumeId": ebsVolumeId}},
                     }
@@ -366,7 +366,7 @@ def EbsVolumeEncryptionCheck(
                     {
                         "Type": "AwsEc2Volume",
                         "Id": ebsVolumeArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"volumeId": ebsVolumeId}},
                     }
@@ -431,7 +431,7 @@ def EbsSnapshotEncryptionCheck(
                     {
                         "Type": "AwsEc2Snapshot",
                         "Id": snapshotArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"snapshotId": snapshotId}},
                     }
@@ -480,7 +480,7 @@ def EbsSnapshotEncryptionCheck(
                     {
                         "Type": "AwsEc2Snapshot",
                         "Id": snapshotArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"snapshotId": snapshotId}},
                     }
@@ -545,7 +545,7 @@ def EbsSnapshotPublicCheck(
                     {
                         "Type": "AwsEc2Snapshot",
                         "Id": snapshotArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"snapshotId": snapshotId}},
                     }
@@ -606,7 +606,7 @@ def EbsSnapshotPublicCheck(
                             {
                                 "Type": "AwsEc2Snapshot",
                                 "Id": snapshotArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {"Other": {"snapshotId": snapshotId}},
                             }
@@ -663,7 +663,7 @@ def EbsSnapshotPublicCheck(
                             {
                                 "Type": "AwsEc2Snapshot",
                                 "Id": snapshotArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {"Other": {"SnapshotId": snapshotId}},
                             }
@@ -734,7 +734,7 @@ def EbsAccountEncryptionByDefaultCheck(
                 {
                     "Type": "AwsAccount",
                     "Id": "AWS::::Account:" + awsAccountId,
-                    "Partition": "aws",
+                    "Partition": awsPartition,
                     "Region": awsRegion,
                 }
             ],
@@ -789,7 +789,7 @@ def EbsAccountEncryptionByDefaultCheck(
                 {
                     "Type": "AwsAccount",
                     "Id": "AWS::::Account:" + awsAccountId,
-                    "Partition": "aws",
+                    "Partition": awsPartition,
                     "Region": awsRegion,
                 }
             ],

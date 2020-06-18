@@ -76,7 +76,7 @@ def public_ec2_shodan_check(
                                 {
                                     "Type": "AwsEc2Instance",
                                     "Id": ec2Arn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "AwsEc2Instance": {
@@ -152,7 +152,7 @@ def public_ec2_shodan_check(
                                 {
                                     "Type": "AwsEc2Instance",
                                     "Id": ec2Arn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "AwsEc2Instance": {
@@ -241,7 +241,7 @@ def public_alb_shodan_check(
                             {
                                 "Type": "AwsElbv2LoadBalancer",
                                 "Id": elbv2Arn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsElbv2LoadBalancer": {
@@ -312,7 +312,7 @@ def public_alb_shodan_check(
                             {
                                 "Type": "AwsElbv2LoadBalancer",
                                 "Id": elbv2Arn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsElbv2LoadBalancer": {
@@ -400,7 +400,7 @@ def public_rds_shodan_check(
                             {
                                 "Type": "AwsRdsDbInstance",
                                 "Id": rdsInstanceArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsRdsDbInstance": {
@@ -472,7 +472,7 @@ def public_rds_shodan_check(
                             {
                                 "Type": "AwsRdsDbInstance",
                                 "Id": rdsInstanceArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsRdsDbInstance": {
@@ -575,7 +575,7 @@ def public_es_domain_shodan_check(
                                     {
                                         "Type": "AwsElasticsearchDomain",
                                         "Id": esDomainArn,
-                                        "Partition": "aws",
+                                        "Partition": awsPartition,
                                         "Region": awsRegion,
                                         "Details": {
                                             "AwsElasticsearchDomain": {
@@ -655,7 +655,7 @@ def public_es_domain_shodan_check(
                                     {
                                         "Type": "AwsElasticsearchDomain",
                                         "Id": esDomainArn,
-                                        "Partition": "aws",
+                                        "Partition": awsPartition,
                                         "Region": awsRegion,
                                         "Details": {
                                             "AwsElasticsearchDomain": {
@@ -751,7 +751,7 @@ def public_clb_shodan_check(
                             {
                                 "Type": "AwsElbLoadBalancer",
                                 "Id": clbArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {"Other": {"LoadBalancerName": clbName}},
                             }
@@ -818,7 +818,7 @@ def public_clb_shodan_check(
                             {
                                 "Type": "AwsElbLoadBalancer",
                                 "Id": clbArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {"Other": {"LoadBalancerName": clbName}},
                             }
@@ -896,7 +896,7 @@ def public_dms_replication_instance_shodan_check(
                             {
                                 "Type": "AwsDmsReplicationInstance",
                                 "Id": dmsInstanceArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {"Other": {"ReplicationInstanceId": dmsInstanceId}},
                             }
@@ -961,7 +961,7 @@ def public_dms_replication_instance_shodan_check(
                             {
                                 "Type": "AwsDmsReplicationInstance",
                                 "Id": dmsInstanceArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {"Other": {"ReplicationInstanceId": dmsInstanceId}},
                             }
@@ -1052,7 +1052,7 @@ def public_amazon_mq_broker_shodan_check(
                                     {
                                         "Type": "AwsMqMessageBroker",
                                         "Id": brokerArn,
-                                        "Partition": "aws",
+                                        "Partition": awsPartition,
                                         "Region": awsRegion,
                                         "Details": {
                                             "Other": {
@@ -1117,7 +1117,7 @@ def public_amazon_mq_broker_shodan_check(
                                     {
                                         "Type": "AwsMqMessageBroker",
                                         "Id": brokerArn,
-                                        "Partition": "aws",
+                                        "Partition": awsPartition,
                                         "Region": awsRegion,
                                         "Details": {
                                             "Other": {

@@ -70,7 +70,7 @@ def ecr_repo_vuln_scan_check(
                     {
                         "Type": "AwsEcrRepository",
                         "Id": repoArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"RepositoryName": repoName}},
                     }
@@ -116,7 +116,7 @@ def ecr_repo_vuln_scan_check(
                     {
                         "Type": "AwsEcrRepository",
                         "Id": repoArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"RepositoryName": repoName}},
                     }
@@ -177,7 +177,7 @@ def ecr_repo_image_lifecycle_policy_check(
                     {
                         "Type": "AwsEcrRepository",
                         "Id": repoArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"RepositoryName": repoName}},
                     }
@@ -227,7 +227,7 @@ def ecr_repo_image_lifecycle_policy_check(
                     {
                         "Type": "AwsEcrRepository",
                         "Id": repoArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"RepositoryName": repoName}},
                     }
@@ -292,7 +292,7 @@ def ecr_repo_permission_policy(
                     {
                         "Type": "AwsEcrRepository",
                         "Id": repoArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"RepositoryName": repoName}},
                     }
@@ -351,7 +351,7 @@ def ecr_repo_permission_policy(
                     {
                         "Type": "AwsEcrRepository",
                         "Id": repoArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"RepositoryName": repoName}},
                     }
@@ -460,7 +460,7 @@ def ecr_latest_image_vuln_check(
                                 {
                                     "Type": "Container",
                                     "Id": repoName + ":" + imageTag,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "Container": {
@@ -525,7 +525,7 @@ def ecr_latest_image_vuln_check(
                                 {
                                     "Type": "Container",
                                     "Id": repoName + ":" + imageTag,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "Container": {

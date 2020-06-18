@@ -75,7 +75,7 @@ def kinesis_stream_encryption_check(
                     {
                         "Type": "AwsKinesisStream",
                         "Id": streamArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"StreamName": streamName}},
                     }
@@ -124,7 +124,7 @@ def kinesis_stream_encryption_check(
                     {
                         "Type": "AwsKinesisStream",
                         "Id": streamArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"StreamName": streamName}},
                     }
@@ -190,7 +190,7 @@ def kinesis_enhanced_monitoring_check(
                         {
                             "Type": "AwsKinesisStream",
                             "Id": streamArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"StreamName": streamName}},
                         }
@@ -242,7 +242,7 @@ def kinesis_enhanced_monitoring_check(
                         {
                             "Type": "AwsKinesisStream",
                             "Id": streamArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"StreamName": streamName}},
                         }

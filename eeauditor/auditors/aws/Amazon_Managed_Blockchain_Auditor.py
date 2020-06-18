@@ -96,7 +96,7 @@ def amb_fabric_node_chaincode_logging_check(
                                         {
                                             "Type": "AwsManagedBlockchainPeerNode",
                                             "Id": nodeArn,
-                                            "Partition": "aws",
+                                            "Partition": awsPartition,
                                             "Region": awsRegion,
                                             "Details": {
                                                 "Other": {
@@ -163,7 +163,7 @@ def amb_fabric_node_chaincode_logging_check(
                                         {
                                             "Type": "AwsManagedBlockchainPeerNode",
                                             "Id": nodeArn,
-                                            "Partition": "aws",
+                                            "Partition": awsPartition,
                                             "Region": awsRegion,
                                             "Details": {
                                                 "Other": {
@@ -280,7 +280,7 @@ def amb_fabric_node_peernode_logging_check(
                                         {
                                             "Type": "AwsManagedBlockchainPeerNode",
                                             "Id": nodeArn,
-                                            "Partition": "aws",
+                                            "Partition": awsPartition,
                                             "Region": awsRegion,
                                             "Details": {
                                                 "Other": {
@@ -347,7 +347,7 @@ def amb_fabric_node_peernode_logging_check(
                                         {
                                             "Type": "AwsManagedBlockchainPeerNode",
                                             "Id": nodeArn,
-                                            "Partition": "aws",
+                                            "Partition": awsPartition,
                                             "Region": awsRegion,
                                             "Details": {
                                                 "Other": {
@@ -455,7 +455,7 @@ def amb_fabric_member_ca_logging_check(
                                 {
                                     "Type": "AwsManagedBlockchainMember",
                                     "Id": memberArn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {
@@ -520,7 +520,7 @@ def amb_fabric_member_ca_logging_check(
                                 {
                                     "Type": "AwsManagedBlockchainMember",
                                     "Id": memberArn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {

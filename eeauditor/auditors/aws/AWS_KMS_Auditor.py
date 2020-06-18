@@ -76,7 +76,7 @@ def kms_key_rotation_check(
                     {
                         "Type": "AwsKmsKey",
                         "Id": keyarn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"AwsKmsKey": {"KeyId": keyid}},
                     }
@@ -112,7 +112,7 @@ def kms_key_rotation_check(
                     {
                         "Type": "AwsKmsKey",
                         "Id": keyarn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"AwsKmsKey": {"KeyId": keyid}},
                     }
@@ -177,7 +177,7 @@ def kms_key_exposed_check(
                         {
                             "Type": "AwsKmsAlias",
                             "Id": aliasArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                         }
                     ],
@@ -217,7 +217,7 @@ def kms_key_exposed_check(
                         {
                             "Type": "AwsKmsAlias",
                             "Id": aliasArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                         }
                     ],

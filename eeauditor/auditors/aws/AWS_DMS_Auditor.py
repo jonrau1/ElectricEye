@@ -61,7 +61,7 @@ def dms_replication_instance_public_access_check(
                     {
                         "Type": "AwsDmsReplicationInstance",
                         "Id": dmsInstanceArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"replicationInstanceId": dmsInstanceId}},
                     }
@@ -115,7 +115,7 @@ def dms_replication_instance_public_access_check(
                     {
                         "Type": "AwsDmsReplicationInstance",
                         "Id": dmsInstanceArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"replicationInstanceId": dmsInstanceId}},
                     }
@@ -182,7 +182,7 @@ def dms_replication_instance_multi_az_check(
                     {
                         "Type": "AwsDmsReplicationInstance",
                         "Id": dmsInstanceArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"replicationInstanceId": dmsInstanceId}},
                     }
@@ -236,7 +236,7 @@ def dms_replication_instance_multi_az_check(
                     {
                         "Type": "AwsDmsReplicationInstance",
                         "Id": dmsInstanceArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"replicationInstanceId": dmsInstanceId}},
                     }
@@ -303,7 +303,7 @@ def dms_replication_instance_minor_version_update_check(
                     {
                         "Type": "AwsDmsReplicationInstance",
                         "Id": dmsInstanceArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"replicationInstanceId": dmsInstanceId}},
                     }
@@ -355,7 +355,7 @@ def dms_replication_instance_minor_version_update_check(
                     {
                         "Type": "AwsDmsReplicationInstance",
                         "Id": dmsInstanceArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"replicationInstanceId": dmsInstanceId}},
                     }

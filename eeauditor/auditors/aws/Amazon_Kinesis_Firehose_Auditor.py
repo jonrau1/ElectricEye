@@ -82,7 +82,7 @@ def firehose_delivery_stream_encryption_check(
                         {
                             "Type": "AwsKinesisFirehoseDeliveryStream",
                             "Id": firehoseArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"deliveryStreamName": firehoseName}},
                         }
@@ -133,7 +133,7 @@ def firehose_delivery_stream_encryption_check(
                         {
                             "Type": "AwsKinesisFirehoseDeliveryStream",
                             "Id": firehoseArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"deliveryStreamName": firehoseName}},
                         }

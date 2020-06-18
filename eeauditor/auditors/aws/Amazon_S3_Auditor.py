@@ -79,7 +79,7 @@ def bucket_encryption_check(
                         {
                             "Type": "AwsS3Bucket",
                             "Id": s3Arn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                         }
                     ],
@@ -133,7 +133,7 @@ def bucket_encryption_check(
                         {
                             "Type": "AwsS3Bucket",
                             "Id": s3Arn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                         }
                     ],
@@ -191,7 +191,12 @@ def bucket_lifecycle_check(
                 },
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
-                    {"Type": "AwsS3Bucket", "Id": s3Arn, "Partition": "aws", "Region": awsRegion}
+                    {
+                        "Type": "AwsS3Bucket",
+                        "Id": s3Arn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                    }
                 ],
                 "Compliance": {
                     "Status": "PASSED",
@@ -246,7 +251,7 @@ def bucket_lifecycle_check(
                         {
                             "Type": "AwsS3Bucket",
                             "Id": s3Arn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                         }
                     ],
@@ -313,7 +318,12 @@ def bucket_versioning_check(
                 },
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
-                    {"Type": "AwsS3Bucket", "Id": s3Arn, "Partition": "aws", "Region": awsRegion}
+                    {
+                        "Type": "AwsS3Bucket",
+                        "Id": s3Arn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                    }
                 ],
                 "Compliance": {
                     "Status": "PASSED",
@@ -365,7 +375,7 @@ def bucket_versioning_check(
                         {
                             "Type": "AwsS3Bucket",
                             "Id": s3Arn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                         }
                     ],
@@ -440,7 +450,7 @@ def bucket_policy_allows_public_access_check(
                             {
                                 "Type": "AwsS3Bucket",
                                 "Id": s3Arn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                             }
                         ],
@@ -496,7 +506,7 @@ def bucket_policy_allows_public_access_check(
                             {
                                 "Type": "AwsS3Bucket",
                                 "Id": s3Arn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                             }
                         ],
@@ -562,7 +572,12 @@ def bucket_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
                 },
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
-                    {"Type": "AwsS3Bucket", "Id": s3Arn, "Partition": "aws", "Region": awsRegion}
+                    {
+                        "Type": "AwsS3Bucket",
+                        "Id": s3Arn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                    }
                 ],
                 "Compliance": {
                     "Status": "PASSED",
@@ -617,7 +632,7 @@ def bucket_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
                         {
                             "Type": "AwsS3Bucket",
                             "Id": s3Arn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                         }
                     ],
@@ -684,7 +699,12 @@ def bucket_access_logging_check(
                 },
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
-                    {"Type": "AwsS3Bucket", "Id": s3Arn, "Partition": "aws", "Region": awsRegion}
+                    {
+                        "Type": "AwsS3Bucket",
+                        "Id": s3Arn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                    }
                 ],
                 "Compliance": {
                     "Status": "PASSED",
@@ -734,7 +754,7 @@ def bucket_access_logging_check(
                         {
                             "Type": "AwsS3Bucket",
                             "Id": s3Arn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                         }
                     ],
@@ -809,7 +829,7 @@ def s3_account_level_block(
                 {
                     "Type": "AwsAccount",
                     "Id": "AWS::::Account:" + awsAccountId,
-                    "Partition": "aws",
+                    "Partition": awsPartition,
                     "Region": awsRegion,
                 }
             ],
@@ -871,7 +891,7 @@ def s3_account_level_block(
                 {
                     "Type": "AwsAccount",
                     "Id": "AWS::::Account:" + awsAccountId,
-                    "Partition": "aws",
+                    "Partition": awsPartition,
                     "Region": awsRegion,
                 }
             ],

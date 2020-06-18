@@ -78,7 +78,7 @@ def redis_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                             + awsAccountId
                             + ":cluster:"
                             + clusterId,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "Other": {"ClusterId": clusterId, "EngineVersion": engineVersion,}
@@ -147,7 +147,7 @@ def redis_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                             + awsAccountId
                             + ":cluster:"
                             + clusterId,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "Other": {"ClusterId": clusterId, "EngineVersion": engineVersion,}
@@ -240,7 +240,7 @@ def encryption_at_rest_check(
                             + awsAccountId
                             + ":cluster:"
                             + clusterId,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "Other": {"ClusterId": clusterId, "EngineVersion": engineVersion,}
@@ -298,7 +298,7 @@ def encryption_at_rest_check(
                             + awsAccountId
                             + ":cluster:"
                             + clusterId,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "Other": {"ClusterId": clusterId, "EngineVersion": engineVersion,}
@@ -380,7 +380,7 @@ def encryption_in_transit_check(
                             + awsAccountId
                             + ":cluster:"
                             + clusterId,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "Other": {"ClusterId": clusterId, "EngineVersion": engineVersion,}
@@ -443,7 +443,7 @@ def encryption_in_transit_check(
                             + awsAccountId
                             + ":cluster:"
                             + clusterId,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "Other": {"ClusterId": clusterId, "EngineVersion": engineVersion,}

@@ -66,7 +66,7 @@ def volume_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
                     {
                         "Type": "AwsEc2Volume",
                         "Id": volumeArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"volumeId": volumeId}},
                     }
@@ -120,7 +120,7 @@ def volume_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
                     {
                         "Type": "AwsEc2Volume",
                         "Id": volumeArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"volumeId": volumeId}},
                     }
@@ -195,7 +195,7 @@ def ec2_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                         {
                             "Type": "AwsEc2Instance",
                             "Id": instanceArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "AwsEc2Instance": {
@@ -256,7 +256,7 @@ def ec2_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                         {
                             "Type": "AwsEc2Instance",
                             "Id": instanceArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "AwsEc2Instance": {
@@ -329,7 +329,7 @@ def ddb_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                     {
                         "Type": "AwsDynamoDbTable",
                         "Id": tableArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"tableName": tableName}},
                     }
@@ -383,7 +383,7 @@ def ddb_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                     {
                         "Type": "AwsDynamoDbTable",
                         "Id": tableArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"tableName": tableName}},
                     }
@@ -470,7 +470,7 @@ def reds_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
                     {
                         "Type": "AwsRdsDbInstance",
                         "Id": dbArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "AwsRdsDbInstance": {
@@ -530,7 +530,7 @@ def reds_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
                     {
                         "Type": "AwsRdsDbInstance",
                         "Id": dbArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "AwsRdsDbInstance": {
@@ -608,7 +608,7 @@ def efs_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                     {
                         "Type": "AwsElasticFileSystem",
                         "Id": fileSysArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"fileSystemId": fileSysId}},
                     }
@@ -662,7 +662,7 @@ def efs_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                     {
                         "Type": "AwsElasticFileSystem",
                         "Id": fileSysArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"fileSystemId": fileSysId}},
                     }

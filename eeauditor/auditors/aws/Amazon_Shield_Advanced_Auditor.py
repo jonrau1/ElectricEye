@@ -75,7 +75,7 @@ def shield_advanced_route_53_protection_check(
                         {
                             "Type": "AwsRoute53HostedZone",
                             "Id": hostedZoneArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"hostedZoneId": hostedZoneId}},
                         }
@@ -133,7 +133,7 @@ def shield_advanced_route_53_protection_check(
                             {
                                 "Type": "AwsRoute53HostedZone",
                                 "Id": hostedZoneArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {"Other": {"hostedZoneId": hostedZoneId}},
                             }
@@ -214,7 +214,7 @@ def shield_advanced_elb_protection_check(
                         {
                             "Type": "AwsElbLoadBalancer",
                             "Id": clbArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"LoadBalancerName": clbName}},
                         }
@@ -272,7 +272,7 @@ def shield_advanced_elb_protection_check(
                             {
                                 "Type": "AwsElbLoadBalancer",
                                 "Id": clbArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {"Other": {"LoadBalancerName": clbName}},
                             }
@@ -353,7 +353,7 @@ def shield_advanced_elb_v2_protection_check(
                         {
                             "Type": "AwsElbv2LoadBalancer",
                             "Id": elbv2Arn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "AwsElbv2LoadBalancer": {
@@ -421,7 +421,7 @@ def shield_advanced_elb_v2_protection_check(
                             {
                                 "Type": "AwsElbv2LoadBalancer",
                                 "Id": elbv2Arn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsElbv2LoadBalancer": {
@@ -506,7 +506,7 @@ def shield_advanced_eip_protection_check(
                         {
                             "Type": "AwsEc2Eip",
                             "Id": eipAllocationArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"AllocationId": allocationId}},
                         }
@@ -564,7 +564,7 @@ def shield_advanced_eip_protection_check(
                             {
                                 "Type": "AwsEc2Eip",
                                 "Id": eipAllocationArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {"Other": {"AllocationId": allocationId}},
                             }
@@ -640,7 +640,7 @@ def shield_advanced_cloudfront_protection_check(
                         {
                             "Type": "AwsCloudFrontDistribution",
                             "Id": distroArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "AwsCloudFrontDistribution": {"DomainName": distroDomainName}
@@ -700,7 +700,7 @@ def shield_advanced_cloudfront_protection_check(
                             {
                                 "Type": "AwsCloudFrontDistribution",
                                 "Id": distroArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsCloudFrontDistribution": {"DomainName": distroDomainName}
@@ -772,7 +772,7 @@ def shield_advanced_drt_access_check(
                     {
                         "Type": "AwsAccount",
                         "Id": "AWS::::Account:" + awsAccountId,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                     }
                 ],
@@ -830,7 +830,7 @@ def shield_advanced_drt_access_check(
                     {
                         "Type": "AwsAccount",
                         "Id": "AWS::::Account:" + awsAccountId,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                     }
                 ],
@@ -900,7 +900,7 @@ def shield_advanced_drt_s3_bucket_check(
                     {
                         "Type": "AwsAccount",
                         "Id": "AWS::::Account:" + awsAccountId,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                     }
                 ],
@@ -958,7 +958,7 @@ def shield_advanced_drt_s3_bucket_check(
                     {
                         "Type": "AwsAccount",
                         "Id": "AWS::::Account:" + awsAccountId,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                     }
                 ],
@@ -1028,7 +1028,7 @@ def shield_advanced_subscription_autorenew_check(
                     {
                         "Type": "AwsAccount",
                         "Id": "AWS::::Account:" + awsAccountId,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                     }
                 ],
@@ -1077,7 +1077,7 @@ def shield_advanced_subscription_autorenew_check(
                     {
                         "Type": "AwsAccount",
                         "Id": "AWS::::Account:" + awsAccountId,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                     }
                 ],

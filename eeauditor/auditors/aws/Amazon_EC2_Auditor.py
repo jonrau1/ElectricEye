@@ -84,7 +84,7 @@ def ec2_imdsv2_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                                     {
                                         "Type": "AwsEc2Instance",
                                         "Id": instanceArn,
-                                        "Partition": "aws",
+                                        "Partition": awsPartition,
                                         "Region": awsRegion,
                                         "Details": {
                                             "AwsEc2Instance": {
@@ -168,7 +168,7 @@ def ec2_imdsv2_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                                     {
                                         "Type": "AwsEc2Instance",
                                         "Id": instanceArn,
-                                        "Partition": "aws",
+                                        "Partition": awsPartition,
                                         "Region": awsRegion,
                                         "Details": {
                                             "AwsEc2Instance": {

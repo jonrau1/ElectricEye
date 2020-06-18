@@ -83,7 +83,7 @@ def license_manager_hard_count_check(
                                 {
                                     "Type": "Other",
                                     "Id": liscConfigArn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {
@@ -146,7 +146,7 @@ def license_manager_hard_count_check(
                                 {
                                     "Type": "Other",
                                     "Id": liscConfigArn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {

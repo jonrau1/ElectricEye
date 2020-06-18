@@ -91,7 +91,7 @@ def iam_access_key_age_check(
                                 {
                                     "Type": "AwsIamAccessKey",
                                     "Id": userArn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "AwsIamAccessKey": {
@@ -173,7 +173,7 @@ def iam_access_key_age_check(
                                 {
                                     "Type": "AwsIamAccessKey",
                                     "Id": userArn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "AwsIamAccessKey": {
@@ -268,7 +268,7 @@ def user_permission_boundary_check(
                     {
                         "Type": "AwsIamUser",
                         "Id": userArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "Other": {
@@ -338,7 +338,7 @@ def user_permission_boundary_check(
                         {
                             "Type": "AwsIamUser",
                             "Id": userArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"PrincipalName": userName}},
                         }
@@ -417,7 +417,7 @@ def user_mfa_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition:
                         {
                             "Type": "AwsIamUser",
                             "Id": userArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"PrincipalName": userName}},
                         }
@@ -487,7 +487,7 @@ def user_mfa_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition:
                         {
                             "Type": "AwsIamUser",
                             "Id": userArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"PrincipalName": userName}},
                         }
@@ -576,7 +576,7 @@ def user_inline_policy_check(
                         {
                             "Type": "AwsIamUser",
                             "Id": userArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"PrincipalName": userName}},
                         }
@@ -648,7 +648,7 @@ def user_inline_policy_check(
                         {
                             "Type": "AwsIamUser",
                             "Id": userArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"PrincipalName": userName}},
                         }
@@ -737,7 +737,7 @@ def user_direct_attached_policy_check(
                         {
                             "Type": "AwsIamUser",
                             "Id": userArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"PrincipalName": userName}},
                         }
@@ -809,7 +809,7 @@ def user_direct_attached_policy_check(
                         {
                             "Type": "AwsIamUser",
                             "Id": userArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"PrincipalName": userName}},
                         }
@@ -909,7 +909,7 @@ def cis_aws_foundation_benchmark_pw_policy_check(
                     {
                         "Type": "AwsAccount",
                         "Id": "AWS::::Account:" + awsAccount,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                     }
                 ],
@@ -980,7 +980,7 @@ def cis_aws_foundation_benchmark_pw_policy_check(
                     {
                         "Type": "AwsAccount",
                         "Id": "AWS::::Account:" + awsAccount,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                     }
                 ],
@@ -1061,7 +1061,7 @@ def server_certs_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartit
                     {
                         "Type": "AwsAccount",
                         "Id": "AWS::::Account:" + awsAccount,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                     }
                 ],
@@ -1132,7 +1132,7 @@ def server_certs_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartit
                     {
                         "Type": "AwsAccount",
                         "Id": "AWS::::Account:" + awsAccount,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                     }
                 ],

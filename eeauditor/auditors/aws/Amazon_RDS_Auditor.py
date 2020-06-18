@@ -106,7 +106,7 @@ def rds_instance_ha_check(
                     {
                         "Type": "AwsRdsDbInstance",
                         "Id": instanceArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "AwsRdsDbInstance": {
@@ -168,7 +168,7 @@ def rds_instance_ha_check(
                     {
                         "Type": "AwsRdsDbInstance",
                         "Id": instanceArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "AwsRdsDbInstance": {
@@ -252,7 +252,7 @@ def rds_instance_public_access_check(
                     {
                         "Type": "AwsRdsDbInstance",
                         "Id": instanceArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "AwsRdsDbInstance": {
@@ -318,7 +318,7 @@ def rds_instance_public_access_check(
                     {
                         "Type": "AwsRdsDbInstance",
                         "Id": instanceArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "AwsRdsDbInstance": {
@@ -403,7 +403,7 @@ def rds_instance_storage_encryption_check(
                     {
                         "Type": "AwsRdsDbInstance",
                         "Id": instanceArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "AwsRdsDbInstance": {
@@ -461,7 +461,7 @@ def rds_instance_storage_encryption_check(
                     {
                         "Type": "AwsRdsDbInstance",
                         "Id": instanceArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "AwsRdsDbInstance": {
@@ -538,7 +538,7 @@ def rds_instance_iam_auth_check(
                         {
                             "Type": "AwsRdsDbInstance",
                             "Id": instanceArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "AwsRdsDbInstance": {
@@ -606,7 +606,7 @@ def rds_instance_iam_auth_check(
                         {
                             "Type": "AwsRdsDbInstance",
                             "Id": instanceArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "AwsRdsDbInstance": {
@@ -709,7 +709,7 @@ def rds_instance_domain_join_check(
                         {
                             "Type": "AwsRdsDbInstance",
                             "Id": instanceArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "AwsRdsDbInstance": {
@@ -776,7 +776,7 @@ def rds_instance_domain_join_check(
                         {
                             "Type": "AwsRdsDbInstance",
                             "Id": instanceArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "AwsRdsDbInstance": {
@@ -864,7 +864,7 @@ def rds_instance_performance_insights_check(
                     {
                         "Type": "AwsRdsDbInstance",
                         "Id": instanceArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "AwsRdsDbInstance": {
@@ -924,7 +924,7 @@ def rds_instance_performance_insights_check(
                     {
                         "Type": "AwsRdsDbInstance",
                         "Id": instanceArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "AwsRdsDbInstance": {
@@ -1003,7 +1003,7 @@ def rds_instance_deletion_protection_check(
                     {
                         "Type": "AwsRdsDbInstance",
                         "Id": instanceArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "AwsRdsDbInstance": {
@@ -1066,7 +1066,7 @@ def rds_instance_deletion_protection_check(
                     {
                         "Type": "AwsRdsDbInstance",
                         "Id": instanceArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "AwsRdsDbInstance": {
@@ -1151,7 +1151,7 @@ def rds_instance_cloudwatch_logging_check(
                     {
                         "Type": "AwsRdsDbInstance",
                         "Id": instanceArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "AwsRdsDbInstance": {
@@ -1211,7 +1211,7 @@ def rds_instance_cloudwatch_logging_check(
                     {
                         "Type": "AwsRdsDbInstance",
                         "Id": instanceArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "AwsRdsDbInstance": {
@@ -1289,7 +1289,7 @@ def rds_snapshot_encryption_check(
                     {
                         "Type": "AwsRdsDbSnapshot",
                         "Id": snapshotArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"SnapshotId": snapshotId}},
                     }
@@ -1338,7 +1338,7 @@ def rds_snapshot_encryption_check(
                     {
                         "Type": "AwsRdsDbSnapshot",
                         "Id": snapshotArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"SnapshotId": snapshotId}},
                     }
@@ -1412,7 +1412,7 @@ def rds_snapshot_public_share_check(
                             {
                                 "Type": "AwsRdsDbSnapshot",
                                 "Id": snapshotArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {"Other": {"SnapshotId": snapshotId}},
                             }
@@ -1468,7 +1468,7 @@ def rds_snapshot_public_share_check(
                             {
                                 "Type": "AwsRdsDbSnapshot",
                                 "Id": snapshotArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {"Other": {"SnapshotId": snapshotId}},
                             }

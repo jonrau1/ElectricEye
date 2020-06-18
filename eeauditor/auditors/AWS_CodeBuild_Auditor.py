@@ -81,7 +81,7 @@ class ArtifactEncryptionCheck(Auditor):
                             {
                                 "Type": "AwsCodeBuildProject",
                                 "Id": buildProjectArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                             }
@@ -132,7 +132,7 @@ class ArtifactEncryptionCheck(Auditor):
                             {
                                 "Type": "AwsCodeBuildProject",
                                 "Id": buildProjectArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                             }
@@ -195,7 +195,7 @@ class InsecureSSLCheck(Auditor):
                         {
                             "Type": "AwsCodeBuildProject",
                             "Id": buildProjectArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                         }
@@ -251,7 +251,7 @@ class InsecureSSLCheck(Auditor):
                         {
                             "Type": "AwsCodeBuildProject",
                             "Id": buildProjectArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                         }
@@ -335,7 +335,7 @@ class PlaintextENVvarCheck(Auditor):
                                 {
                                     "Type": "AwsCodeBuildProject",
                                     "Id": buildProjectArn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                                 }
@@ -411,7 +411,7 @@ class PlaintextENVvarCheck(Auditor):
                                 {
                                     "Type": "AwsCodeBuildProject",
                                     "Id": buildProjectArn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                                 }
@@ -492,7 +492,7 @@ class S3LoggingEncryptionCheck(Auditor):
                         {
                             "Type": "AwsCodeBuildProject",
                             "Id": buildProjectArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                         }
@@ -543,7 +543,7 @@ class S3LoggingEncryptionCheck(Auditor):
                         {
                             "Type": "AwsCodeBuildProject",
                             "Id": buildProjectArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                         }
@@ -603,7 +603,7 @@ class CloudwatchLoggingCheck(Auditor):
                         {
                             "Type": "AwsCodeBuildProject",
                             "Id": buildProjectArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                         }
@@ -655,7 +655,7 @@ class CloudwatchLoggingCheck(Auditor):
                         {
                             "Type": "AwsCodeBuildProject",
                             "Id": buildProjectArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                         }

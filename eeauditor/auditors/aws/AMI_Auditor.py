@@ -73,7 +73,7 @@ def public_ami_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                     {
                         "Type": "Other",
                         "Id": amiArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "Other": {"imageId": imageId, "imageCreatedDate": imageCreatedDate}
@@ -130,7 +130,7 @@ def public_ami_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                     {
                         "Type": "Other",
                         "Id": amiArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "Other": {"imageId": imageId, "imageCreatedDate": imageCreatedDate}
@@ -206,7 +206,7 @@ def encrypted_ami_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
                         {
                             "Type": "Other",
                             "Id": amiArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "Other": {"imageId": imageId, "imageCreatedDate": imageCreatedDate}
@@ -257,7 +257,7 @@ def encrypted_ami_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
                         {
                             "Type": "Other",
                             "Id": amiArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "Other": {"imageId": imageId, "imageCreatedDate": imageCreatedDate}

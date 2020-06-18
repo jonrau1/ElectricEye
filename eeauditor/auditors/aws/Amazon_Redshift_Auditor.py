@@ -70,7 +70,7 @@ def cluster_public_access_check(
                     {
                         "Type": "AwsRedshiftCluster",
                         "Id": clusterArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"ClusterId": clusterId}},
                     }
@@ -125,7 +125,7 @@ def cluster_public_access_check(
                     {
                         "Type": "AwsRedshiftCluster",
                         "Id": clusterArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"ClusterId": clusterId}},
                     }
@@ -194,7 +194,7 @@ def cluster_encryption_check(
                     {
                         "Type": "AwsRedshiftCluster",
                         "Id": clusterArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"ClusterId": clusterId}},
                     }
@@ -243,7 +243,7 @@ def cluster_encryption_check(
                     {
                         "Type": "AwsRedshiftCluster",
                         "Id": clusterArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"ClusterId": clusterId}},
                     }
@@ -303,7 +303,7 @@ def cluster_enhanced_vpc_routing_check(
                     {
                         "Type": "AwsRedshiftCluster",
                         "Id": clusterArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"ClusterId": clusterId}},
                     }
@@ -355,7 +355,7 @@ def cluster_enhanced_vpc_routing_check(
                     {
                         "Type": "AwsRedshiftCluster",
                         "Id": clusterArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"ClusterId": clusterId}},
                     }
@@ -420,7 +420,7 @@ def cluster_logging_check(
                     {
                         "Type": "AwsRedshiftCluster",
                         "Id": clusterArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"ClusterId": clusterId}},
                     }
@@ -470,7 +470,7 @@ def cluster_logging_check(
                     {
                         "Type": "AwsRedshiftCluster",
                         "Id": clusterArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"ClusterId": clusterId}},
                     }

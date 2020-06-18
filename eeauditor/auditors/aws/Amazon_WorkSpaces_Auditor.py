@@ -75,7 +75,7 @@ def workspaces_user_volume_encryption_check(
                         {
                             "Type": "AwsWorkspacesWorkspace",
                             "Id": workspaceArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"WorkspaceId": workspaceId}},
                         }
@@ -126,7 +126,7 @@ def workspaces_user_volume_encryption_check(
                         {
                             "Type": "AwsWorkspacesWorkspace",
                             "Id": workspaceArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"WorkspaceId": workspaceId}},
                         }
@@ -195,7 +195,7 @@ def workspaces_root_volume_encryption_check(
                         {
                             "Type": "AwsWorkspacesWorkspace",
                             "Id": workspaceArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"WorkspaceId": workspaceId}},
                         }
@@ -246,7 +246,7 @@ def workspaces_root_volume_encryption_check(
                         {
                             "Type": "AwsWorkspacesWorkspace",
                             "Id": workspaceArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"WorkspaceId": workspaceId}},
                         }
@@ -311,7 +311,7 @@ def workspaces_running_mode_check(
                     {
                         "Type": "AwsWorkspacesWorkspace",
                         "Id": workspaceArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"WorkspaceId": workspaceId}},
                     }
@@ -361,7 +361,7 @@ def workspaces_running_mode_check(
                     {
                         "Type": "AwsWorkspacesWorkspace",
                         "Id": workspaceArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"WorkspaceId": workspaceId}},
                     }
@@ -431,7 +431,7 @@ def workspaces_directory_default_internet_check(
                     {
                         "Type": "Other",
                         "Id": workspacesDirectoryArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"DirectoryId": workspacesDirectoryId}},
                     }
@@ -484,7 +484,7 @@ def workspaces_directory_default_internet_check(
                     {
                         "Type": "Other",
                         "Id": workspacesDirectoryArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"DirectoryId": workspacesDirectoryId}},
                     }

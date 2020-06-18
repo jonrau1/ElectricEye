@@ -86,7 +86,7 @@ def unused_function_check(
                         {
                             "Type": "AwsLambda",
                             "Id": lambdaArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                         }
                     ],
@@ -135,7 +135,7 @@ def unused_function_check(
                         {
                             "Type": "AwsLambda",
                             "Id": lambdaArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                         }
                     ],

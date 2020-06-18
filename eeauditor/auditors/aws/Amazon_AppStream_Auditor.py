@@ -70,7 +70,7 @@ def default_internet_access_check(
                     {
                         "Type": "AwsAppStreamFleet",
                         "Id": fleetArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"fleetName": fleetName}},
                     }
@@ -123,7 +123,7 @@ def default_internet_access_check(
                     {
                         "Type": "AwsAppStreamFleet",
                         "Id": fleetArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"fleetName": fleetName}},
                     }
@@ -202,7 +202,7 @@ def public_image_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartit
                 {
                     "Type": "Other",
                     "Id": imageArn,
-                    "Partition": "aws",
+                    "Partition": awsPartition,
                     "Region": awsRegion,
                     "Details": {"Other": {"Image Name": imageName}},
                 }
@@ -274,7 +274,7 @@ def compromise_appstream_user_check(
                     {
                         "Type": "Other",
                         "Id": userArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"userName": userName}},
                     }
@@ -336,7 +336,7 @@ def compromise_appstream_user_check(
                     {
                         "Type": "Other",
                         "Id": userArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"userName": userName}},
                     }
@@ -411,7 +411,7 @@ def userpool_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
                     {
                         "Type": "Other",
                         "Id": userArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"userName": userName}},
                     }
@@ -470,7 +470,7 @@ def userpool_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
                     {
                         "Type": "Other",
                         "Id": userArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"userName": userName}},
                     }

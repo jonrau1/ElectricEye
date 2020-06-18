@@ -69,7 +69,7 @@ def secret_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                     {
                         "Type": "Other",
                         "Id": secretArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"secretName": secretName}},
                     }
@@ -133,7 +133,7 @@ def secret_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                     {
                         "Type": "Other",
                         "Id": secretArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"secretName": secretName}},
                     }
@@ -212,7 +212,7 @@ def secret_changed_in_last_90_check(
                     {
                         "Type": "Other",
                         "Id": secretArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"secretName": secretName}},
                     }
@@ -277,7 +277,7 @@ def secret_changed_in_last_90_check(
                     {
                         "Type": "Other",
                         "Id": secretArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"secretName": secretName}},
                     }

@@ -72,7 +72,7 @@ def appmesh_mesh_egress_check(
                         {
                             "Type": "Other",
                             "Id": meshArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"meshName": meshName}},
                         }
@@ -126,7 +126,7 @@ def appmesh_mesh_egress_check(
                         {
                             "Type": "Other",
                             "Id": meshArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"meshName": meshName}},
                         }
@@ -218,7 +218,7 @@ def appmesh_virt_node_backed_default_tls_policy_check(
                                 {
                                     "Type": "Other",
                                     "Id": nodeArn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {
@@ -292,7 +292,7 @@ def appmesh_virt_node_backed_default_tls_policy_check(
                                     {
                                         "Type": "Other",
                                         "Id": nodeArn,
-                                        "Partition": "aws",
+                                        "Partition": awsPartition,
                                         "Region": awsRegion,
                                         "Details": {
                                             "Other": {
@@ -360,7 +360,7 @@ def appmesh_virt_node_backed_default_tls_policy_check(
                                     {
                                         "Type": "Other",
                                         "Id": nodeArn,
-                                        "Partition": "aws",
+                                        "Partition": awsPartition,
                                         "Region": awsRegion,
                                         "Details": {
                                             "Other": {
@@ -459,7 +459,7 @@ def appmesh_virt_node_listener_strict_tls_check(
                                     {
                                         "Type": "Other",
                                         "Id": nodeArn,
-                                        "Partition": "aws",
+                                        "Partition": awsPartition,
                                         "Region": awsRegion,
                                         "Details": {
                                             "Other": {
@@ -528,7 +528,7 @@ def appmesh_virt_node_listener_strict_tls_check(
                                     {
                                         "Type": "Other",
                                         "Id": nodeArn,
-                                        "Partition": "aws",
+                                        "Partition": awsPartition,
                                         "Region": awsRegion,
                                         "Details": {
                                             "Other": {
@@ -617,7 +617,7 @@ def appmesh_logging_check(
                             {
                                 "Type": "Other",
                                 "Id": nodeArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "Other": {
@@ -686,7 +686,7 @@ def appmesh_logging_check(
                                 {
                                     "Type": "Other",
                                     "Id": nodeArn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {

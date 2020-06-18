@@ -194,7 +194,7 @@ def sns_http_encryption_check(
                         {
                             "Type": "AwsSnsTopic",
                             "Id": topicarn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"AwsSnsTopic": {"TopicName": topicName}},
                         }
@@ -245,7 +245,7 @@ def sns_http_encryption_check(
                         {
                             "Type": "AwsSnsTopic",
                             "Id": topicarn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"AwsSnsTopic": {"TopicName": topicName}},
                         }
@@ -323,7 +323,7 @@ def sns_public_access_check(
                     {
                         "Type": "AwsSnsTopic",
                         "Id": topicarn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"AwsSnsTopic": {"TopicName": topicName}},
                     }
@@ -380,7 +380,7 @@ def sns_public_access_check(
                     {
                         "Type": "AwsSnsTopic",
                         "Id": topicarn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"AwsSnsTopic": {"TopicName": topicName}},
                     }
@@ -464,7 +464,7 @@ def sns_cross_account_check(
                     {
                         "Type": "AwsSnsTopic",
                         "Id": topicarn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"AwsSnsTopic": {"TopicName": topicName}},
                     }
@@ -519,7 +519,7 @@ def sns_cross_account_check(
                     {
                         "Type": "AwsSnsTopic",
                         "Id": topicarn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"AwsSnsTopic": {"TopicName": topicName}},
                     }

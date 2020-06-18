@@ -82,7 +82,7 @@ def crawler_s3_encryption_check(
                             {
                                 "Type": "AwsGlueCrawler",
                                 "Id": crawlerArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "Other": {
@@ -138,7 +138,7 @@ def crawler_s3_encryption_check(
                             {
                                 "Type": "AwsGlueCrawler",
                                 "Id": crawlerArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "Other": {
@@ -221,7 +221,7 @@ def crawler_cloudwatch_encryption_check(
                             {
                                 "Type": "AwsGlueCrawler",
                                 "Id": crawlerArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "Other": {
@@ -277,7 +277,7 @@ def crawler_cloudwatch_encryption_check(
                             {
                                 "Type": "AwsGlueCrawler",
                                 "Id": crawlerArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "Other": {
@@ -360,7 +360,7 @@ def crawler_job_bookmark_encryption_check(
                             {
                                 "Type": "AwsGlueCrawler",
                                 "Id": crawlerArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "Other": {
@@ -416,7 +416,7 @@ def crawler_job_bookmark_encryption_check(
                             {
                                 "Type": "AwsGlueCrawler",
                                 "Id": crawlerArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "Other": {
@@ -490,7 +490,7 @@ def glue_data_catalog_encryption_check(
                     {
                         "Type": "AwsGlueDataCatalog",
                         "Id": catalogArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                     }
                 ],
@@ -540,7 +540,7 @@ def glue_data_catalog_encryption_check(
                     {
                         "Type": "AwsGlueDataCatalog",
                         "Id": catalogArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                     }
                 ],
@@ -608,7 +608,7 @@ def glue_data_catalog_password_encryption_check(
                     {
                         "Type": "AwsGlueDataCatalog",
                         "Id": catalogArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                     }
                 ],
@@ -658,7 +658,7 @@ def glue_data_catalog_password_encryption_check(
                     {
                         "Type": "AwsGlueDataCatalog",
                         "Id": catalogArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                     }
                 ],
@@ -725,7 +725,7 @@ def glue_data_catalog_resource_policy_check(
                 {
                     "Type": "AwsGlueDataCatalog",
                     "Id": catalogArn,
-                    "Partition": "aws",
+                    "Partition": awsPartition,
                     "Region": awsRegion,
                     "Details": {"Other": {"policyHash": policyHash}},
                 }
@@ -795,7 +795,7 @@ def glue_data_catalog_resource_policy_check(
                     {
                         "Type": "AwsGlueDataCatalog",
                         "Id": catalogArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                     }
                 ],

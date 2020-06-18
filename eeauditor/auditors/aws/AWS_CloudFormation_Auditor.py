@@ -76,7 +76,7 @@ def cfn_drift_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition
                     {
                         "Type": "AwsCloudFormationStack",
                         "Id": stackArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"stackName": stackName}},
                     }
@@ -128,7 +128,7 @@ def cfn_drift_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition
                     {
                         "Type": "AwsCloudFormationStack",
                         "Id": stackArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"stackName": stackName}},
                     }
@@ -203,7 +203,7 @@ def cfn_monitoring_check(
                     {
                         "Type": "AwsCloudFormationStack",
                         "Id": stackArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"stackName": stackName}},
                     }
@@ -253,7 +253,7 @@ def cfn_monitoring_check(
                     {
                         "Type": "AwsCloudFormationStack",
                         "Id": stackArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"stackName": stackName}},
                     }

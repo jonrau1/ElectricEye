@@ -76,7 +76,7 @@ def emr_cluster_security_configuration_check(
                     {
                         "Type": "AwsEmrCluster",
                         "Id": clusterArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "Other": {
@@ -147,7 +147,7 @@ def emr_cluster_security_configuration_check(
                         {
                             "Type": "AwsEmrCluster",
                             "Id": clusterArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "Other": {"clusterId": clusterId, "clusterName": clusterName,}
@@ -252,7 +252,7 @@ def emr_security_config_encryption_in_transit_check(
                                 {
                                     "Type": "AwsEmrCluster",
                                     "Id": clusterArn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {
@@ -319,7 +319,7 @@ def emr_security_config_encryption_in_transit_check(
                                 {
                                     "Type": "AwsEmrCluster",
                                     "Id": clusterArn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {
@@ -422,7 +422,7 @@ def emr_security_config_encryption_at_rest_check(
                                 {
                                     "Type": "AwsEmrCluster",
                                     "Id": clusterArn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {
@@ -484,7 +484,7 @@ def emr_security_config_encryption_at_rest_check(
                                 {
                                     "Type": "AwsEmrCluster",
                                     "Id": clusterArn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {
@@ -584,7 +584,7 @@ def emr_security_config_config_ebs_encryption_check(
                                 {
                                     "Type": "AwsEmrCluster",
                                     "Id": clusterArn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {
@@ -646,7 +646,7 @@ def emr_security_config_config_ebs_encryption_check(
                                 {
                                     "Type": "AwsEmrCluster",
                                     "Id": clusterArn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {
@@ -710,7 +710,7 @@ def emr_security_config_config_ebs_encryption_check(
                                 {
                                     "Type": "AwsEmrCluster",
                                     "Id": clusterArn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {
@@ -797,7 +797,7 @@ def emr_security_config_kerberos_check(
                             {
                                 "Type": "AwsEmrCluster",
                                 "Id": clusterArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "Other": {
@@ -872,7 +872,7 @@ def emr_security_config_kerberos_check(
                                 {
                                     "Type": "AwsEmrCluster",
                                     "Id": clusterArn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {
@@ -965,7 +965,7 @@ def emr_cluster_termination_protection_check(
                         {
                             "Type": "AwsEmrCluster",
                             "Id": clusterArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "Other": {"clusterId": clusterId, "clusterName": clusterName,}
@@ -1021,7 +1021,7 @@ def emr_cluster_termination_protection_check(
                         {
                             "Type": "AwsEmrCluster",
                             "Id": clusterArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "Other": {"clusterId": clusterId, "clusterName": clusterName,}
@@ -1096,7 +1096,7 @@ def emr_cluster_logging_check(
                     {
                         "Type": "AwsEmrCluster",
                         "Id": clusterArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "Other": {
@@ -1155,7 +1155,7 @@ def emr_cluster_logging_check(
                         {
                             "Type": "AwsEmrCluster",
                             "Id": clusterArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "Other": {"clusterId": clusterId, "clusterName": clusterName,}
@@ -1227,7 +1227,7 @@ def emr_cluster_block_secgroup_check(
                     {
                         "Type": "AwsAccount",
                         "Id": "AWS::::Account:" + awsAccountId,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                     }
                 ],
@@ -1282,7 +1282,7 @@ def emr_cluster_block_secgroup_check(
                     {
                         "Type": "AwsAccount",
                         "Id": "AWS::::Account:" + awsAccountId,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                     }
                 ],

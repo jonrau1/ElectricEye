@@ -80,7 +80,7 @@ def efs_filesys_encryption_check(
                     {
                         "Type": "AwsElasticFileSystem",
                         "Id": fileSysArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"fileSystemId": fileSysId}},
                     }
@@ -129,7 +129,7 @@ def efs_filesys_encryption_check(
                     {
                         "Type": "AwsElasticFileSystem",
                         "Id": fileSysArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"fileSystemId": fileSysId}},
                     }

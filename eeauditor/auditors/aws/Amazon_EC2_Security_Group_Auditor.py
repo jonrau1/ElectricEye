@@ -95,7 +95,7 @@ def security_group_all_open_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -154,7 +154,7 @@ def security_group_all_open_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -254,7 +254,7 @@ def security_group_open_ftp_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -315,7 +315,7 @@ def security_group_open_ftp_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -415,7 +415,7 @@ def security_group_open_telnet_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -476,7 +476,7 @@ def security_group_open_telnet_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -584,7 +584,7 @@ def security_group_open_dcom_rpc_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -653,7 +653,7 @@ def security_group_open_dcom_rpc_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -767,7 +767,7 @@ def security_group_open_smb_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -842,7 +842,7 @@ def security_group_open_smb_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -962,7 +962,7 @@ def security_group_open_mssql_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -1043,7 +1043,7 @@ def security_group_open_mssql_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -1143,7 +1143,7 @@ def security_group_open_oracle_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -1204,7 +1204,7 @@ def security_group_open_oracle_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -1307,7 +1307,7 @@ def security_group_open_mysql_mariadb_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -1371,7 +1371,7 @@ def security_group_open_mysql_mariadb_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -1485,7 +1485,7 @@ def security_group_open_rdp_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -1560,7 +1560,7 @@ def security_group_open_rdp_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -1660,7 +1660,7 @@ def security_group_open_postgresql_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -1721,7 +1721,7 @@ def security_group_open_postgresql_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -1835,7 +1835,7 @@ def security_group_open_kibana_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -1910,7 +1910,7 @@ def security_group_open_kibana_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -2024,7 +2024,7 @@ def security_group_open_redis_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -2099,7 +2099,7 @@ def security_group_open_redis_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -2213,7 +2213,7 @@ def security_group_open_splunkd_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -2288,7 +2288,7 @@ def security_group_open_splunkd_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -2391,7 +2391,7 @@ def security_group_open_elasticsearch1_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -2455,7 +2455,7 @@ def security_group_open_elasticsearch1_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -2558,7 +2558,7 @@ def security_group_open_elasticsearch2_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -2622,7 +2622,7 @@ def security_group_open_elasticsearch2_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -2741,7 +2741,7 @@ def security_group_open_memcached_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -2821,7 +2821,7 @@ def security_group_open_memcached_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -2921,7 +2921,7 @@ def security_group_open_redshift_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -2982,7 +2982,7 @@ def security_group_open_redshift_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -3082,7 +3082,7 @@ def security_group_open_documentdb_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -3143,7 +3143,7 @@ def security_group_open_documentdb_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -3243,7 +3243,7 @@ def security_group_open_cassandra_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -3304,7 +3304,7 @@ def security_group_open_cassandra_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -3404,7 +3404,7 @@ def security_group_open_kafka_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
@@ -3465,7 +3465,7 @@ def security_group_open_kafka_check(
                             {
                                 "Type": "AwsEc2SecurityGroup",
                                 "Id": sgArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}

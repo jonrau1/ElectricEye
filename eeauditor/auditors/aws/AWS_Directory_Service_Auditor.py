@@ -73,7 +73,7 @@ def directory_service_radius_check(
                         {
                             "Type": "Other",
                             "Id": directoryArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"directoryName": directoryName}},
                         }
@@ -132,7 +132,7 @@ def directory_service_radius_check(
                         {
                             "Type": "Other",
                             "Id": directoryArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"directoryName": directoryName}},
                         }
@@ -208,7 +208,7 @@ def directory_service_cloudwatch_logs_check(
                     {
                         "Type": "Other",
                         "Id": directoryArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"directoryName": directoryName}},
                     }
@@ -260,7 +260,7 @@ def directory_service_cloudwatch_logs_check(
                     {
                         "Type": "Other",
                         "Id": directoryArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"directoryName": directoryName}},
                     }

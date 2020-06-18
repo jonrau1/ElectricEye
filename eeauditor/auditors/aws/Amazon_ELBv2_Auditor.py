@@ -94,7 +94,7 @@ def elbv2_alb_logging_check(
                                     {
                                         "Type": "AwsElbv2LoadBalancer",
                                         "Id": elbv2Arn,
-                                        "Partition": "aws",
+                                        "Partition": awsPartition,
                                         "Region": awsRegion,
                                         "Details": {
                                             "AwsElbv2LoadBalancer": {
@@ -164,7 +164,7 @@ def elbv2_alb_logging_check(
                                     {
                                         "Type": "AwsElbv2LoadBalancer",
                                         "Id": elbv2Arn,
-                                        "Partition": "aws",
+                                        "Partition": awsPartition,
                                         "Region": awsRegion,
                                         "Details": {
                                             "AwsElbv2LoadBalancer": {
@@ -267,7 +267,7 @@ def elbv2_deletion_protection_check(
                                 {
                                     "Type": "AwsElbv2LoadBalancer",
                                     "Id": elbv2Arn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "AwsElbv2LoadBalancer": {
@@ -339,7 +339,7 @@ def elbv2_deletion_protection_check(
                                 {
                                     "Type": "AwsElbv2LoadBalancer",
                                     "Id": elbv2Arn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "AwsElbv2LoadBalancer": {
@@ -431,7 +431,7 @@ def elbv2_internet_facing_secure_listeners_check(
                             {
                                 "Type": "AwsElbv2LoadBalancer",
                                 "Id": elbv2Arn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsElbv2LoadBalancer": {
@@ -494,7 +494,7 @@ def elbv2_internet_facing_secure_listeners_check(
                             {
                                 "Type": "AwsElbv2LoadBalancer",
                                 "Id": elbv2Arn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsElbv2LoadBalancer": {
@@ -600,7 +600,7 @@ def elbv2_tls12_listener_policy_check(
                                 {
                                     "Type": "AwsElbv2LoadBalancer",
                                     "Id": elbv2Arn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "AwsElbv2LoadBalancer": {
@@ -671,7 +671,7 @@ def elbv2_tls12_listener_policy_check(
                                 {
                                     "Type": "AwsElbv2LoadBalancer",
                                     "Id": elbv2Arn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "AwsElbv2LoadBalancer": {
@@ -762,7 +762,7 @@ def elbv2_drop_invalid_header_check(
                             {
                                 "Type": "AwsElbv2LoadBalancer",
                                 "Id": elbv2Arn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsElbv2LoadBalancer": {
@@ -824,7 +824,7 @@ def elbv2_drop_invalid_header_check(
                             {
                                 "Type": "AwsElbv2LoadBalancer",
                                 "Id": elbv2Arn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsElbv2LoadBalancer": {
@@ -929,7 +929,7 @@ def elbv2_nlb_tls_logging_check(
                                                 {
                                                     "Type": "AwsElbv2LoadBalancer",
                                                     "Id": elbv2Arn,
-                                                    "Partition": "aws",
+                                                    "Partition": awsPartition,
                                                     "Region": awsRegion,
                                                     "Details": {
                                                         "AwsElbv2LoadBalancer": {
@@ -997,7 +997,7 @@ def elbv2_nlb_tls_logging_check(
                                                 {
                                                     "Type": "AwsElbv2LoadBalancer",
                                                     "Id": elbv2Arn,
-                                                    "Partition": "aws",
+                                                    "Partition": awsPartition,
                                                     "Region": awsRegion,
                                                     "Details": {
                                                         "AwsElbv2LoadBalancer": {

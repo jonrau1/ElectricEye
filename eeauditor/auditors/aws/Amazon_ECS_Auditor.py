@@ -87,7 +87,7 @@ def ecs_cluster_container_insights_check(
                                 {
                                     "Type": "AwsEcsCluster",
                                     "Id": ecsClusterArn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {"Other": {"ClusterName": clusterName}},
                                 }
@@ -147,7 +147,7 @@ def ecs_cluster_container_insights_check(
                                 {
                                     "Type": "AwsEcsCluster",
                                     "Id": ecsClusterArn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {"Other": {"ClusterName": clusterName}},
                                 }
@@ -221,7 +221,7 @@ def ecs_cluster_default_provider_strategy_check(
                             {
                                 "Type": "AwsEcsCluster",
                                 "Id": ecsClusterArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {"Other": {"ClusterName": clusterName}},
                             }
@@ -271,7 +271,7 @@ def ecs_cluster_default_provider_strategy_check(
                             {
                                 "Type": "AwsEcsCluster",
                                 "Id": ecsClusterArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {"Other": {"ClusterName": clusterName}},
                             }

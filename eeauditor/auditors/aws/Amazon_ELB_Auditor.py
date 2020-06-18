@@ -74,7 +74,7 @@ def internet_facing_clb_https_listener_check(
                             {
                                 "Type": "AwsElbLoadBalancer",
                                 "Id": clbArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {"Other": {"LoadBalancerName": clbName}},
                             }
@@ -127,7 +127,7 @@ def internet_facing_clb_https_listener_check(
                             {
                                 "Type": "AwsElbLoadBalancer",
                                 "Id": clbArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {"Other": {"LoadBalancerName": clbName}},
                             }
@@ -208,7 +208,7 @@ def clb_https_listener_tls12_policy_check(
                         {
                             "Type": "AwsElbLoadBalancer",
                             "Id": clbArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"LoadBalancerName": clbName}},
                         }
@@ -261,7 +261,7 @@ def clb_https_listener_tls12_policy_check(
                         {
                             "Type": "AwsElbLoadBalancer",
                             "Id": clbArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"LoadBalancerName": clbName}},
                         }
@@ -337,7 +337,7 @@ def clb_cross_zone_balancing_check(
                     {
                         "Type": "AwsElbLoadBalancer",
                         "Id": clbArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"LoadBalancerName": clbName}},
                     }
@@ -391,7 +391,7 @@ def clb_cross_zone_balancing_check(
                     {
                         "Type": "AwsElbLoadBalancer",
                         "Id": clbArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"LoadBalancerName": clbName}},
                     }
@@ -468,7 +468,7 @@ def clb_connection_draining_check(
                     {
                         "Type": "AwsElbLoadBalancer",
                         "Id": clbArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"LoadBalancerName": clbName}},
                     }
@@ -522,7 +522,7 @@ def clb_connection_draining_check(
                     {
                         "Type": "AwsElbLoadBalancer",
                         "Id": clbArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"LoadBalancerName": clbName}},
                     }
@@ -597,7 +597,7 @@ def clb_access_logging_check(
                     {
                         "Type": "AwsElbLoadBalancer",
                         "Id": clbArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"LoadBalancerName": clbName}},
                     }
@@ -649,7 +649,7 @@ def clb_access_logging_check(
                     {
                         "Type": "AwsElbLoadBalancer",
                         "Id": clbArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"LoadBalancerName": clbName}},
                     }

@@ -66,7 +66,7 @@ def vpc_default_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
                     {
                         "Type": "AwsEc2Vpc",
                         "Id": vpcArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"vpcId": vpcId}},
                     }
@@ -116,7 +116,7 @@ def vpc_default_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
                     {
                         "Type": "AwsEc2Vpc",
                         "Id": vpcArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"vpcId": vpcId}},
                     }
@@ -181,7 +181,7 @@ def vpc_flow_logs_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
                     {
                         "Type": "AwsEc2Vpc",
                         "Id": vpcArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"vpcId": vpcId}},
                     }
@@ -231,7 +231,7 @@ def vpc_flow_logs_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
                     {
                         "Type": "AwsEc2Vpc",
                         "Id": vpcArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"vpcId": vpcId}},
                     }

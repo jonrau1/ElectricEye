@@ -76,7 +76,7 @@ def broker_kms_cmk_check(
                         {
                             "Type": "AwsMqMessageBroker",
                             "Id": brokerArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "Other": {"brokerName": brokerName, "brokerId": brokerId,}
@@ -127,7 +127,7 @@ def broker_kms_cmk_check(
                         {
                             "Type": "AwsMqMessageBroker",
                             "Id": brokerArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "Other": {
@@ -201,7 +201,7 @@ def broker_audit_logging_check(
                         {
                             "Type": "AwsMqMessageBroker",
                             "Id": brokerArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "Other": {"brokerName": brokerName, "brokerId": brokerId,}
@@ -253,7 +253,7 @@ def broker_audit_logging_check(
                         {
                             "Type": "AwsMqMessageBroker",
                             "Id": brokerArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "Other": {"brokerName": brokerName, "brokerId": brokerId,}
@@ -327,7 +327,7 @@ def broker_general_logging_check(
                         {
                             "Type": "AwsMqMessageBroker",
                             "Id": brokerArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "Other": {"brokerName": brokerName, "brokerId": brokerId,}
@@ -381,7 +381,7 @@ def broker_general_logging_check(
                         {
                             "Type": "AwsMqMessageBroker",
                             "Id": brokerArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "Other": {"brokerName": brokerName, "brokerId": brokerId,}
@@ -458,7 +458,7 @@ def broker_public_access_check(
                         {
                             "Type": "AwsMqMessageBroker",
                             "Id": brokerArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "Other": {"brokerName": brokerName, "brokerId": brokerId,}
@@ -517,7 +517,7 @@ def broker_public_access_check(
                         {
                             "Type": "AwsMqMessageBroker",
                             "Id": brokerArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "Other": {"brokerName": brokerName, "brokerId": brokerId,}
@@ -593,7 +593,7 @@ def broker_minor_version_auto_upgrade_check(
                         {
                             "Type": "AwsMqMessageBroker",
                             "Id": brokerArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "Other": {"brokerName": brokerName, "brokerId": brokerId,}
@@ -647,7 +647,7 @@ def broker_minor_version_auto_upgrade_check(
                         {
                             "Type": "AwsMqMessageBroker",
                             "Id": brokerArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "Other": {"brokerName": brokerName, "brokerId": brokerId,}

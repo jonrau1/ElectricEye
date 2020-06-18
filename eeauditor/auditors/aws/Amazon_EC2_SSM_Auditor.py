@@ -85,7 +85,7 @@ def ec2_instance_ssm_managed_check(
                             {
                                 "Type": "AwsEc2Instance",
                                 "Id": instanceArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2Instance": {
@@ -143,7 +143,7 @@ def ec2_instance_ssm_managed_check(
                             {
                                 "Type": "AwsEc2Instance",
                                 "Id": instanceArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2Instance": {
@@ -230,7 +230,7 @@ def ssm_instace_agent_update_check(
                             {
                                 "Type": "AwsEc2Instance",
                                 "Id": instanceArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2Instance": {
@@ -288,7 +288,7 @@ def ssm_instace_agent_update_check(
                             {
                                 "Type": "AwsEc2Instance",
                                 "Id": instanceArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2Instance": {
@@ -373,7 +373,7 @@ def ssm_instance_association_check(
                             {
                                 "Type": "AwsEc2Instance",
                                 "Id": instanceArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2Instance": {
@@ -431,7 +431,7 @@ def ssm_instance_association_check(
                             {
                                 "Type": "AwsEc2Instance",
                                 "Id": instanceArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2Instance": {
@@ -517,7 +517,7 @@ def ssm_instance_patch_state_state(
                             {
                                 "Type": "AwsEc2Instance",
                                 "Id": instanceArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "AwsEc2Instance": {
@@ -588,7 +588,7 @@ def ssm_instance_patch_state_state(
                                     {
                                         "Type": "AwsEc2Instance",
                                         "Id": instanceArn,
-                                        "Partition": "aws",
+                                        "Partition": awsPartition,
                                         "Region": awsRegion,
                                         "Details": {
                                             "AwsEc2Instance": {
@@ -654,7 +654,7 @@ def ssm_instance_patch_state_state(
                                     {
                                         "Type": "AwsEc2Instance",
                                         "Id": instanceArn,
-                                        "Partition": "aws",
+                                        "Partition": awsPartition,
                                         "Region": awsRegion,
                                         "Details": {
                                             "AwsEc2Instance": {

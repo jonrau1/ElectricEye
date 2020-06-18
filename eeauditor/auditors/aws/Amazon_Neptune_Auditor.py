@@ -73,7 +73,7 @@ def neptune_instance_multi_az_check(
                     {
                         "Type": "Other",
                         "Id": neptuneInstanceArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"InstanceId": neptuneDbId}},
                     }
@@ -127,7 +127,7 @@ def neptune_instance_multi_az_check(
                     {
                         "Type": "Other",
                         "Id": neptuneInstanceArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"InstanceId": neptuneDbId}},
                     }
@@ -196,7 +196,7 @@ def neptune_instance_storage_encryption_check(
                     {
                         "Type": "Other",
                         "Id": neptuneInstanceArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"InstanceId": neptuneDbId}},
                     }
@@ -247,7 +247,7 @@ def neptune_instance_storage_encryption_check(
                     {
                         "Type": "Other",
                         "Id": neptuneInstanceArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"InstanceId": neptuneDbId}},
                     }
@@ -310,7 +310,7 @@ def neptune_instance_iam_authentication_check(
                     {
                         "Type": "Other",
                         "Id": neptuneInstanceArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"InstanceId": neptuneDbId}},
                     }
@@ -372,7 +372,7 @@ def neptune_instance_iam_authentication_check(
                     {
                         "Type": "Other",
                         "Id": neptuneInstanceArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"InstanceId": neptuneDbId}},
                     }
@@ -452,7 +452,7 @@ def neptune_cluster_parameter_ssl_enforcement_check(
                             {
                                 "Type": "Other",
                                 "Id": parameterGroupArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {"Other": {"ParameterGroupName": parameterGroupName}},
                             }
@@ -506,7 +506,7 @@ def neptune_cluster_parameter_ssl_enforcement_check(
                             {
                                 "Type": "Other",
                                 "Id": parameterGroupArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {"Other": {"ParameterGroupName": parameterGroupName}},
                             }
@@ -582,7 +582,7 @@ def neptune_cluster_parameter_audit_log_check(
                             {
                                 "Type": "Other",
                                 "Id": parameterGroupArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {"Other": {"ParameterGroupName": parameterGroupName}},
                             }
@@ -635,7 +635,7 @@ def neptune_cluster_parameter_audit_log_check(
                             {
                                 "Type": "Other",
                                 "Id": parameterGroupArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {"Other": {"ParameterGroupName": parameterGroupName}},
                             }

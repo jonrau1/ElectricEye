@@ -73,7 +73,7 @@ def docdb_public_instance_check(
                     {
                         "Type": "AwsDocumentDbInstance",
                         "Id": docdbArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"instanceId": docdbId}},
                     }
@@ -128,7 +128,7 @@ def docdb_public_instance_check(
                     {
                         "Type": "AwsDocumentDbInstance",
                         "Id": docdbArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"instanceId": docdbId}},
                     }
@@ -199,7 +199,7 @@ def docdb_instance_encryption_check(
                     {
                         "Type": "AwsDocumentDbInstance",
                         "Id": docdbArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"instanceId": docdbId}},
                     }
@@ -248,7 +248,7 @@ def docdb_instance_encryption_check(
                     {
                         "Type": "AwsDocumentDbInstance",
                         "Id": docdbArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"instanceId": docdbId}},
                     }
@@ -309,7 +309,7 @@ def docdb_instance_audit_logging_check(
                     {
                         "Type": "AwsDocumentDbInstance",
                         "Id": docdbArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"instanceId": docdbId}},
                     }
@@ -361,7 +361,7 @@ def docdb_instance_audit_logging_check(
                     {
                         "Type": "AwsDocumentDbInstance",
                         "Id": docdbArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"instanceId": docdbId}},
                     }
@@ -428,7 +428,7 @@ def docdb_cluster_multiaz_check(
                     {
                         "Type": "AwsDocumentDbCluster",
                         "Id": docdbClusterArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"clusterId": docdbclusterId}},
                     }
@@ -482,7 +482,7 @@ def docdb_cluster_multiaz_check(
                     {
                         "Type": "AwsDocumentDbCluster",
                         "Id": docdbClusterArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"clusterId": docdbclusterId}},
                     }
@@ -551,7 +551,7 @@ def docdb_cluster_deletion_protection_check(
                     {
                         "Type": "AwsDocumentDbCluster",
                         "Id": docdbClusterArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"clusterId": docdbclusterId}},
                     }
@@ -605,7 +605,7 @@ def docdb_cluster_deletion_protection_check(
                     {
                         "Type": "AwsDocumentDbCluster",
                         "Id": docdbClusterArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"clusterId": docdbclusterId}},
                     }
@@ -692,7 +692,7 @@ def documentdb_parameter_group_audit_log_check(
                                 {
                                     "Type": "Other",
                                     "Id": parameterGroupArn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {"ParameterGroupName": parameterGroupName}
@@ -755,7 +755,7 @@ def documentdb_parameter_group_audit_log_check(
                                 {
                                     "Type": "Other",
                                     "Id": parameterGroupArn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {"ParameterGroupName": parameterGroupName}
@@ -846,7 +846,7 @@ def documentdb_parameter_group_tls_enforcement_check(
                                 {
                                     "Type": "Other",
                                     "Id": parameterGroupArn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {"parameterGroupName": parameterGroupName}
@@ -910,7 +910,7 @@ def documentdb_parameter_group_tls_enforcement_check(
                                 {
                                     "Type": "Other",
                                     "Id": parameterGroupArn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {"parameterGroupName": parameterGroupName}
@@ -990,7 +990,7 @@ def documentdb_cluster_snapshot_encryption_check(
                         {
                             "Type": "Other",
                             "Id": clusterSnapshotArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"snapshotId": clusterSnapshotId}},
                         }
@@ -1041,7 +1041,7 @@ def documentdb_cluster_snapshot_encryption_check(
                         {
                             "Type": "Other",
                             "Id": clusterSnapshotArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"Other": {"snapshotId": clusterSnapshotId}},
                         }
@@ -1126,7 +1126,7 @@ def documentdb_cluster_snapshot_public_share_check(
                                 {
                                     "Type": "Other",
                                     "Id": clusterSnapshotArn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {"Other": {"snapshotId": clusterSnapshotId}},
                                 }
@@ -1190,7 +1190,7 @@ def documentdb_cluster_snapshot_public_share_check(
                                 {
                                     "Type": "Other",
                                     "Id": clusterSnapshotArn,
-                                    "Partition": "aws",
+                                    "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {"Other": {"snapshotId": clusterSnapshotId}},
                                 }

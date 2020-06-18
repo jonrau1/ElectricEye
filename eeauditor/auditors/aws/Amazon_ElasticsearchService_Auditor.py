@@ -75,7 +75,7 @@ def dedicated_master_check(
                     {
                         "Type": "AwsElasticsearchDomain",
                         "Id": domainArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "AwsElasticsearchDomain": {
@@ -135,7 +135,7 @@ def dedicated_master_check(
                     {
                         "Type": "AwsElasticsearchDomain",
                         "Id": domainArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "AwsElasticsearchDomain": {
@@ -210,7 +210,7 @@ def cognito_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: 
                     {
                         "Type": "AwsElasticsearchDomain",
                         "Id": domainArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "AwsElasticsearchDomain": {
@@ -275,7 +275,7 @@ def cognito_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: 
                     {
                         "Type": "AwsElasticsearchDomain",
                         "Id": domainArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "AwsElasticsearchDomain": {
@@ -360,7 +360,7 @@ def encryption_at_rest_check(
                     {
                         "Type": "AwsElasticsearchDomain",
                         "Id": domainArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "AwsElasticsearchDomain": {
@@ -418,7 +418,7 @@ def encryption_at_rest_check(
                     {
                         "Type": "AwsElasticsearchDomain",
                         "Id": domainArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "AwsElasticsearchDomain": {
@@ -495,7 +495,7 @@ def node2node_encryption_check(
                     {
                         "Type": "AwsElasticsearchDomain",
                         "Id": domainArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "AwsElasticsearchDomain": {
@@ -558,7 +558,7 @@ def node2node_encryption_check(
                     {
                         "Type": "AwsElasticsearchDomain",
                         "Id": domainArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "AwsElasticsearchDomain": {
@@ -640,7 +640,7 @@ def https_enforcement_check(
                     {
                         "Type": "AwsElasticsearchDomain",
                         "Id": domainArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "AwsElasticsearchDomain": {
@@ -703,7 +703,7 @@ def https_enforcement_check(
                     {
                         "Type": "AwsElasticsearchDomain",
                         "Id": domainArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "AwsElasticsearchDomain": {
@@ -789,7 +789,7 @@ def tls_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                         {
                             "Type": "AwsElasticsearchDomain",
                             "Id": domainArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "AwsElasticsearchDomain": {
@@ -855,7 +855,7 @@ def tls_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                         {
                             "Type": "AwsElasticsearchDomain",
                             "Id": domainArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
                                 "AwsElasticsearchDomain": {
@@ -943,7 +943,7 @@ def elastic_update_check(
                     {
                         "Type": "AwsElasticsearchDomain",
                         "Id": domainArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "AwsElasticsearchDomain": {
@@ -1005,7 +1005,7 @@ def elastic_update_check(
                     {
                         "Type": "AwsElasticsearchDomain",
                         "Id": domainArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "AwsElasticsearchDomain": {
