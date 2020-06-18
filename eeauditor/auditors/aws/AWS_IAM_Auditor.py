@@ -57,13 +57,7 @@ def iam_access_key_age_check(
                         finding = {
                             "SchemaVersion": "2018-10-08",
                             "Id": keyUserName + keyId + "/iam-access-key-age-check",
-                            "ProductArn": "arn:aws:securityhub:"
-                            + awsRegion
-                            + ":"
-                            + awsAccount
-                            + ":product/"
-                            + awsAccount
-                            + "/default",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": userArn + keyId,
                             "AwsAccountId": awsAccount,
                             "Types": [
@@ -139,13 +133,7 @@ def iam_access_key_age_check(
                         finding = {
                             "SchemaVersion": "2018-10-08",
                             "Id": keyUserName + keyId + "/iam-access-key-age-check",
-                            "ProductArn": "arn:aws:securityhub:"
-                            + awsRegion
-                            + ":"
-                            + awsAccount
-                            + ":product/"
-                            + awsAccount
-                            + "/default",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": userArn + keyId,
                             "AwsAccountId": awsAccount,
                             "Types": [
@@ -240,13 +228,7 @@ def user_permission_boundary_check(
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": userArn + "/iam-user-permissions-boundary-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccount
-                + ":product/"
-                + awsAccount
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": userArn,
                 "AwsAccountId": awsAccount,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -308,13 +290,7 @@ def user_permission_boundary_check(
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": userArn + "/iam-user-permissions-boundary-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccount
-                    + ":product/"
-                    + awsAccount
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": userArn,
                     "AwsAccountId": awsAccount,
                     "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -387,13 +363,7 @@ def user_mfa_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition:
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": userArn + "/iam-user-mfa-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccount
-                    + ":product/"
-                    + awsAccount
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": userArn,
                     "AwsAccountId": awsAccount,
                     "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -459,13 +429,7 @@ def user_mfa_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition:
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": userArn + "/iam-user-mfa-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccount
-                    + ":product/"
-                    + awsAccount
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": userArn,
                     "AwsAccountId": awsAccount,
                     "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -546,13 +510,7 @@ def user_inline_policy_check(
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": userArn + "/iam-user-attach-inline-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccount
-                    + ":product/"
-                    + awsAccount
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": userArn,
                     "AwsAccountId": awsAccount,
                     "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -618,13 +576,7 @@ def user_inline_policy_check(
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": userArn + "/iam-user-attach-inline-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccount
-                    + ":product/"
-                    + awsAccount
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": userArn,
                     "AwsAccountId": awsAccount,
                     "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -707,13 +659,7 @@ def user_direct_attached_policy_check(
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": userArn + "/iam-user-attach-managed-policy-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccount
-                    + ":product/"
-                    + awsAccount
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": userArn,
                     "AwsAccountId": awsAccount,
                     "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -779,13 +725,7 @@ def user_direct_attached_policy_check(
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": userArn + "/iam-user-attach-managed-policy-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccount
-                    + ":product/"
-                    + awsAccount
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": userArn,
                     "AwsAccountId": awsAccount,
                     "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -879,13 +819,7 @@ def cis_aws_foundation_benchmark_pw_policy_check(
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": awsAccount + "/cis-aws-foundations-benchmark-pw-policy-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccount
-                + ":product/"
-                + awsAccount
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": awsAccount + "iam-password-policy",
                 "AwsAccountId": awsAccount,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -908,7 +842,7 @@ def cis_aws_foundation_benchmark_pw_policy_check(
                 "Resources": [
                     {
                         "Type": "AwsAccount",
-                        "Id": "AWS::::Account:" + awsAccount,
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccount}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }
@@ -950,13 +884,7 @@ def cis_aws_foundation_benchmark_pw_policy_check(
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": awsAccount + "/cis-aws-foundations-benchmark-pw-policy-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccount
-                + ":product/"
-                + awsAccount
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": awsAccount + "iam-password-policy",
                 "AwsAccountId": awsAccount,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -979,7 +907,7 @@ def cis_aws_foundation_benchmark_pw_policy_check(
                 "Resources": [
                     {
                         "Type": "AwsAccount",
-                        "Id": "AWS::::Account:" + awsAccount,
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccount}"
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }
@@ -1031,13 +959,7 @@ def server_certs_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartit
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": awsAccount + "/server-x509-certs-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccount
-                + ":product/"
-                + awsAccount
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": awsAccount + "server-cert",
                 "AwsAccountId": awsAccount,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -1060,7 +982,7 @@ def server_certs_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartit
                 "Resources": [
                     {
                         "Type": "AwsAccount",
-                        "Id": "AWS::::Account:" + awsAccount,
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccount}"
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }
@@ -1102,13 +1024,7 @@ def server_certs_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartit
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": awsAccount + "/server-x509-certs-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccount
-                + ":product/"
-                + awsAccount
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": awsAccount + "server-cert",
                 "AwsAccountId": awsAccount,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -1131,7 +1047,7 @@ def server_certs_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartit
                 "Resources": [
                     {
                         "Type": "AwsAccount",
-                        "Id": "AWS::::Account:" + awsAccount,
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccount}"
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }

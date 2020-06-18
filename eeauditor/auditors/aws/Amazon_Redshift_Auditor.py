@@ -37,7 +37,7 @@ def cluster_public_access_check(
     myRedshiftClusters = clusters["Clusters"]
     for cluster in myRedshiftClusters:
         clusterId = str(cluster["ClusterIdentifier"])
-        clusterArn = "arn:aws:redshift:" + awsRegion + ":" + awsAccountId + ":cluster:" + clusterId
+        clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if str(cluster["PubliclyAccessible"]) == "True":
             finding = {
@@ -161,7 +161,7 @@ def cluster_encryption_check(
     myRedshiftClusters = clusters["Clusters"]
     for cluster in myRedshiftClusters:
         clusterId = str(cluster["ClusterIdentifier"])
-        clusterArn = "arn:aws:redshift:" + awsRegion + ":" + awsAccountId + ":cluster:" + clusterId
+        clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if str(cluster["Encrypted"]) == "False":
             finding = {
@@ -273,7 +273,7 @@ def cluster_enhanced_vpc_routing_check(
     myRedshiftClusters = clusters["Clusters"]
     for cluster in myRedshiftClusters:
         clusterId = str(cluster["ClusterIdentifier"])
-        clusterArn = "arn:aws:redshift:" + awsRegion + ":" + awsAccountId + ":cluster:" + clusterId
+        clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if str(cluster["EnhancedVpcRouting"]) == "False":
             finding = {
@@ -389,7 +389,7 @@ def cluster_logging_check(
     myRedshiftClusters = clusters["Clusters"]
     for cluster in myRedshiftClusters:
         clusterId = str(cluster["ClusterIdentifier"])
-        clusterArn = "arn:aws:redshift:" + awsRegion + ":" + awsAccountId + ":cluster:" + clusterId
+        clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"
         response = redshift.describe_logging_status(ClusterIdentifier=clusterId)
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if str(response["LoggingEnabled"]) == "False":

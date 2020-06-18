@@ -38,7 +38,7 @@ def security_group_all_open_check(
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
+        sgArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:security-group/{sgId}"
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -195,7 +195,7 @@ def security_group_open_ftp_check(
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
+        sgArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:security-group/{sgId}"
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -356,7 +356,7 @@ def security_group_open_telnet_check(
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
+        sgArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:security-group/{sgId}"
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -517,7 +517,7 @@ def security_group_open_dcom_rpc_check(
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
+        sgArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:security-group/{sgId}"
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -694,7 +694,7 @@ def security_group_open_smb_check(
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
+        sgArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:security-group/{sgId}"
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -883,7 +883,7 @@ def security_group_open_mssql_check(
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
+        sgArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:security-group/{sgId}"
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -1084,7 +1084,7 @@ def security_group_open_oracle_check(
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
+        sgArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:security-group/{sgId}"
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -1245,7 +1245,7 @@ def security_group_open_mysql_mariadb_check(
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
+        sgArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:security-group/{sgId}"
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -1412,7 +1412,7 @@ def security_group_open_rdp_check(
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
+        sgArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:security-group/{sgId}"
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -1601,7 +1601,7 @@ def security_group_open_postgresql_check(
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
+        sgArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:security-group/{sgId}"
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -1762,7 +1762,7 @@ def security_group_open_kibana_check(
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
+        sgArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:security-group/{sgId}"
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -1951,7 +1951,7 @@ def security_group_open_redis_check(
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
+        sgArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:security-group/{sgId}"
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -2140,7 +2140,7 @@ def security_group_open_splunkd_check(
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
+        sgArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:security-group/{sgId}"
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -2329,7 +2329,7 @@ def security_group_open_elasticsearch1_check(
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
+        sgArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:security-group/{sgId}"
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -2496,7 +2496,7 @@ def security_group_open_elasticsearch2_check(
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
+        sgArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:security-group/{sgId}"
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -2663,7 +2663,7 @@ def security_group_open_memcached_check(
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
+        sgArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:security-group/{sgId}"
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -2862,7 +2862,7 @@ def security_group_open_redshift_check(
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
+        sgArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:security-group/{sgId}"
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -3023,7 +3023,7 @@ def security_group_open_documentdb_check(
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
+        sgArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:security-group/{sgId}"
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -3184,7 +3184,7 @@ def security_group_open_cassandra_check(
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
+        sgArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:security-group/{sgId}"
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -3345,7 +3345,7 @@ def security_group_open_kafka_check(
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
+        sgArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:security-group/{sgId}"
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])

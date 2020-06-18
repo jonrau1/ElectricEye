@@ -38,7 +38,7 @@ def sagemaker_notebook_encryption_check(cache: dict, awsAccountId: str, awsRegio
             finding = {
                 'SchemaVersion': '2018-10-08',
                 'Id': notebookArn + '/sagemaker-notebook-encryption-check',
-                'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                'ProductArn': f'arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default',
                 'GeneratorId': notebookArn,
                 'AwsAccountId': awsAccountId,
                 'Types': [ 
@@ -93,7 +93,7 @@ def sagemaker_notebook_encryption_check(cache: dict, awsAccountId: str, awsRegio
             finding = {
                 'SchemaVersion': '2018-10-08',
                 'Id': notebookArn + '/sagemaker-notebook-encryption-check',
-                'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                'ProductArn': f'arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default',
                 'GeneratorId': notebookArn,
                 'AwsAccountId': awsAccountId,
                 'Types': [ 
@@ -160,7 +160,7 @@ def sagemaker_notebook_direct_internet_access_check(cache: dict, awsAccountId: s
             finding = {
                 'SchemaVersion': '2018-10-08',
                 'Id': notebookArn + '/sagemaker-notebook-direct-internet-access-check',
-                'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                'ProductArn': f'arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default',
                 'GeneratorId': notebookArn,
                 'AwsAccountId': awsAccountId,
                 'Types': [ 
@@ -219,7 +219,7 @@ def sagemaker_notebook_direct_internet_access_check(cache: dict, awsAccountId: s
             finding = {
                 'SchemaVersion': '2018-10-08',
                 'Id': notebookArn + '/sagemaker-notebook-direct-internet-access-check',
-                'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                'ProductArn': f'arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default',
                 'GeneratorId': notebookArn,
                 'AwsAccountId': awsAccountId,
                 'Types': [ 
@@ -291,7 +291,7 @@ def sagemaker_notebook_in_vpc_check(cache: dict, awsAccountId: str, awsRegion: s
             finding = {
                 'SchemaVersion': '2018-10-08',
                 'Id': notebookArn + '/sagemaker-notebook-in-vpc-check',
-                'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                'ProductArn': f'arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default',
                 'GeneratorId': notebookArn,
                 'AwsAccountId': awsAccountId,
                 'Types': [ 
@@ -350,7 +350,7 @@ def sagemaker_notebook_in_vpc_check(cache: dict, awsAccountId: str, awsRegion: s
             finding = {
                 'SchemaVersion': '2018-10-08',
                 'Id': notebookArn + '/sagemaker-notebook-in-vpc-check',
-                'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                'ProductArn': f'arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default',
                 'GeneratorId': notebookArn,
                 'AwsAccountId': awsAccountId,
                 'Types': [ 
@@ -422,7 +422,7 @@ def sagemaker_endpoint_encryption_check(cache: dict, awsAccountId: str, awsRegio
             finding = {
                 'SchemaVersion': '2018-10-08',
                 'Id': endpointArn + '/sagemaker-endpoint-encryption-check',
-                'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                'ProductArn': f'arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default',
                 'GeneratorId': endpointArn,
                 'AwsAccountId': awsAccountId,
                 'Types': [ 
@@ -477,7 +477,7 @@ def sagemaker_endpoint_encryption_check(cache: dict, awsAccountId: str, awsRegio
             finding = {
                 'SchemaVersion': '2018-10-08',
                 'Id': endpointArn + '/sagemaker-endpoint-encryption-check',
-                'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                'ProductArn': f'arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default',
                 'GeneratorId': endpointArn,
                 'AwsAccountId': awsAccountId,
                 'Types': [ 
@@ -544,7 +544,7 @@ def sagemaker_model_network_isolation_check(cache: dict, awsAccountId: str, awsR
             finding = {
                 'SchemaVersion': '2018-10-08',
                 'Id': modelArn + '/sagemaker-model-network-isolation-check',
-                'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                'ProductArn': f'arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default',
                 'GeneratorId': modelArn,
                 'AwsAccountId': awsAccountId,
                 'Types': [ 
@@ -603,7 +603,7 @@ def sagemaker_model_network_isolation_check(cache: dict, awsAccountId: str, awsR
             finding = {
                 'SchemaVersion': '2018-10-08',
                 'Id': modelArn + '/sagemaker-model-network-isolation-check',
-                'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                'ProductArn': f'arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default',
                 'GeneratorId': modelArn,
                 'AwsAccountId': awsAccountId,
                 'Types': [ 

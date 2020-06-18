@@ -38,7 +38,7 @@ def bucket_encryption_check(
     myS3Buckets = bucket["Buckets"]
     for buckets in myS3Buckets:
         bucketName = str(buckets["Name"])
-        s3Arn = "arn:aws:s3:::" + bucketName
+        s3Arn = f"arn:{awsPartition}:s3:::{bucketName}"
         try:
             response = s3.get_bucket_encryption(Bucket=bucketName)
             for rules in response["ServerSideEncryptionConfiguration"]["Rules"]:
@@ -164,7 +164,7 @@ def bucket_lifecycle_check(
     myS3Buckets = bucket["Buckets"]
     for buckets in myS3Buckets:
         bucketName = str(buckets["Name"])
-        s3Arn = "arn:aws:s3:::" + bucketName
+        s3Arn = f"arn:{awsPartition}:s3:::{bucketName}"
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
             response = s3.get_bucket_lifecycle_configuration(Bucket=bucketName)
@@ -288,7 +288,7 @@ def bucket_versioning_check(
     myS3Buckets = bucket["Buckets"]
     for buckets in myS3Buckets:
         bucketName = str(buckets["Name"])
-        s3Arn = "arn:aws:s3:::" + bucketName
+        s3Arn = f"arn:{awsPartition}:s3:::{bucketName}"
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
             response = s3.get_bucket_versioning(Bucket=bucketName)
@@ -412,7 +412,7 @@ def bucket_policy_allows_public_access_check(
     myS3Buckets = bucket["Buckets"]
     for buckets in myS3Buckets:
         bucketName = str(buckets["Name"])
-        s3Arn = "arn:aws:s3:::" + bucketName
+        s3Arn = f"arn:{awsPartition}:s3:::{bucketName}"
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
             response = s3.get_bucket_policy(Bucket=bucketName)
@@ -544,7 +544,7 @@ def bucket_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
     myS3Buckets = bucket["Buckets"]
     for buckets in myS3Buckets:
         bucketName = str(buckets["Name"])
-        s3Arn = "arn:aws:s3:::" + bucketName
+        s3Arn = f"arn:{awsPartition}:s3:::{bucketName}"
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
             response = s3.get_bucket_policy(Bucket=bucketName)
@@ -669,7 +669,7 @@ def bucket_access_logging_check(
     myS3Buckets = bucket["Buckets"]
     for buckets in myS3Buckets:
         bucketName = str(buckets["Name"])
-        s3Arn = "arn:aws:s3:::" + bucketName
+        s3Arn = f"arn:{awsPartition}:s3:::{bucketName}"
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
             response = s3.get_bucket_logging(Bucket=bucketName)
@@ -822,7 +822,7 @@ def s3_account_level_block(
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": "AWS::::Account:" + awsAccountId,
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
                     "Partition": awsPartition,
                     "Region": awsRegion,
                 }
@@ -878,7 +878,7 @@ def s3_account_level_block(
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": "AWS::::Account:" + awsAccountId,
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
                     "Partition": awsPartition,
                     "Region": awsRegion,
                 }

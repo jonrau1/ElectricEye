@@ -36,16 +36,7 @@ def cfn_drift_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition
     for stacks in myCfnStacks:
         stackName = str(stacks["StackName"])
         stackId = str(stacks["StackId"])
-        stackArn = (
-            "arn:aws:cloudformation:"
-            + awsRegion
-            + ":"
-            + awsAccountId
-            + ":stack/"
-            + stackName
-            + "/"
-            + stackId
-        )
+        stackArn = f"arn:{awsPartition}:cloudformation:{awsRegion}:{awsAccountId}:stack/{stackName}/{stackId}"
         driftCheck = str(stacks["DriftInformation"]["StackDriftStatus"])
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if driftCheck != "IN_SYNC":
@@ -163,16 +154,7 @@ def cfn_monitoring_check(
     for stacks in myCfnStacks:
         stackName = str(stacks["StackName"])
         stackId = str(stacks["StackId"])
-        stackArn = (
-            "arn:aws:cloudformation:"
-            + awsRegion
-            + ":"
-            + awsAccountId
-            + ":stack/"
-            + stackName
-            + "/"
-            + stackId
-        )
+        stackArn = f"arn:{awsPartition}:cloudformation:{awsRegion}:{awsAccountId}:stack/{stackName}/{stackId}"
         alertsCheck = str(stacks["NotificationARNs"])
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if alertsCheck == "[]":

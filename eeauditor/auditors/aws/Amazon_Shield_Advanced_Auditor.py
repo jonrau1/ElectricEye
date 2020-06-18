@@ -41,7 +41,7 @@ def shield_advanced_route_53_protection_check(
         for hostedzone in response["HostedZones"]:
             rawHzId = str(hostedzone["Id"])
             hostedZoneId = rawHzId.replace("/hostedzone/", "")
-            hostedZoneArn = "arn:aws:route53:::hostedzone/" + hostedZoneId
+            hostedZoneArn = f"arn:{awsPartition}:route53:::hostedzone/{hostedZoneId}"
             iso8601Time = (
                 datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
@@ -174,12 +174,7 @@ def shield_advanced_elb_protection_check(
         for classicbalancer in response["LoadBalancerDescriptions"]:
             clbName = str(classicbalancer["LoadBalancerName"])
             clbArn = (
-                "arn:aws:elasticloadbalancing:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":loadbalancer/"
-                + clbName
+                f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
             )
             iso8601Time = (
                 datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -468,10 +463,9 @@ def shield_advanced_eip_protection_check(
     else:
         response = ec2.describe_addresses()
         for elasticip in response["Addresses"]:
-            # arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:eip/${EIP1.AllocationId}
             allocationId = str(elasticip["AllocationId"])
             eipAllocationArn = (
-                "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":eip-allocation/" + allocationId
+                f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:eip-allocation/{allocationId}"
             )
             iso8601Time = (
                 datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -771,7 +765,7 @@ def shield_advanced_drt_access_check(
                 "Resources": [
                     {
                         "Type": "AwsAccount",
-                        "Id": "AWS::::Account:" + awsAccountId,
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }
@@ -829,7 +823,7 @@ def shield_advanced_drt_access_check(
                 "Resources": [
                     {
                         "Type": "AwsAccount",
-                        "Id": "AWS::::Account:" + awsAccountId,
+                        f"{awsPartition.upper()}::::Account:{awsAccountId}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }
@@ -899,7 +893,7 @@ def shield_advanced_drt_s3_bucket_check(
                 "Resources": [
                     {
                         "Type": "AwsAccount",
-                        "Id": "AWS::::Account:" + awsAccountId,
+                        f"{awsPartition.upper()}::::Account:{awsAccountId}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }
@@ -957,7 +951,7 @@ def shield_advanced_drt_s3_bucket_check(
                 "Resources": [
                     {
                         "Type": "AwsAccount",
-                        "Id": "AWS::::Account:" + awsAccountId,
+                        f"{awsPartition.upper()}::::Account:{awsAccountId}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }
@@ -1027,7 +1021,7 @@ def shield_advanced_subscription_autorenew_check(
                 "Resources": [
                     {
                         "Type": "AwsAccount",
-                        "Id": "AWS::::Account:" + awsAccountId,
+                        f"{awsPartition.upper()}::::Account:{awsAccountId}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }
@@ -1076,7 +1070,7 @@ def shield_advanced_subscription_autorenew_check(
                 "Resources": [
                     {
                         "Type": "AwsAccount",
-                        "Id": "AWS::::Account:" + awsAccountId,
+                        f"{awsPartition.upper()}::::Account:{awsAccountId}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }

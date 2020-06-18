@@ -36,7 +36,7 @@ def public_ec2_shodan_check(
                 ec2Type = str(inst["InstanceType"])
                 ec2AmiId = str(inst["ImageId"])
                 ec2Id = str(inst["InstanceId"])
-                ec2Arn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + "instance/" + ec2Id
+                ec2Arn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}instance/{ec2Id}"
                 ec2PrivateIp = str(inst["PrivateIpAddress"])
                 ec2VpcId = str(inst["VpcId"])
                 ec2SubnetId = str(inst["SubnetId"])
@@ -683,14 +683,7 @@ def public_clb_shodan_check(
         response = elb.describe_load_balancers()
         for clbs in response["LoadBalancerDescriptions"]:
             clbName = str(clbs["LoadBalancerName"])
-            clbArn = (
-                "arn:aws:elasticloadbalancing:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":loadbalancer/"
-                + clbName
-            )
+            clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
             clbDnsName = str(clbs["DNSName"])
             clbScheme = str(clbs["Scheme"])
             iso8601time = (

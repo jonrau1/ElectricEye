@@ -39,14 +39,7 @@ def efs_filesys_encryption_check(
     for filesys in myFileSys:
         encryptionCheck = str(filesys["Encrypted"])
         fileSysId = str(filesys["FileSystemId"])
-        fileSysArn = (
-            "arn:aws:elasticfilesystem:"
-            + awsRegion
-            + ":"
-            + awsAccountId
-            + ":file-system/"
-            + fileSysId
-        )
+        fileSysArn = f"arn:{awsPartition}:elasticfilesystem:{awsRegion}:{awsAccountId}:file-system/{fileSysId}"
         # ISO Time
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if encryptionCheck == "False":

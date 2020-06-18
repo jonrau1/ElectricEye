@@ -36,7 +36,7 @@ def volume_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
     myEbsVolumes = response["Volumes"]
     for volumes in myEbsVolumes:
         volumeId = str(volumes["VolumeId"])
-        volumeArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":volume/" + volumeId
+        volumeArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:volume/{volumeId}"
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
             # check if ebs volumes are backed up
@@ -162,7 +162,7 @@ def ec2_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
             subnetId = str(instances["SubnetId"])
             vpcId = str(instances["VpcId"])
             instanceArn = (
-                "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":instance/" + instanceId
+                f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}"
             )
             iso8601Time = (
                 datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -571,14 +571,7 @@ def efs_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
     myFileSys = response["FileSystems"]
     for filesys in myFileSys:
         fileSysId = str(filesys["FileSystemId"])
-        fileSysArn = (
-            "arn:aws:elasticfilesystem:"
-            + awsRegion
-            + ":"
-            + awsAccountId
-            + ":file-system/"
-            + fileSysId
-        )
+        fileSysArn = f"arn:{awsPartition}:elasticfilesystem:{awsRegion}:{awsAccountId}:file-system/{fileSysId}"
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
             # check if db instances are backed up

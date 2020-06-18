@@ -41,14 +41,7 @@ def amb_fabric_node_chaincode_logging_check(
                             response = amb.get_node(
                                 NetworkId=fabricNetworkId, MemberId=memberId, NodeId=peerNodeId,
                             )
-                            nodeArn = (
-                                "arn:aws:managedblockchain:"
-                                + awsRegion
-                                + ":"
-                                + awsAccountId
-                                + ":nodes/"
-                                + peerNodeId
-                            )
+                            nodeArn = f"arn:{awsPartition}:managedblockchain:{awsRegion}:{awsAccountId}:nodes/{peerNodeId}"
                             chaincodeLogCheck = str(
                                 response["Node"]["LogPublishingConfiguration"]["Fabric"][
                                     "ChaincodeLogs"
@@ -64,13 +57,7 @@ def amb_fabric_node_chaincode_logging_check(
                                     "SchemaVersion": "2018-10-08",
                                     "Id": nodeArn
                                     + "/managedblockchain-fabric-node-chaincode-logs-check",
-                                    "ProductArn": "arn:aws:securityhub:"
-                                    + awsRegion
-                                    + ":"
-                                    + awsAccountId
-                                    + ":product/"
-                                    + awsAccountId
-                                    + "/default",
+                                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                                     "GeneratorId": nodeArn,
                                     "AwsAccountId": awsAccountId,
                                     "Types": [
@@ -131,13 +118,7 @@ def amb_fabric_node_chaincode_logging_check(
                                     "SchemaVersion": "2018-10-08",
                                     "Id": nodeArn
                                     + "/managedblockchain-fabric-node-chaincode-logs-check",
-                                    "ProductArn": "arn:aws:securityhub:"
-                                    + awsRegion
-                                    + ":"
-                                    + awsAccountId
-                                    + ":product/"
-                                    + awsAccountId
-                                    + "/default",
+                                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                                     "GeneratorId": nodeArn,
                                     "AwsAccountId": awsAccountId,
                                     "Types": [
@@ -225,14 +206,7 @@ def amb_fabric_node_peernode_logging_check(
                             response = amb.get_node(
                                 NetworkId=fabricNetworkId, MemberId=memberId, NodeId=peerNodeId,
                             )
-                            nodeArn = (
-                                "arn:aws:managedblockchain:"
-                                + awsRegion
-                                + ":"
-                                + awsAccountId
-                                + ":nodes/"
-                                + peerNodeId
-                            )
+                            nodeArn = f"arn:{awsPartition}:managedblockchain:{awsRegion}:{awsAccountId}:nodes/{peerNodeId}"
                             peerNodeLogCheck = str(
                                 response["Node"]["LogPublishingConfiguration"]["Fabric"][
                                     "PeerLogs"
@@ -248,13 +222,7 @@ def amb_fabric_node_peernode_logging_check(
                                     "SchemaVersion": "2018-10-08",
                                     "Id": nodeArn
                                     + "/managedblockchain-fabric-node-peernode-logs-check",
-                                    "ProductArn": "arn:aws:securityhub:"
-                                    + awsRegion
-                                    + ":"
-                                    + awsAccountId
-                                    + ":product/"
-                                    + awsAccountId
-                                    + "/default",
+                                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                                     "GeneratorId": nodeArn,
                                     "AwsAccountId": awsAccountId,
                                     "Types": [
@@ -315,13 +283,7 @@ def amb_fabric_node_peernode_logging_check(
                                     "SchemaVersion": "2018-10-08",
                                     "Id": nodeArn
                                     + "/managedblockchain-fabric-node-peernode-logs-check",
-                                    "ProductArn": "arn:aws:securityhub:"
-                                    + awsRegion
-                                    + ":"
-                                    + awsAccountId
-                                    + ":product/"
-                                    + awsAccountId
-                                    + "/default",
+                                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                                     "GeneratorId": nodeArn,
                                     "AwsAccountId": awsAccountId,
                                     "Types": [
@@ -401,14 +363,7 @@ def amb_fabric_member_ca_logging_check(
                 memberId = str(members["Id"])
                 try:
                     response = amb.get_member(NetworkId=fabricNetworkId, MemberId=memberId)
-                    memberArn = (
-                        "arn:aws:managedblockchain:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":members/"
-                        + memberId
-                    )
+                    memberArn = f"arn:{awsPartition}:managedblockchain:{awsRegion}:{awsAccountId}:members/{memberId}"
                     memberCaLogCheck = str(
                         response["Member"]["LogPublishingConfiguration"]["Fabric"]["CaLogs"][
                             "Cloudwatch"

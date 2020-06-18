@@ -37,7 +37,7 @@ def iam_access_analyzer_detector_check(cache: dict, awsAccountId: str, awsRegion
         finding = {
             'SchemaVersion': '2018-10-08',
             'Id': awsAccountId + '/security-services-iaa-enabled-check',
-            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+            'ProductArn': f'arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default',
             'GeneratorId': generatorUuid,
             'AwsAccountId': awsAccountId,
             'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
@@ -60,7 +60,7 @@ def iam_access_analyzer_detector_check(cache: dict, awsAccountId: str, awsRegion
             'Resources': [
                 {
                     'Type': 'AwsAccount',
-                    'Id': 'AWS::::Account:' + awsAccountId,
+                    'Id': f'{awsPartition.upper()}::::Account:{awsAccountId}',
                     'Partition': 'aws',
                     'Region': awsRegion
                 }
@@ -89,7 +89,7 @@ def iam_access_analyzer_detector_check(cache: dict, awsAccountId: str, awsRegion
         finding = {
             'SchemaVersion': '2018-10-08',
             'Id': awsAccountId + '/security-services-iaa-enabled-check',
-            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+            'ProductArn': f'arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default',
             'GeneratorId': generatorUuid,
             'AwsAccountId': awsAccountId,
             'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
@@ -112,7 +112,7 @@ def iam_access_analyzer_detector_check(cache: dict, awsAccountId: str, awsRegion
             'Resources': [
                 {
                     'Type': 'AwsAccount',
-                    'Id': 'AWS::::Account:' + awsAccountId,
+                    'Id': f'{awsPartition.upper()}::::Account:{awsAccountId}',
                     'Partition': 'aws',
                     'Region': awsRegion
                 }
@@ -150,7 +150,7 @@ def guard_duty_detector_check(cache: dict, awsAccountId: str, awsRegion: str, aw
         finding = {
             'SchemaVersion': '2018-10-08',
             'Id': awsAccountId + '/security-services-guardduty-enabled-check',
-            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+            'ProductArn': f'arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default',
             'GeneratorId': generatorUuid,
             'AwsAccountId': awsAccountId,
             'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
@@ -173,7 +173,7 @@ def guard_duty_detector_check(cache: dict, awsAccountId: str, awsRegion: str, aw
             'Resources': [
                 {
                     'Type': 'AwsAccount',
-                    'Id': 'AWS::::Account:' + awsAccountId,
+                    'Id': f'{awsPartition.upper()}::::Account:{awsAccountId}',
                     'Partition': 'aws',
                     'Region': awsRegion
                 }
@@ -202,7 +202,7 @@ def guard_duty_detector_check(cache: dict, awsAccountId: str, awsRegion: str, aw
         finding = {
             'SchemaVersion': '2018-10-08',
             'Id': awsAccountId + '/security-services-guardduty-enabled-check',
-            'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+            'ProductArn': f'arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default',
             'GeneratorId': generatorUuid,
             'AwsAccountId': awsAccountId,
             'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
@@ -225,7 +225,7 @@ def guard_duty_detector_check(cache: dict, awsAccountId: str, awsRegion: str, aw
             'Resources': [
                 {
                     'Type': 'AwsAccount',
-                    'Id': 'AWS::::Account:' + awsAccountId,
+                    'Id': f'{awsPartition.upper()}::::Account:{awsAccountId}',
                     'Partition': 'aws',
                     'Region': awsRegion
                 }
@@ -263,7 +263,7 @@ def detective_graph_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
             finding = {
                 'SchemaVersion': '2018-10-08',
                 'Id': awsAccountId + '/security-services-detective-enabled-check',
-                'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                'ProductArn': f'arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default',
                 'GeneratorId': generatorUuid,
                 'AwsAccountId': awsAccountId,
                 'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
@@ -286,7 +286,7 @@ def detective_graph_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
                 'Resources': [
                     {
                         'Type': 'AwsAccount',
-                        'Id': 'AWS::::Account:' + awsAccountId,
+                        'Id': f'{awsPartition.upper()}::::Account:{awsAccountId}',
                         'Partition': 'aws',
                         'Region': awsRegion
                     }
@@ -315,7 +315,7 @@ def detective_graph_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
             finding = {
                 'SchemaVersion': '2018-10-08',
                 'Id': awsAccountId + '/security-services-detective-enabled-check',
-                'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                'ProductArn': f'arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default',
                 'GeneratorId': generatorUuid,
                 'AwsAccountId': awsAccountId,
                 'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
@@ -338,7 +338,7 @@ def detective_graph_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
                 'Resources': [
                     {
                         'Type': 'AwsAccount',
-                        'Id': 'AWS::::Account:' + awsAccountId,
+                        'Id': f'{awsPartition.upper()}::::Account:{awsAccountId}',
                         'Partition': 'aws',
                         'Region': awsRegion
                     }

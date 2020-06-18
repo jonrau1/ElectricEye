@@ -37,7 +37,7 @@ def public_ami_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
     myAmis = amis["Images"]
     for ami in myAmis:
         imageId = str(ami["ImageId"])
-        amiArn = "arn:aws:ec2:" + awsRegion + "::image/" + imageId
+        amiArn = f"arn:{awsPartition}:ec2:{awsRegion}::image/{imageId}"
         imageName = str(ami["Name"])
         imageCreatedDate = str(ami["CreationDate"])
         publicCheck = str(ami["Public"])
@@ -166,7 +166,7 @@ def encrypted_ami_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
     myAmis = amis["Images"]
     for ami in myAmis:
         imageId = str(ami["ImageId"])
-        amiArn = "arn:aws:ec2:" + awsRegion + "::image/" + imageId
+        amiArn = f"arn:{awsPartition}:ec2:{awsRegion}::image/{imageId}"
         imageName = str(ami["Name"])
         imageCreatedDate = str(ami["CreationDate"])
         BlockDevices = ami["BlockDeviceMappings"]

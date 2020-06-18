@@ -38,7 +38,7 @@ def crawler_s3_encryption_check(
     myCrawlers = crawler["CrawlerNames"]
     for crawlers in myCrawlers:
         crawlerName = str(crawlers)
-        crawlerArn = "arn:aws:glue:" + awsRegion + ":" + awsAccountId + ":crawler/" + crawlerName
+        crawlerArn = f"arn:{awsPartition}:glue:{awsRegion}:{awsAccountId}:crawler/{crawlerName}"
         # ISO Time
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
@@ -177,7 +177,7 @@ def crawler_cloudwatch_encryption_check(
     myCrawlers = crawler["CrawlerNames"]
     for crawlers in myCrawlers:
         crawlerName = str(crawlers)
-        crawlerArn = "arn:aws:glue:" + awsRegion + ":" + awsAccountId + ":crawler/" + crawlerName
+        crawlerArn = f"arn:{awsPartition}:glue:{awsRegion}:{awsAccountId}:crawler/{crawlerName}"
         # ISO Time
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
@@ -316,7 +316,7 @@ def crawler_job_bookmark_encryption_check(
     myCrawlers = crawler["CrawlerNames"]
     for crawlers in myCrawlers:
         crawlerName = str(crawlers)
-        crawlerArn = "arn:aws:glue:" + awsRegion + ":" + awsAccountId + ":crawler/" + crawlerName
+        crawlerArn = f"arn:{awsPartition}:glue:{awsRegion}:{awsAccountId}:crawler/{crawlerName}"
         # ISO Time
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
@@ -451,7 +451,7 @@ def crawler_job_bookmark_encryption_check(
 def glue_data_catalog_encryption_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
-    catalogArn = "arn:aws:glue:" + awsRegion + ":" + awsAccountId + ":catalog"
+    catalogArn = f"arn:{awsPartition}:glue:{awsRegion}:{awsAccountId}:catalog"
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
@@ -567,7 +567,7 @@ def glue_data_catalog_encryption_check(
 def glue_data_catalog_password_encryption_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
-    catalogArn = "arn:aws:glue:" + awsRegion + ":" + awsAccountId + ":catalog"
+    catalogArn = f"arn:{awsPartition}:glue:{awsRegion}:{awsAccountId}:catalog"
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
@@ -685,7 +685,7 @@ def glue_data_catalog_password_encryption_check(
 def glue_data_catalog_resource_policy_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
-    catalogArn = "arn:aws:glue:" + awsRegion + ":" + awsAccountId + ":catalog"
+    catalogArn = f"arn:{awsPartition}:glue:{awsRegion}:{awsAccountId}:catalog"
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:

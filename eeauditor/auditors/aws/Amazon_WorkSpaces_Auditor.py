@@ -39,7 +39,7 @@ def workspaces_user_volume_encryption_check(
     for workspace in myWorkSpaces:
         workspaceId = str(workspace["WorkspaceId"])
         workspaceArn = (
-            "arn:aws:workspaces:" + awsRegion + ":" + awsAccountId + ":workspace/" + workspaceId
+            f"arn:{awsPartition}:workspaces:{awsRegion}:{awsAccountId}:workspace/{workspaceId}"
         )
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
@@ -159,7 +159,7 @@ def workspaces_root_volume_encryption_check(
     for workspace in myWorkSpaces:
         workspaceId = str(workspace["WorkspaceId"])
         workspaceArn = (
-            "arn:aws:workspaces:" + awsRegion + ":" + awsAccountId + ":workspace/" + workspaceId
+            f"arn:{awsPartition}:workspaces:{awsRegion}:{awsAccountId}:workspace/{workspaceId}"
         )
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
@@ -279,7 +279,7 @@ def workspaces_running_mode_check(
     for workspace in myWorkSpaces:
         workspaceId = str(workspace["WorkspaceId"])
         workspaceArn = (
-            "arn:aws:workspaces:" + awsRegion + ":" + awsAccountId + ":workspace/" + workspaceId
+            f"arn:{awsPartition}:workspaces:{awsRegion}:{awsAccountId}:workspace/{workspaceId}"
         )
         runningModeCheck = str(workspace["WorkspaceProperties"]["RunningMode"])
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -392,14 +392,7 @@ def workspaces_directory_default_internet_check(
     response = workspaces.describe_workspace_directories()
     for directory in response["Directories"]:
         workspacesDirectoryId = str(directory["DirectoryId"])
-        workspacesDirectoryArn = (
-            "arn:aws:workspaces:"
-            + awsRegion
-            + ":"
-            + awsAccountId
-            + ":directory/"
-            + workspacesDirectoryId
-        )
+        workspacesDirectoryArn = f"arn:{awsPartition}:workspaces:{awsRegion}:{awsAccountId}:directory/{workspacesDirectoryId}"
         internetAccessCheck = str(directory["WorkspaceCreationProperties"]["EnableInternetAccess"])
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if internetAccessCheck == "True":

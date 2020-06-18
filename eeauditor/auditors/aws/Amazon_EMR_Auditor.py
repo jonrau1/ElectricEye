@@ -1178,7 +1178,7 @@ def emr_cluster_block_secgroup_check(
                 "Resources": [
                     {
                         "Type": "AwsAccount",
-                        "Id": "AWS::::Account:" + awsAccountId,
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }
@@ -1233,7 +1233,7 @@ def emr_cluster_block_secgroup_check(
                 "Resources": [
                     {
                         "Type": "AwsAccount",
-                        "Id": "AWS::::Account:" + awsAccountId,
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }

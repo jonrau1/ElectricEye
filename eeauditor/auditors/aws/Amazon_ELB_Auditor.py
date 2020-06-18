@@ -31,14 +31,7 @@ def internet_facing_clb_https_listener_check(
     response = elb.describe_load_balancers()
     for classicbalancer in response["LoadBalancerDescriptions"]:
         clbName = str(classicbalancer["LoadBalancerName"])
-        clbArn = (
-            "arn:aws:elasticloadbalancing:"
-            + awsRegion
-            + ":"
-            + awsAccountId
-            + ":loadbalancer/"
-            + clbName
-        )
+        clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
         clbScheme = str(classicbalancer["Scheme"])
         if clbScheme == "internet-facing":
             for listeners in classicbalancer["ListenerDescriptions"]:
@@ -165,14 +158,7 @@ def clb_https_listener_tls12_policy_check(
     response = elb.describe_load_balancers()
     for classicbalancer in response["LoadBalancerDescriptions"]:
         clbName = str(classicbalancer["LoadBalancerName"])
-        clbArn = (
-            "arn:aws:elasticloadbalancing:"
-            + awsRegion
-            + ":"
-            + awsAccountId
-            + ":loadbalancer/"
-            + clbName
-        )
+        clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
         for listeners in classicbalancer["ListenerDescriptions"]:
             listenerPolicies = str(listeners["PolicyNames"])
             iso8601Time = (
@@ -296,14 +282,7 @@ def clb_cross_zone_balancing_check(
     response = elb.describe_load_balancers()
     for classicbalancer in response["LoadBalancerDescriptions"]:
         clbName = str(classicbalancer["LoadBalancerName"])
-        clbArn = (
-            "arn:aws:elasticloadbalancing:"
-            + awsRegion
-            + ":"
-            + awsAccountId
-            + ":loadbalancer/"
-            + clbName
-        )
+        clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
         response = elb.describe_load_balancer_attributes(LoadBalancerName=clbName)
         crossZoneCheck = str(
             response["LoadBalancerAttributes"]["CrossZoneLoadBalancing"]["Enabled"]
@@ -427,14 +406,7 @@ def clb_connection_draining_check(
     response = elb.describe_load_balancers()
     for classicbalancer in response["LoadBalancerDescriptions"]:
         clbName = str(classicbalancer["LoadBalancerName"])
-        clbArn = (
-            "arn:aws:elasticloadbalancing:"
-            + awsRegion
-            + ":"
-            + awsAccountId
-            + ":loadbalancer/"
-            + clbName
-        )
+        clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
         response = elb.describe_load_balancer_attributes(LoadBalancerName=clbName)
         connectionDrainCheck = str(
             response["LoadBalancerAttributes"]["ConnectionDraining"]["Enabled"]
@@ -558,14 +530,7 @@ def clb_access_logging_check(
     response = elb.describe_load_balancers()
     for classicbalancer in response["LoadBalancerDescriptions"]:
         clbName = str(classicbalancer["LoadBalancerName"])
-        clbArn = (
-            "arn:aws:elasticloadbalancing:"
-            + awsRegion
-            + ":"
-            + awsAccountId
-            + ":loadbalancer/"
-            + clbName
-        )
+        clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
         response = elb.describe_load_balancer_attributes(LoadBalancerName=clbName)
         accessLogCheck = str(response["LoadBalancerAttributes"]["AccessLog"]["Enabled"])
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()

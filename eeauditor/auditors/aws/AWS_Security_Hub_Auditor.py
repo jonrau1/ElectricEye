@@ -88,7 +88,7 @@ def get_findings(cache, awsAccountId):
             finding={
                 'SchemaVersion': '2018-10-08',
                 'Id': 'high-critical-findings-located/' + awsAccountId,
-                'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                'ProductArn': f'arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default',
                 'GeneratorId': generatorId,
                 'AwsAccountId': awsAccountId,
                 'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
@@ -101,7 +101,7 @@ def get_findings(cache, awsAccountId):
                 'Resources': [
                     {
                         'Type': 'AwsAccount',
-                        'Id': 'AWS::::Account:' + awsAccountId,
+                        'Id': f'{awsPartition.upper()}::::Account:{awsAccountId}',
                         'Partition': 'aws',
                         'Region': awsRegion
                     }
@@ -130,7 +130,7 @@ def get_findings(cache, awsAccountId):
             finding = {
                 'SchemaVersion': '2018-10-08',
                 'Id': 'high-critical-findings-located/' + awsAccountId,
-                'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
+                'ProductArn': f'arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default',
                 'GeneratorId': generatorId,
                 'AwsAccountId': awsAccountId,
                 'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
@@ -145,7 +145,7 @@ def get_findings(cache, awsAccountId):
                 'Resources': [
                     {
                         'Type': 'AwsAccount',
-                        'Id': 'AWS::::Account:' + awsAccountId,
+                        'Id': f'{awsPartition.upper()}::::Account:{awsAccountId}',
                         'Partition': 'aws',
                         'Region': awsRegion
                     }

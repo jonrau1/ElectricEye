@@ -35,7 +35,7 @@ def vpc_default_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
     myVpcs = vpc["Vpcs"]
     for vpcs in myVpcs:
         vpcId = str(vpcs["VpcId"])
-        vpcArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + "vpc/" + vpcId
+        vpcArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}vpc/{vpcId}"
         defaultVpcCheck = str(vpcs["IsDefault"])
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if defaultVpcCheck == "True":
@@ -148,7 +148,7 @@ def vpc_flow_logs_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
     myVpcs = vpc["Vpcs"]
     for vpcs in myVpcs:
         vpcId = str(vpcs["VpcId"])
-        vpcArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + "vpc/" + vpcId
+        vpcArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}vpc/{vpcId}"
         response = ec2.describe_flow_logs(
             DryRun=False, Filters=[{"Name": "resource-id", "Values": [vpcId]}]
         )

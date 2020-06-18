@@ -38,7 +38,7 @@ def directory_service_radius_check(
     myDirectories = directories["DirectoryDescriptions"]
     for directory in myDirectories:
         directoryId = str(directory["DirectoryId"])
-        directoryArn = "arn:aws:ds:" + awsRegion + ":" + awsAccountId + ":directory/" + directoryId
+        directoryArn = f"arn:{awsPartition}:ds:{awsRegion}:{awsAccountId}:directory/{directoryId}"
         directoryName = str(directory["Name"])
         directoryType = str(directory["Type"])
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -176,7 +176,7 @@ def directory_service_cloudwatch_logs_check(
     myDirectories = directories["DirectoryDescriptions"]
     for directory in myDirectories:
         directoryId = str(directory["DirectoryId"])
-        directoryArn = "arn:aws:ds:" + awsRegion + ":" + awsAccountId + ":directory/" + directoryId
+        directoryArn = f"arn:{awsPartition}:ds:{awsRegion}:{awsAccountId}:directory/{directoryId}"
         directoryName = str(directory["Name"])
         response = ds.list_log_subscriptions(DirectoryId=directoryId)
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()

@@ -72,12 +72,7 @@ def redis_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                     "Resources": [
                         {
                             "Type": "AwsElastiCacheCacheCluster",
-                            "Id": "arn:aws:elasticache:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":cluster:"
-                            + clusterId,
+                            "Id": f"arn:{awsPartition}:elasticache:{awsRegion}:{awsAccountId}:cluster:{clusterId}",
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
@@ -141,12 +136,7 @@ def redis_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                     "Resources": [
                         {
                             "Type": "AwsElastiCacheCacheCluster",
-                            "Id": "arn:aws:elasticache:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":cluster:"
-                            + clusterId,
+                            "Id": f"arn:{awsPartition}:elasticache:{awsRegion}:{awsAccountId}:cluster:{clusterId}",
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
@@ -234,12 +224,7 @@ def encryption_at_rest_check(
                     "Resources": [
                         {
                             "Type": "AwsElastiCacheCacheCluster",
-                            "Id": "arn:aws:elasticache:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":cluster:"
-                            + clusterId,
+                            "Id": f"arn:{awsPartition}:elasticache:{awsRegion}:{awsAccountId}:cluster:{clusterId}",
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
@@ -292,12 +277,7 @@ def encryption_at_rest_check(
                     "Resources": [
                         {
                             "Type": "AwsElastiCacheCacheCluster",
-                            "Id": "arn:aws:elasticache:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":cluster:"
-                            + clusterId,
+                            "Id": f"arn:{awsPartition}:elasticache:{awsRegion}:{awsAccountId}:cluster:{clusterId}",
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
@@ -374,12 +354,7 @@ def encryption_in_transit_check(
                     "Resources": [
                         {
                             "Type": "AwsElastiCacheCacheCluster",
-                            "Id": "arn:aws:elasticache:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":cluster:"
-                            + clusterId,
+                            "Id": f"arn:{awsPartition}:elasticache:{awsRegion}:{awsAccountId}:cluster:{clusterId}",
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
@@ -437,12 +412,7 @@ def encryption_in_transit_check(
                     "Resources": [
                         {
                             "Type": "AwsElastiCacheCacheCluster",
-                            "Id": "arn:aws:elasticache:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":cluster:"
-                            + clusterId,
+                            "Id": f"arn:{awsPartition}:elasticache:{awsRegion}:{awsAccountId}:cluster:{clusterId}",
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
