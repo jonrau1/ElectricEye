@@ -21,7 +21,11 @@ def test_eeauditor_plugin_loader_named():
 
 def test_eeauditor_plugin_run_checks():
     app = EEAuditor(name="test controller", search_path="./tests/test_modules")
-    app.registry.checks = {}
+    # Since other tests are importing auditor modules that register checks in the
+    # registry, it is possible checks other than those in the search_path will be
+    # loaded and run here.  This statement clears the checks dictionary prior to
+    # calling load_plugins
+    app.registry.checks.clear()
     app.load_plugins()
     for result in app.run_checks():
         assert result == {"SchemaVersion": "2018-10-08", "Id": "test-finding"}
