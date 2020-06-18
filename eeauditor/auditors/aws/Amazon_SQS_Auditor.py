@@ -66,7 +66,7 @@ def sqs_old_message_check(cache: dict, awsAccountId: str, awsRegion: str) -> dic
                     counter += 1
                 if(counter > 2):
                     fail = True
-                    breaks
+                    break
         if not fail:
             finding = {
                 "SchemaVersion": "2018-10-08",

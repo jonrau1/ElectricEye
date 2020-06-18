@@ -10,7 +10,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-# You should have received a copy of the GNU General Public License along with ElectricEye.  
+# You should have received a copy of the GNU General Public License along with ElectricEye.
 # If not, see https://github.com/jonrau1/ElectricEye/blob/master/LICENSE.
 
 import boto3
@@ -22,9 +22,10 @@ registry = CheckRegister()
 appmesh = boto3.client('appmesh')
 # loop through AWS App Mesh meshes
 
+
 def list_meshes(cache):
     response = cache.get("list_meshes")
-    if response
+    if response:
         return response
     cache["list_meshes"] = appmesh.list_meshes()
     return cache["list_meshes"]
@@ -36,11 +37,13 @@ def appmesh_mesh_egress_check(cache: dict, awsAccountId: str, awsRegion: str) ->
     myMesh = mesh['meshes']
     for meshes in myMesh:
         meshName = str(meshes['meshName'])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        iso8601Time = datetime.datetime.utcnow().replace(
+            tzinfo=datetime.timezone.utc).isoformat()
         try:
             response = appmesh.describe_mesh(meshName=meshName)
             meshArn = str(response['mesh']['metadata']['arn'])
-            egressSpecCheck = str(response['mesh']['spec']['egressFilter']['type'])
+            egressSpecCheck = str(
+                response['mesh']['spec']['egressFilter']['type'])
             if egressSpecCheck != 'DROP_ALL':
                 finding = {
                     'SchemaVersion': '2018-10-08',
@@ -48,11 +51,11 @@ def appmesh_mesh_egress_check(cache: dict, awsAccountId: str, awsRegion: str) ->
                     'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
                     'GeneratorId': meshArn,
                     'AwsAccountId': awsAccountId,
-                    'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                    'Types': ['Software and Configuration Checks/AWS Security Best Practices'],
                     'FirstObservedAt': iso8601Time,
                     'CreatedAt': iso8601Time,
                     'UpdatedAt': iso8601Time,
-                    'Severity': { 'Label': 'MEDIUM' },
+                    'Severity': {'Label': 'MEDIUM'},
                     'Confidence': 99,
                     'Title': '[AppMesh.1] App Mesh meshes should have the egress filter configured to DROP_ALL',
                     'Description': 'App Mesh mesh ' + meshName + ' egress filter is not configured to DROP_ALL. Configuring the filter to DROP_ALL only allows egress to other resources in the mesh and to AWS SPNs for API Calls. Refer to the remediation instructions if this configuration is not intended',
@@ -72,13 +75,13 @@ def appmesh_mesh_egress_check(cache: dict, awsAccountId: str, awsRegion: str) ->
                             'Partition': 'aws',
                             'Region': awsRegion,
                             'Details': {
-                                'Other': { 
+                                'Other': {
                                     'meshName': meshName
                                 }
                             }
                         }
                     ],
-                    'Compliance': { 
+                    'Compliance': {
                         'Status': 'FAILED',
                         'RelatedRequirements': [
                             'NIST CSF PR.AC-3',
@@ -108,11 +111,11 @@ def appmesh_mesh_egress_check(cache: dict, awsAccountId: str, awsRegion: str) ->
                     'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
                     'GeneratorId': meshArn,
                     'AwsAccountId': awsAccountId,
-                    'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                    'Types': ['Software and Configuration Checks/AWS Security Best Practices'],
                     'FirstObservedAt': iso8601Time,
                     'CreatedAt': iso8601Time,
                     'UpdatedAt': iso8601Time,
-                    'Severity': { 'Label': 'INFORMATIONAL' },
+                    'Severity': {'Label': 'INFORMATIONAL'},
                     'Confidence': 99,
                     'Title': '[AppMesh.1] App Mesh meshes should have the egress filter configured to DROP_ALL',
                     'Description': 'App Mesh mesh ' + meshName + ' egress filter is configured to DROP_ALL.',
@@ -132,13 +135,13 @@ def appmesh_mesh_egress_check(cache: dict, awsAccountId: str, awsRegion: str) ->
                             'Partition': 'aws',
                             'Region': awsRegion,
                             'Details': {
-                                'Other': { 
+                                'Other': {
                                     'meshName': meshName
                                 }
                             }
                         }
                     ],
-                    'Compliance': { 
+                    'Compliance': {
                         'Status': 'PASSED',
                         'RelatedRequirements': [
                             'NIST CSF PR.AC-3',
@@ -164,6 +167,7 @@ def appmesh_mesh_egress_check(cache: dict, awsAccountId: str, awsRegion: str) ->
         except Exception as e:
             print(e)
 
+
 @registry.register_check("appmesh")
 def appmesh_virt_node_backed_default_tls_policy_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
     mesh = list_meshes(cache=cache)
@@ -174,11 +178,14 @@ def appmesh_virt_node_backed_default_tls_policy_check(cache: dict, awsAccountId:
             response = appmesh.list_virtual_nodes(meshName=meshName)
             for nodes in response['virtualNodes']:
                 nodeName = str(nodes['virtualNodeName'])
-                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                iso8601Time = datetime.datetime.utcnow().replace(
+                    tzinfo=datetime.timezone.utc).isoformat()
                 try:
-                    response = appmesh.describe_virtual_node(meshName=meshName,virtualNodeName=nodeName)
+                    response = appmesh.describe_virtual_node(
+                        meshName=meshName, virtualNodeName=nodeName)
                     nodeArn = str(response['virtualNode']['metadata']['arn'])
-                    backendDefaultsCheck = str(response['virtualNode']['spec']['backendDefaults']['clientPolicy'])
+                    backendDefaultsCheck = str(
+                        response['virtualNode']['spec']['backendDefaults']['clientPolicy'])
                     if backendDefaultsCheck == '{}':
                         # this is a type of failing check
                         finding = {
@@ -187,11 +194,11 @@ def appmesh_virt_node_backed_default_tls_policy_check(cache: dict, awsAccountId:
                             'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
                             'GeneratorId': nodeArn,
                             'AwsAccountId': awsAccountId,
-                            'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                            'Types': ['Software and Configuration Checks/AWS Security Best Practices'],
                             'FirstObservedAt': iso8601Time,
                             'CreatedAt': iso8601Time,
                             'UpdatedAt': iso8601Time,
-                            'Severity': { 'Label': 'MEDIUM' },
+                            'Severity': {'Label': 'MEDIUM'},
                             'Confidence': 99,
                             'Title': '[AppMesh.2] App Mesh virtual nodes should enforce TLS by default for all backends',
                             'Description': 'App Mesh virtual node ' + nodeName + ' for the mesh ' + meshName + ' does not have a backend default client policy configured. Refer to the remediation instructions if this configuration is not intended',
@@ -211,14 +218,14 @@ def appmesh_virt_node_backed_default_tls_policy_check(cache: dict, awsAccountId:
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 
+                                        'Other': {
                                             'meshName': meshName,
                                             'virtualNodeName': nodeName
                                         }
                                     }
                                 }
                             ],
-                            'Compliance': { 
+                            'Compliance': {
                                 'Status': 'FAILED',
                                 'RelatedRequirements': [
                                     'NIST CSF PR.DS-2',
@@ -241,7 +248,8 @@ def appmesh_virt_node_backed_default_tls_policy_check(cache: dict, awsAccountId:
                         }
                         yield finding
                     else:
-                        backendTlsEnforceCheck = str(response['virtualNode']['spec']['backendDefaults']['clientPolicy']['tls']['enforce'])
+                        backendTlsEnforceCheck = str(
+                            response['virtualNode']['spec']['backendDefaults']['clientPolicy']['tls']['enforce'])
                         if backendTlsEnforceCheck == 'False':
                             finding = {
                                 'SchemaVersion': '2018-10-08',
@@ -249,11 +257,11 @@ def appmesh_virt_node_backed_default_tls_policy_check(cache: dict, awsAccountId:
                                 'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
                                 'GeneratorId': nodeArn,
                                 'AwsAccountId': awsAccountId,
-                                'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                                'Types': ['Software and Configuration Checks/AWS Security Best Practices'],
                                 'FirstObservedAt': iso8601Time,
                                 'CreatedAt': iso8601Time,
                                 'UpdatedAt': iso8601Time,
-                                'Severity': { 'Label': 'HIGH' },
+                                'Severity': {'Label': 'HIGH'},
                                 'Confidence': 99,
                                 'Title': '[AppMesh.2] App Mesh virtual nodes should enforce TLS by default for all backends',
                                 'Description': 'App Mesh virtual node ' + nodeName + ' for the mesh ' + meshName + ' does not enforce TLS in the default client policy. TLS will encrypt the traffic in between the Envoy virtual nodes in your mesh to offload the responsibility from your application code and will also terminate TLS for you. Refer to the remediation instructions if this configuration is not intended',
@@ -273,14 +281,14 @@ def appmesh_virt_node_backed_default_tls_policy_check(cache: dict, awsAccountId:
                                         'Partition': 'aws',
                                         'Region': awsRegion,
                                         'Details': {
-                                            'Other': { 
+                                            'Other': {
                                                 'meshName': meshName,
                                                 'virtualNodeName': nodeName
                                             }
                                         }
                                     }
                                 ],
-                                'Compliance': { 
+                                'Compliance': {
                                     'Status': 'FAILED',
                                     'RelatedRequirements': [
                                         'NIST CSF PR.DS-2',
@@ -309,11 +317,11 @@ def appmesh_virt_node_backed_default_tls_policy_check(cache: dict, awsAccountId:
                                 'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
                                 'GeneratorId': nodeArn,
                                 'AwsAccountId': awsAccountId,
-                                'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                                'Types': ['Software and Configuration Checks/AWS Security Best Practices'],
                                 'FirstObservedAt': iso8601Time,
                                 'CreatedAt': iso8601Time,
                                 'UpdatedAt': iso8601Time,
-                                'Severity': { 'Label': 'INFORMATIONAL' },
+                                'Severity': {'Label': 'INFORMATIONAL'},
                                 'Confidence': 99,
                                 'Title': '[AppMesh.2] App Mesh virtual nodes should enforce TLS by default for all backends',
                                 'Description': 'App Mesh virtual node ' + nodeName + ' for the mesh ' + meshName + ' enforces TLS in the default client policy.',
@@ -333,14 +341,14 @@ def appmesh_virt_node_backed_default_tls_policy_check(cache: dict, awsAccountId:
                                         'Partition': 'aws',
                                         'Region': awsRegion,
                                         'Details': {
-                                            'Other': { 
+                                            'Other': {
                                                 'meshName': meshName,
                                                 'virtualNodeName': nodeName
                                             }
                                         }
                                     }
                                 ],
-                                'Compliance': { 
+                                'Compliance': {
                                     'Status': 'PASSED',
                                     'RelatedRequirements': [
                                         'NIST CSF PR.DS-2',
@@ -367,6 +375,7 @@ def appmesh_virt_node_backed_default_tls_policy_check(cache: dict, awsAccountId:
         except Exception as e:
             print(e)
 
+
 @registry.register_check("appmesh")
 def appmesh_virt_node_listener_strict_tls_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
     mesh = list_meshes(cache=cache)
@@ -378,11 +387,13 @@ def appmesh_virt_node_listener_strict_tls_check(cache: dict, awsAccountId: str, 
             for nodes in response['virtualNodes']:
                 nodeName = str(nodes['virtualNodeName'])
                 try:
-                    response = appmesh.describe_virtual_node(meshName=meshName,virtualNodeName=nodeName)
+                    response = appmesh.describe_virtual_node(
+                        meshName=meshName, virtualNodeName=nodeName)
                     nodeArn = str(response['virtualNode']['metadata']['arn'])
                     for listeners in response['virtualNode']['spec']['listeners']:
                         tlsStrictCheck = str(listeners['tls']['mode'])
-                        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                        iso8601Time = datetime.datetime.utcnow().replace(
+                            tzinfo=datetime.timezone.utc).isoformat()
                         if tlsStrictCheck != 'STRICT':
                             finding = {
                                 'SchemaVersion': '2018-10-08',
@@ -390,11 +401,11 @@ def appmesh_virt_node_listener_strict_tls_check(cache: dict, awsAccountId: str, 
                                 'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
                                 'GeneratorId': nodeArn,
                                 'AwsAccountId': awsAccountId,
-                                'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                                'Types': ['Software and Configuration Checks/AWS Security Best Practices'],
                                 'FirstObservedAt': iso8601Time,
                                 'CreatedAt': iso8601Time,
                                 'UpdatedAt': iso8601Time,
-                                'Severity': { 'Label': 'HIGH' },
+                                'Severity': {'Label': 'HIGH'},
                                 'Confidence': 99,
                                 'Title': '[AppMesh.3] App Mesh virtual node listeners should only accept connections with TLS enabled',
                                 'Description': 'App Mesh virtual node ' + nodeName + ' for the mesh ' + meshName + ' does not enforce STRICT mode for listeners. Not setting a STRICT listener mode will accept non-encrypted connections to the listeners in the node. Refer to the remediation instructions if this configuration is not intended',
@@ -414,14 +425,14 @@ def appmesh_virt_node_listener_strict_tls_check(cache: dict, awsAccountId: str, 
                                         'Partition': 'aws',
                                         'Region': awsRegion,
                                         'Details': {
-                                            'Other': { 
+                                            'Other': {
                                                 'meshName': meshName,
                                                 'virtualNodeName': nodeName
                                             }
                                         }
                                     }
                                 ],
-                                'Compliance': { 
+                                'Compliance': {
                                     'Status': 'FAILED',
                                     'RelatedRequirements': [
                                         'NIST CSF PR.DS-2',
@@ -450,11 +461,11 @@ def appmesh_virt_node_listener_strict_tls_check(cache: dict, awsAccountId: str, 
                                 'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
                                 'GeneratorId': nodeArn,
                                 'AwsAccountId': awsAccountId,
-                                'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                                'Types': ['Software and Configuration Checks/AWS Security Best Practices'],
                                 'FirstObservedAt': iso8601Time,
                                 'CreatedAt': iso8601Time,
                                 'UpdatedAt': iso8601Time,
-                                'Severity': { 'Label': 'INFORMATIONAL' },
+                                'Severity': {'Label': 'INFORMATIONAL'},
                                 'Confidence': 99,
                                 'Title': '[AppMesh.3] App Mesh virtual node listeners should only accept connections with TLS enabled',
                                 'Description': 'App Mesh virtual node ' + nodeName + ' for the mesh ' + meshName + ' enforces STRICT mode for listeners.',
@@ -474,14 +485,14 @@ def appmesh_virt_node_listener_strict_tls_check(cache: dict, awsAccountId: str, 
                                         'Partition': 'aws',
                                         'Region': awsRegion,
                                         'Details': {
-                                            'Other': { 
+                                            'Other': {
                                                 'meshName': meshName,
                                                 'virtualNodeName': nodeName
                                             }
                                         }
                                     }
                                 ],
-                                'Compliance': { 
+                                'Compliance': {
                                     'Status': 'PASSED',
                                     'RelatedRequirements': [
                                         'NIST CSF PR.DS-2',
@@ -511,6 +522,7 @@ def appmesh_virt_node_listener_strict_tls_check(cache: dict, awsAccountId: str, 
         except Exception as e:
             print(e)
 
+
 @registry.register_check("appmesh")
 def appmesh_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
     mesh = list_meshes(cache=cache)
@@ -521,22 +533,25 @@ def appmesh_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -> dic
             response = appmesh.list_virtual_nodes(meshName=meshName)
             for nodes in response['virtualNodes']:
                 nodeName = str(nodes['virtualNodeName'])
-                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                iso8601Time = datetime.datetime.utcnow().replace(
+                    tzinfo=datetime.timezone.utc).isoformat()
                 try:
-                    response = appmesh.describe_virtual_node(meshName=meshName,virtualNodeName=nodeName)
+                    response = appmesh.describe_virtual_node(
+                        meshName=meshName, virtualNodeName=nodeName)
                     nodeArn = str(response['virtualNode']['metadata']['arn'])
-                    loggingCheck = str(response['virtualNode']['spec']['logging'])
+                    loggingCheck = str(
+                        response['virtualNode']['spec']['logging'])
                     finding = {
                         'SchemaVersion': '2018-10-08',
                         'Id': nodeArn + '/appmesh-virtual-node-access-logging-check',
                         'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
                         'GeneratorId': nodeArn,
                         'AwsAccountId': awsAccountId,
-                        'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                        'Types': ['Software and Configuration Checks/AWS Security Best Practices'],
                         'FirstObservedAt': iso8601Time,
                         'CreatedAt': iso8601Time,
                         'UpdatedAt': iso8601Time,
-                        'Severity': { 'Label': 'INFORMATIONAL' },
+                        'Severity': {'Label': 'INFORMATIONAL'},
                         'Confidence': 99,
                         'Title': '[AppMesh.4] App Mesh virtual nodes should define an HTTP access log path to enable log exports for Envoy proxies',
                         'Description': 'App Mesh virtual node ' + nodeName + ' for the mesh ' + meshName + ' specifies a path for HTTP access logs.',
@@ -556,7 +571,7 @@ def appmesh_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -> dic
                                 'Partition': 'aws',
                                 'Region': awsRegion,
                                 'Details': {
-                                    'Other': { 
+                                    'Other': {
                                         'meshName': meshName,
                                         'virtualNodeName': nodeName,
                                         'accessLogPath': loggingCheck
@@ -564,7 +579,7 @@ def appmesh_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -> dic
                                 }
                             }
                         ],
-                        'Compliance': { 
+                        'Compliance': {
                             'Status': 'PASSED',
                             'RelatedRequirements': [
                                 'NIST CSF DE.AE-3',
@@ -572,7 +587,7 @@ def appmesh_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -> dic
                                 'NIST SP 800-53 CA-7',
                                 'NIST SP 800-53 IR-4',
                                 'NIST SP 800-53 IR-5',
-                                'NIST SP 800-53 IR-8', 
+                                'NIST SP 800-53 IR-8',
                                 'NIST SP 800-53 SI-4',
                                 'AICPA TSC CC7.2',
                                 'ISO 27001:2013 A.12.4.1',
@@ -593,11 +608,11 @@ def appmesh_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -> dic
                             'ProductArn': 'arn:aws:securityhub:' + awsRegion + ':' + awsAccountId + ':product/' + awsAccountId + '/default',
                             'GeneratorId': nodeArn,
                             'AwsAccountId': awsAccountId,
-                            'Types': [ 'Software and Configuration Checks/AWS Security Best Practices' ],
+                            'Types': ['Software and Configuration Checks/AWS Security Best Practices'],
                             'FirstObservedAt': iso8601Time,
                             'CreatedAt': iso8601Time,
                             'UpdatedAt': iso8601Time,
-                            'Severity': { 'Label': 'LOW' },
+                            'Severity': {'Label': 'LOW'},
                             'Confidence': 99,
                             'Title': '[AppMesh.4] App Mesh virtual nodes should define an HTTP access log path to enable log exports for Envoy proxies',
                             'Description': 'App Mesh virtual node ' + nodeName + ' for the mesh ' + meshName + ' does not specify a path for HTTP access logs. Specifying a path will allow you to use Docker log drivers or otherwise to pipe logs out of Envoy to another service such as CloudWatch. Refer to the remediation instructions if this configuration is not intended.',
@@ -617,14 +632,14 @@ def appmesh_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -> dic
                                     'Partition': 'aws',
                                     'Region': awsRegion,
                                     'Details': {
-                                        'Other': { 
+                                        'Other': {
                                             'meshName': meshName,
                                             'virtualNodeName': nodeName
                                         }
                                     }
                                 }
                             ],
-                            'Compliance': { 
+                            'Compliance': {
                                 'Status': 'FAILED',
                                 'RelatedRequirements': [
                                     'NIST CSF DE.AE-3',
@@ -632,7 +647,7 @@ def appmesh_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -> dic
                                     'NIST SP 800-53 CA-7',
                                     'NIST SP 800-53 IR-4',
                                     'NIST SP 800-53 IR-5',
-                                    'NIST SP 800-53 IR-8', 
+                                    'NIST SP 800-53 IR-8',
                                     'NIST SP 800-53 SI-4',
                                     'AICPA TSC CC7.2',
                                     'ISO 27001:2013 A.12.4.1',
