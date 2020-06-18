@@ -40,7 +40,9 @@ def list_aliases(cache):
 
 
 @registry.register_check("kms")
-def kms_key_rotation_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def kms_key_rotation_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     keys = list_keys(cache=cache)
     my_keys = keys["Keys"]
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -52,13 +54,7 @@ def kms_key_rotation_check(cache: dict, awsAccountId: str, awsRegion: str) -> di
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": keyarn + "/kms-key-rotation-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": keyarn,
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices",],
@@ -94,13 +90,7 @@ def kms_key_rotation_check(cache: dict, awsAccountId: str, awsRegion: str) -> di
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": keyarn + "/kms-key-rotation-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": keyarn,
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -135,7 +125,9 @@ def kms_key_rotation_check(cache: dict, awsAccountId: str, awsRegion: str) -> di
 
 
 @registry.register_check("kms")
-def kms_key_exposed_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def kms_key_exposed_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_aliases(cache=cache)
     aliasList = response["Aliases"]
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -158,13 +150,7 @@ def kms_key_exposed_check(cache: dict, awsAccountId: str, awsRegion: str) -> dic
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": aliasArn + "/kms-key-exposed-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": aliasArn,
                     "AwsAccountId": awsAccountId,
                     "Types": [
@@ -204,13 +190,7 @@ def kms_key_exposed_check(cache: dict, awsAccountId: str, awsRegion: str) -> dic
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": aliasArn + "/kms-key-exposed-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": aliasArn,
                     "AwsAccountId": awsAccountId,
                     "Types": [

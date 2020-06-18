@@ -26,7 +26,9 @@ shodanApiKey = str(response["Parameter"]["Value"])
 
 
 @registry.register_check("shodan")
-def public_ec2_shodan_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def public_ec2_shodan_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     try:
         response = ec2.describe_instances(DryRun=False, MaxResults=500)
         for res in response["Reservations"]:
@@ -34,41 +36,24 @@ def public_ec2_shodan_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
                 ec2Type = str(inst["InstanceType"])
                 ec2AmiId = str(inst["ImageId"])
                 ec2Id = str(inst["InstanceId"])
-                ec2Arn = (
-                    "arn:aws:ec2:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + "instance/"
-                    + ec2Id
-                )
+                ec2Arn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + "instance/" + ec2Id
                 ec2PrivateIp = str(inst["PrivateIpAddress"])
                 ec2VpcId = str(inst["VpcId"])
                 ec2SubnetId = str(inst["SubnetId"])
                 iso8601time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 try:
                     ec2PublicIp = str(inst["PublicIpAddress"])
                     # use requests Library to check the Shodan index for your host
-                    r = requests.get(
-                        url=shodanUrl + ec2PublicIp + "?key=" + shodanApiKey
-                    )
+                    r = requests.get(url=shodanUrl + ec2PublicIp + "?key=" + shodanApiKey)
                     data = r.json()
                     shodanOutput = str(data)
-                    if (
-                        shodanOutput
-                        == "{'error': 'No information available for that IP.'}"
-                    ):
+                    if shodanOutput == "{'error': 'No information available for that IP.'}":
                         # this is a passing check
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": ec2Arn
-                            + "/"
-                            + ec2PublicIp
-                            + "/ec2-shodan-index-check",
+                            "Id": ec2Arn + "/" + ec2PublicIp + "/ec2-shodan-index-check",
                             "ProductArn": "arn:aws:securityhub:"
                             + awsRegion
                             + ":"
@@ -97,10 +82,7 @@ def public_ec2_shodan_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
                                         "AwsEc2Instance": {
                                             "Type": ec2Type,
                                             "ImageId": ec2AmiId,
-                                            "IpV4Addresses": [
-                                                ec2PublicIp,
-                                                ec2PrivateIp,
-                                            ],
+                                            "IpV4Addresses": [ec2PublicIp, ec2PrivateIp,],
                                             "VpcId": ec2VpcId,
                                             "SubnetId": ec2SubnetId,
                                         }
@@ -134,10 +116,7 @@ def public_ec2_shodan_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
                     else:
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": ec2Arn
-                            + "/"
-                            + ec2PublicIp
-                            + "/ec2-shodan-index-check",
+                            "Id": ec2Arn + "/" + ec2PublicIp + "/ec2-shodan-index-check",
                             "ProductArn": "arn:aws:securityhub:"
                             + awsRegion
                             + ":"
@@ -157,8 +136,7 @@ def public_ec2_shodan_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
                             + " has been indexed by Shodan on IP address "
                             + ec2PublicIp
                             + ". review the Shodan.io host information in the SourceUrl or ThreatIntelIndicators.SourceUrl fields for information about what ports and services are exposed and then take action to reduce exposure and harden your host.",
-                            "SourceUrl": "https://www.shodan.io/host/"
-                            + ec2PublicIp,
+                            "SourceUrl": "https://www.shodan.io/host/" + ec2PublicIp,
                             "ProductFields": {"Product Name": "ElectricEye"},
                             "ThreatIntelIndicators": [
                                 {
@@ -167,8 +145,7 @@ def public_ec2_shodan_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
                                     "Value": ec2PublicIp,
                                     "LastObservedAt": iso8601time,
                                     "Source": "Shodan.io",
-                                    "SourceUrl": "https://www.shodan.io/host/"
-                                    + ec2PublicIp,
+                                    "SourceUrl": "https://www.shodan.io/host/" + ec2PublicIp,
                                 },
                             ],
                             "Resources": [
@@ -181,10 +158,7 @@ def public_ec2_shodan_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
                                         "AwsEc2Instance": {
                                             "Type": ec2Type,
                                             "ImageId": ec2AmiId,
-                                            "IpV4Addresses": [
-                                                ec2PublicIp,
-                                                ec2PrivateIp,
-                                            ],
+                                            "IpV4Addresses": [ec2PublicIp, ec2PrivateIp,],
                                             "VpcId": ec2VpcId,
                                             "SubnetId": ec2SubnetId,
                                         }
@@ -217,9 +191,7 @@ def public_ec2_shodan_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
                         yield finding
                 except Exception as e:
                     if str(e) == "'PublicIpAddress'":
-                        print(
-                            ec2Id + " does not have a Public IPv4 Address, skipping"
-                        )
+                        print(ec2Id + " does not have a Public IPv4 Address, skipping")
                         pass
                     else:
                         print(e)
@@ -228,7 +200,9 @@ def public_ec2_shodan_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
 
 
 @registry.register_check("shodan")
-def public_alb_shodan_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def public_alb_shodan_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     try:
         response = elbv2.describe_load_balancers()
         for lbs in response["LoadBalancers"]:
@@ -239,9 +213,7 @@ def public_alb_shodan_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
             elbv2Vpc = str(lbs["VpcId"])
             elbv2Dns = str(lbs["DNSName"])
             iso8601time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             if elbv2Scheme == "internet-facing" and elbv2Type == "application":
                 # use Socket to do a DNS lookup and retrieve the IP address
@@ -250,10 +222,7 @@ def public_alb_shodan_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
                 r = requests.get(url=shodanUrl + elbv2Ip + "?key=" + shodanApiKey)
                 data = r.json()
                 shodanOutput = str(data)
-                if (
-                    shodanOutput
-                    == "{'error': 'No information available for that IP.'}"
-                ):
+                if shodanOutput == "{'error': 'No information available for that IP.'}":
                     # this is a passing check
                     finding = {
                         "SchemaVersion": "2018-10-08",
@@ -272,9 +241,7 @@ def public_alb_shodan_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
                         "UpdatedAt": iso8601time,
                         "Severity": {"Label": "INFORMATIONAL"},
                         "Title": "[Shodan.ELBv2.1] Internet-facing Application Load Balancers should be monitored for being indexed by Shodan",
-                        "Description": "ALB "
-                        + elbv2Name
-                        + " has not been indexed by Shodan.",
+                        "Description": "ALB " + elbv2Name + " has not been indexed by Shodan.",
                         "ProductFields": {"Product Name": "ElectricEye"},
                         "Resources": [
                             {
@@ -350,8 +317,7 @@ def public_alb_shodan_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
                                 "Value": elbv2Ip,
                                 "LastObservedAt": iso8601time,
                                 "Source": "Shodan.io",
-                                "SourceUrl": "https://www.shodan.io/host/"
-                                + elbv2Ip,
+                                "SourceUrl": "https://www.shodan.io/host/" + elbv2Ip,
                             },
                         ],
                         "Resources": [
@@ -395,15 +361,15 @@ def public_alb_shodan_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
                     }
                     yield finding
             else:
-                print(
-                    elbv2Name + " is not an ALB or is not internet-facing, skipping"
-                )
+                print(elbv2Name + " is not an ALB or is not internet-facing, skipping")
     except Exception as e:
         print(e)
 
 
 @registry.register_check("shodan")
-def public_rds_shodan_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def public_rds_shodan_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     try:
         response = rds.describe_db_instances()
         for rdsdb in response["DBInstances"]:
@@ -416,9 +382,7 @@ def public_rds_shodan_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
             rdsDns = str(rdsdb["Endpoint"]["Address"])
             publicCheck = str(rdsdb["PubliclyAccessible"])
             iso8601time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             if publicCheck == "True":
                 # use Socket to do a DNS lookup and retrieve the IP address
@@ -427,17 +391,11 @@ def public_rds_shodan_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
                 r = requests.get(url=shodanUrl + rdsIp + "?key=" + shodanApiKey)
                 data = r.json()
                 shodanOutput = str(data)
-                if (
-                    shodanOutput
-                    == "{'error': 'No information available for that IP.'}"
-                ):
+                if shodanOutput == "{'error': 'No information available for that IP.'}":
                     # this is a passing check
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": rdsInstanceArn
-                        + "/"
-                        + rdsDns
-                        + "/rds-shodan-index-check",
+                        "Id": rdsInstanceArn + "/" + rdsDns + "/rds-shodan-index-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -500,10 +458,7 @@ def public_rds_shodan_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
                 else:
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": rdsInstanceArn
-                        + "/"
-                        + rdsDns
-                        + "/rds-shodan-index-check",
+                        "Id": rdsInstanceArn + "/" + rdsDns + "/rds-shodan-index-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -585,24 +540,22 @@ def public_rds_shodan_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
 
 
 @registry.register_check("shodan")
-def public_es_domain_shodan_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def public_es_domain_shodan_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     try:
         response = elasticsearch.list_domain_names()
         for domain in response["DomainNames"]:
             esDomain = str(domain["DomainName"])
             try:
-                response = elasticsearch.describe_elasticsearch_domain(
-                    DomainName=esDomain
-                )
+                response = elasticsearch.describe_elasticsearch_domain(DomainName=esDomain)
                 esDomainId = str(response["DomainStatus"]["DomainId"])
                 esDomainName = str(response["DomainStatus"]["DomainName"])
                 esDomainArn = str(response["DomainStatus"]["ARN"])
                 esVersion = str(response["DomainStatus"]["ElasticsearchVersion"])
                 esDomainEndpoint = str(response["DomainStatus"]["Endpoint"])
                 iso8601time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 try:
                     esVpcOptions = str(response["DomainStatus"]["VPCOptions"])
@@ -613,15 +566,10 @@ def public_es_domain_shodan_check(cache: dict, awsAccountId: str, awsRegion: str
                         # use Socket to do a DNS lookup and retrieve the IP address
                         esDomainIp = socket.gethostbyname(esDomainEndpoint)
                         # use requests Library to check the Shodan index for your host
-                        r = requests.get(
-                            url=shodanUrl + esDomainIp + "?key=" + shodanApiKey
-                        )
+                        r = requests.get(url=shodanUrl + esDomainIp + "?key=" + shodanApiKey)
                         data = r.json()
                         shodanOutput = str(data)
-                        if (
-                            shodanOutput
-                            == "{'error': 'No information available for that IP.'}"
-                        ):
+                        if shodanOutput == "{'error': 'No information available for that IP.'}":
                             # this is a passing check
                             finding = {
                                 "SchemaVersion": "2018-10-08",
@@ -715,8 +663,7 @@ def public_es_domain_shodan_check(cache: dict, awsAccountId: str, awsRegion: str
                                 + " from endpoint DNS name "
                                 + esDomainEndpoint
                                 + ". review the Shodan.io host information in the SourceUrl or ThreatIntelIndicators.SourceUrl fields for information about what ports and services are exposed and then take action to reduce exposure and harden your ES domain.",
-                                "SourceUrl": "https://www.shodan.io/host/"
-                                + esDomainIp,
+                                "SourceUrl": "https://www.shodan.io/host/" + esDomainIp,
                                 "ProductFields": {"Product Name": "ElectricEye"},
                                 "ThreatIntelIndicators": [
                                     {
@@ -725,8 +672,7 @@ def public_es_domain_shodan_check(cache: dict, awsAccountId: str, awsRegion: str
                                         "Value": esDomainIp,
                                         "LastObservedAt": iso8601time,
                                         "Source": "Shodan.io",
-                                        "SourceUrl": "https://www.shodan.io/host/"
-                                        + esDomainIp,
+                                        "SourceUrl": "https://www.shodan.io/host/" + esDomainIp,
                                     },
                                 ],
                                 "Resources": [
@@ -778,7 +724,9 @@ def public_es_domain_shodan_check(cache: dict, awsAccountId: str, awsRegion: str
 
 
 @registry.register_check("shodan")
-def public_clb_shodan_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def public_clb_shodan_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     try:
         response = elb.describe_load_balancers()
         for clbs in response["LoadBalancerDescriptions"]:
@@ -794,9 +742,7 @@ def public_clb_shodan_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
             clbDnsName = str(clbs["DNSName"])
             clbScheme = str(clbs["Scheme"])
             iso8601time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             if clbScheme == "internet-facing":
                 # use Socket to do a DNS lookup and retrieve the IP address
@@ -805,10 +751,7 @@ def public_clb_shodan_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
                 r = requests.get(url=shodanUrl + clbIp + "?key=" + shodanApiKey)
                 data = r.json()
                 shodanOutput = str(data)
-                if (
-                    shodanOutput
-                    == "{'error': 'No information available for that IP.'}"
-                ):
+                if shodanOutput == "{'error': 'No information available for that IP.'}":
                     # this is a passing check
                     finding = {
                         "SchemaVersion": "2018-10-08",
@@ -947,7 +890,9 @@ def public_clb_shodan_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
 
 
 @registry.register_check("shodan")
-def public_dms_replication_instance_shodan_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def public_dms_replication_instance_shodan_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     try:
         response = dms.describe_replication_instances()
         for repinstances in response["ReplicationInstances"]:
@@ -955,24 +900,15 @@ def public_dms_replication_instance_shodan_check(cache: dict, awsAccountId: str,
             dmsInstanceArn = str(repinstances["ReplicationInstanceArn"])
             publicAccessCheck = str(repinstances["PubliclyAccessible"])
             iso8601time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             if publicAccessCheck == "True":
-                dmsPublicIp = str(
-                    repinstances["ReplicationInstancePublicIpAddress"]
-                )
+                dmsPublicIp = str(repinstances["ReplicationInstancePublicIpAddress"])
                 # use requests Library to check the Shodan index for your host
-                r = requests.get(
-                    url=shodanUrl + dmsPublicIp + "?key=" + shodanApiKey
-                )
+                r = requests.get(url=shodanUrl + dmsPublicIp + "?key=" + shodanApiKey)
                 data = r.json()
                 shodanOutput = str(data)
-                if (
-                    shodanOutput
-                    == "{'error': 'No information available for that IP.'}"
-                ):
+                if shodanOutput == "{'error': 'No information available for that IP.'}":
                     # this is a passing check
                     finding = {
                         "SchemaVersion": "2018-10-08",
@@ -1004,11 +940,7 @@ def public_dms_replication_instance_shodan_check(cache: dict, awsAccountId: str,
                                 "Id": dmsInstanceArn,
                                 "Partition": "aws",
                                 "Region": awsRegion,
-                                "Details": {
-                                    "Other": {
-                                        "ReplicationInstanceId": dmsInstanceId
-                                    }
-                                },
+                                "Details": {"Other": {"ReplicationInstanceId": dmsInstanceId}},
                             }
                         ],
                         "Compliance": {
@@ -1070,8 +1002,7 @@ def public_dms_replication_instance_shodan_check(cache: dict, awsAccountId: str,
                                 "Value": dmsPublicIp,
                                 "LastObservedAt": iso8601time,
                                 "Source": "Shodan.io",
-                                "SourceUrl": "https://www.shodan.io/host/"
-                                + dmsPublicIp,
+                                "SourceUrl": "https://www.shodan.io/host/" + dmsPublicIp,
                             },
                         ],
                         "Resources": [
@@ -1080,11 +1011,7 @@ def public_dms_replication_instance_shodan_check(cache: dict, awsAccountId: str,
                                 "Id": dmsInstanceArn,
                                 "Partition": "aws",
                                 "Region": awsRegion,
-                                "Details": {
-                                    "Other": {
-                                        "ReplicationInstanceId": dmsInstanceId
-                                    }
-                                },
+                                "Details": {"Other": {"ReplicationInstanceId": dmsInstanceId}},
                             }
                         ],
                         "Compliance": {
@@ -1118,7 +1045,9 @@ def public_dms_replication_instance_shodan_check(cache: dict, awsAccountId: str,
 
 
 @registry.register_check("shodan")
-def public_amazon_mq_broker_shodan_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def public_amazon_mq_broker_shodan_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     try:
         response = amzmq.list_brokers(MaxResults=100)
         myBrokers = response["BrokerSummaries"]
@@ -1133,9 +1062,7 @@ def public_amazon_mq_broker_shodan_check(cache: dict, awsAccountId: str, awsRegi
                     mqInstances = response["BrokerInstances"]
                     for instance in mqInstances:
                         mqBrokerIpv4 = str(instance["IpAddress"])
-                        r = requests.get(
-                            url=shodanUrl + mqBrokerIpv4 + "?key=" + shodanApiKey
-                        )
+                        r = requests.get(url=shodanUrl + mqBrokerIpv4 + "?key=" + shodanApiKey)
                         data = r.json()
                         shodanOutput = str(data)
                         iso8601time = (
@@ -1143,10 +1070,7 @@ def public_amazon_mq_broker_shodan_check(cache: dict, awsAccountId: str, awsRegi
                             .replace(tzinfo=datetime.timezone.utc)
                             .isoformat()
                         )
-                        if (
-                            shodanOutput
-                            == "{'error': 'No information available for that IP.'}"
-                        ):
+                        if shodanOutput == "{'error': 'No information available for that IP.'}":
                             # this is a passing check
                             finding = {
                                 "SchemaVersion": "2018-10-08",

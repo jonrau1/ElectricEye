@@ -26,7 +26,7 @@ detective = boto3.client('detective')
 
 
 @registry.register_check("security_service")
-def iam_access_analyzer_detector_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def iam_access_analyzer_detector_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     response = accessanalyzer.list_analyzers()
     iamAccessAnalyzerCheck = str(response['analyzers'])
     # ISO Time
@@ -139,7 +139,7 @@ def iam_access_analyzer_detector_check(cache: dict, awsAccountId: str, awsRegion
         yield finding
 
 @registry.register_check("security_service")
-def guard_duty_detector_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def guard_duty_detector_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     response = guardduty.list_detectors()
     guarddutyDetectorCheck = str(response['DetectorIds'])
     # ISO Time
@@ -252,7 +252,7 @@ def guard_duty_detector_check(cache: dict, awsAccountId: str, awsRegion: str) ->
         yield finding
 
 class DetectiveGraphCheck(Auditor):
-def detective_graph_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def detective_graph_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     try:
         response = detective.list_graphs(MaxResults=200)
         # ISO Time

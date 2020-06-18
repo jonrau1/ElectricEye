@@ -31,7 +31,9 @@ def describe_db_instances(cache):
 
 
 @registry.register_check("documentdb")
-def docdb_public_instance_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def docdb_public_instance_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_db_instances(cache)
     myDocDbs = response["DBInstances"]
     for docdb in myDocDbs:
@@ -39,20 +41,12 @@ def docdb_public_instance_check(cache: dict, awsAccountId: str, awsRegion: str) 
         docdbArn = str(docdb["DBInstanceArn"])
         publicAccessCheck = str(docdb["PubliclyAccessible"])
         # ISO Time
-        iso8601Time = (
-            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if publicAccessCheck == "True":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": docdbArn + "/docdb-public-access",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": docdbArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -109,13 +103,7 @@ def docdb_public_instance_check(cache: dict, awsAccountId: str, awsRegion: str) 
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": docdbArn + "/docdb-public-access",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": docdbArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -128,9 +116,7 @@ def docdb_public_instance_check(cache: dict, awsAccountId: str, awsRegion: str) 
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[DocDb.1] DocumentDB instances should not be exposed to the public",
-                "Description": "DocumentDB instance "
-                + docdbId
-                + " is not exposed to the public.",
+                "Description": "DocumentDB instance " + docdbId + " is not exposed to the public.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your DocumentDB is not intended to be public refer to the Connecting to an Amazon DocumentDB Cluster from Outside an Amazon VPC section in the Amazon DocumentDB Developer Guide",
@@ -172,7 +158,7 @@ def docdb_public_instance_check(cache: dict, awsAccountId: str, awsRegion: str) 
 
 @registry.register_check("documentdb")
 def docdb_instance_encryption_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = describe_db_instances(cache)
     myDocDbs = response["DBInstances"]
@@ -181,20 +167,12 @@ def docdb_instance_encryption_check(
         docdbArn = str(docdb["DBInstanceArn"])
         encryptionCheck = str(docdb["StorageEncrypted"])
         # ISO Time
-        iso8601Time = (
-            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if encryptionCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": docdbArn + "/docdb-encryption-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": docdbArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -245,13 +223,7 @@ def docdb_instance_encryption_check(
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": docdbArn + "/docdb-encryption-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": docdbArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -300,7 +272,7 @@ def docdb_instance_encryption_check(
 
 @registry.register_check("documentdb")
 def docdb_instance_audit_logging_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = describe_db_instances(cache)
     myDocDbs = response["DBInstances"]
@@ -308,36 +280,24 @@ def docdb_instance_audit_logging_check(
         docdbId = str(docdb["DBInstanceIdentifier"])
         docdbArn = str(docdb["DBInstanceArn"])
         # ISO Time
-        iso8601Time = (
-            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
             # this is a passing check
             logCheck = str(docdb["EnabledCloudwatchLogsExports"])
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": docdbArn + "/docdb-instance-audit-logging-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": docdbArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[DocDb.3] DocumentDB instances should have audit logging configured",
-                "Description": "DocumentDB instance "
-                + docdbId
-                + " has audit logging configured.",
+                "Description": "DocumentDB instance " + docdbId + " has audit logging configured.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For information on DocumentDB audit logging refer to the Auditing Amazon DocumentDB Events section in the Amazon DocumentDB Developer Guide",
@@ -377,18 +337,10 @@ def docdb_instance_audit_logging_check(
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": docdbArn + "/docdb-instance-audit-logging-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": docdbArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -436,7 +388,9 @@ def docdb_instance_audit_logging_check(
 
 
 @registry.register_check("documentdb")
-def docdb_cluster_multiaz_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def docdb_cluster_multiaz_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     # find document db clusters
     response = documentdb.describe_db_clusters(MaxRecords=100)
     myDocDbClusters = response["DBClusters"]
@@ -445,25 +399,15 @@ def docdb_cluster_multiaz_check(cache: dict, awsAccountId: str, awsRegion: str) 
         docdbClusterArn = str(docdbcluster["DBClusterArn"])
         multiAzCheck = str(docdbcluster["MultiAZ"])
         # ISO Time
-        iso8601Time = (
-            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if multiAzCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": docdbClusterArn + "/docdb-cluster-multi-az-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": docdbclusterId,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -514,18 +458,10 @@ def docdb_cluster_multiaz_check(cache: dict, awsAccountId: str, awsRegion: str) 
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": docdbClusterArn + "/docdb-cluster-multi-az-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": docdbClusterArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -576,7 +512,7 @@ def docdb_cluster_multiaz_check(cache: dict, awsAccountId: str, awsRegion: str) 
 
 @registry.register_check("documentdb")
 def docdb_cluster_deletion_protection_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     # find document db instances
     response = documentdb.describe_db_clusters(MaxRecords=100)
@@ -586,25 +522,15 @@ def docdb_cluster_deletion_protection_check(
         docdbClusterArn = str(docdbcluster["DBClusterArn"])
         multiAzCheck = str(docdbcluster["MultiAZ"])
         # ISO Time
-        iso8601Time = (
-            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if multiAzCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": docdbClusterArn + "/docdb-cluster-deletion-protection-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": docdbClusterArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -655,18 +581,10 @@ def docdb_cluster_deletion_protection_check(
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": docdbClusterArn + "/docdb-cluster-deletion-protection-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": docdbClusterArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -717,7 +635,7 @@ def docdb_cluster_deletion_protection_check(
 
 @registry.register_check("documentdb")
 def documentdb_parameter_group_audit_log_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = documentdb.describe_db_cluster_parameter_groups()
     dbClusterParameters = response["DBClusterParameterGroups"]
@@ -777,9 +695,7 @@ def documentdb_parameter_group_audit_log_check(
                                     "Partition": "aws",
                                     "Region": awsRegion,
                                     "Details": {
-                                        "Other": {
-                                            "ParameterGroupName": parameterGroupName
-                                        }
+                                        "Other": {"ParameterGroupName": parameterGroupName}
                                     },
                                 }
                             ],
@@ -842,9 +758,7 @@ def documentdb_parameter_group_audit_log_check(
                                     "Partition": "aws",
                                     "Region": awsRegion,
                                     "Details": {
-                                        "Other": {
-                                            "ParameterGroupName": parameterGroupName
-                                        }
+                                        "Other": {"ParameterGroupName": parameterGroupName}
                                     },
                                 }
                             ],
@@ -875,7 +789,7 @@ def documentdb_parameter_group_audit_log_check(
 
 @registry.register_check("documentdb")
 def documentdb_parameter_group_tls_enforcement_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = documentdb.describe_db_cluster_parameter_groups()
     dbClusterParameters = response["DBClusterParameterGroups"]
@@ -935,9 +849,7 @@ def documentdb_parameter_group_tls_enforcement_check(
                                     "Partition": "aws",
                                     "Region": awsRegion,
                                     "Details": {
-                                        "Other": {
-                                            "parameterGroupName": parameterGroupName
-                                        }
+                                        "Other": {"parameterGroupName": parameterGroupName}
                                     },
                                 }
                             ],
@@ -1001,9 +913,7 @@ def documentdb_parameter_group_tls_enforcement_check(
                                     "Partition": "aws",
                                     "Region": awsRegion,
                                     "Details": {
-                                        "Other": {
-                                            "parameterGroupName": parameterGroupName
-                                        }
+                                        "Other": {"parameterGroupName": parameterGroupName}
                                     },
                                 }
                             ],
@@ -1035,38 +945,25 @@ def documentdb_parameter_group_tls_enforcement_check(
 
 @registry.register_check("documentdb")
 def documentdb_cluster_snapshot_encryption_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
-    response = documentdb.describe_db_clusters(
-        Filters=[{"Name": "engine", "Values": ["docdb"]}]
-    )
+    response = documentdb.describe_db_clusters(Filters=[{"Name": "engine", "Values": ["docdb"]}])
     for clusters in response["DBClusters"]:
         clusterId = str(clusters["DBClusterIdentifier"])
-        response = documentdb.describe_db_cluster_snapshots(
-            DBClusterIdentifier=clusterId
-        )
+        response = documentdb.describe_db_cluster_snapshots(DBClusterIdentifier=clusterId)
         for snapshots in response["DBClusterSnapshots"]:
             clusterSnapshotId = str(snapshots["DBClusterSnapshotIdentifier"])
             clusterSnapshotArn = str(snapshots["DBClusterSnapshotArn"])
             encryptionCheck = str(snapshots["StorageEncrypted"])
             # ISO Time
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             if encryptionCheck == "False":
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": clusterSnapshotArn
-                    + "/docdb-cluster-snapshot-encryption-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "Id": clusterSnapshotArn + "/docdb-cluster-snapshot-encryption-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": clusterSnapshotArn,
                     "AwsAccountId": awsAccountId,
                     "Types": [
@@ -1116,15 +1013,8 @@ def documentdb_cluster_snapshot_encryption_check(
             else:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": clusterSnapshotArn
-                    + "/docdb-cluster-snapshot-encryption-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "Id": clusterSnapshotArn + "/docdb-cluster-snapshot-encryption-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": clusterSnapshotArn,
                     "AwsAccountId": awsAccountId,
                     "Types": [
@@ -1175,16 +1065,12 @@ def documentdb_cluster_snapshot_encryption_check(
 
 @registry.register_check("documentdb")
 def documentdb_cluster_snapshot_public_share_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
-    response = documentdb.describe_db_clusters(
-        Filters=[{"Name": "engine", "Values": ["docdb"]}]
-    )
+    response = documentdb.describe_db_clusters(Filters=[{"Name": "engine", "Values": ["docdb"]}])
     for clusters in response["DBClusters"]:
         clusterId = str(clusters["DBClusterIdentifier"])
-        response = documentdb.describe_db_cluster_snapshots(
-            DBClusterIdentifier=clusterId
-        )
+        response = documentdb.describe_db_cluster_snapshots(DBClusterIdentifier=clusterId)
         for snapshots in response["DBClusterSnapshots"]:
             clusterSnapshotId = str(snapshots["DBClusterSnapshotIdentifier"])
             clusterSnapshotArn = str(snapshots["DBClusterSnapshotArn"])
@@ -1242,9 +1128,7 @@ def documentdb_cluster_snapshot_public_share_check(
                                     "Id": clusterSnapshotArn,
                                     "Partition": "aws",
                                     "Region": awsRegion,
-                                    "Details": {
-                                        "Other": {"snapshotId": clusterSnapshotId}
-                                    },
+                                    "Details": {"Other": {"snapshotId": clusterSnapshotId}},
                                 }
                             ],
                             "Compliance": {
@@ -1308,9 +1192,7 @@ def documentdb_cluster_snapshot_public_share_check(
                                     "Id": clusterSnapshotArn,
                                     "Partition": "aws",
                                     "Region": awsRegion,
-                                    "Details": {
-                                        "Other": {"snapshotId": clusterSnapshotId}
-                                    },
+                                    "Details": {"Other": {"snapshotId": clusterSnapshotId}},
                                 }
                             ],
                             "Compliance": {

@@ -30,7 +30,9 @@ def describe_users(cache):
 
 
 @registry.register_check("appstream")
-def default_internet_access_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def default_internet_access_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     # loop through AppStream 2.0 fleets
     response = appstream.describe_fleets()
     myAppstreamFleets = response["Fleets"]
@@ -44,13 +46,7 @@ def default_internet_access_check(cache: dict, awsAccountId: str, awsRegion: str
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": fleetArn + "/appstream-default-internet-access",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": fleetArn,
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -103,13 +99,7 @@ def default_internet_access_check(cache: dict, awsAccountId: str, awsRegion: str
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": fleetArn + "/appstream-default-internet-access",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": fleetArn,
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -160,7 +150,7 @@ def default_internet_access_check(cache: dict, awsAccountId: str, awsRegion: str
 
 
 @registry.register_check("appstream")
-def public_image_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def public_image_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """Check for appstream images marked public
 
     TODO: Right now, this check is returning all public images including what appear 
@@ -241,7 +231,9 @@ def public_image_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
 
 
 @registry.register_check("appstream")
-def compromise_appstream_user_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def compromise_appstream_user_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     # loop through AppStream 2.0 users
     response = describe_users(cache)
     myAppStreamUsers = response["Users"]
@@ -255,13 +247,7 @@ def compromise_appstream_user_check(cache: dict, awsAccountId: str, awsRegion: s
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": userArn + "/appstream-compromised-user",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": userArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -325,13 +311,7 @@ def compromise_appstream_user_check(cache: dict, awsAccountId: str, awsRegion: s
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": userArn + "/appstream-compromised-user",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": userArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -392,7 +372,7 @@ def compromise_appstream_user_check(cache: dict, awsAccountId: str, awsRegion: s
 
 
 @registry.register_check("appstream")
-def userpool_auth_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def userpool_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     # loop through AppStream 2.0 users
     response = describe_users(cache)
     myAppStreamUsers = response["Users"]
@@ -407,13 +387,7 @@ def userpool_auth_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": userArn + "/appstream-compromised-user",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": userArn,
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -472,13 +446,7 @@ def userpool_auth_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": userArn + "/appstream-compromised-user",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": userArn,
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],

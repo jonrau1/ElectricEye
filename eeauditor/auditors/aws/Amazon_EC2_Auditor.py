@@ -21,20 +21,16 @@ registry = CheckRegister()
 
 ec2 = boto3.client("ec2")
 
+
 @registry.register_check("ec2")
-def ec2_imdsv2_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def ec2_imdsv2_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     try:
         response = ec2.describe_instances(MaxResults=1000)
         for r in response["Reservations"]:
             for i in r["Instances"]:
                 instanceId = str(i["InstanceId"])
                 instanceArn = (
-                    "arn:aws:ec2:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":instance/"
-                    + instanceId
+                    "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":instance/" + instanceId
                 )
                 instanceType = str(i["InstanceType"])
                 instanceImage = str(i["ImageId"])

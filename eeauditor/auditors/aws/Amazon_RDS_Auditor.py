@@ -28,25 +28,27 @@ def describe_db_instances(cache):
     response = cache.get("describe_db_instances")
     if response:
         return response
-    cache["describe_db_instances"] = rds.describe_db_instances(Filters=[
-        {
-            "Name": "engine",
-            "Values": [
-                "aurora",
-                "aurora-mysql",
-                "aurora-postgresql",
-                "mariadb",
-                "mysql",
-                "oracle-ee",
-                "postgres",
-                "sqlserver-ee",
-                "sqlserver-se",
-                "sqlserver-ex",
-                "sqlserver-web",
-            ],
-        }
-    ],
-        MaxRecords=100,)
+    cache["describe_db_instances"] = rds.describe_db_instances(
+        Filters=[
+            {
+                "Name": "engine",
+                "Values": [
+                    "aurora",
+                    "aurora-mysql",
+                    "aurora-postgresql",
+                    "mariadb",
+                    "mysql",
+                    "oracle-ee",
+                    "postgres",
+                    "sqlserver-ee",
+                    "sqlserver-se",
+                    "sqlserver-ex",
+                    "sqlserver-web",
+                ],
+            }
+        ],
+        MaxRecords=100,
+    )
     return cache["describe_db_instances"]
 
 
@@ -60,7 +62,9 @@ def describe_db_snapshots(cache):
 
 
 @registry.register_check("rds")
-def rds_instance_ha_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def rds_instance_ha_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_db_instances(cache)
     myRdsInstances = response["DBInstances"]
     response = describe_db_snapshots(cache)
@@ -73,27 +77,15 @@ def rds_instance_ha_check(cache: dict, awsAccountId: str, awsRegion: str) -> dic
         instanceEngine = str(dbinstances["Engine"])
         instanceEngineVersion = str(dbinstances["EngineVersion"])
         highAvailabilityCheck = str(dbinstances["MultiAZ"])
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if highAvailabilityCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": instanceArn + "/instance-ha-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": instanceArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -152,18 +144,10 @@ def rds_instance_ha_check(cache: dict, awsAccountId: str, awsRegion: str) -> dic
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": instanceArn + "/instance-ha-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": instanceArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -221,7 +205,9 @@ def rds_instance_ha_check(cache: dict, awsAccountId: str, awsRegion: str) -> dic
 
 
 @registry.register_check("rds")
-def rds_instance_public_access_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def rds_instance_public_access_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_db_instances(cache)
     myRdsInstances = response["DBInstances"]
     response = describe_db_snapshots(cache)
@@ -234,22 +220,12 @@ def rds_instance_public_access_check(cache: dict, awsAccountId: str, awsRegion: 
         instanceEngine = str(dbinstances["Engine"])
         instanceEngineVersion = str(dbinstances["EngineVersion"])
         publicAccessibleCheck = str(dbinstances["PubliclyAccessible"])
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if publicAccessibleCheck == "True":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": instanceArn + "/instance-public-access-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": instanceArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -315,13 +291,7 @@ def rds_instance_public_access_check(cache: dict, awsAccountId: str, awsRegion: 
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": instanceArn + "/instance-public-access-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": instanceArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -386,7 +356,9 @@ def rds_instance_public_access_check(cache: dict, awsAccountId: str, awsRegion: 
 
 
 @registry.register_check("rds")
-def rds_instance_storage_encryption_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def rds_instance_storage_encryption_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_db_instances(cache)
     myRdsInstances = response["DBInstances"]
     response = describe_db_snapshots(cache)
@@ -399,22 +371,12 @@ def rds_instance_storage_encryption_check(cache: dict, awsAccountId: str, awsReg
         instanceEngine = str(dbinstances["Engine"])
         instanceEngineVersion = str(dbinstances["EngineVersion"])
         rdsStorageEncryptionCheck = str(dbinstances["StorageEncrypted"])
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if rdsStorageEncryptionCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": instanceArn + "/instance-storage-encryption-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": instanceArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -474,13 +436,7 @@ def rds_instance_storage_encryption_check(cache: dict, awsAccountId: str, awsReg
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": instanceArn + "/instance-storage-encryption-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": instanceArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -493,9 +449,7 @@ def rds_instance_storage_encryption_check(cache: dict, awsAccountId: str, awsReg
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[RDS.3] RDS instances should have encrypted storage",
-                "Description": "RDS DB instance "
-                + instanceId
-                + " has encrypted storage.",
+                "Description": "RDS DB instance " + instanceId + " has encrypted storage.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on RDS storage encryption refer to the Enabling Amazon RDS Encryption for a DB Instance section of the Amazon Relational Database Service User Guide",
@@ -539,7 +493,9 @@ def rds_instance_storage_encryption_check(cache: dict, awsAccountId: str, awsReg
 
 
 @registry.register_check("rds")
-def rds_instance_iam_auth_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def rds_instance_iam_auth_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_db_instances(cache)
     myRdsInstances = response["DBInstances"]
     response = describe_db_snapshots(cache)
@@ -551,30 +507,17 @@ def rds_instance_iam_auth_check(cache: dict, awsAccountId: str, awsRegion: str) 
         instancePort = int(dbinstances["Endpoint"]["Port"])
         instanceEngine = str(dbinstances["Engine"])
         instanceEngineVersion = str(dbinstances["EngineVersion"])
-        iamDbAuthCheck = str(
-            dbinstances["IAMDatabaseAuthenticationEnabled"])
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iamDbAuthCheck = str(dbinstances["IAMDatabaseAuthenticationEnabled"])
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if instanceEngine == "mysql" or "postgres":
             if iamDbAuthCheck == "False":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": instanceArn + "/instance-iam-auth-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": instanceArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -639,18 +582,10 @@ def rds_instance_iam_auth_check(cache: dict, awsAccountId: str, awsRegion: str) 
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": instanceArn + "/instance-iam-auth-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": instanceArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -716,7 +651,9 @@ def rds_instance_iam_auth_check(cache: dict, awsAccountId: str, awsRegion: str) 
 
 
 @registry.register_check("rds")
-def rds_instance_domain_join_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def rds_instance_domain_join_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_db_instances(cache)
     myRdsInstances = response["DBInstances"]
     response = describe_db_snapshots(cache)
@@ -742,26 +679,16 @@ def rds_instance_domain_join_check(cache: dict, awsAccountId: str, awsRegion: st
             or "sqlserver-web"
         ):
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             if activeDirectoryDomainCheck == "[]":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": instanceArn + "/instance-domain-join-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": instanceArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -825,18 +752,10 @@ def rds_instance_domain_join_check(cache: dict, awsAccountId: str, awsRegion: st
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": instanceArn + "/instance-domain-join-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": instanceArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -901,7 +820,9 @@ def rds_instance_domain_join_check(cache: dict, awsAccountId: str, awsRegion: st
 
 
 @registry.register_check("rds")
-def rds_instance_performance_insights_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def rds_instance_performance_insights_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_db_instances(cache)
     myRdsInstances = response["DBInstances"]
     response = describe_db_snapshots(cache)
@@ -914,27 +835,15 @@ def rds_instance_performance_insights_check(cache: dict, awsAccountId: str, awsR
         instanceEngine = str(dbinstances["Engine"])
         instanceEngineVersion = str(dbinstances["EngineVersion"])
         perfInsightsCheck = str(dbinstances["PerformanceInsightsEnabled"])
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if perfInsightsCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": instanceArn + "/instance-perf-insights-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": instanceArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -991,18 +900,10 @@ def rds_instance_performance_insights_check(cache: dict, awsAccountId: str, awsR
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": instanceArn + "/instance-perf-insights-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": instanceArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -1058,7 +959,9 @@ def rds_instance_performance_insights_check(cache: dict, awsAccountId: str, awsR
 
 
 @registry.register_check("rds")
-def rds_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def rds_instance_deletion_protection_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_db_instances(cache)
     myRdsInstances = response["DBInstances"]
     response = describe_db_snapshots(cache)
@@ -1071,27 +974,15 @@ def rds_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRe
         instanceEngine = str(dbinstances["Engine"])
         instanceEngineVersion = str(dbinstances["EngineVersion"])
         deletionProtectionCheck = str(dbinstances["DeletionProtection"])
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if deletionProtectionCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": instanceArn + "/instance-deletion-prot-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": instanceArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -1151,18 +1042,10 @@ def rds_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRe
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": instanceArn + "/instance-database-cloudwatch-logs-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": instanceArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -1221,7 +1104,9 @@ def rds_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRe
 
 
 @registry.register_check("rds")
-def rds_instance_cloudwatch_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def rds_instance_cloudwatch_logging_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_db_instances(cache)
     myRdsInstances = response["DBInstances"]
     response = describe_db_snapshots(cache)
@@ -1233,29 +1118,17 @@ def rds_instance_cloudwatch_logging_check(cache: dict, awsAccountId: str, awsReg
         instancePort = int(dbinstances["Endpoint"]["Port"])
         instanceEngine = str(dbinstances["Engine"])
         instanceEngineVersion = str(dbinstances["EngineVersion"])
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
             logCheck = str(database["EnabledCloudwatchLogsExports"])
             # this is a passing check
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": instanceArn + "/instance-database-cloudwatch-logs-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": instanceArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -1314,18 +1187,10 @@ def rds_instance_cloudwatch_logging_check(cache: dict, awsAccountId: str, awsReg
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": instanceArn + "/instance-deletion-prot-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": instanceArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -1381,7 +1246,9 @@ def rds_instance_cloudwatch_logging_check(cache: dict, awsAccountId: str, awsReg
 
 
 @registry.register_check("rds")
-def rds_snapshot_encryption_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def rds_snapshot_encryption_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_db_instances(cache)
     myRdsInstances = response["DBInstances"]
     response = describe_db_snapshots(cache)
@@ -1390,22 +1257,12 @@ def rds_snapshot_encryption_check(cache: dict, awsAccountId: str, awsRegion: str
         snapshotId = str(snapshot["DBSnapshotIdentifier"])
         snapshotArn = str(snapshot["DBSnapshotArn"])
         snapshotEncryptionCheck = str(snapshot["Encrypted"])
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if snapshotEncryptionCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": snapshotArn + "/rds-snapshot-encryption-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": snapshotArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -1456,13 +1313,7 @@ def rds_snapshot_encryption_check(cache: dict, awsAccountId: str, awsRegion: str
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": snapshotArn + "/rds-snapshot-encryption-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": snapshotArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -1510,7 +1361,9 @@ def rds_snapshot_encryption_check(cache: dict, awsAccountId: str, awsRegion: str
 
 
 @registry.register_check("rds")
-def rds_snapshot_public_share_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def rds_snapshot_public_share_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_db_instances(cache)
     myRdsInstances = response["DBInstances"]
     response = describe_db_snapshots(cache)
@@ -1518,20 +1371,14 @@ def rds_snapshot_public_share_check(cache: dict, awsAccountId: str, awsRegion: s
     for snapshot in myRdsSnapshots:
         snapshotId = str(snapshot["DBSnapshotIdentifier"])
         snapshotArn = str(snapshot["DBSnapshotArn"])
-        response = rds.describe_db_snapshot_attributes(
-            DBSnapshotIdentifier=snapshotId
-        )
-        rdsSnapshotAttrs = response["DBSnapshotAttributesResult"][
-            "DBSnapshotAttributes"
-        ]
+        response = rds.describe_db_snapshot_attributes(DBSnapshotIdentifier=snapshotId)
+        rdsSnapshotAttrs = response["DBSnapshotAttributesResult"]["DBSnapshotAttributes"]
         for attribute in rdsSnapshotAttrs:
             attrName = str(attribute["AttributeName"])
             if attrName == "restore":
                 attrValue = str(attribute["AttributeValues"])
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if attrValue == "['all']":
                     finding = {
@@ -1621,9 +1468,7 @@ def rds_snapshot_public_share_check(cache: dict, awsAccountId: str, awsRegion: s
                         "Severity": {"Label": "INFORMATIONAL"},
                         "Confidence": 99,
                         "Title": "[RDS.10] RDS snapshots should not be publicly shared",
-                        "Description": "RDS snapshot "
-                        + snapshotId
-                        + " is not publicly shared.",
+                        "Description": "RDS snapshot " + snapshotId + " is not publicly shared.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "For more information on sharing RDS snapshots refer to the Sharing a Snapshot section of the Amazon Relational Database Service User Guide",

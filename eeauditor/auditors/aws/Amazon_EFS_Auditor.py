@@ -31,7 +31,9 @@ def describe_file_systems(cache):
 
 
 @registry.register_check("efs")
-def efs_filesys_encryption_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def efs_filesys_encryption_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_file_systems(cache)
     myFileSys = response["FileSystems"]
     for filesys in myFileSys:
@@ -46,22 +48,12 @@ def efs_filesys_encryption_check(cache: dict, awsAccountId: str, awsRegion: str)
             + fileSysId
         )
         # ISO Time
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if encryptionCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": fileSysArn + "/efs-encryption-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": fileSysArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -112,13 +104,7 @@ def efs_filesys_encryption_check(cache: dict, awsAccountId: str, awsRegion: str)
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": fileSysArn + "/efs-encryption-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": fileSysArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -131,9 +117,7 @@ def efs_filesys_encryption_check(cache: dict, awsAccountId: str, awsRegion: str)
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[EFS.1] EFS File Systems should have encryption enabled",
-                "Description": "EFS file system "
-                + fileSysId
-                + " has encryption enabled.",
+                "Description": "EFS file system " + fileSysId + " has encryption enabled.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For EFS encryption information refer to the Data Encryption in EFS section of the Amazon Elastic File System User Guide",

@@ -29,22 +29,19 @@ def list_clusters(cache):
     response = cache.get("list_clusters")
     if response:
         return response
-    cache["list_clusters"] = emr.list_clusters(
-        ClusterStates=["STARTING", "RUNNING", "WAITING"])
+    cache["list_clusters"] = emr.list_clusters(ClusterStates=["STARTING", "RUNNING", "WAITING"])
     return cache["list_clusters"]
 
 
 @registry.register_check("emr")
-def emr_cluster_security_configuration_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def emr_cluster_security_configuration_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_clusters(cache)
     myEmrClusters = response["Clusters"]
     for cluster in myEmrClusters:
         clusterId = str(cluster["Id"])
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
             response = emr.describe_cluster(ClusterId=clusterId)
             clusterId = str(response["Cluster"]["Id"])
@@ -55,18 +52,10 @@ def emr_cluster_security_configuration_check(cache: dict, awsAccountId: str, aws
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": clusterArn + "/emr-cluster-sec-policy-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": clusterArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -134,18 +123,10 @@ def emr_cluster_security_configuration_check(cache: dict, awsAccountId: str, aws
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": clusterArn + "/emr-cluster-sec-policy-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": clusterArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -169,10 +150,7 @@ def emr_cluster_security_configuration_check(cache: dict, awsAccountId: str, aws
                             "Partition": "aws",
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {
-                                    "clusterId": clusterId,
-                                    "clusterName": clusterName,
-                                }
+                                "Other": {"clusterId": clusterId, "clusterName": clusterName,}
                             },
                         }
                     ],
@@ -212,7 +190,9 @@ def emr_cluster_security_configuration_check(cache: dict, awsAccountId: str, aws
 
 
 @registry.register_check("emr")
-def emr_security_config_encryption_in_transit_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def emr_security_config_encryption_in_transit_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_clusters(cache)
     myEmrClusters = response["Clusters"]
     for cluster in myEmrClusters:
@@ -224,15 +204,12 @@ def emr_security_config_encryption_in_transit_check(cache: dict, awsAccountId: s
             clusterArn = str(response["Cluster"]["ClusterArn"])
             secConfigName = str(response["Cluster"]["SecurityConfiguration"])
             try:
-                response = emr.describe_security_configuration(
-                    Name=secConfigName)
+                response = emr.describe_security_configuration(Name=secConfigName)
                 configData = str(response["SecurityConfiguration"])
                 jsonConfig = json.loads(configData)
                 try:
                     eitCheck = str(
-                        jsonConfig["EncryptionConfiguration"][
-                            "EnableInTransitEncryption"
-                        ]
+                        jsonConfig["EncryptionConfiguration"]["EnableInTransitEncryption"]
                     )
                     iso8601Time = (
                         datetime.datetime.utcnow()
@@ -385,7 +362,9 @@ def emr_security_config_encryption_in_transit_check(cache: dict, awsAccountId: s
 
 
 @registry.register_check("emr")
-def emr_security_config_encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def emr_security_config_encryption_at_rest_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_clusters(cache)
     myEmrClusters = response["Clusters"]
     for cluster in myEmrClusters:
@@ -397,16 +376,11 @@ def emr_security_config_encryption_at_rest_check(cache: dict, awsAccountId: str,
             clusterArn = str(response["Cluster"]["ClusterArn"])
             secConfigName = str(response["Cluster"]["SecurityConfiguration"])
             try:
-                response = emr.describe_security_configuration(
-                    Name=secConfigName)
+                response = emr.describe_security_configuration(Name=secConfigName)
                 configData = str(response["SecurityConfiguration"])
                 jsonConfig = json.loads(configData)
                 try:
-                    earCheck = str(
-                        jsonConfig["EncryptionConfiguration"][
-                            "EnableAtRestEncryption"
-                        ]
-                    )
+                    earCheck = str(jsonConfig["EncryptionConfiguration"]["EnableAtRestEncryption"])
                     iso8601Time = (
                         datetime.datetime.utcnow()
                         .replace(tzinfo=datetime.timezone.utc)
@@ -415,8 +389,7 @@ def emr_security_config_encryption_at_rest_check(cache: dict, awsAccountId: str,
                     if earCheck == "False":
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": clusterArn
-                            + "/emr-encryption-at-rest-emrfs-check",
+                            "Id": clusterArn + "/emr-encryption-at-rest-emrfs-check",
                             "ProductArn": "arn:aws:securityhub:"
                             + awsRegion
                             + ":"
@@ -478,8 +451,7 @@ def emr_security_config_encryption_at_rest_check(cache: dict, awsAccountId: str,
                     else:
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": clusterArn
-                            + "/emr-encryption-at-rest-emrfs-check",
+                            "Id": clusterArn + "/emr-encryption-at-rest-emrfs-check",
                             "ProductArn": "arn:aws:securityhub:"
                             + awsRegion
                             + ":"
@@ -550,7 +522,9 @@ def emr_security_config_encryption_at_rest_check(cache: dict, awsAccountId: str,
 
 
 @registry.register_check("emr")
-def emr_security_config_config_ebs_encryption_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def emr_security_config_config_ebs_encryption_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_clusters(cache)
     myEmrClusters = response["Clusters"]
     for cluster in myEmrClusters:
@@ -562,20 +536,17 @@ def emr_security_config_config_ebs_encryption_check(cache: dict, awsAccountId: s
             clusterArn = str(response["Cluster"]["ClusterArn"])
             secConfigName = str(response["Cluster"]["SecurityConfiguration"])
             try:
-                response = emr.describe_security_configuration(
-                    Name=secConfigName)
+                response = emr.describe_security_configuration(Name=secConfigName)
                 configData = str(response["SecurityConfiguration"])
                 jsonConfig = json.loads(configData)
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 try:
                     ebsEncryptionCheck = str(
-                        jsonConfig["EncryptionConfiguration"][
-                            "AtRestEncryptionConfiguration"
-                        ]["LocalDiskEncryptionConfiguration"]["EnableEbsEncryption"]
+                        jsonConfig["EncryptionConfiguration"]["AtRestEncryptionConfiguration"][
+                            "LocalDiskEncryptionConfiguration"
+                        ]["EnableEbsEncryption"]
                     )
                     if ebsEncryptionCheck == "False":
                         finding = {
@@ -777,7 +748,9 @@ def emr_security_config_config_ebs_encryption_check(cache: dict, awsAccountId: s
 
 
 @registry.register_check("emr")
-def emr_security_config_kerberos_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def emr_security_config_kerberos_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_clusters(cache)
     myEmrClusters = response["Clusters"]
     for cluster in myEmrClusters:
@@ -789,14 +762,11 @@ def emr_security_config_kerberos_check(cache: dict, awsAccountId: str, awsRegion
             clusterArn = str(response["Cluster"]["ClusterArn"])
             secConfigName = str(response["Cluster"]["SecurityConfiguration"])
             try:
-                response = emr.describe_security_configuration(
-                    Name=secConfigName)
+                response = emr.describe_security_configuration(Name=secConfigName)
                 configData = str(response["SecurityConfiguration"])
                 jsonConfig = json.loads(configData)
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 try:
                     kerbCheck = str(jsonConfig["AuthenticationConfiguration"])
@@ -812,9 +782,7 @@ def emr_security_config_kerberos_check(cache: dict, awsAccountId: str, awsRegion
                         + "/default",
                         "GeneratorId": clusterArn,
                         "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices"
-                        ],
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
                         "CreatedAt": iso8601Time,
                         "UpdatedAt": iso8601Time,
@@ -959,7 +927,9 @@ def emr_security_config_kerberos_check(cache: dict, awsAccountId: str, awsRegion
 
 
 @registry.register_check("emr")
-def emr_cluster_termination_protection_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def emr_cluster_termination_protection_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_clusters(cache)
     myEmrClusters = response["Clusters"]
     for cluster in myEmrClusters:
@@ -971,26 +941,16 @@ def emr_cluster_termination_protection_check(cache: dict, awsAccountId: str, aws
             clusterArn = str(response["Cluster"]["ClusterArn"])
             delProtectCheck = str(response["Cluster"]["TerminationProtected"])
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             if delProtectCheck == "False":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": clusterArn + "/emr-termination-protection-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": clusterArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -1014,10 +974,7 @@ def emr_cluster_termination_protection_check(cache: dict, awsAccountId: str, aws
                             "Partition": "aws",
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {
-                                    "clusterId": clusterId,
-                                    "clusterName": clusterName,
-                                }
+                                "Other": {"clusterId": clusterId, "clusterName": clusterName,}
                             },
                         }
                     ],
@@ -1046,18 +1003,10 @@ def emr_cluster_termination_protection_check(cache: dict, awsAccountId: str, aws
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": clusterArn + "/emr-termination-protection-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": clusterArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -1081,10 +1030,7 @@ def emr_cluster_termination_protection_check(cache: dict, awsAccountId: str, aws
                             "Partition": "aws",
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {
-                                    "clusterId": clusterId,
-                                    "clusterName": clusterName,
-                                }
+                                "Other": {"clusterId": clusterId, "clusterName": clusterName,}
                             },
                         }
                     ],
@@ -1114,7 +1060,9 @@ def emr_cluster_termination_protection_check(cache: dict, awsAccountId: str, aws
 
 
 @registry.register_check("emr")
-def emr_cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def emr_cluster_logging_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_clusters(cache)
     myEmrClusters = response["Clusters"]
     for cluster in myEmrClusters:
@@ -1126,35 +1074,23 @@ def emr_cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str) ->
             clusterArn = str(response["Cluster"]["ClusterArn"])
             logUriCheck = str(response["Cluster"]["LogUri"])
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             # this is a passing check
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": clusterArn + "/emr-cluster-logging-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": clusterArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[EMR.7] EMR Clusters should have logging enabled",
-                "Description": "EMR Cluster "
-                + clusterName
-                + " does has logging enabled.",
+                "Description": "EMR Cluster " + clusterName + " does has logging enabled.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For information on EMR cluster logging and debugging refer to the Configure Cluster Logging and Debugging section of the Amazon EMR Management Guide",
@@ -1201,18 +1137,10 @@ def emr_cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str) ->
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": clusterArn + "/emr-cluster-logging-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": clusterArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -1236,10 +1164,7 @@ def emr_cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str) ->
                             "Partition": "aws",
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {
-                                    "clusterId": clusterId,
-                                    "clusterName": clusterName,
-                                }
+                                "Other": {"clusterId": clusterId, "clusterName": clusterName,}
                             },
                         }
                     ],
@@ -1267,41 +1192,25 @@ def emr_cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str) ->
 
 
 @registry.register_check("emr")
-def emr_cluster_block_secgroup_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def emr_cluster_block_secgroup_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_clusters(cache)
     myEmrClusters = response["Clusters"]
     try:
         response = emr.get_block_public_access_configuration()
         blockPubSgCheck = str(
-            response["BlockPublicAccessConfiguration"][
-                "BlockPublicSecurityGroupRules"
-            ]
+            response["BlockPublicAccessConfiguration"]["BlockPublicSecurityGroupRules"]
         )
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if blockPubSgCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": awsAccountId + "/account-level-emr-block-public-sg-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
-                "GeneratorId": awsAccountId
-                + "/"
-                + awsRegion
-                + "/"
-                + "emr-acct-sg-block",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": awsAccountId + "/" + awsRegion + "/" + "emr-acct-sg-block",
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -1353,22 +1262,10 @@ def emr_cluster_block_secgroup_check(cache: dict, awsAccountId: str, awsRegion: 
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": awsAccountId + "/account-level-emr-block-public-sg-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
-                "GeneratorId": awsAccountId
-                + "/"
-                + awsRegion
-                + "/"
-                + "emr-acct-sg-block",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": awsAccountId + "/" + awsRegion + "/" + "emr-acct-sg-block",
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,

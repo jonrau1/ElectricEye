@@ -24,7 +24,9 @@ elb = boto3.client("elb")
 
 
 @registry.register_check("elb")
-def internet_facing_clb_https_listener_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def internet_facing_clb_https_listener_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     # loop through classic load balancers
     response = elb.describe_load_balancers()
     for classicbalancer in response["LoadBalancerDescriptions"]:
@@ -42,15 +44,12 @@ def internet_facing_clb_https_listener_check(cache: dict, awsAccountId: str, aws
             for listeners in classicbalancer["ListenerDescriptions"]:
                 listenerProtocol = str(listeners["Listener"]["Protocol"])
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if listenerProtocol != "HTTPS" or "SSL":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": clbArn
-                        + "/classic-loadbalancer-secure-listener-check",
+                        "Id": clbArn + "/classic-loadbalancer-secure-listener-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -60,9 +59,7 @@ def internet_facing_clb_https_listener_check(cache: dict, awsAccountId: str, aws
                         + "/default",
                         "GeneratorId": clbArn,
                         "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices"
-                        ],
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
                         "CreatedAt": iso8601Time,
                         "UpdatedAt": iso8601Time,
@@ -111,8 +108,7 @@ def internet_facing_clb_https_listener_check(cache: dict, awsAccountId: str, aws
                 else:
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": clbArn
-                        + "/classic-loadbalancer-secure-listener-check",
+                        "Id": clbArn + "/classic-loadbalancer-secure-listener-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -122,9 +118,7 @@ def internet_facing_clb_https_listener_check(cache: dict, awsAccountId: str, aws
                         + "/default",
                         "GeneratorId": clbArn,
                         "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices"
-                        ],
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
                         "CreatedAt": iso8601Time,
                         "UpdatedAt": iso8601Time,
@@ -176,7 +170,9 @@ def internet_facing_clb_https_listener_check(cache: dict, awsAccountId: str, aws
 
 
 @registry.register_check("elb")
-def clb_https_listener_tls12_policy_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def clb_https_listener_tls12_policy_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     # loop through classic load balancers
     response = elb.describe_load_balancers()
     for classicbalancer in response["LoadBalancerDescriptions"]:
@@ -192,9 +188,7 @@ def clb_https_listener_tls12_policy_check(cache: dict, awsAccountId: str, awsReg
         for listeners in classicbalancer["ListenerDescriptions"]:
             listenerPolicies = str(listeners["PolicyNames"])
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             if listenerPolicies == "[]":
                 pass
@@ -202,18 +196,10 @@ def clb_https_listener_tls12_policy_check(cache: dict, awsAccountId: str, awsReg
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": clbArn + "/classic-loadbalancer-tls12-policy-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": clbArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -263,18 +249,10 @@ def clb_https_listener_tls12_policy_check(cache: dict, awsAccountId: str, awsReg
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": clbArn + "/classic-loadbalancer-tls12-policy-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": clbArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -323,7 +301,9 @@ def clb_https_listener_tls12_policy_check(cache: dict, awsAccountId: str, awsReg
 
 
 @registry.register_check("elb")
-def clb_cross_zone_balancing_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def clb_cross_zone_balancing_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     # loop through classic load balancers
     response = elb.describe_load_balancers()
     for classicbalancer in response["LoadBalancerDescriptions"]:
@@ -340,27 +320,15 @@ def clb_cross_zone_balancing_check(cache: dict, awsAccountId: str, awsRegion: st
         crossZoneCheck = str(
             response["LoadBalancerAttributes"]["CrossZoneLoadBalancing"]["Enabled"]
         )
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if crossZoneCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": clbArn + "/classic-loadbalancer-cross-zone-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": clbArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -411,18 +379,10 @@ def clb_cross_zone_balancing_check(cache: dict, awsAccountId: str, awsRegion: st
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": clbArn + "/classic-loadbalancer-cross-zone-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": clbArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -472,7 +432,9 @@ def clb_cross_zone_balancing_check(cache: dict, awsAccountId: str, awsRegion: st
 
 
 @registry.register_check("elb")
-def clb_connection_draining_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def clb_connection_draining_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     # loop through classic load balancers
     response = elb.describe_load_balancers()
     for classicbalancer in response["LoadBalancerDescriptions"]:
@@ -489,27 +451,15 @@ def clb_connection_draining_check(cache: dict, awsAccountId: str, awsRegion: str
         connectionDrainCheck = str(
             response["LoadBalancerAttributes"]["ConnectionDraining"]["Enabled"]
         )
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if connectionDrainCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": clbArn + "/classic-loadbalancer-connection-draining-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": clbArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -560,18 +510,10 @@ def clb_connection_draining_check(cache: dict, awsAccountId: str, awsRegion: str
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": clbArn + "/classic-loadbalancer-connection-draining-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": clbArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -621,7 +563,9 @@ def clb_connection_draining_check(cache: dict, awsAccountId: str, awsRegion: str
 
 
 @registry.register_check("elb")
-def clb_access_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def clb_access_logging_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     # loop through classic load balancers
     response = elb.describe_load_balancers()
     for classicbalancer in response["LoadBalancerDescriptions"]:
@@ -635,30 +579,16 @@ def clb_access_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -> 
             + clbName
         )
         response = elb.describe_load_balancer_attributes(LoadBalancerName=clbName)
-        accessLogCheck = str(
-            response["LoadBalancerAttributes"]["AccessLog"]["Enabled"]
-        )
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        accessLogCheck = str(response["LoadBalancerAttributes"]["AccessLog"]["Enabled"])
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if accessLogCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": clbArn + "/classic-loadbalancer-access-logging-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": clbArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -707,18 +637,10 @@ def clb_access_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -> 
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": clbArn + "/classic-loadbalancer-access-logging-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": clbArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,

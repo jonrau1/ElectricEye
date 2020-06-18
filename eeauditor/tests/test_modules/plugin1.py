@@ -19,6 +19,6 @@ registry = CheckRegister()
 
 
 @registry.register_check("test")
-def plugin_func_1(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def plugin_func_1(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     finding = {"SchemaVersion": "2018-10-08", "Id": "test-finding"}
     yield finding

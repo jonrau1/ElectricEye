@@ -36,45 +36,34 @@ def describe_snapshots(cache, awsAccountId):
     response = cache.get("describe_snapshots")
     if response:
         return response
-    cache["describe_snapshots"] = ec2.describe_snapshots(
-        OwnerIds=[awsAccountId], DryRun=False
-    )
+    cache["describe_snapshots"] = ec2.describe_snapshots(OwnerIds=[awsAccountId], DryRun=False)
     return cache["describe_snapshots"]
 
+
 @registry.register_check("ec2")
-def ebs_volume_attachment_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def ebs_volume_attachment_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_volumes(cache)
     myEbsVolumes = response["Volumes"]
     for volumes in myEbsVolumes:
         ebsVolumeId = str(volumes["VolumeId"])
-        ebsVolumeArn = (
-            "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + "/" + ebsVolumeId
-        )
+        ebsVolumeArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + "/" + ebsVolumeId
         ebsAttachments = volumes["Attachments"]
         for attachments in ebsAttachments:
             ebsAttachmentState = str(attachments["State"])
             # ISO Time
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             if ebsAttachmentState != "attached":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": ebsVolumeArn + "/ebs-volume-attachment-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": ebsVolumeArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -121,27 +110,17 @@ def ebs_volume_attachment_check(cache: dict, awsAccountId: str, awsRegion: str) 
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": ebsVolumeArn + "/ebs-volume-attachment-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": ebsVolumeArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
                     "Title": "[EBS.1] EBS Volumes should be in an attached state",
-                    "Description": "EBS Volume "
-                    + ebsVolumeId
-                    + " is in an attached state.",
+                    "Description": "EBS Volume " + ebsVolumeId + " is in an attached state.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "If your EBS volume should be attached refer to the Attaching an Amazon EBS Volume to an Instance section of the Amazon Elastic Compute Cloud User Guide",
@@ -176,42 +155,31 @@ def ebs_volume_attachment_check(cache: dict, awsAccountId: str, awsRegion: str) 
                 }
                 yield finding
 
+
 @registry.register_check("ec2")
 def EbsVolumeDeleteOnTerminationCheck(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = describe_volumes(cache)
     myEbsVolumes = response["Volumes"]
     for volumes in myEbsVolumes:
         ebsVolumeId = str(volumes["VolumeId"])
-        ebsVolumeArn = (
-            "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + "/" + ebsVolumeId
-        )
+        ebsVolumeArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + "/" + ebsVolumeId
         ebsAttachments = volumes["Attachments"]
         for attachments in ebsAttachments:
             ebsDeleteOnTerminationCheck = str(attachments["DeleteOnTermination"])
             # ISO Time
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             if ebsDeleteOnTerminationCheck == "False":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": ebsVolumeArn + "/ebs-volume-delete-on-termination-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": ebsVolumeArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -258,18 +226,10 @@ def EbsVolumeDeleteOnTerminationCheck(
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": ebsVolumeArn + "/ebs-volume-delete-on-termination-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": ebsVolumeArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -313,31 +273,24 @@ def EbsVolumeDeleteOnTerminationCheck(
                 }
                 yield finding
 
+
 @registry.register_check("ec2")
-def EbsVolumeEncryptionCheck(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def EbsVolumeEncryptionCheck(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_volumes(cache)
     myEbsVolumes = response["Volumes"]
     for volumes in myEbsVolumes:
         ebsVolumeId = str(volumes["VolumeId"])
-        ebsVolumeArn = (
-            "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + "/" + ebsVolumeId
-        )
+        ebsVolumeArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + "/" + ebsVolumeId
         ebsEncryptionCheck = str(volumes["Encrypted"])
         # ISO Time
-        iso8601Time = (
-            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if ebsEncryptionCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": ebsVolumeArn + "/ebs-volume-encryption-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": ebsVolumeArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -388,13 +341,7 @@ def EbsVolumeEncryptionCheck(cache: dict, awsAccountId: str, awsRegion: str) -> 
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": ebsVolumeArn + "/ebs-volume-encryption-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": ebsVolumeArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -440,8 +387,11 @@ def EbsVolumeEncryptionCheck(cache: dict, awsAccountId: str, awsRegion: str) -> 
             }
             yield finding
 
+
 @registry.register_check("ec2")
-def EbsSnapshotEncryptionCheck(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def EbsSnapshotEncryptionCheck(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_snapshots(cache, awsAccountId)
     myEbsSnapshots = response["Snapshots"]
     for snapshots in myEbsSnapshots:
@@ -449,20 +399,12 @@ def EbsSnapshotEncryptionCheck(cache: dict, awsAccountId: str, awsRegion: str) -
         snapshotArn = "arn:aws:ec2:" + awsRegion + "::snapshot/" + snapshotId
         snapshotEncryptionCheck = str(snapshots["Encrypted"])
         # ISO Time
-        iso8601Time = (
-            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if snapshotEncryptionCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": snapshotArn + "/ebs-snapshot-encryption-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": snapshotArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -513,13 +455,7 @@ def EbsSnapshotEncryptionCheck(cache: dict, awsAccountId: str, awsRegion: str) -
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": snapshotArn + "/ebs-snapshot-encryption-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": snapshotArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -565,8 +501,11 @@ def EbsSnapshotEncryptionCheck(cache: dict, awsAccountId: str, awsRegion: str) -
             }
             yield finding
 
+
 @registry.register_check("ec2")
-def EbsSnapshotPublicCheck(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def EbsSnapshotPublicCheck(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_snapshots(cache, awsAccountId)
     myEbsSnapshots = response["Snapshots"]
     for snapshots in myEbsSnapshots:
@@ -576,20 +515,12 @@ def EbsSnapshotPublicCheck(cache: dict, awsAccountId: str, awsRegion: str) -> di
             Attribute="createVolumePermission", SnapshotId=snapshotId, DryRun=False
         )
         # ISO Time
-        iso8601Time = (
-            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if str(response["CreateVolumePermissions"]) == "[]":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": snapshotArn + "/ebs-snapshot-public-share-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": snapshotArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -771,15 +702,14 @@ def EbsSnapshotPublicCheck(cache: dict, awsAccountId: str, awsRegion: str) -> di
                     }
                     yield finding
 
+
 @registry.register_check("ec2")
 def EbsAccountEncryptionByDefaultCheck(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = ec2.get_ebs_encryption_by_default(DryRun=False)
     # ISO Time
-    iso8601Time = (
-        datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    )
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     if str(response["EbsEncryptionByDefault"]) == "False":
         finding = {
             "SchemaVersion": "2018-10-08",

@@ -79,7 +79,7 @@ def get_findings(cache, awsAccountId):
     return cache["get_findings"]
 
 @registry.register_check("security_hub")
-    def high_critical_findings(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+    def high_critical_findings(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
         getFindings = get_findings(cache=cache, awsAccountId=awsAccountId)
         generatorId = str(getFindings['ResponseMetadata']['RequestId'])
         # ISO Time

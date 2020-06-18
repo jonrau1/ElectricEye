@@ -31,44 +31,30 @@ def list_domain_names(cache):
 
 
 @registry.register_check("elasticsearch")
-def dedicated_master_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def dedicated_master_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
         esDomainName = str(domains["DomainName"])
-        response = elasticsearch.describe_elasticsearch_domain(
-            DomainName=esDomainName
-        )
+        response = elasticsearch.describe_elasticsearch_domain(DomainName=esDomainName)
         esVersion = str(response["DomainStatus"]["ElasticsearchVersion"])
         domainId = str(response["DomainStatus"]["DomainId"])
         domainArn = str(response["DomainStatus"]["ARN"])
         dedicatedMasterCheck = str(
-            response["DomainStatus"]["ElasticsearchClusterConfig"][
-                "DedicatedMasterEnabled"
-            ]
+            response["DomainStatus"]["ElasticsearchClusterConfig"]["DedicatedMasterEnabled"]
         )
         # ISO Time
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if dedicatedMasterCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": domainArn + "/elasticsearch-dedicated-master-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": domainArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -125,18 +111,10 @@ def dedicated_master_check(cache: dict, awsAccountId: str, awsRegion: str) -> di
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": domainArn + "/elasticsearch-dedicated-master-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": domainArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -192,42 +170,26 @@ def dedicated_master_check(cache: dict, awsAccountId: str, awsRegion: str) -> di
 
 
 @registry.register_check("elasticsearch")
-def cognito_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def cognito_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
         esDomainName = str(domains["DomainName"])
-        response = elasticsearch.describe_elasticsearch_domain(
-            DomainName=esDomainName
-        )
+        response = elasticsearch.describe_elasticsearch_domain(DomainName=esDomainName)
         esVersion = str(response["DomainStatus"]["ElasticsearchVersion"])
         domainId = str(response["DomainStatus"]["DomainId"])
         domainArn = str(response["DomainStatus"]["ARN"])
-        cognitoEnabledCheck = str(
-            response["DomainStatus"]["CognitoOptions"]["Enabled"]
-        )
+        cognitoEnabledCheck = str(response["DomainStatus"]["CognitoOptions"]["Enabled"])
         # ISO Time
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if cognitoEnabledCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": domainArn + "/elasticsearch-cognito-auth-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": domainArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -289,18 +251,10 @@ def cognito_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": domainArn + "/elasticsearch-cognito-auth-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": domainArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -361,37 +315,25 @@ def cognito_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
 
 
 @registry.register_check("elasticsearch")
-def encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def encryption_at_rest_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
         esDomainName = str(domains["DomainName"])
-        response = elasticsearch.describe_elasticsearch_domain(
-            DomainName=esDomainName
-        )
+        response = elasticsearch.describe_elasticsearch_domain(DomainName=esDomainName)
         esVersion = str(response["DomainStatus"]["ElasticsearchVersion"])
         domainId = str(response["DomainStatus"]["DomainId"])
         domainArn = str(response["DomainStatus"]["ARN"])
-        encryptionAtRestCheck = str(
-            response["DomainStatus"]["EncryptionAtRestOptions"]["Enabled"]
-        )
+        encryptionAtRestCheck = str(response["DomainStatus"]["EncryptionAtRestOptions"]["Enabled"])
         # ISO Time
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if encryptionAtRestCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": domainArn + "/elasticsearch-encryption-at-rest-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": domainArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -449,13 +391,7 @@ def encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str) -> 
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": domainArn + "/elasticsearch-encryption-at-rest-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": domainArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -512,14 +448,14 @@ def encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str) -> 
 
 
 @registry.register_check("elasticsearch")
-def node2node_encryption_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def node2node_encryption_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
         esDomainName = str(domains["DomainName"])
-        response = elasticsearch.describe_elasticsearch_domain(
-            DomainName=esDomainName
-        )
+        response = elasticsearch.describe_elasticsearch_domain(DomainName=esDomainName)
         esVersion = str(response["DomainStatus"]["ElasticsearchVersion"])
         domainId = str(response["DomainStatus"]["DomainId"])
         domainArn = str(response["DomainStatus"]["ARN"])
@@ -527,22 +463,12 @@ def node2node_encryption_check(cache: dict, awsAccountId: str, awsRegion: str) -
             response["DomainStatus"]["NodeToNodeEncryptionOptions"]["Enabled"]
         )
         # ISO Time
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if node2nodeEncryptionCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": domainArn + "/elasticsearch-node2node-encryption-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": domainArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -605,13 +531,7 @@ def node2node_encryption_check(cache: dict, awsAccountId: str, awsRegion: str) -
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": domainArn + "/elasticsearch-node2node-encryption-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": domainArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -673,14 +593,14 @@ def node2node_encryption_check(cache: dict, awsAccountId: str, awsRegion: str) -
 
 
 @registry.register_check("elasticsearch")
-def https_enforcement_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def https_enforcement_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
         esDomainName = str(domains["DomainName"])
-        response = elasticsearch.describe_elasticsearch_domain(
-            DomainName=esDomainName
-        )
+        response = elasticsearch.describe_elasticsearch_domain(DomainName=esDomainName)
         esVersion = str(response["DomainStatus"]["ElasticsearchVersion"])
         domainId = str(response["DomainStatus"]["DomainId"])
         domainArn = str(response["DomainStatus"]["ARN"])
@@ -688,22 +608,12 @@ def https_enforcement_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
             response["DomainStatus"]["DomainEndpointOptions"]["EnforceHTTPS"]
         )
         # ISO Time
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if httpsEnforcementCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": domainArn + "/elasticsearch-enforce-https-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": domainArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -766,13 +676,7 @@ def https_enforcement_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": domainArn + "/elasticsearch-enforce-https-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": domainArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -834,14 +738,12 @@ def https_enforcement_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
 
 
 @registry.register_check("elasticsearch")
-def tls_policy_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def tls_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
         esDomainName = str(domains["DomainName"])
-        response = elasticsearch.describe_elasticsearch_domain(
-            DomainName=esDomainName
-        )
+        response = elasticsearch.describe_elasticsearch_domain(DomainName=esDomainName)
         esVersion = str(response["DomainStatus"]["ElasticsearchVersion"])
         domainId = str(response["DomainStatus"]["DomainId"])
         domainArn = str(response["DomainStatus"]["ARN"])
@@ -851,26 +753,16 @@ def tls_policy_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
         if httpsEnforcementCheck == "True":
             # ISO Time
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             tlsPolicyCheck = str(
-                response["DomainStatus"]["DomainEndpointOptions"][
-                    "TLSSecurityPolicy"
-                ]
+                response["DomainStatus"]["DomainEndpointOptions"]["TLSSecurityPolicy"]
             )
             if tlsPolicyCheck != "Policy-Min-TLS-1-2-2019-07":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": domainArn + "/elasticsearch-tls-1-2-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": domainArn,
                     "AwsAccountId": awsAccountId,
                     "Types": [
@@ -936,13 +828,7 @@ def tls_policy_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": domainArn + "/elasticsearch-tls-1-2-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": domainArn,
                     "AwsAccountId": awsAccountId,
                     "Types": [
@@ -1009,40 +895,26 @@ def tls_policy_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
 
 
 @registry.register_check("elasticsearch")
-def elastic_update_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def elastic_update_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
         esDomainName = str(domains["DomainName"])
-        response = elasticsearch.describe_elasticsearch_domain(
-            DomainName=esDomainName
-        )
+        response = elasticsearch.describe_elasticsearch_domain(DomainName=esDomainName)
         esVersion = str(response["DomainStatus"]["ElasticsearchVersion"])
         domainId = str(response["DomainStatus"]["DomainId"])
         domainArn = str(response["DomainStatus"]["ARN"])
-        updateCheck = str(
-            response["DomainStatus"]["ServiceSoftwareOptions"]["UpdateAvailable"]
-        )
-        updateInformation = str(
-            response["DomainStatus"]["ServiceSoftwareOptions"]["Description"]
-        )
+        updateCheck = str(response["DomainStatus"]["ServiceSoftwareOptions"]["UpdateAvailable"])
+        updateInformation = str(response["DomainStatus"]["ServiceSoftwareOptions"]["Description"])
         # ISO Time
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if updateCheck == "True":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": domainArn + "/elasticsearch-enforce-https-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": domainArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -1105,13 +977,7 @@ def elastic_update_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": domainArn + "/elasticsearch-enforce-https-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": domainArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [

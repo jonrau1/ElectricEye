@@ -22,7 +22,7 @@ registry = CheckRegister()
 codebuild = boto3.client("codebuild")
 # loop through all CodeBuild projects and list their attributes
 
-#one cache for all to get to myCodeBuildProjects
+# one cache for all to get to myCodeBuildProjects
 response = codebuild.list_projects()
 allCodebuildProjects = response["projects"]
 if allCodebuildProjects:
@@ -39,9 +39,7 @@ class ArtifactEncryptionCheck(Auditor):
             buildProjectName = str(projects["name"])
             buildProjectArn = str(projects["arn"])
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             # check if this project supports artifacts
             artifactCheck = str(projects["artifacts"]["type"])
@@ -51,9 +49,7 @@ class ArtifactEncryptionCheck(Auditor):
                 pass
             else:
                 # check if encryption for artifacts is disabled
-                artifactEncryptionCheck = str(
-                    projects["artifacts"]["encryptionDisabled"]
-                )
+                artifactEncryptionCheck = str(projects["artifacts"]["encryptionDisabled"])
                 if artifactEncryptionCheck == "True":
                     finding = {
                         "SchemaVersion": "2018-10-08",
@@ -93,9 +89,7 @@ class ArtifactEncryptionCheck(Auditor):
                                 "Id": buildProjectArn,
                                 "Partition": "aws",
                                 "Region": awsRegion,
-                                "Details": {
-                                    "AwsCodeBuildProject": {"Name": buildProjectName}
-                                },
+                                "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                             }
                         ],
                         "Compliance": {
@@ -152,9 +146,7 @@ class ArtifactEncryptionCheck(Auditor):
                                 "Id": buildProjectArn,
                                 "Partition": "aws",
                                 "Region": awsRegion,
-                                "Details": {
-                                    "AwsCodeBuildProject": {"Name": buildProjectName}
-                                },
+                                "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                             }
                         ],
                         "Compliance": {
@@ -180,9 +172,7 @@ class InsecureSSLCheck(Auditor):
             buildProjectName = str(projects["name"])
             buildProjectArn = str(projects["arn"])
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             # check if Insecure SSL is enabled for your Source
             sourceInsecureSslCheck = str(projects["source"]["insecureSsl"])
@@ -190,13 +180,7 @@ class InsecureSSLCheck(Auditor):
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": buildProjectArn + "/insecure-ssl",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": buildProjectArn,
                     "AwsAccountId": awsAccountId,
                     "Types": [
@@ -225,9 +209,7 @@ class InsecureSSLCheck(Auditor):
                             "Id": buildProjectArn,
                             "Partition": "aws",
                             "Region": awsRegion,
-                            "Details": {
-                                "AwsCodeBuildProject": {"Name": buildProjectName}
-                            },
+                            "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                         }
                     ],
                     "Compliance": {
@@ -254,13 +236,7 @@ class InsecureSSLCheck(Auditor):
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": buildProjectArn + "/insecure-ssl",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": buildProjectArn,
                     "AwsAccountId": awsAccountId,
                     "Types": [
@@ -289,9 +265,7 @@ class InsecureSSLCheck(Auditor):
                             "Id": buildProjectArn,
                             "Partition": "aws",
                             "Region": awsRegion,
-                            "Details": {
-                                "AwsCodeBuildProject": {"Name": buildProjectName}
-                            },
+                            "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                         }
                     ],
                     "Compliance": {
@@ -322,9 +296,7 @@ class PlaintextENVvarCheck(Auditor):
             buildProjectName = str(projects["name"])
             buildProjectArn = str(projects["arn"])
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             # check if this project has any env vars
             envVarCheck = str(projects["environment"]["environmentVariables"])
@@ -377,11 +349,7 @@ class PlaintextENVvarCheck(Auditor):
                                     "Id": buildProjectArn,
                                     "Partition": "aws",
                                     "Region": awsRegion,
-                                    "Details": {
-                                        "AwsCodeBuildProject": {
-                                            "Name": buildProjectName
-                                        }
-                                    },
+                                    "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                                 }
                             ],
                             "Compliance": {
@@ -457,11 +425,7 @@ class PlaintextENVvarCheck(Auditor):
                                     "Id": buildProjectArn,
                                     "Partition": "aws",
                                     "Region": awsRegion,
-                                    "Details": {
-                                        "AwsCodeBuildProject": {
-                                            "Name": buildProjectName
-                                        }
-                                    },
+                                    "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                                 }
                             ],
                             "Compliance": {
@@ -505,25 +469,15 @@ class S3LoggingEncryptionCheck(Auditor):
             buildProjectName = str(projects["name"])
             buildProjectArn = str(projects["arn"])
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             # check if this project disabled s3 log encryption
-            s3EncryptionCheck = str(
-                projects["logsConfig"]["s3Logs"]["encryptionDisabled"]
-            )
+            s3EncryptionCheck = str(projects["logsConfig"]["s3Logs"]["encryptionDisabled"])
             if s3EncryptionCheck == "True":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": buildProjectArn + "/s3-encryption",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": buildProjectArn,
                     "AwsAccountId": awsAccountId,
                     "Types": [
@@ -552,9 +506,7 @@ class S3LoggingEncryptionCheck(Auditor):
                             "Id": buildProjectArn,
                             "Partition": "aws",
                             "Region": awsRegion,
-                            "Details": {
-                                "AwsCodeBuildProject": {"Name": buildProjectName}
-                            },
+                            "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                         }
                     ],
                     "Compliance": {
@@ -576,13 +528,7 @@ class S3LoggingEncryptionCheck(Auditor):
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": buildProjectArn + "/s3-encryption",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": buildProjectArn,
                     "AwsAccountId": awsAccountId,
                     "Types": [
@@ -611,9 +557,7 @@ class S3LoggingEncryptionCheck(Auditor):
                             "Id": buildProjectArn,
                             "Partition": "aws",
                             "Region": awsRegion,
-                            "Details": {
-                                "AwsCodeBuildProject": {"Name": buildProjectName}
-                            },
+                            "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                         }
                     ],
                     "Compliance": {
@@ -639,30 +583,18 @@ class CloudwatchLoggingCheck(Auditor):
             buildProjectName = str(projects["name"])
             buildProjectArn = str(projects["arn"])
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             # check if this project logs to cloudwatch
-            codeBuildLoggingCheck = str(
-                projects["logsConfig"]["cloudWatchLogs"]["status"]
-            )
+            codeBuildLoggingCheck = str(projects["logsConfig"]["cloudWatchLogs"]["status"])
             if codeBuildLoggingCheck != "ENABLED":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": buildProjectArn + "/cloudwatch-logging",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": buildProjectArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -685,9 +617,7 @@ class CloudwatchLoggingCheck(Auditor):
                             "Id": buildProjectArn,
                             "Partition": "aws",
                             "Region": awsRegion,
-                            "Details": {
-                                "AwsCodeBuildProject": {"Name": buildProjectName}
-                            },
+                            "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                         }
                     ],
                     "Compliance": {
@@ -713,18 +643,10 @@ class CloudwatchLoggingCheck(Auditor):
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": buildProjectArn + "/cloudwatch-logging",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": buildProjectArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -747,9 +669,7 @@ class CloudwatchLoggingCheck(Auditor):
                             "Id": buildProjectArn,
                             "Partition": "aws",
                             "Region": awsRegion,
-                            "Details": {
-                                "AwsCodeBuildProject": {"Name": buildProjectName}
-                            },
+                            "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                         }
                     ],
                     "Compliance": {

@@ -33,7 +33,9 @@ def describe_load_balancers(cache):
 
 
 @registry.register_check("elbv2")
-def elbv2_alb_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def elbv2_alb_logging_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_load_balancers(cache)
     myElbv2LoadBalancers = response["LoadBalancers"]
     for loadbalancers in myElbv2LoadBalancers:
@@ -46,9 +48,7 @@ def elbv2_alb_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
         elbv2IpAddressType = str(loadbalancers["IpAddressType"])
         if elbv2LbType == "application":
             try:
-                response = elbv2.describe_load_balancer_attributes(
-                    LoadBalancerArn=elbv2Arn
-                )
+                response = elbv2.describe_load_balancer_attributes(LoadBalancerArn=elbv2Arn)
                 elbv2Attributes = response["Attributes"]
                 for attributes in elbv2Attributes:
                     if str(attributes["Key"]) == "access_logs.s3.enabled":
@@ -205,7 +205,9 @@ def elbv2_alb_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
 
 
 @registry.register_check("elbv2")
-def elbv2_deletion_protection_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def elbv2_deletion_protection_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_load_balancers(cache)
     myElbv2LoadBalancers = response["LoadBalancers"]
     for loadbalancers in myElbv2LoadBalancers:
@@ -217,9 +219,7 @@ def elbv2_deletion_protection_check(cache: dict, awsAccountId: str, awsRegion: s
         elbv2VpcId = str(loadbalancers["VpcId"])
         elbv2IpAddressType = str(loadbalancers["IpAddressType"])
         try:
-            response = elbv2.describe_load_balancer_attributes(
-                LoadBalancerArn=elbv2Arn
-            )
+            response = elbv2.describe_load_balancer_attributes(LoadBalancerArn=elbv2Arn)
             elbv2Attributes = response["Attributes"]
             for attributes in elbv2Attributes:
                 if str(attributes["Key"]) == "deletion_protection.enabled":
@@ -380,7 +380,9 @@ def elbv2_deletion_protection_check(cache: dict, awsAccountId: str, awsRegion: s
 
 
 @registry.register_check("elbv2")
-def elbv2_internet_facing_secure_listeners_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def elbv2_internet_facing_secure_listeners_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_load_balancers(cache)
     myElbv2LoadBalancers = response["LoadBalancers"]
     for loadbalancers in myElbv2LoadBalancers:
@@ -397,15 +399,9 @@ def elbv2_internet_facing_secure_listeners_check(cache: dict, awsAccountId: str,
             for listeners in myElbv2Listeners:
                 listenerProtocol = str(listeners["Protocol"])
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
-                if (
-                    elbv2Scheme == "internet-facing"
-                    and listenerProtocol != "HTTPS"
-                    or "TLS"
-                ):
+                if elbv2Scheme == "internet-facing" and listenerProtocol != "HTTPS" or "TLS":
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": elbv2Arn + "/internet-facing-secure-listeners-check",
@@ -418,9 +414,7 @@ def elbv2_internet_facing_secure_listeners_check(cache: dict, awsAccountId: str,
                         + "/default",
                         "GeneratorId": elbv2Arn,
                         "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices"
-                        ],
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
                         "CreatedAt": iso8601Time,
                         "UpdatedAt": iso8601Time,
@@ -489,9 +483,7 @@ def elbv2_internet_facing_secure_listeners_check(cache: dict, awsAccountId: str,
                         + "/default",
                         "GeneratorId": elbv2Arn,
                         "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices"
-                        ],
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
                         "CreatedAt": iso8601Time,
                         "UpdatedAt": iso8601Time,
@@ -552,7 +544,9 @@ def elbv2_internet_facing_secure_listeners_check(cache: dict, awsAccountId: str,
 
 
 @registry.register_check("elbv2")
-def elbv2_tls12_listener_policy_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def elbv2_tls12_listener_policy_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_load_balancers(cache)
     myElbv2LoadBalancers = response["LoadBalancers"]
     for loadbalancers in myElbv2LoadBalancers:
@@ -576,8 +570,7 @@ def elbv2_tls12_listener_policy_check(cache: dict, awsAccountId: str, awsRegion:
                         .isoformat()
                     )
                     if (
-                        listenerTlsPolicyCheck
-                        != "ELBSecurityPolicy-TLS-1-2-2017-01"
+                        listenerTlsPolicyCheck != "ELBSecurityPolicy-TLS-1-2-2017-01"
                         or "ELBSecurityPolicy-TLS-1-2-Ext-2018-06"
                         or "ELBSecurityPolicy-FS-1-2-2019-08"
                         or "ELBSecurityPolicy-FS-1-2-Res-2019-08"
@@ -730,7 +723,9 @@ def elbv2_tls12_listener_policy_check(cache: dict, awsAccountId: str, awsRegion:
 
 
 @registry.register_check("elbv2")
-def elbv2_drop_invalid_header_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def elbv2_drop_invalid_header_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_load_balancers(cache)
     myElbv2LoadBalancers = response["LoadBalancers"]
     for loadbalancers in myElbv2LoadBalancers:
@@ -741,19 +736,13 @@ def elbv2_drop_invalid_header_check(cache: dict, awsAccountId: str, awsRegion: s
         elbv2Scheme = str(loadbalancers["Scheme"])
         elbv2VpcId = str(loadbalancers["VpcId"])
         elbv2IpAddressType = str(loadbalancers["IpAddressType"])
-        response = elbv2.describe_load_balancer_attributes(
-            LoadBalancerArn=elbv2Arn)
+        response = elbv2.describe_load_balancer_attributes(LoadBalancerArn=elbv2Arn)
         elbv2Attributes = response["Attributes"]
         for attributes in elbv2Attributes:
-            if (
-                str(attributes["Key"])
-                == "routing.http.drop_invalid_header_fields.enabled"
-            ):
+            if str(attributes["Key"]) == "routing.http.drop_invalid_header_fields.enabled":
                 elbv2DropInvalidHeaderCheck = str(attributes["Value"])
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if elbv2DropInvalidHeaderCheck == "false":
                     finding = {
@@ -768,9 +757,7 @@ def elbv2_drop_invalid_header_check(cache: dict, awsAccountId: str, awsRegion: s
                         + "/default",
                         "GeneratorId": elbv2Arn,
                         "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices"
-                        ],
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
                         "CreatedAt": iso8601Time,
                         "UpdatedAt": iso8601Time,
@@ -838,9 +825,7 @@ def elbv2_drop_invalid_header_check(cache: dict, awsAccountId: str, awsRegion: s
                         + "/default",
                         "GeneratorId": elbv2Arn,
                         "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices"
-                        ],
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
                         "CreatedAt": iso8601Time,
                         "UpdatedAt": iso8601Time,
@@ -900,7 +885,9 @@ def elbv2_drop_invalid_header_check(cache: dict, awsAccountId: str, awsRegion: s
 
 
 @registry.register_check("elbv2")
-def elbv2_nlb_tls_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def elbv2_nlb_tls_logging_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_load_balancers(cache)
     myElbv2LoadBalancers = response["LoadBalancers"]
     for loadbalancers in myElbv2LoadBalancers:
@@ -923,12 +910,8 @@ def elbv2_nlb_tls_logging_check(cache: dict, awsAccountId: str, awsRegion: str) 
                             )
                             elbv2Attributes = response["Attributes"]
                             for attributes in elbv2Attributes:
-                                if (
-                                    str(attributes["Key"])
-                                    == "access_logs.s3.enabled"
-                                ):
-                                    elbv2LoggingCheck = str(
-                                        attributes["Value"])
+                                if str(attributes["Key"]) == "access_logs.s3.enabled":
+                                    elbv2LoggingCheck = str(attributes["Value"])
                                     iso8601Time = (
                                         datetime.datetime.utcnow()
                                         .replace(tzinfo=datetime.timezone.utc)
@@ -937,8 +920,7 @@ def elbv2_nlb_tls_logging_check(cache: dict, awsAccountId: str, awsRegion: str) 
                                     if elbv2LoggingCheck == "false":
                                         finding = {
                                             "SchemaVersion": "2018-10-08",
-                                            "Id": elbv2Arn
-                                            + "/tls-nlb-logging-check",
+                                            "Id": elbv2Arn + "/tls-nlb-logging-check",
                                             "ProductArn": "arn:aws:securityhub:"
                                             + awsRegion
                                             + ":"
@@ -966,9 +948,7 @@ def elbv2_nlb_tls_logging_check(cache: dict, awsAccountId: str, awsRegion: str) 
                                                     "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-access-logs.html",
                                                 }
                                             },
-                                            "ProductFields": {
-                                                "Product Name": "ElectricEye"
-                                            },
+                                            "ProductFields": {"Product Name": "ElectricEye"},
                                             "Resources": [
                                                 {
                                                     "Type": "AwsElbv2LoadBalancer",
@@ -1008,8 +988,7 @@ def elbv2_nlb_tls_logging_check(cache: dict, awsAccountId: str, awsRegion: str) 
                                     else:
                                         finding = {
                                             "SchemaVersion": "2018-10-08",
-                                            "Id": elbv2Arn
-                                            + "/tls-nlb-logging-check",
+                                            "Id": elbv2Arn + "/tls-nlb-logging-check",
                                             "ProductArn": "arn:aws:securityhub:"
                                             + awsRegion
                                             + ":"
@@ -1037,9 +1016,7 @@ def elbv2_nlb_tls_logging_check(cache: dict, awsAccountId: str, awsRegion: str) 
                                                     "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-access-logs.html",
                                                 }
                                             },
-                                            "ProductFields": {
-                                                "Product Name": "ElectricEye"
-                                            },
+                                            "ProductFields": {"Product Name": "ElectricEye"},
                                             "Resources": [
                                                 {
                                                     "Type": "AwsElbv2LoadBalancer",

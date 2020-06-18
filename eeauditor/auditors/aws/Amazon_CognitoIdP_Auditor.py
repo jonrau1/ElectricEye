@@ -35,7 +35,9 @@ def list_user_pools(cache):
 
 
 @registry.register_check("sns")
-def cognitoidp_cis_password_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def cognitoidp_cis_password_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_user_pools(cache)
     myCognitoUserPools = response["UserPools"]
     for userpools in myCognitoUserPools:
@@ -63,13 +65,7 @@ def cognitoidp_cis_password_check(cache: dict, awsAccountId: str, awsRegion: str
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": userPoolArn + "/cognito-user-pool-password-policy",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": userPoolId,
                 "awsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -136,13 +132,7 @@ def cognitoidp_cis_password_check(cache: dict, awsAccountId: str, awsRegion: str
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": userPoolArn + "/cognito-user-pool-password-policy",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": userPoolId,
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -207,7 +197,9 @@ def cognitoidp_cis_password_check(cache: dict, awsAccountId: str, awsRegion: str
 
 
 @registry.register_check("sns")
-def cognitoidp_temp_password_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def cognitoidp_temp_password_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_user_pools(cache)
     myCognitoUserPools = response["UserPools"]
     for userpools in myCognitoUserPools:
@@ -224,13 +216,7 @@ def cognitoidp_temp_password_check(cache: dict, awsAccountId: str, awsRegion: st
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": userPoolArn + "/cognito-user-pool-temp-password-life",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": userPoolId,
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -296,13 +282,7 @@ def cognitoidp_temp_password_check(cache: dict, awsAccountId: str, awsRegion: st
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": userPoolArn + "/cognito-user-pool-temp-password-life",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": userPoolId,
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -367,7 +347,9 @@ def cognitoidp_temp_password_check(cache: dict, awsAccountId: str, awsRegion: st
 
 
 @registry.register_check("sns")
-def cognitoidp_mfa_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def cognitoidp_mfa_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_user_pools(cache)
     myCognitoUserPools = response["UserPools"]
     for userpools in myCognitoUserPools:
@@ -382,13 +364,7 @@ def cognitoidp_mfa_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": userPoolArn + "/cognito-user-pool-mfa",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": userPoolId,
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -454,13 +430,7 @@ def cognitoidp_mfa_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": userPoolArn + "/cognito-user-pool-mfa",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": userPoolId,
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],

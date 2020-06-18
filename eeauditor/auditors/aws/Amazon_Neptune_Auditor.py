@@ -29,39 +29,30 @@ def describe_db_instances(cache):
     if response:
         return response
     cache["describe_db_instances"] = neptune.describe_db_instances(
-        Filters=[{"Name": "engine", "Values": ["neptune"]}])
+        Filters=[{"Name": "engine", "Values": ["neptune"]}]
+    )
     return cache["describe_db_instances"]
     neptune_instances = describe_db_instances(cache)
 
 
 @registry.register_check("neptune")
-def neptune_instance_multi_az_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def neptune_instance_multi_az_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     neptune_instances = describe_db_instances(cache)
     for instances in neptune_instances["DBInstances"]:
         neptuneInstanceArn = str(instances["DBInstanceArn"])
         neptuneDbId = str(instances["DBInstanceIdentifier"])
         mutliAzCheck = str(instances["MultiAZ"])
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if mutliAzCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": neptuneInstanceArn + "/neptune-instance-ha-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": neptuneInstanceArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -112,18 +103,10 @@ def neptune_instance_multi_az_check(cache: dict, awsAccountId: str, awsRegion: s
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": neptuneInstanceArn + "/neptune-instance-ha-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": neptuneInstanceArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -173,29 +156,20 @@ def neptune_instance_multi_az_check(cache: dict, awsAccountId: str, awsRegion: s
 
 
 @registry.register_check("neptune")
-def neptune_instance_storage_encryption_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def neptune_instance_storage_encryption_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     neptune_instances = describe_db_instances(cache)
     for instances in neptune_instances["DBInstances"]:
         neptuneInstanceArn = str(instances["DBInstanceArn"])
         neptuneDbId = str(instances["DBInstanceIdentifier"])
         storageEncryptionCheck = str(instances["StorageEncrypted"])
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if storageEncryptionCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": neptuneInstanceArn
-                + "/neptune-instance-storage-encryption-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "Id": neptuneInstanceArn + "/neptune-instance-storage-encryption-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": neptuneInstanceArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -245,15 +219,8 @@ def neptune_instance_storage_encryption_check(cache: dict, awsAccountId: str, aw
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": neptuneInstanceArn
-                + "/neptune-instance-storage-encryption-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "Id": neptuneInstanceArn + "/neptune-instance-storage-encryption-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": neptuneInstanceArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -303,28 +270,20 @@ def neptune_instance_storage_encryption_check(cache: dict, awsAccountId: str, aw
 
 
 @registry.register_check("neptune")
-def neptune_instance_iam_authentication_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def neptune_instance_iam_authentication_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     neptune_instances = describe_db_instances(cache)
     for instances in neptune_instances["DBInstances"]:
         neptuneInstanceArn = str(instances["DBInstanceArn"])
         neptuneDbId = str(instances["DBInstanceIdentifier"])
         iamDbAuthCheck = str(instances["IAMDatabaseAuthenticationEnabled"])
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if iamDbAuthCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": neptuneInstanceArn + "/neptune-instance-iam-db-auth-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": neptuneInstanceArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -386,13 +345,7 @@ def neptune_instance_iam_authentication_check(cache: dict, awsAccountId: str, aw
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": neptuneInstanceArn + "/neptune-instance-iam-db-auth-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": neptuneInstanceArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -453,7 +406,9 @@ def neptune_instance_iam_authentication_check(cache: dict, awsAccountId: str, aw
 
 
 @registry.register_check("neptune")
-def neptune_cluster_parameter_ssl_enforcement_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def neptune_cluster_parameter_ssl_enforcement_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     neptune_instances = describe_db_instances(cache)
     response = neptune.describe_db_cluster_parameter_groups()
     for parametergroup in response["DBClusterParameterGroups"]:
@@ -466,9 +421,7 @@ def neptune_cluster_parameter_ssl_enforcement_check(cache: dict, awsAccountId: s
             if str(parameters["ParameterName"]) == "neptune_enforce_ssl":
                 sslEnforcementCheck = str(parameters["ParameterValue"])
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if sslEnforcementCheck == "0":
                     finding = {
@@ -484,9 +437,7 @@ def neptune_cluster_parameter_ssl_enforcement_check(cache: dict, awsAccountId: s
                         + "/default",
                         "GeneratorId": parameterGroupArn,
                         "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices"
-                        ],
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
                         "CreatedAt": iso8601Time,
                         "UpdatedAt": iso8601Time,
@@ -509,11 +460,7 @@ def neptune_cluster_parameter_ssl_enforcement_check(cache: dict, awsAccountId: s
                                 "Id": parameterGroupArn,
                                 "Partition": "aws",
                                 "Region": awsRegion,
-                                "Details": {
-                                    "Other": {
-                                        "ParameterGroupName": parameterGroupName
-                                    }
-                                },
+                                "Details": {"Other": {"ParameterGroupName": parameterGroupName}},
                             }
                         ],
                         "Compliance": {
@@ -550,9 +497,7 @@ def neptune_cluster_parameter_ssl_enforcement_check(cache: dict, awsAccountId: s
                         + "/default",
                         "GeneratorId": parameterGroupArn,
                         "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices"
-                        ],
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
                         "CreatedAt": iso8601Time,
                         "UpdatedAt": iso8601Time,
@@ -575,11 +520,7 @@ def neptune_cluster_parameter_ssl_enforcement_check(cache: dict, awsAccountId: s
                                 "Id": parameterGroupArn,
                                 "Partition": "aws",
                                 "Region": awsRegion,
-                                "Details": {
-                                    "Other": {
-                                        "ParameterGroupName": parameterGroupName
-                                    }
-                                },
+                                "Details": {"Other": {"ParameterGroupName": parameterGroupName}},
                             }
                         ],
                         "Compliance": {
@@ -607,7 +548,9 @@ def neptune_cluster_parameter_ssl_enforcement_check(cache: dict, awsAccountId: s
 
 
 @registry.register_check("neptune")
-def neptune_cluster_parameter_audit_log_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def neptune_cluster_parameter_audit_log_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     neptune_instances = describe_db_instances(cache)
     response = neptune.describe_db_cluster_parameter_groups()
     for parametergroup in response["DBClusterParameterGroups"]:
@@ -620,9 +563,7 @@ def neptune_cluster_parameter_audit_log_check(cache: dict, awsAccountId: str, aw
             if str(parameters["ParameterName"]) == "neptune_enable_audit_log":
                 auditLogCheck = str(parameters["ParameterValue"])
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if auditLogCheck == "0":
                     finding = {
@@ -638,9 +579,7 @@ def neptune_cluster_parameter_audit_log_check(cache: dict, awsAccountId: str, aw
                         + "/default",
                         "GeneratorId": parameterGroupArn,
                         "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices"
-                        ],
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
                         "CreatedAt": iso8601Time,
                         "UpdatedAt": iso8601Time,
@@ -663,11 +602,7 @@ def neptune_cluster_parameter_audit_log_check(cache: dict, awsAccountId: str, aw
                                 "Id": parameterGroupArn,
                                 "Partition": "aws",
                                 "Region": awsRegion,
-                                "Details": {
-                                    "Other": {
-                                        "ParameterGroupName": parameterGroupName
-                                    }
-                                },
+                                "Details": {"Other": {"ParameterGroupName": parameterGroupName}},
                             }
                         ],
                         "Compliance": {
@@ -703,9 +638,7 @@ def neptune_cluster_parameter_audit_log_check(cache: dict, awsAccountId: str, aw
                         + "/default",
                         "GeneratorId": parameterGroupArn,
                         "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices"
-                        ],
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
                         "CreatedAt": iso8601Time,
                         "UpdatedAt": iso8601Time,
@@ -728,11 +661,7 @@ def neptune_cluster_parameter_audit_log_check(cache: dict, awsAccountId: str, aw
                                 "Id": parameterGroupArn,
                                 "Partition": "aws",
                                 "Region": awsRegion,
-                                "Details": {
-                                    "Other": {
-                                        "ParameterGroupName": parameterGroupName
-                                    }
-                                },
+                                "Details": {"Other": {"ParameterGroupName": parameterGroupName}},
                             }
                         ],
                         "Compliance": {

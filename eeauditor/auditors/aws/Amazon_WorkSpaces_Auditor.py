@@ -31,39 +31,24 @@ def describe_workspaces(cache):
 
 
 @registry.register_check("workspaces")
-def workspaces_user_volume_encryption_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def workspaces_user_volume_encryption_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     work = describe_workspaces(cache=cache)
     myWorkSpaces = work["describe_workspaces"]
     for workspace in myWorkSpaces:
         workspaceId = str(workspace["WorkspaceId"])
         workspaceArn = (
-            "arn:aws:workspaces:"
-            + awsRegion
-            + ":"
-            + awsAccountId
-            + ":workspace/"
-            + workspaceId
+            "arn:aws:workspaces:" + awsRegion + ":" + awsAccountId + ":workspace/" + workspaceId
         )
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
-            userVolumeEncryptionCheck = str(
-                workspace["UserVolumeEncryptionEnabled"]
-            )
+            userVolumeEncryptionCheck = str(workspace["UserVolumeEncryptionEnabled"])
             if userVolumeEncryptionCheck == "False":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": workspaceArn + "/workspaces-user-volume-encryption-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": workspaceArn,
                     "AwsAccountId": awsAccountId,
                     "Types": [
@@ -114,13 +99,7 @@ def workspaces_user_volume_encryption_check(cache: dict, awsAccountId: str, awsR
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": workspaceArn + "/workspaces-user-volume-encryption-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": workspaceArn,
                     "AwsAccountId": awsAccountId,
                     "Types": [
@@ -172,39 +151,24 @@ def workspaces_user_volume_encryption_check(cache: dict, awsAccountId: str, awsR
 
 
 @registry.register_check("workspaces")
-def workspaces_root_volume_encryption_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def workspaces_root_volume_encryption_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     work = describe_workspaces(cache=cache)
     myWorkSpaces = work["describe_workspaces"]
     for workspace in myWorkSpaces:
         workspaceId = str(workspace["WorkspaceId"])
         workspaceArn = (
-            "arn:aws:workspaces:"
-            + awsRegion
-            + ":"
-            + awsAccountId
-            + ":workspace/"
-            + workspaceId
+            "arn:aws:workspaces:" + awsRegion + ":" + awsAccountId + ":workspace/" + workspaceId
         )
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
-            rootVolumeEncryptionCheck = str(
-                workspace["RootVolumeEncryptionEnabled"]
-            )
+            rootVolumeEncryptionCheck = str(workspace["RootVolumeEncryptionEnabled"])
             if rootVolumeEncryptionCheck == "False":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": workspaceArn + "/workspaces-root-volume-encryption-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": workspaceArn,
                     "AwsAccountId": awsAccountId,
                     "Types": [
@@ -255,13 +219,7 @@ def workspaces_root_volume_encryption_check(cache: dict, awsAccountId: str, awsR
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": workspaceArn + "/workspaces-root-volume-encryption-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": workspaceArn,
                     "AwsAccountId": awsAccountId,
                     "Types": [
@@ -313,41 +271,26 @@ def workspaces_root_volume_encryption_check(cache: dict, awsAccountId: str, awsR
 
 
 @registry.register_check("workspaces")
-def workspaces_running_mode_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def workspaces_running_mode_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     work = describe_workspaces(cache=cache)
     myWorkSpaces = work["describe_workspaces"]
     for workspace in myWorkSpaces:
         workspaceId = str(workspace["WorkspaceId"])
         workspaceArn = (
-            "arn:aws:workspaces:"
-            + awsRegion
-            + ":"
-            + awsAccountId
-            + ":workspace/"
-            + workspaceId
+            "arn:aws:workspaces:" + awsRegion + ":" + awsAccountId + ":workspace/" + workspaceId
         )
         runningModeCheck = str(workspace["WorkspaceProperties"]["RunningMode"])
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if runningModeCheck != "AUTO_STOP":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": workspaceArn + "/workspaces-auto-stop-running-mode-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": workspaceArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -394,18 +337,10 @@ def workspaces_running_mode_check(cache: dict, awsAccountId: str, awsRegion: str
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": workspaceArn + "/workspaces-auto-stop-running-mode-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": workspaceArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -451,7 +386,9 @@ def workspaces_running_mode_check(cache: dict, awsAccountId: str, awsRegion: str
 
 
 @registry.register_check("workspaces")
-def workspaces_directory_default_internet_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def workspaces_directory_default_internet_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = workspaces.describe_workspace_directories()
     for directory in response["Directories"]:
         workspacesDirectoryId = str(directory["DirectoryId"])
@@ -463,31 +400,17 @@ def workspaces_directory_default_internet_check(cache: dict, awsAccountId: str, 
             + ":directory/"
             + workspacesDirectoryId
         )
-        internetAccessCheck = str(
-            directory["WorkspaceCreationProperties"]["EnableInternetAccess"]
-        )
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        internetAccessCheck = str(directory["WorkspaceCreationProperties"]["EnableInternetAccess"])
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if internetAccessCheck == "True":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": workspacesDirectoryArn
                 + "/workspaces-directory-default-internet-access-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": workspacesDirectoryArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -510,9 +433,7 @@ def workspaces_directory_default_internet_check(cache: dict, awsAccountId: str, 
                         "Id": workspacesDirectoryArn,
                         "Partition": "aws",
                         "Region": awsRegion,
-                        "Details": {
-                            "Other": {"DirectoryId": workspacesDirectoryId}
-                        },
+                        "Details": {"Other": {"DirectoryId": workspacesDirectoryId}},
                     }
                 ],
                 "Compliance": {
@@ -539,18 +460,10 @@ def workspaces_directory_default_internet_check(cache: dict, awsAccountId: str, 
                 "SchemaVersion": "2018-10-08",
                 "Id": workspacesDirectoryArn
                 + "/workspaces-directory-default-internet-access-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": workspacesDirectoryArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -573,9 +486,7 @@ def workspaces_directory_default_internet_check(cache: dict, awsAccountId: str, 
                         "Id": workspacesDirectoryArn,
                         "Partition": "aws",
                         "Region": awsRegion,
-                        "Details": {
-                            "Other": {"DirectoryId": workspacesDirectoryId}
-                        },
+                        "Details": {"Other": {"DirectoryId": workspacesDirectoryId}},
                     }
                 ],
                 "Compliance": {

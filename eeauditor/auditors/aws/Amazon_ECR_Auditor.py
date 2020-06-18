@@ -29,8 +29,11 @@ def describe_repositories(cache):
     cache["describe_repositories"] = ecr.describe_repositories(maxResults=1000)
     return cache["describe_repositories"]
 
+
 @registry.register_check("ecr")
-def ecr_repo_vuln_scan_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def ecr_repo_vuln_scan_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_repositories(cache)
     myRepos = response["repositories"]
     for repo in myRepos:
@@ -38,27 +41,15 @@ def ecr_repo_vuln_scan_check(cache: dict, awsAccountId: str, awsRegion: str) -> 
         repoName = str(repo["repositoryName"])
         scanningConfig = str(repo["imageScanningConfiguration"]["scanOnPush"])
         # ISO Time
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if scanningConfig == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": repoArn + "/ecr-no-scan",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": repoArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -101,18 +92,10 @@ def ecr_repo_vuln_scan_check(cache: dict, awsAccountId: str, awsRegion: str) -> 
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": repoArn + "/ecr-no-scan",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": repoArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -152,37 +135,28 @@ def ecr_repo_vuln_scan_check(cache: dict, awsAccountId: str, awsRegion: str) -> 
             }
             yield finding
 
+
 @registry.register_check("ecr")
-def ecr_repo_image_lifecycle_policy_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def ecr_repo_image_lifecycle_policy_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_repositories(cache)
     myRepos = response["repositories"]
     for repo in myRepos:
         repoArn = str(repo["repositoryArn"])
         repoName = str(repo["repositoryName"])
         # ISO Time
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
             # this is a passing finding
             response = ecr.get_lifecycle_policy(repositoryName=repoName)
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": repoArn + "/ecr-lifecycle-policy-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": repoArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -229,18 +203,10 @@ def ecr_repo_image_lifecycle_policy_check(cache: dict, awsAccountId: str, awsReg
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": repoArn + "/ecr-lifecycle-policy-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": repoArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -284,37 +250,28 @@ def ecr_repo_image_lifecycle_policy_check(cache: dict, awsAccountId: str, awsReg
             }
             yield finding
 
+
 @registry.register_check("ecr")
-def ecr_repo_permission_policy(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def ecr_repo_permission_policy(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_repositories(cache)
     myRepos = response["repositories"]
     for repo in myRepos:
         repoArn = str(repo["repositoryArn"])
         repoName = str(repo["repositoryName"])
         # ISO Time
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
             # this is a passing finding
             response = ecr.get_repository_policy(repositoryName=repoName)
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": repoArn + "/ecr-repo-access-policy-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": repoArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -370,18 +327,10 @@ def ecr_repo_permission_policy(cache: dict, awsAccountId: str, awsRegion: str) -
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": repoArn + "/ecr-repo-access-policy-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": repoArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -434,8 +383,11 @@ def ecr_repo_permission_policy(cache: dict, awsAccountId: str, awsRegion: str) -
             }
             yield finding
 
+
 @registry.register_check("ecr")
-def ecr_latest_image_vuln_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def ecr_latest_image_vuln_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_repositories(cache)
     myRepos = response["repositories"]
     for repo in myRepos:
@@ -445,9 +397,7 @@ def ecr_latest_image_vuln_check(cache: dict, awsAccountId: str, awsRegion: str) 
         if scanningConfig == "True":
             try:
                 response = ecr.describe_images(
-                    repositoryName=repoName,
-                    filter={"tagStatus": "TAGGED"},
-                    maxResults=1000,
+                    repositoryName=repoName, filter={"tagStatus": "TAGGED"}, maxResults=1000,
                 )
                 for images in response["imageDetails"]:
                     imageDigest = str(images["imageDigest"])
@@ -473,10 +423,7 @@ def ecr_latest_image_vuln_check(cache: dict, awsAccountId: str, awsRegion: str) 
                         )
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": repoName
-                            + "/"
-                            + imageDigest
-                            + "/ecr-latest-image-vuln-check",
+                            "Id": repoName + "/" + imageDigest + "/ecr-latest-image-vuln-check",
                             "ProductArn": "arn:aws:securityhub:"
                             + awsRegion
                             + ":"
@@ -543,10 +490,7 @@ def ecr_latest_image_vuln_check(cache: dict, awsAccountId: str, awsRegion: str) 
                     else:
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": repoName
-                            + "/"
-                            + imageDigest
-                            + "/ecr-latest-image-vuln-check",
+                            "Id": repoName + "/" + imageDigest + "/ecr-latest-image-vuln-check",
                             "ProductArn": "arn:aws:securityhub:"
                             + awsRegion
                             + ":"

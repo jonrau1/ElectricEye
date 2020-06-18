@@ -29,20 +29,18 @@ def describe_instances(cache):
     cache["describe_instances"] = ec2.describe_instances(DryRun=False, MaxResults=1000)
     return cache["describe_instances"]
 
+
 @registry.register_check("ec2")
-def ec2_instance_ssm_managed_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def ec2_instance_ssm_managed_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_instances(cache)
     myEc2InstanceReservations = response["Reservations"]
     for reservations in myEc2InstanceReservations:
         for instances in reservations["Instances"]:
             instanceId = str(instances["InstanceId"])
             instanceArn = (
-                "arn:aws:ec2:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":instance/"
-                + instanceId
+                "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":instance/" + instanceId
             )
             instanceType = str(instances["InstanceType"])
             instanceImage = str(instances["ImageId"])
@@ -57,9 +55,7 @@ def ec2_instance_ssm_managed_check(cache: dict, awsAccountId: str, awsRegion: st
                 )
                 # ISO Time
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if str(response["InstanceInformationList"]) == "[]":
                     finding = {
@@ -74,9 +70,7 @@ def ec2_instance_ssm_managed_check(cache: dict, awsAccountId: str, awsRegion: st
                         + "/default",
                         "GeneratorId": instanceArn,
                         "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices"
-                        ],
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
                         "CreatedAt": iso8601Time,
                         "UpdatedAt": iso8601Time,
@@ -140,9 +134,7 @@ def ec2_instance_ssm_managed_check(cache: dict, awsAccountId: str, awsRegion: st
                         + "/default",
                         "GeneratorId": instanceArn,
                         "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices"
-                        ],
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
                         "CreatedAt": iso8601Time,
                         "UpdatedAt": iso8601Time,
@@ -196,20 +188,18 @@ def ec2_instance_ssm_managed_check(cache: dict, awsAccountId: str, awsRegion: st
             except Exception as e:
                 print(e)
 
+
 @registry.register_check("ec2")
-def ssm_instace_agent_update_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def ssm_instace_agent_update_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_instances(cache)
     myEc2InstanceReservations = response["Reservations"]
     for reservations in myEc2InstanceReservations:
         for instances in reservations["Instances"]:
             instanceId = str(instances["InstanceId"])
             instanceArn = (
-                "arn:aws:ec2:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":instance/"
-                + instanceId
+                "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":instance/" + instanceId
             )
             instanceType = str(instances["InstanceType"])
             instanceImage = str(instances["ImageId"])
@@ -222,9 +212,7 @@ def ssm_instace_agent_update_check(cache: dict, awsAccountId: str, awsRegion: st
                 latestVersionCheck = str(instances["IsLatestVersion"])
                 # ISO Time
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if latestVersionCheck == "False":
                     finding = {
@@ -239,9 +227,7 @@ def ssm_instace_agent_update_check(cache: dict, awsAccountId: str, awsRegion: st
                         + "/default",
                         "GeneratorId": instanceArn,
                         "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices"
-                        ],
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
                         "CreatedAt": iso8601Time,
                         "UpdatedAt": iso8601Time,
@@ -305,9 +291,7 @@ def ssm_instace_agent_update_check(cache: dict, awsAccountId: str, awsRegion: st
                         + "/default",
                         "GeneratorId": instanceArn,
                         "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices"
-                        ],
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
                         "CreatedAt": iso8601Time,
                         "UpdatedAt": iso8601Time,
@@ -359,20 +343,18 @@ def ssm_instace_agent_update_check(cache: dict, awsAccountId: str, awsRegion: st
                     }
                     yield finding
 
+
 @registry.register_check("ec2")
-def ssm_instance_association_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def ssm_instance_association_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_instances(cache)
     myEc2InstanceReservations = response["Reservations"]
     for reservations in myEc2InstanceReservations:
         for instances in reservations["Instances"]:
             instanceId = str(instances["InstanceId"])
             instanceArn = (
-                "arn:aws:ec2:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":instance/"
-                + instanceId
+                "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":instance/" + instanceId
             )
             instanceType = str(instances["InstanceType"])
             instanceImage = str(instances["ImageId"])
@@ -385,9 +367,7 @@ def ssm_instance_association_check(cache: dict, awsAccountId: str, awsRegion: st
                 associationStatusCheck = str(instances["AssociationStatus"])
                 # ISO Time
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if associationStatusCheck != "Success":
                     finding = {
@@ -402,9 +382,7 @@ def ssm_instance_association_check(cache: dict, awsAccountId: str, awsRegion: st
                         + "/default",
                         "GeneratorId": instanceArn,
                         "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices"
-                        ],
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
                         "CreatedAt": iso8601Time,
                         "UpdatedAt": iso8601Time,
@@ -468,9 +446,7 @@ def ssm_instance_association_check(cache: dict, awsAccountId: str, awsRegion: st
                         + "/default",
                         "GeneratorId": instanceArn,
                         "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices"
-                        ],
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
                         "CreatedAt": iso8601Time,
                         "UpdatedAt": iso8601Time,
@@ -522,20 +498,18 @@ def ssm_instance_association_check(cache: dict, awsAccountId: str, awsRegion: st
                     }
                     yield finding
 
+
 @registry.register_check("ec2")
-def ssm_instance_patch_state_state(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def ssm_instance_patch_state_state(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = describe_instances(cache)
     myEc2InstanceReservations = response["Reservations"]
     for reservations in myEc2InstanceReservations:
         for instances in reservations["Instances"]:
             instanceId = str(instances["InstanceId"])
             instanceArn = (
-                "arn:aws:ec2:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":instance/"
-                + instanceId
+                "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":instance/" + instanceId
             )
             instanceType = str(instances["InstanceType"])
             instanceImage = str(instances["ImageId"])
@@ -544,15 +518,11 @@ def ssm_instance_patch_state_state(cache: dict, awsAccountId: str, awsRegion: st
             instanceLaunchedAt = str(instances["LaunchTime"])
             response = ssm.describe_instance_information()
             try:
-                response = ssm.describe_instance_patch_states(
-                    InstanceIds=[instanceId]
-                )
+                response = ssm.describe_instance_patch_states(InstanceIds=[instanceId])
                 patchStatesCheck = str(response["InstancePatchStates"])
                 # ISO Time
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if patchStatesCheck == "[]":
                     print("no patch info")
@@ -568,9 +538,7 @@ def ssm_instance_patch_state_state(cache: dict, awsAccountId: str, awsRegion: st
                         + "/default",
                         "GeneratorId": instanceArn,
                         "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices"
-                        ],
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
                         "CreatedAt": iso8601Time,
                         "UpdatedAt": iso8601Time,

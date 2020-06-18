@@ -28,18 +28,17 @@ def describe_security_groups(cache):
     cache["describe_security_groups"] = ec2.describe_security_groups()
     return cache["describe_security_groups"]
 
+
 @registry.register_check("ec2")
 def security_group_all_open_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = (
-            "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
-        )
+        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -63,17 +62,12 @@ def security_group_all_open_check(
             for cidrs in ipRanges:
                 cidrIpRange = str(cidrs["CidrIp"])
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if ipProtocol == "-1" and cidrIpRange == "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-all-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-all-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -110,10 +104,7 @@ def security_group_all_open_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -141,10 +132,7 @@ def security_group_all_open_check(
                 elif ipProtocol == "-1" and cidrIpRange != "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-all-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-all-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -181,10 +169,7 @@ def security_group_all_open_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -212,18 +197,17 @@ def security_group_all_open_check(
                 else:
                     pass
 
+
 @registry.register_check("ec2")
 def security_group_open_ftp_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = (
-            "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
-        )
+        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -247,17 +231,12 @@ def security_group_open_ftp_check(
             for cidrs in ipRanges:
                 cidrIpRange = str(cidrs["CidrIp"])
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if toPort == "20" and fromPort == "21" and cidrIpRange == "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-ftp-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-ftp-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -296,10 +275,7 @@ def security_group_open_ftp_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -327,10 +303,7 @@ def security_group_open_ftp_check(
                 elif toPort == "20" and fromPort == "21" and cidrIpRange != "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-ftp-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-ftp-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -369,10 +342,7 @@ def security_group_open_ftp_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -400,18 +370,17 @@ def security_group_open_ftp_check(
                 else:
                     pass
 
+
 @registry.register_check("ec2")
 def security_group_open_telnet_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = (
-            "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
-        )
+        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -435,17 +404,12 @@ def security_group_open_telnet_check(
             for cidrs in ipRanges:
                 cidrIpRange = str(cidrs["CidrIp"])
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if toPort and fromPort == "23" and cidrIpRange == "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-telnet-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-telnet-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -484,10 +448,7 @@ def security_group_open_telnet_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -515,10 +476,7 @@ def security_group_open_telnet_check(
                 elif toPort and fromPort == "23" and cidrIpRange != "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-telnet-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-telnet-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -557,10 +515,7 @@ def security_group_open_telnet_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -588,18 +543,17 @@ def security_group_open_telnet_check(
                 else:
                     pass
 
+
 @registry.register_check("ec2")
 def security_group_open_dcom_rpc_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = (
-            "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
-        )
+        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -623,17 +577,12 @@ def security_group_open_dcom_rpc_check(
             for cidrs in ipRanges:
                 cidrIpRange = str(cidrs["CidrIp"])
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if toPort and fromPort == "135" and cidrIpRange == "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-telnet-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-telnet-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -680,10 +629,7 @@ def security_group_open_dcom_rpc_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -711,10 +657,7 @@ def security_group_open_dcom_rpc_check(
                 if toPort and fromPort == "135" and cidrIpRange != "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-wsrpc-dcom-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-wsrpc-dcom-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -761,10 +704,7 @@ def security_group_open_dcom_rpc_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -792,18 +732,17 @@ def security_group_open_dcom_rpc_check(
                 else:
                     pass
 
+
 @registry.register_check("ec2")
 def security_group_open_smb_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = (
-            "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
-        )
+        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -827,17 +766,12 @@ def security_group_open_smb_check(
             for cidrs in ipRanges:
                 cidrIpRange = str(cidrs["CidrIp"])
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if toPort and fromPort == "445" and cidrIpRange == "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-smb-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-smb-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -890,10 +824,7 @@ def security_group_open_smb_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -921,10 +852,7 @@ def security_group_open_smb_check(
                 elif toPort and fromPort == "445" and cidrIpRange != "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-smb-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-smb-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -977,10 +905,7 @@ def security_group_open_smb_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -1008,18 +933,17 @@ def security_group_open_smb_check(
                 else:
                     pass
 
+
 @registry.register_check("ec2")
 def security_group_open_mssql_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = (
-            "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
-        )
+        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -1043,17 +967,12 @@ def security_group_open_mssql_check(
             for cidrs in ipRanges:
                 cidrIpRange = str(cidrs["CidrIp"])
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if toPort and fromPort == "1433" and cidrIpRange == "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-mssql-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-mssql-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -1112,10 +1031,7 @@ def security_group_open_mssql_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -1143,10 +1059,7 @@ def security_group_open_mssql_check(
                 elif toPort and fromPort == "1433" and cidrIpRange != "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-mssql-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-mssql-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -1205,10 +1118,7 @@ def security_group_open_mssql_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -1236,18 +1146,17 @@ def security_group_open_mssql_check(
                 else:
                     pass
 
+
 @registry.register_check("ec2")
 def security_group_open_oracle_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = (
-            "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
-        )
+        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -1271,17 +1180,12 @@ def security_group_open_oracle_check(
             for cidrs in ipRanges:
                 cidrIpRange = str(cidrs["CidrIp"])
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if toPort and fromPort == "1521" and cidrIpRange == "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-oracledb-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-oracledb-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -1320,10 +1224,7 @@ def security_group_open_oracle_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -1351,10 +1252,7 @@ def security_group_open_oracle_check(
                 elif toPort and fromPort == "1521" and cidrIpRange != "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-oracledb-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-oracledb-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -1393,10 +1291,7 @@ def security_group_open_oracle_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -1424,18 +1319,17 @@ def security_group_open_oracle_check(
                 else:
                     pass
 
+
 @registry.register_check("ec2")
 def security_group_open_mysql_mariadb_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = (
-            "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
-        )
+        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -1459,9 +1353,7 @@ def security_group_open_mysql_mariadb_check(
             for cidrs in ipRanges:
                 cidrIpRange = str(cidrs["CidrIp"])
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if toPort and fromPort == "3306" and cidrIpRange == "0.0.0.0/0":
                     finding = {
@@ -1508,10 +1400,7 @@ def security_group_open_mysql_mariadb_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -1581,10 +1470,7 @@ def security_group_open_mysql_mariadb_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -1612,18 +1498,17 @@ def security_group_open_mysql_mariadb_check(
                 else:
                     pass
 
+
 @registry.register_check("ec2")
 def security_group_open_rdp_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = (
-            "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
-        )
+        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -1647,17 +1532,12 @@ def security_group_open_rdp_check(
             for cidrs in ipRanges:
                 cidrIpRange = str(cidrs["CidrIp"])
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if toPort and fromPort == "3389" and cidrIpRange == "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-rdp-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-rdp-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -1710,10 +1590,7 @@ def security_group_open_rdp_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -1741,10 +1618,7 @@ def security_group_open_rdp_check(
                 elif toPort and fromPort == "3389" and cidrIpRange != "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-rdp-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-rdp-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -1797,10 +1671,7 @@ def security_group_open_rdp_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -1828,18 +1699,17 @@ def security_group_open_rdp_check(
                 else:
                     pass
 
+
 @registry.register_check("ec2")
 def security_group_open_postgresql_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = (
-            "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
-        )
+        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -1863,17 +1733,12 @@ def security_group_open_postgresql_check(
             for cidrs in ipRanges:
                 cidrIpRange = str(cidrs["CidrIp"])
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if toPort and fromPort == "5432" and cidrIpRange == "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-postgresql-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-postgresql-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -1912,10 +1777,7 @@ def security_group_open_postgresql_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -1943,10 +1805,7 @@ def security_group_open_postgresql_check(
                 elif toPort and fromPort == "5432" and cidrIpRange != "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-postgresql-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-postgresql-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -1985,10 +1844,7 @@ def security_group_open_postgresql_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -2016,18 +1872,17 @@ def security_group_open_postgresql_check(
                 else:
                     pass
 
+
 @registry.register_check("ec2")
 def security_group_open_kibana_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = (
-            "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
-        )
+        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -2051,17 +1906,12 @@ def security_group_open_kibana_check(
             for cidrs in ipRanges:
                 cidrIpRange = str(cidrs["CidrIp"])
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if toPort and fromPort == "5601" and cidrIpRange == "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-kibana-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-kibana-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -2114,10 +1964,7 @@ def security_group_open_kibana_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -2145,10 +1992,7 @@ def security_group_open_kibana_check(
                 elif toPort and fromPort == "5601" and cidrIpRange != "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-kibana-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-kibana-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -2201,10 +2045,7 @@ def security_group_open_kibana_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -2232,18 +2073,17 @@ def security_group_open_kibana_check(
                 else:
                     pass
 
+
 @registry.register_check("ec2")
 def security_group_open_redis_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = (
-            "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
-        )
+        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -2267,17 +2107,12 @@ def security_group_open_redis_check(
             for cidrs in ipRanges:
                 cidrIpRange = str(cidrs["CidrIp"])
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if toPort and fromPort == "6379" and cidrIpRange == "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-redis-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-redis-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -2330,10 +2165,7 @@ def security_group_open_redis_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -2361,10 +2193,7 @@ def security_group_open_redis_check(
                 elif toPort and fromPort == "6379" and cidrIpRange != "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-redis-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-redis-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -2417,10 +2246,7 @@ def security_group_open_redis_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -2448,18 +2274,17 @@ def security_group_open_redis_check(
                 else:
                     pass
 
+
 @registry.register_check("ec2")
 def security_group_open_splunkd_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = (
-            "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
-        )
+        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -2483,17 +2308,12 @@ def security_group_open_splunkd_check(
             for cidrs in ipRanges:
                 cidrIpRange = str(cidrs["CidrIp"])
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if toPort and fromPort == "8089" and cidrIpRange == "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-splunkd-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-splunkd-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -2546,10 +2366,7 @@ def security_group_open_splunkd_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -2577,10 +2394,7 @@ def security_group_open_splunkd_check(
                 elif toPort and fromPort == "8089" and cidrIpRange != "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-splunkd-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-splunkd-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -2633,10 +2447,7 @@ def security_group_open_splunkd_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -2664,18 +2475,17 @@ def security_group_open_splunkd_check(
                 else:
                     pass
 
+
 @registry.register_check("ec2")
 def security_group_open_elasticsearch1_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = (
-            "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
-        )
+        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -2699,9 +2509,7 @@ def security_group_open_elasticsearch1_check(
             for cidrs in ipRanges:
                 cidrIpRange = str(cidrs["CidrIp"])
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if toPort and fromPort == "9200" and cidrIpRange == "0.0.0.0/0":
                     finding = {
@@ -2748,10 +2556,7 @@ def security_group_open_elasticsearch1_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -2821,10 +2626,7 @@ def security_group_open_elasticsearch1_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -2852,18 +2654,17 @@ def security_group_open_elasticsearch1_check(
                 else:
                     pass
 
+
 @registry.register_check("ec2")
 def security_group_open_elasticsearch2_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = (
-            "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
-        )
+        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -2887,9 +2688,7 @@ def security_group_open_elasticsearch2_check(
             for cidrs in ipRanges:
                 cidrIpRange = str(cidrs["CidrIp"])
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if toPort and fromPort == "9300" and cidrIpRange == "0.0.0.0/0":
                     finding = {
@@ -2936,10 +2735,7 @@ def security_group_open_elasticsearch2_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -3009,10 +2805,7 @@ def security_group_open_elasticsearch2_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -3040,18 +2833,17 @@ def security_group_open_elasticsearch2_check(
                 else:
                     pass
 
+
 @registry.register_check("ec2")
 def security_group_open_memcached_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = (
-            "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
-        )
+        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -3075,9 +2867,7 @@ def security_group_open_memcached_check(
             for cidrs in ipRanges:
                 cidrIpRange = str(cidrs["CidrIp"])
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if (
                     toPort
@@ -3087,10 +2877,7 @@ def security_group_open_memcached_check(
                 ):
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-memcached-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-memcached-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -3143,10 +2930,7 @@ def security_group_open_memcached_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -3179,10 +2963,7 @@ def security_group_open_memcached_check(
                 ):
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-memcached-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-memcached-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -3235,10 +3016,7 @@ def security_group_open_memcached_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -3266,18 +3044,17 @@ def security_group_open_memcached_check(
                 else:
                     pass
 
+
 @registry.register_check("ec2")
 def security_group_open_redshift_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = (
-            "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
-        )
+        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -3301,17 +3078,12 @@ def security_group_open_redshift_check(
             for cidrs in ipRanges:
                 cidrIpRange = str(cidrs["CidrIp"])
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if toPort and fromPort == "5439" and cidrIpRange == "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-redshift-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-redshift-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -3350,10 +3122,7 @@ def security_group_open_redshift_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -3381,10 +3150,7 @@ def security_group_open_redshift_check(
                 elif toPort and fromPort == "5439" and cidrIpRange != "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-redshift-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-redshift-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -3423,10 +3189,7 @@ def security_group_open_redshift_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -3454,18 +3217,17 @@ def security_group_open_redshift_check(
                 else:
                     pass
 
+
 @registry.register_check("ec2")
 def security_group_open_documentdb_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = (
-            "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
-        )
+        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -3489,17 +3251,12 @@ def security_group_open_documentdb_check(
             for cidrs in ipRanges:
                 cidrIpRange = str(cidrs["CidrIp"])
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if toPort and fromPort == "27017" and cidrIpRange == "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-documentdb-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-documentdb-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -3538,10 +3295,7 @@ def security_group_open_documentdb_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -3569,10 +3323,7 @@ def security_group_open_documentdb_check(
                 elif toPort and fromPort == "27017" and cidrIpRange != "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-documentdb-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-documentdb-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -3611,10 +3362,7 @@ def security_group_open_documentdb_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -3642,18 +3390,17 @@ def security_group_open_documentdb_check(
                 else:
                     pass
 
+
 @registry.register_check("ec2")
 def security_group_open_cassandra_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = (
-            "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
-        )
+        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -3677,17 +3424,12 @@ def security_group_open_cassandra_check(
             for cidrs in ipRanges:
                 cidrIpRange = str(cidrs["CidrIp"])
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if toPort and fromPort == "9142" and cidrIpRange == "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-cassandra-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-cassandra-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -3726,10 +3468,7 @@ def security_group_open_cassandra_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -3757,10 +3496,7 @@ def security_group_open_cassandra_check(
                 elif toPort and fromPort == "9142" and cidrIpRange != "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-cassandra-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-cassandra-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -3799,10 +3535,7 @@ def security_group_open_cassandra_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -3830,18 +3563,17 @@ def security_group_open_cassandra_check(
                 else:
                     pass
 
+
 @registry.register_check("ec2")
 def security_group_open_kafka_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
-        sgArn = (
-            "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
-        )
+        sgArn = "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":security-group/" + sgId
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
@@ -3865,17 +3597,12 @@ def security_group_open_kafka_check(
             for cidrs in ipRanges:
                 cidrIpRange = str(cidrs["CidrIp"])
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if toPort and fromPort == "9092" and cidrIpRange == "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-kafka-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-kafka-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -3914,10 +3641,7 @@ def security_group_open_kafka_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],
@@ -3945,10 +3669,7 @@ def security_group_open_kafka_check(
                 elif toPort and fromPort == "9092" and cidrIpRange != "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn
-                        + "/"
-                        + ipProtocol
-                        + "/security-group-kafka-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-kafka-open-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -3987,10 +3708,7 @@ def security_group_open_kafka_check(
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsEc2SecurityGroup": {
-                                        "GroupName": sgName,
-                                        "GroupId": sgId,
-                                    }
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
                                 },
                             }
                         ],

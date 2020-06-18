@@ -26,17 +26,18 @@ cloudwatch = boto3.client("cloudwatch")
 
 
 @registry.register_check("sqs")
-def sqs_old_message_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def sqs_old_message_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = sqs.list_queues()
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for queueUrl in response["QueueUrls"]:
-        queueName = queueUrl.rsplit('/', 1)[-1]
+        queueName = queueUrl.rsplit("/", 1)[-1]
         attributes = sqs.get_queue_attributes(
-            QueueUrl=queueUrl,
-            AttributeNames=["MessageRetentionPeriod", "QueueArn"]
+            QueueUrl=queueUrl, AttributeNames=["MessageRetentionPeriod", "QueueArn"]
         )
-        messageRetention = attributes["Attributes"]['MessageRetentionPeriod']
-        queueArn = attributes["Attributes"]['QueueArn']
+        messageRetention = attributes["Attributes"]["MessageRetentionPeriod"]
+        queueArn = attributes["Attributes"]["QueueArn"]
         metricResponse = cloudwatch.get_metric_data(
             MetricDataQueries=[
                 {
@@ -49,12 +50,11 @@ def sqs_old_message_check(cache: dict, awsAccountId: str, awsRegion: str) -> dic
                         },
                         "Period": 3600,
                         "Stat": "Maximum",
-                        "Unit": "Seconds"
+                        "Unit": "Seconds",
                     },
                 },
             ],
-            StartTime=datetime.datetime.now(
-                datetime.timezone.utc) - datetime.timedelta(days=1),
+            StartTime=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1),
             EndTime=datetime.datetime.now(datetime.timezone.utc),
         )
         metrics = metricResponse["MetricDataResults"]
@@ -64,20 +64,14 @@ def sqs_old_message_check(cache: dict, awsAccountId: str, awsRegion: str) -> dic
             for value in metric["Values"]:
                 if value > int(messageRetention) * 0.8:
                     counter += 1
-                if(counter > 2):
+                if counter > 2:
                     fail = True
                     break
         if not fail:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": queueArn + "/sqs-old-message-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": queueArn,
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -98,16 +92,9 @@ def sqs_old_message_check(cache: dict, awsAccountId: str, awsRegion: str) -> dic
                 },
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
-                    {
-                        "Type": "AwsSQS",
-                        "Id": queueArn,
-                        "Partition": "aws",
-                        "Region": awsRegion,
-                    }
+                    {"Type": "AwsSQS", "Id": queueArn, "Partition": "aws", "Region": awsRegion,}
                 ],
-                "Compliance": {
-                    "Status": "PASSED",
-                },
+                "Compliance": {"Status": "PASSED",},
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED",
             }
@@ -116,13 +103,7 @@ def sqs_old_message_check(cache: dict, awsAccountId: str, awsRegion: str) -> dic
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": queueArn + "/sqs-old-message-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": queueArn,
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -143,16 +124,9 @@ def sqs_old_message_check(cache: dict, awsAccountId: str, awsRegion: str) -> dic
                 },
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
-                    {
-                        "Type": "AwsSQS",
-                        "Id": queueArn,
-                        "Partition": "aws",
-                        "Region": awsRegion,
-                    }
+                    {"Type": "AwsSQS", "Id": queueArn, "Partition": "aws", "Region": awsRegion,}
                 ],
-                "Compliance": {
-                    "Status": "FAILED"
-                },
+                "Compliance": {"Status": "FAILED"},
                 "Workflow": {"Status": "NEW"},
                 "RecordState": "ACTIVE",
             }

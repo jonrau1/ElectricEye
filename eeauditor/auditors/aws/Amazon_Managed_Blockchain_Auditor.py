@@ -18,7 +18,9 @@ def list_networks(cache):
 
 
 @registry.register_check("amb")
-def amb_fabric_node_chaincode_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def amb_fabric_node_chaincode_logging_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_networks(cache)
     myFabricNetworks = response["Networks"]
     for networks in myFabricNetworks:
@@ -31,17 +33,13 @@ def amb_fabric_node_chaincode_logging_check(cache: dict, awsAccountId: str, awsR
                 memberId = str(members["Id"])
                 try:
                     response = amb.list_nodes(
-                        NetworkId=fabricNetworkId,
-                        MemberId=memberId,
-                        Status="AVAILABLE",
+                        NetworkId=fabricNetworkId, MemberId=memberId, Status="AVAILABLE",
                     )
                     for nodes in response["Nodes"]:
                         peerNodeId = str(nodes["Id"])
                         try:
                             response = amb.get_node(
-                                NetworkId=fabricNetworkId,
-                                MemberId=memberId,
-                                NodeId=peerNodeId,
+                                NetworkId=fabricNetworkId, MemberId=memberId, NodeId=peerNodeId,
                             )
                             nodeArn = (
                                 "arn:aws:managedblockchain:"
@@ -52,9 +50,9 @@ def amb_fabric_node_chaincode_logging_check(cache: dict, awsAccountId: str, awsR
                                 + peerNodeId
                             )
                             chaincodeLogCheck = str(
-                                response["Node"]["LogPublishingConfiguration"][
-                                    "Fabric"
-                                ]["ChaincodeLogs"]["Cloudwatch"]["Enabled"]
+                                response["Node"]["LogPublishingConfiguration"]["Fabric"][
+                                    "ChaincodeLogs"
+                                ]["Cloudwatch"]["Enabled"]
                             )
                             iso8601Time = (
                                 datetime.datetime.utcnow()
@@ -93,9 +91,7 @@ def amb_fabric_node_chaincode_logging_check(cache: dict, awsAccountId: str, awsR
                                             "Url": "https://docs.aws.amazon.com/managed-blockchain/latest/managementguide/monitoring-cloudwatch-logs.html#monitoring-enable",
                                         }
                                     },
-                                    "ProductFields": {
-                                        "Product Name": "ElectricEye"
-                                    },
+                                    "ProductFields": {"Product Name": "ElectricEye"},
                                     "Resources": [
                                         {
                                             "Type": "AwsManagedBlockchainPeerNode",
@@ -162,9 +158,7 @@ def amb_fabric_node_chaincode_logging_check(cache: dict, awsAccountId: str, awsR
                                             "Url": "https://docs.aws.amazon.com/managed-blockchain/latest/managementguide/monitoring-cloudwatch-logs.html#monitoring-enable",
                                         }
                                     },
-                                    "ProductFields": {
-                                        "Product Name": "ElectricEye"
-                                    },
+                                    "ProductFields": {"Product Name": "ElectricEye"},
                                     "Resources": [
                                         {
                                             "Type": "AwsManagedBlockchainPeerNode",
@@ -208,7 +202,9 @@ def amb_fabric_node_chaincode_logging_check(cache: dict, awsAccountId: str, awsR
 
 
 @registry.register_check("amb")
-def amb_fabric_node_peernode_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def amb_fabric_node_peernode_logging_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_networks(cache)
     myFabricNetworks = response["Networks"]
     for networks in myFabricNetworks:
@@ -221,17 +217,13 @@ def amb_fabric_node_peernode_logging_check(cache: dict, awsAccountId: str, awsRe
                 memberId = str(members["Id"])
                 try:
                     response = amb.list_nodes(
-                        NetworkId=fabricNetworkId,
-                        MemberId=memberId,
-                        Status="AVAILABLE",
+                        NetworkId=fabricNetworkId, MemberId=memberId, Status="AVAILABLE",
                     )
                     for nodes in response["Nodes"]:
                         peerNodeId = str(nodes["Id"])
                         try:
                             response = amb.get_node(
-                                NetworkId=fabricNetworkId,
-                                MemberId=memberId,
-                                NodeId=peerNodeId,
+                                NetworkId=fabricNetworkId, MemberId=memberId, NodeId=peerNodeId,
                             )
                             nodeArn = (
                                 "arn:aws:managedblockchain:"
@@ -242,9 +234,9 @@ def amb_fabric_node_peernode_logging_check(cache: dict, awsAccountId: str, awsRe
                                 + peerNodeId
                             )
                             peerNodeLogCheck = str(
-                                response["Node"]["LogPublishingConfiguration"][
-                                    "Fabric"
-                                ]["PeerLogs"]["Cloudwatch"]["Enabled"]
+                                response["Node"]["LogPublishingConfiguration"]["Fabric"][
+                                    "PeerLogs"
+                                ]["Cloudwatch"]["Enabled"]
                             )
                             iso8601Time = (
                                 datetime.datetime.utcnow()
@@ -283,9 +275,7 @@ def amb_fabric_node_peernode_logging_check(cache: dict, awsAccountId: str, awsRe
                                             "Url": "https://docs.aws.amazon.com/managed-blockchain/latest/managementguide/monitoring-cloudwatch-logs.html#monitoring-enable",
                                         }
                                     },
-                                    "ProductFields": {
-                                        "Product Name": "ElectricEye"
-                                    },
+                                    "ProductFields": {"Product Name": "ElectricEye"},
                                     "Resources": [
                                         {
                                             "Type": "AwsManagedBlockchainPeerNode",
@@ -352,9 +342,7 @@ def amb_fabric_node_peernode_logging_check(cache: dict, awsAccountId: str, awsRe
                                             "Url": "https://docs.aws.amazon.com/managed-blockchain/latest/managementguide/monitoring-cloudwatch-logs.html#monitoring-enable",
                                         }
                                     },
-                                    "ProductFields": {
-                                        "Product Name": "ElectricEye"
-                                    },
+                                    "ProductFields": {"Product Name": "ElectricEye"},
                                     "Resources": [
                                         {
                                             "Type": "AwsManagedBlockchainPeerNode",
@@ -398,7 +386,9 @@ def amb_fabric_node_peernode_logging_check(cache: dict, awsAccountId: str, awsRe
 
 
 @registry.register_check("amb")
-def amb_fabric_member_ca_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def amb_fabric_member_ca_logging_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_networks(cache)
     myFabricNetworks = response["Networks"]
     for networks in myFabricNetworks:
@@ -410,9 +400,7 @@ def amb_fabric_member_ca_logging_check(cache: dict, awsAccountId: str, awsRegion
             for members in response["Members"]:
                 memberId = str(members["Id"])
                 try:
-                    response = amb.get_member(
-                        NetworkId=fabricNetworkId, MemberId=memberId
-                    )
+                    response = amb.get_member(NetworkId=fabricNetworkId, MemberId=memberId)
                     memberArn = (
                         "arn:aws:managedblockchain:"
                         + awsRegion
@@ -422,9 +410,9 @@ def amb_fabric_member_ca_logging_check(cache: dict, awsAccountId: str, awsRegion
                         + memberId
                     )
                     memberCaLogCheck = str(
-                        response["Member"]["LogPublishingConfiguration"]["Fabric"][
-                            "CaLogs"
-                        ]["Cloudwatch"]["Enabled"]
+                        response["Member"]["LogPublishingConfiguration"]["Fabric"]["CaLogs"][
+                            "Cloudwatch"
+                        ]["Enabled"]
                     )
                     iso8601Time = (
                         datetime.datetime.utcnow()
@@ -434,8 +422,7 @@ def amb_fabric_member_ca_logging_check(cache: dict, awsAccountId: str, awsRegion
                     if memberCaLogCheck == "False":
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": memberArn
-                            + "/managedblockchain-member-ca-logs-check",
+                            "Id": memberArn + "/managedblockchain-member-ca-logs-check",
                             "ProductArn": "arn:aws:securityhub:"
                             + awsRegion
                             + ":"
@@ -500,8 +487,7 @@ def amb_fabric_member_ca_logging_check(cache: dict, awsAccountId: str, awsRegion
                     else:
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": memberArn
-                            + "/managedblockchain-member-ca-logs-check",
+                            "Id": memberArn + "/managedblockchain-member-ca-logs-check",
                             "ProductArn": "arn:aws:securityhub:"
                             + awsRegion
                             + ":"

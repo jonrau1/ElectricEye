@@ -26,7 +26,9 @@ cloudwatch = boto3.client("cloudwatch")
 
 
 @registry.register_check("lambda")
-def unused_function_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def unused_function_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = lambda_client.list_functions()
     functions = response["Functions"]
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -60,13 +62,7 @@ def unused_function_check(cache: dict, awsAccountId: str, awsRegion: str) -> dic
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": lambdaArn + "/lambda-function-unused-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": lambdaArn,
                     "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
@@ -115,13 +111,7 @@ def unused_function_check(cache: dict, awsAccountId: str, awsRegion: str) -> dic
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": lambdaArn + "/lambda-function-unused-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": lambdaArn,
                     "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks/AWS Security Best Practices"],

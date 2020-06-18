@@ -33,31 +33,22 @@ def list_streams(cache):
 
 
 @registry.register_check("sns")
-def kinesis_stream_encryption_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def kinesis_stream_encryption_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_streams(cache)
     myKinesisStreams = response["StreamNames"]
     for streams in myKinesisStreams:
         response = kinesis.describe_stream(StreamName=streams)
         streamArn = str(response["StreamDescription"]["StreamARN"])
         streamName = str(response["StreamDescription"]["StreamName"])
-        streamEncryptionCheck = str(
-            response["StreamDescription"]["EncryptionType"])
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        streamEncryptionCheck = str(response["StreamDescription"]["EncryptionType"])
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if streamEncryptionCheck == "NONE":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": streamArn + "/kinesis-streams-encryption-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": streamArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -108,13 +99,7 @@ def kinesis_stream_encryption_check(cache: dict, awsAccountId: str, awsRegion: s
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": streamArn + "/kinesis-streams-encryption-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": streamArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -127,9 +112,7 @@ def kinesis_stream_encryption_check(cache: dict, awsAccountId: str, awsRegion: s
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[Kinesis.1] Kinesis Data Streams should be encrypted",
-                "Description": "Kinesis data stream "
-                + streamName
-                + " is encrypted.",
+                "Description": "Kinesis data stream " + streamName + " is encrypted.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on Kinesis Data Stream encryption refer to the How Do I Get Started with Server-Side Encryption? section of the Amazon Kinesis Data Streams Developer Guide",
@@ -164,39 +147,29 @@ def kinesis_stream_encryption_check(cache: dict, awsAccountId: str, awsRegion: s
 
 
 @registry.register_check("sns")
-def kinesis_enhanced_monitoring_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def kinesis_enhanced_monitoring_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_streams(cache)
     myKinesisStreams = response["StreamNames"]
     for streams in myKinesisStreams:
         response = kinesis.describe_stream(StreamName=streams)
         streamArn = str(response["StreamDescription"]["StreamARN"])
         streamName = str(response["StreamDescription"]["StreamName"])
-        streamEnhancedMonitoring = response["StreamDescription"][
-            "EnhancedMonitoring"
-        ]
+        streamEnhancedMonitoring = response["StreamDescription"]["EnhancedMonitoring"]
         for enhancedmonitors in streamEnhancedMonitoring:
             shardLevelMetricCheck = str(enhancedmonitors["ShardLevelMetrics"])
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             if shardLevelMetricCheck == "[]":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": streamArn + "/kinesis-streams-enhanced-monitoring-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": streamArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -245,18 +218,10 @@ def kinesis_enhanced_monitoring_check(cache: dict, awsAccountId: str, awsRegion:
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": streamArn + "/kinesis-streams-enhanced-monitoring-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": streamArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,

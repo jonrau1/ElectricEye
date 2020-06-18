@@ -25,7 +25,7 @@ eks = boto3.client("eks")
 
 @registry.register_check("eks")
 def eks_public_endpoint_access_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     # loop through EKS clusters
     response = eks.list_clusters(maxResults=100)
@@ -41,21 +41,13 @@ def eks_public_endpoint_access_check(
             )
             # ISO Time
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             if eksPublicAccessCheck == "True":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": clusterArn + "/public-endpoint-access-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": clusterName,
                     "AwsAccountId": awsAccountId,
                     "Types": [
@@ -112,13 +104,7 @@ def eks_public_endpoint_access_check(
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": clusterArn + "/public-endpoint-access-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": clusterName,
                     "AwsAccountId": awsAccountId,
                     "Types": [
@@ -177,7 +163,7 @@ def eks_public_endpoint_access_check(
 
 @registry.register_check("eks")
 def eks_latest_k8s_version_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     # loop through EKS clusters
     response = eks.list_clusters(maxResults=100)
@@ -191,26 +177,16 @@ def eks_latest_k8s_version_check(
             k8sVersionCheck = str(response["cluster"]["version"])
             # ISO Time
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             if k8sVersionCheck != "1.14" or "1.15":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": clusterArn + "/eks-latest-k8s-version-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": clusterName,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices",
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices",],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -259,18 +235,10 @@ def eks_latest_k8s_version_check(
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": clusterArn + "/eks-latest-k8s-version-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": clusterName,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices",
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices",],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -320,7 +288,7 @@ def eks_latest_k8s_version_check(
 
 @registry.register_check("eks")
 def eks_logging_audit_auth_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     # loop through EKS clusters
     response = eks.list_clusters(maxResults=100)
@@ -381,9 +349,7 @@ def eks_logging_audit_auth_check(
                                         "Id": clusterArn,
                                         "Partition": "aws",
                                         "Region": awsRegion,
-                                        "Details": {
-                                            "Other": {"Cluster Name": clusterName}
-                                        },
+                                        "Details": {"Other": {"Cluster Name": clusterName}},
                                     }
                                 ],
                                 "Compliance": {
@@ -443,9 +409,7 @@ def eks_logging_audit_auth_check(
                                         "Id": clusterArn,
                                         "Partition": "aws",
                                         "Region": awsRegion,
-                                        "Details": {
-                                            "Other": {"Cluster Name": clusterName}
-                                        },
+                                        "Details": {"Other": {"Cluster Name": clusterName}},
                                     }
                                 ],
                                 "Compliance": {

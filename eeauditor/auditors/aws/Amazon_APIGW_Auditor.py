@@ -33,7 +33,7 @@ def get_rest_apis(cache):
 
 @registry.register_check("apigateway")
 def api_gateway_stage_metrics_enabled_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for restapi in get_rest_apis(cache)["items"]:
@@ -195,7 +195,9 @@ def api_gateway_stage_metrics_enabled_check(
 
 
 @registry.register_check("apigateway")
-def api_gateway_stage_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def api_gateway_stage_logging_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for restapi in get_rest_apis(cache)["items"]:
         apiGwApiId = str(restapi["id"])
@@ -357,7 +359,7 @@ def api_gateway_stage_logging_check(cache: dict, awsAccountId: str, awsRegion: s
 
 @registry.register_check("apigateway")
 def api_gateway_stage_cacheing_enabled_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for restapi in get_rest_apis(cache)["items"]:
@@ -524,7 +526,7 @@ def api_gateway_stage_cacheing_enabled_check(
 
 @registry.register_check("apigateway")
 def api_gateway_stage_cache_encryption_check(
-    cache: dict, awsAccountId: str, awsRegion: str
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for restapi in get_rest_apis(cache)["items"]:
@@ -685,7 +687,9 @@ def api_gateway_stage_cache_encryption_check(
 
 
 @registry.register_check("apigateway")
-def api_gateway_stage_xray_tracking_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def api_gateway_stage_xray_tracking_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for restapi in get_rest_apis(cache)["items"]:
         apiGwApiId = str(restapi["id"])
@@ -842,7 +846,9 @@ def api_gateway_stage_xray_tracking_check(cache: dict, awsAccountId: str, awsReg
 
 
 @registry.register_check("apigateway")
-def api_gateway_stage_waf_check_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def api_gateway_stage_waf_check_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for restapi in get_rest_apis(cache)["items"]:
         apiGwApiId = str(restapi["id"])

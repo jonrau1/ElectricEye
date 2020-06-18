@@ -31,7 +31,9 @@ def list_clusters(cache):
 
 
 @registry.register_check("ecs")
-def ecs_cluster_container_insights_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def ecs_cluster_container_insights_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_clusters(cache)
     myEcsClusters = response["clusterArns"]
     for clusters in myEcsClusters:
@@ -52,8 +54,7 @@ def ecs_cluster_container_insights_check(cache: dict, awsAccountId: str, awsRegi
                     if contInsightsCheck == "disabled":
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": ecsClusterArn
-                            + "/ecs-cluster-container-insights-check",
+                            "Id": ecsClusterArn + "/ecs-cluster-container-insights-check",
                             "ProductArn": "arn:aws:securityhub:"
                             + awsRegion
                             + ":"
@@ -88,9 +89,7 @@ def ecs_cluster_container_insights_check(cache: dict, awsAccountId: str, awsRegi
                                     "Id": ecsClusterArn,
                                     "Partition": "aws",
                                     "Region": awsRegion,
-                                    "Details": {
-                                        "Other": {"ClusterName": clusterName}
-                                    },
+                                    "Details": {"Other": {"ClusterName": clusterName}},
                                 }
                             ],
                             "Compliance": {
@@ -115,8 +114,7 @@ def ecs_cluster_container_insights_check(cache: dict, awsAccountId: str, awsRegi
                     else:
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": ecsClusterArn
-                            + "/ecs-cluster-container-insights-check",
+                            "Id": ecsClusterArn + "/ecs-cluster-container-insights-check",
                             "ProductArn": "arn:aws:securityhub:"
                             + awsRegion
                             + ":"
@@ -151,9 +149,7 @@ def ecs_cluster_container_insights_check(cache: dict, awsAccountId: str, awsRegi
                                     "Id": ecsClusterArn,
                                     "Partition": "aws",
                                     "Region": awsRegion,
-                                    "Details": {
-                                        "Other": {"ClusterName": clusterName}
-                                    },
+                                    "Details": {"Other": {"ClusterName": clusterName}},
                                 }
                             ],
                             "Compliance": {
@@ -180,7 +176,9 @@ def ecs_cluster_container_insights_check(cache: dict, awsAccountId: str, awsRegi
 
 
 @registry.register_check("ecs")
-def ecs_cluster_default_provider_strategy_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def ecs_cluster_default_provider_strategy_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_clusters(cache)
     myEcsClusters = response["clusterArns"]
     for clusters in myEcsClusters:
@@ -190,20 +188,15 @@ def ecs_cluster_default_provider_strategy_check(cache: dict, awsAccountId: str, 
             for clusterinfo in response["clusters"]:
                 clusterName = str(clusterinfo["clusterName"])
                 ecsClusterArn = str(clusterinfo["clusterArn"])
-                defaultProviderStratCheck = str(
-                    clusterinfo["defaultCapacityProviderStrategy"]
-                )
+                defaultProviderStratCheck = str(clusterinfo["defaultCapacityProviderStrategy"])
                 # ISO Time
                 iso8601Time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if defaultProviderStratCheck == "[]":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": ecsClusterArn
-                        + "/ecs-cluster-default-provider-strategy-check",
+                        "Id": ecsClusterArn + "/ecs-cluster-default-provider-strategy-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -213,9 +206,7 @@ def ecs_cluster_default_provider_strategy_check(cache: dict, awsAccountId: str, 
                         + "/default",
                         "GeneratorId": ecsClusterArn,
                         "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices"
-                        ],
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
                         "CreatedAt": iso8601Time,
                         "UpdatedAt": iso8601Time,
@@ -261,8 +252,7 @@ def ecs_cluster_default_provider_strategy_check(cache: dict, awsAccountId: str, 
                 else:
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": ecsClusterArn
-                        + "/ecs-cluster-default-provider-strategy-check",
+                        "Id": ecsClusterArn + "/ecs-cluster-default-provider-strategy-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -272,9 +262,7 @@ def ecs_cluster_default_provider_strategy_check(cache: dict, awsAccountId: str, 
                         + "/default",
                         "GeneratorId": ecsClusterArn,
                         "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices"
-                        ],
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
                         "CreatedAt": iso8601Time,
                         "UpdatedAt": iso8601Time,

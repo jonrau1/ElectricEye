@@ -33,37 +33,29 @@ def list_delivery_streams(cache):
 
 
 @registry.register_check("list_delivery_streams")
-def firehose_delivery_stream_encryption_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def firehose_delivery_stream_encryption_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_delivery_streams(cache)
     myFirehoseStreams = response["DeliveryStreamNames"]
     for deliverystreams in myFirehoseStreams:
         firehoseName = str(deliverystreams)
         try:
-            response = firehose.describe_delivery_stream(
-                DeliveryStreamName=firehoseName
-            )
+            response = firehose.describe_delivery_stream(DeliveryStreamName=firehoseName)
             firehoseArn = str(response["DeliveryStreamARN"])
             firehoseEncryptionCheck = str(
-                response["DeliveryStreamDescription"][
-                    "DeliveryStreamEncryptionConfiguration"
-                ]["Status"]
+                response["DeliveryStreamDescription"]["DeliveryStreamEncryptionConfiguration"][
+                    "Status"
+                ]
             )
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             if firehoseEncryptionCheck == "DISABLED":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": firehoseArn + "/firehose-stream-encryption-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": firehoseArn,
                     "AwsAccountId": awsAccountId,
                     "Types": [
@@ -92,9 +84,7 @@ def firehose_delivery_stream_encryption_check(cache: dict, awsAccountId: str, aw
                             "Id": firehoseArn,
                             "Partition": "aws",
                             "Region": awsRegion,
-                            "Details": {
-                                "Other": {"deliveryStreamName": firehoseName}
-                            },
+                            "Details": {"Other": {"deliveryStreamName": firehoseName}},
                         }
                     ],
                     "Compliance": {
@@ -116,13 +106,7 @@ def firehose_delivery_stream_encryption_check(cache: dict, awsAccountId: str, aw
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": firehoseArn + "/firehose-stream-encryption-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": firehoseArn,
                     "AwsAccountId": awsAccountId,
                     "Types": [
@@ -151,9 +135,7 @@ def firehose_delivery_stream_encryption_check(cache: dict, awsAccountId: str, aw
                             "Id": firehoseArn,
                             "Partition": "aws",
                             "Region": awsRegion,
-                            "Details": {
-                                "Other": {"deliveryStreamName": firehoseName}
-                            },
+                            "Details": {"Other": {"deliveryStreamName": firehoseName}},
                         }
                     ],
                     "Compliance": {

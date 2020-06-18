@@ -24,7 +24,7 @@ elasticache = boto3.client("elasticache")
 
 
 @registry.register_check("elasticache")
-def redis_auth_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def redis_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     # loop through EC clusters
     response = elasticache.describe_cache_clusters(MaxRecords=100)
     myElasticacheClusters = response["CacheClusters"]
@@ -40,21 +40,13 @@ def redis_auth_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
             authTokenCheck = str(clusters["AuthTokenEnabled"])
             # ISO Time
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             if authTokenCheck == "False":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": clusterId + "/no-redis-auth-token",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": clusterId,
                     "AwsAccountId": awsAccountId,
                     "Types": [
@@ -89,10 +81,7 @@ def redis_auth_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
                             "Partition": "aws",
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {
-                                    "ClusterId": clusterId,
-                                    "EngineVersion": engineVersion,
-                                }
+                                "Other": {"ClusterId": clusterId, "EngineVersion": engineVersion,}
                             },
                         }
                     ],
@@ -126,13 +115,7 @@ def redis_auth_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": clusterId + "/no-redis-auth-token",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": clusterId,
                     "AwsAccountId": awsAccountId,
                     "Types": [
@@ -167,10 +150,7 @@ def redis_auth_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
                             "Partition": "aws",
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {
-                                    "ClusterId": clusterId,
-                                    "EngineVersion": engineVersion,
-                                }
+                                "Other": {"ClusterId": clusterId, "EngineVersion": engineVersion,}
                             },
                         }
                     ],
@@ -203,7 +183,9 @@ def redis_auth_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
 
 
 @registry.register_check("elasticache")
-def encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def encryption_at_rest_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     # loop through EC clusters
     response = elasticache.describe_cache_clusters(MaxRecords=100)
     myElasticacheClusters = response["CacheClusters"]
@@ -212,9 +194,7 @@ def encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str) -> 
         clusterEngine = str(clusters["Engine"])
         # ignore memcached clusters
         if clusterEngine != "redis":
-            print(
-                "Memcached cluster found, skipping as it does not support encryption"
-            )
+            print("Memcached cluster found, skipping as it does not support encryption")
             pass
         else:
             engineVersion = str(clusters["EngineVersion"])
@@ -222,21 +202,13 @@ def encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str) -> 
             atRestEncryptionCheck = str(clusters["AtRestEncryptionEnabled"])
             # ISO Time
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             if atRestEncryptionCheck == "False":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": clusterId + "/no-redis-auth-token",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": clusterId,
                     "AwsAccountId": awsAccountId,
                     "Types": [
@@ -271,10 +243,7 @@ def encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str) -> 
                             "Partition": "aws",
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {
-                                    "ClusterId": clusterId,
-                                    "EngineVersion": engineVersion,
-                                }
+                                "Other": {"ClusterId": clusterId, "EngineVersion": engineVersion,}
                             },
                         }
                     ],
@@ -297,13 +266,7 @@ def encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str) -> 
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": clusterId + "/no-redis-auth-token",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": clusterId,
                     "AwsAccountId": awsAccountId,
                     "Types": [
@@ -338,10 +301,7 @@ def encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str) -> 
                             "Partition": "aws",
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {
-                                    "ClusterId": clusterId,
-                                    "EngineVersion": engineVersion,
-                                }
+                                "Other": {"ClusterId": clusterId, "EngineVersion": engineVersion,}
                             },
                         }
                     ],
@@ -363,7 +323,9 @@ def encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str) -> 
 
 
 @registry.register_check("elasticache")
-def encryption_in_transit_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def encryption_in_transit_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     # loop through EC clusters
     response = elasticache.describe_cache_clusters(MaxRecords=100)
     myElasticacheClusters = response["CacheClusters"]
@@ -372,9 +334,7 @@ def encryption_in_transit_check(cache: dict, awsAccountId: str, awsRegion: str) 
         clusterEngine = str(clusters["Engine"])
         # ignore memcached clusters
         if clusterEngine != "redis":
-            print(
-                "Memcached cluster found, skipping as it does not support encryption"
-            )
+            print("Memcached cluster found, skipping as it does not support encryption")
             pass
         else:
             engineVersion = str(clusters["EngineVersion"])
@@ -382,21 +342,13 @@ def encryption_in_transit_check(cache: dict, awsAccountId: str, awsRegion: str) 
             inTransitEncryptionCheck = str(clusters["TransitEncryptionEnabled"])
             # ISO Time
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             if inTransitEncryptionCheck == "False":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": clusterId + "/no-redis-auth-token",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": clusterId,
                     "AwsAccountId": awsAccountId,
                     "Types": [
@@ -431,10 +383,7 @@ def encryption_in_transit_check(cache: dict, awsAccountId: str, awsRegion: str) 
                             "Partition": "aws",
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {
-                                    "ClusterId": clusterId,
-                                    "EngineVersion": engineVersion,
-                                }
+                                "Other": {"ClusterId": clusterId, "EngineVersion": engineVersion,}
                             },
                         }
                     ],
@@ -462,13 +411,7 @@ def encryption_in_transit_check(cache: dict, awsAccountId: str, awsRegion: str) 
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": clusterId + "/no-redis-auth-token",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": clusterId,
                     "AwsAccountId": awsAccountId,
                     "Types": [
@@ -503,10 +446,7 @@ def encryption_in_transit_check(cache: dict, awsAccountId: str, awsRegion: str) 
                             "Partition": "aws",
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {
-                                    "ClusterId": clusterId,
-                                    "EngineVersion": engineVersion,
-                                }
+                                "Other": {"ClusterId": clusterId, "EngineVersion": engineVersion,}
                             },
                         }
                     ],

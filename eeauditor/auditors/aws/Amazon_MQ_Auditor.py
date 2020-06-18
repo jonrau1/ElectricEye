@@ -33,7 +33,9 @@ def list_brokers(cache):
 
 
 @registry.register_check("amzmq")
-def broker_kms_cmk_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def broker_kms_cmk_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_brokers(cache)
     myBrokers = response["BrokerSummaries"]
     for broker in myBrokers:
@@ -44,26 +46,16 @@ def broker_kms_cmk_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict
             brokerId = str(response["BrokerId"])
             kmsCmkCheck = str(response["EncryptionOptions"]["UseAwsOwnedKey"])
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             if kmsCmkCheck == "True":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": brokerArn + "/amazonmq-broker-kms-cmk-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": brokerArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -87,10 +79,7 @@ def broker_kms_cmk_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict
                             "Partition": "aws",
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {
-                                    "brokerName": brokerName,
-                                    "brokerId": brokerId,
-                                }
+                                "Other": {"brokerName": brokerName, "brokerId": brokerId,}
                             },
                         }
                     ],
@@ -114,18 +103,10 @@ def broker_kms_cmk_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": brokerArn + "/amazonmq-broker-kms-cmk-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": brokerArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -177,7 +158,9 @@ def broker_kms_cmk_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict
 
 
 @registry.register_check("amzmq")
-def broker_audit_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def broker_audit_logging_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_brokers(cache)
     myBrokers = response["BrokerSummaries"]
     for broker in myBrokers:
@@ -188,26 +171,16 @@ def broker_audit_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -
             brokerId = str(response["BrokerId"])
             auditLogCheck = str(response["Logs"]["Audit"])
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             if auditLogCheck == "False":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": brokerArn + "/amazonmq-broker-audit-logging-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": brokerArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -231,10 +204,7 @@ def broker_audit_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -
                             "Partition": "aws",
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {
-                                    "brokerName": brokerName,
-                                    "brokerId": brokerId,
-                                }
+                                "Other": {"brokerName": brokerName, "brokerId": brokerId,}
                             },
                         }
                     ],
@@ -261,27 +231,17 @@ def broker_audit_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": brokerArn + "/amazonmq-broker-audit-logging-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": brokerArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
                     "Title": "[AmazonMQ.2] AmazonMQ message brokers should have audit logging enabled",
-                    "Description": "AmazonMQ broker "
-                    + brokerName
-                    + " has audit logging enabled.",
+                    "Description": "AmazonMQ broker " + brokerName + " has audit logging enabled.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For more information on message broker logging refer to the Understanding the Structure of Logging in CloudWatch Logs section of the Amazon MQ Developer Guide",
@@ -296,10 +256,7 @@ def broker_audit_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -
                             "Partition": "aws",
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {
-                                    "brokerName": brokerName,
-                                    "brokerId": brokerId,
-                                }
+                                "Other": {"brokerName": brokerName, "brokerId": brokerId,}
                             },
                         }
                     ],
@@ -327,7 +284,9 @@ def broker_audit_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -
 
 
 @registry.register_check("amzmq")
-def broker_general_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def broker_general_logging_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_brokers(cache)
     myBrokers = response["BrokerSummaries"]
     for broker in myBrokers:
@@ -338,26 +297,16 @@ def broker_general_logging_check(cache: dict, awsAccountId: str, awsRegion: str)
             brokerId = str(response["BrokerId"])
             genLogCheck = str(response["Logs"]["General"])
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             if genLogCheck == "False":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": brokerArn + "/amazonmq-broker-general-logging-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": brokerArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -381,10 +330,7 @@ def broker_general_logging_check(cache: dict, awsAccountId: str, awsRegion: str)
                             "Partition": "aws",
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {
-                                    "brokerName": brokerName,
-                                    "brokerId": brokerId,
-                                }
+                                "Other": {"brokerName": brokerName, "brokerId": brokerId,}
                             },
                         }
                     ],
@@ -411,18 +357,10 @@ def broker_general_logging_check(cache: dict, awsAccountId: str, awsRegion: str)
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": brokerArn + "/amazonmq-broker-general-logging-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": brokerArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -446,10 +384,7 @@ def broker_general_logging_check(cache: dict, awsAccountId: str, awsRegion: str)
                             "Partition": "aws",
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {
-                                    "brokerName": brokerName,
-                                    "brokerId": brokerId,
-                                }
+                                "Other": {"brokerName": brokerName, "brokerId": brokerId,}
                             },
                         }
                     ],
@@ -477,7 +412,9 @@ def broker_general_logging_check(cache: dict, awsAccountId: str, awsRegion: str)
 
 
 @registry.register_check("amzmq")
-def broker_public_access_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def broker_public_access_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_brokers(cache)
     myBrokers = response["BrokerSummaries"]
     for broker in myBrokers:
@@ -488,21 +425,13 @@ def broker_public_access_check(cache: dict, awsAccountId: str, awsRegion: str) -
             brokerId = str(response["BrokerId"])
             publicAccessCheck = str(response["PubliclyAccessible"])
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             if publicAccessCheck == "True":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": brokerArn + "/amazonmq-public-accessible-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": brokerArn,
                     "AwsAccountId": awsAccountId,
                     "Types": [
@@ -532,10 +461,7 @@ def broker_public_access_check(cache: dict, awsAccountId: str, awsRegion: str) -
                             "Partition": "aws",
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {
-                                    "brokerName": brokerName,
-                                    "brokerId": brokerId,
-                                }
+                                "Other": {"brokerName": brokerName, "brokerId": brokerId,}
                             },
                         }
                     ],
@@ -564,13 +490,7 @@ def broker_public_access_check(cache: dict, awsAccountId: str, awsRegion: str) -
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": brokerArn + "/amazonmq-public-accessible-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": brokerArn,
                     "AwsAccountId": awsAccountId,
                     "Types": [
@@ -600,10 +520,7 @@ def broker_public_access_check(cache: dict, awsAccountId: str, awsRegion: str) -
                             "Partition": "aws",
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {
-                                    "brokerName": brokerName,
-                                    "brokerId": brokerId,
-                                }
+                                "Other": {"brokerName": brokerName, "brokerId": brokerId,}
                             },
                         }
                     ],
@@ -633,7 +550,9 @@ def broker_public_access_check(cache: dict, awsAccountId: str, awsRegion: str) -
 
 
 @registry.register_check("amzmq")
-def broker_minor_version_auto_upgrade_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def broker_minor_version_auto_upgrade_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_brokers(cache)
     myBrokers = response["BrokerSummaries"]
     for broker in myBrokers:
@@ -642,29 +561,18 @@ def broker_minor_version_auto_upgrade_check(cache: dict, awsAccountId: str, awsR
             response = amzmq.describe_broker(BrokerId=brokerName)
             brokerArn = str(response["BrokerArn"])
             brokerId = str(response["BrokerId"])
-            autoUpgrMinorVersionCheck = str(
-                response["AutoMinorVersionUpgrade"])
+            autoUpgrMinorVersionCheck = str(response["AutoMinorVersionUpgrade"])
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             if autoUpgrMinorVersionCheck == "False":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": brokerArn + "/amazonmq-auto-minor-version-upgrade-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": brokerArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -688,10 +596,7 @@ def broker_minor_version_auto_upgrade_check(cache: dict, awsAccountId: str, awsR
                             "Partition": "aws",
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {
-                                    "brokerName": brokerName,
-                                    "brokerId": brokerId,
-                                }
+                                "Other": {"brokerName": brokerName, "brokerId": brokerId,}
                             },
                         }
                     ],
@@ -718,18 +623,10 @@ def broker_minor_version_auto_upgrade_check(cache: dict, awsAccountId: str, awsR
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": brokerArn + "/amazonmq-auto-minor-version-upgrade-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": brokerArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -753,10 +650,7 @@ def broker_minor_version_auto_upgrade_check(cache: dict, awsAccountId: str, awsR
                             "Partition": "aws",
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {
-                                    "brokerName": brokerName,
-                                    "brokerId": brokerId,
-                                }
+                                "Other": {"brokerName": brokerName, "brokerId": brokerId,}
                             },
                         }
                     ],

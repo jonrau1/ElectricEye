@@ -33,36 +33,24 @@ def list_clusters(cache):
 
 
 @registry.register_check("kafka")
-def inter_cluster_encryption_in_transit_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def inter_cluster_encryption_in_transit_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_clusters(cache)
     myMskClusters = response["ClusterInfoList"]
     for clusters in myMskClusters:
         clusterArn = str(clusters["ClusterArn"])
         clusterName = str(clusters["ClusterName"])
-        interClusterEITCheck = str(
-            clusters["EncryptionInfo"]["EncryptionInTransit"]["InCluster"]
-        )
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        interClusterEITCheck = str(clusters["EncryptionInfo"]["EncryptionInTransit"]["InCluster"])
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if interClusterEITCheck != "True":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": clusterArn + "/intercluster-encryption-in-transit",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": clusterArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -112,18 +100,10 @@ def inter_cluster_encryption_in_transit_check(cache: dict, awsAccountId: str, aw
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": clusterArn + "/intercluster-encryption-in-transit",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": clusterArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -172,7 +152,9 @@ def inter_cluster_encryption_in_transit_check(cache: dict, awsAccountId: str, aw
 
 
 @registry.register_check("kafka")
-def client_broker_encryption_in_transit_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def client_broker_encryption_in_transit_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_clusters(cache)
     myMskClusters = response["ClusterInfoList"]
     for clusters in myMskClusters:
@@ -181,27 +163,15 @@ def client_broker_encryption_in_transit_check(cache: dict, awsAccountId: str, aw
         clientBrokerTlsCheck = str(
             clusters["EncryptionInfo"]["EncryptionInTransit"]["ClientBroker"]
         )
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if clientBrokerTlsCheck != "TLS":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": clusterArn + "/client-broker-tls",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": clusterArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -251,18 +221,10 @@ def client_broker_encryption_in_transit_check(cache: dict, awsAccountId: str, aw
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": clusterArn + "/client-broker-tls",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": clusterArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -311,38 +273,26 @@ def client_broker_encryption_in_transit_check(cache: dict, awsAccountId: str, aw
 
 
 @registry.register_check("kafka")
-def client_authentication_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def client_authentication_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_clusters(cache)
     myMskClusters = response["ClusterInfoList"]
     for clusters in myMskClusters:
         clusterArn = str(clusters["ClusterArn"])
         clusterName = str(clusters["ClusterName"])
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
             clientAuthCheck = str(
-                clusters["ClientAuthentication"]["Tls"][
-                    "CertificateAuthorityArnList"
-                ]
+                clusters["ClientAuthentication"]["Tls"]["CertificateAuthorityArnList"]
             )
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": clusterArn + "/tls-client-auth",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": clusterArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -392,18 +342,10 @@ def client_authentication_check(cache: dict, awsAccountId: str, awsRegion: str) 
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": clusterArn + "/tls-client-auth",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": clusterArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -452,34 +394,24 @@ def client_authentication_check(cache: dict, awsAccountId: str, awsRegion: str) 
 
 
 @registry.register_check("kafka")
-def cluster_enhanced_monitoring_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def cluster_enhanced_monitoring_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     response = list_clusters(cache)
     myMskClusters = response["ClusterInfoList"]
     for clusters in myMskClusters:
         clusterArn = str(clusters["ClusterArn"])
         clusterName = str(clusters["ClusterName"])
         enhancedMonitoringCheck = str(clusters["EnhancedMonitoring"])
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if enhancedMonitoringCheck == "DEFAULT":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": clusterArn + "/detailed-monitoring",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": clusterArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -528,27 +460,17 @@ def cluster_enhanced_monitoring_check(cache: dict, awsAccountId: str, awsRegion:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": clusterArn + "/detailed-monitoring",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": clusterArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[MSK.4] Managed Kafka Stream clusters should use enhanced monitoring",
-                "Description": "MSK cluster "
-                + clusterName
-                + " uses enhanced monitoring.",
+                "Description": "MSK cluster " + clusterName + " uses enhanced monitoring.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your cluster should use enhanced monitoring refer to the Monitoring an Amazon MSK Cluster section of the Amazon Managed Streaming for Apache Kakfa Developer Guide",

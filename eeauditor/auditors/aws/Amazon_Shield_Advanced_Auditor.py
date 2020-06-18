@@ -27,10 +27,13 @@ elbv2 = boto3.client("elbv2")
 ec2 = boto3.client("ec2")
 cloudfront = boto3.client("cloudfront")
 
-#put conditional in each individual function
+# put conditional in each individual function
+
 
 @registry.register_check("shield")
-def shield_advanced_route_53_protection_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def shield_advanced_route_53_protection_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     if awsRegion != "us-east-1":
         print("Shield Advanced APIs are only available in North Virginia")
     else:
@@ -40,9 +43,7 @@ def shield_advanced_route_53_protection_check(cache: dict, awsAccountId: str, aw
             hostedZoneId = rawHzId.replace("/hostedzone/", "")
             hostedZoneArn = "arn:aws:route53:::hostedzone/" + hostedZoneId
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             try:
                 # this is a passing check
@@ -50,18 +51,10 @@ def shield_advanced_route_53_protection_check(cache: dict, awsAccountId: str, aw
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": hostedZoneArn + "/route53-shield-adv-protection-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": hostedZoneArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -115,8 +108,7 @@ def shield_advanced_route_53_protection_check(cache: dict, awsAccountId: str, aw
                 ):
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": hostedZoneArn
-                        + "/route53-shield-adv-protection-check",
+                        "Id": hostedZoneArn + "/route53-shield-adv-protection-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -126,9 +118,7 @@ def shield_advanced_route_53_protection_check(cache: dict, awsAccountId: str, aw
                         + "/default",
                         "GeneratorId": hostedZoneArn,
                         "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices"
-                        ],
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
                         "CreatedAt": iso8601Time,
                         "UpdatedAt": iso8601Time,
@@ -151,9 +141,7 @@ def shield_advanced_route_53_protection_check(cache: dict, awsAccountId: str, aw
                                 "Id": hostedZoneArn,
                                 "Partition": "aws",
                                 "Region": awsRegion,
-                                "Details": {
-                                    "Other": {"hostedZoneId": hostedZoneId}
-                                },
+                                "Details": {"Other": {"hostedZoneId": hostedZoneId}},
                             }
                         ],
                         "Compliance": {
@@ -180,8 +168,11 @@ def shield_advanced_route_53_protection_check(cache: dict, awsAccountId: str, aw
                 else:
                     print(e)
 
+
 @registry.register_check("shield")
-def shield_advanced_elb_protection_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def shield_advanced_elb_protection_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     if awsRegion != "us-east-1":
         print("Shield Advanced APIs are only available in North Virginia")
     else:
@@ -197,9 +188,7 @@ def shield_advanced_elb_protection_check(cache: dict, awsAccountId: str, awsRegi
                 + clbName
             )
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             try:
                 # this is a passing check
@@ -207,18 +196,10 @@ def shield_advanced_elb_protection_check(cache: dict, awsAccountId: str, awsRegi
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": clbArn + "/classiclb-shield-adv-protection-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": clbArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -282,9 +263,7 @@ def shield_advanced_elb_protection_check(cache: dict, awsAccountId: str, awsRegi
                         + "/default",
                         "GeneratorId": clbArn,
                         "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices"
-                        ],
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
                         "CreatedAt": iso8601Time,
                         "UpdatedAt": iso8601Time,
@@ -334,8 +313,11 @@ def shield_advanced_elb_protection_check(cache: dict, awsAccountId: str, awsRegi
                 else:
                     print(e)
 
+
 @registry.register_check("shield")
-def shield_advanced_elb_v2_protection_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def shield_advanced_elb_v2_protection_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     if awsRegion != "us-east-1":
         print("Shield Advanced APIs are only available in North Virginia")
     else:
@@ -349,9 +331,7 @@ def shield_advanced_elb_v2_protection_check(cache: dict, awsAccountId: str, awsR
             elbv2VpcId = str(loadbalancer["VpcId"])
             elbv2IpAddressType = str(loadbalancer["IpAddressType"])
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             try:
                 # this is a passing check
@@ -359,18 +339,10 @@ def shield_advanced_elb_v2_protection_check(cache: dict, awsAccountId: str, awsR
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": elbv2Arn + "/elbv2-shield-adv-protection-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": elbv2Arn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -444,9 +416,7 @@ def shield_advanced_elb_v2_protection_check(cache: dict, awsAccountId: str, awsR
                         + "/default",
                         "GeneratorId": elbv2Arn,
                         "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices"
-                        ],
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
                         "CreatedAt": iso8601Time,
                         "UpdatedAt": iso8601Time,
@@ -506,47 +476,34 @@ def shield_advanced_elb_v2_protection_check(cache: dict, awsAccountId: str, awsR
                 else:
                     print(e)
 
+
 @registry.register_check("shield")
-def shield_advanced_eip_protection_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def shield_advanced_eip_protection_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     if awsRegion != "us-east-1":
-            print("Shield Advanced APIs are only available in North Virginia")
-    else:       
+        print("Shield Advanced APIs are only available in North Virginia")
+    else:
         response = ec2.describe_addresses()
         for elasticip in response["Addresses"]:
             # arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:eip/${EIP1.AllocationId}
             allocationId = str(elasticip["AllocationId"])
             eipAllocationArn = (
-                "arn:aws:ec2:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":eip-allocation/"
-                + allocationId
+                "arn:aws:ec2:" + awsRegion + ":" + awsAccountId + ":eip-allocation/" + allocationId
             )
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             try:
                 # this is a passing check
                 response = shield.describe_protection(ResourceArn=eipAllocationArn)
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": eipAllocationArn
-                    + "/elasticip-shield-adv-protection-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "Id": eipAllocationArn + "/elasticip-shield-adv-protection-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": eipAllocationArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -600,8 +557,7 @@ def shield_advanced_eip_protection_check(cache: dict, awsAccountId: str, awsRegi
                 ):
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": eipAllocationArn
-                        + "/elasticip-shield-adv-protection-check",
+                        "Id": eipAllocationArn + "/elasticip-shield-adv-protection-check",
                         "ProductArn": "arn:aws:securityhub:"
                         + awsRegion
                         + ":"
@@ -611,9 +567,7 @@ def shield_advanced_eip_protection_check(cache: dict, awsAccountId: str, awsRegi
                         + "/default",
                         "GeneratorId": eipAllocationArn,
                         "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices"
-                        ],
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
                         "CreatedAt": iso8601Time,
                         "UpdatedAt": iso8601Time,
@@ -636,9 +590,7 @@ def shield_advanced_eip_protection_check(cache: dict, awsAccountId: str, awsRegi
                                 "Id": eipAllocationArn,
                                 "Partition": "aws",
                                 "Region": awsRegion,
-                                "Details": {
-                                    "Other": {"AllocationId": allocationId}
-                                },
+                                "Details": {"Other": {"AllocationId": allocationId}},
                             }
                         ],
                         "Compliance": {
@@ -665,8 +617,11 @@ def shield_advanced_eip_protection_check(cache: dict, awsAccountId: str, awsRegi
                 else:
                     print(e)
 
+
 @registry.register_check("shield")
-def shield_advanced_cloudfront_protection_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def shield_advanced_cloudfront_protection_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     if awsRegion != "us-east-1":
         print("Shield Advanced APIs are only available in North Virginia")
     else:
@@ -677,9 +632,7 @@ def shield_advanced_cloudfront_protection_check(cache: dict, awsAccountId: str, 
             distroArn = str(distro["ARN"])
             distroDomainName = str(distro["DomainName"])
             iso8601Time = (
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
-                .isoformat()
+                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
             try:
                 # this is a passing check
@@ -687,18 +640,10 @@ def shield_advanced_cloudfront_protection_check(cache: dict, awsAccountId: str, 
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": distroArn + "/cloudfront-shield-adv-protection-check",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": distroArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -722,9 +667,7 @@ def shield_advanced_cloudfront_protection_check(cache: dict, awsAccountId: str, 
                             "Partition": "aws",
                             "Region": awsRegion,
                             "Details": {
-                                "AwsCloudFrontDistribution": {
-                                    "DomainName": distroDomainName
-                                }
+                                "AwsCloudFrontDistribution": {"DomainName": distroDomainName}
                             },
                         }
                     ],
@@ -766,9 +709,7 @@ def shield_advanced_cloudfront_protection_check(cache: dict, awsAccountId: str, 
                         + "/default",
                         "GeneratorId": distroArn,
                         "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices"
-                        ],
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
                         "CreatedAt": iso8601Time,
                         "UpdatedAt": iso8601Time,
@@ -792,9 +733,7 @@ def shield_advanced_cloudfront_protection_check(cache: dict, awsAccountId: str, 
                                 "Partition": "aws",
                                 "Region": awsRegion,
                                 "Details": {
-                                    "AwsCloudFrontDistribution": {
-                                        "DomainName": distroDomainName
-                                    }
+                                    "AwsCloudFrontDistribution": {"DomainName": distroDomainName}
                                 },
                             }
                         ],
@@ -822,35 +761,26 @@ def shield_advanced_cloudfront_protection_check(cache: dict, awsAccountId: str, 
                 else:
                     print(e)
 
+
 @registry.register_check("shield")
-def shield_advanced_drt_access_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def shield_advanced_drt_access_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     if awsRegion != "us-east-1":
         print("Shield Advanced APIs are only available in North Virginia")
     else:
         response = shield.describe_drt_access()
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
             # this is a passing check
             drtRole = str(response["RoleArn"])
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": awsAccountId + "/shield-adv-drt-iam-access-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": awsAccountId,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -906,18 +836,10 @@ def shield_advanced_drt_access_check(cache: dict, awsAccountId: str, awsRegion: 
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": awsAccountId + "/shield-adv-drt-iam-access-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": awsAccountId,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -969,35 +891,26 @@ def shield_advanced_drt_access_check(cache: dict, awsAccountId: str, awsRegion: 
             }
             yield finding
 
+
 @registry.register_check("shield")
-def shield_advanced_drt_s3_bucket_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def shield_advanced_drt_s3_bucket_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     if awsRegion != "us-east-1":
         print("Shield Advanced APIs are only available in North Virginia")
     else:
         response = shield.describe_drt_access()
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
             logBucketList = str(response["LogBucketList"])
             print(logBucketList)
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": awsAccountId + "/shield-adv-drt-s3bucket-access-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": awsAccountId,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -1051,18 +964,10 @@ def shield_advanced_drt_s3_bucket_check(cache: dict, awsAccountId: str, awsRegio
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": awsAccountId + "/shield-adv-drt-s3bucket-access-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": awsAccountId,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -1114,34 +1019,25 @@ def shield_advanced_drt_s3_bucket_check(cache: dict, awsAccountId: str, awsRegio
             }
             yield finding
 
+
 @registry.register_check("shield")
-def shield_advanced_subscription_autorenew_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def shield_advanced_subscription_autorenew_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     if awsRegion != "us-east-1":
         print("Shield Advanced APIs are only available in North Virginia")
     else:
         response = shield.describe_subscription()
         renewCheck = str(response["Subscription"]["AutoRenew"])
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if renewCheck != "ENABLED":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": awsAccountId + "/shield-adv-subscription-auto-renew-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": awsAccountId,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -1187,18 +1083,10 @@ def shield_advanced_subscription_autorenew_check(cache: dict, awsAccountId: str,
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": awsAccountId + "/shield-adv-subscription-auto-renew-check",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": awsAccountId,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
