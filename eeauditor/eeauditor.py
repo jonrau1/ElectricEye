@@ -12,14 +12,15 @@
 
 # You should have received a copy of the GNU General Public License along with ElectricEye.
 # If not, see https://github.com/jonrau1/ElectricEye/blob/master/LICENSE.
-
 from functools import partial
 import json
 import os
-import report
+
 import boto3
-from pluginbase import PluginBase
+
 from check_register import CheckRegister
+from pluginbase import PluginBase
+import report
 
 here = os.path.abspath(os.path.dirname(__file__))
 get_path = partial(os.path.join, here)
