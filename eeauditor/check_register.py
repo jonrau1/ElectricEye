@@ -25,3 +25,11 @@ class CheckRegister(object):
             return func_wrapper
 
         return decorator_register
+
+
+def accumulate_paged_results(page_iterator, key):
+    results = {key: []}
+    for page in page_iterator:
+        page_vals = page[key]
+        results[key].extend(iter(page_vals))
+    return results
