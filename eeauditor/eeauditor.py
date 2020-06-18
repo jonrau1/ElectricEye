@@ -18,13 +18,14 @@ import os
 
 import boto3
 
-from check_register import CheckRegister
+from check_register import CheckRegister, accumulate_paged_results
 from pluginbase import PluginBase
 import report
 
 here = os.path.abspath(os.path.dirname(__file__))
 get_path = partial(os.path.join, here)
 ssm = boto3.client("ssm")
+sts = boto3.client("sts")
 
 
 class EEAuditor(object):
@@ -42,9 +43,11 @@ class EEAuditor(object):
         # to be discovered during plugin loading.
         self.registry = CheckRegister()
         # vendor specific credentials dictionary
-        sts = boto3.client("sts")
         self.awsAccountId = sts.get_caller_identity()["Account"]
         self.awsRegion = os.environ.get("AWS_REGION", sts.meta.region_name)
+        self.awsPartition = "aws"
+        if self.awsRegion in ["us-gov-east-1", "us-gov-west-1"]:
+            self.awsPartition = "aws-us-gov"
         # If there is a desire to add support for multiple clouds, this would be
         # a great place to implement it.
         self.source = self.plugin_base.make_plugin_source(
@@ -56,47 +59,30 @@ class EEAuditor(object):
             try:
                 plugin = self.source.load_plugin(plugin_name)
             except Exception as e:
-                print(
-                    f"Failed to load plugin {plugin_name} with exception {e}")
+                print(f"Failed to load plugin {plugin_name} with exception {e}")
         else:
             for plugin_name in self.source.list_plugins():
                 try:
                     plugin = self.source.load_plugin(plugin_name)
                 except Exception as e:
-                    print(
-                        f"Failed to load plugin {plugin_name} with exception {e}")
+                    print(f"Failed to load plugin {plugin_name} with exception {e}")
 
     def get_regions(self, service):
-        results = ssm.get_parameters_by_path(
-            Path="/aws/service/global-infrastructure/services/" + service + "/regions",
+        paginator = ssm.get_paginator("get_parameters_by_path")
+        response_iterator = paginator.paginate(
+            Path=f"/aws/service/global-infrastructure/services/{service}/regions"
         )
-        parameters = results["Parameters"]
-        while True:
-            try:
-                results = ssm.get_parameters_by_path(
-                    Path="/aws/service/global-infrastructure/services/" + service + "/regions",
-                    NextToken=results["NextToken"]
-                )
-                parameters += results["Parameters"]
-            except:
-                break
-        values = []
-        for parameter in parameters:
-            values.append(parameter["Value"])
-        return values
+        values = accumulate_paged_results(page_iterator=response_iterator, key="Parameters")
+        return values["Parameters"]
 
     def run_checks(self, requested_check_name=None):
-        self.awsPartition = 'aws'
-        for cache_name, cache in self.registry.checks.items():
-            if self.awsRegion not in self.get_regions(cache_name):
-                print(
-                    f"AWS region {self.awsRegion} not supported for {cache_name}")
+        for service_name, check_list in self.registry.checks.items():
+            if self.awsRegion not in self.get_regions(service_name):
+                print(f"AWS region {self.awsRegion} not supported for {service_name}")
                 break
-            if self.awsRegion in ['us-gov-east-1', 'us-gov-west-1']:
-                self.awsPartition = 'aws-us-gov'
-            # a dictionary to be used by checks that share a common cache
+            # a dictionary to be used by checks that are part of the same service
             auditor_cache = {}
-            for check_name, check in cache.items():
+            for check_name, check in check_list.items():
                 # if a specific check is requested, only run that one check
                 if (
                     not requested_check_name
@@ -113,8 +99,7 @@ class EEAuditor(object):
                         ):
                             yield finding
                     except Exception as e:
-                        print(
-                            f"Failed to execute check {check_name} with exception {e}")
+                        print(f"Failed to execute check {check_name} with exception {e}")
 
     def run(self, sechub=True, output=False, check_name=None):
         # TODO: currently streaming all findings to a statically defined file on the file
@@ -147,6 +132,5 @@ class EEAuditor(object):
         else:
             print("Not writing results to SecurityHub")
         if output:
-            report.csv_output(input_file=json_out_location,
-                              output_file=output_file)
+            report.csv_output(input_file=json_out_location, output_file=output_file)
         return json_out_location

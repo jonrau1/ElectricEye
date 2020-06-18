@@ -4,7 +4,7 @@ from functools import wraps
 class CheckRegister(object):
     checks = {}
 
-    def register_check(self, cache_name="GLOBAL"):
+    def register_check(self, service_name):
         """Decorator registers event handlers
 
         Args:
@@ -13,10 +13,10 @@ class CheckRegister(object):
         """
 
         def decorator_register(func):
-            if cache_name not in self.checks:
-                self.checks[cache_name] = {func.__name__: func}
+            if service_name not in self.checks:
+                self.checks[service_name] = {func.__name__: func}
             else:
-                self.checks[cache_name].update({func.__name__: func})
+                self.checks[service_name].update({func.__name__: func})
 
             @wraps(func)
             def func_wrapper(*args, **kwargs):
