@@ -301,13 +301,7 @@ class PlaintextENVvarCheck(Auditor):
                         finding = {
                             "SchemaVersion": "2018-10-08",
                             "Id": buildProjectArn + "/plaintext-env-vars",
-                            "ProductArn": "arn:aws:securityhub:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":product/"
-                            + awsAccountId
-                            + "/default",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": buildProjectArn,
                             "AwsAccountId": awsAccountId,
                             "Types": [
@@ -377,13 +371,7 @@ class PlaintextENVvarCheck(Auditor):
                         finding = {
                             "SchemaVersion": "2018-10-08",
                             "Id": buildProjectArn + "/plaintext-env-vars",
-                            "ProductArn": "arn:aws:securityhub:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":product/"
-                            + awsAccountId
-                            + "/default",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": buildProjectArn,
                             "AwsAccountId": awsAccountId,
                             "Types": [

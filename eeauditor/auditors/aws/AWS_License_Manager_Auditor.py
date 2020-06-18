@@ -51,13 +51,7 @@ def license_manager_hard_count_check(
                         finding = {
                             "SchemaVersion": "2018-10-08",
                             "Id": liscConfigArn + "/license-manager-enforce-hard-limit-check",
-                            "ProductArn": "arn:aws:securityhub:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":product/"
-                            + awsAccountId
-                            + "/default",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": liscConfigArn,
                             "AwsAccountId": awsAccountId,
                             "Types": [
@@ -114,13 +108,7 @@ def license_manager_hard_count_check(
                         finding = {
                             "SchemaVersion": "2018-10-08",
                             "Id": liscConfigArn + "/license-manager-enforce-hard-limit-check",
-                            "ProductArn": "arn:aws:securityhub:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":product/"
-                            + awsAccountId
-                            + "/default",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": liscConfigArn,
                             "AwsAccountId": awsAccountId,
                             "Types": [

@@ -220,13 +220,7 @@ def emr_security_config_encryption_in_transit_check(
                         finding = {
                             "SchemaVersion": "2018-10-08",
                             "Id": clusterArn + "/emr-encryption-in-transit-check",
-                            "ProductArn": "arn:aws:securityhub:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":product/"
-                            + awsAccountId
-                            + "/default",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": clusterArn,
                             "AwsAccountId": awsAccountId,
                             "Types": [
@@ -287,13 +281,7 @@ def emr_security_config_encryption_in_transit_check(
                         finding = {
                             "SchemaVersion": "2018-10-08",
                             "Id": clusterArn + "/emr-encryption-in-transit-check",
-                            "ProductArn": "arn:aws:securityhub:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":product/"
-                            + awsAccountId
-                            + "/default",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": clusterArn,
                             "AwsAccountId": awsAccountId,
                             "Types": [
@@ -390,13 +378,7 @@ def emr_security_config_encryption_at_rest_check(
                         finding = {
                             "SchemaVersion": "2018-10-08",
                             "Id": clusterArn + "/emr-encryption-at-rest-emrfs-check",
-                            "ProductArn": "arn:aws:securityhub:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":product/"
-                            + awsAccountId
-                            + "/default",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": clusterArn,
                             "AwsAccountId": awsAccountId,
                             "Types": [
@@ -452,13 +434,7 @@ def emr_security_config_encryption_at_rest_check(
                         finding = {
                             "SchemaVersion": "2018-10-08",
                             "Id": clusterArn + "/emr-encryption-at-rest-emrfs-check",
-                            "ProductArn": "arn:aws:securityhub:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":product/"
-                            + awsAccountId
-                            + "/default",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": clusterArn,
                             "AwsAccountId": awsAccountId,
                             "Types": [
@@ -552,13 +528,7 @@ def emr_security_config_config_ebs_encryption_check(
                         finding = {
                             "SchemaVersion": "2018-10-08",
                             "Id": clusterArn + "/emr-encryption-at-rest-ebs-check",
-                            "ProductArn": "arn:aws:securityhub:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":product/"
-                            + awsAccountId
-                            + "/default",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": clusterArn,
                             "AwsAccountId": awsAccountId,
                             "Types": [
@@ -614,13 +584,7 @@ def emr_security_config_config_ebs_encryption_check(
                         finding = {
                             "SchemaVersion": "2018-10-08",
                             "Id": clusterArn + "/emr-encryption-at-rest-ebs-check",
-                            "ProductArn": "arn:aws:securityhub:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":product/"
-                            + awsAccountId
-                            + "/default",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": clusterArn,
                             "AwsAccountId": awsAccountId,
                             "Types": [
@@ -678,13 +642,7 @@ def emr_security_config_config_ebs_encryption_check(
                         finding = {
                             "SchemaVersion": "2018-10-08",
                             "Id": clusterArn + "/emr-encryption-at-rest-ebs-check",
-                            "ProductArn": "arn:aws:securityhub:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":product/"
-                            + awsAccountId
-                            + "/default",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": clusterArn,
                             "AwsAccountId": awsAccountId,
                             "Types": [
@@ -840,13 +798,7 @@ def emr_security_config_kerberos_check(
                         finding = {
                             "SchemaVersion": "2018-10-08",
                             "Id": clusterArn + "/emr-kerberos-authn-check",
-                            "ProductArn": "arn:aws:securityhub:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":product/"
-                            + awsAccountId
-                            + "/default",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": clusterArn,
                             "AwsAccountId": awsAccountId,
                             "Types": [

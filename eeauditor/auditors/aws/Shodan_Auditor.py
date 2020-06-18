@@ -54,13 +54,7 @@ def public_ec2_shodan_check(
                         finding = {
                             "SchemaVersion": "2018-10-08",
                             "Id": ec2Arn + "/" + ec2PublicIp + "/ec2-shodan-index-check",
-                            "ProductArn": "arn:aws:securityhub:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":product/"
-                            + awsAccountId
-                            + "/default",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": ec2Arn,
                             "AwsAccountId": awsAccountId,
                             "Types": ["Effects/Data Exposure"],
@@ -117,13 +111,7 @@ def public_ec2_shodan_check(
                         finding = {
                             "SchemaVersion": "2018-10-08",
                             "Id": ec2Arn + "/" + ec2PublicIp + "/ec2-shodan-index-check",
-                            "ProductArn": "arn:aws:securityhub:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":product/"
-                            + awsAccountId
-                            + "/default",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": ec2Arn,
                             "AwsAccountId": awsAccountId,
                             "Types": ["Effects/Data Exposure"],

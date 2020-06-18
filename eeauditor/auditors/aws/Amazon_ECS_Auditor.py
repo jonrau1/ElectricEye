@@ -55,13 +55,7 @@ def ecs_cluster_container_insights_check(
                         finding = {
                             "SchemaVersion": "2018-10-08",
                             "Id": ecsClusterArn + "/ecs-cluster-container-insights-check",
-                            "ProductArn": "arn:aws:securityhub:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":product/"
-                            + awsAccountId
-                            + "/default",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": ecsClusterArn,
                             "AwsAccountId": awsAccountId,
                             "Types": [
@@ -115,13 +109,7 @@ def ecs_cluster_container_insights_check(
                         finding = {
                             "SchemaVersion": "2018-10-08",
                             "Id": ecsClusterArn + "/ecs-cluster-container-insights-check",
-                            "ProductArn": "arn:aws:securityhub:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":product/"
-                            + awsAccountId
-                            + "/default",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": ecsClusterArn,
                             "AwsAccountId": awsAccountId,
                             "Types": [

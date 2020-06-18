@@ -43,14 +43,7 @@ def api_gateway_stage_metrics_enabled_check(
         for apistages in response["item"]:
             apiStageName = str(apistages["stageName"])
             apiStageDeploymentId = str(apistages["deploymentId"])
-            apiStageArn = (
-                "arn:aws:apigateway:"
-                + awsRegion
-                + "::/restapis/"
-                + apiGwApiId
-                + "/stages/"
-                + apiStageName
-            )
+            apiStageArn = f"arn:{awsPartition}:apigateway:{awsRegion}::/restapis/{apiGwApiId}/stages/{apiStageName}"
             # is is possible methodSettings is empty indicating metrics are not enabled
             try:
                 metricsCheck = str(apistages["methodSettings"]["*/*"]["metricsEnabled"])
@@ -194,14 +187,7 @@ def api_gateway_stage_logging_check(
         for apistages in response["item"]:
             apiStageName = str(apistages["stageName"])
             apiStageDeploymentId = str(apistages["deploymentId"])
-            apiStageArn = (
-                "arn:aws:apigateway:"
-                + awsRegion
-                + "::/restapis/"
-                + apiGwApiId
-                + "/stages/"
-                + apiStageName
-            )
+            apiStageArn = f"arn:{awsPartition}:apigateway:{awsRegion}::/restapis/{apiGwApiId}/stages/{apiStageName}"
             # it is possible for methodSettings to be empty indicating logging is Off
             try:
                 loggingCheck = str(apistages["methodSettings"]["*/*"]["loggingLevel"])
@@ -345,14 +331,7 @@ def api_gateway_stage_cacheing_enabled_check(
         for apistages in response["item"]:
             apiStageName = str(apistages["stageName"])
             apiStageDeploymentId = str(apistages["deploymentId"])
-            apiStageArn = (
-                "arn:aws:apigateway:"
-                + awsRegion
-                + "::/restapis/"
-                + apiGwApiId
-                + "/stages/"
-                + apiStageName
-            )
+            apiStageArn = f"arn:{awsPartition}:apigateway:{awsRegion}::/restapis/{apiGwApiId}/stages/{apiStageName}"
             # it is possible for methodSettings to be empty which indicated caching is not enabled
             try:
                 cachingCheck = str(apistages["methodSettings"]["*/*"]["cachingEnabled"])
@@ -500,14 +479,7 @@ def api_gateway_stage_cache_encryption_check(
         for apistages in response["item"]:
             apiStageName = str(apistages["stageName"])
             apiStageDeploymentId = str(apistages["deploymentId"])
-            apiStageArn = (
-                "arn:aws:apigateway:"
-                + awsRegion
-                + "::/restapis/"
-                + apiGwApiId
-                + "/stages/"
-                + apiStageName
-            )
+            apiStageArn = f"arn:{awsPartition}:apigateway:{awsRegion}::/restapis/{apiGwApiId}/stages/{apiStageName}"
             try:
                 cachingEncryptionCheck = str(
                     apistages["methodSettings"]["*/*"]["cacheDataEncrypted"]
@@ -650,14 +622,7 @@ def api_gateway_stage_xray_tracking_check(
         for apistages in response["item"]:
             apiStageName = str(apistages["stageName"])
             apiStageDeploymentId = str(apistages["deploymentId"])
-            apiStageArn = (
-                "arn:aws:apigateway:"
-                + awsRegion
-                + "::/restapis/"
-                + apiGwApiId
-                + "/stages/"
-                + apiStageName
-            )
+            apiStageArn = f"arn:{awsPartition}:apigateway:{awsRegion}::/restapis/{apiGwApiId}/stages/{apiStageName}"
             xrayTracingCheck = str(apistages["tracingEnabled"])
             if xrayTracingCheck == "False":
                 try:
@@ -797,14 +762,7 @@ def api_gateway_stage_waf_check_check(
         for apistages in response["item"]:
             apiStageName = str(apistages["stageName"])
             apiStageDeploymentId = str(apistages["deploymentId"])
-            apiStageArn = (
-                "arn:aws:apigateway:"
-                + awsRegion
-                + "::/restapis/"
-                + apiGwApiId
-                + "/stages/"
-                + apiStageName
-            )
+            apiStageArn = f"arn:{awsPartition}:apigateway:{awsRegion}::/restapis/{apiGwApiId}/stages/{apiStageName}"
             try:
                 wafCheck = str(apistages["webAclArn"])
                 # this is a passing check
@@ -877,13 +835,7 @@ def api_gateway_stage_waf_check_check(
                         finding = {
                             "SchemaVersion": "2018-10-08",
                             "Id": apiStageArn + "/apigateway-stage-waf-protection-check",
-                            "ProductArn": "arn:aws:securityhub:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":product/"
-                            + awsAccountId
-                            + "/default",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": apiStageArn,
                             "AwsAccountId": awsAccountId,
                             "Types": [

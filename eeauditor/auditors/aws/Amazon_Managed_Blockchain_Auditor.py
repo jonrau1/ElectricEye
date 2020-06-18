@@ -423,13 +423,7 @@ def amb_fabric_member_ca_logging_check(
                         finding = {
                             "SchemaVersion": "2018-10-08",
                             "Id": memberArn + "/managedblockchain-member-ca-logs-check",
-                            "ProductArn": "arn:aws:securityhub:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":product/"
-                            + awsAccountId
-                            + "/default",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": memberArn,
                             "AwsAccountId": awsAccountId,
                             "Types": [
@@ -488,13 +482,7 @@ def amb_fabric_member_ca_logging_check(
                         finding = {
                             "SchemaVersion": "2018-10-08",
                             "Id": memberArn + "/managedblockchain-member-ca-logs-check",
-                            "ProductArn": "arn:aws:securityhub:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":product/"
-                            + awsAccountId
-                            + "/default",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": memberArn,
                             "AwsAccountId": awsAccountId,
                             "Types": [

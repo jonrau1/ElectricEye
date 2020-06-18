@@ -660,13 +660,7 @@ def documentdb_parameter_group_audit_log_check(
                             "SchemaVersion": "2018-10-08",
                             "Id": parameterGroupArn
                             + "/docdb-cluster-parameter-audit-logging-check",
-                            "ProductArn": "arn:aws:securityhub:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":product/"
-                            + awsAccountId
-                            + "/default",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": parameterGroupArn,
                             "AwsAccountId": awsAccountId,
                             "Types": [
@@ -723,13 +717,7 @@ def documentdb_parameter_group_audit_log_check(
                             "SchemaVersion": "2018-10-08",
                             "Id": parameterGroupArn
                             + "/docdb-cluster-parameter-audit-logging-check",
-                            "ProductArn": "arn:aws:securityhub:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":product/"
-                            + awsAccountId
-                            + "/default",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": parameterGroupArn,
                             "AwsAccountId": awsAccountId,
                             "Types": [
@@ -814,13 +802,7 @@ def documentdb_parameter_group_tls_enforcement_check(
                             "SchemaVersion": "2018-10-08",
                             "Id": parameterGroupArn
                             + "/docdb-cluster-parameter-tls-connections-check",
-                            "ProductArn": "arn:aws:securityhub:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":product/"
-                            + awsAccountId
-                            + "/default",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": parameterGroupArn,
                             "AwsAccountId": awsAccountId,
                             "Types": [
@@ -878,13 +860,7 @@ def documentdb_parameter_group_tls_enforcement_check(
                             "SchemaVersion": "2018-10-08",
                             "Id": parameterGroupArn
                             + "/docdb-cluster-parameter-tls-connections-check",
-                            "ProductArn": "arn:aws:securityhub:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":product/"
-                            + awsAccountId
-                            + "/default",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": parameterGroupArn,
                             "AwsAccountId": awsAccountId,
                             "Types": [
@@ -1093,13 +1069,7 @@ def documentdb_cluster_snapshot_public_share_check(
                             "SchemaVersion": "2018-10-08",
                             "Id": clusterSnapshotArn
                             + "/docdb-cluster-snapshot-public-share-check",
-                            "ProductArn": "arn:aws:securityhub:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":product/"
-                            + awsAccountId
-                            + "/default",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": clusterSnapshotArn,
                             "AwsAccountId": awsAccountId,
                             "Types": [
@@ -1157,13 +1127,7 @@ def documentdb_cluster_snapshot_public_share_check(
                             "SchemaVersion": "2018-10-08",
                             "Id": clusterSnapshotArn
                             + "/docdb-cluster-snapshot-public-share-check",
-                            "ProductArn": "arn:aws:securityhub:"
-                            + awsRegion
-                            + ":"
-                            + awsAccountId
-                            + ":product/"
-                            + awsAccountId
-                            + "/default",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": clusterSnapshotArn,
                             "AwsAccountId": awsAccountId,
                             "Types": [
