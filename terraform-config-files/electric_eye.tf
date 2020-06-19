@@ -287,6 +287,8 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "apigateway:GET",
                 "ssm:GetParameter",
                 "ssm:GetParameters",
+                "ssm:GetParametersByPath",
+                "sts:GetCallerIdentity",
                 "rds:DescribeDBParameterGroups",
                 "s3:ListBucket",
                 "backup:DescribeProtectedResource",
