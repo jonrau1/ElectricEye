@@ -26,10 +26,12 @@ def get_code_build_projects(cache):
     if response:
         return response
     project_list = codebuild.list_projects()
-    if project_list:
+    if project_list["projects"]:
         my_projects = codebuild.batch_get_projects(names=project_list["projects"])
         cache["code_build_projects"] = my_projects
-    return cache["code_build_projects"]
+        return cache["code_build_projects"]
+    else:
+        return {}
 
 
 @registry.register_check("codebuild")
@@ -37,7 +39,7 @@ def artifact_encryption_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     project = get_code_build_projects(cache=cache)
-    myCodeBuildProjects = project["projects"]
+    myCodeBuildProjects = project.get("projects", [])
     for projects in myCodeBuildProjects:
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
@@ -158,7 +160,7 @@ def artifact_encryption_check(
 @registry.register_check("codebuild")
 def insecure_ssl_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     project = get_code_build_projects(cache=cache)
-    myCodeBuildProjects = project["projects"]
+    myCodeBuildProjects = project.get("projects", [])
     for projects in myCodeBuildProjects:
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
@@ -284,7 +286,7 @@ def plaintext_env_var_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     project = get_code_build_projects(cache=cache)
-    myCodeBuildProjects = project["projects"]
+    myCodeBuildProjects = project.get("projects", [])
     for projects in myCodeBuildProjects:
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
@@ -447,7 +449,7 @@ def s3_logging_encryption_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     project = get_code_build_projects(cache=cache)
-    myCodeBuildProjects = project["projects"]
+    myCodeBuildProjects = project.get("projects", [])
     for projects in myCodeBuildProjects:
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
@@ -563,7 +565,7 @@ def cloudwatch_logging_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     project = get_code_build_projects(cache=cache)
-    myCodeBuildProjects = project["projects"]
+    myCodeBuildProjects = project.get("projects", [])
     for projects in myCodeBuildProjects:
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
