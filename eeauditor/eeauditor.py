@@ -108,7 +108,7 @@ class EEAuditor(object):
                         print(f"Failed to execute check {check_name} with exception {e}")
                     sleep(delay)
 
-    def run(self, sechub=True, output=False, check_name=None, delay=0):
+    def run(self, sechub=True, output=False, check_name=None, delay=0, dops=False):
         # TODO: currently streaming all findings to a statically defined file on the file
         # system.  Should support a custom file name.
         # TODO: Consider removing this file after execution if the user doesn't ask to

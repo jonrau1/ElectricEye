@@ -31,6 +31,7 @@ def main(argv):
     output_file = ""
     print_checks = False
     delay = 0
+    dops = False
     help_text = (
         "auditor.py [-p <profile_name> -a <auditor_name> -c <check_name> -o <output_file_name>]"
     )
@@ -47,6 +48,7 @@ def main(argv):
                 "sechub=",
                 "printchecks",
                 "delay=",
+                "dops",
             ],
         )
     except getopt.GetoptError:
@@ -69,6 +71,8 @@ def main(argv):
             check_name = arg
         if opt in ("-d", "--delay"):
             delay = float(arg)
+        if opt == "--dops":
+            dops = True
         if opt in ("-s", "--sechub"):
             sechub = arg.lower() not in ["false", "False"]
     if profile_name:
@@ -79,7 +83,7 @@ def main(argv):
     if print_checks == True:
         app.print_checks_md()
         sys.exit(2)
-    json_out = app.run(sechub=sechub, output=output, check_name=check_name, delay=delay)
+    json_out = app.run(sechub=sechub, output=output, check_name=check_name, delay=delay, dops=dops)
     print(f"Done.  Raw results {json_out}")
 
 
