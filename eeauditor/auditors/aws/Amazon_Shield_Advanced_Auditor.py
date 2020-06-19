@@ -595,7 +595,7 @@ def shield_advanced_cloudfront_protection_check(
     else:
         response = cloudfront.list_distributions()
         # TODO: Should handle case no results returned
-        cfDistros = response["DistributionList"]["Items"]
+        cfDistros = response["DistributionList"].get("Items",[])
         for distro in cfDistros:
             distroId = str(distro["Id"])
             distroArn = str(distro["ARN"])
