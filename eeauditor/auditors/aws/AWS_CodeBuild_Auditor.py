@@ -33,17 +33,15 @@ def get_code_build_projects(cache):
 
 
 @registry.register_check("codebuild")
-def artifact_encryption_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def artifact_encryption_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     project = get_code_build_projects(cache=cache)
     myCodeBuildProjects = project["projects"]
     for projects in myCodeBuildProjects:
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         # check if this project supports artifacts
         artifactCheck = str(projects["artifacts"]["type"])
         # skip projects without artifacts
@@ -52,20 +50,12 @@ def artifact_encryption_check(cache: dict, awsAccountId: str, awsRegion: str) ->
             pass
         else:
             # check if encryption for artifacts is disabled
-            artifactEncryptionCheck = str(
-                projects["artifacts"]["encryptionDisabled"]
-            )
+            artifactEncryptionCheck = str(projects["artifacts"]["encryptionDisabled"])
             if artifactEncryptionCheck == "True":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": buildProjectArn + "/unencrypted-artifacts",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": buildProjectArn,
                     "AwsAccountId": awsAccountId,
                     "Types": [
@@ -94,9 +84,7 @@ def artifact_encryption_check(cache: dict, awsAccountId: str, awsRegion: str) ->
                             "Id": buildProjectArn,
                             "Partition": "aws",
                             "Region": awsRegion,
-                            "Details": {
-                                "AwsCodeBuildProject": {"Name": buildProjectName}
-                            },
+                            "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                         }
                     ],
                     "Compliance": {
@@ -118,13 +106,7 @@ def artifact_encryption_check(cache: dict, awsAccountId: str, awsRegion: str) ->
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": buildProjectArn + "/unencrypted-artifacts",
-                    "ProductArn": "arn:aws:securityhub:"
-                    + awsRegion
-                    + ":"
-                    + awsAccountId
-                    + ":product/"
-                    + awsAccountId
-                    + "/default",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": buildProjectArn,
                     "AwsAccountId": awsAccountId,
                     "Types": [
@@ -153,9 +135,7 @@ def artifact_encryption_check(cache: dict, awsAccountId: str, awsRegion: str) ->
                             "Id": buildProjectArn,
                             "Partition": "aws",
                             "Region": awsRegion,
-                            "Details": {
-                                "AwsCodeBuildProject": {"Name": buildProjectName}
-                            },
+                            "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                         }
                     ],
                     "Compliance": {
@@ -176,30 +156,20 @@ def artifact_encryption_check(cache: dict, awsAccountId: str, awsRegion: str) ->
 
 
 @registry.register_check("codebuild")
-def insecure_ssl_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def insecure_ssl_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     project = get_code_build_projects(cache=cache)
     myCodeBuildProjects = project["projects"]
     for projects in myCodeBuildProjects:
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         # check if Insecure SSL is enabled for your Source
         sourceInsecureSslCheck = str(projects["source"]["insecureSsl"])
         if sourceInsecureSslCheck != "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": buildProjectArn + "/insecure-ssl",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": buildProjectArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -228,9 +198,7 @@ def insecure_ssl_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
                         "Id": buildProjectArn,
                         "Partition": "aws",
                         "Region": awsRegion,
-                        "Details": {
-                            "AwsCodeBuildProject": {"Name": buildProjectName}
-                        },
+                        "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                     }
                 ],
                 "Compliance": {
@@ -257,13 +225,7 @@ def insecure_ssl_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": buildProjectArn + "/insecure-ssl",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": buildProjectArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -292,9 +254,7 @@ def insecure_ssl_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
                         "Id": buildProjectArn,
                         "Partition": "aws",
                         "Region": awsRegion,
-                        "Details": {
-                            "AwsCodeBuildProject": {"Name": buildProjectName}
-                        },
+                        "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                     }
                 ],
                 "Compliance": {
@@ -320,17 +280,15 @@ def insecure_ssl_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
 
 
 @registry.register_check("codebuild")
-def plaintext_env_var_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def plaintext_env_var_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     project = get_code_build_projects(cache=cache)
     myCodeBuildProjects = project["projects"]
     for projects in myCodeBuildProjects:
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         # check if this project has any env vars
         envVarCheck = str(projects["environment"]["environmentVariables"])
         if envVarCheck == "[]":
@@ -346,13 +304,7 @@ def plaintext_env_var_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": buildProjectArn + "/plaintext-env-vars",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": buildProjectArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -382,11 +334,7 @@ def plaintext_env_var_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
                                 "Id": buildProjectArn,
                                 "Partition": "aws",
                                 "Region": awsRegion,
-                                "Details": {
-                                    "AwsCodeBuildProject": {
-                                        "Name": buildProjectName
-                                    }
-                                },
+                                "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                             }
                         ],
                         "Compliance": {
@@ -426,13 +374,7 @@ def plaintext_env_var_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": buildProjectArn + "/plaintext-env-vars",
-                        "ProductArn": "arn:aws:securityhub:"
-                        + awsRegion
-                        + ":"
-                        + awsAccountId
-                        + ":product/"
-                        + awsAccountId
-                        + "/default",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": buildProjectArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
@@ -462,11 +404,7 @@ def plaintext_env_var_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
                                 "Id": buildProjectArn,
                                 "Partition": "aws",
                                 "Region": awsRegion,
-                                "Details": {
-                                    "AwsCodeBuildProject": {
-                                        "Name": buildProjectName
-                                    }
-                                },
+                                "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                             }
                         ],
                         "Compliance": {
@@ -505,32 +443,22 @@ def plaintext_env_var_check(cache: dict, awsAccountId: str, awsRegion: str) -> d
 
 
 @registry.register_check("codebuild")
-def s3_logging_encryption_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def s3_logging_encryption_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     project = get_code_build_projects(cache=cache)
     myCodeBuildProjects = project["projects"]
     for projects in myCodeBuildProjects:
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         # check if this project disabled s3 log encryption
-        s3EncryptionCheck = str(
-            projects["logsConfig"]["s3Logs"]["encryptionDisabled"]
-        )
+        s3EncryptionCheck = str(projects["logsConfig"]["s3Logs"]["encryptionDisabled"])
         if s3EncryptionCheck == "True":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": buildProjectArn + "/s3-encryption",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": buildProjectArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -559,9 +487,7 @@ def s3_logging_encryption_check(cache: dict, awsAccountId: str, awsRegion: str) 
                         "Id": buildProjectArn,
                         "Partition": "aws",
                         "Region": awsRegion,
-                        "Details": {
-                            "AwsCodeBuildProject": {"Name": buildProjectName}
-                        },
+                        "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                     }
                 ],
                 "Compliance": {
@@ -583,13 +509,7 @@ def s3_logging_encryption_check(cache: dict, awsAccountId: str, awsRegion: str) 
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": buildProjectArn + "/s3-encryption",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": buildProjectArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
@@ -618,9 +538,7 @@ def s3_logging_encryption_check(cache: dict, awsAccountId: str, awsRegion: str) 
                         "Id": buildProjectArn,
                         "Partition": "aws",
                         "Region": awsRegion,
-                        "Details": {
-                            "AwsCodeBuildProject": {"Name": buildProjectName}
-                        },
+                        "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                     }
                 ],
                 "Compliance": {
@@ -641,37 +559,25 @@ def s3_logging_encryption_check(cache: dict, awsAccountId: str, awsRegion: str) 
 
 
 @registry.register_check("codebuild")
-def cloudwatch_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -> dict:
+def cloudwatch_logging_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     project = get_code_build_projects(cache=cache)
     myCodeBuildProjects = project["projects"]
     for projects in myCodeBuildProjects:
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
-        iso8601Time = (
-            datetime.datetime.utcnow()
-            .replace(tzinfo=datetime.timezone.utc)
-            .isoformat()
-        )
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         # check if this project logs to cloudwatch
-        codeBuildLoggingCheck = str(
-            projects["logsConfig"]["cloudWatchLogs"]["status"]
-        )
+        codeBuildLoggingCheck = str(projects["logsConfig"]["cloudWatchLogs"]["status"])
         if codeBuildLoggingCheck != "ENABLED":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": buildProjectArn + "/cloudwatch-logging",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": buildProjectArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -694,9 +600,7 @@ def cloudwatch_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -> 
                         "Id": buildProjectArn,
                         "Partition": "aws",
                         "Region": awsRegion,
-                        "Details": {
-                            "AwsCodeBuildProject": {"Name": buildProjectName}
-                        },
+                        "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                     }
                 ],
                 "Compliance": {
@@ -722,18 +626,10 @@ def cloudwatch_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -> 
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": buildProjectArn + "/cloudwatch-logging",
-                "ProductArn": "arn:aws:securityhub:"
-                + awsRegion
-                + ":"
-                + awsAccountId
-                + ":product/"
-                + awsAccountId
-                + "/default",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": buildProjectArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -756,9 +652,7 @@ def cloudwatch_logging_check(cache: dict, awsAccountId: str, awsRegion: str) -> 
                         "Id": buildProjectArn,
                         "Partition": "aws",
                         "Region": awsRegion,
-                        "Details": {
-                            "AwsCodeBuildProject": {"Name": buildProjectName}
-                        },
+                        "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                     }
                 ],
                 "Compliance": {
