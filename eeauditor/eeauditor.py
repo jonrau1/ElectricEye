@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public License along with ElectricEye.
 # If not, see https://github.com/jonrau1/ElectricEye/blob/master/LICENSE.
 from functools import partial
+import inspect
 import json
 import os
 
@@ -143,3 +144,24 @@ class EEAuditor(object):
         if output:
             report.csv_output(input_file=json_out_location, output_file=output_file)
         return json_out_location
+
+    def print_checks_md(self):
+        table = []
+        table.append(
+            "| Auditor File Name                      | AWS Service                   | Auditor Scan Description                                                               |"
+        )
+        table.append(
+            "|----------------------------------------|-------------------------------|----------------------------------------------------------------------------------------|"
+        )
+
+        for service_name, check_list in self.registry.checks.items():
+            for check_name, check in check_list.items():
+                doc = check.__doc__
+                if doc:
+                    description = (check.__doc__).replace("\n", "")
+                else:
+                    description = ""
+                table.append(
+                    f"|{inspect.getfile(check).rpartition('/')[2]} |{service_name} |{description}"
+                )
+        print("\n".join(table))

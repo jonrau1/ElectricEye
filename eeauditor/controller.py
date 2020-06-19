@@ -29,12 +29,15 @@ def main(argv):
     output = False
     sechub = True
     output_file = ""
+    print_checks = False
     help_text = (
         "auditor.py [-p <profile_name> -a <auditor_name> -c <check_name> -o <output_file_name>]"
     )
     try:
         opts, args = getopt.getopt(
-            argv, "ho:p:a:c:s:", ["help", "output=", "profile=", "auditor=", "check=", "sechub="]
+            argv,
+            "ho:p:a:c:s:",
+            ["help", "output=", "profile=", "auditor=", "check=", "sechub=", "printchecks"],
         )
     except getopt.GetoptError:
         print(help_text)
@@ -43,6 +46,8 @@ def main(argv):
         if opt in ("-h", "--help"):
             print(help_text)
             sys.exit(2)
+        if opt in ("--printchecks"):
+            print_checks = True
         if opt in ("-o", "--output"):
             output = True
             output_file = arg
@@ -59,6 +64,9 @@ def main(argv):
 
     app = EEAuditor(name="AWS Auditor")
     app.load_plugins(plugin_name=auditor_name)
+    if print_checks:
+        app.print_checks_md()
+        sys.exit(2)
     json_out = app.run(sechub=sechub, output=output, check_name=check_name)
     print(f"Done.  Raw results {json_out}")
 
