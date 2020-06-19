@@ -73,11 +73,8 @@ class EEAuditor(object):
             Path=f"/aws/service/global-infrastructure/services/{service}/regions",
             PaginationConfig={"MaxItems": 1000, "PageSize": 10},
         )
-        results = {"Parameters": []}
+        results = accumulate_paged_results(page_iterator=response_iterator, key="Parameters")
         values = []
-        for page in response_iterator:
-            page_vals = page["Parameters"]
-            results["Parameters"].extend(iter(page_vals))
         for parameter in results["Parameters"]:
             values.append(parameter["Value"])
         return values
