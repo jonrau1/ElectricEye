@@ -32,7 +32,7 @@ def list_delivery_streams(cache):
     return cache["list_delivery_streams"]
 
 
-@registry.register_check("list_delivery_streams")
+@registry.register_check("firehose")
 def firehose_delivery_stream_encryption_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:

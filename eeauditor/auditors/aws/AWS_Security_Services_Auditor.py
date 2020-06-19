@@ -25,7 +25,7 @@ guardduty = boto3.client("guardduty")
 detective = boto3.client("detective")
 
 
-@registry.register_check("security_service")
+@registry.register_check("accessanalyzer")
 def iam_access_analyzer_detector_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
@@ -133,7 +133,7 @@ def iam_access_analyzer_detector_check(
         yield finding
 
 
-@registry.register_check("security_service")
+@registry.register_check("guardduty")
 def guard_duty_detector_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
@@ -241,7 +241,7 @@ def guard_duty_detector_check(
         yield finding
 
 
-@registry.register_check("security_service")
+@registry.register_check("detective")
 def detective_graph_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:

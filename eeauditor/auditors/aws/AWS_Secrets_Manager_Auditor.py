@@ -30,7 +30,7 @@ def list_secrets(cache):
     return cache["list_secrets"]
 
 
-@registry.register_check("secrets_manager")
+@registry.register_check("secretsmanager")
 def secret_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     secret = list_secrets(cache=cache)
     myAsmSecrets = secret["SecretList"]
@@ -173,7 +173,7 @@ def secret_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
             yield finding
 
 
-@registry.register_check("secrets_manager")
+@registry.register_check("secretsmanager")
 def secret_changed_in_last_90_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:

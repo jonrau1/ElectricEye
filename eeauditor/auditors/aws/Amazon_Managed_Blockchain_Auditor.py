@@ -17,7 +17,7 @@ def list_networks(cache):
     return cache["list_networks"]
 
 
-@registry.register_check("amb")
+@registry.register_check("managedblockchain")
 def amb_fabric_node_chaincode_logging_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
@@ -182,7 +182,7 @@ def amb_fabric_node_chaincode_logging_check(
             print(e)
 
 
-@registry.register_check("amb")
+@registry.register_check("managedblockchain")
 def amb_fabric_node_peernode_logging_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
@@ -347,7 +347,7 @@ def amb_fabric_node_peernode_logging_check(
             print(e)
 
 
-@registry.register_check("amb")
+@registry.register_check("managedblockchain")
 def amb_fabric_member_ca_logging_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:

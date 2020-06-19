@@ -534,7 +534,7 @@ def bucket_policy_allows_public_access_check(
             except Exception as e:
                 print(e)
         except Exception as e:
-            print("This bucket does not have a bucket policy and the status cannot be checked")
+            # This bucket does not have a bucket policy and the status cannot be checked
             pass
 
 
@@ -548,7 +548,7 @@ def bucket_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
             response = s3.get_bucket_policy(Bucket=bucketName)
-            print("This bucket has a policy but we wont be printing that in the logs lol")
+            # print("This bucket has a policy but we wont be printing that in the logs lol")
             # this is a passing check
             finding = {
                 "SchemaVersion": "2018-10-08",

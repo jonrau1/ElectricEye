@@ -31,7 +31,7 @@ def describe_images(cache, awsAccountId):
     return cache["describe_images"]
 
 
-@registry.register_check("ami")
+@registry.register_check("ec2")
 def public_ami_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     amis = describe_images(cache=cache, awsAccountId=awsAccountId)
     myAmis = amis["Images"]
@@ -160,7 +160,7 @@ def public_ami_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
             yield finding
 
 
-@registry.register_check("ami")
+@registry.register_check("ec2")
 def encrypted_ami_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     amis = describe_images(cache=cache, awsAccountId=awsAccountId)
     myAmis = amis["Images"]

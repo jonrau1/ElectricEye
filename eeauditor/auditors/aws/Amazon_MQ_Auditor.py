@@ -32,7 +32,7 @@ def list_brokers(cache):
     return cache["list_brokers"]
 
 
-@registry.register_check("amzmq")
+@registry.register_check("mq")
 def broker_kms_cmk_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
@@ -157,7 +157,7 @@ def broker_kms_cmk_check(
             print(e)
 
 
-@registry.register_check("amzmq")
+@registry.register_check("mq")
 def broker_audit_logging_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
@@ -283,7 +283,7 @@ def broker_audit_logging_check(
             print(e)
 
 
-@registry.register_check("amzmq")
+@registry.register_check("mq")
 def broker_general_logging_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
@@ -411,7 +411,7 @@ def broker_general_logging_check(
             print(e)
 
 
-@registry.register_check("amzmq")
+@registry.register_check("mq")
 def broker_public_access_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
@@ -549,7 +549,7 @@ def broker_public_access_check(
             print(e)
 
 
-@registry.register_check("amzmq")
+@registry.register_check("mq")
 def broker_minor_version_auto_upgrade_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:

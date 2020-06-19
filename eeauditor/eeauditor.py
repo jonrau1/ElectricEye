@@ -25,13 +25,12 @@ import report
 here = os.path.abspath(os.path.dirname(__file__))
 get_path = partial(os.path.join, here)
 ssm = boto3.client("ssm")
-sts = boto3.client("sts")
 
 
 class EEAuditor(object):
     """ElectricEye controller
 
-        Load and execute all auditor plugins.
+        This class manages loading auditor plugins and running checks
     """
 
     def __init__(self, name, search_path=None):
@@ -43,6 +42,7 @@ class EEAuditor(object):
         # to be discovered during plugin loading.
         self.registry = CheckRegister()
         # vendor specific credentials dictionary
+        sts = boto3.client("sts")
         self.awsAccountId = sts.get_caller_identity()["Account"]
         self.awsRegion = os.environ.get("AWS_REGION", sts.meta.region_name)
         self.awsPartition = "aws"
@@ -70,16 +70,23 @@ class EEAuditor(object):
     def get_regions(self, service):
         paginator = ssm.get_paginator("get_parameters_by_path")
         response_iterator = paginator.paginate(
-            Path=f"/aws/service/global-infrastructure/services/{service}/regions"
+            Path=f"/aws/service/global-infrastructure/services/{service}/regions",
+            PaginationConfig={"MaxItems": 1000, "PageSize": 10},
         )
-        values = accumulate_paged_results(page_iterator=response_iterator, key="Parameters")
-        return values["Parameters"]
+        results = {"Parameters": []}
+        values = []
+        for page in response_iterator:
+            page_vals = page["Parameters"]
+            results["Parameters"].extend(iter(page_vals))
+        for parameter in results["Parameters"]:
+            values.append(parameter["Value"])
+        return values
 
     def run_checks(self, requested_check_name=None):
         for service_name, check_list in self.registry.checks.items():
             if self.awsRegion not in self.get_regions(service_name):
                 print(f"AWS region {self.awsRegion} not supported for {service_name}")
-                break
+                next
             # a dictionary to be used by checks that are part of the same service
             auditor_cache = {}
             for check_name, check in check_list.items():
@@ -90,12 +97,12 @@ class EEAuditor(object):
                     and requested_check_name == check_name
                 ):
                     try:
-                        print(f"Executing check {self.name}.{check_name}")
+                        # print(f"Executing check {self.name}.{check_name}")
                         for finding in check(
                             cache=auditor_cache,
                             awsAccountId=self.awsAccountId,
                             awsRegion=self.awsRegion,
-                            # awsPartition=self.awsPartition
+                            awsPartition=self.awsPartition,
                         ):
                             yield finding
                     except Exception as e:
@@ -127,7 +134,12 @@ class EEAuditor(object):
                 findings_list = Findings = findings["Findings"]
                 print(f"Writing {len(findings_list)} results to SecurityHub")
                 if findings_list:
-                    securityhub.batch_import_findings(Findings=findings_list)
+                    # can only send 100 findings at a time, so slice the list to sub-lists of 100 findings
+                    findings_sliced = [
+                        findings_list[i : i + 100] for i in range(0, len(findings_list), 100)
+                    ]
+                    for finding_slice in findings_sliced:
+                        securityhub.batch_import_findings(Findings=finding_slice)
             read_json_findings.close()
         else:
             print("Not writing results to SecurityHub")

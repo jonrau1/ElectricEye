@@ -23,11 +23,12 @@ registry = CheckRegister()
 licensemanager = boto3.client("license-manager")
 
 
-@registry.register_check("license_manager")
+@registry.register_check("license-manager")
 def license_manager_hard_count_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     try:
+        # TODO: need to catch the case that License Manager is not setup
         response = licensemanager.list_license_configurations()
         lmCheck = str(response["LicenseConfigurations"])
         if lmCheck == "[]":

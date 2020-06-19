@@ -20,6 +20,7 @@ from check_register import CheckRegister
 registry = CheckRegister()
 # create boto3 clients
 ec2 = boto3.client("ec2")
+ssm = boto3.client("ssm")
 
 # loop through ec2 instances
 def describe_instances(cache):

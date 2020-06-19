@@ -594,6 +594,7 @@ def shield_advanced_cloudfront_protection_check(
         print("Shield Advanced APIs are only available in North Virginia")
     else:
         response = cloudfront.list_distributions()
+        # TODO: Should handle case no results returned
         cfDistros = response["DistributionList"]["Items"]
         for distro in cfDistros:
             distroId = str(distro["Id"])

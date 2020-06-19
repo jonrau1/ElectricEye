@@ -30,7 +30,7 @@ def describe_db_instances(cache):
     return cache["describe_db_instances"]
 
 
-@registry.register_check("documentdb")
+@registry.register_check("docdb")
 def docdb_public_instance_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
@@ -156,7 +156,7 @@ def docdb_public_instance_check(
             yield finding
 
 
-@registry.register_check("documentdb")
+@registry.register_check("docdb")
 def docdb_instance_encryption_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
@@ -270,7 +270,7 @@ def docdb_instance_encryption_check(
             yield finding
 
 
-@registry.register_check("documentdb")
+@registry.register_check("docdb")
 def docdb_instance_audit_logging_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
@@ -387,7 +387,7 @@ def docdb_instance_audit_logging_check(
             yield finding
 
 
-@registry.register_check("documentdb")
+@registry.register_check("docdb")
 def docdb_cluster_multiaz_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
@@ -510,7 +510,7 @@ def docdb_cluster_multiaz_check(
             yield finding
 
 
-@registry.register_check("documentdb")
+@registry.register_check("docdb")
 def docdb_cluster_deletion_protection_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
@@ -633,7 +633,7 @@ def docdb_cluster_deletion_protection_check(
             yield finding
 
 
-@registry.register_check("documentdb")
+@registry.register_check("docdb")
 def documentdb_parameter_group_audit_log_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
@@ -775,7 +775,7 @@ def documentdb_parameter_group_audit_log_check(
             pass
 
 
-@registry.register_check("documentdb")
+@registry.register_check("docdb")
 def documentdb_parameter_group_tls_enforcement_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
@@ -919,7 +919,7 @@ def documentdb_parameter_group_tls_enforcement_check(
             pass
 
 
-@registry.register_check("documentdb")
+@registry.register_check("docdb")
 def documentdb_cluster_snapshot_encryption_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
@@ -1039,7 +1039,7 @@ def documentdb_cluster_snapshot_encryption_check(
                 yield finding
 
 
-@registry.register_check("documentdb")
+@registry.register_check("docdb")
 def documentdb_cluster_snapshot_public_share_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:

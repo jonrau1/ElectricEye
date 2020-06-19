@@ -29,7 +29,7 @@ def describe_vpcs(cache):
     return cache["describe_vpcs"]
 
 
-@registry.register_check("vpc")
+@registry.register_check("ec2")
 def vpc_default_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     vpc = describe_vpcs(cache=cache)
     myVpcs = vpc["Vpcs"]
@@ -142,7 +142,7 @@ def vpc_default_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
             yield finding
 
 
-@registry.register_check("vpc")
+@registry.register_check("ec2")
 def vpc_flow_logs_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     vpc = describe_vpcs(cache=cache)
     myVpcs = vpc["Vpcs"]

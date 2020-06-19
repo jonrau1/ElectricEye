@@ -148,7 +148,7 @@ def volume_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
             yield finding
 
 
-@registry.register_check("backup")
+@registry.register_check("ec2")
 def ec2_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     # loop through ec2 instances
     response = ec2.describe_instances(DryRun=False)
@@ -291,7 +291,7 @@ def ec2_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                 yield finding
 
 
-@registry.register_check("backup")
+@registry.register_check("dynamodb")
 def ddb_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     # loop through dynamodb tables
     response = dynamodb.list_tables()

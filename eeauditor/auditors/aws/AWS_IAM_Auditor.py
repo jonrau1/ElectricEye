@@ -59,7 +59,7 @@ def iam_access_key_age_check(
                             "Id": keyUserName + keyId + "/iam-access-key-age-check",
                             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": userArn + keyId,
-                            "AwsAccountId": awsAccount,
+                            "AwsAccountId": awsAccountId,
                             "Types": [
                                 "Software and Configuration Checks/AWS Security Best Practices"
                             ],
@@ -135,7 +135,7 @@ def iam_access_key_age_check(
                             "Id": keyUserName + keyId + "/iam-access-key-age-check",
                             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": userArn + keyId,
-                            "AwsAccountId": awsAccount,
+                            "AwsAccountId": awsAccountId,
                             "Types": [
                                 "Software and Configuration Checks/AWS Security Best Practices"
                             ],
@@ -230,7 +230,7 @@ def user_permission_boundary_check(
                 "Id": userArn + "/iam-user-permissions-boundary-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": userArn,
-                "AwsAccountId": awsAccount,
+                "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
@@ -292,7 +292,7 @@ def user_permission_boundary_check(
                     "Id": userArn + "/iam-user-permissions-boundary-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": userArn,
-                    "AwsAccountId": awsAccount,
+                    "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
@@ -365,7 +365,7 @@ def user_mfa_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition:
                     "Id": userArn + "/iam-user-mfa-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": userArn,
-                    "AwsAccountId": awsAccount,
+                    "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
@@ -431,7 +431,7 @@ def user_mfa_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition:
                     "Id": userArn + "/iam-user-mfa-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": userArn,
-                    "AwsAccountId": awsAccount,
+                    "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
@@ -512,7 +512,7 @@ def user_inline_policy_check(
                     "Id": userArn + "/iam-user-attach-inline-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": userArn,
-                    "AwsAccountId": awsAccount,
+                    "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
@@ -578,7 +578,7 @@ def user_inline_policy_check(
                     "Id": userArn + "/iam-user-attach-inline-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": userArn,
-                    "AwsAccountId": awsAccount,
+                    "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
@@ -661,7 +661,7 @@ def user_direct_attached_policy_check(
                     "Id": userArn + "/iam-user-attach-managed-policy-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": userArn,
-                    "AwsAccountId": awsAccount,
+                    "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
@@ -727,7 +727,7 @@ def user_direct_attached_policy_check(
                     "Id": userArn + "/iam-user-attach-managed-policy-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": userArn,
-                    "AwsAccountId": awsAccount,
+                    "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
@@ -796,6 +796,8 @@ def cis_aws_foundation_benchmark_pw_policy_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     try:
+        # TODO: if no policy is found, this will throw an exception in
+        # which case we need to create an ACTIVE finding
         response = iam.get_account_password_policy()
         pwPolicy = response["PasswordPolicy"]
         minPwLength = int(pwPolicy["MinimumPasswordLength"])
@@ -818,10 +820,10 @@ def cis_aws_foundation_benchmark_pw_policy_check(
         ):
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": awsAccount + "/cis-aws-foundations-benchmark-pw-policy-check",
+                "Id": awsAccountId + "/cis-aws-foundations-benchmark-pw-policy-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": awsAccount + "iam-password-policy",
-                "AwsAccountId": awsAccount,
+                "GeneratorId": awsAccountId + "iam-password-policy",
+                "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
@@ -830,7 +832,7 @@ def cis_aws_foundation_benchmark_pw_policy_check(
                 "Confidence": 99,
                 "Title": "[IAM.6] The IAM password policy should meet or exceed the AWS CIS Foundations Benchmark standard",
                 "Description": "The IAM password policy for account "
-                + awsAccount
+                + awsAccountId
                 + " meets or exceeds the AWS CIS Foundations Benchmark standard.",
                 "Remediation": {
                     "Recommendation": {
@@ -842,7 +844,7 @@ def cis_aws_foundation_benchmark_pw_policy_check(
                 "Resources": [
                     {
                         "Type": "AwsAccount",
-                        "Id": f"{awsPartition.upper()}::::Account:{awsAccount}",
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }
@@ -883,10 +885,10 @@ def cis_aws_foundation_benchmark_pw_policy_check(
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": awsAccount + "/cis-aws-foundations-benchmark-pw-policy-check",
+                "Id": awsAccountId + "/cis-aws-foundations-benchmark-pw-policy-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": awsAccount + "iam-password-policy",
-                "AwsAccountId": awsAccount,
+                "GeneratorId": awsAccountId + "iam-password-policy",
+                "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
@@ -895,7 +897,7 @@ def cis_aws_foundation_benchmark_pw_policy_check(
                 "Confidence": 99,
                 "Title": "[IAM.6] The IAM password policy should meet or exceed the AWS CIS Foundations Benchmark standard",
                 "Description": "The IAM password policy for account "
-                + awsAccount
+                + awsAccountId
                 + " does not meet the AWS CIS Foundations Benchmark standard. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
@@ -907,7 +909,7 @@ def cis_aws_foundation_benchmark_pw_policy_check(
                 "Resources": [
                     {
                         "Type": "AwsAccount",
-                        "Id": f"{awsPartition.upper()}::::Account:{awsAccount}",
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }
@@ -958,10 +960,10 @@ def server_certs_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartit
         if str(response["ServerCertificateMetadataList"]) != "[]":
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": awsAccount + "/server-x509-certs-check",
+                "Id": awsAccountId + "/server-x509-certs-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": awsAccount + "server-cert",
-                "AwsAccountId": awsAccount,
+                "GeneratorId": awsAccountId + "server-cert",
+                "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
@@ -970,7 +972,7 @@ def server_certs_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartit
                 "Confidence": 99,
                 "Title": "[IAM.7] There should not be any server certificates stored in AWS IAM",
                 "Description": "There are server certificates stored in AWS IAM for the account "
-                + awsAccount
+                + awsAccountId
                 + ". ACM is the preferred tool to provision, manage, and deploy your server certificates. With ACM you can request a certificate or deploy an existing ACM or external certificate to AWS resources. Certificates provided by ACM are free and automatically renew. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
@@ -982,7 +984,7 @@ def server_certs_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartit
                 "Resources": [
                     {
                         "Type": "AwsAccount",
-                        "Id": f"{awsPartition.upper()}::::Account:{awsAccount}",
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }
@@ -1023,10 +1025,10 @@ def server_certs_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartit
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": awsAccount + "/server-x509-certs-check",
+                "Id": awsAccountId + "/server-x509-certs-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": awsAccount + "server-cert",
-                "AwsAccountId": awsAccount,
+                "GeneratorId": awsAccountId + "server-cert",
+                "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
@@ -1035,7 +1037,7 @@ def server_certs_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartit
                 "Confidence": 99,
                 "Title": "[IAM.7] There should not be any server certificates stored in AWS IAM",
                 "Description": "There are not server certificates stored in AWS IAM for the account "
-                + awsAccount
+                + awsAccountId
                 + ".",
                 "Remediation": {
                     "Recommendation": {
@@ -1047,7 +1049,7 @@ def server_certs_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartit
                 "Resources": [
                     {
                         "Type": "AwsAccount",
-                        "Id": f"{awsPartition.upper()}::::Account:{awsAccount}",
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }

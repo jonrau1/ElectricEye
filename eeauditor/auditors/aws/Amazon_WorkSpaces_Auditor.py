@@ -22,7 +22,7 @@ registry = CheckRegister()
 workspaces = boto3.client("workspaces")
 # loop through workspaces
 def describe_workspaces(cache):
-    response = cache.get("describe_workspaces")
+    response = cache.get("describe_workspaces", [])
     if response:
         return response
     cache["describe_workspaces"] = workspaces.describe_workspaces()
@@ -35,7 +35,7 @@ def workspaces_user_volume_encryption_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     work = describe_workspaces(cache=cache)
-    myWorkSpaces = work["describe_workspaces"]
+    myWorkSpaces = work.get("describe_workspaces", [])
     for workspace in myWorkSpaces:
         workspaceId = str(workspace["WorkspaceId"])
         workspaceArn = (
@@ -155,7 +155,7 @@ def workspaces_root_volume_encryption_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     work = describe_workspaces(cache=cache)
-    myWorkSpaces = work["describe_workspaces"]
+    myWorkSpaces = work.get("describe_workspaces", [])
     for workspace in myWorkSpaces:
         workspaceId = str(workspace["WorkspaceId"])
         workspaceArn = (
@@ -275,7 +275,7 @@ def workspaces_running_mode_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     work = describe_workspaces(cache=cache)
-    myWorkSpaces = work["describe_workspaces"]
+    myWorkSpaces = work.get("describe_workspaces", [])
     for workspace in myWorkSpaces:
         workspaceId = str(workspace["WorkspaceId"])
         workspaceArn = (

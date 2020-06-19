@@ -32,7 +32,7 @@ def describe_load_balancers(cache):
     return cache["describe_load_balancers"]
 
 
-@registry.register_check("elbv2")
+@registry.register_check("elb")
 def elbv2_alb_logging_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
@@ -192,7 +192,7 @@ def elbv2_alb_logging_check(
             pass
 
 
-@registry.register_check("elbv2")
+@registry.register_check("elb")
 def elbv2_deletion_protection_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
@@ -355,7 +355,7 @@ def elbv2_deletion_protection_check(
             print(e)
 
 
-@registry.register_check("elbv2")
+@registry.register_check("elb")
 def elbv2_internet_facing_secure_listeners_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
@@ -507,7 +507,7 @@ def elbv2_internet_facing_secure_listeners_check(
             print(e)
 
 
-@registry.register_check("elbv2")
+@registry.register_check("elb")
 def elbv2_tls12_listener_policy_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
@@ -674,7 +674,7 @@ def elbv2_tls12_listener_policy_check(
             print(e)
 
 
-@registry.register_check("elbv2")
+@registry.register_check("elb")
 def elbv2_drop_invalid_header_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
@@ -824,7 +824,7 @@ def elbv2_drop_invalid_header_check(
                 pass
 
 
-@registry.register_check("elbv2")
+@registry.register_check("elb")
 def elbv2_nlb_tls_logging_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:

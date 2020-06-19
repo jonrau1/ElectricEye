@@ -30,7 +30,7 @@ def list_domain_names(cache):
     return cache["list_domain_names"]
 
 
-@registry.register_check("elasticsearch")
+@registry.register_check("es")
 def dedicated_master_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
@@ -169,7 +169,7 @@ def dedicated_master_check(
             yield finding
 
 
-@registry.register_check("elasticsearch")
+@registry.register_check("es")
 def cognito_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
@@ -314,7 +314,7 @@ def cognito_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: 
             yield finding
 
 
-@registry.register_check("elasticsearch")
+@registry.register_check("es")
 def encryption_at_rest_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
@@ -447,7 +447,7 @@ def encryption_at_rest_check(
             yield finding
 
 
-@registry.register_check("elasticsearch")
+@registry.register_check("es")
 def node2node_encryption_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
@@ -592,7 +592,7 @@ def node2node_encryption_check(
             yield finding
 
 
-@registry.register_check("elasticsearch")
+@registry.register_check("es")
 def https_enforcement_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
@@ -737,7 +737,7 @@ def https_enforcement_check(
             yield finding
 
 
-@registry.register_check("elasticsearch")
+@registry.register_check("es")
 def tls_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
@@ -894,7 +894,7 @@ def tls_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
             pass
 
 
-@registry.register_check("elasticsearch")
+@registry.register_check("es")
 def elastic_update_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
