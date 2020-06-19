@@ -16,6 +16,7 @@ from functools import partial
 import inspect
 import json
 import os
+from time import sleep
 
 import boto3
 
@@ -80,7 +81,7 @@ class EEAuditor(object):
             values.append(parameter["Value"])
         return values
 
-    def run_checks(self, requested_check_name=None):
+    def run_checks(self, requested_check_name=None, delay=0):
         for service_name, check_list in self.registry.checks.items():
             if self.awsRegion not in self.get_regions(service_name):
                 print(f"AWS region {self.awsRegion} not supported for {service_name}")
@@ -105,8 +106,9 @@ class EEAuditor(object):
                             yield finding
                     except Exception as e:
                         print(f"Failed to execute check {check_name} with exception {e}")
+                    sleep(delay)
 
-    def run(self, sechub=True, output=False, check_name=None):
+    def run(self, sechub=True, output=False, check_name=None, delay=0):
         # TODO: currently streaming all findings to a statically defined file on the file
         # system.  Should support a custom file name.
         # TODO: Consider removing this file after execution if the user doesn't ask to
@@ -116,7 +118,7 @@ class EEAuditor(object):
         with open("findings.json", "w") as json_out:
             print('{"Findings":[', file=json_out)
             json_out_location = os.path.abspath(json_out.name)
-            for result in self.run_checks(requested_check_name=check_name):
+            for result in self.run_checks(requested_check_name=check_name, delay=delay):
                 # print a comma separation between findings except before first finding
                 if first:
                     first = False

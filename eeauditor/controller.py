@@ -30,14 +30,24 @@ def main(argv):
     sechub = True
     output_file = ""
     print_checks = False
+    delay = 0
     help_text = (
         "auditor.py [-p <profile_name> -a <auditor_name> -c <check_name> -o <output_file_name>]"
     )
     try:
         opts, args = getopt.getopt(
             argv,
-            "ho:p:a:c:s:",
-            ["help", "output=", "profile=", "auditor=", "check=", "sechub=", "printchecks"],
+            "ho:p:a:c:s:d:",
+            [
+                "help",
+                "output=",
+                "profile=",
+                "auditor=",
+                "check=",
+                "sechub=",
+                "printchecks",
+                "delay=",
+            ],
         )
     except getopt.GetoptError:
         print(help_text)
@@ -46,7 +56,7 @@ def main(argv):
         if opt in ("-h", "--help"):
             print(help_text)
             sys.exit(2)
-        if opt in ("--printchecks"):
+        if opt == "--printchecks":
             print_checks = True
         if opt in ("-o", "--output"):
             output = True
@@ -54,9 +64,11 @@ def main(argv):
         if opt in ("-p", "--profile"):
             profile_name = arg.strip()
         if opt in ("-a", "--auditor"):
-            auditor_name = arg
+            auditor_name = arg.strip()
         if opt in ("-c", "--check"):
             check_name = arg
+        if opt in ("-d", "--delay"):
+            delay = float(arg)
         if opt in ("-s", "--sechub"):
             sechub = arg.lower() not in ["false", "False"]
     if profile_name:
@@ -64,10 +76,10 @@ def main(argv):
 
     app = EEAuditor(name="AWS Auditor")
     app.load_plugins(plugin_name=auditor_name)
-    if print_checks:
+    if print_checks == True:
         app.print_checks_md()
         sys.exit(2)
-    json_out = app.run(sechub=sechub, output=output, check_name=check_name)
+    json_out = app.run(sechub=sechub, output=output, check_name=check_name, delay=delay)
     print(f"Done.  Raw results {json_out}")
 
 
