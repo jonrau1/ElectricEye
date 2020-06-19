@@ -20,35 +20,47 @@ import sys
 import boto3
 
 from eeauditor import EEAuditor
+from processor.main import get_providers, process_findings
+
+
+def print_checks():
+    app = EEAuditor(name="AWS Auditor")
+    app.load_plugins()
+    app.print_checks_md()
+
+
+def run_auditor(auditor_name=None, check_name=None, delay=0, outputs=None, output_file=""):
+    if not outputs:
+        outputs = ["sechub"]
+    app = EEAuditor(name="AWS Auditor")
+    app.load_plugins(plugin_name=auditor_name)
+    findings = list(app.run_checks(requested_check_name=check_name, delay=delay))
+    result = process_findings(findings=findings, outputs=outputs, output_file=output_file)
+    print(f"Done.")
 
 
 def main(argv):
     profile_name = ""
     auditor_name = ""
     check_name = ""
-    output = False
-    sechub = True
-    output_file = ""
-    print_checks = False
+    outputs = []
+    output_file = "output"
     delay = 0
-    dops = False
-    help_text = (
-        "auditor.py [-p <profile_name> -a <auditor_name> -c <check_name> -o <output_file_name>]"
-    )
+    help_text = "auditor.py [--profile <profile_name> --auditor <auditor_name> -check <check_name> --delay <delay_time> --outputs <output format list> --output-file <output_file_name> --list-outputs --print-checks ]"
     try:
         opts, args = getopt.getopt(
             argv,
-            "ho:p:a:c:s:d:",
+            "ho:p:a:c:d:",
             [
                 "help",
-                "output=",
+                "outputs=",
+                "output-file=",
                 "profile=",
                 "auditor=",
                 "check=",
-                "sechub=",
-                "printchecks",
+                "print-checks",
                 "delay=",
-                "dops",
+                "list-outputs",
             ],
         )
     except getopt.GetoptError:
@@ -58,11 +70,14 @@ def main(argv):
         if opt in ("-h", "--help"):
             print(help_text)
             sys.exit(2)
-        if opt == "--printchecks":
-            print_checks = True
-        if opt in ("-o", "--output"):
-            output = True
-            output_file = arg
+        if opt == "--list-outputs":
+            print(get_providers())
+            sys.exit(2)
+        if opt == "--print-checks":
+            print_checks()
+            sys.exit(2)
+        if opt in ("-o", "--outputs"):
+            outputs.append(arg)
         if opt in ("-p", "--profile"):
             profile_name = arg.strip()
         if opt in ("-a", "--auditor"):
@@ -71,24 +86,18 @@ def main(argv):
             check_name = arg
         if opt in ("-d", "--delay"):
             delay = float(arg)
-        if opt == "--dops":
-            dops = True
-        if opt in ("-s", "--sechub"):
-            sechub = arg.lower() not in ["false", "False"]
+
     if profile_name:
         boto3.setup_default_session(profile_name=profile_name)
 
-    app = EEAuditor(name="AWS Auditor")
-    app.load_plugins(plugin_name=auditor_name)
-    if print_checks == True:
-        app.print_checks_md()
-        sys.exit(2)
-    json_out = app.run(sechub=sechub, output=output, check_name=check_name, delay=delay, dops=dops)
-    print(f"Done.  Raw results {json_out}")
+    run_auditor(
+        auditor_name=auditor_name,
+        check_name=check_name,
+        delay=delay,
+        outputs=outputs,
+        output_file=output_file,
+    )
 
 
 if __name__ == "__main__":
-    # this is for local testing where the AWS_REGION is not liekly set
-    # if not os.environ.get("AWS_REGION", None):
-    # os.environ["AWS_REGION"] = "us-east-1"
     main(sys.argv[1:])

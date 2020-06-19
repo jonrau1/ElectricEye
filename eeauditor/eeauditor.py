@@ -22,7 +22,6 @@ import boto3
 
 from check_register import CheckRegister, accumulate_paged_results
 from pluginbase import PluginBase
-import report
 
 here = os.path.abspath(os.path.dirname(__file__))
 get_path = partial(os.path.join, here)
@@ -106,46 +105,7 @@ class EEAuditor(object):
                             yield finding
                     except Exception as e:
                         print(f"Failed to execute check {check_name} with exception {e}")
-                    sleep(delay)
-
-    def run(self, sechub=True, output=False, check_name=None, delay=0, dops=False):
-        # TODO: currently streaming all findings to a statically defined file on the file
-        # system.  Should support a custom file name.
-        # TODO: Consider removing this file after execution if the user doesn't ask to
-        # persist the output as a json file.
-        first = True
-        json_out_location = ""
-        with open("findings.json", "w") as json_out:
-            print('{"Findings":[', file=json_out)
-            json_out_location = os.path.abspath(json_out.name)
-            for result in self.run_checks(requested_check_name=check_name, delay=delay):
-                # print a comma separation between findings except before first finding
-                if first:
-                    first = False
-                else:
-                    print(",", file=json_out)
-                json.dump(result, json_out, indent=2)
-            print("]}", file=json_out)
-        json_out.close()
-        if sechub:
-            securityhub = boto3.client("securityhub")
-            with open(json_out_location) as read_json_findings:
-                findings = json.load(read_json_findings)
-                findings_list = Findings = findings["Findings"]
-                print(f"Writing {len(findings_list)} results to SecurityHub")
-                if findings_list:
-                    # can only send 100 findings at a time, so slice the list to sub-lists of 100 findings
-                    findings_sliced = [
-                        findings_list[i : i + 100] for i in range(0, len(findings_list), 100)
-                    ]
-                    for finding_slice in findings_sliced:
-                        securityhub.batch_import_findings(Findings=finding_slice)
-            read_json_findings.close()
-        else:
-            print("Not writing results to SecurityHub")
-        if output:
-            report.csv_output(input_file=json_out_location, output_file=output_file)
-        return json_out_location
+            sleep(delay)
 
     def print_checks_md(self):
         table = []
