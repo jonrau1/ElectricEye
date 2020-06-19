@@ -14,7 +14,6 @@
 # If not, see https://github.com/jonrau1/ElectricEye/blob/master/LICENSE.
 
 import boto3
-import os
 import datetime
 from check_register import CheckRegister
 
@@ -595,7 +594,7 @@ def shield_advanced_cloudfront_protection_check(
     else:
         response = cloudfront.list_distributions()
         # TODO: Should handle case no results returned
-        cfDistros = response["DistributionList"].get("Items",[])
+        cfDistros = response["DistributionList"].get("Items", [])
         for distro in cfDistros:
             distroId = str(distro["Id"])
             distroArn = str(distro["ARN"])
