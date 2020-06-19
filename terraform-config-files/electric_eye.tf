@@ -344,7 +344,8 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "kms:ListAliases",
                 "kms:GetKeyPolicy",
                 "kms:ListKeys",
-                "kms:GetKeyRotationStatus"
+                "kms:GetKeyRotationStatus",
+                "sqs:ListQueues"
             ],
             "Resource": "*"
         }

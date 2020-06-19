@@ -316,6 +316,7 @@ Resources:
                   - ssm:DescribeInstancePatchStates
                   - ssm:DescribeInstanceProperties
                   - sts:GetCallerIdentity
+                  - sqs:ListQueues
                   - workspaces:DescribeWorkspaceDirectories
                   - workspaces:DescribeWorkspaces
                 Resource: "*"
