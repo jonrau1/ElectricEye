@@ -18,6 +18,7 @@ import os
 import sys
 
 import boto3
+import click
 
 from eeauditor import EEAuditor
 from processor.main import get_providers, process_findings
@@ -34,58 +35,30 @@ def run_auditor(auditor_name=None, check_name=None, delay=0, outputs=None, outpu
         outputs = ["sechub"]
     app = EEAuditor(name="AWS Auditor")
     app.load_plugins(plugin_name=auditor_name)
-    findings = list(app.run_checks(requested_check_name=check_name, delay=delay))
-    result = process_findings(findings=findings, outputs=outputs, output_file=output_file)
+    findings = list(app.run_checks(
+        requested_check_name=check_name, delay=delay))
+    result = process_findings(
+        findings=findings, outputs=outputs, output_file=output_file)
     print(f"Done.")
 
 
-def main(argv):
-    profile_name = ""
-    auditor_name = ""
-    check_name = ""
-    outputs = []
-    output_file = "output"
-    delay = 0
-    help_text = "auditor.py [--profile <profile_name> --auditor <auditor_name> -check <check_name> --delay <delay_time> --outputs <output format list> --output-file <output_file_name> --list-outputs --print-checks ]"
-    try:
-        opts, args = getopt.getopt(
-            argv,
-            "ho:p:a:c:d:",
-            [
-                "help",
-                "outputs=",
-                "output-file=",
-                "profile=",
-                "auditor=",
-                "check=",
-                "print-checks",
-                "delay=",
-                "list-outputs",
-            ],
-        )
-    except getopt.GetoptError:
-        print(help_text)
+@click.command()
+@click.option('-p', '--profile-name', default="", help='User profile to use')
+@click.option('-a', '--auditor-name', default="", help='Auditor to test defaulting to all auditors')
+@click.option('-c', '--check-name', default="", help='Check to test defaulting to all checks')
+@click.option('-d', '--delay', default=0, help='Delay between auditors defaulting to 0')
+@click.option('-o', '--outputs', multiple=True, default=(["sechub"]), show_default=True, help='Outputs for findings')
+@click.option('--output-file', default="output", show_default=True, help='File to output findings')
+@click.option('--list-options', is_flag=True, help='List output options')
+@click.option('--list-checks', is_flag=True, help='List all checks')
+def main(profile_name, auditor_name, check_name, delay, outputs, output_file, list_options, list_checks):
+    if list_options:
+        print(get_providers())
         sys.exit(2)
-    for opt, arg in opts:
-        if opt in ("-h", "--help"):
-            print(help_text)
-            sys.exit(2)
-        if opt == "--list-outputs":
-            print(get_providers())
-            sys.exit(2)
-        if opt == "--print-checks":
-            print_checks()
-            sys.exit(2)
-        if opt in ("-o", "--outputs"):
-            outputs.append(arg)
-        if opt in ("-p", "--profile"):
-            profile_name = arg.strip()
-        if opt in ("-a", "--auditor"):
-            auditor_name = arg.strip()
-        if opt in ("-c", "--check"):
-            check_name = arg
-        if opt in ("-d", "--delay"):
-            delay = float(arg)
+
+    if list_checks:
+        print_checks()
+        sys.exit(2)
 
     if profile_name:
         boto3.setup_default_session(profile_name=profile_name)
