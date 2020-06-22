@@ -242,7 +242,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **212** checks supported across **65** AWS services / components using **47** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **215** checks supported across **65** AWS services / components using **48** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -270,6 +270,9 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_DocumentDB_Auditor.py           | DocumentDB Cluster            | Is cluster TLS enforcement on                                                          |
 | Amazon_DocumentDB_Auditor.py           | DocDB Snapshot                | Are docdb cluster snapshots encrypted                                                  |
 | Amazon_DocumentDB_Auditor.py           | DocDB Snapshot                | Are docdb cluster snapshots public                                                     |
+| Amazon_DynamoDB_Auditor.py             | DynamoDB Table                | Do tables use KMS CMK for encryption                                                   |
+| Amazon_DynamoDB_Auditor.py             | DynamoDB Table                | Do tables have PITR enabled                                                            |
+| Amazon_DynamoDB_Auditor.py             | DynamoDB Table                | Do tables have TTL enabled                                                             |
 | Amazon_EBS_Auditor.py                  | EBS Volume                    | Is the Volume attached                                                                 |
 | Amazon_EBS_Auditor.py                  | EBS Volume                    | Is the Volume configured to be<br>deleted on instance termination                      |
 | Amazon_EBS_Auditor.py                  | EBS Volume                    | Is the Volume encrypted                                                                |

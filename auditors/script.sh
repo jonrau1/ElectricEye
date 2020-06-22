@@ -23,6 +23,8 @@ python3 Amazon_CognitoIdP_Auditor.py
 sleep 2
 python3 Amazon_DocumentDB_Auditor.py
 sleep 2
+python3 Amazon_DynamoDB_Auditor.py
+sleep 2
 python3 Amazon_EBS_Auditor.py
 sleep 2
 python3 Amazon_EC2_Auditor.py

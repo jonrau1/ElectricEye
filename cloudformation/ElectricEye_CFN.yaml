@@ -198,6 +198,8 @@ Resources:
             - ds:ListLogSubscriptions
             - dynamodb:DescribeTable
             - dynamodb:ListTables
+            - dynamodb:DescribeContinuousBackups
+            - dynamodb:DescribeTimeToLive
             - ec2:DescribeAddresses
             - ec2:DescribeFlowLogs
             - ec2:DescribeImageAttribute
