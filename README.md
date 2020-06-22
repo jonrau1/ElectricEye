@@ -19,6 +19,7 @@ Continuously monitor your AWS services for configurations that can lead to degra
   - [Setup baseline infrastructure via Terraform](https://github.com/jonrau1/ElectricEye#setup-baseline-infrastructure-via-terraform)
   - [Setup baseline infrastructure via AWS CloudFormation](https://github.com/jonrau1/ElectricEye#setup-baseline-infrastructure-via-aws-cloudformation)
   - [Manually execute the ElectricEye ECS Task](https://github.com/jonrau1/ElectricEye#manually-execute-the-electriceye-ecs-task-you-only-need-to-do-this-once)
+  - [Running locally](https://github.com/jonrau1/ElectricEye#running-locally)
 - [Supported Services and Checks](https://github.com/jonrau1/ElectricEye#supported-services-and-checks)
 - [Add-on Modules](https://github.com/jonrau1/ElectricEye#add-on-modules)
   - [Config Findings Pruner](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/config-deletion-pruner)
@@ -31,6 +32,7 @@ Continuously monitor your AWS services for configurations that can lead to degra
   - [13. How much does this solution cost to run?](https://github.com/jonrau1/ElectricEye#13-how-much-does-this-solution-cost-to-run)
   - [14. What are those other tools you mentioned?](https://github.com/jonrau1/ElectricEye#14-what-are-those-other-tools-you-mentioned)
 - [Contributing](https://github.com/jonrau1/ElectricEye#contributing)
+  - [Auditor testing](https://github.com/jonrau1/ElectricEye#auditor-testing)
   - [ToDo](https://github.com/jonrau1/ElectricEye#to-do)
 - [License](https://github.com/jonrau1/ElectricEye#license)
 
@@ -240,6 +242,17 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 ![ECS task menu](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/ecs-task-menu-modifications.JPG)
 
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
+
+### Running locally
+1. Install all dependencies
+```bash
+pip install -r requirements.txt
+```
+2. Run the controller
+```bash
+python eeauditor/controller.py
+```
+Add the --help option for info on running individual checks and auditors and different outputs options.
 
 ## Supported Services and Checks
 These are the following services and checks perform by each Auditor. There are currently **214** checks supported across **66** AWS services / components using **48** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
@@ -752,6 +765,17 @@ Quick shout-outs to the folks who answered the call early to test out ElectricEy
 - [Manuel Leos Rivas](https://www.linkedin.com/in/manuel-lr/)
 - [Andrew Alaniz](https://www.linkedin.com/in/andrewdalaniz/)
 - [Christopher Childers](https://www.linkedin.com/in/christopher-childers-28950537/)
+
+### Auditor testing
+1. Install dependencies
+```bash
+pip install -r requirements-dev.txt
+```
+2. Run pytest
+```bash
+pytest
+```
+Tests are located in the [eeauditor tests folder](https://github.com/jonrau1/ElectricEye/eeauditor/tests) and individual test can be run by adding the path with the name of the file after pytest.
 
 ### To-Do
 As of 12 MAR 2020, most of these items will be tracked on the [roadmap project board](https://github.com/jonrau1/ElectricEye/projects/1)
