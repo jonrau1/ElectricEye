@@ -244,12 +244,15 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
 ### Running locally
-1. Have python 3 and pip installed and setup virtualenv
+1. Navigate to the IAM console and click on **Policies** under **Access management**. Select **Create policy** and under the JSON tab, copy and paste the contents [Instance Profile IAM Policy](policies/Instance_Profile_IAM_Policy.json). Click **Review policy**, create a name, and then click **Create policy**.
+
+2. Have python 3 and pip installed and setup virtualenv
 ```bash
 pip install virtualenv --user
 virtualenv .venv
 ```
-2. This will create a virtualenv directory called .venv which needs to be activated
+
+3. This will create a virtualenv directory called .venv which needs to be activated
 ```bash
 #For macOS and Linux
 . venv/bin/activate
@@ -257,14 +260,17 @@ virtualenv .venv
 #For Windows
 venv\scripts\activate
 ```
-3. Install all dependencies
+
+4. Install all dependencies
 ```bash
 pip install -r requirements.txt
 ```
-4. Run the controller
+
+5. Run the controller
 ```bash
 python eeauditor/controller.py
 ```
+
 Add the --help option for info on running individual checks and auditors and different outputs options.
 
 ## Supported Services and Checks
