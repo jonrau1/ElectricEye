@@ -274,7 +274,7 @@ python eeauditor/controller.py
 Add the --help option for info on running individual checks and auditors and different outputs options.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **214** checks supported across **66** AWS services / components using **48** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **217** checks supported across **66** AWS services / components using **49** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -302,6 +302,9 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_DocumentDB_Auditor.py           | DocumentDB Cluster            | Is cluster TLS enforcement on                                                          |
 | Amazon_DocumentDB_Auditor.py           | DocDB Snapshot                | Are docdb cluster snapshots encrypted                                                  |
 | Amazon_DocumentDB_Auditor.py           | DocDB Snapshot                | Are docdb cluster snapshots public                                                     |
+| Amazon_DynamoDB_Auditor.py             | DynamoDB Table                | Do tables use KMS CMK for encryption                                                   |
+| Amazon_DynamoDB_Auditor.py             | DynamoDB Table                | Do tables have PITR enabled                                                            |
+| Amazon_DynamoDB_Auditor.py             | DynamoDB Table                | Do tables have TTL enabled                                                             |
 | Amazon_EBS_Auditor.py                  | EBS Volume                    | Is the Volume attached                                                                 |
 | Amazon_EBS_Auditor.py                  | EBS Volume                    | Is the Volume configured to be<br>deleted on instance termination                      |
 | Amazon_EBS_Auditor.py                  | EBS Volume                    | Is the Volume encrypted                                                                |
