@@ -19,7 +19,7 @@ Continuously monitor your AWS services for configurations that can lead to degra
   - [Setup baseline infrastructure via Terraform](https://github.com/jonrau1/ElectricEye#setup-baseline-infrastructure-via-terraform)
   - [Setup baseline infrastructure via AWS CloudFormation](https://github.com/jonrau1/ElectricEye#setup-baseline-infrastructure-via-aws-cloudformation)
   - [Manually execute the ElectricEye ECS Task](https://github.com/jonrau1/ElectricEye#manually-execute-the-electriceye-ecs-task-you-only-need-to-do-this-once)
-  - [Running locally](https://github.com/jonrau1/ElectricEye#running-locally)
+  - [Running locally](#running-locally)
 - [Supported Services and Checks](https://github.com/jonrau1/ElectricEye#supported-services-and-checks)
 - [Add-on Modules](https://github.com/jonrau1/ElectricEye#add-on-modules)
   - [Config Findings Pruner](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/config-deletion-pruner)
@@ -32,7 +32,7 @@ Continuously monitor your AWS services for configurations that can lead to degra
   - [13. How much does this solution cost to run?](https://github.com/jonrau1/ElectricEye#13-how-much-does-this-solution-cost-to-run)
   - [14. What are those other tools you mentioned?](https://github.com/jonrau1/ElectricEye#14-what-are-those-other-tools-you-mentioned)
 - [Contributing](https://github.com/jonrau1/ElectricEye#contributing)
-  - [Auditor testing](https://github.com/jonrau1/ElectricEye#auditor-testing)
+  - [Auditor testing](#auditor-testing)
   - [ToDo](https://github.com/jonrau1/ElectricEye#to-do)
 - [License](https://github.com/jonrau1/ElectricEye#license)
 
@@ -244,11 +244,24 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
 ### Running locally
-1. Install all dependencies
+1. Have python 3 and pip installed and setup virtualenv
+```bash
+pip install virtualenv --user
+virtualenv .venv
+```
+2. This will create a virtualenv directory called .venv which needs to be activated
+```bash
+#For macOS and Linux
+. venv/bin/activate
+
+#For Windows
+venv\scripts\activate
+```
+3. Install all dependencies
 ```bash
 pip install -r requirements.txt
 ```
-2. Run the controller
+4. Run the controller
 ```bash
 python eeauditor/controller.py
 ```
@@ -775,7 +788,7 @@ pip install -r requirements-dev.txt
 ```bash
 pytest
 ```
-Tests are located in the [eeauditor tests folder](https://github.com/jonrau1/ElectricEye/eeauditor/tests) and individual test can be run by adding the path with the name of the file after pytest.
+Tests are located in the [eeauditor tests folder](eeauditor/tests) and individual test can be run by adding the path with the name of the file after pytest.
 
 ### To-Do
 As of 12 MAR 2020, most of these items will be tracked on the [roadmap project board](https://github.com/jonrau1/ElectricEye/projects/1)
