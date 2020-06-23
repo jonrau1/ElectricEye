@@ -9,7 +9,7 @@ class DopsProvider(object):
     __provider__ = "dops"
 
     def __init__(self):
-        self.url = "https://collector.dev2.disruptops.com/event"
+        self.url = os.environ.get("DOPS_COLLECTOR_URL")
         self.client_id = os.environ.get("DOPS_CLIENT_ID")
         self.api_key = os.environ.get("DOPS_API_KEY")
 
