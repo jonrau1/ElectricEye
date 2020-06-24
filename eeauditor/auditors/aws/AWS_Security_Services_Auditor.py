@@ -23,6 +23,7 @@ registry = CheckRegister()
 accessanalyzer = boto3.client("accessanalyzer")
 guardduty = boto3.client("guardduty")
 detective = boto3.client("detective")
+macie2 = boto3.client("macie2")
 
 
 @registry.register_check("accessanalyzer")
@@ -32,7 +33,9 @@ def iam_access_analyzer_detector_check(
     response = accessanalyzer.list_analyzers()
     iamAccessAnalyzerCheck = str(response["analyzers"])
     # ISO Time
-    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    iso8601Time = (
+        datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    )
     # unique ID
     generatorUuid = str(uuid.uuid4())
     if iamAccessAnalyzerCheck == "[]":
@@ -140,7 +143,9 @@ def guard_duty_detector_check(
     response = guardduty.list_detectors()
     guarddutyDetectorCheck = str(response["DetectorIds"])
     # ISO Time
-    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    iso8601Time = (
+        datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    )
     # unique ID
     generatorUuid = str(uuid.uuid4())
     if guarddutyDetectorCheck == "[]":
@@ -248,7 +253,9 @@ def detective_graph_check(
     try:
         response = detective.list_graphs(MaxResults=200)
         # ISO Time
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        iso8601Time = (
+            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        )
         # unique ID
         generatorUuid = str(uuid.uuid4())
         if str(response["GraphList"]) == "[]":
@@ -258,7 +265,9 @@ def detective_graph_check(
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": generatorUuid,
                 "AwsAccountId": awsAccountId,
-                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices"
+                ],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -306,7 +315,9 @@ def detective_graph_check(
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": generatorUuid,
                 "AwsAccountId": awsAccountId,
-                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices"
+                ],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -345,6 +356,99 @@ def detective_graph_check(
                 },
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED",
+            }
+            yield finding
+    except Exception as e:
+        print(e)
+
+
+@registry.register_check("macie2")
+def macie_in_use_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
+    try:
+        # ISO Time
+        iso8601Time = (
+            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        )
+        # unique ID
+        generatorUuid = str(uuid.uuid4())
+        try:
+            response = macie2.get_macie_session()
+            status = response["status"]
+            if status == "PAUSED":
+                raise Exception
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": awsAccountId + "/security-services-macie-in-use-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": generatorUuid,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices"
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[SecSvcs.4] Amazon Macie should be enabled",
+                "Description": "Amazon Macie is enabled.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If Detective should be enabled refer to the Setting up Amazon Detective section of the Amazon Detective Administration Guide",
+                        "Url": "https://docs.aws.amazon.com/detective/latest/adminguide/detective-setup.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsAccount",
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                        "Partition": "aws",
+                        "Region": awsRegion,
+                    }
+                ],
+                "Compliance": {"Status": "PASSED",},
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED",
+            }
+            yield finding
+        except:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": awsAccountId + "/security-services-macie-in-use-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": generatorUuid,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices"
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[SecSvcs.4] Amazon Macie should be enabled",
+                "Description": "Amazon Macie is not enabled.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If Macie should be enabled refer to the Getting started with Amazon Macie section of the Amazon Macie User Guide",
+                        "Url": "https://docs.aws.amazon.com/macie/latest/user/what-is-macie.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsAccount",
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                        "Partition": "aws",
+                        "Region": awsRegion,
+                    }
+                ],
+                "Compliance": {"Status": "FAILED",},
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE",
             }
             yield finding
     except Exception as e:

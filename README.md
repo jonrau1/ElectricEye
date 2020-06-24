@@ -274,7 +274,7 @@ python eeauditor/controller.py
 Add the --help option for info on running individual checks and auditors and different outputs options.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **217** checks supported across **66** AWS services / components using **49** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **219** checks supported across **68** AWS services / components using **50** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -433,6 +433,7 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_SNS_Auditor.py                  | SNS Topic                     | Does the topic have plaintext (HTTP)<br>subscriptions                                  |
 | Amazon_SNS_Auditor.py                  | SNS Topic                     | Does the topic allow public access                                                     |
 | Amazon_SNS_Auditor.py                  | SNS Topic                     | Does the   topic allow cross-account access                                            |
+| Amazon_SQS_Auditor.py                  | SQS Queue                     | Are there old messages                                                                 |
 | Amazon_VPC_Auditor.py                  | VPC                           | Is the default VPC out and about                                                       |
 | Amazon_VPC_Auditor.py                  | VPC                           | Is flow logging enabled                                                                |
 | Amazon_WorkSpaces_Auditor.py           | Workspace                     | Is user volume encrypted                                                               |
@@ -490,6 +491,7 @@ These are the following services and checks perform by each Auditor. There are c
 | AWS_Security_Services_Auditor.py       | IAM Access Analyzer (Account) | Is IAM Access Analyzer enabled                                                         |
 | AWS_Security_Services_Auditor.py       | GuardDuty (Account)           | Is GuardDuty enabled                                                                   |
 | AWS_Security_Services_Auditor.py       | Detective (Account)           | Is Detective enabled                                                                   |
+| AWS_Security_Services_Auditor.py       | Macie2                        | Is Macie enabled                                                                       |
 | Shodan_Auditor.py                      | EC2 Instance                  | Are EC2 instances w/ public IPs indexed                                                |
 | Shodan_Auditor.py                      | ELBv2 (ALB)                   | Are internet-facing ALBs indexed                                                       |
 | Shodan_Auditor.py                      | RDS Instance                  | Are public accessible RDS instances indexed                                            |

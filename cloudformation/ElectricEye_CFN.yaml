@@ -262,6 +262,7 @@ Resources:
                   - lambda:ListFunctions
                   - license-manager:GetLicenseConfiguration
                   - license-manager:ListLicenseConfigurations
+                  - macie2:GetMacieSession
                   - managedblockchain:GetNetwork
                   - managedblockchain:ListMembers
                   - managedblockchain:ListNetworks
@@ -319,6 +320,7 @@ Resources:
                   - ssm:DescribeInstanceProperties
                   - sts:GetCallerIdentity
                   - sqs:ListQueues
+                  - sqs:GetQueueAttributes
                   - workspaces:DescribeWorkspaceDirectories
                   - workspaces:DescribeWorkspaces
                 Resource: "*"

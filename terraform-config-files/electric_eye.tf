@@ -277,6 +277,7 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "iam:ListServerCertificates",
                 "mq:DescribeBroker",
                 "mq:ListBrokers",
+                "macie2:GetMacieSession",
                 "managedblockchain:GetNetwork",
                 "managedblockchain:ListMembers",
                 "managedblockchain:ListNetworks",
@@ -347,7 +348,8 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "kms:GetKeyPolicy",
                 "kms:ListKeys",
                 "kms:GetKeyRotationStatus",
-                "sqs:ListQueues"
+                "sqs:ListQueues",
+                "GetQueueAttributes"
             ],
             "Resource": "*"
         }
