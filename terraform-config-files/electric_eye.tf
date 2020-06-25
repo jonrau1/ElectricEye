@@ -352,7 +352,10 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "sqs:GetQueueAttributes",
                 "qldb:ListLedgers",
                 "qldb:DescribeLedger",
-                "qldb:ListJournalS3Exports"
+                "qldb:ListJournalS3Exports",
+                "globalaccelerator:ListAccelerators",
+                "globalaccelerator:ListListeners",
+                "globalaccelerator:ListEndpointGroups"
             ],
             "Resource": "*"
         }

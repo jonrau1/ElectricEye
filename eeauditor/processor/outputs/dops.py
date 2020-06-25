@@ -12,9 +12,6 @@ api_key = os.environ.get("DOPS_API_KEY")
 class DopsProvider(object):
     __provider__ = "dops"
 
-    def __init__(self):
-
-
     def write_findings(self, findings: list, **kwargs):
         if client_id and api_key and url:
             for finding in findings:

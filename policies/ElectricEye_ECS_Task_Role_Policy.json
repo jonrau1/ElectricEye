@@ -144,7 +144,10 @@
                 "ecr:GetRepositoryPolicy",
                 "rds:DescribeDBClusterParameterGroups",
                 "sqs:ListQueues",
-                "sqs:GetQueueAttributes"
+                "sqs:GetQueueAttributes",
+                "globalaccelerator:ListAccelerators",
+                "globalaccelerator:ListListeners",
+                "globalaccelerator:ListEndpointGroups"
             ],
             "Resource": "*"
         }

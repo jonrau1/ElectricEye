@@ -236,6 +236,9 @@ Resources:
                   - es:ListDomainNames
                   - firehose:DescribeDeliveryStream
                   - firehose:ListDeliveryStreams
+                  - globalaccelerator:ListAccelerators
+                  - globalaccelerator:ListListeners
+                  - globalaccelerator:ListEndpointGroups
                   - glue:GetSecurityConfiguration
                   - glue:GetResourcePolicy
                   - glue:GetCrawler

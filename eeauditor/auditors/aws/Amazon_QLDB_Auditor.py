@@ -73,7 +73,7 @@ def qldb_deletion_protection_check(
                         {
                             "Type": "AwsAccount",
                             "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                         }
                     ],
@@ -110,7 +110,7 @@ def qldb_deletion_protection_check(
                         {
                             "Type": "AwsAccount",
                             "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                         }
                     ],
@@ -170,7 +170,7 @@ def qldb_export_export_encryption_check(
                         {
                             "Type": "AwsAccount",
                             "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                         }
                     ],
@@ -207,7 +207,7 @@ def qldb_export_export_encryption_check(
                         {
                             "Type": "AwsAccount",
                             "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                         }
                     ],
