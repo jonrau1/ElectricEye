@@ -20,6 +20,9 @@
                 "kinesis:ListStreams",
                 "cognito-idp:DescribeUserPool",
                 "dynamodb:DescribeTable",
+                "dynamodb:DescribeContinuousBackups",
+                "dynamodb:DescribeTimeToLive",
+                "dynamodb:ListTables",
                 "detective:ListGraphs",
                 "shield:DescribeSubscription",
                 "ec2:DescribeVolumes",
@@ -45,6 +48,7 @@
                 "iam:ListUserPolicies",
                 "iam:ListAttachedUserPolicies",
                 "iam:ListServerCertificates",
+                "macie2:GetMacieSession",
                 "managedblockchain:GetNetwork",
                 "managedblockchain:ListMembers",
                 "managedblockchain:ListNetworks",
@@ -81,7 +85,6 @@
                 "ec2:DescribeAddresses",
                 "appstream:DescribeUsers",
                 "kafka:ListClusters",
-                "dynamodb:ListTables",
                 "shield:DescribeProtection",
                 "ec2:DescribeInstanceAttribute",
                 "ec2:DescribeFlowLogs",
@@ -139,7 +142,9 @@
                 "rds:DescribeDBClusters",
                 "sagemaker:ListEndpoints",
                 "ecr:GetRepositoryPolicy",
-                "rds:DescribeDBClusterParameterGroups"
+                "rds:DescribeDBClusterParameterGroups",
+                "sqs:ListQueues",
+                "sqs:GetQueueAttributes"
             ],
             "Resource": "*"
         }

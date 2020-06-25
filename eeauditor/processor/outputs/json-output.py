@@ -13,6 +13,7 @@ class JsonProvider(object):
         jsonfile = output_file + ".json"
         json_out_location = ""
         with open(jsonfile, "w") as json_out:
+            print(f"Writing findings to {jsonfile}")
             print('{"Findings":[', file=json_out)
             json_out_location = os.path.abspath(json_out.name)
             for finding in findings:

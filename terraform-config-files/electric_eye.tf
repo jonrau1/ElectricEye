@@ -214,6 +214,9 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "kinesis:ListStreams",
                 "cognito-idp:DescribeUserPool",
                 "dynamodb:DescribeTable",
+                "dynamodb:DescribeContinuousBackups",
+                "dynamodb:DescribeTimeToLive",
+                "dynamodb:ListTables",
                 "shield:DescribeSubscription",
                 "ec2:DescribeVolumes",
                 "ec2:GetEbsDefaultKmsKeyId",
@@ -262,7 +265,6 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "ec2:DescribeAddresses",
                 "appstream:DescribeUsers",
                 "kafka:ListClusters",
-                "dynamodb:ListTables",
                 "shield:DescribeProtection",
                 "ec2:DescribeInstanceAttribute",
                 "ec2:DescribeFlowLogs",
@@ -275,6 +277,7 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "iam:ListServerCertificates",
                 "mq:DescribeBroker",
                 "mq:ListBrokers",
+                "macie2:GetMacieSession",
                 "managedblockchain:GetNetwork",
                 "managedblockchain:ListMembers",
                 "managedblockchain:ListNetworks",
@@ -345,7 +348,8 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "kms:GetKeyPolicy",
                 "kms:ListKeys",
                 "kms:GetKeyRotationStatus",
-                "sqs:ListQueues"
+                "sqs:ListQueues",
+                "GetQueueAttributes"
             ],
             "Resource": "*"
         }

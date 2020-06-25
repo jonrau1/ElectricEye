@@ -19,6 +19,7 @@ Continuously monitor your AWS services for configurations that can lead to degra
   - [Setup baseline infrastructure via Terraform](https://github.com/jonrau1/ElectricEye#setup-baseline-infrastructure-via-terraform)
   - [Setup baseline infrastructure via AWS CloudFormation](https://github.com/jonrau1/ElectricEye#setup-baseline-infrastructure-via-aws-cloudformation)
   - [Manually execute the ElectricEye ECS Task](https://github.com/jonrau1/ElectricEye#manually-execute-the-electriceye-ecs-task-you-only-need-to-do-this-once)
+  - [Running locally](#running-locally)
 - [Supported Services and Checks](https://github.com/jonrau1/ElectricEye#supported-services-and-checks)
 - [Add-on Modules](https://github.com/jonrau1/ElectricEye#add-on-modules)
   - [Config Findings Pruner](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/config-deletion-pruner)
@@ -31,6 +32,7 @@ Continuously monitor your AWS services for configurations that can lead to degra
   - [13. How much does this solution cost to run?](https://github.com/jonrau1/ElectricEye#13-how-much-does-this-solution-cost-to-run)
   - [14. What are those other tools you mentioned?](https://github.com/jonrau1/ElectricEye#14-what-are-those-other-tools-you-mentioned)
 - [Contributing](https://github.com/jonrau1/ElectricEye#contributing)
+  - [Auditor testing](#auditor-testing)
   - [ToDo](https://github.com/jonrau1/ElectricEye#to-do)
 - [License](https://github.com/jonrau1/ElectricEye#license)
 
@@ -241,8 +243,38 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
+### Running locally
+1. Navigate to the IAM console and click on **Policies** under **Access management**. Select **Create policy** and under the JSON tab, copy and paste the contents [Instance Profile IAM Policy](policies/Instance_Profile_IAM_Policy.json). Click **Review policy**, create a name, and then click **Create policy**.
+
+2. Have python 3 and pip installed and setup virtualenv
+```bash
+pip install virtualenv --user
+virtualenv .venv
+```
+
+3. This will create a virtualenv directory called .venv which needs to be activated
+```bash
+#For macOS and Linux
+. venv/bin/activate
+
+#For Windows
+venv\scripts\activate
+```
+
+4. Install all dependencies
+```bash
+pip install -r requirements.txt
+```
+
+5. Run the controller
+```bash
+python eeauditor/controller.py
+```
+
+Add the --help option for info on running individual checks and auditors and different outputs options.
+
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **214** checks supported across **66** AWS services / components using **48** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **219** checks supported across **68** AWS services / components using **50** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -270,6 +302,9 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_DocumentDB_Auditor.py           | DocumentDB Cluster            | Is cluster TLS enforcement on                                                          |
 | Amazon_DocumentDB_Auditor.py           | DocDB Snapshot                | Are docdb cluster snapshots encrypted                                                  |
 | Amazon_DocumentDB_Auditor.py           | DocDB Snapshot                | Are docdb cluster snapshots public                                                     |
+| Amazon_DynamoDB_Auditor.py             | DynamoDB Table                | Do tables use KMS CMK for encryption                                                   |
+| Amazon_DynamoDB_Auditor.py             | DynamoDB Table                | Do tables have PITR enabled                                                            |
+| Amazon_DynamoDB_Auditor.py             | DynamoDB Table                | Do tables have TTL enabled                                                             |
 | Amazon_EBS_Auditor.py                  | EBS Volume                    | Is the Volume attached                                                                 |
 | Amazon_EBS_Auditor.py                  | EBS Volume                    | Is the Volume configured to be<br>deleted on instance termination                      |
 | Amazon_EBS_Auditor.py                  | EBS Volume                    | Is the Volume encrypted                                                                |
@@ -398,6 +433,7 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_SNS_Auditor.py                  | SNS Topic                     | Does the topic have plaintext (HTTP)<br>subscriptions                                  |
 | Amazon_SNS_Auditor.py                  | SNS Topic                     | Does the topic allow public access                                                     |
 | Amazon_SNS_Auditor.py                  | SNS Topic                     | Does the   topic allow cross-account access                                            |
+| Amazon_SQS_Auditor.py                  | SQS Queue                     | Are there old messages                                                                 |
 | Amazon_VPC_Auditor.py                  | VPC                           | Is the default VPC out and about                                                       |
 | Amazon_VPC_Auditor.py                  | VPC                           | Is flow logging enabled                                                                |
 | Amazon_WorkSpaces_Auditor.py           | Workspace                     | Is user volume encrypted                                                               |
@@ -455,6 +491,7 @@ These are the following services and checks perform by each Auditor. There are c
 | AWS_Security_Services_Auditor.py       | IAM Access Analyzer (Account) | Is IAM Access Analyzer enabled                                                         |
 | AWS_Security_Services_Auditor.py       | GuardDuty (Account)           | Is GuardDuty enabled                                                                   |
 | AWS_Security_Services_Auditor.py       | Detective (Account)           | Is Detective enabled                                                                   |
+| AWS_Security_Services_Auditor.py       | Macie2                        | Is Macie enabled                                                                       |
 | Shodan_Auditor.py                      | EC2 Instance                  | Are EC2 instances w/ public IPs indexed                                                |
 | Shodan_Auditor.py                      | ELBv2 (ALB)                   | Are internet-facing ALBs indexed                                                       |
 | Shodan_Auditor.py                      | RDS Instance                  | Are public accessible RDS instances indexed                                            |
@@ -752,6 +789,17 @@ Quick shout-outs to the folks who answered the call early to test out ElectricEy
 - [Manuel Leos Rivas](https://www.linkedin.com/in/manuel-lr/)
 - [Andrew Alaniz](https://www.linkedin.com/in/andrewdalaniz/)
 - [Christopher Childers](https://www.linkedin.com/in/christopher-childers-28950537/)
+
+### Auditor testing
+1. Install dependencies
+```bash
+pip install -r requirements-dev.txt
+```
+2. Run pytest
+```bash
+pytest
+```
+Tests are located in the [eeauditor tests folder](eeauditor/tests) and individual test can be run by adding the path with the name of the file after pytest.
 
 ### To-Do
 As of 12 MAR 2020, most of these items will be tracked on the [roadmap project board](https://github.com/jonrau1/ElectricEye/projects/1)
