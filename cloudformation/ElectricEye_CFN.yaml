@@ -271,6 +271,9 @@ Resources:
                   - managedblockchain:ListNodes
                   - mq:DescribeBroker
                   - mq:ListBrokers
+                  - qldb:DescribeLedger
+                  - qldb:ListJournalS3Exports
+                  - qldb:ListLedgers
                   - rds:DescribeDBClusterParameterGroups
                   - rds:DescribeDBClusterParameters
                   - rds:DescribeDBClusters

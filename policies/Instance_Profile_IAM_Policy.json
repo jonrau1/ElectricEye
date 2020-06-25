@@ -236,7 +236,10 @@
                 "kms:ListAliases",
                 "kms:GetKeyPolicy",
                 "kms:ListKeys",
-                "kms:GetKeyRotationStatus"
+                "kms:GetKeyRotationStatus",
+                "qldb:ListLedgers",
+                "qldb:DescribeLedger",
+                "qldb:ListJournalS3Exports"
             ],
             "Resource": "*"
         }

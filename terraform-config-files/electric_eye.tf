@@ -349,7 +349,10 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "kms:ListKeys",
                 "kms:GetKeyRotationStatus",
                 "sqs:ListQueues",
-                "GetQueueAttributes"
+                "sqs:GetQueueAttributes",
+                "qldb:ListLedgers",
+                "qldb:DescribeLedger",
+                "qldb:ListJournalS3Exports"
             ],
             "Resource": "*"
         }
