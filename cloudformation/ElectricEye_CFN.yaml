@@ -22,6 +22,14 @@ Parameters:
     Type: String
     Description: The SSM Secure String Parameter containing your Shodan API key. Leave the default value if you will not be using Shodan
     Default: placeholder
+  DopsClientIdSSMParam:
+    Type: String
+    Description: The SSM Secure String Parameter containing your DisruptOps Client ID. Leave the default value if you will not be using DisruptOps
+    Default: placeholder
+  DopsApiKeySSMParam:
+      Type: String
+      Description: The SSM Secure String Parameter containing your DisruptOps API key. Leave the default value if you will not be using DisruptOps
+      Default: placeholder
   ElectricEyeClusterName:
     Type: String
     Description: Name of the ECS Cluster that the ElectricEye Fargate Task will run in
@@ -396,6 +404,10 @@ Resources:
           Environment:
             - Name: SHODAN_API_KEY_PARAM
               Value: !Ref ShodanApiKeySSMParam
+            - Name: DOPS_CLIENT_ID_PARAM
+              Value: !Ref DopsClientIdSSMParam
+            - Name: DOPS_API_KEY_PARAM
+              Value: !Ref DopsApiKeySSMParam
           LogConfiguration:
             LogDriver: awslogs
             Options:

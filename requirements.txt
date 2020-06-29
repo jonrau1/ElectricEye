@@ -2,3 +2,4 @@ awscli
 boto3
 requests
 pluginbase
+click
