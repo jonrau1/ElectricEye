@@ -1,11 +1,20 @@
+import boto3
 import json
 import os
 import requests
 from processor.outputs.output_base import ElectricEyeOutput
 
-url = os.environ.get("DOPS_COLLECTOR_URL")
-client_id = os.environ.get("DOPS_CLIENT_ID")
-api_key = os.environ.get("DOPS_API_KEY")
+ssm = boto3.client("ssm")
+
+dops_client_id_param = os.environ["DOPS_CLIENT_ID_PARAM"]
+dops_api_key_param = os.environ["DOPS_API_KEY_PARAM"]
+
+client_id_response = ssm.get_parameter(Name=dops_client_id_param, WithDecryption=True)
+api_key_response = ssm.get_parameter(Name=dops_api_key_param, WithDecryption=True)
+
+url = "https://collector.prod.disruptops.com/event"
+client_id = str(client_id_response["Parameter"]["Value"])
+api_key = str(api_key_response["Parameter"]["Value"])
 
 
 @ElectricEyeOutput
