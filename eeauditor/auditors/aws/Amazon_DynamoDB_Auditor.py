@@ -28,7 +28,7 @@ def paginate(cache):
         return response
     get_paginators = dynamodb.get_paginator('list_tables')
     if get_paginators:
-        cache["paginate"] = paginator.paginate()
+        cache["paginate"] = get_paginators.paginate()
         return cache["paginate"]
 
 @registry.register_check("dynamodb")
@@ -280,7 +280,7 @@ def ddb_pitr_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition:
                         },
                         'RecordState': 'ACTIVE'
                     }
-                    yield findign
+                    yield finding
                 else:
                     # ISO Time
                     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
