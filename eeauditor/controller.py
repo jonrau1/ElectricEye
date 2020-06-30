@@ -48,7 +48,7 @@ def run_auditor(auditor_name=None, check_name=None, delay=0, outputs=None, outpu
 @click.option('-c', '--check-name', default="", help='Check to test defaulting to all checks')
 @click.option('-d', '--delay', default=0, help='Delay between auditors defaulting to 0')
 @click.option('-o', '--outputs', multiple=True, default=(["sechub"]), show_default=True, help='Outputs for findings')
-@click.option('--output-file', default="output", show_default=True, help='File to output findings')
+@click.option('--output-file', default="findings", show_default=True, help='File to output findings')
 @click.option('--list-options', is_flag=True, help='List output options')
 @click.option('--list-checks', is_flag=True, help='List all checks')
 def main(profile_name, auditor_name, check_name, delay, outputs, output_file, list_options, list_checks):
