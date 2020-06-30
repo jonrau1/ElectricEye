@@ -99,7 +99,7 @@ aws ecr create-repository --repository-name <REPO_NAME>
 
 ```bash
 cd ElectricEye
-aws ecr get-login-password --region <AWS_REGION> | sudo docker login --username AWS --password-stdin <userid>.dkr.ecr.<AWS_REGION>.amazonaws.com
+aws ecr get-login-password --region <AWS_REGION> | sudo docker login --username AWS --password-stdin <ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com
 ```
 **Note**: If you are using AWS CLI v1 use the following in place of the line above `sudo $(aws ecr get-login --no-include-email --region <AWS_REGION>)`
 ```
