@@ -23,6 +23,7 @@ class DopsProvider(object):
         self.api_key = str(api_key_response["Parameter"]["Value"])
 
     def write_findings(self, findings: list, **kwargs):
+        print(f"Writing {len(findings)} results to DisruptOps")
         if self.client_id and self.api_key and self.url:
             for finding in findings:
                 response = requests.post(

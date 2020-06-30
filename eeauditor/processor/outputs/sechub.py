@@ -9,7 +9,7 @@ class SecHubProvider(object):
     __provider__ = "sechub"
 
     def write_findings(self, findings: list, **kwargs):
-        print(f"Writing results to SecurityHub")
+        print(f"Writing {len(findings)} results to SecurityHub")
         if findings:
             sechub_client = boto3.client("securityhub")
             for i in range(0, len(findings), 100):

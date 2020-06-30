@@ -35,22 +35,19 @@ class CsvProvider(object):
             {"name": "Description", "path": "Description"},
             {"name": "RecordState", "path": "RecordState"},
             {"name": "Compliance Status", "path": "Compliance.Status"},
-            {"name": "Remediation Recommendation",
-                "path": "Remediation.Recommendation.Text", },
-            {"name": "Remediation Recommendation Link",
-                "path": "Remediation.Recommendation.Url", },
+            {"name": "Remediation Recommendation", "path": "Remediation.Recommendation.Text",},
+            {"name": "Remediation Recommendation Link", "path": "Remediation.Recommendation.Url",},
         ]
         csv_file = output_file + ".csv"
         try:
             with open(csv_file, "w") as csvfile:
-                print(f"Writing findings to {csv_file}")
+                print(f"Writing {len(findings)} findings to {csv_file}")
                 writer = csv.writer(csvfile, dialect="excel")
                 writer.writerow(item["name"] for item in csv_columns)
                 for finding in findings:
                     row_data = []
                     for column_dict in csv_columns:
-                        row_data.append(self.deep_get(
-                            finding, column_dict["path"]))
+                        row_data.append(self.deep_get(finding, column_dict["path"]))
                     writer.writerow(row_data)
             csvfile.close()
         except IOError as e:
