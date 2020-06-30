@@ -16,6 +16,7 @@ Continuously monitor your AWS services for configurations that can lead to degra
 - [Setting Up](https://github.com/jonrau1/ElectricEye#setting-up)
   - [Build and push the Docker image](https://github.com/jonrau1/ElectricEye#build-and-push-the-docker-image)
   - [(OPTIONAL) Setup Shodan.io API Key](https://github.com/jonrau1/ElectricEye#optional-setup-shodanio-api-key)
+  - [(OPTIONAL) Setup DisruptOps Client Id and API Key](#optional-setup-disruptops-client-id-and-api-key)
   - [Setup baseline infrastructure via Terraform](https://github.com/jonrau1/ElectricEye#setup-baseline-infrastructure-via-terraform)
   - [Setup baseline infrastructure via AWS CloudFormation](https://github.com/jonrau1/ElectricEye#setup-baseline-infrastructure-via-aws-cloudformation)
   - [Manually execute the ElectricEye ECS Task](https://github.com/jonrau1/ElectricEye#manually-execute-the-electriceye-ecs-task-you-only-need-to-do-this-once)
@@ -98,7 +99,10 @@ aws ecr create-repository --repository-name <REPO_NAME>
 
 ```bash
 cd ElectricEye
-sudo $(aws ecr get-login --no-include-email --region <AWS_REGION>)
+aws ecr get-login-password --region <AWS_REGION> | sudo docker login --username AWS --password-stdin <userid>.dkr.ecr.<AWS_REGION>.amazonaws.com
+```
+**Note**: If you are using AWS CLI v1 use the following in place of the line above `sudo $(aws ecr get-login --no-include-email --region <AWS_REGION>)`
+```
 sudo docker build -t <REPO_NAME> .
 sudo docker tag <REPO_NAME>:latest <ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/<REPO_NAME>:latest
 sudo docker push <ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/<REPO_NAME>:latest
@@ -115,6 +119,15 @@ This is an optional step to setup a Shodan.io API key to determine if your inter
 
 In both the Terraform config files and CloudFormation templates the value for this key is prepopulated with the value `placeholder`, overwrite them with this parameter you just created to be able to use the Shodan checks.
 
+### (OPTIONAL) Setup DisruptOps Client Id and API Key
+This is an optional step to setup for sending findings to DisruptOps. 
+
+1. Create a Systems Manager Parameter Store `SecureString` parameter for the client id: `aws ssm put-parameter --name dops-client-id --description 'DisruptOps client id' --type SecureString --value <CLIENT-ID-HERE>
+
+2. Create a Systems Manager Parameter Store `SecureString` parameter for this API key: `aws ssm put-parameter --name dops-api-key  --description 'DisruptOps api key' --type SecureString --value <API-KEY-HERE>`
+
+In both the Terraform config files and CloudFormation templates the value for this key is prepopulated with the value `placeholder`, overwrite them with this parameter you just created to be able to use DisruptOps.
+
 ### Setup baseline infrastructure via Terraform
 Before starting [attach this IAM policy](https://github.com/jonrau1/ElectricEye/blob/master/policies/Instance_Profile_IAM_Policy.json) to your [Instance Profile](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html) (if you are using Cloud9 or EC2).
 
@@ -130,7 +143,7 @@ sudo mv terraform /usr/local/bin/
 terraform --version
 ```
 
-2. Change directories, and modify the `variables.tf` config file to include the URI of your Docker image and the name of your ECR Repository as shown in the screenshot below. Optionally replace the value of the Shodan API Key parameter with yours if you created it in the previous optional step.
+2. Change directories, and modify the `variables.tf` config file to include the URI of your Docker image and the name of your ECR Repository as shown in the screenshot below. Optionally replace the values of the Shodan API Key, DisruptOps Client Id, and DisruptOps API Key parameters with yours if you created them in the previous optional steps.
 ```bash
 cd terraform-config-files
 nano variables.tf
@@ -149,7 +162,7 @@ terraform apply -auto-approve
 5. Navigate to the `auditors` directory and upload the code base to your S3 bucket
 ```bash
 cd -
-cd auditors
+cd eeauditor/auditors/aws
 aws s3 sync . s3://<your-bucket-name>
 ```
 
@@ -167,7 +180,7 @@ In the next stage you will launch the ElectricEye ECS task manually because afte
 ### Setup baseline infrastructure via AWS CloudFormation
 1. Download the [CloudFormation template](https://github.com/jonrau1/ElectricEye/blob/master/cloudformation/ElectricEye_CFN.yaml) and create a Stack. Refer to the [Get Started](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/GettingStarted.Walkthrough.html) section of the *AWS CloudFormation User Guide* if you have not done this before.
 
-2. Enter the URI of the Docker image in the space for the parameter **ElectricEyeContainerInfo**. Leave all other parameters as the default value, unless you already used `10.77.0.0/16` as the CIDR for one of your VPCs and plan to attach this VPC to your [T-Gateway](https://aws.amazon.com/transit-gateway/). Optionally replace the value of the Shodan API Key parameter with yours if you created it in the previous optional step and then create your stack.
+2. Enter the URI of the Docker image in the space for the parameter **ElectricEyeContainerInfo**. Leave all other parameters as the default value, unless you already used `10.77.0.0/16` as the CIDR for one of your VPCs and plan to attach this VPC to your [T-Gateway](https://aws.amazon.com/transit-gateway/). Optionally replace the values of the Shodan API Key, DisruptOps Client Id, and DisruptOps API Key parameters with yours if you created them in the previous optional steps and then create your stack.
 ![Run task dropdown](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/cfn-parameter-uri-modification.JPG)
 
 **NOTE**: The Terraform implementation applies a resource-based repository policy that only allows access to the ElectricEye ECS IAM Roles (Execution & Task), if you want to apply something similar for CloudFormation you will need to issue the following ECR CLI command:
@@ -212,7 +225,7 @@ You can create `my-policy.json` with the below example, replace the values for `
 4. Navigate to the `auditors` directory and upload the code base to your S3 bucket
 ```bash
 cd -
-cd auditors
+cd eeauditor/auditors/aws
 aws s3 sync . s3://<your-bucket-name>
 ```
 

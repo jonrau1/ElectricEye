@@ -96,6 +96,14 @@ resource "aws_ecs_task_definition" "Electric_Eye_ECS_Task_Definition" {
       {
         "value": "${var.Shodan_API_Key_SSM_Parameter}",
         "name": "SHODAN_API_KEY_PARAM"
+      },
+      {
+        "value": "${var.Dops_client_id_SSM_Parameter}",
+        "name": "DOPS_CLIENT_ID_PARAM"
+      },
+      {
+        "value": "${var.Dops_api_key_SSM_Parameter}",
+        "name": "DOPS_API_KEY_PARAM"
       }
     ],
     "name": "${var.Electric_Eye_ECS_Resources_Name}",
