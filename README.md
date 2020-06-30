@@ -268,10 +268,10 @@ virtualenv .venv
 3. This will create a virtualenv directory called .venv which needs to be activated
 ```bash
 #For macOS and Linux
-. venv/bin/activate
+. .venv/bin/activate
 
 #For Windows
-venv\scripts\activate
+.venv\scripts\activate
 ```
 
 4. Install all dependencies
