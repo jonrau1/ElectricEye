@@ -166,8 +166,6 @@ cd eeauditor/auditors/aws
 aws s3 sync . s3://<your-bucket-name>
 ```
 
-**Note**: If you are in GovCloud use the `govcloud-auditors` folder
-
 6. Navigate to the `insights` directory and execute the Python script to have Security Hub Insights created. Insights are saved searches that can also be used as quick-view dashboards (though no where near the sophsication of a QuickSight dashboard)
 ```bash
 cd -
