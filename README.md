@@ -148,7 +148,7 @@ terraform --version
 cd terraform-config-files
 nano variables.tf
 ```
-![Variables.tf modification](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/variables-tf-uri-modification.JPG)
+![Variables.tf modification](screenshots/variables-tf-uri-modification.png)
 
 3. Initialize, plan and apply your state with Terraform, this step should not take too long.
 ```bash
@@ -268,10 +268,10 @@ virtualenv .venv
 3. This will create a virtualenv directory called .venv which needs to be activated
 ```bash
 #For macOS and Linux
-. venv/bin/activate
+. .venv/bin/activate
 
 #For Windows
-venv\scripts\activate
+.venv\scripts\activate
 ```
 
 4. Install all dependencies
