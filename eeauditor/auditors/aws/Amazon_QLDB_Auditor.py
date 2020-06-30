@@ -98,7 +98,7 @@ def qldb_deletion_protection_check(
                     "Severity": {"Label": "MEDIUM"},
                     "Confidence": 99,
                     "Title": "[QLDB.1] Ledgers should have deletion protection enabled",
-                    "Description": "Ledger " + ledgerName + " has deletion protection.",
+                    "Description": "Ledger " + ledgerName + " does not have deletion protection.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For more information on managing ledgers refer to the Basic Operations for Amazon QLDB Ledgers section of the Amazon QLDB Developer Guide",
