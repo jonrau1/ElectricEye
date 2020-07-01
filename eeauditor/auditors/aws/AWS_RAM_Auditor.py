@@ -42,89 +42,98 @@ def get_resource_shares(cache):
 def ram_resource_shares_status_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
-    response = get_resource_shares(cache)
-    resourceShares = response["resourceShares"]
-    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for resourceShare in resourceShares:
-        status = resourceShare["status"]
-        shareName = resourceShare["name"]
-        generatorUuid = str(uuid.uuid4())
-        if status != "FAILED":
-            finding = {
-                "SchemaVersion": "2018-10-08",
-                "Id": awsAccountId + "/ram-resource-shares-status-check",
-                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": generatorUuid,
-                "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
-                "FirstObservedAt": iso8601Time,
-                "CreatedAt": iso8601Time,
-                "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "INFORMATIONAL"},
-                "Confidence": 99,
-                "Title": "[RAM.1] Resource share should not have a failed status",
-                "Description": "Resource share "
-                + shareName
-                + " does not have a failed status.",
-                "Remediation": {
-                    "Recommendation": {
-                        "Text": "For more information on resource share statuses refer to the Viewing Resource Shares section of the AWS Resource Access Manager User Guide",
-                        "Url": "https://docs.aws.amazon.com/ram/latest/userguide/working-with-shared.html#working-with-shared-view-rs",
-                    }
-                },
-                "ProductFields": {"Product Name": "ElectricEye"},
-                "Resources": [
-                    {
-                        "Type": "AwsResourceAccessManagerShare",
-                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
-                    }
-                ],
-                "Compliance": {"Status": "PASSED",},
-                "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
-            }
-            yield finding
-        else:
-            finding = {
-                "SchemaVersion": "2018-10-08",
-                "Id": awsAccountId + "/ram-resource-shares-status-check",
-                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": generatorUuid,
-                "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices"
-                ],
-                "FirstObservedAt": iso8601Time,
-                "CreatedAt": iso8601Time,
-                "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "MEDIUM"},
-                "Confidence": 99,
-                "Title": "[RAM.1] Resource share should not have a failed status",
-                "Description": "Resource share " + shareName + " has a failed status.",
-                "Remediation": {
-                    "Recommendation": {
-                        "Text": "For more information on resource share statuses refer to the Viewing Resource Shares section of the AWS Resource Access Manager User Guide",
-                        "Url": "https://docs.aws.amazon.com/ram/latest/userguide/working-with-shared.html#working-with-shared-view-rs",
-                    }
-                },
-                "ProductFields": {"Product Name": "ElectricEye"},
-                "Resources": [
-                    {
-                        "Type": "AwsResourceAccessManagerShare",
-                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
-                    }
-                ],
-                "Compliance": {"Status": "FAILED"},
-                "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
-            }
-            yield finding
+    responses = []
+    responses.append(get_resource_shares(cache))
+    paginator = ram.get_paginator("get_resource_shares")
+    response_iterator = paginator.paginate(resourceOwner="OTHER-ACCOUNTS")
+    responses.append(
+        accumulate_paged_results(page_iterator=response_iterator, key="resourceShares")
+    )
+    for response in responses:
+        resourceShares = response["resourceShares"]
+        iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        for resourceShare in resourceShares:
+            status = resourceShare["status"]
+            shareName = resourceShare["name"]
+            generatorUuid = str(uuid.uuid4())
+            if status != "FAILED":
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": awsAccountId + "/ram-resource-shares-status-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": generatorUuid,
+                    "AwsAccountId": awsAccountId,
+                    "Types": [
+                        "Software and Configuration Checks/AWS Security Best Practices"
+                    ],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Confidence": 99,
+                    "Title": "[RAM.1] Resource share should not have a failed status",
+                    "Description": "Resource share "
+                    + shareName
+                    + " does not have a failed status.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on resource share statuses refer to the Viewing Resource Shares section of the AWS Resource Access Manager User Guide",
+                            "Url": "https://docs.aws.amazon.com/ram/latest/userguide/working-with-shared.html#working-with-shared-view-rs",
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsResourceAccessManagerShare",
+                            "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                        }
+                    ],
+                    "Compliance": {"Status": "PASSED",},
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED",
+                }
+                yield finding
+            else:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": awsAccountId + "/ram-resource-shares-status-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": generatorUuid,
+                    "AwsAccountId": awsAccountId,
+                    "Types": [
+                        "Software and Configuration Checks/AWS Security Best Practices"
+                    ],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "MEDIUM"},
+                    "Confidence": 99,
+                    "Title": "[RAM.1] Resource share should not have a failed status",
+                    "Description": "Resource share "
+                    + shareName
+                    + " has a failed status.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on resource share statuses refer to the Viewing Resource Shares section of the AWS Resource Access Manager User Guide",
+                            "Url": "https://docs.aws.amazon.com/ram/latest/userguide/working-with-shared.html#working-with-shared-view-rs",
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsResourceAccessManagerShare",
+                            "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                        }
+                    ],
+                    "Compliance": {"Status": "FAILED"},
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE",
+                }
+                yield finding
 
 
 @registry.register_check("ram")

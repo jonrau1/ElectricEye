@@ -39,6 +39,7 @@ def ram_stubber():
 
 def test_resource_shares_not_fail(ram_stubber):
     ram_stubber.add_response("get_resource_shares", get_resource_shares_pass)
+    ram_stubber.add_response("get_resource_shares", get_resource_shares_pass)
     results = ram_resource_shares_status_check(
         cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
     )
@@ -48,6 +49,7 @@ def test_resource_shares_not_fail(ram_stubber):
 
 
 def test_resource_shares_fail(ram_stubber):
+    ram_stubber.add_response("get_resource_shares", get_resource_shares_fail)
     ram_stubber.add_response("get_resource_shares", get_resource_shares_fail)
     results = ram_resource_shares_status_check(
         cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
