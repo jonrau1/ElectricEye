@@ -247,6 +247,7 @@ Resources:
                   - globalaccelerator:ListAccelerators
                   - globalaccelerator:ListListeners
                   - globalaccelerator:ListEndpointGroups
+                  - globalaccelerator:DescribeAcceleratorAttributes
                   - glue:GetSecurityConfiguration
                   - glue:GetResourcePolicy
                   - glue:GetCrawler

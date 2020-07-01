@@ -239,7 +239,11 @@
                 "kms:GetKeyRotationStatus",
                 "qldb:ListLedgers",
                 "qldb:DescribeLedger",
-                "qldb:ListJournalS3Exports"
+                "qldb:ListJournalS3Exports",
+                "globalaccelerator:ListAccelerators",
+                "globalaccelerator:ListListeners",
+                "globalaccelerator:ListEndpointGroups",
+                "globalaccelerator:DescribeAcceleratorAttributes"
             ],
             "Resource": "*"
         }

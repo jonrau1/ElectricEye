@@ -132,3 +132,102 @@ def unhealthy_endpoint_group_check(
                             "RecordState": "ACTIVE",
                         }
                         yield finding
+
+
+@registry.register_check("globalaccelerator")
+def flow_logs_enabled_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
+    paginator = globalaccelerator.get_paginator("list_accelerators")
+    response_iterator = paginator.paginate()
+    accelerators = accumulate_paged_results(
+        page_iterator=response_iterator, key="Accelerators"
+    )
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for accelerator in accelerators["Accelerators"]:
+        acceleratorAttributes = globalaccelerator.describe_accelerator_attributes(
+            AcceleratorArn=accelerator["AcceleratorArn"]
+        )
+        acceleratorName = accelerator["Name"]
+        generatorUuid = str(uuid.uuid4())
+        loggingEnabled = acceleratorAttributes["AcceleratorAttributes"][
+            "FlowLogsEnabled"
+        ]
+        if loggingEnabled:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": awsAccountId + "/access-logging-enabled-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": generatorUuid,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices"
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[GlobalAccelerator.2] Accelerator should have flow logs enabled",
+                "Description": "Accelerator "
+                + acceleratorName
+                + " has flow logs enabled.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on accelerator flow logs refer to the Flow logs in AWS Global Accelerator section of the AWS Global Accelerator Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/global-accelerator/latest/dg/monitoring-global-accelerator.flow-logs.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsGlobalAcceleratorAccelerator",
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                    }
+                ],
+                "Compliance": {"Status": "PASSED",},
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED",
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": awsAccountId + "/access-logging-enabled-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": generatorUuid,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices"
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[GlobalAccelerator.2] Accelerator should have flow logs enabled",
+                "Description": "Accelerator "
+                + acceleratorName
+                + " does not have flow logs enabled.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on accelerator flow logs refer to the Flow logs in AWS Global Accelerator section of the AWS Global Accelerator Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/global-accelerator/latest/dg/monitoring-global-accelerator.flow-logs.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsGlobalAcceleratorAccelerator",
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                    }
+                ],
+                "Compliance": {"Status": "FAILED"},
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE",
+            }
+            yield finding

@@ -363,7 +363,8 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "qldb:ListJournalS3Exports",
                 "globalaccelerator:ListAccelerators",
                 "globalaccelerator:ListListeners",
-                "globalaccelerator:ListEndpointGroups"
+                "globalaccelerator:ListEndpointGroups",
+                "globalaccelerator:DescribeAcceleratorAttributes"
             ],
             "Resource": "*"
         }
