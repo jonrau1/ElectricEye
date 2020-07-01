@@ -286,6 +286,7 @@ Resources:
                   - qldb:DescribeLedger
                   - qldb:ListJournalS3Exports
                   - qldb:ListLedgers
+                  - ram:GetResourceShares
                   - rds:DescribeDBClusterParameterGroups
                   - rds:DescribeDBClusterParameters
                   - rds:DescribeDBClusters

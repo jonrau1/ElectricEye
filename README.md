@@ -285,7 +285,7 @@ python eeauditor/controller.py
 Add the --help option for info on running individual checks and auditors and different outputs options.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **223** checks supported across **70** AWS services / components using **52** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **225** checks supported across **71** AWS services / components using **53** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -500,6 +500,8 @@ These are the following services and checks perform by each Auditor. There are c
 | AWS_KMS_Auditor.py                     | KMS key                       | Does the key allow public access                                                       |
 | AWS_Lambda_Auditor.py                  | Lambda function               | Has function been used or updated in the last<br>30 days                               |
 | AWS_License_Manager_Auditor            | License Manager configuration | Do LM configurations enforce a hard limit on<br>license consumption                    |
+| AWS_RAM_Auditor.py                     | RAM Resource Share            | Is the resource share status not failed                                                |
+| AWS_RAM_Auditor.py                     | RAM Resource Share            | Does the resource allow external principals                                            |
 | AWS_Secrets_Manager_Auditor.py         | Secrets Manager secret        | Is the secret over 90 days old                                                         |
 | AWS_Secrets_Manager_Auditor.py         | Secrets Manager secret        | Is secret auto-rotation enabled                                                        |
 | AWS_Security_Hub_Auditor.py            | Security Hub (Account)        | Are there active high or critical<br>findings in Security Hub                          |

@@ -243,7 +243,8 @@
                 "globalaccelerator:ListAccelerators",
                 "globalaccelerator:ListListeners",
                 "globalaccelerator:ListEndpointGroups",
-                "globalaccelerator:DescribeAcceleratorAttributes"
+                "globalaccelerator:DescribeAcceleratorAttributes",
+                "ram:GetResourceShares"
             ],
             "Resource": "*"
         }
