@@ -50,7 +50,7 @@ def imagebuilder_pipeline_tests_enabled_check(cache: dict, awsAccountId: str, aw
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[imagebuilder.1] Image pipeline tests should be enabled",
+                "Title": "[ImageBuilder.1] Image pipeline tests should be enabled",
                 "Description": "Image pipeline " + pipeline_name + " has tests enabled.",
                 "Remediation": {
                     "Recommendation": {
@@ -91,7 +91,7 @@ def imagebuilder_pipeline_tests_enabled_check(cache: dict, awsAccountId: str, aw
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": "[imagebuilder.1] Image pipeline tests should be enabled",
+                "Title": "[ImageBuilder.1] Image pipeline tests should be enabled",
                 "Description": "Image pipeline " + pipeline_name + " does not have tests enabled.",
                 "Remediation": {
                     "Recommendation": {
@@ -145,7 +145,7 @@ def imagebuilder_ebs_encryption_check(cache: dict, awsAccountId: str, awsRegion:
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[imagebuilder.2] Image recipes should encrypt EBS volumes",
+            "Title": "[ImageBuilder.2] Image recipes should encrypt EBS volumes",
             "Description": "Image recipe " + recipe_name + " has EBS encrypted.",
             "Remediation": {
                 "Recommendation": {
@@ -186,7 +186,7 @@ def imagebuilder_ebs_encryption_check(cache: dict, awsAccountId: str, awsRegion:
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[imagebuilder.2] Image recipes should encrypt EBS volumes",
+            "Title": "[ImageBuilder.2] Image recipes should encrypt EBS volumes",
             "Description": "Image recipe " + recipe_name + " does not have EBS encrypted.",
             "Remediation": {
                 "Recommendation": {
