@@ -127,87 +127,88 @@ def imagebuilder_ebs_encryption_check(cache: dict, awsAccountId: str, awsRegion:
         recipe_name = details["name"]
         recipe = imagebuilder.get_image_recipe(imageRecipeArn=recipe_arn)
         device_mapping = recipe["imageRecipe"]["blockDeviceMappings"]
-        ebs = device_mapping["ebs"]
+        list1 = device_mapping[0]
+        ebs = list1["ebs"]
         ebs_encryption = ebs["encrypted"]
         if ebs_encryption == True:
             finding = {
-            "SchemaVersion": "2018-10-08",
-            "Id": recipe_arn + "/imagebuilder-pipeline-tests-enabled-check",
-            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-            "GeneratorId": recipe_arn,
-            "AwsAccountId": awsAccountId,
-            "Types": [
-                "Software and Configuration Checks/AWS Security Best Practices",
-                "Effects/Data Exposure",
-            ],
-            "FirstObservedAt": iso8601Time,
-            "CreatedAt": iso8601Time,
-            "UpdatedAt": iso8601Time,
-            "Severity": {"Label": "INFORMATIONAL"},
-            "Confidence": 99,
-            "Title": "[ImageBuilder.2] Image recipes should encrypt EBS volumes",
-            "Description": "Image recipe " + recipe_name + " has EBS encrypted.",
-            "Remediation": {
-                "Recommendation": {
-                    "Text": "For more information on EC2 Image Builder Security and EBS encyption refer to the How EC2 Image Builder Works section of the Amazon EC2 Image Builder Developer Guide.",
-                    "Url": "https://docs.aws.amazon.com/imagebuilder/latest/userguide/how-image-builder-works.html#image-builder-components",
-                }
-            },
-            "ProductFields": {"Product Name": "ElectricEye"},
-            "Resources": [
-                {
-                    "Type": "AwsImageBuilderRecipe",
-                    "Id": recipe_arn,
-                    "Partition": awsPartition,
-                    "Region": awsRegion,
-                    "Details": {"AwsImageBuilderRecipe": {"RecipeName": recipe_name}},
-                }
-            ],
-            "Compliance": {
-                "Status": "PASSED"
-            },
-            "Workflow": {"Status": "RESOLVED"},
-            "RecordState": "ARCHIVED",
-        }
-        yield finding
-    else:
-        finding = {
-            "SchemaVersion": "2018-10-08",
-            "Id": recipe_arn + "/imagebuilder-pipeline-tests-enabled-check",
-            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-            "GeneratorId": recipe_arn,
-            "AwsAccountId": awsAccountId,
-            "Types": [
-                "Software and Configuration Checks/AWS Security Best Practices",
-                "Effects/Data Exposure",
-            ],
-            "FirstObservedAt": iso8601Time,
-            "CreatedAt": iso8601Time,
-            "UpdatedAt": iso8601Time,
-            "Severity": {"Label": "MEDIUM"},
-            "Confidence": 99,
-            "Title": "[ImageBuilder.2] Image recipes should encrypt EBS volumes",
-            "Description": "Image recipe " + recipe_name + " does not have EBS encrypted.",
-            "Remediation": {
-                "Recommendation": {
-                    "Text": "For more information on EC2 Image Builder Security and EBS encyption refer to the How EC2 Image Builder Works section of the Amazon EC2 Image Builder Developer Guide.",
-                    "Url": "https://docs.aws.amazon.com/imagebuilder/latest/userguide/how-image-builder-works.html#image-builder-components",
-                }
-            },
-            "ProductFields": {"Product Name": "ElectricEye"},
-            "Resources": [
-                {
-                    "Type": "AwsImageBuilderRecipe",
-                    "Id": recipe_arn,
-                    "Partition": awsPartition,
-                    "Region": awsRegion,
-                    "Details": {"AwsImageBuilderRecipe": {"RecipeName": recipe_name}},
-                }
-            ],
-            "Compliance": {
-                "Status": "FAILED"
-            },
-            "Workflow": {"Status": "NEW"},
-            "RecordState": "ACTIVE",
-        }
-        yield finding
+                "SchemaVersion": "2018-10-08",
+                "Id": recipe_arn + "/imagebuilder-pipeline-tests-enabled-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": recipe_arn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure",
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[ImageBuilder.2] Image recipes should encrypt EBS volumes",
+                "Description": "Image recipe " + recipe_name + " has EBS encrypted.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on EC2 Image Builder Security and EBS encyption refer to the How EC2 Image Builder Works section of the Amazon EC2 Image Builder Developer Guide.",
+                        "Url": "https://docs.aws.amazon.com/imagebuilder/latest/userguide/how-image-builder-works.html#image-builder-components",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsImageBuilderRecipe",
+                        "Id": recipe_arn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {"AwsImageBuilderRecipe": {"RecipeName": recipe_name}},
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED"
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED",
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": recipe_arn + "/imagebuilder-pipeline-tests-enabled-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": recipe_arn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure",
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[ImageBuilder.2] Image recipes should encrypt EBS volumes",
+                "Description": "Image recipe " + recipe_name + " does not have EBS encrypted.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on EC2 Image Builder Security and EBS encyption refer to the How EC2 Image Builder Works section of the Amazon EC2 Image Builder Developer Guide.",
+                        "Url": "https://docs.aws.amazon.com/imagebuilder/latest/userguide/how-image-builder-works.html#image-builder-components",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsImageBuilderRecipe",
+                        "Id": recipe_arn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {"AwsImageBuilderRecipe": {"RecipeName": recipe_name}},
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED"
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE",
+            }
+            yield finding

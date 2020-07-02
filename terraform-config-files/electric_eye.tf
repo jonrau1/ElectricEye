@@ -365,7 +365,11 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "globalaccelerator:ListListeners",
                 "globalaccelerator:ListEndpointGroups",
                 "globalaccelerator:DescribeAcceleratorAttributes",
-                "ram:GetResourceShares"
+                "ram:GetResourceShares",
+                "imagebuilder:ListImagePipelines",
+                "imagebuilder:GetImagePipeline",
+                "imagebuilder:ListImageRecipes",
+                "imagebuilder:GetImageRecipe"
             ],
             "Resource": "*"
         }
