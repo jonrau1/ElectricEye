@@ -261,6 +261,10 @@ Resources:
                   - iam:ListUserPolicies
                   - iam:ListAttachedUserPolicies
                   - iam:ListServerCertificates
+                  - imagebuilder:ListImagePipelines
+                  - imagebuilder:GetImagePipeline
+                  - imagebuilder:ListImageRecipes
+                  - imagebuilder:GetImageRecipe
                   - kafka:DescribeCluster
                   - kafka:ListClusters
                   - kinesis:DescribeStream

@@ -285,7 +285,7 @@ python eeauditor/controller.py
 Add the --help option for info on running individual checks and auditors and different outputs options.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **226** checks supported across **71** AWS services / components using **54** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **228** checks supported across **72** AWS services / components using **55** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -323,6 +323,8 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_EBS_Auditor.py                  | EBS Snapshot                  | Is the Snapshot public                                                                 |
 | Amazon_EBS_Auditor.py                  | Account                       | Is account level encryption by<br>default enabled                                      |
 | Amazon_EC2_Auditor.py                  | EC2 Instance                  | Is IMDSv2 enabled                                                                      |
+| Amazon_EC2_Image_Builder_Auditor.py    | Image Builder                 | Are pipeline tests enabled                                                 |
+| Amazon_EC2_Image_Builder_Auditor.py    | Image Builder                 | Is EBS encrypted                                               |
 | Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Are all ports (-1) open to the internet                                                |
 | Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is FTP (tcp20-21) open to the internet                                                 |
 | Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is TelNet (tcp23) open to the internet                                                 |
@@ -807,6 +809,123 @@ Quick shout-outs to the folks who answered the call early to test out ElectricEy
 - [Manuel Leos Rivas](https://www.linkedin.com/in/manuel-lr/)
 - [Andrew Alaniz](https://www.linkedin.com/in/andrewdalaniz/)
 - [Christopher Childers](https://www.linkedin.com/in/christopher-childers-28950537/)
+
+### Developer Guide
+
+1. Naming an auditor: To keep naming consistent auditor names are based on the name of the service from the [AWS Documentation](https://docs.aws.amazon.com/index.html) and are named after the service being audited.
+
+2. Necessary Imports and Intro: At the top of the auditor insert the following intro and imports (although other imports may be needed)
+
+``` # This file is part of ElectricEye.
+
+    # ElectricEye is free software: you can redistribute it and/or modify
+    # it under the terms of the GNU General Public License as published by
+    # the Free Software Foundation, either version 3 of the License, or
+    # (at your option) any later version.
+
+    # ElectricEye is distributed in the hope that it will be useful,
+    # but WITHOUT ANY WARRANTY; without even the implied warranty of
+    # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    # GNU General Public License for more details.
+
+    # You should have received a copy of the GNU General Public License along with ElectricEye.
+    # If not, see https://github.com/jonrau1/ElectricEye/blob/master/LICENSE.
+
+    import boto3
+    import datetime
+    from check_register import CheckRegister
+
+    registry = CheckRegister()
+```
+
+The boto3 client will also need imported for whichever service is being audited. For example for EC2 ImageBuilder it is
+``` 
+imagebuilder = boto3.client("imagebuilder")
+```
+
+**NOTE** If a boto call is used multiple times within an auditor and could be put in the global space it should be cached. For example in Amazon_SNS_Auditor list_topics is used for every function so it is cached like this:
+```
+def list_topics(cache):
+    response = cache.get("list_topics")
+    if response:
+        return response
+    cache["list_topics"] = sns.list_topics()
+    return cache["list_topics"]
+```
+
+3. Registering and Defining Checks: All checks are registered by the same tag and checks should describe what is being checked with the word check at the end. Example from ImageBuilder.
+```
+@registry.register_check("imagebuilder")
+def imagebuilder_pipeline_tests_enabled_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+```
+
+4. Formatting Findings: Findings will be formatted for AWS Security Hub, [ASSF](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html). Look to other auditors findings format for more specifics on ElectricEye formatting. Parts that will stay consistent across checks are: SchemaVersion, ProductArn, AwsAccountId, Params with iso8601Time, ProductFields, and the Partition and Region within Resources. Example finding formatting from Amazon_SNS_Auditor:
+```
+finding = {
+    "SchemaVersion": "2018-10-08",
+    "Id": topicarn + "/sns-topic-encryption-check",
+    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+    "GeneratorId": topicarn,
+    "AwsAccountId": awsAccountId,
+    "Types": [
+        "Software and Configuration Checks/AWS Security Best Practices",
+        "Effects/Data Exposure",
+    ],
+    "FirstObservedAt": iso8601Time,
+    "CreatedAt": iso8601Time,
+    "UpdatedAt": iso8601Time,
+    "Severity": {"Label": "INFORMATIONAL"},
+    "Confidence": 99,
+    "Title": "[SNS.1] SNS topics should be encrypted",
+    "Description": "SNS topic " + topicName + " is encrypted.",
+    "Remediation": {
+        "Recommendation": {
+            "Text": "For more information on SNS encryption at rest and how to configure it refer to the Encryption at Rest section of the Amazon Simple Notification Service Developer Guide.",
+            "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-server-side-encryption.html",
+        }
+    },
+    "ProductFields": {"Product Name": "ElectricEye"},
+    "Resources": [
+        {
+            "Type": "AwsSnsTopic",
+            "Id": topicarn,
+            "Partition": awsPartition,
+            "Region": awsRegion,
+            "Details": {"AwsSnsTopic": {"TopicName": topicName}},
+        }
+    ],
+    "Compliance": {
+        "Status": "PASSED",
+        "RelatedRequirements": [
+            "NIST CSF PR.DS-1",
+            "NIST SP 800-53 MP-8",
+            "NIST SP 800-53 SC-12",
+            "NIST SP 800-53 SC-28",
+            "AICPA TSC CC6.1",
+            "ISO 27001:2013 A.8.2.3",
+        ],
+    },
+    "Workflow": {"Status": "RESOLVED"},
+    "RecordState": "ARCHIVED",
+}
+yield finding
+```
+
+5. Creating Tests: For each check within an auditor there should be a corresponding test for each case the check could come across, often times a pass and fail but sometimes more. A stubber is used to give the auditor the desired responses for testing. Necessary imports are:
+```
+import datetime
+import os
+import pytest
+import sys
+
+from botocore.stub import Stubber, ANY
+```
+
+6. Update all three IAM permissions with the new required boto permissions.
+
+7. Update Readme for total count of auditors/checks and the new checks are added to the list.
+
+8. All new checks mapped to Compliance.RelatedRequirements checks
 
 ### Auditor testing
 1. Install dependencies

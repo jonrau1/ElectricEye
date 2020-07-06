@@ -246,7 +246,11 @@
                 "globalaccelerator:DescribeAcceleratorAttributes",
                 "ram:GetResourceShares",
                 "kinesisanalyticsv2:ListApplications",
-                "kinesisanalyticsv2:DescribeApplication"
+                "kinesisanalyticsv2:DescribeApplication",
+                "imagebuilder:ListImagePipelines",
+                "imagebuilder:GetImagePipeline",
+                "imagebuilder:ListImageRecipes",
+                "imagebuilder:GetImageRecipe"
             ],
             "Resource": "*"
         }

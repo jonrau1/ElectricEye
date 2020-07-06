@@ -367,7 +367,11 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "globalaccelerator:DescribeAcceleratorAttributes",
                 "ram:GetResourceShares",
                 "kinesisanalyticsv2:ListApplications",
-                "kinesisanalyticsv2:DescribeApplication"
+                "kinesisanalyticsv2:DescribeApplication",
+                "imagebuilder:ListImagePipelines",
+                "imagebuilder:GetImagePipeline",
+                "imagebuilder:ListImageRecipes",
+                "imagebuilder:GetImageRecipe"
             ],
             "Resource": "*"
         }
