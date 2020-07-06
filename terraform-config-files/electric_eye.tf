@@ -365,7 +365,9 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "globalaccelerator:ListListeners",
                 "globalaccelerator:ListEndpointGroups",
                 "globalaccelerator:DescribeAcceleratorAttributes",
-                "ram:GetResourceShares"
+                "ram:GetResourceShares",
+                "kinesisanalyticsv2:ListApplications",
+                "kinesisanalyticsv2:DescribeApplication"
             ],
             "Resource": "*"
         }

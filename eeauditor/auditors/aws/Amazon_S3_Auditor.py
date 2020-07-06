@@ -36,15 +36,17 @@ def bucket_encryption_check(
 ) -> dict:
     bucket = list_buckets(cache=cache)
     myS3Buckets = bucket["Buckets"]
+    iso8601Time = (
+        datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    )
     for buckets in myS3Buckets:
         bucketName = str(buckets["Name"])
         s3Arn = f"arn:{awsPartition}:s3:::{bucketName}"
         try:
             response = s3.get_bucket_encryption(Bucket=bucketName)
             for rules in response["ServerSideEncryptionConfiguration"]["Rules"]:
-                sseType = str(rules["ApplyServerSideEncryptionByDefault"]["SSEAlgorithm"])
-                iso8601Time = (
-                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                sseType = str(
+                    rules["ApplyServerSideEncryptionByDefault"]["SSEAlgorithm"]
                 )
                 # this is a passing check
                 finding = {
@@ -165,7 +167,9 @@ def bucket_lifecycle_check(
     for buckets in myS3Buckets:
         bucketName = str(buckets["Name"])
         s3Arn = f"arn:{awsPartition}:s3:::{bucketName}"
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        iso8601Time = (
+            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        )
         try:
             response = s3.get_bucket_lifecycle_configuration(Bucket=bucketName)
             # this is a passing check
@@ -175,14 +179,18 @@ def bucket_lifecycle_check(
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": s3Arn,
                 "AwsAccountId": awsAccountId,
-                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices"
+                ],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[S3.2] S3 Buckets should implement lifecycle policies for data archival and recovery operations",
-                "Description": "S3 bucket " + bucketName + " has a lifecycle policy configured.",
+                "Description": "S3 bucket "
+                + bucketName
+                + " has a lifecycle policy configured.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on Lifecycle policies and how to configure it refer to the How Do I Create a Lifecycle Policy for an S3 Bucket? section of the Amazon Simple Storage Service Developer Guide",
@@ -230,7 +238,9 @@ def bucket_lifecycle_check(
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": s3Arn,
                     "AwsAccountId": awsAccountId,
-                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "Types": [
+                        "Software and Configuration Checks/AWS Security Best Practices"
+                    ],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -289,7 +299,9 @@ def bucket_versioning_check(
     for buckets in myS3Buckets:
         bucketName = str(buckets["Name"])
         s3Arn = f"arn:{awsPartition}:s3:::{bucketName}"
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        iso8601Time = (
+            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        )
         try:
             response = s3.get_bucket_versioning(Bucket=bucketName)
             versioningCheck = str(response["Status"])
@@ -300,7 +312,9 @@ def bucket_versioning_check(
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": s3Arn,
                 "AwsAccountId": awsAccountId,
-                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices"
+                ],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -354,7 +368,9 @@ def bucket_versioning_check(
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": s3Arn,
                     "AwsAccountId": awsAccountId,
-                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "Types": [
+                        "Software and Configuration Checks/AWS Security Best Practices"
+                    ],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -413,7 +429,9 @@ def bucket_policy_allows_public_access_check(
     for buckets in myS3Buckets:
         bucketName = str(buckets["Name"])
         s3Arn = f"arn:{awsPartition}:s3:::{bucketName}"
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        iso8601Time = (
+            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        )
         try:
             response = s3.get_bucket_policy(Bucket=bucketName)
             try:
@@ -539,13 +557,17 @@ def bucket_policy_allows_public_access_check(
 
 
 @registry.register_check("s3")
-def bucket_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def bucket_policy_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
     bucket = list_buckets(cache=cache)
     myS3Buckets = bucket["Buckets"]
     for buckets in myS3Buckets:
         bucketName = str(buckets["Name"])
         s3Arn = f"arn:{awsPartition}:s3:::{bucketName}"
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        iso8601Time = (
+            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        )
         try:
             response = s3.get_bucket_policy(Bucket=bucketName)
             # print("This bucket has a policy but we wont be printing that in the logs lol")
@@ -556,14 +578,18 @@ def bucket_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": s3Arn,
                 "AwsAccountId": awsAccountId,
-                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices"
+                ],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[S3.5] S3 Buckets should have a bucket policy configured",
-                "Description": "S3 bucket " + bucketName + " has a bucket policy configured.",
+                "Description": "S3 bucket "
+                + bucketName
+                + " has a bucket policy configured.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on Bucket Policies and how to configure it refer to the Bucket Policy Examples section of the Amazon Simple Storage Service Developer Guide",
@@ -611,7 +637,9 @@ def bucket_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": s3Arn,
                     "AwsAccountId": awsAccountId,
-                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "Types": [
+                        "Software and Configuration Checks/AWS Security Best Practices"
+                    ],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -670,7 +698,9 @@ def bucket_access_logging_check(
     for buckets in myS3Buckets:
         bucketName = str(buckets["Name"])
         s3Arn = f"arn:{awsPartition}:s3:::{bucketName}"
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        iso8601Time = (
+            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        )
         try:
             response = s3.get_bucket_logging(Bucket=bucketName)
             accessLoggingCheck = str(response["LoggingEnabled"])
@@ -681,7 +711,9 @@ def bucket_access_logging_check(
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": s3Arn,
                 "AwsAccountId": awsAccountId,
-                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices"
+                ],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -733,7 +765,9 @@ def bucket_access_logging_check(
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": s3Arn,
                     "AwsAccountId": awsAccountId,
-                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "Types": [
+                        "Software and Configuration Checks/AWS Security Best Practices"
+                    ],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -791,7 +825,9 @@ def s3_account_level_block(
     ignoreAcl = str(accountBlock["IgnorePublicAcls"])
     blockPubPolicy = str(accountBlock["BlockPublicPolicy"])
     restrictPubBuckets = str(accountBlock["RestrictPublicBuckets"])
-    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    iso8601Time = (
+        datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    )
     if blockAcl and ignoreAcl and blockPubPolicy and restrictPubBuckets == "True":
         finding = {
             "SchemaVersion": "2018-10-08",

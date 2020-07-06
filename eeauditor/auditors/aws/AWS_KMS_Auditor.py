@@ -57,7 +57,9 @@ def kms_key_rotation_check(
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": keyarn,
                 "AwsAccountId": awsAccountId,
-                "Types": ["Software and Configuration Checks/AWS Security Best Practices",],
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                ],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -93,14 +95,18 @@ def kms_key_rotation_check(
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": keyarn,
                 "AwsAccountId": awsAccountId,
-                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices"
+                ],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
                 "Title": "[KMS.1] KMS keys should have key rotation enabled",
-                "Description": "KMS key " + keyid + " does not have key rotation enabled.",
+                "Description": "KMS key "
+                + keyid
+                + " does not have key rotation enabled.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on KMS key rotation refer to the AWS KMS Developer Guide on Rotating Keys",
@@ -140,7 +146,10 @@ def kms_key_exposed_check(
             policy_json = policyString["Policy"]
             policy = json.loads(policy_json)
             for sid in policy["Statement"]:
-                access = sid["Principal"].get("AWS", None)
+                if sid["Principal"] == "*":
+                    access = "*"
+                else:
+                    access = sid["Principal"].get("AWS", None)
                 if access != "*" or (access == "*" and "Condition" in sid):
                     continue
                 else:

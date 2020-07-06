@@ -265,6 +265,8 @@ Resources:
                   - kafka:ListClusters
                   - kinesis:DescribeStream
                   - kinesis:ListStreams
+                  - kinesisanalyticsv2:ListApplications
+                  - kinesisanalyticsv2:DescribeApplication
                   - kms:Decrypt
                   - kms:DescribeKey
                   - kms:GetKeyPolicy

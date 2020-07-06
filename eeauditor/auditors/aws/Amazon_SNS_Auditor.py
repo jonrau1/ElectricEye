@@ -42,7 +42,9 @@ def sns_topic_encryption_check(
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for topic in mySnsTopics:
         topicarn = str(topic["TopicArn"])
-        topicName = topicarn.replace(f"arn:{awsPartition}:sns:{awsRegion}:{awsAccountId}:", "")
+        topicName = topicarn.replace(
+            f"arn:{awsPartition}:sns:{awsRegion}:{awsAccountId}:", ""
+        )
         response = sns.get_topic_attributes(TopicArn=topicarn)
         try:
             # this is a passing check
@@ -158,7 +160,9 @@ def sns_http_encryption_check(
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for topic in mySnsTopics:
         topicarn = str(topic["TopicArn"])
-        topicName = topicarn.replace(f"arn:{awsPartition}:sns:{awsRegion}:{awsAccountId}:", "")
+        topicName = topicarn.replace(
+            f"arn:{awsPartition}:sns:{awsRegion}:{awsAccountId}:", ""
+        )
         response = sns.list_subscriptions_by_topic(TopicArn=topicarn)
         mySubs = response["Subscriptions"]
         for subscriptions in mySubs:
@@ -233,7 +237,9 @@ def sns_http_encryption_check(
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
                     "Title": "[SNS.2] SNS topics should not use HTTP subscriptions",
-                    "Description": "SNS topic " + topicName + " does not have a HTTP subscriber.",
+                    "Description": "SNS topic "
+                    + topicName
+                    + " does not have a HTTP subscriber.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For more information on SNS encryption in transit refer to the Enforce Encryption of Data in Transit section of the Amazon Simple Notification Service Developer Guide.",
@@ -279,14 +285,19 @@ def sns_public_access_check(
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for topic in mySnsTopics:
         topicarn = str(topic["TopicArn"])
-        topicName = topicarn.replace(f"arn:{awsPartition}:sns:{awsRegion}:{awsAccountId}:", "")
+        topicName = topicarn.replace(
+            f"arn:{awsPartition}:sns:{awsRegion}:{awsAccountId}:", ""
+        )
         response = sns.get_topic_attributes(TopicArn=topicarn)
         statement_json = response["Attributes"]["Policy"]
         statement = json.loads(statement_json)
         fail = False
         # this results in one finding per topic instead of one finding per statement
         for sid in statement["Statement"]:
-            access = sid["Principal"].get("AWS", None)
+            if sid["Principal"] == "*":
+                access = "*"
+            else:
+                access = sid["Principal"].get("AWS", None)
             if access != "*" or (access == "*" and "Condition" in sid):
                 continue
             else:
@@ -418,14 +429,19 @@ def sns_cross_account_check(
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for topic in mySnsTopics:
         topicarn = str(topic["TopicArn"])
-        topicName = topicarn.replace(f"arn:{awsPartition}:sns:{awsRegion}:{awsAccountId}:", "")
+        topicName = topicarn.replace(
+            f"arn:{awsPartition}:sns:{awsRegion}:{awsAccountId}:", ""
+        )
         response = sns.get_topic_attributes(TopicArn=topicarn)
         myPolicy_json = str(response["Attributes"]["Policy"])
         myPolicy = json.loads(myPolicy_json)
         fail = False
         for statement in myPolicy["Statement"]:
-            principal = statement["Principal"].get("AWS", None)
-            if principal and principal != "*":
+            if statement["Principal"] == "*":
+                continue
+            else:
+                principal = statement["Principal"].get("AWS", None)
+            if principal:
                 if not principal.isdigit():
                     # This assumes if it is not a digit that it must be an arn.
                     # not sure if this is a safe assumption.
@@ -452,7 +468,9 @@ def sns_cross_account_check(
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[SNS.4] SNS topics should not allow cross-account access",
-                "Description": "SNS topic " + topicName + " does not have cross-account access.",
+                "Description": "SNS topic "
+                + topicName
+                + " does not have cross-account access.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on SNS best practices refer to the Amazon SNS security best practices section of the Amazon Simple Notification Service Developer Guide.",

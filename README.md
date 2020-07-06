@@ -285,7 +285,7 @@ python eeauditor/controller.py
 Add the --help option for info on running individual checks and auditors and different outputs options.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **225** checks supported across **71** AWS services / components using **53** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **226** checks supported across **71** AWS services / components using **54** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -386,6 +386,7 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_EMR_Auditor.py                  | EMR Cluster                   | Is cluster termination protection enabled                                              |
 | Amazon_EMR_Auditor.py                  | EMR Cluster                   | Is cluster logging enabled                                                             |
 | Amazon_EMR_Auditor.py                  | AWS Account                   | Is EMR public SG block configured for the<br>Account in the region                     |
+| Amazon_Kinesis_Analytics_Auditor.py    | Kinesis analytics application | Does application log to CloudWatch                                                     |
 | Amazon_Kinesis_Data_Streams_Auditor.py | Kinesis data stream           | Is stream encryption enabled                                                           |
 | Amazon_Kinesis_Data_Streams_Auditor.py | Kinesis data stream           | Is enhanced monitoring enabled                                                         |
 | Amazon_Kinesis_Firehose_Auditor.py     | Firehose delivery stream      | Is delivery stream encryption enabled                                                  |

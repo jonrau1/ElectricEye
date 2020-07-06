@@ -37,6 +37,10 @@ get_key_policy_no_AWS_response = {
     "Policy": '{"Version": "2012-10-17","Id": "KeyPolicy1568312239560","Statement": [{"Sid": "StmtID1672312238115","Effect": "Allow","Principal": {"Service": "cloudtrail.amazonaws.com"},"Action": "kms:*","Resource": "*","Condition": {"StringEquals": {"kms:CallerAccount": "012345678901","kms:ViaService": "sns.us-east-1.amazonaws.com"}}}]}'
 }
 
+get_key_policy_principal_str_response = {
+    "Policy": '{"Version": "2012-10-17","Id": "KeyPolicy1568312239560","Statement": [{"Sid": "StmtID1672312238115","Effect": "Allow","Principal": "*","Action": "kms:*","Resource": "*","Condition": {"StringEquals": {"kms:CallerAccount": "012345678901","kms:ViaService": "sns.us-east-1.amazonaws.com"}}}]}'
+}
+
 list_keys_response = {
     "Keys": [
         {
@@ -61,7 +65,9 @@ def kms_stubber():
 
 def test_key_rotation_enabled(kms_stubber):
     kms_stubber.add_response("list_keys", list_keys_response)
-    kms_stubber.add_response("get_key_rotation_status", get_key_rotation_status_response)
+    kms_stubber.add_response(
+        "get_key_rotation_status", get_key_rotation_status_response
+    )
     results = kms_key_rotation_check(
         cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
     )
@@ -73,7 +79,9 @@ def test_key_rotation_enabled(kms_stubber):
 
 def test_key_rotation_not_enabled(kms_stubber):
     kms_stubber.add_response("list_keys", list_keys_response)
-    kms_stubber.add_response("get_key_rotation_status", get_key_rotation_status_response1)
+    kms_stubber.add_response(
+        "get_key_rotation_status", get_key_rotation_status_response1
+    )
     results = kms_key_rotation_check(
         cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
     )
@@ -122,6 +130,18 @@ def test_has_condition(kms_stubber):
 def test_no_AWS(kms_stubber):
     kms_stubber.add_response("list_aliases", list_aliases_response)
     kms_stubber.add_response("get_key_policy", get_key_policy_no_AWS_response)
+    results = kms_key_exposed_check(
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
+    )
+    for result in results:
+        assert "s3" in result["Id"]
+        assert result["RecordState"] == "ARCHIVED"
+    kms_stubber.assert_no_pending_responses()
+
+
+def test_principal_is_string(kms_stubber):
+    kms_stubber.add_response("list_aliases", list_aliases_response)
+    kms_stubber.add_response("get_key_policy", get_key_policy_principal_str_response)
     results = kms_key_exposed_check(
         cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
     )
