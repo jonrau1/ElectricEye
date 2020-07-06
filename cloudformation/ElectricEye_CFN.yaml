@@ -194,6 +194,7 @@ Resources:
                   - backup:DescribeProtectedResource
                   - cloudformation:DescribeStacks
                   - cloudfront:ListDistributions
+                  - cloudfront:GetDistribution
                   - cloudtrail:DescribeTrails
                   - cloudtrail:ListTrails
                   - cloudwatch:GetMetricData

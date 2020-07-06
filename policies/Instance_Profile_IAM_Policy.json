@@ -250,7 +250,9 @@
                 "imagebuilder:ListImagePipelines",
                 "imagebuilder:GetImagePipeline",
                 "imagebuilder:ListImageRecipes",
-                "imagebuilder:GetImageRecipe"
+                "imagebuilder:GetImageRecipe",
+                "cloudfront:ListDistributions",
+                "cloudfront:GetDistribution"
             ],
             "Resource": "*"
         }

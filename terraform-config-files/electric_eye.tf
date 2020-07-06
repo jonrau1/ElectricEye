@@ -343,6 +343,7 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "rds:DescribeDBClusterSnapshots",
                 "redshift:DescribeClusters",
                 "cloudfront:ListDistributions",
+                "cloudfront:GetDistribution",
                 "sagemaker:ListModels",
                 "ds:DescribeDirectories",
                 "securityhub:BatchImportFindings",

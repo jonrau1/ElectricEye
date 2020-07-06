@@ -285,7 +285,7 @@ python eeauditor/controller.py
 Add the --help option for info on running individual checks and auditors and different outputs options.
 
 ## Supported Services and Checks
-These are the following services and checks perform by each Auditor. There are currently **228** checks supported across **72** AWS services / components using **55** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **229** checks supported across **72** AWS services / components using **56** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -301,6 +301,7 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_AppStream_Auditor.py            | AppStream 2.0 (Images)        | Are Images Public                                                                      |
 | Amazon_AppStream_Auditor.py            | AppStream 2.0 (Users)         | Are users reported as Compromised                                                      |
 | Amazon_AppStream_Auditor.py            | AppStream 2.0 (Users)         | Do users use SAML authentication                                                       |
+| Amazon_CloudFront_Auditor.py           | CloudFront Distribution       | Does distribution have trusted<br>signers with key pairs                               |
 | Amazon_CognitoIdP_Auditor.py           | Cognito Identity Pool         | Does the Password policy comply<br>with AWS CIS Foundations Benchmark                  |
 | Amazon_CognitoIdP_Auditor.py           | Cognito Identity Pool         | Cognito Temporary Password Age                                                         |
 | Amazon_CognitoIdP_Auditor.py           | Cognito Identity Pool         | Does the Identity pool enforce MFA                                                     |
@@ -323,8 +324,8 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_EBS_Auditor.py                  | EBS Snapshot                  | Is the Snapshot public                                                                 |
 | Amazon_EBS_Auditor.py                  | Account                       | Is account level encryption by<br>default enabled                                      |
 | Amazon_EC2_Auditor.py                  | EC2 Instance                  | Is IMDSv2 enabled                                                                      |
-| Amazon_EC2_Image_Builder_Auditor.py    | Image Builder                 | Are pipeline tests enabled                                                 |
-| Amazon_EC2_Image_Builder_Auditor.py    | Image Builder                 | Is EBS encrypted                                               |
+| Amazon_EC2_Image_Builder_Auditor.py    | Image Builder                 | Are pipeline tests enabled                                                             |
+| Amazon_EC2_Image_Builder_Auditor.py    | Image Builder                 | Is EBS encrypted                                                                       |
 | Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Are all ports (-1) open to the internet                                                |
 | Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is FTP (tcp20-21) open to the internet                                                 |
 | Amazon_EC2_Security_Group_Auditor.py   | Security Group                | Is TelNet (tcp23) open to the internet                                                 |
