@@ -53,6 +53,7 @@ def ram_resource_shares_status_check(
         resourceShares = response["resourceShares"]
         iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
         for resourceShare in resourceShares:
+            resourceshareArn = resourceShare["resourceShareArn"]
             status = resourceShare["status"]
             shareName = resourceShare["name"]
             generatorUuid = str(uuid.uuid4())
@@ -85,7 +86,7 @@ def ram_resource_shares_status_check(
                     "Resources": [
                         {
                             "Type": "AwsResourceAccessManagerShare",
-                            "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                            "Id": resourceshareArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
                         }
@@ -124,7 +125,7 @@ def ram_resource_shares_status_check(
                     "Resources": [
                         {
                             "Type": "AwsResourceAccessManagerShare",
-                            "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                            "Id": resourceshareArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
                         }

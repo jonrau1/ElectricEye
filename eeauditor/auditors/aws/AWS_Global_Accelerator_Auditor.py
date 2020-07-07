@@ -37,8 +37,9 @@ def unhealthy_endpoint_group_check(
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for accelerator in accelerators["Accelerators"]:
         paginator = globalaccelerator.get_paginator("list_listeners")
+        acceleratorArn = accelerator["AcceleratorArn"]
         response_iterator = paginator.paginate(
-            AcceleratorArn=accelerator["AcceleratorArn"]
+            AcceleratorArn=acceleratorArn
         )
         listeners = accumulate_paged_results(
             page_iterator=response_iterator, key="Listeners"
@@ -50,6 +51,7 @@ def unhealthy_endpoint_group_check(
                 page_iterator=response_iterator, key="EndpointGroups"
             )
             for endpointGroup in endpointGroups["EndpointGroups"]:
+                endpointGroupArn = endpointGroup["EndpointGroupArn"]
                 for description in endpointGroup["EndpointDescriptions"]:
                     endpointId = description["EndpointId"]
                     health = description["HealthState"]
@@ -83,7 +85,7 @@ def unhealthy_endpoint_group_check(
                             "Resources": [
                                 {
                                     "Type": "AwsGlobalAcceleratorEndpoint",
-                                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                                    "Id": endpointGroupArn,
                                     "Partition": awsPartition,
                                     "Region": awsRegion,
                                 }
@@ -122,7 +124,7 @@ def unhealthy_endpoint_group_check(
                             "Resources": [
                                 {
                                     "Type": "AwsGlobalAcceleratorEndpoint",
-                                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                                    "Id": endpointGroupArn,
                                     "Partition": awsPartition,
                                     "Region": awsRegion,
                                 }
@@ -145,8 +147,9 @@ def flow_logs_enabled_check(
     )
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for accelerator in accelerators["Accelerators"]:
+        acceleratorArn = accelerator["AcceleratorArn"]
         acceleratorAttributes = globalaccelerator.describe_accelerator_attributes(
-            AcceleratorArn=accelerator["AcceleratorArn"]
+            AcceleratorArn=acceleratorArn
         )
         acceleratorName = accelerator["Name"]
         generatorUuid = str(uuid.uuid4())
@@ -182,7 +185,7 @@ def flow_logs_enabled_check(
                 "Resources": [
                     {
                         "Type": "AwsGlobalAcceleratorAccelerator",
-                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                        "Id": acceleratorArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }
@@ -221,7 +224,7 @@ def flow_logs_enabled_check(
                 "Resources": [
                     {
                         "Type": "AwsGlobalAcceleratorAccelerator",
-                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                        "Id": acceleratorArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }
