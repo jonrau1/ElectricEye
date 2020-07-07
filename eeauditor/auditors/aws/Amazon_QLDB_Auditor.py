@@ -44,6 +44,7 @@ def qldb_deletion_protection_check(
             ledgerName = ledger["Name"]
             ledgerDescription = qldb.describe_ledger(Name=ledgerName)
             deletionProtection = ledgerDescription["DeletionProtection"]
+            ledgerArn = ledgerDescription["Arn"]
             generatorUuid = str(uuid.uuid4())
             if deletionProtection:
                 finding = {
@@ -71,8 +72,8 @@ def qldb_deletion_protection_check(
                     "ProductFields": {"Product Name": "ElectricEye"},
                     "Resources": [
                         {
-                            "Type": "AwsAccount",
-                            "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                            "Type": "AwsQldbLedger",
+                            "Id": ledgerArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
                         }
@@ -98,7 +99,9 @@ def qldb_deletion_protection_check(
                     "Severity": {"Label": "MEDIUM"},
                     "Confidence": 99,
                     "Title": "[QLDB.1] Ledgers should have deletion protection enabled",
-                    "Description": "Ledger " + ledgerName + " does not have deletion protection.",
+                    "Description": "Ledger "
+                    + ledgerName
+                    + " does not have deletion protection.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For more information on managing ledgers refer to the Basic Operations for Amazon QLDB Ledgers section of the Amazon QLDB Developer Guide",
@@ -108,8 +111,8 @@ def qldb_deletion_protection_check(
                     "ProductFields": {"Product Name": "ElectricEye"},
                     "Resources": [
                         {
-                            "Type": "AwsAccount",
-                            "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                            "Type": "AwsQldbLedger",
+                            "Id": ledgerArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
                         }
@@ -168,8 +171,8 @@ def qldb_export_export_encryption_check(
                     "ProductFields": {"Product Name": "ElectricEye"},
                     "Resources": [
                         {
-                            "Type": "AwsAccount",
-                            "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                            "Type": "AwsQldbExport",
+                            "Id": f"arn:{awsPartition}:qldb:{awsRegion}:{awsAccountId}:export:{exportId}",
                             "Partition": awsPartition,
                             "Region": awsRegion,
                         }
@@ -205,8 +208,8 @@ def qldb_export_export_encryption_check(
                     "ProductFields": {"Product Name": "ElectricEye"},
                     "Resources": [
                         {
-                            "Type": "AwsAccount",
-                            "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                            "Type": "AwsQldbExport",
+                            "Id": f"arn:{awsPartition}:qldb:{awsRegion}:{awsAccountId}:export:{exportId}",
                             "Partition": awsPartition,
                             "Region": awsRegion,
                         }

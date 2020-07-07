@@ -45,6 +45,7 @@ def cloudfront_active_trusted_signers_check(
             activeTrustedSigners = distribution["Distribution"]["ActiveTrustedSigners"][
                 "Enabled"
             ]
+            distributionArn = distribution["Distribution"]["ARN"]
             generatorUuid = str(uuid.uuid4())
             if not activeTrustedSigners:
                 finding = {
@@ -75,7 +76,7 @@ def cloudfront_active_trusted_signers_check(
                     "Resources": [
                         {
                             "Type": "AwsCloudFrontDistribution",
-                            "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                            "Id": distributionArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
                         }

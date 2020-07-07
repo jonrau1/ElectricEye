@@ -46,6 +46,7 @@ def kda_log_to_cloudwatch_check(
         cwDescription = applicationDescription["ApplicationDetail"][
             "CloudWatchLoggingOptionDescriptions"
         ]
+        applicationArn = applicationDescription["ApplicationDetail"]["ApplicationARN"]
         generatorUuid = str(uuid.uuid4())
         if not cwDescription:
             finding = {
@@ -76,7 +77,7 @@ def kda_log_to_cloudwatch_check(
                 "Resources": [
                     {
                         "Type": "AwsKinesisDataAnalyticsApplication",
-                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                        "Id": applicationArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }
@@ -115,7 +116,7 @@ def kda_log_to_cloudwatch_check(
                 "Resources": [
                     {
                         "Type": "AwsKinesisDataAnalyticsApplication",
-                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                        "Id": applicationArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }
