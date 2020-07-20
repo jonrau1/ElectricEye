@@ -60,7 +60,7 @@ def ram_resource_shares_status_check(
             if status != "FAILED":
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": awsAccountId + "/ram-resource-shares-status-check",
+                    "Id": resourceshareArn + "/ram-resource-shares-status-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": generatorUuid,
                     "AwsAccountId": awsAccountId,
@@ -91,7 +91,19 @@ def ram_resource_shares_status_check(
                             "Region": awsRegion,
                         }
                     ],
-                    "Compliance": {"Status": "PASSED",},
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF ID.AM-2",
+                            "NIST SP 800-53 CM-8",
+                            "NIST SP 800-53 PM-5",
+                            "AICPA TSC CC3.2",
+                            "AICPA TSC CC6.1",
+                            "ISO 27001:2013 A.8.1.1",
+                            "ISO 27001:2013 A.8.1.2",
+                            "ISO 27001:2013 A.12.5.1",
+                        ],
+                    },
                     "Workflow": {"Status": "RESOLVED"},
                     "RecordState": "ARCHIVED",
                 }
@@ -99,7 +111,7 @@ def ram_resource_shares_status_check(
             else:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": awsAccountId + "/ram-resource-shares-status-check",
+                    "Id": resourceshareArn + "/ram-resource-shares-status-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": generatorUuid,
                     "AwsAccountId": awsAccountId,
@@ -130,7 +142,19 @@ def ram_resource_shares_status_check(
                             "Region": awsRegion,
                         }
                     ],
-                    "Compliance": {"Status": "FAILED"},
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF ID.AM-2",
+                            "NIST SP 800-53 CM-8",
+                            "NIST SP 800-53 PM-5",
+                            "AICPA TSC CC3.2",
+                            "AICPA TSC CC6.1",
+                            "ISO 27001:2013 A.8.1.1",
+                            "ISO 27001:2013 A.8.1.2",
+                            "ISO 27001:2013 A.12.5.1",
+                        ],
+                    },
                     "Workflow": {"Status": "NEW"},
                     "RecordState": "ACTIVE",
                 }
@@ -182,7 +206,23 @@ def ram_allow_external_principals_check(
                         "Region": awsRegion,
                     }
                 ],
-                "Compliance": {"Status": "PASSED",},
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-3",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-17",
+                        "NIST SP 800-53 AC-19",
+                        "NIST SP 800-53 AC-20",
+                        "NIST SP 800-53 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                    ]
+                },
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED",
             }
@@ -221,7 +261,23 @@ def ram_allow_external_principals_check(
                         "Region": awsRegion,
                     }
                 ],
-                "Compliance": {"Status": "FAILED"},
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-3",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-17",
+                        "NIST SP 800-53 AC-19",
+                        "NIST SP 800-53 AC-20",
+                        "NIST SP 800-53 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                    ]
+                },
                 "Workflow": {"Status": "NEW"},
                 "RecordState": "ACTIVE",
             }

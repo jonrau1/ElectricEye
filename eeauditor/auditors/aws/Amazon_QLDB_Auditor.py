@@ -49,7 +49,7 @@ def qldb_deletion_protection_check(
             if deletionProtection:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": awsAccountId + "/qldb-deletion-protection-check",
+                    "Id": ledgerArn + "/qldb-deletion-protection-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": generatorUuid,
                     "AwsAccountId": awsAccountId,
@@ -78,7 +78,23 @@ def qldb_deletion_protection_check(
                             "Region": awsRegion,
                         }
                     ],
-                    "Compliance": {"Status": "PASSED",},
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF ID.BE-5",
+                            "NIST CSF PR.PT-5",
+                            "NIST SP 800-53 CP-2",
+                            "NIST SP 800-53 CP-11",
+                            "NIST SP 800-53 SA-13",
+                            "NIST SP 800-53 SA-14",
+                            "AICPA TSC A1.2",
+                            "AICPA TSC CC3.1",
+                            "ISO 27001:2013 A.11.1.4",
+                            "ISO 27001:2013 A.17.1.1",
+                            "ISO 27001:2013 A.17.1.2",
+                            "ISO 27001:2013 A.17.2.1",
+                        ],
+                    },
                     "Workflow": {"Status": "RESOLVED"},
                     "RecordState": "ARCHIVED",
                 }
@@ -86,7 +102,7 @@ def qldb_deletion_protection_check(
             else:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": awsAccountId + "/qldb-deletion-protection-check",
+                    "Id": ledgerArn + "/qldb-deletion-protection-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": generatorUuid,
                     "AwsAccountId": awsAccountId,
@@ -117,7 +133,23 @@ def qldb_deletion_protection_check(
                             "Region": awsRegion,
                         }
                     ],
-                    "Compliance": {"Status": "FAILED"},
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF ID.BE-5",
+                            "NIST CSF PR.PT-5",
+                            "NIST SP 800-53 CP-2",
+                            "NIST SP 800-53 CP-11",
+                            "NIST SP 800-53 SA-13",
+                            "NIST SP 800-53 SA-14",
+                            "AICPA TSC A1.2",
+                            "AICPA TSC CC3.1",
+                            "ISO 27001:2013 A.11.1.4",
+                            "ISO 27001:2013 A.17.1.1",
+                            "ISO 27001:2013 A.17.1.2",
+                            "ISO 27001:2013 A.17.2.1",
+                        ],
+                    },
                     "Workflow": {"Status": "NEW"},
                     "RecordState": "ACTIVE",
                 }
@@ -148,7 +180,7 @@ def qldb_export_export_encryption_check(
             if encryption != "NO_ENCRYPTION":
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": awsAccountId + "/qldb-export-export-encryption-check",
+                    "Id": f"arn:{awsPartition}:qldb:{awsRegion}:{awsAccountId}:export:{exportId}" + "/qldb-export-export-encryption-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": generatorUuid,
                     "AwsAccountId": awsAccountId,
@@ -177,7 +209,17 @@ def qldb_export_export_encryption_check(
                             "Region": awsRegion,
                         }
                     ],
-                    "Compliance": {"Status": "PASSED",},
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF PR.DS-1",
+                            "NIST SP 800-53 MP-8",
+                            "NIST SP 800-53 SC-12",
+                            "NIST SP 800-53 SC-28",
+                            "AICPA TSC CC6.1",
+                            "ISO 27001:2013 A.8.2.3",
+                        ],
+                    },
                     "Workflow": {"Status": "RESOLVED"},
                     "RecordState": "ARCHIVED",
                 }
@@ -185,7 +227,7 @@ def qldb_export_export_encryption_check(
             else:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": awsAccountId + "/qldb-export-export-encryption-check",
+                    "Id": f"arn:{awsPartition}:qldb:{awsRegion}:{awsAccountId}:export:{exportId}" + "/qldb-export-export-encryption-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": generatorUuid,
                     "AwsAccountId": awsAccountId,
@@ -214,7 +256,17 @@ def qldb_export_export_encryption_check(
                             "Region": awsRegion,
                         }
                     ],
-                    "Compliance": {"Status": "FAILED"},
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF PR.DS-1",
+                            "NIST SP 800-53 MP-8",
+                            "NIST SP 800-53 SC-12",
+                            "NIST SP 800-53 SC-28",
+                            "AICPA TSC CC6.1",
+                            "ISO 27001:2013 A.8.2.3",
+                        ],
+                    },
                     "Workflow": {"Status": "NEW"},
                     "RecordState": "ACTIVE",
                 }
