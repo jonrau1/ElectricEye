@@ -51,7 +51,7 @@ def kda_log_to_cloudwatch_check(
         if not cwDescription:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": awsAccountId + "/kda-log-to-cloudwatch-check",
+                "Id": applicationArn + "/kda-log-to-cloudwatch-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": generatorUuid,
                 "AwsAccountId": awsAccountId,
@@ -82,7 +82,21 @@ def kda_log_to_cloudwatch_check(
                         "Region": awsRegion,
                     }
                 ],
-                "Compliance": {"Status": "FAILED"},
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF DE.AE-3",
+                        "NIST SP 800-53 AU-6",
+                        "NIST SP 800-53 CA-7",
+                        "NIST SP 800-53 IR-4",
+                        "NIST SP 800-53 IR-5",
+                        "NIST SP 800-53 IR-8",
+                        "NIST SP 800-53 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.7",
+                    ],
+                },
                 "Workflow": {"Status": "NEW"},
                 "RecordState": "ACTIVE",
             }
@@ -90,7 +104,7 @@ def kda_log_to_cloudwatch_check(
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": awsAccountId + "/kda-log-to-cloudwatch-check",
+                "Id": applicationArn + "/kda-log-to-cloudwatch-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": generatorUuid,
                 "AwsAccountId": awsAccountId,
@@ -121,7 +135,21 @@ def kda_log_to_cloudwatch_check(
                         "Region": awsRegion,
                     }
                 ],
-                "Compliance": {"Status": "PASSED",},
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF DE.AE-3",
+                        "NIST SP 800-53 AU-6",
+                        "NIST SP 800-53 CA-7",
+                        "NIST SP 800-53 IR-4",
+                        "NIST SP 800-53 IR-5",
+                        "NIST SP 800-53 IR-8",
+                        "NIST SP 800-53 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.7",
+                    ],
+                },
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED",
             }

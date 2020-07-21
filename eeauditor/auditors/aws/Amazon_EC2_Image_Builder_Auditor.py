@@ -29,17 +29,17 @@ def imagebuilder_pipeline_tests_enabled_check(cache: dict, awsAccountId: str, aw
     pipeline_list = pipelines["imagePipelineList"]
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for arn in pipeline_list:
-        pipeline_arn = arn["arn"]
+        pipelineArn = arn["arn"]
         pipeline_name = arn["name"]
-        image_pipelines = imagebuilder.get_image_pipeline(imagePipelineArn=pipeline_arn)
+        image_pipelines = imagebuilder.get_image_pipeline(imagePipelineArn=pipelineArn)
         image_test_config = image_pipelines["imagePipeline"]["imageTestsConfiguration"]
         image_test_enabled = image_test_config["imageTestsEnabled"]
         if image_test_enabled == True:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": pipeline_arn + "/imagebuilder-pipeline-tests-enabled-check",
+                "Id": pipelineArn + "/imagebuilder-pipeline-tests-enabled-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": pipeline_arn,
+                "GeneratorId": pipelineArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
                     "Software and Configuration Checks/AWS Security Best Practices",
@@ -62,14 +62,24 @@ def imagebuilder_pipeline_tests_enabled_check(cache: dict, awsAccountId: str, aw
                 "Resources": [
                     {
                         "Type": "AwsImageBuilderPipeline",
-                        "Id": pipeline_arn,
+                        "Id": pipelineArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"AwsImageBuilderPipeline": {"PipelineName": pipeline_name}},
                     }
                 ],
                 "Compliance": {
-                    "Status": "PASSED"
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.AM-2",
+                        "NIST SP 800-53 CM-8",
+                        "NIST SP 800-53 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1",
+                    ],
                 },
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED",
@@ -78,9 +88,9 @@ def imagebuilder_pipeline_tests_enabled_check(cache: dict, awsAccountId: str, aw
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": pipeline_arn + "/imagebuilder-pipeline-tests-enabled-check",
+                "Id": pipelineArn + "/imagebuilder-pipeline-tests-enabled-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": pipeline_arn,
+                "GeneratorId": pipelineArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
                     "Software and Configuration Checks/AWS Security Best Practices",
@@ -103,14 +113,24 @@ def imagebuilder_pipeline_tests_enabled_check(cache: dict, awsAccountId: str, aw
                 "Resources": [
                     {
                         "Type": "AwsImageBuilderPipeline",
-                        "Id": pipeline_arn,
+                        "Id": pipelineArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"AwsImageBuilderPipeline": {"PipelineName": pipeline_name}},
                     }
                 ],
                 "Compliance": {
-                    "Status": "FAILED"
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.AM-2",
+                        "NIST SP 800-53 CM-8",
+                        "NIST SP 800-53 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1",
+                    ],
                 },
                 "Workflow": {"Status": "NEW"},
                 "RecordState": "ACTIVE",
@@ -123,9 +143,9 @@ def imagebuilder_ebs_encryption_check(cache: dict, awsAccountId: str, awsRegion:
     recipes_list = recipes["imageRecipeSummaryList"]
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for details in recipes_list:
-        recipe_arn = details["arn"]
+        recipeArn = details["arn"]
         recipe_name = details["name"]
-        recipe = imagebuilder.get_image_recipe(imageRecipeArn=recipe_arn)
+        recipe = imagebuilder.get_image_recipe(imageRecipeArn=recipeArn)
         device_mapping = recipe["imageRecipe"]["blockDeviceMappings"]
         list1 = device_mapping[0]
         ebs = list1["ebs"]
@@ -133,9 +153,9 @@ def imagebuilder_ebs_encryption_check(cache: dict, awsAccountId: str, awsRegion:
         if ebs_encryption == True:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": recipe_arn + "/imagebuilder-pipeline-tests-enabled-check",
+                "Id": recipeArn + "/imagebuilder-pipeline-tests-enabled-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": recipe_arn,
+                "GeneratorId": recipeArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
                     "Software and Configuration Checks/AWS Security Best Practices",
@@ -158,14 +178,24 @@ def imagebuilder_ebs_encryption_check(cache: dict, awsAccountId: str, awsRegion:
                 "Resources": [
                     {
                         "Type": "AwsImageBuilderRecipe",
-                        "Id": recipe_arn,
+                        "Id": recipeArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"AwsImageBuilderRecipe": {"RecipeName": recipe_name}},
                     }
                 ],
                 "Compliance": {
-                    "Status": "PASSED"
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.AM-2",
+                        "NIST SP 800-53 CM-8",
+                        "NIST SP 800-53 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1",
+                    ],
                 },
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED",
@@ -174,9 +204,9 @@ def imagebuilder_ebs_encryption_check(cache: dict, awsAccountId: str, awsRegion:
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": recipe_arn + "/imagebuilder-pipeline-tests-enabled-check",
+                "Id": recipeArn + "/imagebuilder-pipeline-tests-enabled-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": recipe_arn,
+                "GeneratorId": recipeArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
                     "Software and Configuration Checks/AWS Security Best Practices",
@@ -199,14 +229,24 @@ def imagebuilder_ebs_encryption_check(cache: dict, awsAccountId: str, awsRegion:
                 "Resources": [
                     {
                         "Type": "AwsImageBuilderRecipe",
-                        "Id": recipe_arn,
+                        "Id": recipeArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"AwsImageBuilderRecipe": {"RecipeName": recipe_name}},
                     }
                 ],
                 "Compliance": {
-                    "Status": "FAILED"
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.AM-2",
+                        "NIST SP 800-53 CM-8",
+                        "NIST SP 800-53 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1",
+                    ],
                 },
                 "Workflow": {"Status": "NEW"},
                 "RecordState": "ACTIVE",

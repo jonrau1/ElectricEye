@@ -81,7 +81,19 @@ def cloudfront_active_trusted_signers_check(
                             "Region": awsRegion,
                         }
                     ],
-                    "Compliance": {"Status": "FAILED"},
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF ID.AM-2",
+                            "NIST SP 800-53 CM-8",
+                            "NIST SP 800-53 PM-5",
+                            "AICPA TSC CC3.2",
+                            "AICPA TSC CC6.1",
+                            "ISO 27001:2013 A.8.1.1",
+                            "ISO 27001:2013 A.8.1.2",
+                            "ISO 27001:2013 A.12.5.1",
+                        ],
+                    },
                     "Workflow": {"Status": "NEW"},
                     "RecordState": "ACTIVE",
                 }
@@ -120,7 +132,19 @@ def cloudfront_active_trusted_signers_check(
                             "Region": awsRegion,
                         }
                     ],
-                    "Compliance": {"Status": "PASSED",},
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF ID.AM-2",
+                            "NIST SP 800-53 CM-8",
+                            "NIST SP 800-53 PM-5",
+                            "AICPA TSC CC3.2",
+                            "AICPA TSC CC6.1",
+                            "ISO 27001:2013 A.8.1.1",
+                            "ISO 27001:2013 A.8.1.2",
+                            "ISO 27001:2013 A.12.5.1",
+                        ],
+                    },
                     "Workflow": {"Status": "RESOLVED"},
                     "RecordState": "ARCHIVED",
                 }

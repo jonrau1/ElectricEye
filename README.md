@@ -39,13 +39,15 @@ Continuously monitor your AWS services for configurations that can lead to degra
 
 ## Synopsis
 - 100% native Security Hub integration & 100% serverless with full CloudFormation & Terraform support in AWS Commercial and GovCloud Regions
-- 200+ security & best practice detections including services not covered by Security Hub/Config (AppStream, Cognito, EKS, ECR, DocDB, etc.)
+- 220+ security & best practice detections including services not covered by Security Hub/Config (AppStream, Cognito, EKS, ECR, DocDB, etc.)
 - Detections aligned to NIST CSF, NIST 800-53, AICPA TSC and ISO 27001:2013 using the `Compliance.RelatedRequirements` field.
 - 60+ multi-account SOAR playbooks
-- AWS & 3rd Party Integrations: Config Recorder, Pagerduty, Slack, ServiceNow Incident Management, Jira, Azure DevOps, Shodan and Microsoft Teams
+- AWS & 3rd Party Integrations: DisruptOps, Config Recorder, Pagerduty, Slack, ServiceNow Incident Management, Jira, Azure DevOps, Shodan and Microsoft Teams
 
 ## Description
-ElectricEye is a set of Python scripts (affectionately called **Auditors**) that continuously monitor your AWS infrastructure looking for configurations related to confidentiality, integrity and availability that do not align with AWS best practices. All findings from these scans will be sent to AWS Security Hub where you can perform basic correlation against other AWS and 3rd Party services that send findings to Security Hub. Security Hub also provides a centralized view from which account owners and other responsible parties can view and take action on findings. ElectricEye supports both AWS commercial and GovCloud Regions, however, Auditors for services not supported in GovCloud were not removed. Running these scans in Fargate will not fail the entire task if a service is not supported in GovCloud, in those cases they will fail gracefully.
+ElectricEye is a set of Python scripts (affectionately called **Auditors**) that continuously monitor your AWS infrastructure looking for configurations related to confidentiality, integrity and availability that do not align with AWS best practices. All findings from these scans will be sent to AWS Security Hub where you can perform basic correlation against other AWS and 3rd Party services that send findings to Security Hub. Security Hub also provides a centralized view from which account owners and other responsible parties can view and take action on findings. ElectricEye supports both AWS commercial and GovCloud Regions.
+
+**Note**: If you would like to use the "classic" version of ElectricEye it is available in [this branch](https://github.com/jonrau1/ElectricEye/tree/electriceye-classic), however, it will not include any new auditors for services such as QLDB, RAM, etc. Some screenshots may not work correctly due to the linking, sorry about that.
 
 ElectricEye runs on AWS Fargate, which is a serverless container orchestration service. On a schedule, Fargate will download all of the auditor scripts from a S3 bucket, run the checks and send results to Security Hub. All infrastructure will be deployed via CloudFormation or Terraform to help you apply this solution to many accounts and/or regions. All findings (passed or failed) will contain AWS documentation references in the `Remediation.Recommendation` section of the ASFF (and the **Remediation** section of the Security Hub UI) to further educate yourself and others on.
 
@@ -54,14 +56,12 @@ ElectricEye comes with several add-on modules to extend the core model which pro
 Personas who can make use of this tool are DevOps/DevSecOps engineers, SecOps analysts, Cloud Center-of-Excellence personnel, Site Relability Engineers (SREs), Internal Audit and/or Compliance Analysts.
 
 ## Solution Architecture
-![Architecture](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/ElectricEye-Architecture.jpg)
-1. A [time-based CloudWatch Event](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html) starts up an ElectricEye task every 12 hours (or whatever time period you set)
-2. The ElectricEye Task will pull the Docker image from [Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/) via a VPC Interface Endpoint (**Note**: The endpoint `com.amazonaws.region.ecr.dkr` also needs the S3 Gateway Endpoint under the covers as Docker image layers are stored in S3, it serves a dual purpose to download the auditor scripts as well)
-3. Systems Manager Parameter Store parameters are provided to the ElectricEye Task, these store values such as the S3 bucket containing the Auditor scripts and your Shodan.io API key (if used). These allow you to not have to hardcode these values in the environment variables of ECS or in the codebase
-4. The ElectricEye task will download all Auditor scripts from S3 via the VPC endpoint  
-5. ElectricEye executes the scripts to scan your AWS infrastructure for both compliant and non-compliant configurations
-6. **(If Configured)** ElectricEye will query the Shodan Host API with IP addresses retrieved from certain public facing services (EC2 Instances, AmazonMQ brokers, ELB/ELBv2 load balancers, etc.)
-7. All findings are sent to Security Hub using the [BatchImportFindings API](https://docs.aws.amazon.com/securityhub/1.0/APIReference/API_BatchImportFindings.html), findings about compliant resources are automatically [archived](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-concepts.html).
+![Architecture](screenshots/ElectricEye-Architecture.jpg)
+1. A [time-based CloudWatch Event](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html) runs ElectricEye every 12 hours (default value)
+2. The ElectricEye Task will pull the Docker image from [Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/).
+3. Systems Manager Parameter Store passes the bucket name from which Auditors are downloaded. Optionally, ElectricEye will retrieve you API key(s) for [DisruptOps](https://disruptops.com/features/) and [Shodan](https://www.shodan.io/explore), if those integrations are configured.
+4. The ElectricEye task will execute all Auditors to scan your AWS infrastructure and deliver both passed and failed findings to Security Hub. **Note:** ElectricEye will query the Shodan APIs to see if there is a match against select internet-facing AWS resources if configured.
+5. If configured, ElectricEye will send findings to DisruptOps. DisruptOps is also [integrated with Security Hub](https://disruptops.com/aws-security-management-with-securityhub/) and can optionally enforce guardrails and orchestrate security automation from within the platform.
 
 Refer to the [Supported Services and Checks](https://github.com/jonrau1/ElectricEye#supported-services-and-checks) section for an up-to-date list of supported services and checks performed by the Auditors.
 
@@ -69,7 +69,7 @@ Refer to the [Supported Services and Checks](https://github.com/jonrau1/Electric
 These steps are split across their relevant sections. All CLI commands are executed from an Ubuntu 18.04LTS [Cloud9 IDE](https://aws.amazon.com/cloud9/details/), modify them to fit your OS. 
 
 **Note 1:** If you do use Cloud9, navigate to Settings (represented by a Gear icon) > AWS Settings and **unmark** the selection for `AWS managed temporary credentials` (move the toggle to your left-hand side) as shown below. If you do not, you instance profile will not apply properly.
-![Cloud9TempCred](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/cloud9-temp-creds.JPG)
+![Cloud9TempCred](screenshots/cloud9-temp-creds.JPG)
 
 **Note 2:** Ensure AWS Security Hub is enabled in the region you are attempting to run ElectricEye
 
@@ -179,7 +179,7 @@ In the next stage you will launch the ElectricEye ECS task manually because afte
 1. Download the [CloudFormation template](https://github.com/jonrau1/ElectricEye/blob/master/cloudformation/ElectricEye_CFN.yaml) and create a Stack. Refer to the [Get Started](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/GettingStarted.Walkthrough.html) section of the *AWS CloudFormation User Guide* if you have not done this before.
 
 2. Enter the URI of the Docker image in the space for the parameter **ElectricEyeContainerInfo**. Leave all other parameters as the default value, unless you already used `10.77.0.0/16` as the CIDR for one of your VPCs and plan to attach this VPC to your [T-Gateway](https://aws.amazon.com/transit-gateway/). Optionally replace the values of the Shodan API Key, DisruptOps Client Id, and DisruptOps API Key parameters with yours if you created them in the previous optional steps and then create your stack.
-![Run task dropdown](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/cfn-parameter-uri-modification.JPG)
+![Run task dropdown](screenshots/cfn-parameter-uri-modification.JPG)
 
 **NOTE**: The Terraform implementation applies a resource-based repository policy that only allows access to the ElectricEye ECS IAM Roles (Execution & Task), if you want to apply something similar for CloudFormation you will need to issue the following ECR CLI command:
 ```bash
@@ -238,7 +238,7 @@ python3 electriceye-insights.py
 In this stage we will use the console the manually run the ElectricEye ECS task.
 
 1. Navigate to the ECS Console, select **Task Definitions** and toggle the `electric-eye` task definition. Select the **Actions** dropdown menu and select **Run Task** as shown in the below screenshot.
-![Run task dropdown](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/run-ecs-task-dropdown.JPG)
+![Run task dropdown](screenshots/run-ecs-task-dropdown.JPG)
 
 2. Configure the following settings in the **Run Task** screen as shown in the screenshot below
 - Launch type: **Fargate**
@@ -250,7 +250,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 - Subnets: ***any eletric eye Subnet***
 - Security groups: **electric-eye-vpc-sec-group** (you will need to select **Modify** and choose from another menu)
 - Auto-assign public IP: **ENABLED**
-![ECS task menu](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/ecs-task-menu-modifications.JPG)
+![ECS task menu](screenshots/ecs-task-menu-modifications.JPG)
 
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
@@ -567,7 +567,7 @@ One of the main benefits to moving to the cloud is the agility it gives you to q
 ElectricEye won't take the place of a crack squad of principal security engineers or stand-in for a compliance, infosec, privacy or risk function but it will help you stay informed to the security posture of your AWS environment across a multitude of services. You should also implement secure software delivery, privacy engineering, secure-by-design configuration, and application security programs and rely on automation where you can to develop a mature cloud security program.
 
 Or, you could just not do security at all and look like pic below:
-![ThreatActorKittens](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/plz-no.jpg)
+![ThreatActorKittens](screenshots/plz-no.jpg)
 
 ### 1. Why should I use this tool?
 Primarily because it is free to *use* (you still need to pay for the infrastructure). This tool will also help cover services not currently covered by AWS Config rules or AWS Security Hub security standards. This tool is also natively integrated with Security Hub, no need to create additional services to perform translation into the AWS Security Finding Format and call the `BatchImportFindings` API to send findings to Security Hub.
@@ -575,7 +575,7 @@ Primarily because it is free to *use* (you still need to pay for the infrastruct
 There is logic that will auto-archive findings as they move in and out of compliance, there are also other add-ons such as multi-account response & remediation playbooks, Config Recorder integration, Shodan integration, Slack integration and others that even if you do not use ElectricEye you can get some usage from the other stuff. Or just, you know, steal the code?
 
 Finally, you can look like the GIF below, where your security team is Jacob Trouba (New York Rangers #8 in white) laying sick open-ice hits on pesky security violations represented by Dal Colle (New York Islanders #28 in that ugly uniform).
-![OpenIceHit](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/old-school-hockey-trouba.gif)
+![OpenIceHit](screenshots/old-school-hockey-trouba.gif)
 
 ### 2. Will this tool help me become compliant with (insert framework of some sort here)?
 No, it still won't. If you wanted to use this tool to satisfy an audit, I would recommend you work closely with your GRC and Legal functions to determine if the checks performed by ElectricEye will legally satisfy the requirements of any compliance framework or regulations you need to comply with. 
