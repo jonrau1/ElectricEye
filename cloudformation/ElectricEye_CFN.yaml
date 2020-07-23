@@ -10,7 +10,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-# You should have received a copy of the GNU General Public License along with ElectricEye.  
+# You should have received a copy of the GNU General Public License along with ElectricEye.
 # If not, see https://github.com/jonrau1/ElectricEye/blob/master/LICENSE.
 
 AWSTemplateFormatVersion: 2010-09-09
@@ -22,15 +22,23 @@ Parameters:
     Type: String
     Description: The SSM Secure String Parameter containing your Shodan API key. Leave the default value if you will not be using Shodan
     Default: placeholder
+  DopsClientIdSSMParam:
+    Type: String
+    Description: The SSM Secure String Parameter containing your DisruptOps Client ID. Leave the default value if you will not be using DisruptOps
+    Default: placeholder
+  DopsApiKeySSMParam:
+      Type: String
+      Description: The SSM Secure String Parameter containing your DisruptOps API key. Leave the default value if you will not be using DisruptOps
+      Default: placeholder
   ElectricEyeClusterName:
     Type: String
     Description: Name of the ECS Cluster that the ElectricEye Fargate Task will run in
     Default: ElectricEyeCluster
-  ElectricEyeContainerName: 
+  ElectricEyeContainerName:
     Type: String
     Description: Name of the ElectricEye Container Definition within the ECS Task
     Default: ElectricEye
-  ElectricEyeContainerInfo: 
+  ElectricEyeContainerInfo:
     Type: String
     Description: ECR URI of the ElectricEye container
   EnvironmentName:
@@ -74,7 +82,7 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
-      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      AvailabilityZone: !Select [0, !GetAZs ""]
       CidrBlock: !Ref ElectricEyeScheduledSubnet1CIDR
       MapPublicIpOnLaunch: true
       Tags:
@@ -84,7 +92,7 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
-      AvailabilityZone: !Select [ 1, !GetAZs  '' ]
+      AvailabilityZone: !Select [1, !GetAZs ""]
       CidrBlock: !Ref ElectricEyeScheduledSubnet2CIDR
       MapPublicIpOnLaunch: true
       Tags:
@@ -141,24 +149,25 @@ Resources:
       GroupDescription: "Security group with HTTPS for Electric Eye Fargate"
       VpcId: !Ref VPC
       SecurityGroupIngress:
-      - IpProtocol: tcp
-        FromPort: 443
-        ToPort: 443
-        CidrIp: 0.0.0.0/0
-        Description: HTTPS Inbound
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+          Description: HTTPS Inbound
       SecurityGroupEgress:
-      - IpProtocol: tcp
-        FromPort: 0
-        ToPort: 65535
-        CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: 0.0.0.0/0
   ElectricEyeECSCloudWatchLogsGroup:
     Type: AWS::Logs::LogGroup
-    Properties: 
-      LogGroupName: !Join [ "-", [ !Ref ElectricEyeContainerName, !Ref 'AWS::StackName' ] ]
+    Properties:
+      LogGroupName:
+        !Join ["-", [!Ref ElectricEyeContainerName, !Ref "AWS::StackName"]]
       RetentionInDays: 90
   ElectricEyeECSCluster:
     Type: AWS::ECS::Cluster
-    Properties: 
+    Properties:
       ClusterName: !Ref ElectricEyeClusterName
       ClusterSettings:
         - Name: containerInsights
@@ -167,192 +176,216 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       Policies:
-      - PolicyName: electriceyetaskpolicy
-        PolicyDocument:
-          Version: 2012-10-17
-          Statement:
-          - Effect: Allow
-            Action:
-            - access-analyzer:ListAnalyzers
-            - apigateway:GET
-            - appmesh:DescribeMesh
-            - appmesh:DescribeVirtualNode
-            - appmesh:ListMeshes
-            - appmesh:ListVirtualNodes
-            - appstream:DescribeFleets
-            - appstream:DescribeImages
-            - appstream:DescribeUsers
-            - backup:DescribeProtectedResource
-            - cloudformation:DescribeStacks
-            - cloudfront:ListDistributions
-            - cloudtrail:DescribeTrails
-            - cloudtrail:ListTrails
-            - cloudwatch:GetMetricData
-            - codebuild:BatchGetProjects
-            - codebuild:ListProjects
-            - cognito-idp:DescribeUserPool
-            - cognito-idp:ListUserPools
-            - detective:ListGraphs
-            - dms:DescribeReplicationInstances
-            - ds:DescribeDirectories
-            - ds:ListLogSubscriptions
-            - dynamodb:DescribeTable
-            - dynamodb:ListTables
-            - dynamodb:DescribeContinuousBackups
-            - dynamodb:DescribeTimeToLive
-            - ec2:DescribeAddresses
-            - ec2:DescribeFlowLogs
-            - ec2:DescribeImageAttribute
-            - ec2:DescribeImages
-            - ec2:DescribeInstanceAttribute
-            - ec2:DescribeInstances
-            - ec2:DescribeSecurityGroupReferences
-            - ec2:DescribeSecurityGroups
-            - ec2:DescribeSnapshotAttribute
-            - ec2:DescribeSnapshots
-            - ec2:DescribeVolumes
-            - ec2:DescribeVpcs
-            - ec2:GetEbsDefaultKmsKeyId
-            - ec2:GetEbsEncryptionByDefault
-            - ecs:ListClusters
-            - ecs:DescribeClusters
-            - ecr:DescribeImages
-            - ecr:DescribeRepositories
-            - ecr:GetLifecyclePolicy
-            - ecr:GetRepositoryPolicy
-            - eks:DescribeCluster
-            - eks:ListClusters
-            - elasticfilesystem:DescribeFileSystems
-            - elasticache:DescribeCacheClusters
-            - elasticloadbalancing:DescribeListeners
-            - elasticloadbalancing:DescribeLoadBalancerAttributes
-            - elasticloadbalancing:DescribeLoadBalancers
-            - elasticmapreduce:DescribeCluster
-            - elasticmapreduce:DescribeSecurityConfiguration
-            - elasticmapreduce:GetBlockPublicAccessConfiguration
-            - elasticmapreduce:ListClusters
-            - es:DescribeElasticsearchDomain
-            - es:ListDomainNames
-            - firehose:DescribeDeliveryStream
-            - firehose:ListDeliveryStreams
-            - glue:GetSecurityConfiguration
-            - glue:GetResourcePolicy
-            - glue:GetCrawler
-            - glue:GetDataCatalogEncryptionSettings
-            - glue:ListCrawlers
-            - guardduty:ListDetectors
-            - iam:GetAccountPasswordPolicy
-            - iam:ListUsers
-            - iam:ListAccessKeys
-            - iam:ListMfaDevices
-            - iam:ListUserPolicies
-            - iam:ListAttachedUserPolicies
-            - iam:ListServerCertificates
-            - kafka:DescribeCluster
-            - kafka:ListClusters
-            - kinesis:DescribeStream
-            - kinesis:ListStreams
-            - kms:Decrypt
-            - kms:DescribeKey
-            - lambda:ListFunctions
-            - license-manager:GetLicenseConfiguration
-            - license-manager:ListLicenseConfigurations
-            - managedblockchain:GetNetwork
-            - managedblockchain:ListMembers
-            - managedblockchain:ListNetworks
-            - managedblockchain:GetNode
-            - managedblockchain:GetMember
-            - managedblockchain:ListNodes
-            - mq:DescribeBroker
-            - mq:ListBrokers
-            - rds:DescribeDBClusterParameterGroups
-            - rds:DescribeDBClusterParameters
-            - rds:DescribeDBClusters
-            - rds:DescribeDBClusterSnapshotAttributes
-            - rds:DescribeDBClusterSnapshots
-            - rds:DescribeDBInstances
-            - rds:DescribeDBParameterGroups
-            - rds:DescribeDBParameters
-            - rds:DescribeDBSnapshotAttributes
-            - rds:DescribeDBSnapshots
-            - redshift:DescribeClusters
-            - redshift:DescribeLoggingStatus
-            - route53:ListHostedZones
-            - s3:GetBucketLogging
-            - s3:GetBucketPolicy
-            - s3:GetBucketPolicyStatus
-            - s3:GetBucketVersioning
-            - s3:GetAccountPublicAccessBlock
-            - s3:GetEncryptionConfiguration
-            - s3:GetLifecycleConfiguration
-            - s3:GetObject
-            - s3:ListAllMyBuckets
-            - s3:ListBucket
-            - sagemaker:DescribeEndpoint
-            - sagemaker:DescribeModel
-            - sagemaker:DescribeNotebookInstance
-            - sagemaker:ListEndpoints
-            - sagemaker:ListModels
-            - sagemaker:ListNotebookInstances
-            - secretsmanager:ListSecrets
-            - securityhub:BatchImportFindings
-            - securityhub:GetFindings
-            - shield:DescribeDRTAccess
-            - shield:DescribeProtection
-            - shield:DescribeSubscription
-            - sns:GetTopicAttributes
-            - sns:ListSubscriptions
-            - sns:ListSubscriptionsByTopic
-            - sns:ListTopics
-            - ssm:GetParameter
-            - ssm:GetParameters
-            - ssm:DescribeInstanceAssociationsStatus
-            - ssm:DescribeInstanceInformation
-            - ssm:DescribeInstancePatches
-            - ssm:DescribeInstancePatchStates
-            - ssm:DescribeInstanceProperties
-            - workspaces:DescribeWorkspaceDirectories
-            - workspaces:DescribeWorkspaces              
-            Resource: "*"
+        - PolicyName: electriceyetaskpolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - access-analyzer:ListAnalyzers
+                  - apigateway:GET
+                  - appmesh:DescribeMesh
+                  - appmesh:DescribeVirtualNode
+                  - appmesh:ListMeshes
+                  - appmesh:ListVirtualNodes
+                  - appstream:DescribeFleets
+                  - appstream:DescribeImages
+                  - appstream:DescribeUsers
+                  - backup:DescribeProtectedResource
+                  - cloudformation:DescribeStacks
+                  - cloudfront:ListDistributions
+                  - cloudfront:GetDistribution
+                  - cloudtrail:DescribeTrails
+                  - cloudtrail:ListTrails
+                  - cloudwatch:GetMetricData
+                  - codebuild:BatchGetProjects
+                  - codebuild:ListProjects
+                  - cognito-idp:DescribeUserPool
+                  - cognito-idp:ListUserPools
+                  - detective:ListGraphs
+                  - dms:DescribeReplicationInstances
+                  - ds:DescribeDirectories
+                  - ds:ListLogSubscriptions
+                  - dynamodb:DescribeTable
+                  - dynamodb:ListTables
+                  - dynamodb:DescribeContinuousBackups
+                  - dynamodb:DescribeTimeToLive
+                  - ec2:DescribeAddresses
+                  - ec2:DescribeFlowLogs
+                  - ec2:DescribeImageAttribute
+                  - ec2:DescribeImages
+                  - ec2:DescribeInstanceAttribute
+                  - ec2:DescribeInstances
+                  - ec2:DescribeSecurityGroupReferences
+                  - ec2:DescribeSecurityGroups
+                  - ec2:DescribeSnapshotAttribute
+                  - ec2:DescribeSnapshots
+                  - ec2:DescribeVolumes
+                  - ec2:DescribeVpcs
+                  - ec2:GetEbsDefaultKmsKeyId
+                  - ec2:GetEbsEncryptionByDefault
+                  - ecs:ListClusters
+                  - ecs:DescribeClusters
+                  - ecr:DescribeImages
+                  - ecr:DescribeRepositories
+                  - ecr:GetLifecyclePolicy
+                  - ecr:GetRepositoryPolicy
+                  - eks:DescribeCluster
+                  - eks:ListClusters
+                  - elasticfilesystem:DescribeFileSystems
+                  - elasticache:DescribeCacheClusters
+                  - elasticloadbalancing:DescribeListeners
+                  - elasticloadbalancing:DescribeLoadBalancerAttributes
+                  - elasticloadbalancing:DescribeLoadBalancers
+                  - elasticmapreduce:DescribeCluster
+                  - elasticmapreduce:DescribeSecurityConfiguration
+                  - elasticmapreduce:GetBlockPublicAccessConfiguration
+                  - elasticmapreduce:ListClusters
+                  - es:DescribeElasticsearchDomain
+                  - es:ListDomainNames
+                  - firehose:DescribeDeliveryStream
+                  - firehose:ListDeliveryStreams
+                  - globalaccelerator:ListAccelerators
+                  - globalaccelerator:ListListeners
+                  - globalaccelerator:ListEndpointGroups
+                  - globalaccelerator:DescribeAcceleratorAttributes
+                  - glue:GetSecurityConfiguration
+                  - glue:GetResourcePolicy
+                  - glue:GetCrawler
+                  - glue:GetDataCatalogEncryptionSettings
+                  - glue:ListCrawlers
+                  - guardduty:ListDetectors
+                  - iam:GetAccountPasswordPolicy
+                  - iam:ListUsers
+                  - iam:ListAccessKeys
+                  - iam:ListMfaDevices
+                  - iam:ListUserPolicies
+                  - iam:ListAttachedUserPolicies
+                  - iam:ListServerCertificates
+                  - imagebuilder:ListImagePipelines
+                  - imagebuilder:GetImagePipeline
+                  - imagebuilder:ListImageRecipes
+                  - imagebuilder:GetImageRecipe
+                  - kafka:DescribeCluster
+                  - kafka:ListClusters
+                  - kinesis:DescribeStream
+                  - kinesis:ListStreams
+                  - kinesisanalyticsv2:ListApplications
+                  - kinesisanalyticsv2:DescribeApplication
+                  - kms:Decrypt
+                  - kms:DescribeKey
+                  - kms:GetKeyPolicy
+                  - kms:GetKeyRotationStatus
+                  - kms:ListAliases
+                  - kms:ListKeys
+                  - lambda:ListFunctions
+                  - license-manager:GetLicenseConfiguration
+                  - license-manager:ListLicenseConfigurations
+                  - macie2:GetMacieSession
+                  - managedblockchain:GetNetwork
+                  - managedblockchain:ListMembers
+                  - managedblockchain:ListNetworks
+                  - managedblockchain:GetNode
+                  - managedblockchain:GetMember
+                  - managedblockchain:ListNodes
+                  - mq:DescribeBroker
+                  - mq:ListBrokers
+                  - qldb:DescribeLedger
+                  - qldb:ListJournalS3Exports
+                  - qldb:ListLedgers
+                  - ram:GetResourceShares
+                  - rds:DescribeDBClusterParameterGroups
+                  - rds:DescribeDBClusterParameters
+                  - rds:DescribeDBClusters
+                  - rds:DescribeDBClusterSnapshotAttributes
+                  - rds:DescribeDBClusterSnapshots
+                  - rds:DescribeDBInstances
+                  - rds:DescribeDBParameterGroups
+                  - rds:DescribeDBParameters
+                  - rds:DescribeDBSnapshotAttributes
+                  - rds:DescribeDBSnapshots
+                  - redshift:DescribeClusters
+                  - redshift:DescribeLoggingStatus
+                  - route53:ListHostedZones
+                  - s3:GetBucketLogging
+                  - s3:GetBucketPolicy
+                  - s3:GetBucketPolicyStatus
+                  - s3:GetBucketVersioning
+                  - s3:GetAccountPublicAccessBlock
+                  - s3:GetEncryptionConfiguration
+                  - s3:GetLifecycleConfiguration
+                  - s3:GetObject
+                  - s3:ListAllMyBuckets
+                  - s3:ListBucket
+                  - sagemaker:DescribeEndpoint
+                  - sagemaker:DescribeModel
+                  - sagemaker:DescribeNotebookInstance
+                  - sagemaker:ListEndpoints
+                  - sagemaker:ListModels
+                  - sagemaker:ListNotebookInstances
+                  - secretsmanager:ListSecrets
+                  - securityhub:BatchImportFindings
+                  - securityhub:GetFindings
+                  - shield:DescribeDRTAccess
+                  - shield:DescribeProtection
+                  - shield:DescribeSubscription
+                  - sns:GetTopicAttributes
+                  - sns:ListSubscriptions
+                  - sns:ListSubscriptionsByTopic
+                  - sns:ListTopics
+                  - ssm:GetParameter
+                  - ssm:GetParameters
+                  - ssm:GetParametersByPath
+                  - ssm:DescribeInstanceAssociationsStatus
+                  - ssm:DescribeInstanceInformation
+                  - ssm:DescribeInstancePatches
+                  - ssm:DescribeInstancePatchStates
+                  - ssm:DescribeInstanceProperties
+                  - sts:GetCallerIdentity
+                  - sqs:ListQueues
+                  - sqs:GetQueueAttributes
+                  - workspaces:DescribeWorkspaceDirectories
+                  - workspaces:DescribeWorkspaces
+                Resource: "*"
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
-        - Effect: Allow
-          Principal: { Service: ecs-tasks.amazonaws.com }
-          Action:
-          - sts:AssumeRole
+          - Effect: Allow
+            Principal: { Service: ecs-tasks.amazonaws.com }
+            Action:
+              - sts:AssumeRole
   ElectricEyeExecutionRole:
     Type: AWS::IAM::Role
     Properties:
       Policies:
-      - PolicyName: electriceyeexecpolicy
-        PolicyDocument:
-          Version: 2012-10-17
-          Statement:
-          - Effect: Allow
-            Action:
-            - ecr:GetAuthorizationToken
-            - ecr:BatchCheckLayerAvailability
-            - ecr:GetDownloadUrlForLayer
-            - ecr:BatchGetImage
-            - kms:Decrypt
-            - kms:DescribeKey
-            - logs:CreateLogStream
-            - logs:PutLogEvents
-            - ssm:GetParameter
-            - ssm:GetParameters
-            Resource: "*"
+        - PolicyName: electriceyeexecpolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecr:GetAuthorizationToken
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:BatchGetImage
+                  - kms:Decrypt
+                  - kms:DescribeKey
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                  - ssm:GetParameter
+                  - ssm:GetParameters
+                Resource: "*"
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
-        - Effect: Allow
-          Principal: { Service: ecs-tasks.amazonaws.com }
-          Action:
-          - sts:AssumeRole
+          - Effect: Allow
+            Principal: { Service: ecs-tasks.amazonaws.com }
+            Action:
+              - sts:AssumeRole
   ElectricEyeArtifactBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub '${EnvironmentName}-artifact-bucket-${AWS::Region}-${AWS::AccountId}'
+      BucketName: !Sub "${EnvironmentName}-artifact-bucket-${AWS::Region}-${AWS::AccountId}"
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
@@ -370,10 +403,9 @@ Resources:
       Value: !Ref ElectricEyeArtifactBucket
   ElectricEyeECSTaskDefinition:
     Type: AWS::ECS::TaskDefinition
-    Properties: 
-      ContainerDefinitions: 
-        -   
-          Image: !Ref ElectricEyeContainerInfo
+    Properties:
+      ContainerDefinitions:
+        - Image: !Ref ElectricEyeContainerInfo
           Name: !Ref ElectricEyeContainerName
           Secrets:
             - Name: SH_SCRIPTS_BUCKET
@@ -381,11 +413,15 @@ Resources:
           Environment:
             - Name: SHODAN_API_KEY_PARAM
               Value: !Ref ShodanApiKeySSMParam
+            - Name: DOPS_CLIENT_ID_PARAM
+              Value: !Ref DopsClientIdSSMParam
+            - Name: DOPS_API_KEY_PARAM
+              Value: !Ref DopsApiKeySSMParam
           LogConfiguration:
             LogDriver: awslogs
             Options:
               awslogs-group: !Ref ElectricEyeECSCloudWatchLogsGroup
-              awslogs-region: !Ref 'AWS::Region'
+              awslogs-region: !Ref "AWS::Region"
               awslogs-stream-prefix: ecs
       Cpu: 2048
       ExecutionRoleArn: !GetAtt ElectricEyeExecutionRole.Arn
@@ -408,7 +444,7 @@ Resources:
             TaskDefinitionArn: !Ref ElectricEyeECSTaskDefinition
             TaskCount: 1
             LaunchType: FARGATE
-            PlatformVersion: 'LATEST'
+            PlatformVersion: "LATEST"
             NetworkConfiguration:
               AwsVpcConfiguration:
                 AssignPublicIp: ENABLED

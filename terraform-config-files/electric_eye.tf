@@ -96,6 +96,14 @@ resource "aws_ecs_task_definition" "Electric_Eye_ECS_Task_Definition" {
       {
         "value": "${var.Shodan_API_Key_SSM_Parameter}",
         "name": "SHODAN_API_KEY_PARAM"
+      },
+      {
+        "value": "${var.Dops_client_id_SSM_Parameter}",
+        "name": "DOPS_CLIENT_ID_PARAM"
+      },
+      {
+        "value": "${var.Dops_api_key_SSM_Parameter}",
+        "name": "DOPS_API_KEY_PARAM"
       }
     ],
     "name": "${var.Electric_Eye_ECS_Resources_Name}",
@@ -277,6 +285,7 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "iam:ListServerCertificates",
                 "mq:DescribeBroker",
                 "mq:ListBrokers",
+                "macie2:GetMacieSession",
                 "managedblockchain:GetNetwork",
                 "managedblockchain:ListMembers",
                 "managedblockchain:ListNetworks",
@@ -289,6 +298,8 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "apigateway:GET",
                 "ssm:GetParameter",
                 "ssm:GetParameters",
+                "ssm:GetParametersByPath",
+                "sts:GetCallerIdentity",
                 "rds:DescribeDBParameterGroups",
                 "s3:ListBucket",
                 "backup:DescribeProtectedResource",
@@ -332,6 +343,7 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "rds:DescribeDBClusterSnapshots",
                 "redshift:DescribeClusters",
                 "cloudfront:ListDistributions",
+                "cloudfront:GetDistribution",
                 "sagemaker:ListModels",
                 "ds:DescribeDirectories",
                 "securityhub:BatchImportFindings",
@@ -340,7 +352,27 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "ecr:GetRepositoryPolicy",
                 "rds:DescribeDBClusterParameterGroups",
                 "lambda:ListFunctions",
-                "cloudwatch:GetMetricData"
+                "cloudwatch:GetMetricData",
+                "kms:ListAliases",
+                "kms:GetKeyPolicy",
+                "kms:ListKeys",
+                "kms:GetKeyRotationStatus",
+                "sqs:ListQueues",
+                "sqs:GetQueueAttributes",
+                "qldb:ListLedgers",
+                "qldb:DescribeLedger",
+                "qldb:ListJournalS3Exports",
+                "globalaccelerator:ListAccelerators",
+                "globalaccelerator:ListListeners",
+                "globalaccelerator:ListEndpointGroups",
+                "globalaccelerator:DescribeAcceleratorAttributes",
+                "ram:GetResourceShares",
+                "kinesisanalyticsv2:ListApplications",
+                "kinesisanalyticsv2:DescribeApplication",
+                "imagebuilder:ListImagePipelines",
+                "imagebuilder:GetImagePipeline",
+                "imagebuilder:ListImageRecipes",
+                "imagebuilder:GetImageRecipe"
             ],
             "Resource": "*"
         }

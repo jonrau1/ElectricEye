@@ -232,7 +232,27 @@
                 "ecr:GetRepositoryPolicy",
                 "lambda:ListFunctions",
                 "cloudwatch:GetMetricData",
-                "sns:GetTopicAttributes"
+                "sns:GetTopicAttributes",
+                "kms:ListAliases",
+                "kms:GetKeyPolicy",
+                "kms:ListKeys",
+                "kms:GetKeyRotationStatus",
+                "qldb:ListLedgers",
+                "qldb:DescribeLedger",
+                "qldb:ListJournalS3Exports",
+                "globalaccelerator:ListAccelerators",
+                "globalaccelerator:ListListeners",
+                "globalaccelerator:ListEndpointGroups",
+                "globalaccelerator:DescribeAcceleratorAttributes",
+                "ram:GetResourceShares",
+                "kinesisanalyticsv2:ListApplications",
+                "kinesisanalyticsv2:DescribeApplication",
+                "imagebuilder:ListImagePipelines",
+                "imagebuilder:GetImagePipeline",
+                "imagebuilder:ListImageRecipes",
+                "imagebuilder:GetImageRecipe",
+                "cloudfront:ListDistributions",
+                "cloudfront:GetDistribution"
             ],
             "Resource": "*"
         }

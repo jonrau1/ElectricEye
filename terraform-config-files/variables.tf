@@ -40,6 +40,14 @@ variable "Shodan_API_Key_SSM_Parameter" {
   default =     "placeholder"
   description = "The SSM Secure String Parameter containing your Shodan API key. Leave the default value if you will not be using Shodan"
 }
+variable "Dops_client_id_SSM_Parameter" {
+  default =     "placeholder"
+  description = "The SSM Secure String Parameter containing your DisruptOps client id. Leave the default value if you will not be using DisruptOps"
+}
+variable "Dops_api_key_SSM_Parameter" {
+  default =     "placeholder"
+  description = "The SSM Secure String Parameter containing your DisruptOps API key. Leave the default value if you will not be using DisruptOps"
+}
 variable "Electric_Eye_Schedule_Task_Expression" {
   default = "rate(12 hours)"
 }

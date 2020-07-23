@@ -48,6 +48,7 @@
                 "iam:ListUserPolicies",
                 "iam:ListAttachedUserPolicies",
                 "iam:ListServerCertificates",
+                "macie2:GetMacieSession",
                 "managedblockchain:GetNetwork",
                 "managedblockchain:ListMembers",
                 "managedblockchain:ListNetworks",
@@ -141,7 +142,12 @@
                 "rds:DescribeDBClusters",
                 "sagemaker:ListEndpoints",
                 "ecr:GetRepositoryPolicy",
-                "rds:DescribeDBClusterParameterGroups"
+                "rds:DescribeDBClusterParameterGroups",
+                "sqs:ListQueues",
+                "sqs:GetQueueAttributes",
+                "globalaccelerator:ListAccelerators",
+                "globalaccelerator:ListListeners",
+                "globalaccelerator:ListEndpointGroups"
             ],
             "Resource": "*"
         }
