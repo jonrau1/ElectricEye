@@ -65,7 +65,7 @@ def sagemaker_notebook_encryption_check(
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "Other",
+                        "Type": "AwsSagemakerNotebookInstance",
                         "Id": notebookArn,
                         "Partition": "aws",
                         "Region": awsRegion,
@@ -116,7 +116,7 @@ def sagemaker_notebook_encryption_check(
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "Other",
+                        "Type": "AwsSagemakerNotebookInstance",
                         "Id": notebookArn,
                         "Partition": "aws",
                         "Region": awsRegion,
@@ -182,7 +182,7 @@ def sagemaker_notebook_direct_internet_access_check(
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "Other",
+                        "Type": "AwsSagemakerNotebookInstance",
                         "Id": notebookArn,
                         "Partition": "aws",
                         "Region": awsRegion,
@@ -237,7 +237,7 @@ def sagemaker_notebook_direct_internet_access_check(
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "Other",
+                        "Type": "AwsSagemakerNotebookInstance",
                         "Id": notebookArn,
                         "Partition": "aws",
                         "Region": awsRegion,
@@ -308,7 +308,7 @@ def sagemaker_notebook_in_vpc_check(
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "Other",
+                        "Type": "AwsSagemakerNotebookInstance",
                         "Id": notebookArn,
                         "Partition": "aws",
                         "Region": awsRegion,
@@ -361,7 +361,7 @@ def sagemaker_notebook_in_vpc_check(
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "Other",
+                        "Type": "AwsSagemakerNotebookInstance",
                         "Id": notebookArn,
                         "Partition": "aws",
                         "Region": awsRegion,
@@ -430,7 +430,7 @@ def sagemaker_endpoint_encryption_check(
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "Other",
+                        "Type": "AwsSagemakerEndpoint",
                         "Id": endpointArn,
                         "Partition": "aws",
                         "Region": awsRegion,
@@ -481,7 +481,7 @@ def sagemaker_endpoint_encryption_check(
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "Other",
+                        "Type": "AwsSagemakerEndpoint",
                         "Id": endpointArn,
                         "Partition": "aws",
                         "Region": awsRegion,
@@ -547,7 +547,7 @@ def sagemaker_model_network_isolation_check(
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "Other",
+                        "Type": "AwsSagemakerModel",
                         "Id": modelArn,
                         "Partition": "aws",
                         "Region": awsRegion,
@@ -600,7 +600,7 @@ def sagemaker_model_network_isolation_check(
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "Other",
+                        "Type": "AwsSagemakerModel",
                         "Id": modelArn,
                         "Partition": "aws",
                         "Region": awsRegion,
@@ -626,4 +626,3 @@ def sagemaker_model_network_isolation_check(
                 "RecordState": "ARCHIVED",
             }
             yield finding
-
