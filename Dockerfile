@@ -27,5 +27,7 @@ RUN \
     pip3 install -r /tmp/requirements.txt
 
 CMD \
+    echo "Copying auditor files to ECS container..." && \
     aws s3 cp s3://${SH_SCRIPTS_BUCKET}/ ./eeauditor/auditors --recursive && \
+    echo "Starting auditor run via ECS container..." && \
     python3 eeauditor/controller.py
