@@ -16,16 +16,16 @@
 resource "aws_ecs_cluster" "Electric_Eye_ECS_Cluster" {
   name = "${var.Electric_Eye_VPC_Name_Tag}-ecs-cluster"
   capacity_providers = ["FARGATE"]
-  default_capacity_provider_strategy = {
-    capacity_provider = "FARGATE"
+  default_capacity_provider_strategy {
+    capacity_provider = "FARGATE"      
   }
-  setting = {
+  setting {
     name  = "containerInsights"
     value = "enabled"
   }
 }
 resource "aws_ecr_repository_policy" "foopolicy" {
-  repository = "${var.Electric_Eye_ECR_Repository_Name}"
+  repository = var.Electric_Eye_ECR_Repository_Name
   policy = <<EOF
 {
   "Version": "2008-10-17",
@@ -69,7 +69,7 @@ resource "aws_s3_bucket" "Electric_Eye_Security_Artifact_Bucket" {
 resource "aws_ssm_parameter" "Electric_Eye_Bucket_Parameter" {
   name       = "electriceye-bucket"
   type        = "String"
-  value       = "${aws_s3_bucket.Electric_Eye_Security_Artifact_Bucket.id}"
+  value       = aws_s3_bucket.Electric_Eye_Security_Artifact_Bucket.id
   description = "Contains the location of the S3 bucket with ElectricEye Auditor files"
 }
 resource "aws_cloudwatch_log_group" "Electric_Eye_ECS_Task_Definition_CW_Logs_Group" {
@@ -77,8 +77,8 @@ resource "aws_cloudwatch_log_group" "Electric_Eye_ECS_Task_Definition_CW_Logs_Gr
 }
 resource "aws_ecs_task_definition" "Electric_Eye_ECS_Task_Definition" {
   family                   = "electric-eye"
-  execution_role_arn       = "${aws_iam_role.Electric_Eye_ECS_Task_Execution_Role.arn}"
-  task_role_arn            = "${aws_iam_role.Electric_Eye_ECS_Task_Role.arn}"
+  execution_role_arn       = aws_iam_role.Electric_Eye_ECS_Task_Execution_Role.arn
+  task_role_arn            = aws_iam_role.Electric_Eye_ECS_Task_Role.arn
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = 2048
@@ -150,7 +150,7 @@ EOF
 }
 resource "aws_iam_role_policy" "Electric_Eye_Task_Execution_Role_Policy" {
   name   = "${var.Electric_Eye_ECS_Resources_Name}-exec-policy"
-  role   = "${aws_iam_role.Electric_Eye_ECS_Task_Execution_Role.id}"
+  role   = aws_iam_role.Electric_Eye_ECS_Task_Execution_Role.id
   policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -200,7 +200,7 @@ EOF
 }
 resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
   name   = "${var.Electric_Eye_ECS_Resources_Name}-task-policy"
-  role   = "${aws_iam_role.Electric_Eye_ECS_Task_Role.id}"
+  role   = aws_iam_role.Electric_Eye_ECS_Task_Role.id
   policy = <<EOF
 {
     "Version": "2012-10-17",
@@ -383,7 +383,7 @@ EOF
 resource "aws_cloudwatch_event_rule" "Electric_Eye_Task_Scheduling_CW_Event_Rule" {
   name                = "${var.Electric_Eye_ECS_Resources_Name}-scheduler"
   description         = "Run ${var.Electric_Eye_ECS_Resources_Name} Task at a scheduled time (${var.Electric_Eye_Schedule_Task_Expression}) - Managed by Terraform"
-  schedule_expression = "${var.Electric_Eye_Schedule_Task_Expression}"
+  schedule_expression = var.Electric_Eye_Schedule_Task_Expression
 }
 resource "aws_iam_role" "Electric_Eye_Scheduled_Task_Event_Role" {
   name               = "${var.Electric_Eye_ECS_Resources_Name}-event-role"
@@ -404,20 +404,21 @@ resource "aws_iam_role" "Electric_Eye_Scheduled_Task_Event_Role" {
 EOF
 }
 resource "aws_iam_role_policy_attachment" "Electric_Eye_Scheduled_Task_Event_Role_Policy" {
-  role       = "${aws_iam_role.Electric_Eye_Scheduled_Task_Event_Role.id}"
-  policy_arn = "${data.aws_iam_policy.AWS_Managed_ECS_Events_Role.arn}"
+  role       = aws_iam_role.Electric_Eye_Scheduled_Task_Event_Role.id
+  policy_arn = data.aws_iam_policy.AWS_Managed_ECS_Events_Role.arn
 }
+
 resource "aws_cloudwatch_event_target" "Electric_Eye_Scheduled_Scans" {
-  rule       = "${aws_cloudwatch_event_rule.Electric_Eye_Task_Scheduling_CW_Event_Rule.name}"
-  arn        = "${aws_ecs_cluster.Electric_Eye_ECS_Cluster.arn}"
-  role_arn   = "${aws_iam_role.Electric_Eye_Scheduled_Task_Event_Role.arn}"
-  ecs_target = {
+  rule       = aws_cloudwatch_event_rule.Electric_Eye_Task_Scheduling_CW_Event_Rule.name
+  arn        = aws_ecs_cluster.Electric_Eye_ECS_Cluster.arn
+  role_arn   = aws_iam_role.Electric_Eye_Scheduled_Task_Event_Role.arn
+  ecs_target {
       launch_type         = "FARGATE"
-      task_definition_arn = "${aws_ecs_task_definition.Electric_Eye_ECS_Task_Definition.arn}"
+      task_definition_arn = aws_ecs_task_definition.Electric_Eye_ECS_Task_Definition.arn
       task_count          = "1"
       platform_version    = "LATEST"
-      network_configuration  {
-        subnets         = ["${element(aws_subnet.Electric_Eye_Public_Subnets.*.id, count.index)}"]
+      network_configuration {
+        subnets         = [element(aws_subnet.Electric_Eye_Public_Subnets[*].id, 0)]
         security_groups = ["${aws_security_group.Electric_Eye_Sec_Group.id}"]
     }
   }
