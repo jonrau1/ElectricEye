@@ -23,6 +23,7 @@ Continuously monitor your AWS services for configurations that can lead to degra
   - [Running locally](#running-locally)
 - [Supported Services and Checks](https://github.com/jonrau1/ElectricEye#supported-services-and-checks)
 - [(OPTIONAL) Configuration of Checks and Scope](https://github.com/jonrau1/ElectricEye#optional-configuration-of-checks-and-scope)
+- [(OPTIONAL) Configuration of Cloudtrail Logs](https://github.com/jonrau1/ElectricEye#optional-configuration-of-cloudtrail-logs)
 - [Add-on Modules](https://github.com/jonrau1/ElectricEye#add-on-modules)
   - [Config Findings Pruner](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/config-deletion-pruner)
   - [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response)
