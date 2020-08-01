@@ -32,12 +32,48 @@ def print_checks():
 
 
 def run_auditor(auditor_name=None, check_name=None, delay=0, outputs=None, output_file=""):
+    search_path = "/eeauditor/auditors/aws"
+
+    # log output handling
+    # auditorfiles_log
+    auditorfiles_log = False
+    if os.path.isfile(f"{search_path}/auditorfiles_log.txt"):
+        auditorfiles_log = True
+        print(f"Detected auditorfiles_log.txt file, auditorfiles_log output ENABLED")
+    else:
+        print(f"Did not detect auditorfiles_log.txt file, upload blank file to {search_path}/auditorfiles_log.txt for auditorfiles_log output")
+
+    # configfile_log
+    configfile_log = False
+    if os.path.isfile(f"{search_path}/configfile_log.txt"):
+        configfile_log = True
+        print(f"Detected configfile_log.txt file, configfile_log output ENABLED")
+    else:
+        print(f"Did not detect configfile_log.txt file, upload blank file to {search_path}/configfile_log.txt for configfile_log output")
+
+    # debug_log
+    debug_log = False
+    if os.path.isfile(f"{search_path}/debug_log.txt"):
+        debug_log = True
+        print(f"Detected debug_log.txt file, debug_log output ENABLED")
+        print(f"debug_log output includes all other log output")
+        auditorfiles_log = True
+        configfile_log = True
+    else:
+        print(f"Did not detect debug_log.txt file, upload blank file to {search_path}/debug_log.txt for debug_log output")
+        
+
+    if debug_log:
+        print(f"controller.py -> run_auditor method START")
+
     if not outputs:
         outputs = ["sechub"]
-    app = EEAuditor(name="AWS Auditor")
+    app = EEAuditor(name="AWS Auditor",search_path=search_path,debug_log=debug_log,auditorfiles_log=auditorfiles_log,configfile_log=configfile_log)
     app.load_plugins(plugin_name=auditor_name)
     findings = list(app.run_checks(requested_check_name=check_name, delay=delay))
     result = process_findings(findings=findings, outputs=outputs, output_file=output_file)
+    if debug_log:
+        print(f"controller.py -> run_auditor method END")
     print(f"Done.")
 
 

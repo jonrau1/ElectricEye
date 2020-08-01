@@ -22,6 +22,7 @@ Continuously monitor your AWS services for configurations that can lead to degra
   - [Manually execute the ElectricEye ECS Task](https://github.com/jonrau1/ElectricEye#manually-execute-the-electriceye-ecs-task-you-only-need-to-do-this-once)
   - [Running locally](#running-locally)
 - [Supported Services and Checks](https://github.com/jonrau1/ElectricEye#supported-services-and-checks)
+- [(OPTIONAL) Configuration of Checks and Scope](https://github.com/jonrau1/ElectricEye#optional-configuration-of-checks-and-scope)
 - [Add-on Modules](https://github.com/jonrau1/ElectricEye#add-on-modules)
   - [Config Findings Pruner](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/config-deletion-pruner)
   - [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response)
@@ -520,6 +521,35 @@ These are the following services and checks perform by each Auditor. There are c
 | Shodan_Auditor.py                      | ELB (CLB)                     | Are internet-facing CLBs indexed                                                       |
 | Shodan_Auditor.py                      | DMS Replication Instance      | Are public accessible DMS instances indexed                                            |
 | Shodan_Auditor.py                      | Amazon MQ message broker      | Are public accessible message brokers indexed                                          |
+
+
+## (OPTIONAL) Configuration of Checks
+This is an optional configuration file to specify/limit checks that will be run.
+
+If no config file exists in the auditor S3 bucket, all checks in all auditor files will be run, against all resources. 
+
+If ElectricEye locates a `.yaml` file it will assume it is a config file and execute the first one, ignoring others. 
+
+The following config file will run all s3 checks (due to the wildcard *) and both of the indicated ec2 checks. 
+```
+checks:
+  - ec2.public_ami_check
+  - ec2.ebs_volume_attachment_check
+  - s3.*
+```
+
+
+## (OPTIONAL) Configuration of Cloudtrail Logs
+This is an optional configuration to specify which events output to Cloudtrail.
+
+If none of the files below exist in the auditor S3 bucket, only minimal log output will occur. 
+
+If ElectricEye detects any of the files below, logging will be changed as noted: 
+
+- auditorfiles_log.txt: log output will include details on the auditor check processing
+- configfile_log.txt: log output will include details on the config file parsing
+- debug_log.txt: log output will be all available log statements, including auditor check processing and config file parsing
+
 
 ## Add-on Modules
 The following are optional add-on's to ElectricEye that will extend its functionality via reporting, alerting, enrichment and/or finding lifecycle management.

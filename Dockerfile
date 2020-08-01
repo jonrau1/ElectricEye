@@ -16,6 +16,7 @@ LABEL maintainer="https://github.com/jonrau1" \
 
 COPY requirements.txt /tmp/requirements.txt
 # NOTE: This will copy all application files and auditors to the container
+# TODO: update this to prevent baking the auditor files into the docker image
 COPY ./eeauditor/ ./eeauditor/
 
 RUN \
@@ -28,6 +29,6 @@ RUN \
 
 CMD \
     echo "Copying auditor files to ECS container..." && \
-    aws s3 cp s3://${SH_SCRIPTS_BUCKET}/ ./eeauditor/auditors --recursive && \
+    aws s3 cp s3://${SH_SCRIPTS_BUCKET}/ ./eeauditor/auditors/aws --recursive --quiet && \
     echo "Starting auditor run via ECS container..." && \
     python3 eeauditor/controller.py
