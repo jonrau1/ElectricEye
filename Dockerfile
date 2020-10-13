@@ -5,9 +5,6 @@ FROM alpine@sha256:a15790640a6690aa1730c38cf0a440e2aa44aaca9b0e8931a9f2b0d7cc90f
 # See: https://github.com/Docker-Hub-frolvlad/docker-alpine-python3/pull/13
 ENV PYTHONUNBUFFERED=1
 ENV SH_SCRIPTS_BUCKET=SH_SCRIPTS_BUCKET
-ENV SHODAN_API_KEY_PARAM=SHODAN_API_KEY_PARAM
-ENV DOPS_CLIENT_ID_PARAM=DOPS_CLIENT_ID_PARAM
-ENV DOPS_API_KEY_PARAM=DOPS_API_KEY_PARAM
 
 LABEL maintainer="https://github.com/jonrau1" \
     version="2.0" \
@@ -16,7 +13,7 @@ LABEL maintainer="https://github.com/jonrau1" \
 
 COPY requirements.txt /tmp/requirements.txt
 # NOTE: This will copy all application files and auditors to the container
-COPY ./eeauditor/ ./eeauditor/
+COPY ./sbauditor/ ./sbauditor/
 
 RUN \
     apk add bash && \
@@ -27,5 +24,5 @@ RUN \
     pip3 install -r /tmp/requirements.txt
 
 CMD \
-    aws s3 cp s3://${SH_SCRIPTS_BUCKET}/ ./eeauditor/auditors --recursive && \
-    python3 eeauditor/controller.py
+    aws s3 cp s3://${SH_SCRIPTS_BUCKET}/ ./sbauditor/auditors --recursive && \
+    python3 sbauditor/controller.py

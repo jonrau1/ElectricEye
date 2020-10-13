@@ -1,17 +1,3 @@
-# This file is part of ElectricEye.
-
-# ElectricEye is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-
-# ElectricEye is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-
-# You should have received a copy of the GNU General Public License along with ElectricEye.  
-# If not, see https://github.com/jonrau1/ElectricEye/blob/master/LICENSE.
 AWSTemplateFormatVersion: 2010-09-09
 Description: This Template will create the supporting infrastructure for the ElectricEye-ChatOps module to send Security Hub findings to Teams
 Metadata:
@@ -19,25 +5,40 @@ Metadata:
 Parameters:
   Python3RequestsLayer:
     Type: String
-    Description: The regional ARN with Version of the Lambda Layer that has Python 3.7 support for the requests library
-    Default: arn:aws:lambda:us-east-1:770693421928:layer:Klayers-python38-requests:3
-  TeamsWebHookParameter:
+    Description: The regional ARN with Version of the Lambda Layer that has Python 3.8 support for the requests library
+    Default: arn:aws:lambda:us-east-1:770693421928:layer:Klayers-python38-requests:9
+  WebHookParameterName:
     Type: String
     Description: The name of the SSM Parameter that contains the Teams App Webhook URL for ElectricEye-ChatOps Teams edition
+    Default: teamswebhookParam
+  WebHookParameterValue:
+    Type: String
+    Description: The value for SSM Parameter that gets stored non-encrypted. Below is a dummy value. Replace with actual value
+    Default: https://outlook.office.com/webhook/*****
 Resources:
-  ElectricEyeChatOpsRRLambdaFunction:
+  SlackWebHookParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Ref WebHookParameterName
+      Type: String
+      Value: !Ref WebHookParameterValue
+      Tier: Standard
+      Description: Slack Web hook URL
+      Tags:
+        Environment: SecurityBot 
+  ElectricEyeChatOpsTeamsLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: ElectricEye-ChatOps-Teams
+      FunctionName: ElectricEye-TeamsChatOps-Teams
       Description: Sends the results of high-severity ElectricEye findings to a Teams Channel - Managed by CloudFormation
       Handler: index.lambda_handler
       MemorySize: 256
-      Role: !GetAtt ElectricEyeChatOpsExecRole.Arn
+      Role: !GetAtt ElectricEyeTeamsChatOpsExecRole.Arn
       Runtime: python3.7
       Timeout: 60
       Environment:
         Variables:
-          MS_TEAMS_WEBHOOK_PARAMETER: !Ref TeamsWebHookParameter
+          MS_TEAMS_WEBHOOK_PARAMETER: !Ref WebHookParameterName
       Layers:
         - !Ref Python3RequestsLayer
       Code:
@@ -46,6 +47,8 @@ Resources:
           import boto3
           import json
           import requests
+
+
           def lambda_handler(event, context):
               # create ssm client
               ssm = boto3.client('ssm')
@@ -53,27 +56,27 @@ Resources:
               webhookParam = os.environ['MS_TEAMS_WEBHOOK_PARAMETER']
               # retrieve Teams webhook from SSM
               try:
-                  response = ssm.get_parameter(Name=webhookParam)
+                  response = ssm.get_parameter(Name=webhookParam,WithDecryption=True)
                   teamsWebhook = str(response['Parameter']['Value'])
               except Exception as e:
                   print(e)
-              teamsHeaders = { 'Content-Type': 'application/json' }
+              teamsHeaders = {'Content-Type': 'application/json'}
               for findings in event['detail']['findings']:
-                  severityLabel = str(findings['ProductFields']['aws/securityhub/SeverityLabel'])
+                  severityLabel = str(findings['Severity']['Label'])
                   electricEyeCheck = str(findings['Title'])
                   awsAccountId = str(findings['AwsAccountId'])
                   for resources in findings['Resources']:
                       resourceId = str(resources['Id'])
                       teamsMessage = 'A new ' + severityLabel + ' severity finding for ' + resourceId + ' in acccount ' + awsAccountId + ' has been created in Security Hub due to failing the check: ' + electricEyeCheck
-                      message = { 'text': teamsMessage }
+                      message = {'text': teamsMessage}
                       requests.post(teamsWebhook, headers=teamsHeaders, data=json.dumps(message))
-  ElectricEyeChatOpsExecRole:
+  ElectricEyeTeamsChatOpsExecRole:
     Type: AWS::IAM::Role
     Properties:
       ManagedPolicyArns: 
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
       Policies:
-      - PolicyName: ElectricEye-ChatOps-RolePolicy
+      - PolicyName: ElectricEye-TeamsChatOps-RolePolicy
         PolicyDocument:
           Version: 2012-10-17
           Statement:
@@ -89,40 +92,41 @@ Resources:
           Principal: { Service: lambda.amazonaws.com }
           Action:
           - sts:AssumeRole
-  ElectricEyeChatOpsEventRule: 
+  ElectricEyeTeamsChatOpsEventRule: 
     Type: AWS::Events::Rule
     Properties: 
-      Name: ElectricEye-ChatOps-CWE
+      Name: ElectricEye-TeamsChatOps-CWE
       Description: "Sends the results of high-severity ElectricEye findings to a Teams Channel via Lambda - Managed by CloudFormation"
       EventPattern: 
-        source: 
+        source:
           - aws.securityhub
-        detail-type: 
+        detail-type:
           - Security Hub Findings - Imported
-        detail: 
+        detail:
           findings:
             ProductFields:
               Product Name:
-              - ElectricEye
-              aws/securityhub/SeverityLabel:
-              - HIGH
-              - CRITICAL
+                - ElectricEye
+            Severity:
+              Label:
+                - HIGH
+                - CRITICAL
       State: "ENABLED"
       Targets: 
         - 
           Arn: 
             Fn::GetAtt: 
-              - "ElectricEyeChatOpsRRLambdaFunction"
+              - "ElectricEyeChatOpsTeamsLambdaFunction"
               - "Arn"
           Id: "ElectricEye_ChatOps_CWE"
-  ElectricEyeChatOpsRRCWEPermissions: 
+  ElectricEyeTeamsChatOpsCWEPermissions: 
     Type: AWS::Lambda::Permission
     Properties: 
       FunctionName: 
-        Ref: "ElectricEyeChatOpsRRLambdaFunction"
+        Ref: "ElectricEyeChatOpsTeamsLambdaFunction"
       Action: "lambda:InvokeFunction"
       Principal: "events.amazonaws.com"
       SourceArn: 
         Fn::GetAtt: 
-          - "ElectricEyeChatOpsEventRule"
+          - "ElectricEyeTeamsChatOpsEventRule"
           - "Arn"

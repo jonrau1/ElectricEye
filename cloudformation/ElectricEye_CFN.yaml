@@ -1,174 +1,203 @@
-# This file is part of ElectricEye.
-
-# ElectricEye is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-
-# ElectricEye is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-
-# You should have received a copy of the GNU General Public License along with ElectricEye.
-# If not, see https://github.com/jonrau1/ElectricEye/blob/master/LICENSE.
-
-AWSTemplateFormatVersion: 2010-09-09
+AWSTemplateFormatVersion: '2010-09-09'
 Description: This Template will create the supporting infrastructure for ElectricEye
 Metadata:
-  License: GPL-3.0
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: Application Configuration
+        Parameters:
+          - Application
+          - Environment
+          - ApplicationId
+      - Label:
+          default: Artifacts Configuration
+        Parameters:
+          - S3BucketName
+          - ECRImageURI
+      - Label:
+          default: SecurityBot Configuration
+        Parameters:
+          - ScheduleExpression
+          - VpcCIDR
+          - ElectricEyeScheduledSubnet1CIDR
+          - ElectricEyeScheduledSubnet2CIDR
+    ParameterLabels:
+      Application:
+        default: Application Name
+      Environment:
+        default: Environment Type such as Prod , QA , STG , DEV
+      ApplicationId:
+        default: To be hidden from customer
+      S3BucketName:
+        default: S3 Bucket to download Auditors python scripts
+      ScheduleExpression:
+        default: Cron expression to run ECS Fargate Task
+      ECRImageURI:
+        default: ECR Image URL
+      VpcCIDR:
+        default: Please enter the IP range (CIDR notation) for this VPC
+      ElectricEyeScheduledSubnet1CIDR:
+        default: Please enter the IP range (CIDR notation) for the public subnet in
+          the first Availability Zone
+      ElectricEyeScheduledSubnet2CIDR:
+        default: Please enter the IP range (CIDR notation) for the public subnet in
+          the second Availability Zone
 Parameters:
-  ShodanApiKeySSMParam:
+  Application:
     Type: String
-    Description: The SSM Secure String Parameter containing your Shodan API key. Leave the default value if you will not be using Shodan
-    Default: placeholder
-  DopsClientIdSSMParam:
-    Type: String
-    Description: The SSM Secure String Parameter containing your DisruptOps Client ID. Leave the default value if you will not be using DisruptOps
-    Default: placeholder
-  DopsApiKeySSMParam:
-      Type: String
-      Description: The SSM Secure String Parameter containing your DisruptOps API key. Leave the default value if you will not be using DisruptOps
-      Default: placeholder
-  ElectricEyeClusterName:
-    Type: String
-    Description: Name of the ECS Cluster that the ElectricEye Fargate Task will run in
-    Default: ElectricEyeCluster
-  ElectricEyeContainerName:
-    Type: String
-    Description: Name of the ElectricEye Container Definition within the ECS Task
-    Default: ElectricEye
-  ElectricEyeContainerInfo:
-    Type: String
-    Description: ECR URI of the ElectricEye container
-  EnvironmentName:
+    Default: SecurityBot
+    Description: Application Name
+  Environment:
     Description: An environment name that is prefixed to resource names
     Type: String
-    Default: electric-eye
+    Default: dev
+  ApplicationId:
+    Type: String
+    Default: ''
+    Description: Application Id
+  S3BucketName:
+    Type: String
+    Description: Public S3 bucket which holds the artifacts python auditor scripts
+    Default: dev-artifact-bucket-us-east-1-908268824556
+  ScheduleExpression:
+    Type: String
+    Description: time at which to invoke this Fargate Task
+    Default: rate(12 hours)
+  ECRImageURI:
+    Type: String
+    Description: ECR URI of the ElectricEye container
   VpcCIDR:
     Description: Please enter the IP range (CIDR notation) for this VPC
     Type: String
     Default: 10.77.0.0/16
   ElectricEyeScheduledSubnet1CIDR:
-    Description: Please enter the IP range (CIDR notation) for the public subnet in the first Availability Zone
+    Description: Please enter the IP range (CIDR notation) for the public subnet in
+      the first Availability Zone
     Type: String
     Default: 10.77.10.0/24
   ElectricEyeScheduledSubnet2CIDR:
-    Description: Please enter the IP range (CIDR notation) for the public subnet in the second Availability Zone
+    Description: Please enter the IP range (CIDR notation) for the public subnet in
+      the second Availability Zone
     Type: String
     Default: 10.77.20.0/24
 Resources:
   VPC:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: !Ref VpcCIDR
+      CidrBlock: !Ref 'VpcCIDR'
       EnableDnsSupport: true
       EnableDnsHostnames: true
       Tags:
         - Key: Name
-          Value: !Ref EnvironmentName
+          Value: !Ref 'Environment'
   InternetGateway:
     Type: AWS::EC2::InternetGateway
     Properties:
       Tags:
         - Key: Name
-          Value: !Ref EnvironmentName
+          Value: !Ref 'Environment'
   InternetGatewayAttachment:
     Type: AWS::EC2::VPCGatewayAttachment
     Properties:
-      InternetGatewayId: !Ref InternetGateway
-      VpcId: !Ref VPC
+      InternetGatewayId: !Ref 'InternetGateway'
+      VpcId: !Ref 'VPC'
   ElectricEyeScheduledSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref VPC
-      AvailabilityZone: !Select [0, !GetAZs ""]
-      CidrBlock: !Ref ElectricEyeScheduledSubnet1CIDR
+      VpcId: !Ref 'VPC'
+      AvailabilityZone: !Select
+        - 0
+        - !GetAZs ''
+      CidrBlock: !Ref 'ElectricEyeScheduledSubnet1CIDR'
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName} Public Subnet (AZ1)
+          Value: !Sub '${Environment} Public Subnet (AZ1)'
   ElectricEyeScheduledSubnet2:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref VPC
-      AvailabilityZone: !Select [1, !GetAZs ""]
-      CidrBlock: !Ref ElectricEyeScheduledSubnet2CIDR
+      VpcId: !Ref 'VPC'
+      AvailabilityZone: !Select
+        - 1
+        - !GetAZs ''
+      CidrBlock: !Ref 'ElectricEyeScheduledSubnet2CIDR'
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName} Public Subnet (AZ2)
+          Value: !Sub '${Environment} Public Subnet (AZ2)'
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
-      VpcId: !Ref VPC
+      VpcId: !Ref 'VPC'
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName} Public Routes
+          Value: !Sub '${Environment} Public Routes'
   DefaultPublicRoute:
     Type: AWS::EC2::Route
     DependsOn: InternetGatewayAttachment
     Properties:
-      RouteTableId: !Ref PublicRouteTable
-      DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref InternetGateway
+      RouteTableId: !Ref 'PublicRouteTable'
+      DestinationCidrBlock: '0.0.0.0/0'
+      GatewayId: !Ref 'InternetGateway'
   ElectricEyeScheduledSubnet1RouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      RouteTableId: !Ref PublicRouteTable
-      SubnetId: !Ref ElectricEyeScheduledSubnet1
+      RouteTableId: !Ref 'PublicRouteTable'
+      SubnetId: !Ref 'ElectricEyeScheduledSubnet1'
   ElectricEyeScheduledSubnet2RouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      RouteTableId: !Ref PublicRouteTable
-      SubnetId: !Ref ElectricEyeScheduledSubnet2
+      RouteTableId: !Ref 'PublicRouteTable'
+      SubnetId: !Ref 'ElectricEyeScheduledSubnet2'
   ElectricEyeS3VpcEndpoint:
     Type: AWS::EC2::VPCEndpoint
     Properties:
       VpcEndpointType: Gateway
       RouteTableIds:
-        - !Ref PublicRouteTable
-      ServiceName: !Sub com.amazonaws.${AWS::Region}.s3
-      VpcId: !Ref VPC
+        - !Ref 'PublicRouteTable'
+      ServiceName: !Sub 'com.amazonaws.${AWS::Region}.s3'
+      VpcId: !Ref 'VPC'
   ElectricEyeEcrDkrEndpoint:
     Type: AWS::EC2::VPCEndpoint
     Properties:
       VpcEndpointType: Interface
       PrivateDnsEnabled: true
       SecurityGroupIds:
-        - !Ref ElectricEyeSecurityGroup
+        - !Ref 'ElectricEyeSecurityGroup'
       SubnetIds:
-        - !Ref ElectricEyeScheduledSubnet1
-        - !Ref ElectricEyeScheduledSubnet2
-      ServiceName: !Sub com.amazonaws.${AWS::Region}.ecr.dkr
-      VpcId: !Ref VPC
+        - !Ref 'ElectricEyeScheduledSubnet1'
+        - !Ref 'ElectricEyeScheduledSubnet2'
+      ServiceName: !Sub 'com.amazonaws.${AWS::Region}.ecr.dkr'
+      VpcId: !Ref 'VPC'
   ElectricEyeSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupName: "ElectricEye Security Group"
-      GroupDescription: "Security group with HTTPS for Electric Eye Fargate"
-      VpcId: !Ref VPC
+      GroupName: ElectricEye Security Group
+      GroupDescription: Security group with HTTPS for Electric Eye Fargate
+      VpcId: !Ref 'VPC'
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 443
           ToPort: 443
-          CidrIp: 0.0.0.0/0
+          CidrIp: '0.0.0.0/0'
           Description: HTTPS Inbound
       SecurityGroupEgress:
         - IpProtocol: tcp
           FromPort: 0
           ToPort: 65535
-          CidrIp: 0.0.0.0/0
+          CidrIp: '0.0.0.0/0'
   ElectricEyeECSCloudWatchLogsGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName:
-        !Join ["-", [!Ref ElectricEyeContainerName, !Ref "AWS::StackName"]]
+      LogGroupName: !Join
+        - '-'
+        - - ElectricEye
+          - !Ref 'AWS::StackName'
       RetentionInDays: 90
   ElectricEyeECSCluster:
     Type: AWS::ECS::Cluster
     Properties:
-      ClusterName: !Ref ElectricEyeClusterName
+      ClusterName: ElectricEyeCluster
       ClusterSettings:
         - Name: containerInsights
           Value: enabled
@@ -178,7 +207,7 @@ Resources:
       Policies:
         - PolicyName: electriceyetaskpolicy
           PolicyDocument:
-            Version: 2012-10-17
+            Version: '2012-10-17'
             Statement:
               - Effect: Allow
                 Action:
@@ -346,12 +375,13 @@ Resources:
                   - sqs:GetQueueAttributes
                   - workspaces:DescribeWorkspaceDirectories
                   - workspaces:DescribeWorkspaces
-                Resource: "*"
+                Resource: '*'
       AssumeRolePolicyDocument:
-        Version: 2012-10-17
+        Version: '2012-10-17'
         Statement:
           - Effect: Allow
-            Principal: { Service: ecs-tasks.amazonaws.com }
+            Principal:
+              Service: ecs-tasks.amazonaws.com
             Action:
               - sts:AssumeRole
   ElectricEyeExecutionRole:
@@ -360,7 +390,7 @@ Resources:
       Policies:
         - PolicyName: electriceyeexecpolicy
           PolicyDocument:
-            Version: 2012-10-17
+            Version: '2012-10-17'
             Statement:
               - Effect: Allow
                 Action:
@@ -374,82 +404,94 @@ Resources:
                   - logs:PutLogEvents
                   - ssm:GetParameter
                   - ssm:GetParameters
-                Resource: "*"
+                Resource: '*'
       AssumeRolePolicyDocument:
-        Version: 2012-10-17
+        Version: '2012-10-17'
         Statement:
           - Effect: Allow
-            Principal: { Service: ecs-tasks.amazonaws.com }
+            Principal:
+              Service: ecs-tasks.amazonaws.com
             Action:
               - sts:AssumeRole
-  ElectricEyeArtifactBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: !Sub "${EnvironmentName}-artifact-bucket-${AWS::Region}-${AWS::AccountId}"
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: AES256
-  ElectricEyeBucketParameter:
-    Type: AWS::SSM::Parameter
-    Properties:
-      Name: electric-eye-bucket
-      Type: String
-      Value: !Ref ElectricEyeArtifactBucket
   ElectricEyeECSTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
       ContainerDefinitions:
-        - Image: !Ref ElectricEyeContainerInfo
-          Name: !Ref ElectricEyeContainerName
-          Secrets:
-            - Name: SH_SCRIPTS_BUCKET
-              ValueFrom: !Ref ElectricEyeBucketParameter
+        - Image: !Ref 'ECRImageURI'
+          Name: ElectricEye
           Environment:
-            - Name: SHODAN_API_KEY_PARAM
-              Value: !Ref ShodanApiKeySSMParam
-            - Name: DOPS_CLIENT_ID_PARAM
-              Value: !Ref DopsClientIdSSMParam
-            - Name: DOPS_API_KEY_PARAM
-              Value: !Ref DopsApiKeySSMParam
+            - Name: SH_SCRIPTS_BUCKET
+              Value: !Ref 'S3BucketName'
           LogConfiguration:
             LogDriver: awslogs
             Options:
-              awslogs-group: !Ref ElectricEyeECSCloudWatchLogsGroup
-              awslogs-region: !Ref "AWS::Region"
+              awslogs-group: !Ref 'ElectricEyeECSCloudWatchLogsGroup'
+              awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: ecs
       Cpu: 2048
-      ExecutionRoleArn: !GetAtt ElectricEyeExecutionRole.Arn
+      ExecutionRoleArn: !GetAtt 'ElectricEyeExecutionRole.Arn'
       Memory: 4096
       NetworkMode: awsvpc
-      TaskRoleArn: !GetAtt ElectricEyeTaskRole.Arn
+      TaskRoleArn: !GetAtt 'ElectricEyeTaskRole.Arn'
       Family: ElectricEye2SecurityHubTask
       RequiresCompatibilities:
         - FARGATE
   ElectricEyeTaskScheduler:
     Type: AWS::Events::Rule
     Properties:
-      ScheduleExpression: "rate(12 hours)"
+      ScheduleExpression: !Ref 'ScheduleExpression'
       State: ENABLED
       Targets:
-        - Arn: !GetAtt ElectricEyeECSCluster.Arn
-          RoleArn: !GetAtt ElectricEyeTaskRole.Arn
+        - Arn: !GetAtt 'ElectricEyeECSCluster.Arn'
+          RoleArn: !GetAtt 'ElectricEyeTaskRole.Arn'
           Id: ElectricEyeTaskScheduler
           EcsParameters:
-            TaskDefinitionArn: !Ref ElectricEyeECSTaskDefinition
+            TaskDefinitionArn: !Ref 'ElectricEyeECSTaskDefinition'
             TaskCount: 1
             LaunchType: FARGATE
-            PlatformVersion: "LATEST"
+            PlatformVersion: LATEST
             NetworkConfiguration:
               AwsVpcConfiguration:
                 AssignPublicIp: ENABLED
                 SecurityGroups:
-                  - !Ref ElectricEyeSecurityGroup
+                  - !Ref 'ElectricEyeSecurityGroup'
                 Subnets:
-                  - !Ref ElectricEyeScheduledSubnet1
-                  - !Ref ElectricEyeScheduledSubnet2
+                  - !Ref 'ElectricEyeScheduledSubnet1'
+                  - !Ref 'ElectricEyeScheduledSubnet2'
+Outputs:
+  StackName:
+    Description: Stack name.
+    Value: !Sub '${AWS::StackName}'
+  VPCId:
+    Description: VPC Id
+    Value: !Ref 'VPC'
+  SubnetId1:
+    Description: Subnet Id 1
+    Value: !Ref 'ElectricEyeScheduledSubnet1'
+  SubnetId2:
+    Description: Subnet Id 1
+    Value: !Ref 'ElectricEyeScheduledSubnet2'
+  SecurityGroupId:
+    Description: Security Group Id of Security Bot
+    Value: !Ref 'ElectricEyeSecurityGroup'
+  ECSTaskDefinition:
+    Description: Task Definition of Security Bot
+    Value: !Ref 'ElectricEyeECSTaskDefinition'
+  SecurityBotExecutionRole:
+    Description: Arn of Execution Role
+    Value: !GetAtt 'ElectricEyeExecutionRole.Arn'
+  SecurityBotTaskRole:
+    Description: Arn of Task Role
+    Value: !GetAtt 'ElectricEyeTaskRole.Arn'
+  LaunchType:
+    Description: Launch Type
+    Value: FARGATE
+  AssignPublicIp:
+    Description: Public IP
+    Value: ENABLED
+  S3Bucket:
+    Description: S3BucketName
+    Value: !Ref 'S3BucketName'
+  Cluster:
+    Description: Cluster Name
+    Value: !Ref 'ElectricEyeECSCluster'

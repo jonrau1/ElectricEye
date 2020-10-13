@@ -1,17 +1,3 @@
-# This file is part of ElectricEye.
-
-# ElectricEye is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-
-# ElectricEye is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-
-# You should have received a copy of the GNU General Public License along with ElectricEye.  
-# If not, see https://github.com/jonrau1/ElectricEye/blob/master/LICENSE.
 AWSTemplateFormatVersion: 2010-09-09
 Description: This Template will create the supporting infrastructure for the ElectricEye-ChatOps module to send Security Hub findings to Slack
 Metadata:
@@ -21,10 +7,25 @@ Parameters:
     Type: String
     Description: The regional ARN with Version of the Lambda Layer that has Python 3.7 support for the requests library
     Default: arn:aws:lambda:us-east-1:770693421928:layer:Klayers-python38-requests:3
-  SlackWebHookParameter:
+  WebHookParameterName:
     Type: String
     Description: The name of the SSM Parameter that contains the Slack App Webhook URL for ElectricEye-ChatOps
+    Default: slackwebhookParam
+  WebHookParameterValue:
+    Type: String
+    Description: The value for SSM Parameter that gets stored non-encrypted. Below is a dummy value. Replace with actual value
+    Default: https://hooks.slack.com/services/****/****
 Resources:
+  SlackWebHookParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Ref WebHookParameterName
+      Type: String
+      Value: !Ref WebHookParameterValue
+      Tier: Standard
+      Description: Slack Web hook URL
+      Tags:
+        Environment: SecurityBot 
   ElectricEyeChatOpsRRLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
@@ -37,7 +38,7 @@ Resources:
       Timeout: 60
       Environment:
         Variables:
-          SLACK_WEBHOOK_PARAMETER: !Ref SlackWebHookParameter
+          SLACK_WEBHOOK_PARAMETER: !Ref WebHookParameterName
       Layers:
         - !Ref Python3RequestsLayer
       Code:
@@ -46,6 +47,7 @@ Resources:
           import boto3
           import json
           import requests
+
           def lambda_handler(event, context):
               # create ssm client
               ssm = boto3.client('ssm')
@@ -53,20 +55,20 @@ Resources:
               webhookParam = os.environ['SLACK_WEBHOOK_PARAMETER']
               # retrieve slack webhook from SSM
               try:
-                  response = ssm.get_parameter(Name=webhookParam)
+                  response = ssm.get_parameter(Name=webhookParam,WithDecryption=True)
                   slackWebhook = str(response['Parameter']['Value'])
               except Exception as e:
                   print(e)
-              slackHeaders = { 'Content-Type': 'application/json' }
+              slackHeaders = {'Content-Type': 'application/json'}
               for findings in event['detail']['findings']:
-                  severityLabel = str(findings['ProductFields']['aws/securityhub/SeverityLabel'])
+                  severityLabel = str(findings['Severity']['Label'])
                   electricEyeCheck = str(findings['Title'])
                   awsAccountId = str(findings['AwsAccountId'])
                   for resources in findings['Resources']:
                       resourceId = str(resources['Id'])
                       slackMessage = 'A new ' + severityLabel + ' severity finding for ' + resourceId + ' in acccount ' + awsAccountId + ' has been created in Security Hub due to failing the check: ' + electricEyeCheck
-                      message = { 'text': slackMessage }
-                      requests.post(slackWebhook, headers=slackHeaders, data=json.dumps(message))
+                      message = {'text': slackMessage}
+                      requests.post(slackWebhook, headers=slackHeaders, data=json.dumps(message))   
   ElectricEyeChatOpsExecRole:
     Type: AWS::IAM::Role
     Properties:
@@ -95,18 +97,19 @@ Resources:
       Name: ElectricEye-ChatOps-CWE
       Description: "Sends the results of high-severity ElectricEye findings to a Slack Channel via Lambda - Managed by CloudFormation"
       EventPattern: 
-        source: 
+        source:
           - aws.securityhub
-        detail-type: 
+        detail-type:
           - Security Hub Findings - Imported
-        detail: 
+        detail:
           findings:
             ProductFields:
               Product Name:
-              - ElectricEye
-              aws/securityhub/SeverityLabel:
-              - HIGH
-              - CRITICAL
+                - ElectricEye
+            Severity:
+              Label:
+                - HIGH
+                - CRITICAL
       State: "ENABLED"
       Targets: 
         - 

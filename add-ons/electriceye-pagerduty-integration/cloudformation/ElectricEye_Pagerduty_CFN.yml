@@ -1,18 +1,4 @@
-# This file is part of ElectricEye.
-
-# ElectricEye is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-
-# ElectricEye is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-
-# You should have received a copy of the GNU General Public License along with ElectricEye.  
-# If not, see https://github.com/jonrau1/ElectricEye/blob/master/LICENSE.
-AWSTemplateFormatVersion: 2010-09-09
+AWSTemplateFormatVersion: '2010-09-09'
 Description: This Template will create the supporting infrastructure for the ElectricEye-Pagerduty module to send Security Hub findings to Pagerduty
 Metadata:
   License: GPL-3.0
@@ -21,11 +7,25 @@ Parameters:
     Type: String
     Description: The regional ARN with Version of the Lambda Layer that has Python 3.7 or 3.8 support for the requests library
     Default: arn:aws:lambda:us-east-1:770693421928:layer:Klayers-python38-requests:3
-  PagerdutyIntegrationKeyParameter:
+  WebHookParameterName:
     Type: String
     Description: The name of the SSM Parameter that contains the Pagerduty Integration Key NOTE if you chose a different name than the tutorial for this parameter change the default value
-    Default: electriceye-pagerduty
+    Default: pagerdutyIntegrationKey
+  WebHookParameterValue:
+    Type: String
+    Description: The value for SSM Parameter that gets stored non-encrypted. Below is a dummy value. Replace with actual value
+    Default: 70ba*******034952df
 Resources:
+  SlackWebHookParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Ref WebHookParameterName
+      Type: String
+      Value: !Ref WebHookParameterValue
+      Tier: Standard
+      Description: Slack Web hook URL
+      Tags:
+        Environment: SecurityBot 
   ElectricEyePagerdutyRRLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
@@ -38,7 +38,7 @@ Resources:
       Timeout: 60
       Environment:
         Variables:
-          PAGERDUTY_INTEGRATION_KEY_PARAMETER: !Ref PagerdutyIntegrationKeyParameter
+          PAGERDUTY_INTEGRATION_KEY_PARAMETER: !Ref WebHookParameterName
       Layers:
         - !Ref Python3RequestsLayer
       Code:
@@ -47,6 +47,7 @@ Resources:
           import boto3
           import json
           import requests
+
           def lambda_handler(event, context):
               # create ssm client
               ssm = boto3.client('ssm')
@@ -59,7 +60,7 @@ Resources:
               except Exception as e:
                   print(e)
               for findings in event['detail']['findings']:
-                  severityLabel = str(findings['ProductFields']['aws/securityhub/SeverityLabel'])
+                  severityLabel = str(findings['Severity']['Label'])
                   if severityLabel == 'CRITICAL':
                       pdSev = str('critical')
                   elif severityLabel == 'HIGH':
@@ -99,10 +100,10 @@ Resources:
                           "dedup_key": findingId,
                           "event_action": "trigger"
                       }
-                      pdHeaders = { 
+                      pdHeaders = {
                           'Content-Type': 'application/json',
                           'X-Routing-Key': pdIntegrationKey
-                      }   
+                      }
                       # this is a static value
                       pdEventApiv2Url = 'https://events.pagerduty.com/v2/enqueue'
                       # form a request
@@ -137,18 +138,19 @@ Resources:
       Name: ElectricEye-Pagerduty-CWE
       Description: "Sends the results of high-severity ElectricEye findings to Pagerduty as incidents - Managed by CloudFormation"
       EventPattern: 
-        source: 
+        source:
           - aws.securityhub
-        detail-type: 
+        detail-type:
           - Security Hub Findings - Imported
-        detail: 
+        detail:
           findings:
             ProductFields:
               Product Name:
-              - ElectricEye
-              aws/securityhub/SeverityLabel:
-              - HIGH
-              - CRITICAL
+                - ElectricEye
+            Severity:
+              Label:
+                - HIGH
+                - CRITICAL
       State: "ENABLED"
       Targets: 
         - 
