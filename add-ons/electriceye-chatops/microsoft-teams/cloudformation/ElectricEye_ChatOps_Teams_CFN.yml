@@ -6,7 +6,7 @@ Parameters:
   Python3RequestsLayer:
     Type: String
     Description: The regional ARN with Version of the Lambda Layer that has Python 3.8 support for the requests library
-    Default: arn:aws:lambda:us-east-1:770693421928:layer:Klayers-python38-requests:9
+    Default: arn:aws:lambda:us-east-1:*:layer:Klayers-python38-requests:9
   WebHookParameterName:
     Type: String
     Description: The name of the SSM Parameter that contains the Teams App Webhook URL for ElectricEye-ChatOps Teams edition
