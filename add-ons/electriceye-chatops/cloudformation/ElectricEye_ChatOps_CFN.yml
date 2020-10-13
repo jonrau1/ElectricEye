@@ -105,7 +105,7 @@ Resources:
           findings:
             ProductFields:
               Product Name:
-                - ElectricEye
+                - Day2SecurityBot
             Severity:
               Label:
                 - HIGH
