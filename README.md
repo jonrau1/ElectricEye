@@ -9,21 +9,29 @@
   **SecurityBot Auditors Bucket is where the python scripts reside. These get downloaded to a Fargate Task**
      - `http://s3.amazonaws.com/some-dummy-bucket-us-east-1-13465`
 
-### Modify the bucket policy for public access. The bucket becomes a public S3 bucket
+  3. Modify the bucket policy for public access. The bucket becomes a public S3 bucket
 
-  - `aws ecr create-repository --repository-name security_bot --profile platform --region us-east-1`
+     - `aws ecr create-repository --repository-name security_bot --profile platform --region us-east-1`
 
-### Check for successfull authentication
+  4. Check for successfull authentication
+     **Requires AWS CLI v2**
+ 
+     - `cd ElectricEye`
+     - `aws ecr get-login-password --region us-east-1 --profile platform | docker login --username AWS --password-stdin 13456.dkr.ecr.us-east-1.amazonaws.com/security_bot`
 
-  - `cd ElectricEye`
-  - `aws ecr get-login-password --region us-east-1 --profile platform | docker login --username AWS --password-stdin 13456.dkr.ecr.us-east-1.amazonaws.com/security_bot`
+     **Works with AWS CLI v1**
+        - `aws ecr get-login --registry-ids 1346579 --region us-east-1 --no-include-email`
 
-### Docker build commands for AWS cli v2 
+ 5. Build a docker image
+     - `docker build -t security_bot .`
+  
+ 6. Tag the docker image
+      - `docker tag security_bot:latest 13456.dkr.ecr.us-east-1.amazonaws.com/security_bot`
+  
+ 7. Push the docker image
+      - `docker push 13456.dkr.ecr.us-east-1.amazonaws.com/security_bot`
+  
+ 8. Restrict the ECR Policy 
+      - `aws ecr set-repository-policy --repository-name repository_name --policy-text file://my-policy.json --profile profile_name --region us-east-1` **for AWS cli v2**
 
-  - `docker build -t security_bot .`
-  - `docker tag security_bot:latest 13456.dkr.ecr.us-east-1.amazonaws.com/security_bot`
-  - `docker push 13456.dkr.ecr.us-east-1.amazonaws.com/security_bot`
-  - `aws ecr set-repository-policy --repository-name repository_name --policy-text file://my-policy.json --profile profile_name --region us-east-1`
 
-### Docker build command for AWS cli v1
- - `aws ecr get-login --registry-ids 1346579 --region us-east-1 --no-include-email`
