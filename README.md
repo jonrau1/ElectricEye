@@ -13,10 +13,10 @@
 
      - `aws ecr create-repository --repository-name security_bot --profile platform --region us-east-1`
 
-  4. Check for successfull authentication
+  4. Check for successfull authentication before pushing image at Step 7
      **Requires AWS CLI v2**
  
-     - `cd ElectricEye`
+     - `cd into folder ElectricEye`
      - `aws ecr get-login-password --region us-east-1 --profile platform | docker login --username AWS --password-stdin 13456.dkr.ecr.us-east-1.amazonaws.com/security_bot`
 
      **Works with AWS CLI v1**
@@ -31,7 +31,40 @@
  7. Push the docker image
       - `docker push 13456.dkr.ecr.us-east-1.amazonaws.com/security_bot`
   
- 8. Restrict the ECR Policy 
-      - `aws ecr set-repository-policy --repository-name repository_name --policy-text file://my-policy.json --profile profile_name --region us-east-1` **for AWS cli v2**
+ 8. Restrict the ECR Policy. Needs a Policy JSON File.
+      - `aws ecr set-repository-policy --repository-name repository_name --policy-text file://my-policy.json --profile profile_name --region us-east-1`
 
+Sample ECR Policy JSON File 
 
+```
+     {
+      "Version": "2008-10-17",
+      "Statement": [
+        {
+          "Sid": "AllowSameAccountPull",
+          "Effect": "Allow",
+          "Principal": {
+            "AWS": [
+                "arn:aws:iam::132465:role/Stg1-Day2-Security-Bot-ElectricEyeExecutionRole-123456789",
+                "arn:aws:iam::13456:role/Stg1-Day2-Security-Bot-ElectricEyeTaskRole-13246579"
+            ],
+            "Service": "ecs-tasks.amazonaws.com"
+          },
+          "Action": [
+            "ecr:BatchCheckLayerAvailability",
+            "ecr:BatchGetImage",
+            "ecr:CompleteLayerUpload",
+            "ecr:DescribeImages",
+            "ecr:DescribeRepositories",
+            "ecr:GetAuthorizationToken",
+            "ecr:GetDownloadUrlForLayer",
+            "ecr:GetRepositoryPolicy",
+            "ecr:InitiateLayerUpload",
+            "ecr:ListImages",
+            "ecr:PutImage"
+          ]
+        }
+      ]
+    }
+  ```
+  
