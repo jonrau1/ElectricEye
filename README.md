@@ -14,12 +14,12 @@
      - `aws ecr create-repository --repository-name security_bot --profile {profile_name} --region us-east-1`
 
   4. Check for successfull authentication before pushing image at Step 7
-     **For AWS CLI v2**
+     - **For AWS CLI v2**
  
-     - `cd into folder ElectricEye`
-     - `aws ecr get-login-password --region us-east-1 --profile platform | docker login --username AWS --password-stdin 13456.dkr.ecr.us-east-1.amazonaws.com/security_bot`
+      - `cd into folder ElectricEye`
+      - `aws ecr get-login-password --region us-east-1 --profile platform | docker login --username AWS --password-stdin 13456.dkr.ecr.us-east-1.amazonaws.com/security_bot`
 
-     **For AWS CLI v1**
+     - **For AWS CLI v1**
         - `aws ecr get-login --registry-ids 1346579 --region us-east-1 --no-include-email`
 
  5. Build a docker image
