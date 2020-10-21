@@ -59,7 +59,7 @@ Resources:
               except Exception as e:
                   print(e)
               for findings in event['detail']['findings']:
-                  severityLabel = str(findings['ProductFields']['aws/securityhub/SeverityLabel'])
+                  severityLabel = str(findings['Severity']['Label'])
                   if severityLabel == 'CRITICAL':
                       pdSev = str('critical')
                   elif severityLabel == 'HIGH':
@@ -146,9 +146,10 @@ Resources:
             ProductFields:
               Product Name:
               - ElectricEye
-              aws/securityhub/SeverityLabel:
-              - HIGH
-              - CRITICAL
+            Severity:
+              Label:
+                - HIGH
+                - CRITICAL
       State: "ENABLED"
       Targets: 
         - 

@@ -29,7 +29,7 @@ def lambda_handler(event, context):
         print(e)
     slackHeaders = { 'Content-Type': 'application/json' }
     for findings in event['detail']['findings']:
-        severityLabel = str(findings['ProductFields']['aws/securityhub/SeverityLabel'])
+        severityLabel = str(findings['Severity']['Label'])
         electricEyeCheck = str(findings['Title'])
         awsAccountId = str(findings['AwsAccountId'])
         for resources in findings['Resources']:
