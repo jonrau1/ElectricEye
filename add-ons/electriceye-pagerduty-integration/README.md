@@ -85,46 +85,53 @@ terraform apply -auto-approve
 You can swap the Event Pattern to the below if you want only Critical findings
 ```json
 {
-  "source": [
-    "aws.securityhub"
-  ],
-  "detail-type": [
-    "Security Hub Findings - Imported"
-  ],
-  "detail": {
-    "findings": {
-      "ProductFields": {
-        "Product Name": [
-          "ElectricEye"
-        ],
-        "aws/securityhub/SeverityLabel": [
-          "CRITICAL"
-        ]
-      }
+    "source": [
+        "aws.securityhub"
+    ],
+    "detail-type": [
+        "Security Hub Findings - Imported"
+    ],
+    "detail": {
+        "findings": {
+            "ProductFields": {
+                "Product Name": [
+                    "ElectricEye"
+                ]
+            },
+            "Severity": {
+                "Label": [
+                    "CRITICAL"
+                ]
+            }
+        }
     }
-  }
 }
 ```
 
 Or, you can swap the Event Pattern to the below if you want Critical and High findings from all products
 ```json
 {
-  "source": [
-    "aws.securityhub"
-  ],
-  "detail-type": [
-    "Security Hub Findings - Imported"
-  ],
-  "detail": {
-    "findings": {
-      "ProductFields": {
-        "aws/securityhub/SeverityLabel": [
-          "CRITICAL",
-          "HIGH"
-        ]
-      }
+    "source": [
+        "aws.securityhub"
+    ],
+    "detail-type": [
+        "Security Hub Findings - Imported"
+    ],
+    "detail": {
+        "findings": {
+            "ProductFields": {
+                "Product Name": [
+                    "ElectricEye"
+                ]
+            },
+            "Severity": {
+                "Label": [
+                    "HIGH",
+                    "CRITICAL"
+                ]
+            }
+        }
     }
-  }
 }
 ```
 

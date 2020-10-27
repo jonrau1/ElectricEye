@@ -59,7 +59,7 @@ Resources:
                   print(e)
               slackHeaders = { 'Content-Type': 'application/json' }
               for findings in event['detail']['findings']:
-                  severityLabel = str(findings['ProductFields']['aws/securityhub/SeverityLabel'])
+                  severityLabel = str(findings['Severity']['Label'])
                   electricEyeCheck = str(findings['Title'])
                   awsAccountId = str(findings['AwsAccountId'])
                   for resources in findings['Resources']:
@@ -95,18 +95,19 @@ Resources:
       Name: ElectricEye-ChatOps-CWE
       Description: "Sends the results of high-severity ElectricEye findings to a Slack Channel via Lambda - Managed by CloudFormation"
       EventPattern: 
-        source: 
+        source:
           - aws.securityhub
-        detail-type: 
+        detail-type:
           - Security Hub Findings - Imported
-        detail: 
+        detail:
           findings:
             ProductFields:
               Product Name:
-              - ElectricEye
-              aws/securityhub/SeverityLabel:
-              - HIGH
-              - CRITICAL
+                - ElectricEye
+            Severity:
+              Label:
+                - HIGH
+                - CRITICAL
       State: "ENABLED"
       Targets: 
         - 

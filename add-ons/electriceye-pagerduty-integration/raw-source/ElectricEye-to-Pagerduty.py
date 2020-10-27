@@ -15,7 +15,7 @@ def lambda_handler(event, context):
     except Exception as e:
         print(e)
     for findings in event['detail']['findings']:
-        severityLabel = str(findings['ProductFields']['aws/securityhub/SeverityLabel'])
+        severityLabel = str(findings['Severity']['Label'])
         if severityLabel == 'CRITICAL':
             pdSev = str('critical')
         elif severityLabel == 'HIGH':
