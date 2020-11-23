@@ -16,6 +16,7 @@
 import boto3
 import datetime
 from check_register import CheckRegister
+from dateutil.parser import parse
 
 registry = CheckRegister()
 # create boto3 clients
@@ -94,7 +95,7 @@ def ec2_instance_ssm_managed_check(
                                         "ImageId": instanceImage,
                                         "VpcId": instanceVpc,
                                         "SubnetId": instanceSubnet,
-                                        "LaunchedAt": instanceLaunchedAt,
+                                        "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
                                     }
                                 },
                             }
@@ -152,7 +153,7 @@ def ec2_instance_ssm_managed_check(
                                         "ImageId": instanceImage,
                                         "VpcId": instanceVpc,
                                         "SubnetId": instanceSubnet,
-                                        "LaunchedAt": instanceLaunchedAt,
+                                        "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
                                     }
                                 },
                             }
@@ -239,7 +240,7 @@ def ssm_instace_agent_update_check(
                                         "ImageId": instanceImage,
                                         "VpcId": instanceVpc,
                                         "SubnetId": instanceSubnet,
-                                        "LaunchedAt": instanceLaunchedAt,
+                                        "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
                                     }
                                 },
                             }
@@ -297,7 +298,7 @@ def ssm_instace_agent_update_check(
                                         "ImageId": instanceImage,
                                         "VpcId": instanceVpc,
                                         "SubnetId": instanceSubnet,
-                                        "LaunchedAt": instanceLaunchedAt,
+                                        "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
                                     }
                                 },
                             }
@@ -382,7 +383,7 @@ def ssm_instance_association_check(
                                         "ImageId": instanceImage,
                                         "VpcId": instanceVpc,
                                         "SubnetId": instanceSubnet,
-                                        "LaunchedAt": instanceLaunchedAt,
+                                        "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
                                     }
                                 },
                             }
@@ -440,7 +441,7 @@ def ssm_instance_association_check(
                                         "ImageId": instanceImage,
                                         "VpcId": instanceVpc,
                                         "SubnetId": instanceSubnet,
-                                        "LaunchedAt": instanceLaunchedAt,
+                                        "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
                                     }
                                 },
                             }
@@ -526,7 +527,7 @@ def ssm_instance_patch_state_state(
                                         "ImageId": instanceImage,
                                         "VpcId": instanceVpc,
                                         "SubnetId": instanceSubnet,
-                                        "LaunchedAt": instanceLaunchedAt,
+                                        "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
                                     }
                                 },
                             }
@@ -591,7 +592,7 @@ def ssm_instance_patch_state_state(
                                                 "ImageId": instanceImage,
                                                 "VpcId": instanceVpc,
                                                 "SubnetId": instanceSubnet,
-                                                "LaunchedAt": instanceLaunchedAt,
+                                                "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
                                             }
                                         },
                                     }
@@ -651,7 +652,7 @@ def ssm_instance_patch_state_state(
                                                 "ImageId": instanceImage,
                                                 "VpcId": instanceVpc,
                                                 "SubnetId": instanceSubnet,
-                                                "LaunchedAt": instanceLaunchedAt,
+                                                "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
                                             }
                                         },
                                     }
