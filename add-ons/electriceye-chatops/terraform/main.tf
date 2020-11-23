@@ -21,7 +21,6 @@ resource "aws_lambda_function" "ElectricEye_ChatOps_Lambda_Function" {
   runtime       = "python3.8"
   memory_size   = 256
   timeout       = 61
-  layers        = ["${var.Python3_Requests_Layer_ARN}"]
   environment {
     variables = {
       SLACK_WEBHOOK_PARAMETER = "${var.Slack_Webhook_Parameter}"
@@ -80,25 +79,27 @@ resource "aws_cloudwatch_event_rule" "ElectricEye_ChatOps_Event_Rule" {
   description = "Sends the results of high-severity ElectricEye findings to a Slack Channel via Lambda - Managed by Terraform"
   event_pattern = <<PATTERN
 {
-  "source": [
-    "aws.securityhub"
-  ],
-  "detail-type": [
-    "Security Hub Findings - Imported"
-  ],
-  "detail": {
-    "findings": {
-      "ProductFields": {
-        "Product Name": [
-          "ElectricEye"
-        ],
-        "aws/securityhub/SeverityLabel": [
-          "HIGH",
-          "CRITICAL"
-        ]
-      }
+    "source": [
+        "aws.securityhub"
+    ],
+    "detail-type": [
+        "Security Hub Findings - Imported"
+    ],
+    "detail": {
+        "findings": {
+            "ProductFields": {
+                "Product Name": [
+                    "ElectricEye"
+                ]
+            },
+            "Severity": {
+                "Label": [
+                    "HIGH",
+                    "CRITICAL"
+                ]
+            }
+        }
     }
-  }
 }
 PATTERN
 }

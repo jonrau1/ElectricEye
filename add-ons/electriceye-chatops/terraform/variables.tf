@@ -15,10 +15,6 @@
 variable "AWS_REGION" {
   default = "us-east-1"
 }
-variable "Python3_Requests_Layer_ARN" {
-  default     = "arn:aws:lambda:us-east-1:770693421928:layer:Klayers-python38-requests:3"
-  description = "The regional ARN with Version of the Lambda Layer that has Python 3 support for the requests library"
-}
 variable "Slack_Webhook_Parameter" {
   default     = ""
   description = "The name of the SSM Parameter that contains the Slack App Webhook URL for ElectricEye-ChatOps"

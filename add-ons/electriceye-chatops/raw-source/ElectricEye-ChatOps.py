@@ -15,12 +15,13 @@
 import os
 import boto3
 import json
-import requests
+import urllib3
 def lambda_handler(event, context):
     # create ssm client
     ssm = boto3.client('ssm')
     # create env var for SSM Parameter containing Slack Webhook URL
     webhookParam = os.environ['SLACK_WEBHOOK_PARAMETER']
+    http = urllib3.PoolManager()
     # retrieve slack webhook from SSM
     try:
         response = ssm.get_parameter(Name=webhookParam)
@@ -36,4 +37,4 @@ def lambda_handler(event, context):
             resourceId = str(resources['Id'])
             slackMessage = 'A new ' + severityLabel + ' severity finding for ' + resourceId + ' in acccount ' + awsAccountId + ' has been created in Security Hub due to failing the check: ' + electricEyeCheck
             message = { 'text': slackMessage }
-            requests.post(slackWebhook, headers=slackHeaders, data=json.dumps(message))
+            http.request('POST', slackWebhook,  headers=slackHeaders, body=json.dumps(message).encode('utf-8'))
