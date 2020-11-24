@@ -1,21 +1,7 @@
-# This file is part of ElectricEye.
-
-# ElectricEye is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-
-# ElectricEye is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-
-# You should have received a copy of the GNU General Public License along with ElectricEye.
-# If not, see https://github.com/jonrau1/ElectricEye/blob/master/LICENSE.
-
 import boto3
 import datetime
 from check_register import CheckRegister
+from dateutil.parser import parse
 
 registry = CheckRegister()
 
@@ -37,6 +23,7 @@ def ec2_imdsv2_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                 subnetId = str(i["SubnetId"])
                 vpcId = str(i["VpcId"])
                 instanceLaunchedAt = str(i["LaunchTime"])
+                print(instanceLaunchedAt)
                 metadataServiceCheck = str(i["MetadataOptions"]["HttpEndpoint"])
                 if metadataServiceCheck == "enabled":
                     imdsv2Check = str(i["MetadataOptions"]["HttpTokens"])
@@ -73,7 +60,7 @@ def ec2_imdsv2_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                                         "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html#instance-metadata-transition-to-version-2",
                                     }
                                 },
-                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "ProductFields": {"Product Name": "Day2SecurityBot"},
                                 "Resources": [
                                     {
                                         "Type": "AwsEc2Instance",
@@ -86,7 +73,7 @@ def ec2_imdsv2_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                                                 "ImageId": instanceImage,
                                                 "VpcId": vpcId,
                                                 "SubnetId": subnetId,
-                                                "LaunchedAt": instanceLaunchedAt,
+                                                "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
                                             }
                                         },
                                     }
@@ -151,7 +138,7 @@ def ec2_imdsv2_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                                         "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html#instance-metadata-transition-to-version-2",
                                     }
                                 },
-                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "ProductFields": {"Product Name": "Day2SecurityBot"},
                                 "Resources": [
                                     {
                                         "Type": "AwsEc2Instance",
@@ -164,7 +151,7 @@ def ec2_imdsv2_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                                                 "ImageId": instanceImage,
                                                 "VpcId": vpcId,
                                                 "SubnetId": subnetId,
-                                                "LaunchedAt": instanceLaunchedAt,
+                                                "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
                                             }
                                         },
                                     }
