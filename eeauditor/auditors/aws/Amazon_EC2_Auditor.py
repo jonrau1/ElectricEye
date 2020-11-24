@@ -38,7 +38,6 @@ def ec2_imdsv2_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                 subnetId = str(i["SubnetId"])
                 vpcId = str(i["VpcId"])
                 instanceLaunchedAt = str(i["LaunchTime"])
-                print(instanceLaunchedAt)
                 metadataServiceCheck = str(i["MetadataOptions"]["HttpEndpoint"])
                 if metadataServiceCheck == "enabled":
                     imdsv2Check = str(i["MetadataOptions"]["HttpTokens"])
