@@ -16,6 +16,7 @@
 import boto3
 import datetime
 from check_register import CheckRegister
+from dateutil.parser import parse
 
 registry = CheckRegister()
 
@@ -86,7 +87,7 @@ def ec2_imdsv2_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                                                 "ImageId": instanceImage,
                                                 "VpcId": vpcId,
                                                 "SubnetId": subnetId,
-                                                "LaunchedAt": instanceLaunchedAt,
+                                                "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
                                             }
                                         },
                                     }
@@ -164,7 +165,7 @@ def ec2_imdsv2_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                                                 "ImageId": instanceImage,
                                                 "VpcId": vpcId,
                                                 "SubnetId": subnetId,
-                                                "LaunchedAt": instanceLaunchedAt,
+                                                "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
                                             }
                                         },
                                     }
