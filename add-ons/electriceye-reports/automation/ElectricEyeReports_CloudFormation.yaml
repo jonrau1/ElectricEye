@@ -1,0 +1,168 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  Deploys the ElectricEye-Reports Add-on Solution with all necessary services including CodeBuild and EventBridge.
+Parameters:
+  ReportRefreshRate:
+    Type: String
+    Description: Frequency of which to run the CodeBuild Project to generate QuickSight reports
+    AllowedValues:
+      - 1 hour
+      - 4 hours
+      - 12 hours
+      - 1 day
+      - 3 days
+      - 7 days
+      - 14 days
+      - 30 days
+    Default: 7 days
+  ElectricEyeReportsSlnName:
+    Type: String
+    Description: >-
+      The name given to all resources for the ElectricEye Reports Add-on. 
+      DO NOT include any special characters as this value is also populated into services such as IAM and EventBridge
+    Default: ElectricEyeReports
+  InitialCommitBucket:
+    Type: String
+    Description: The name of the S3 Bucket you uploaded the CodeCommit Archived (ZIP) to during the setup phase.
+  InitialCommitKey:
+    Type: String
+    Description: Name of the package for the initial commit DO NOT include .zip
+    Default: codecommit-archive
+Resources:
+  ReportAutomationBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub 'electriceye-reports-data-${AWS::Region}-${AWS::AccountId}'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+  CodeCommitRepo:
+    Type: AWS::CodeCommit::Repository
+    Properties:
+      RepositoryDescription: !Sub 'Contains the code artifacts for CodeBuild to parse findings from ${ElectricEyeReportsSlnName} - Managed by CloudFormation'
+      RepositoryName: !Sub '${ElectricEyeReportsSlnName}Repo'
+      Code:
+        S3:
+          Bucket: !Ref InitialCommitBucket
+          Key: !Sub '${InitialCommitKey}.zip'
+  CodeBuildServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${ElectricEyeReportsSlnName}CodeBuildRole'
+      Description: !Sub 'Permissions for the ${ElectricEyeReportsSlnName} CodeBuild Project to access S3, EC2 and QuickSight - Managed by CloudFormation'
+      Policies:
+      - PolicyName: CodeBuildServiceRolePolicy
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+          - Effect: Allow
+            Action:
+            - codecommit:GitPull
+            Resource: !GetAtt CodeCommitRepo.Arn
+          - Effect: Allow
+            Action:
+            - s3:GetObject
+            - s3:GetObjectVersion
+            - s3:PutObject
+            - s3:GetBucketAcl
+            - s3:GetBucketLocation
+            - s3:ListBucket
+            Resource:
+              - !Sub 'arn:aws:s3:::${ReportAutomationBucket}'
+              - !Sub 'arn:aws:s3:::${ReportAutomationBucket}/*'
+          - Effect: Allow
+            Action:
+            - ec2:DescribeRegions
+            - securityhub:GetFindings
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            - quicksight:CreateGroup
+            - quicksight:CreateDataSet
+            - quicksight:UpdateDataSet
+            - quicksight:ListUserGroups
+            - quicksight:DescribeUser
+            - quicksight:ListUsers
+            - quicksight:CreateDataSource
+            - quicksight:UpdateDataSource
+            - quicksight:DescribeDataSetPermissions
+            - quicksight:UpdateDataSetPermissions
+            - quicksight:ListDataSources
+            - quicksight:UpdateDataSourcePermissions
+            - quicksight:DescribeDataSourcePermissions
+            - quicksight:UpdateGroup
+            - quicksight:DescribeGroup
+            - quicksight:DescribeDataSet
+            - quicksight:DescribeDataSource
+            - quicksight:UpdateUser
+            - quicksight:ListGroupMemberships
+            Resource: '*'
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Principal: { Service: codebuild.amazonaws.com }
+          Action:
+          - sts:AssumeRole
+  CodeBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Ref ElectricEyeReportsSlnName
+      Description: Automates QuickSight report creation from Security Hub ElectricEye Findings - Managed by CloudFormation
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:4.0
+        PrivilegedMode: True
+        Type: LINUX_CONTAINER
+        EnvironmentVariables:
+        - Name: QUICKSIGHT_DATASOURCE_BUCKET
+          Type: PLAINTEXT
+          Value: !Ref ReportAutomationBucket
+      LogsConfig:
+        CloudWatchLogs:
+          Status: ENABLED
+      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+      Artifacts:
+        Type: NO_ARTIFACTS
+      Source:
+        BuildSpec: buildspec.yml
+        Type: CODECOMMIT
+        Location: !GetAtt CodeCommitRepo.CloneUrlHttp
+  CodeBuildEventRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${ElectricEyeReportsSlnName}SchedulerRole'
+      Policies:
+      - PolicyName: !Sub '${ElectricEyeReportsSlnName}SchedulerRole'
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+          - Effect: Allow
+            Action:
+              - codebuild:StartBuild
+            Resource: !Sub 'arn:${AWS::Partition}:codebuild:${AWS::Region}:${AWS::AccountId}:project/${ElectricEyeReportsSlnName}'
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Principal: { Service: events.amazonaws.com }
+          Action:
+            - sts:AssumeRole
+  CodeBuildProjectEvent: 
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub '${ElectricEyeReportsSlnName}AutomationRule'
+      Description: !Sub 'Runs ${ElectricEyeReportsSlnName} every 2 weeks - Managed by CloudFormation'
+      ScheduleExpression: !Sub 'rate(${ReportRefreshRate})'
+      State: ENABLED
+      Targets: 
+        - 
+          Arn: !GetAtt CodeBuildProject.Arn
+          Id: EEReportsAutomation
+          RoleArn: !GetAtt CodeBuildEventRole.Arn
