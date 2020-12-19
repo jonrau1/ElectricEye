@@ -374,7 +374,7 @@ def bucket_versioning_check(
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "LOW"},
+                    "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
                     "Title": "[S3.3] S3 Buckets should have versioning enabled",
                     "Description": "S3 bucket "

@@ -93,10 +93,11 @@ def sqs_old_message_check(
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "AwsSQS",
+                        "Type": "AwsSqsQueue",
                         "Id": queueArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
+                        "Details": {"AwsSqsQueue": {"QueueName": queueName}}
                     }
                 ],
                 "Compliance": {
@@ -142,10 +143,11 @@ def sqs_old_message_check(
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "AwsSQS",
+                        "Type": "AwsSqsQueue",
                         "Id": queueArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
+                        "Details": {"AwsSqsQueue": {"QueueName": queueName}}
                     }
                 ],
                 "Compliance": {

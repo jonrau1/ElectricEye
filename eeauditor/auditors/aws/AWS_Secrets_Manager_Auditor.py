@@ -67,11 +67,11 @@ def secret_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "Other",
+                        "Type": "AwsSecretsManagerSecret",
                         "Id": secretArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"secretName": secretName}},
+                        "Details": {"AwsSecretsManagerSecret": {"Name": secretName}}
                     }
                 ],
                 "Compliance": {
@@ -131,11 +131,11 @@ def secret_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "Other",
+                        "Type": "AwsSecretsManagerSecret",
                         "Id": secretArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"secretName": secretName}},
+                        "Details": {"AwsSecretsManagerSecret": {"Name": secretName}}
                     }
                 ],
                 "Compliance": {
@@ -210,11 +210,11 @@ def secret_changed_in_last_90_check(
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "Other",
+                        "Type": "AwsSecretsManagerSecret",
                         "Id": secretArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"secretName": secretName}},
+                        "Details": {"AwsSecretsManagerSecret": {"Name": secretName}}
                     }
                 ],
                 "Compliance": {
@@ -275,11 +275,11 @@ def secret_changed_in_last_90_check(
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "Other",
+                        "Type": "AwsSecretsManagerSecret",
                         "Id": secretArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"secretName": secretName}},
+                        "Details": {"AwsSecretsManagerSecret": {"Name": secretName}}
                     }
                 ],
                 "Compliance": {

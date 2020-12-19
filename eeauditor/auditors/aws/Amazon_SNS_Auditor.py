@@ -79,7 +79,12 @@ def sns_topic_encryption_check(
                         "Id": topicarn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"AwsSnsTopic": {"TopicName": topicName}},
+                        "Details": {
+                            "AwsSnsTopic": {
+                                "TopicName": topicName,
+                                'KmsMasterKeyId': encryptionCheck
+                            }
+                        },
                     }
                 ],
                 "Compliance": {

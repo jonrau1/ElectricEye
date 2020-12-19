@@ -32,7 +32,6 @@ def describe_db_instances(cache):
         Filters=[{"Name": "engine", "Values": ["neptune"]}]
     )
     return cache["describe_db_instances"]
-    neptune_instances = describe_db_instances(cache)
 
 
 @registry.register_check("neptune")
@@ -71,7 +70,7 @@ def neptune_instance_multi_az_check(
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "Other",
+                        "Type": "AwsNeptuneInstance",
                         "Id": neptuneInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
@@ -125,7 +124,7 @@ def neptune_instance_multi_az_check(
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "Other",
+                        "Type": "AwsNeptuneInstance",
                         "Id": neptuneInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
@@ -194,7 +193,7 @@ def neptune_instance_storage_encryption_check(
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "Other",
+                        "Type": "AwsNeptuneInstance",
                         "Id": neptuneInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
@@ -245,7 +244,7 @@ def neptune_instance_storage_encryption_check(
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "Other",
+                        "Type": "AwsNeptuneInstance",
                         "Id": neptuneInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
@@ -308,7 +307,7 @@ def neptune_instance_iam_authentication_check(
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "Other",
+                        "Type": "AwsNeptuneInstance",
                         "Id": neptuneInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
@@ -370,7 +369,7 @@ def neptune_instance_iam_authentication_check(
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "Other",
+                        "Type": "AwsNeptuneInstance",
                         "Id": neptuneInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
@@ -409,7 +408,6 @@ def neptune_instance_iam_authentication_check(
 def neptune_cluster_parameter_ssl_enforcement_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
-    neptune_instances = describe_db_instances(cache)
     response = neptune.describe_db_cluster_parameter_groups()
     for parametergroup in response["DBClusterParameterGroups"]:
         parameterGroupName = str(parametergroup["DBClusterParameterGroupName"])
@@ -450,7 +448,7 @@ def neptune_cluster_parameter_ssl_enforcement_check(
                         "ProductFields": {"Product Name": "ElectricEye"},
                         "Resources": [
                             {
-                                "Type": "Other",
+                                "Type": "AwsNeptuneParameterGroup",
                                 "Id": parameterGroupArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
@@ -504,7 +502,7 @@ def neptune_cluster_parameter_ssl_enforcement_check(
                         "ProductFields": {"Product Name": "ElectricEye"},
                         "Resources": [
                             {
-                                "Type": "Other",
+                                "Type": "AwsNeptuneParameterGroup",
                                 "Id": parameterGroupArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
@@ -539,7 +537,6 @@ def neptune_cluster_parameter_ssl_enforcement_check(
 def neptune_cluster_parameter_audit_log_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
-    neptune_instances = describe_db_instances(cache)
     response = neptune.describe_db_cluster_parameter_groups()
     for parametergroup in response["DBClusterParameterGroups"]:
         parameterGroupName = str(parametergroup["DBClusterParameterGroupName"])
@@ -580,7 +577,7 @@ def neptune_cluster_parameter_audit_log_check(
                         "ProductFields": {"Product Name": "ElectricEye"},
                         "Resources": [
                             {
-                                "Type": "Other",
+                                "Type": "AwsNeptuneParameterGroup",
                                 "Id": parameterGroupArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
@@ -633,7 +630,7 @@ def neptune_cluster_parameter_audit_log_check(
                         "ProductFields": {"Product Name": "ElectricEye"},
                         "Resources": [
                             {
-                                "Type": "Other",
+                                "Type": "AwsNeptuneParameterGroup",
                                 "Id": parameterGroupArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
