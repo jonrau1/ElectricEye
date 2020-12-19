@@ -288,7 +288,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 
 2. Have python 3 and pip installed and setup virtualenv
 ```bash
-pip install virtualenv --user
+pip3 install virtualenv --user
 virtualenv .venv
 ```
 
@@ -303,12 +303,12 @@ virtualenv .venv
 
 4. Install all dependencies
 ```bash
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 5. Run the controller
 ```bash
-python eeauditor/controller.py
+python3 eeauditor/controller.py
 ```
 
 Add the --help option for info on running individual checks and auditors and different outputs options.
@@ -567,7 +567,7 @@ The following are optional add-on's to ElectricEye that will extend its function
   - ElectricEye-ChatOps utilizes EventBridge / CloudWatch Event Rules to consume `HIGH` and `CRITICAL` severity findings created by ElectricEye from Security Hub and route them to a Lambda function. Lambda will parse out certain elements from the Security Hub finding, create a message and post it to a Slack App's webhook for consumption by your security engineers or other personnel in a Slack channel.
 
 - [ElectricEye-Reports](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-reports)
-  - ***EXPERIMENTAL***: ElectricEye-Reports is a fully serverless solution that extends Security Hub and ElectricEye by sending select finding information to [Amazon QuickSight](https://aws.amazon.com/quicksight/) via services such as Amazon Kinesis and Amazon DynamoDB. From QuickSight, you can create rich and detailed graphics that can be shared, embedded in your enterprise applications and analyzed for purposes such as gamification of security compliance, executive reporting, business line reporting, risk assessments, audit reports, etc.
+  - ElectricEye-Reports is an add-on that allows you the created detailed business intelligence (BI) reports from ElectricEye findings in Security Hub using [Amazon QuickSight](https://aws.amazon.com/quicksight/), a "...scalable, serverless, embeddable, machine learning-powered business intelligence (BI) service built for the cloud." Using QuickSight, you can create detailed reports that breakdown all of your ElectricEye findings by Severity, Region, Resource Type, as well as breakout by-Compliance Control reporting and further enrich the dataset in this solution with business-context such as Cost Center, Division, Business Owner, and other metadata. With this data you can create visualizations that can be used by a many Personas across Information Security, IT Audit, IT Operations, Product Development, and Risk functions - such as tracking compliance with specific controls, measuring Key Risk Indicators (KRIs), or preparing evidence for a formal audit certification/attestation/examination.
 
 - [ElectricEye-Pagerduty-Integration](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-pagerduty-integration)
   - The Pagerduty integration for ElectricEye, similar to ElectricEye-ChatOps, utilizes EventBridge / CloudWatch Event Rules to consume `HIGH` and `CRITICAL` severity findings created by ElectricEye from Security Hub and route them to a Lambda function. Lambda will parse out certain elements from the Security Hub finding such as the title, remediation information and resource information and to form a Pagerduty Incident to be sent using the EventsV2 API. Pagerduty is an on-call management / incident management tool that has built-in intelligence and automation to route escalations, age-off incidents and can be integrated downstream with other tools.
@@ -1069,7 +1069,7 @@ from botocore.stub import Stubber, ANY
 
 1. Install dependencies
 ```bash
-pip install -r requirements-dev.txt
+pip3 install -r requirements-dev.txt
 ```
 2. Run pytest
 ```bash
@@ -1088,8 +1088,7 @@ As of 12 MAR 2020, most of these items will be tracked on the [roadmap project b
 - [X] Upload response and remediation playbooks and IAC for them - Custom Action Version (Semi Auto)
 - [X] Upload response and remediation playbooks and IAC for them - Imported Findings (Full Auto)
 - [X] Create an Alerting framework with ~~ChatBot~~ Slack for Critical findings
-- [] Create a Reporting module for use with QuickSight
-  - An **EXPERIMENTAL** take is located here: [ElectricEye-Reports](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-reports)
+- [X] Create a Reporting module for use with QuickSight
 - [] Localization of ReadMe in: Spanish, Arabic, German, Italian, French, Japenese, etc.
 
 ## License

@@ -95,7 +95,7 @@ def ddb_kms_cmk_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
                         },
                         'RecordState': 'ACTIVE'
                     }
-                    yield response
+                    yield finding
                 else:
                     # ISO Time
                     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -150,7 +150,7 @@ def ddb_kms_cmk_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
                         },
                         'RecordState': 'ARCHIVED'
                     }
-                    yield resposne
+                    yield finding
             except Exception as e:
                 if str(e) == "'SSEDescription'":
                     # ISO Time

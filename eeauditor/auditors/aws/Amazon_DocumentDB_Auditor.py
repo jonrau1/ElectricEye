@@ -684,7 +684,7 @@ def documentdb_parameter_group_audit_log_check(
                             "ProductFields": {"Product Name": "ElectricEye"},
                             "Resources": [
                                 {
-                                    "Type": "Other",
+                                    "Type": "AwsDocumentDbParameterGroup",
                                     "Id": parameterGroupArn,
                                     "Partition": awsPartition,
                                     "Region": awsRegion,
@@ -741,7 +741,7 @@ def documentdb_parameter_group_audit_log_check(
                             "ProductFields": {"Product Name": "ElectricEye"},
                             "Resources": [
                                 {
-                                    "Type": "Other",
+                                    "Type": "AwsDocumentDbParameterGroup",
                                     "Id": parameterGroupArn,
                                     "Partition": awsPartition,
                                     "Region": awsRegion,
@@ -826,7 +826,7 @@ def documentdb_parameter_group_tls_enforcement_check(
                             "ProductFields": {"Product Name": "ElectricEye"},
                             "Resources": [
                                 {
-                                    "Type": "Other",
+                                    "Type": "AwsDocumentDbParameterGroup",
                                     "Id": parameterGroupArn,
                                     "Partition": awsPartition,
                                     "Region": awsRegion,
@@ -884,7 +884,7 @@ def documentdb_parameter_group_tls_enforcement_check(
                             "ProductFields": {"Product Name": "ElectricEye"},
                             "Resources": [
                                 {
-                                    "Type": "Other",
+                                    "Type": "AwsDocumentDbParameterGroup",
                                     "Id": parameterGroupArn,
                                     "Partition": awsPartition,
                                     "Region": awsRegion,
@@ -964,7 +964,7 @@ def documentdb_cluster_snapshot_encryption_check(
                     "ProductFields": {"Product Name": "ElectricEye"},
                     "Resources": [
                         {
-                            "Type": "Other",
+                            "Type": "AwsDocumentDbSnapshot",
                             "Id": clusterSnapshotArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
@@ -1015,7 +1015,7 @@ def documentdb_cluster_snapshot_encryption_check(
                     "ProductFields": {"Product Name": "ElectricEye"},
                     "Resources": [
                         {
-                            "Type": "Other",
+                            "Type": "AwsDocumentDbSnapshot",
                             "Id": clusterSnapshotArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
@@ -1094,7 +1094,7 @@ def documentdb_cluster_snapshot_public_share_check(
                             "ProductFields": {"Product Name": "ElectricEye"},
                             "Resources": [
                                 {
-                                    "Type": "Other",
+                                    "Type": "AwsDocumentDbSnapshot",
                                     "Id": clusterSnapshotArn,
                                     "Partition": awsPartition,
                                     "Region": awsRegion,
@@ -1152,7 +1152,7 @@ def documentdb_cluster_snapshot_public_share_check(
                             "ProductFields": {"Product Name": "ElectricEye"},
                             "Resources": [
                                 {
-                                    "Type": "Other",
+                                    "Type": "AwsDocumentDbSnapshot",
                                     "Id": clusterSnapshotArn,
                                     "Partition": awsPartition,
                                     "Region": awsRegion,
