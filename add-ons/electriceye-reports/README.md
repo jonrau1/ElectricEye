@@ -84,7 +84,7 @@ aws codebuild start-build \
     --project-name ElectricEyeReports
 ```
 
-4. To ensure the Data Set created succesfully navigate to your QuickSight console and look for the `ElectricEyeComplianceFindingsDataset` Data Set, if you see it, you're good to go!
+4. To ensure the Data Set created successfully navigate to your QuickSight console and look for the `ElectricEyeComplianceFindingsDataset` Data Set, if you see it, you're good to go!
 
 ![ElectricEye Dataset in the Menu](./screenshots/ElectricEyeDatasetMenu.JPG)
 
@@ -112,7 +112,7 @@ This section will provide a brief walkthrough of creating a new Analysis with so
 
 ![Visual Configure Menu](./screenshots/visualConfigureMenu.JPG)
 
-6. Most of the Visual Configuration options are self-explantory, such as font sizes. The more useful configurations typically live in the `Data labels` section which allow you to modify elements in your visual such as the metric presenation. Select the `Show metric` checkbox and ensure the `Metric label style` is set to **Value and percent** to show the Total Count and Percentage of findings by *Compliance Status* as shown below.
+6. Most of the Visual Configuration options are self-explanatory, such as font sizes. The more useful configurations typically live in the `Data labels` section which allow you to modify elements in your visual such as the metric presentation. Select the `Show metric` checkbox and ensure the `Metric label style` is set to **Value and percent** to show the Total Count and Percentage of findings by *Compliance Status* as shown below.
 
 ![Pie Chart Data Labels](./screenshots/pieChartLabelMetrics.JPG)
 
@@ -130,7 +130,7 @@ This section will provide a brief walkthrough of creating a new Analysis with so
 
 ![Add New Visual](./screenshots/addNewVisual.JPG)
 
-10. We will now demonstrate how to use dyanmic filters to show only information we want - in our case we want to show *only* NIST CSF compliance controls and their status. To start select the **Vertical stacked bar chart** and expand the size by dragging the bottom-right of the Visual border as shown below.
+10. We will now demonstrate how to use dynamic filters to show only information we want - in our case we want to show *only* NIST CSF compliance controls and their status. To start select the **Vertical stacked bar chart** and expand the size by dragging the bottom-right of the Visual border as shown below.
 
 ![Expand Stacked Bars](./screenshots/extendoStackedBars.JPG)
 
@@ -149,7 +149,7 @@ This section will provide a brief walkthrough of creating a new Analysis with so
 
 ![NIST CSF Dynamic Filter](./screenshots/nistCsfStartsWithFilter.JPG)
 
-At this point you can choose to configure the visualization as shwon in Steps 5 and 6, it is reccomended to change the Chart Titles and show Metrics. You can also choose to sort the fields by using the tooltips within each Axis of a bar chart style visual as well as click-and-drag various elements of the Visual to resize them. Some of the examples of that are shown in the screenshot below.
+At this point you can choose to configure the visualization as shown in Steps 5 and 6, it is recommended to change the Chart Titles and show Metrics. You can also choose to sort the fields by using the tooltips within each Axis of a bar chart style visual as well as click-and-drag various elements of the Visual to resize them. Some of the examples of that are shown in the screenshot below.
 
 ![NIST CSF Stacked Final](./screenshots/nistCsfFinalVis.JPG)
 
@@ -161,17 +161,17 @@ At this point you can choose to configure the visualization as shwon in Steps 5 
     - **Value**: *Finding ID* - Aggregate this by *Count distinct* as shown in Step 4
     - **Categories**: *Resource ID*
 
-**Note:** If you have not noticed by now, you can edit the `Title` of a Visual directly from the widget instead of opening up the Configuration Menu.
+**Note:** If you have not noticed by now, you can edit the `Title` of a Visual directly from the widget instead of opening the Configuration Menu.
 
 ![Top 3 Insight](./screenshots/insightTop3Raw.JPG)
 
 16. To add a Filter, it is the same workflow as in Steps 12 and 13, create a Filter for *Compliance Status*, uncheck **PASSED** from the `Filter list` and select **Apply**. Your Insight should now change to reflect only failed resources.
 
-17. Insights can be further modified with Narratives, to do so select the **Customize narrative** menu from the Visual dropdown, similar to Step 5 as shown below.
+17. Insights can be further modified with Narratives, to do so select the **Customize narrative** menu from the Visual dropdown, like Step 5 as shown below.
 
 ![Custom Narrative Menu](./screenshots/insightCustomizeNarrativeMenu.JPG)
 
-18. You will now be in the [Expression Editor Screen](https://docs.aws.amazon.com/quicksight/latest/user/using-narratives-expression-editor-menus.html) (shown below for this particular Insight) where you can add various computations, mathematical functions, or add plaintext explanations to the Insights. Editing the insight is out-of-scope for this Guide but the narrative can be useful to add with various visualizations to convey key risks or observations.
+18. You will now be in the [Expression Editor Screen](https://docs.aws.amazon.com/quicksight/latest/user/using-narratives-expression-editor-menus.html) (shown below for this Insight) where you can add various computations, mathematical functions, or add plaintext explanations to the Insights. Editing the insight is out-of-scope for this Guide but the narrative can be useful to add with various visualizations to convey key risks or observations.
 
 ![Expression Editor](./screenshots/insightNarrativeExprEditor.JPG)
 
@@ -181,7 +181,7 @@ There are much more modifications and configurations that can be done with Visua
 
 #### 1. What information is extracted from the ElectricEye findings?
 
-Only certain elements are parsed from the [AWS Security Finding Format](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html) (ASFF), this is primarily due to the fact that the Resource-level information greatly varies by Finding and would not be feasible to collect efficiently. Secondarily, only certain information makes sense to gather for the purpose of a BI report such as the finding's title, the related compliance controls, severity, status, and ownership (Account and Region) of the finding. The full data schema is included under Step 5 within the Solution Architecture Section.
+Only certain elements are parsed from the [AWS Security Finding Format](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html) (ASFF), this is primarily since the Resource-level information greatly varies by Finding and would not be feasible to collect efficiently. Secondarily, only certain information makes sense to gather for the purpose of a BI report such as the finding's title, the related compliance controls, severity, status, and ownership (Account and Region) of the finding. The full data schema is included under Step 5 within the Solution Architecture Section.
 
 #### 2. How are the related compliance controls extracted from the findings in a way that can be individually reported on?
 
@@ -197,7 +197,7 @@ Yes. However, the data preparation of the QuickSight Data Set is directly depend
 
 #### 5. What sort of data preparation for the QuickSight Data Set is done in this Add-on?
 
-Transformation all the data points in Strings and ensuring that the JSON Keys are properly mapped into Column Names. If you were to create a Data Set direclty from the Data Source the column names are mapped correctly but some data types are not mapped to Strings, for instance the Account ID is transformed into an Integer and the Workflow State and AWs Region are mapped into Geolocation Types (due to their name).
+Transformation all the data points in Strings and ensuring that the JSON Keys are properly mapped into Column Names. If you were to create a Data Set directly from the Data Source the column names are mapped correctly but some data types are not mapped to Strings, for instance the Account ID is transformed into an Integer and the Workflow State and AWs Region are mapped into Geolocation Types (due to their name).
 
 #### 6. Why can you not create an Analysis?
 
@@ -205,15 +205,17 @@ The creation of an Analysis in the API is dependent on a Template being created 
 
 #### 7. Will this solution ever include example embedding?
 
-Yes, eventually. The QuickSight Embedded Analytics SDK is only available in JavaScript, which I am not proficient in, so I will need to explore how to use this and create a way to host the Dashboard.
+Likely not any time soon. The QuickSight Embedding SDK is not offered in Python yet, so I cannot really figure out how it works. A brave soul may step forward and put in an implementation though.
 
 #### 8. I have other datasets I want to merge with this one, how can I do that in QuickSight?
 
-QuickSight has a native workflow tool within the Data Set Editing view that allows you to perform SQL-Like JOINS across datasets. If you had a dataset that mapped your AWS Accounts into business lines for instance, you can perform an INNER or LEFT Join form the Data Set created in this Add-on with that one. This new Data Set can be saved as its own Data Set and not affect the downstream solution for this Add-on.
+QuickSight has a native workflow tool within the Data Set Editing view that allows you to [perform SQL-Like JOINS across datasets](https://docs.aws.amazon.com/quicksight/latest/user/joining-data.html). If you had a dataset that mapped your AWS Accounts into business lines for instance, you can perform an INNER or LEFT Join form the Data Set created in this Add-on with that one. This new Data Set can be saved as its own Data Set and not affect the downstream solution for this Add-on.
 
 #### 9. Why use QuickSight? Why not another BI / Visualization tool such as Kibana or PowerBI?
 
-QuickSight offers direct APIs to prepapre and transform the data, is more cost effective than hosting your own Elasticsearch/Kibana server, way more cost effective than using Amazon Elasticsearch Service, and PowerBI is a silly Microsoft tool.
+QuickSight makes the most sense as it is AWS Native, offers many APIs, allows a rich array of features such as AutoML and various data ingests and is relatively cost-effective for a handful of users, even in the Enterprise Subscription. Kibana could likely reproduce many of the visualizations but you would have the cost overhead of managing Elasticsearch, or using AWS' native version, which is very expensive. Authentication into Kibana is also messy, needing a variety of Cognito User Pools, proxies, and Open Distro for Elasticsearch features turned on - those same features require more expensive options to be enabled (larger instances which support Masters, etc.).
+
+PowerBI is a joke...just don't ;)
 
 #### 10. Why is the Default Namespace used for the creation of the QuickSight Group?
 

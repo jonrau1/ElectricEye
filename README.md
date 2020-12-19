@@ -59,18 +59,18 @@ ElectricEye is a set of Python scripts (affectionately called **Auditors**) that
 
 ElectricEye runs on AWS Fargate, which is a serverless container orchestration service, you can also run it via a CLI anywhere you have the required dependencies installed. On a schedule, Fargate will download all of the auditor scripts from a S3 bucket, run the checks and send results to Security Hub. All infrastructure will be deployed via CloudFormation or Terraform to help you apply this solution to many accounts and/or regions. All findings (passed or failed) will contain AWS documentation references in the `Remediation.Recommendation` section of the ASFF (and the **Remediation** section of the Security Hub UI) to further educate yourself and others on.
 
-ElectricEye comes with several add-on modules to extend the core model which provides dozens of detection-based controls. ElectricEye-Response provides a multi-account response and remediation platform (also known as SOAR), ElectricEye-ChatOps integrates with Slack and ElectricEye-Reports integrates with QuickSight (experimental) and the Config-Deletion-Pruner will auto-archive findings as Config-supported resources are deleted. All add-ons are supported by both CloudFormation and Terraform and can also be used independly of the core module itself.
+ElectricEye comes with several add-on modules to extend the core model which provides dozens of detection-based controls. ElectricEye-Response provides a multi-account response and remediation platform (also known as SOAR), ElectricEye-ChatOps integrates with Slack and ElectricEye-Reports integrates with QuickSight (experimental) and the Config-Deletion-Pruner will auto-archive findings as Config-supported resources are deleted. All add-ons are supported by both CloudFormation and Terraform and can also be used independently of the core module itself.
 
-Personas who can make use of this tool are DevOps/DevSecOps engineers, SecOps analysts, Cloud Center-of-Excellence personnel, Site Relability Engineers (SREs), Internal Audit and/or Compliance Analysts.
+Personas who can make use of this tool are DevOps/DevSecOps engineers, SecOps analysts, Cloud Center-of-Excellence personnel, Site Reliability Engineers (SREs), Internal Audit and/or Compliance Analysts.
 
 ## Solution Architecture
 ---
 
 ![Architecture](screenshots/ElectricEye-Architecture.jpg)
 
-1. A [time-based CloudWatch Event](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html) runs ElectricEye every 12 hours (default value).
+1. A [time-based CloudWatch Event](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html) runs ElectricEye every 12 hours (default value).
 
-2. The ElectricEye Task will pull the Docker image from [Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/).
+2. The ElectricEye Task will pull the Docker image from [Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/).
 
 3. Systems Manager Parameter Store passes the bucket name from which Auditors are downloaded. Optionally, ElectricEye will retrieve you API key(s) for [DisruptOps](https://disruptops.com/features/) and [Shodan](https://www.shodan.io/explore), if those integrations are configured.
 
@@ -91,8 +91,6 @@ These steps are split across their relevant sections. All CLI commands are execu
 **Note 2:** Ensure AWS Security Hub is enabled in the region you are attempting to run ElectricEye
 
 **Note 3:** If you have never used ECS before you'll likely run into a problem with the service-linked role (SLR), or lack thereof, and you should follow the [instructions here](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using-service-linked-roles.html#service-linked-role-permissions) to have it created first
-
-**Note 4:** I do not have a GovCloud Account and did not test any Terraform, CloudFormation, add-on's or the new `govcloud-auditors` there. I willfully did *not* remove auditors that did not have support in GovCloud out of sheer laziness in the event that they become available at a later date. YMMV when using this tool in GovCloud.
 
 ### Build and push the Docker image
 **Note:** You must have [permissions to push images](https://docs.aws.amazon.com/AmazonECR/latest/userguide/docker-push-ecr-image.html) to ECR before performing this step. These permissions are not included in the instance profile example.
@@ -154,11 +152,12 @@ In both the Terraform config files and CloudFormation templates the value for th
 
 Before starting [attach this IAM policy](https://github.com/jonrau1/ElectricEye/blob/master/policies/Instance_Profile_IAM_Policy.json) to your [Instance Profile](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html) (if you are using Cloud9 or EC2).
 
-**Important Note:** The policy for the instance profile is ***highly dangerous*** given the S3, VPC and IAM related permissions given to it, Terraform needs a wide swath of CRUD permissions and even permissions for things that aren't deployed by the config files. For rolling ElectricEye out in a Production or an otherwise highly-regulated environment, consider adding [IAM Condition Keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_actions-resources-contextkeys.html#context_keys_table), using CI/CD (no human access) and backing up your Terraform state files to a S3 backend to add guardrails around this deployment. I would avoid adding these permissions to an IAM user, and any roles that use this should only be assumable by where you are deploying it from, consider adding other Condition Keys to the Trust Policy.
+**Important Note:** The policy for the instance profile is ***highly dangerous*** given the S3, VPC and IAM related permissions given to it, Terraform needs a wide swath of CRUD permissions and even permissions for things that aren't deployed by the config files. For rolling ElectricEye out in a Production or an otherwise highly regulated environment, consider adding [IAM Condition Keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_actions-resources-contextkeys.html#context_keys_table), using CI/CD (no human access) and backing up your Terraform state files to a S3 backend to add guardrails around this deployment. I would avoid adding these permissions to an IAM user, and any roles that use this should only be assumable by where you are deploying it from, consider adding other Condition Keys to the Trust Policy.
 
 In this stage we will install and deploy the ElectricEye infrastructure via Terraform. To securely backup your state file, you should explore the usage of a [S3 backend](https://www.terraform.io/docs/backends/index.html), this is also described in this [AWS Security Blog post](https://aws.amazon.com/blogs/security/how-use-ci-cd-deploy-configure-aws-security-services-terraform/).
 
 1. Install the dependencies for Terraform. **Note:** these configuration files are written for `v 0.11.x` and will not work with `v 0.12.x` Terraform installations and rewriting for that spec is not in the immediate roadmap.
+
 ```bash
 wget https://releases.hashicorp.com/terraform/0.11.14/terraform_0.11.14_linux_amd64.zip
 unzip terraform_0.11.14_linux_amd64.zip
@@ -166,11 +165,13 @@ sudo mv terraform /usr/local/bin/
 terraform --version
 ```
 
-2. Change directories, and modify the `variables.tf` config file to include the URI of your Docker image and the name of your ECR Repository as shown in the screenshot below. Optionally replace the values of the Shodan API Key, DisruptOps Client Id, and DisruptOps API Key parameters with yours if you created them in the previous optional steps.
+2. Change directories and modify the `variables.tf` config file to include the URI of your Docker image and the name of your ECR Repository as shown in the screenshot below. Optionally replace the values of the Shodan API Key, DisruptOps Client Id, and DisruptOps API Key parameters with yours if you created them in the previous optional steps.
+
 ```bash
 cd terraform-config-files
 nano variables.tf
 ```
+
 ![Variables.tf modification](screenshots/variables-tf-uri-modification.png)
 
 3. Initialize, plan and apply your state with Terraform, this step should not take too long.
@@ -183,20 +184,22 @@ terraform apply -auto-approve
 4. Navigate to the S3 console and locate the name of the S3 bucket created by Terraform for the next step. It should be in the format of `electriceye-artifact-bucket-(AWS_REGION)-(ACCOUNT-NUMBER)` if you left everything else default in `variables.tf`
 
 5. Navigate to the `auditors` directory and upload the code base to your S3 bucket
+
 ```bash
 cd -
 cd eeauditor/auditors/aws
 aws s3 sync . s3://<your-bucket-name>
 ```
 
-6. Navigate to the `insights` directory and execute the Python script to have Security Hub Insights created. Insights are saved searches that can also be used as quick-view dashboards (though no where near the sophsication of a QuickSight dashboard)
+6. Navigate to the `insights` directory and execute the Python script to have Security Hub Insights created. Insights are saved searches that can also be used as quick-view dashboards (though nowhere near the sophistication of a QuickSight dashboard)
+
 ```bash
 cd -
 cd insights
 python3 electriceye-insights.py
 ```
 
-In the next stage you will launch the ElectricEye ECS task manually because after Terraform deploys this solution it will automatically run and it will fail due to a lack of Auditor scripts in the S3 bucket.
+In the next stage you will launch the ElectricEye ECS task manually because after Terraform deploys this solution it will automatically run, and it will fail due to a lack of Auditor scripts in the S3 bucket.
 
 ### Setup baseline infrastructure via AWS CloudFormation
 ---
@@ -207,6 +210,7 @@ In the next stage you will launch the ElectricEye ECS task manually because afte
 ![Run task dropdown](screenshots/cfn-parameter-uri-modification.JPG)
 
 **NOTE**: The Terraform implementation applies a resource-based repository policy that only allows access to the ElectricEye ECS IAM Roles (Execution & Task), if you want to apply something similar for CloudFormation you will need to issue the following ECR CLI command:
+
 ```bash
 aws ecr set-repository-policy \
     --repository-name <ECR_REPO_NAME> \
@@ -214,6 +218,7 @@ aws ecr set-repository-policy \
 ```
 
 You can create `my-policy.json` with the below example, replace the values for `<Task_Execution_Role_ARN>` and `<Task_Role.arn>` as needed.
+
 ```json
 {
   "Version": "2008-10-17",
@@ -246,13 +251,15 @@ You can create `my-policy.json` with the below example, replace the values for `
 3. Navigate to the S3 console and locate the name of the S3 bucket created by CloudFormation for the next step. It should be in the format of `electric-eye-artifact-bucket--(AWS_REGION)-(ACCOUNT-NUMBER)`
 
 4. Navigate to the `auditors` directory and upload the code base to your S3 bucket
+
 ```bash
 cd -
 cd eeauditor/auditors/aws
 aws s3 sync . s3://<your-bucket-name>
 ```
 
-5. Navigate to the `insights` directory and execute the Python script to have Security Hub Insights created. Insights are saved searches that can also be used as quick-view dashboards (though no where near the sophsication of a QuickSight dashboard)
+5. Navigate to the `insights` directory and execute the Python script to have Security Hub Insights created. Insights are saved searches that can also be used as quick-view dashboards (though nowhere near the sophistication of a QuickSight dashboard)
+
 ```bash
 cd -
 cd insights
@@ -265,6 +272,7 @@ python3 electriceye-insights.py
 In this stage we will use the console the manually run the ElectricEye ECS task.
 
 1. Navigate to the ECS Console, select **Task Definitions** and toggle the `electric-eye` task definition. Select the **Actions** dropdown menu and select **Run Task** as shown in the below screenshot.
+
 ![Run task dropdown](screenshots/run-ecs-task-dropdown.JPG)
 
 2. Configure the following settings in the **Run Task** screen as shown in the screenshot below
@@ -277,6 +285,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 - Subnets: ***any eletric eye Subnet***
 - Security groups: **electric-eye-vpc-sec-group** (you will need to select **Modify** and choose from another menu)
 - Auto-assign public IP: **ENABLED**
+
 ![ECS task menu](screenshots/ecs-task-menu-modifications.JPG)
 
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
@@ -287,12 +296,14 @@ In this stage we will use the console the manually run the ElectricEye ECS task.
 1. Navigate to the IAM console and click on **Policies** under **Access management**. Select **Create policy** and under the JSON tab, copy and paste the contents [Instance Profile IAM Policy](policies/Instance_Profile_IAM_Policy.json). Click **Review policy**, create a name, and then click **Create policy**.
 
 2. Have python 3 and pip installed and setup virtualenv
+
 ```bash
 pip3 install virtualenv --user
 virtualenv .venv
 ```
 
 3. This will create a virtualenv directory called .venv which needs to be activated
+
 ```bash
 #For macOS and Linux
 . .venv/bin/activate
@@ -302,11 +313,13 @@ virtualenv .venv
 ```
 
 4. Install all dependencies
+
 ```bash
 pip3 install -r requirements.txt
 ```
 
 5. Run the controller
+
 ```bash
 python3 eeauditor/controller.py
 ```
@@ -570,7 +583,7 @@ The following are optional add-on's to ElectricEye that will extend its function
   - ElectricEye-Reports is an add-on that allows you the created detailed business intelligence (BI) reports from ElectricEye findings in Security Hub using [Amazon QuickSight](https://aws.amazon.com/quicksight/), a "...scalable, serverless, embeddable, machine learning-powered business intelligence (BI) service built for the cloud." Using QuickSight, you can create detailed reports that breakdown all of your ElectricEye findings by Severity, Region, Resource Type, as well as breakout by-Compliance Control reporting and further enrich the dataset in this solution with business-context such as Cost Center, Division, Business Owner, and other metadata. With this data you can create visualizations that can be used by a many Personas across Information Security, IT Audit, IT Operations, Product Development, and Risk functions - such as tracking compliance with specific controls, measuring Key Risk Indicators (KRIs), or preparing evidence for a formal audit certification/attestation/examination.
 
 - [ElectricEye-Pagerduty-Integration](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-pagerduty-integration)
-  - The Pagerduty integration for ElectricEye, similar to ElectricEye-ChatOps, utilizes EventBridge / CloudWatch Event Rules to consume `HIGH` and `CRITICAL` severity findings created by ElectricEye from Security Hub and route them to a Lambda function. Lambda will parse out certain elements from the Security Hub finding such as the title, remediation information and resource information and to form a Pagerduty Incident to be sent using the EventsV2 API. Pagerduty is an on-call management / incident management tool that has built-in intelligence and automation to route escalations, age-off incidents and can be integrated downstream with other tools.
+  - The Pagerduty integration for ElectricEye, like ElectricEye-ChatOps, utilizes EventBridge / CloudWatch Event Rules to consume `HIGH` and `CRITICAL` severity findings created by ElectricEye from Security Hub and route them to a Lambda function. Lambda will parse out certain elements from the Security Hub finding such as the title, remediation information and resource information and to form a Pagerduty Incident to be sent using the EventsV2 API. Pagerduty is an on-call management / incident management tool that has built-in intelligence and automation to route escalations, age-off incidents and can be integrated downstream with other tools.
 
 ## Known Issues & Limitations
 ---
@@ -605,6 +618,7 @@ One of the main benefits to moving to the cloud is the agility it gives you to q
 ElectricEye won't take the place of a crack squad of principal security engineers or stand-in for a compliance, infosec, privacy or risk function but it will help you stay informed to the security posture of your AWS environment across a multitude of services. You should also implement secure software delivery, privacy engineering, secure-by-design configuration, and application security programs and rely on automation where you can to develop a mature cloud security program.
 
 Or, you could just not do security at all and look like pic below:
+
 ![ThreatActorKittens](screenshots/plz-no.jpg)
 
 ### 1. Why should I use this tool?
@@ -658,7 +672,7 @@ No. That is something in mind for the future, and a very good idea for a PR. The
 
 First, the IAM permissions needed to run all of the auditors' scans are numerous, and while not particularly destructive, give a lot of Read/List rights which can be an awesome recon tool (very fitting given the name of the tool) for a malicious insider or threat actor. Giving it cross-account just makes that totally-not-cool individual's job of mass destruction so much easier, this security information can give them all sorts of ideas for attacks to launch. Lastly, it could also make provisioning a little harder, given that you have to keep up to 1000s (depending on how many accounts you have) of roles up-to-date as ElectricEye adds new capabilities.
 
-These are lazy answers above, I did not want to make this a master-member tool because security should be democratized. You are **NOT** doing your account owners, DevOps teams or anyone else in the business any favors if you are just running scans and slapping a report you did up in Quicksight in front of them. By allowing them to view their findings in their own Security Hub console and take action on them, you are empowering and entrusting them with security goodness and fortune shall smile upon you. With that, I will not make this master-member nor accept any PRs that attempt to.
+These are lazy answers above, I did not want to make this a master-member tool because security should be democratized. You are **NOT** doing your account owners, DevOps teams or anyone else in the business any favors if you are just running scans and slapping a report you did up in Quicksight in front of them. By allowing them to view their findings in their own Security Hub console and act on them, you are empowering and entrusting them with security goodness and fortune shall smile upon you. With that, I will not make this master-member nor accept any PRs that attempt to.
 
 Plus, Security Hub supports master-member patterns, so you can get your nasty security-as-a-dashboard paws on the findings there.
 
@@ -670,23 +684,21 @@ I will, eventually. If you really need a specific check supported RIGHT NOW plea
 ### 10. Where is that automated remediation you like so much?
 ---
 
-~~You probably have me confused with someone else...That is a Phase 2 plan: after I am done scanning all the things, we can remediate all of the things.~~
+~~You probably have me confused with someone else...That is a Phase 2 plan: after I am done scanning all the things, we can remediate all the things.~~
 
 Work has started in [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response)
 
 ### 11. Why do some of the severity scores / labels for the same failing check have different values?!
 ---
 
-Some checks, such as the EC2 Systems Manager check for having the latest patches installed are dual-purpose and will have different severities. For instance, that check looks if you have any patch state infromation reported at all, if you do not you likely are not even managing that instance as part of the patch baseline. If a missing or failed patch is reported, then the severity is bumped up since you ARE managing patches but something happened and now the patch is not being installed.
+Some checks, such as the EC2 Systems Manager check for having the latest patches installed are dual-purpose and will have different severities. For instance, that check looks if you have any patch state information reported at all, if you do not you likely are not even managing that instance as part of the patch baseline. If a missing or failed patch is reported, then the severity is bumped up since you ARE managing patches, but something happened and now the patch is not being installed.
 
-In a similar vein, some findings that have a severity score of 0 (severity label of `INFORMATIONAL`) and a Compliance status of `PASSED` may not be Archived if it is something you may want to pay attention to. An example of this are EBS Snapshots that are shared with other accounts, it is no where near as bad as being public but you should audit these accounts to make sure you are sharing with folks who should be shared with (I cannot tell who that is, your SecOps analyst should be able to).
+In a similar vein, some findings that have a severity score of 0 (severity label of `INFORMATIONAL`) and a Compliance status of `PASSED` may not be Archived if it is something you may want to pay attention to. An example of this are EBS Snapshots that are shared with other accounts, it is nowhere near as bad as being public but you should audit these accounts to make sure you are sharing with folks who should be shared with (I cannot tell who that is, your SecOps analyst should be able to).
 
 ### 12. What if I run into throttling issues, how can I get the findings?
 ---
 
-For now, I put (lazy) sleep steps in the bash script that runs all of the auditors. It should hopefully add enough cooldown to avoid getting near the 10TPS rate limit, let alone the 30TPS burst limit of the BIF API. You are throttled after bursting, but the auditors do not run in parallel for this reason, so you should not run into that unless for some reason you have 1000s of a single type of resource in a single region.
-
-That said, it is possible some of you crazy folks have that many resources. A To-Do is improve ElectricEye's architecture (while increasing costs) and write up batches of findings to SQS which will be parsed and sent to BIF via Lambda. So even if you had 1000 resources, if I did the full batch of 100, you wouldn't tip that scale and have some retry ability. A similar pattern could technically be done with Kinesis, but more research for the best pattern is needed.
+For now, I put (lazy) sleep steps in the bash script that runs all the auditors. It should hopefully add enough cooldown to avoid getting near the 10TPS rate limit, let alone the 30TPS burst limit of the BIF API. You are throttled after bursting, but the auditors do not run in parallel for this reason, so you should not run into that unless for some reason you have 1000s of a single type of resource in a single region.
 
 ### 13. How much does this solution cost to run?
 ---
@@ -849,7 +861,8 @@ You should consider taking a look at all of these:
 ### 15. Why did you swap the Dockerfile to being Alpine Linux-based?
 ---
 
-The original (V1.0) Dockerfile used the `ubuntu:latest` image as its base image and was pretty chunky (~450MB) where the Alpine image is a tiny bit under a 10th of that (41.95MB). It is also much faster to create and push the image since `apk` adds only what is needed and isn't bloated by the Ubuntu dependencies from `apt` or that come prepackaged. Lastly, the build logs are a lot less chatty with the (hacky) ENV value set for Python and Pip related logs. Oh, and as of 13 MARCH 2020 there are no vulns in this image. (Reminder for me to periodically update and confirm this)
+The original (V1.0) Dockerfile used the `ubuntu:latest` image as its base image and was chunky (~450MB) where the Alpine image is a tiny bit under a 10th of that (41.95MB). It is also much faster to create and push the image since `apk` adds only what is needed and isn't bloated by the Ubuntu dependencies from `apt` or that come prepackaged. Lastly, the build logs are a lot less chatty with the (hacky) ENV value set for Python and Pip related logs. Oh, and as of 13 MARCH 2020 there are no vulns in this image. (Reminder for me to periodically update and confirm this)
+
 ![AlpineVulns](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/alpine-ecr-vulns.JPG)
 
 ### 16. I thought you said that ElectricEye will not help me pass an audit!?
@@ -866,46 +879,47 @@ I am most familiar with NIST CSF so I mapped all checks that I felt satisfied th
 
 The `Compliance.RelatedRequiremens` JSON list only accepts up to 32 strings so with that in mind I was not very aggressive in my mappings to NIST CSF to avoid running over that hard limit. I blame ISO 27001:2013, that compliance framework has a ton of mapped controls from the CSF. To that effect you will only be receiving a coarse-grained mapping, at best, hence why I stress that you should do your own analysis on this. I also did not do any mapping into the Respond or Recover functions of NIST CSF, the subcategories are very vague in those areas and I cannot assume that you actually analyze and respond to threats, map that on your own if need be.
 
-The mappings list is [located here](https://github.com/jonrau1/ElectricEye/blob/master/compliance-mapping/electriceye-auditor-compliance-mapping.xlsx)
+~~The mappings list is [located here](https://github.com/jonrau1/ElectricEye/blob/master/compliance-mapping/electriceye-auditor-compliance-mapping.xlsx)~~ Shit, I don't know where I put that...
 
 ### 18. What is the NIST CSF? Is that the same as NIST SP 800-53?
 ---
 
-The National Institue of Standards and Technology (NIST) [Cybersecurity Framework](https://www.nist.gov/cyberframework/new-framework) (CSF) is "...voluntary guidance, based on existing standards, guidelines, and practices for organizations to better manage and reduce cybersecurity risk. In addition to helping organizations manage and reduce risks, it was designed to foster risk and cybersecurity management communications amongst both internal and external organizational stakeholders." The CSF is organized into 5 functions which consist of 104 outcome-based, risk-informed activities and requirements to help managed cyber security risk.
+The National Institute of Standards and Technology (NIST) [Cybersecurity Framework](https://www.nist.gov/cyberframework/new-framework) (CSF) is "...voluntary guidance, based on existing standards, guidelines, and practices for organizations to better manage and reduce cybersecurity risk. In addition to helping organizations manage and reduce risks, it was designed to foster risk and cybersecurity management communications amongst both internal and external organizational stakeholders." The CSF is organized into 5 functions which consist of 104 outcome-based, risk-informed activities and requirements to help managed cyber security risk.
 
-It is not to be confused with [NIST Special Publication (SP) 800-53 revision 4](https://www.nist.gov/cyberframework/new-framework) which is "...a catalog of security and privacy controls for federal information systems and organizations and a process for selecting controls to protect organizational operations (including mission, functions, image, and reputation), organizational assets, individuals, other organizations, and the Nation from a diverse set of threats including hostile cyber attacks, natural disasters, structural failures, and human errors (both intentional and unintentional)." The controls in 800-53 are related to [FedRAMP Moderate & High SSPs](https://www.fedramp.gov/developing-a-system-security-plan/), the [Government of Canada's ITSG-33](https://cyber.gc.ca/en/path-enterprise-security) and other international frameworks and are regarded as a standard of which to base a cybersecurity program off of.
+It is not to be confused with [NIST Special Publication (SP) 800-53 revision 4](https://www.nist.gov/cyberframework/new-framework) which is "...a catalog of security and privacy controls for federal information systems and organizations and a process for selecting controls to protect organizational operations (including mission, functions, image, and reputation), organizational assets, individuals, other organizations, and the Nation from a diverse set of threats including hostile cyber-attacks, natural disasters, structural failures, and human errors (both intentional and unintentional)." The controls in 800-53 are related to [FedRAMP Moderate & High SSPs](https://www.fedramp.gov/developing-a-system-security-plan/), the [Government of Canada's ITSG-33](https://cyber.gc.ca/en/path-enterprise-security) and other international frameworks and are regarded as a standard of which to base a cybersecurity program off.
 
 ### 19. What is ISO 27001?
 ---
 
-"ISO 27001 (formally known as ISO/IEC 27001:2013) is a specification for an information security management system (ISMS). An ISMS is a framework of policies and procedures that includes all legal, physical and technical controls involved in an organisation's information risk management processes." Like other ISO standards, NIST CSF and NIST SP 800-53, it is a top-down and technology agnostic way of performing an information security risk assessment. 27001 does not have any true technical controls, those are in [ISO 27002:2013](https://www.iso.org/standard/54533.html), and audits are conducted as risk assessments by qualified 3rd party assessors to give you an accredited certification against ISO 27001.
+"ISO 27001 (formally known as ISO/IEC 27001:2013) is a specification for an information security management system (ISMS). An ISMS is a framework of policies and procedures that includes all legal, physical and technical controls involved in an organization’s information risk management processes." Like other ISO standards, NIST CSF and NIST SP 800-53, it is a top-down and technology agnostic way of performing an information security risk assessment. 27001 does not have any true technical controls, those are in [ISO 27002:2013](https://www.iso.org/standard/54533.html), and audits are conducted as risk assessments by qualified 3rd party assessors to give you an accredited certification against ISO 27001.
 
-There are a lot of purported benefits to ISO 27001 (and other framework compliance) but the long and short of it is a lot of organizations (suppliers, customers, partners) require it for contractual and regulatory obligations so you are going to be stuck doing one at one point or another. As noted in [FAQ#16](https://github.com/jonrau1/ElectricEye#16-i-thought-you-said-that-electriceye-will-not-help-me-pass-an-audit), I took what NIST provided for these mappings, I did not pay for the Standard nor do I intend to take a look.
+There are a lot of purported benefits to ISO 27001 (and other framework compliance) but the long and short of it is a lot of organizations (suppliers, customers, partners) require it for contractual and regulatory obligations so you are going to be stuck doing one at one point or another. As noted in [FAQ#16](https://github.com/jonrau1/ElectricEye#16-i-thought-you-said-that-electriceye-will-not-help-me-pass-an-audit), I took what NIST provided for these mappings, I did not pay for the Standard nor do I intend to look.
 
 ### 20. What is the AICPA TSC? Is that the same as SOC 2 or SOC 3?
 ---
 
-From AICPA: "The TSC are control criteria for use in attestation or consulting engagements to evaluate and report on controls over information and systems (a) across an entire entity; (b) at a subsidiary, division, or operating unit level; (c) within a function relevant to the entity's operational, reporting, or compliance objectives; or (d) for a particular type of information used by the entity." These criteria are broken into 5 different categories and aligned with COSO Principles which provided "points of focus" which are things that are important to the criteria, akin to NIST CSF Subcategories in a way.
+From AICPA: "The TSC are control criteria for use in attestation or consulting engagements to evaluate and report on controls over information and systems (a) across an entire entity; (b) at a subsidiary, division, or operating unit level; (c) within a function relevant to the entity's operational, reporting, or compliance objectives; or (d) for a particular type of information used by the entity." These criteria are broken into 5 different categories and aligned with COSO Principles which provided "points of focus" which are important to the criteria, akin to NIST CSF Subcategories in a way.
 
-These are not the same as a SOC 2 or SOC 3 Report, those Reports are generated from audits that you give to external parties, it gives information about how you manage data relative to 5 different Principles. A SOC 2 Report audit is pretty different than something rigid like ISO27002 or PCI-DSS in that your organization has to pick crtieria and related controls that meet the spirit of those criteria before being audited against it. The TSC can help in that matter by giving you an idea of Criteria and the "areas of focus", I suspect the mappings were done into NIST and ISO frameworks by AICPA to help more people prepare for their SOC Reports. Random point to make this all the more confusing, SOC 2 comes in two flavors, SOC 2 Type I details your system and design specs relative to the 5 Principles where Type II details the operational effectiveness of your systems.
+These are not the same as a SOC 2 or SOC 3 Report, those Reports are generated from audits that you give to external parties, it gives information about how you manage data relative to 5 different Principles. A SOC 2 Report audit is different than something rigid like ISO27002 or PCI-DSS in that your organization must pick criteria and related controls that meet the spirit of those criteria before being audited against it. The TSC can help in that matter by giving you an idea of Criteria and the "areas of focus", I suspect the mappings were done into NIST and ISO frameworks by AICPA to help more people prepare for their SOC Reports. Random point to make this more confusing, SOC 2 comes in two flavors, SOC 2 Type I details your system and design specs relative to the 5 Principles where Type II details the operational effectiveness of your systems.
 
-I did read through the TSC and some AICPA literature, but, it's not the most fun read. There are blogs like [this one from Imperva](https://www.imperva.com/learn/data-security/soc-2-compliance/) and [this one from CLA](https://www.claconnect.com/resources/articles/2018/new-soc-report-framework-addresses-emerging-risks) that go into detail about TSC, TSP, SOCs and all of that fun stuff. Since you have to back your Report, it may be appropiate to bring in ElectricEye mappings since you can decide to do a SOC 2 Type I report against a specific information system or environment as detailed by AICPA. **NOT THAT I WARRANT FOR THAT BY THE WAY.**
+I did read through the TSC and some AICPA literature, but, it's not the most fun read. There are blogs like [this one from Imperva](https://www.imperva.com/learn/data-security/soc-2-compliance/) and [this one from CLA](https://www.claconnect.com/resources/articles/2018/new-soc-report-framework-addresses-emerging-risks) that go into detail about TSC, TSP, SOCs and all that fun stuff. Since you must back your Report, it may be appropriate to bring in ElectricEye mappings since you can decide to do a SOC 2 Type I report against a specific information system or environment as detailed by AICPA. **NOT THAT I WARRANT FOR THAT BY THE WAY.**
 
 ### 21. Why didn't you do PCI-DSS or HITRUST CSF or HIPAA or GDPR or...?
 ---
 
 Don't wish that evil on me. If you want PCI-DSS, I would use the [Security Hub security standard](https://aws.amazon.com/blogs/security/how-to-use-the-aws-security-hub-pci-dss-v3-2-1-standard/) for it, I helped work on that when I was at AWS and it was no joke an almost year-long affair. PCI-DSS is an industry regulation that has its own governing board and certification process to become a Qualified Security Assessor (QSA), the audits should only be in scope for your cardholder data environments (CDE), ElectricEye has no way to differentiate and I am a QSA so...yeah, not doing that.
 
-HITRUST is much the same way, it is an amalgamation of stuff from the HIPAA Security and Privacy Rules, ISO, and even things like NYDFS that consists of 600+ controls and also has its own multi-day, on-site assessor training course. I have not attended it, I have a lot of experience with it but it is a massive control framework and the last thing you want to do as a HCLS company on the AWS Cloud is use my stupid ass mappings to pass that audit.
+HITRUST is much the same way, it is an amalgamation of stuff from the HIPAA Security and Privacy Rules, ISO, and even things like NYDFS that consists of 600+ controls and has its own multi-day, on-site assessor training course. I have not attended it, I have a lot of experience with it but it is a massive control framework and the last thing you want to do as a HCLS company on the AWS Cloud is use my stupid ass mappings to pass that audit.
 
-As far as things the the NIST Privacy Framework, the CCPA, GDPR and other Privacy regimes I will not be touching them either. They delve into stuff like privacy-by-design, privacy engineering, how you handle data and prevent disclosures and lack in technical controls. HIPAA only has a few sections that go into what they call "technical safeguards", the whole Act (along with HITECH and the Omnibus) was originally 5 Titles of which Title II delved into what became known as the Security Rule, the Privacy Rule and the Breach Notification Rule. The HHS has issued tons of guidance about it, it has the Safe Harbor act for it and even combined the relevant sections from 45 CFR for a sort-of easy read on the aforementioned 'Rules'. It is highly slim on details (other than encryption) and you are better suited with HITRUST and I am definitely not a lawyer and won't be touching that.
+As far as things the NIST Privacy Framework, the CCPA, GDPR and other Privacy regimes I will not be touching them either. They delve into stuff like privacy-by-design, privacy engineering, how you handle data and prevent disclosures and lack in technical controls. HIPAA only has a few sections that go into what they call "technical safeguards", the whole Act (along with HITECH and the Omnibus) was originally 5 Titles of which Title II delved into what became known as the Security Rule, the Privacy Rule and the Breach Notification Rule. The HHS has issued tons of guidance about it, it has the Safe Harbor act for it and even combined the relevant sections from 45 CFR for a sort-of easy read on the aforementioned 'Rules'. It is highly slim on details (other than encryption) and you are better suited with HITRUST and I am not a lawyer and won't be touching that.
 
-Before you ask, no, I won't be doing any Government stuff (DOD-ILA, FedRAMP, FISMA) or non-US stuff (ITSG-33, IRAP, C5, etc.) because I am a combination of unqualified and unknowledgable. All of this said, if you are qualified for any of the above *and* want to perform mappings with your independent sign-off, please reach out to me via a PR or on LinkedIn.
+Before you ask, no, I won't be doing any Government stuff (DOD-ILA, FedRAMP, FISMA) or non-US stuff (ITSG-33, IRAP, C5, etc.) because I am a combination of unqualified and unknowledgeable. All of this said, if you are qualified for any of the above *and* want to perform mappings with your independent sign-off, please reach out to me via a PR or on LinkedIn.
 
 ## Contributing
 ---
 
 I am very happy to accept PR's for the following:
+
 - Adding new Auditors
 - Adding new checks to existing Auditors
 - Adding new ElectricEye-Response playbooks
