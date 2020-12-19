@@ -82,7 +82,7 @@ aws codebuild start-build \
     --project-name ElectricEyeReports
 ```
 
-4. To ensure the Data Set created succesfully navigate to your QuickSight console and look for the `ElectricEyeComplianceFindingsDataset` Data Set, if you see it you're good to go!
+4. To ensure the Data Set created succesfully navigate to your QuickSight console and look for the `ElectricEyeComplianceFindingsDataset` Data Set, if you see it, you're good to go!
 
 ![ElectricEye Dataset in the Menu](./screenshots/ElectricEyeDatasetMenu.JPG)
 
@@ -94,6 +94,69 @@ TODO
 
 This section will provide a brief walkthrough of creating a new Analysis with some Visualizations you can use to get started.
 
+1. Select the ElectricEye Data Set and within the QuickSight Console and choose **Create analysis** as shown below.
+
+![Create QS Analysis](./screenshots/createAnalysis.JPG)
+
+2. Within the Analysis Console you can choose your **Visuals** from the bottom left-hand side in the UI. Select the Pie Chart tooltip from the `Visual types`, you can hover your cursor over the icons to get the name as shown below.
+
+![Create Piechart](./screenshots/createPieChart.JPG)
+
+3. At the top center-left of the UI you should see `Field wells`, these are where you select the **Dimensions** for your Visuals. Select a value to `Group/Color` such as *Compliance Status* by dragging the values from `Fields list` on the left-hand side and into the `Field well` as shown below.
+
+![GroupBy Field Well](./screenshots/groupByFieldWell.JPG)
+
+4. Due to how the compliance controls were parsed from the ASFF, the number of findings is artificially inflated. To deduplicate values we will add a **Value** into the field well based on the unique counts of Finding IDs which are always unique. Drag the *Finding ID* field into the `Field well` for **Value** and then select the dropdown menu to change **Aggregate** to **Count Distinct** as shown below.
+
+![Finding ID Unique](./screenshots/fieldIdUniqueCount.JPG)
+
+5. To reformat the Visual you can use the **Configure visual** option from the hover-over menu on the right-hand side of a Visual (represented by a gear icon) as shown below, select this and advanced to the next step.
+
+![Visual Configure Menu](./screenshots/visualConfigureMenu.JPG)
+
+6. Most of the Visual Configuration options are self-explantory, such as font sizes. The more useful configurations typically live in the `Data labels` section which allow you to modify elements in your visual such as the metric presenation. Select the `Show metric` checkbox and ensure the `Metric label style` is set to **Value and percent** to show the Total Count and Percentage of findings by *Compliance Status* as shown below.
+
+![Pie Chart Data Labels](./screenshots/pieChartLabelMetrics.JPG)
+
+7. If at any time you wanted to change how the Visual looks you can select a new one for `Visual types`, such as a Donut Chart which has the option to show the total of the **Value** `Field well` by aggregate. As shown below, in this case, the donut chart shows the total amount of unique findings by Finding ID you extracted from Security Hub.
+
+![Pie Chart to Donut Chart](./screenshots/fromPiesToDonuts.JPG)
+
+**Note:** Not every visual type can fully transfer all style changes over and may require additional modification of the `Field wells`.
+
+8. To quickly create similar Visuals you can use the **Duplicate visual** option from the **Menu Options** from the hover-over menu on the right-hand side of a Visual (represented by an ellipsis) as shown below. This can be useful for creating multiple group-by visualizations for an at-a-glance view of various dimensions for ElectricEye findings, such as Region breakdown or Severity.
+
+![Duplicate Visual](./screenshots/duplicateVisual.JPG)
+
+9. To create a new Visual choose the **Add** option at the top-left of the UI and select `Add visual` as shown below. Once the new visual is added you can select the `Visual type` and modify the `Fields wells` as demonstrated in Steps 2 - 6.
+
+![Add New Visual](./screenshots/addNewVisual.JPG)
+
+10. We will now demonstrate how to use dyanmic filters to show only information we want - in our case we want to show *only* NIST CSF compliance controls and their status. To start select the **Vertical stacked bar chart** and expand the size by dragging the bottom-right of the Visual border as shown below.
+
+![Expand Stacked Bars](./screenshots/extendoStackedBars.JPG)
+
+11. To create the visual shown in the screenshot below configure the following `Field well` and `Field list` pairs.
+    - **X Axis**: *Compliance Control*
+    - **Value**: *Finding ID* - Aggregate this by *Count distinct* as shown in Step 4
+    - **Group/Color**: *Compliance Status*
+
+![Compliance Control Status Chart Fields](./screenshots/complianceControlStatusStacked.JPG)
+
+12. Now that we have the raw view correct, let's modify the formatting by using a Filter. On the left-hand side of the UI select the **Filters** menu and create a new filter by selecting the "plus" icon at the top-left of the UI and select *Compliance Control* as shown below. 
+
+![Filter Menu](./screenshots/addNewFilterMenu.JPG)
+
+13. Select the new Filter and change the `Filter type` to a **Custom filter** with a **Starts with** operator and enter *NIST CSF* into the filter box and select Apply as shown below.
+
+![NIST CSF Dynamic Filter](./screenshots/nistCsfStartsWithFilter.JPG)
+
+At this point you can choose to configure the visualization as shwon in Steps 5 and 6, it is reccomended to change the Chart Titles and show Metrics. You can also choose to sort the fields by using the tooltips within each Axis of a bar chart style visual as well as click-and-drag various elements of the Visual to resize them. Some of the examples of that are shown in the screenshot below.
+
+![NIST CSF Stacked Final](./screenshots/nistCsfFinalVis.JPG)
+
+There are much more modifications and configurations that can be done with Visuals, you can also add additional Sheets, create tabular views, and add ML-Backed insights to identify key trends and data source anomalies. In the future, you can consider adding Timestamps (they must be reformatted from the Security Hub IS08601 to a different kind of timestamp for QuickSight) if you wanted to capture anomaly-based trends overtime or measure time-series movement of compliance controls using the Key Performance Indicator (KPI) Visual type. For more information you should also consider looking at various AWS QuickSight Blogs.
+
 ## FAQ
 
 #### 1. What information is extracted from the ElectricEye findings?
@@ -102,7 +165,7 @@ Only certain elements are parsed from the [AWS Security Finding Format](https://
 
 #### 2. How are the related compliance controls extracted from the findings in a way that can be individually reported on?
 
-The object shape for the related compliance controls is a nested array of strings underneath the [`Compliance`](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format-attributes.html#asff-compliance) object within the ASFF. Due to the inability for QuickSight to deconstruct a List / Array, it will be iterated through using a Python `for` loop and written to it's own individual object within the overall JSON schema. This will artificially inflate the total amount of findings that are written to a JSON file for the [Finding ID](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format-attributes.html#asff-top-level-attributes) is recorded to provide a unique counter for the breakout of compliance controls within QuickSight. For more information on how I mapped the compliance controls see the [top-level README starting at FAQ#17](https://github.com/jonrau1/ElectricEye#17-at-a-high-level-how-did-you-map-the-electriceye-auditors-into-these-compliance-frameworks).
+The object shape for the related compliance controls is a nested array of strings underneath the [`Compliance`](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format-attributes.html#asff-compliance) object within the ASFF. Due to the inability for QuickSight to deconstruct a List / Array, it will be iterated through using a Python `for` loop and written to its own individual object within the overall JSON schema. This will artificially inflate the total amount of findings that are written to a JSON file for the [Finding ID](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format-attributes.html#asff-top-level-attributes) is recorded to provide a unique counter for the breakout of compliance controls within QuickSight. For more information on how I mapped the compliance controls see the [top-level README starting at FAQ#17](https://github.com/jonrau1/ElectricEye#17-at-a-high-level-how-did-you-map-the-electriceye-auditors-into-these-compliance-frameworks).
 
 #### 3. How long does it take the parse the ElectricEye findings and their compliance controls?
 
@@ -114,7 +177,7 @@ Yes. However, the data preparation of the QuickSight Data Set is directly depend
 
 #### 5. What sort of data preparation for the QuickSight Data Set is done in this Add-on?
 
-Transformation all of the data points in Strings and ensuring that the JSON Keys are properly mapped into Column Names. If you were to create a Data Set direclty from the Data Source the column names are mapped correctly but some data types are not mapped to Strings, for instance the Account ID is transformed into an Integer and the Workflow State and AWs Region are mapped into Geolocation Types (due to their name).
+Transformation all the data points in Strings and ensuring that the JSON Keys are properly mapped into Column Names. If you were to create a Data Set direclty from the Data Source the column names are mapped correctly but some data types are not mapped to Strings, for instance the Account ID is transformed into an Integer and the Workflow State and AWs Region are mapped into Geolocation Types (due to their name).
 
 #### 6. Why can you not create an Analysis?
 
