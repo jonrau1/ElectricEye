@@ -29,19 +29,6 @@ Parameters:
     Description: Name of the package for the initial commit DO NOT include .zip
     Default: codecommit-archive
 Resources:
-  ReportAutomationBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: !Sub 'electriceye-reports-data-${AWS::Region}-${AWS::AccountId}'
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: AES256
   CodeCommitRepo:
     Type: AWS::CodeCommit::Repository
     Properties:
@@ -74,8 +61,8 @@ Resources:
             - s3:GetBucketLocation
             - s3:ListBucket
             Resource:
-              - !Sub 'arn:aws:s3:::${ReportAutomationBucket}'
-              - !Sub 'arn:aws:s3:::${ReportAutomationBucket}/*'
+              - !Sub 'arn:aws:s3:::${InitialCommitBucket}'
+              - !Sub 'arn:aws:s3:::${InitialCommitBucket}/*'
           - Effect: Allow
             Action:
             - ec2:DescribeRegions
@@ -85,10 +72,12 @@ Resources:
             - logs:PutLogEvents
             - quicksight:CreateGroup
             - quicksight:CreateDataSet
+            - quicksight:CreateGroupMembership
             - quicksight:UpdateDataSet
             - quicksight:ListUserGroups
             - quicksight:DescribeUser
             - quicksight:ListUsers
+            - quicksight:PassDataSource
             - quicksight:CreateDataSource
             - quicksight:UpdateDataSource
             - quicksight:DescribeDataSetPermissions
@@ -123,7 +112,7 @@ Resources:
         EnvironmentVariables:
         - Name: QUICKSIGHT_DATASOURCE_BUCKET
           Type: PLAINTEXT
-          Value: !Ref ReportAutomationBucket
+          Value: !Ref InitialCommitBucket
       LogsConfig:
         CloudWatchLogs:
           Status: ENABLED
@@ -158,7 +147,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Name: !Sub '${ElectricEyeReportsSlnName}AutomationRule'
-      Description: !Sub 'Runs ${ElectricEyeReportsSlnName} every 2 weeks - Managed by CloudFormation'
+      Description: !Sub 'Runs ${ElectricEyeReportsSlnName} every ${ReportRefreshRate} - Managed by CloudFormation'
       ScheduleExpression: !Sub 'rate(${ReportRefreshRate})'
       State: ENABLED
       Targets: 

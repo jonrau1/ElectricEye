@@ -1,0 +1,14 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - apt update
+      - pip3 install --upgrade pip
+      - pip3 install boto3
+      - pip3 install awscli
+  build:
+    commands:
+      - echo Executing ElectricEye-Reports script on `date`
+      - python3 ElectricEyeReports.py
+      - echo Completed running ElectricEye-Reports script on `date`

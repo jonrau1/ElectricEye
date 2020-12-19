@@ -14,7 +14,9 @@ This solution will utilize AWS Serverless technologies such as AWS CodeBuild, Am
 
 - An Amazon QuickSight Subscription is setup in the Region you will run this solution. For more information on setting up a Subscription, and the types of Subscriptions, see [here](https://docs.aws.amazon.com/quicksight/latest/user/signing-up.html).
 
-- Access to a S3 Bucket that you can upload a ZIP file (used for CodeCommit Repo creation by [AWS CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codecommit-repository-s3.html)) and JSON files to for this Add-on.
+- Access to a S3 Bucket that you can upload a ZIP file to (used for CodeCommit Repo creation by [AWS CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codecommit-repository-s3.html)) and JSON files to for this Add-on.
+
+- The same S3 Bucket in the previous prerequisite should be Authorized within QuickSight, for more information see [here](https://docs.aws.amazon.com/quicksight/latest/user/troubleshoot-connect-S3.html).
 
 - Access to a workstation / server with the AWS CLI installed and necessary IAM Permissions.
 
@@ -49,9 +51,9 @@ This solution will utilize AWS Serverless technologies such as AWS CodeBuild, Am
 ]
 ```
 
-6. The JSON file is [GZIP'ed](https://www.gzip.org/) and uploaded to Amazon S3 along with an uncompressed [JSON Manifest file](https://docs.aws.amazon.com/quicksight/latest/user/supported-manifest-file-format.html) used by QuickSight to create [Data Sources from S3-hosted data](https://docs.aws.amazon.com/quicksight/latest/user/working-with-data-sources.html).
+6. The JSON file is uploaded to Amazon S3 along with a [JSON Manifest file](https://docs.aws.amazon.com/quicksight/latest/user/supported-manifest-file-format.html) used by QuickSight to create [Data Sources from S3-hosted data](https://docs.aws.amazon.com/quicksight/latest/user/working-with-data-sources.html).
 
-7. A QuickSight Data Source is created from the JSON Manifest which references the GZIP'ed JSON file we created in Step 5.
+7. A QuickSight Data Source is created from the JSON Manifest which references the JSON file we created in Step 5 that contains our extracted ElectricEye findings.
 
 8. A QuickSight Data Set is [prepared](https://docs.aws.amazon.com/quicksight/latest/user/preparing-data.html) from the Data Source in Step 7. This Data Set will perform transformations of the raw JSON file, load it into QuickSight's [SPICE Engine](https://docs.aws.amazon.com/quicksight/latest/user/how-quicksight-works.html), and be used for the creation of an [Analysis](https://docs.aws.amazon.com/quicksight/latest/user/working-with-analyses.html).
 
@@ -85,10 +87,6 @@ aws codebuild start-build \
 4. To ensure the Data Set created succesfully navigate to your QuickSight console and look for the `ElectricEyeComplianceFindingsDataset` Data Set, if you see it, you're good to go!
 
 ![ElectricEye Dataset in the Menu](./screenshots/ElectricEyeDatasetMenu.JPG)
-
-### Running locally
-
-TODO
 
 ## Creating Visualizations
 
@@ -155,7 +153,29 @@ At this point you can choose to configure the visualization as shwon in Steps 5 
 
 ![NIST CSF Stacked Final](./screenshots/nistCsfFinalVis.JPG)
 
-There are much more modifications and configurations that can be done with Visuals, you can also add additional Sheets, create tabular views, and add ML-Backed insights to identify key trends and data source anomalies. In the future, you can consider adding Timestamps (they must be reformatted from the Security Hub IS08601 to a different kind of timestamp for QuickSight) if you wanted to capture anomaly-based trends overtime or measure time-series movement of compliance controls using the Key Performance Indicator (KPI) Visual type. For more information you should also consider looking at various AWS QuickSight Blogs.
+14. To add some basic contextual insights to our data we can use [QuickSight Insights](https://docs.aws.amazon.com/quicksight/latest/user/computational-insights.html) which can range from extremely basic to highly sophisticated [Amazon SageMaker-hosted models](https://docs.aws.amazon.com/quicksight/latest/user/sagemaker-integration.html). To create one select **Add insight** from the dropdown menu under **Add** at the top-left of the UI and select a `Computation type` such as *Top ranked* as shown below.
+
+![New Insight](./screenshots/insightAdd.JPG)
+
+15. To create an Insight like the one below that will identify the Top-3 Resources with failing findings configure the following `Field well` and `Field list` pairs.
+    - **Value**: *Finding ID* - Aggregate this by *Count distinct* as shown in Step 4
+    - **Categories**: *Resource ID*
+
+**Note:** If you have not noticed by now, you can edit the `Title` of a Visual directly from the widget instead of opening up the Configuration Menu.
+
+![Top 3 Insight](./screenshots/insightTop3Raw.JPG)
+
+16. To add a Filter, it is the same workflow as in Steps 12 and 13, create a Filter for *Compliance Status*, uncheck **PASSED** from the `Filter list` and select **Apply**. Your Insight should now change to reflect only failed resources.
+
+17. Insights can be further modified with Narratives, to do so select the **Customize narrative** menu from the Visual dropdown, similar to Step 5 as shown below.
+
+![Custom Narrative Menu](./screenshots/insightCustomizeNarrativeMenu.JPG)
+
+18. You will now be in the [Expression Editor Screen](https://docs.aws.amazon.com/quicksight/latest/user/using-narratives-expression-editor-menus.html) (shown below for this particular Insight) where you can add various computations, mathematical functions, or add plaintext explanations to the Insights. Editing the insight is out-of-scope for this Guide but the narrative can be useful to add with various visualizations to convey key risks or observations.
+
+![Expression Editor](./screenshots/insightNarrativeExprEditor.JPG)
+
+There are much more modifications and configurations that can be done with Visuals, you can also add additional Sheets, create tabular views, and add additional ML-Backed insights or [Autonarratives](https://docs.aws.amazon.com/quicksight/latest/user/narratives-creating.html) to identify key trends and data source anomalies using Natural Language Processing (NLP) and [Random Cut Forest](https://docs.aws.amazon.com/quicksight/latest/user/what-is-random-cut-forest.html) (RCF) algorithms. In the future, you can consider adding Timestamps (they must be reformatted from the Security Hub IS08601 to a different kind of timestamp for QuickSight) if you wanted to capture anomaly-based trends overtime or measure time-series movement of compliance controls using the Key Performance Indicator (KPI) Visual type. For more information you should also consider looking at various AWS QuickSight Blogs.
 
 ## FAQ
 
