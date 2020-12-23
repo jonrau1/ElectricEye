@@ -1,6 +1,6 @@
 # ElectricEye-Reports
 
-ElectricEye-Reports is an add-on that allows you the created detailed business intelligence (BI) reports from ElectricEye findings in Security Hub using [Amazon QuickSight](https://aws.amazon.com/quicksight/), a "...scalable, serverless, embeddable, machine learning-powered business intelligence (BI) service built for the cloud." Using QuickSight, you can create detailed reports that breakdown all of your ElectricEye findings by Severity, Region, Resource Type, as well as breakout by-Compliance Control reporting and further enrich the dataset in this solution with business-context such as Cost Center, Division, Business Owner, and other metadata. With this data you can create visualizations that can be used by a many Personas across Information Security, IT Audit, IT Operations, Product Development, and Risk functions - such as tracking compliance with specific controls, measuring Key Risk Indicators (KRIs), or preparing evidence for a formal audit certification/attestation/examination.
+ElectricEye-Reports is an add-on that allows you the created detailed business intelligence (BI) reports from ElectricEye findings in Security Hub using [Amazon QuickSight](https://aws.amazon.com/quicksight/), a "...scalable, serverless, embeddable, machine learning-powered business intelligence (BI) service built for the cloud." Using QuickSight, you can create detailed reports that breakdown ElectricEye findings by various dimensions such as Compliance Status or Severity, as well as create detailed reports by compliance regime (e.g. NIST CSF or ISO 27001). You can further enrich these reports by joining datasets from your CMDB that can contain business service data about your AWS Accounts to add further granularity and importance to stakeholders. With this data you can create visualizations that can be used by many Personas across Information Security, IT Audit, IT Operations, Product Development, and Risk functions - such as tracking compliance with specific controls, measuring Key Risk Indicators (KRIs), or preparing evidence for a formal audit certification/attestation/examination.
 
 ![I like Graphs](./screenshots/CrazyCharts.gif)
 
@@ -38,15 +38,17 @@ This solution will utilize AWS Serverless technologies such as AWS CodeBuild, Am
 [
   {
     "Finding Type": "Software and Configuration Checks/AWS Security Best Practices",
-    "Account ID": "0000000",
+    "Finding ID": "123456789101/shield-adv-subscription-auto-renew-check",
+    "Account ID": "123456789101",
+    "Finding Timestamp": "2020-12-19 00:49:05",
     "Severity": "INFORMATIONAL",
     "Title": "[ShieldAdvanced.8] Shield Advanced subscription should be set to auto-renew",
     "Resource Type": "AwsAccount",
-    "Resource ID": "AWS::::Account:0000000",
+    "Resource ID": "AWS::::Account:123456789101",
     "Region": "us-east-1",
     "Compliance Status": "PASSED",
     "Workflow State": "RESOLVED",
-    "Compliance Control": "NIST CSF ID.AM-2"
+    "Compliance Control": "NIST SP 800-53 CM-8"
   }
 ]
 ```
