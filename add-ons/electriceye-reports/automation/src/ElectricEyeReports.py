@@ -2,6 +2,7 @@ import os
 import boto3
 import json
 import botocore
+from datetime import datetime
 
 # Import Boto3 Clients
 sts = boto3.client('sts')
@@ -14,12 +15,12 @@ awsAccountId = sts.get_caller_identity()['Account']
 awsRegion = os.environ['AWS_REGION']
 reportBucket = os.environ['QUICKSIGHT_DATASOURCE_BUCKET']
 groupName = 'ElectricEyeReports'
-dataSourceName = 'ElectricEyeComplianceFindings'
+dataSourceName = 'ElectricEyeComplianceFindingsV2'
 
 # Create empty lists for processing of Regions
 regionList = []
-findingsJsonFileName = 'electriceye-qs-findings.json'
-manifestJsonFileName = 'electriceye-qs-manifest.json'
+findingsJsonFileName = 'electriceye-qs-findingsV2.json'
+manifestJsonFileName = 'electriceye-qs-manifestV2.json'
 
 # Loop through all Opted-In AWS Regions and write
 # To a Global list for the Security Hub pagination
@@ -66,6 +67,8 @@ def parse_securityhub_findings():
                 # did not have any ComplianceRequirements for some reason (or to use for other Products)
                 # we do not include the finding date due to an unsupported ISO Format in QS...
                 awsAccountId = str(f['AwsAccountId'])
+                updatedAt = str(f['UpdatedAt']).replace('Z', '+00:00')
+                fromIso = datetime.fromisoformat(updatedAt)
                 findingId = str(f['Id'])
                 findingType = str(f['Types'][0])
                 severityLabel = str(f['Severity']['Label'])
@@ -83,6 +86,7 @@ def parse_securityhub_findings():
                             'Finding Type': findingType,
                             'Finding ID': findingId,
                             'Account ID': awsAccountId,
+                            'Finding Timestamp': str(fromIso).split('.')[0],
                             'Severity': severityLabel,
                             'Title': findingTitle,
                             'Resource Type': resourceType,
@@ -100,6 +104,7 @@ def parse_securityhub_findings():
                                 'Finding Type': findingType,
                                 'Finding ID': findingId,
                                 'Account ID': awsAccountId,
+                                'Finding Timestamp': str(fromIso).split('.')[0],
                                 'Severity': severityLabel,
                                 'Title': findingTitle,
                                 'Resource Type': resourceType,
@@ -116,6 +121,7 @@ def parse_securityhub_findings():
                         'Finding Type': findingType,
                         'Finding ID': findingId,
                         'Account ID': awsAccountId,
+                        'Finding Timestamp': str(fromIso).split('.')[0],
                         'Severity': severityLabel,
                         'Title': findingTitle,
                         'Resource Type': resourceType,
@@ -278,7 +284,7 @@ def create_quicksight_datasource():
 
 '''
 It is important to note that many of the values within the Dataset Creation are hard-coded
-and directly dependent on the "Shape" of the JSON Data. If the Order or Content of the JSON
+and directly dependent on the 'Shape' of the JSON Data. If the Order or Content of the JSON
 file created from parsing ElectricEye Findings from Security Hub is changed this Dataset creation
 will likely either fail or create the wrong mapping of fields from the JSON Columns. Modify the above
 Datasource / JSON file creation AT YOUR OWN RISK!
@@ -307,48 +313,52 @@ def create_quicksight_dataset():
                         },
                         'InputColumns': [
                             {
-                                'Name': 'ColumnId-1',
-                                'Type': 'STRING'
+                            'Name': 'ColumnId-1',
+                            'Type': 'STRING'
                             },
                             {
-                                'Name': 'ColumnId-2',
-                                'Type': 'STRING'
+                            'Name': 'ColumnId-2',
+                            'Type': 'STRING'
                             },
                             {
-                                'Name': 'ColumnId-3',
-                                'Type': 'STRING'
+                            'Name': 'ColumnId-3',
+                            'Type': 'STRING'
                             },
                             {
-                                'Name': 'ColumnId-4',
-                                'Type': 'STRING'
+                            'Name': 'ColumnId-4',
+                            'Type': 'STRING'
                             },
                             {
-                                'Name': 'ColumnId-5',
-                                'Type': 'STRING'
+                            'Name': 'ColumnId-5',
+                            'Type': 'STRING'
                             },
                             {
-                                'Name': 'ColumnId-6',
-                                'Type': 'STRING'
+                            'Name': 'ColumnId-6',
+                            'Type': 'STRING'
                             },
                             {
-                                'Name': 'ColumnId-7',
-                                'Type': 'STRING'
+                            'Name': 'ColumnId-7',
+                            'Type': 'STRING'
                             },
                             {
-                                'Name': 'ColumnId-8',
-                                'Type': 'STRING'
+                            'Name': 'ColumnId-8',
+                            'Type': 'STRING'
                             },
                             {
-                                'Name': 'ColumnId-9',
-                                'Type': 'STRING'
+                            'Name': 'ColumnId-9',
+                            'Type': 'STRING'
                             },
                             {
-                                'Name': 'ColumnId-10',
-                                'Type': 'STRING'
+                            'Name': 'ColumnId-10',
+                            'Type': 'STRING'
                             },
                             {
-                                'Name': 'ColumnId-11',
-                                'Type': 'STRING'
+                            'Name': 'ColumnId-11',
+                            'Type': 'STRING'
+                            },
+                            {
+                            'Name': 'ColumnId-12',
+                            'Type': 'STRING'
                             }
                         ]
                     }
@@ -356,94 +366,108 @@ def create_quicksight_dataset():
             },
             LogicalTableMap={
                 's3PhysicalTable': {
-                    'Alias': 'Group 1',
-                    'DataTransforms': [
-                        {
-                            'RenameColumnOperation': {
-                            'ColumnName': 'ColumnId-2',
-                            'NewColumnName': 'Finding ID'
-                            }
-                        },
-                        {
-                            'RenameColumnOperation': {
-                            'ColumnName': 'ColumnId-3',
-                            'NewColumnName': 'Account ID'
-                            }
-                        },
-                        {
-                            'RenameColumnOperation': {
-                            'ColumnName': 'ColumnId-1',
-                            'NewColumnName': 'Finding Type'
-                            }
-                        },
-                        {
-                            'RenameColumnOperation': {
-                            'ColumnName': 'ColumnId-6',
-                            'NewColumnName': 'Resource Type'
-                            }
-                        },
-                        {
-                            'RenameColumnOperation': {
-                            'ColumnName': 'ColumnId-11',
-                            'NewColumnName': 'Compliance Control'
-                            }
-                        },
-                        {
-                            'RenameColumnOperation': {
-                            'ColumnName': 'ColumnId-7',
-                            'NewColumnName': 'Resource ID'
-                            }
-                        },
-                        {
-                            'RenameColumnOperation': {
-                            'ColumnName': 'ColumnId-4',
-                            'NewColumnName': 'Severity'
-                            }
-                        },
-                        {
-                            'RenameColumnOperation': {
-                            'ColumnName': 'ColumnId-5',
-                            'NewColumnName': 'Title'
-                            }
-                        },
-                        {
-                            'RenameColumnOperation': {
-                            'ColumnName': 'ColumnId-10',
-                            'NewColumnName': 'Workflow State'
-                            }
-                        },
-                        {
-                            'RenameColumnOperation': {
-                            'ColumnName': 'ColumnId-8',
-                            'NewColumnName': 'Region'
-                            }
-                        },
-                        {
-                            'RenameColumnOperation': {
-                            'ColumnName': 'ColumnId-9',
-                            'NewColumnName': 'Compliance Status'
-                            }
-                        },
-                        {
-                            'ProjectOperation': {
+                'Alias': 'Group 1',
+                'DataTransforms': [
+                    {
+                        'RenameColumnOperation': {
+                        'ColumnName': 'ColumnId-2',
+                        'NewColumnName': 'Finding ID'
+                        }
+                    },
+                    {
+                        'RenameColumnOperation': {
+                        'ColumnName': 'ColumnId-3',
+                        'NewColumnName': 'Account ID'
+                        }
+                    },
+                    {
+                        'RenameColumnOperation': {
+                        'ColumnName': 'ColumnId-1',
+                        'NewColumnName': 'Finding Type'
+                        }
+                    },
+                    {
+                        'RenameColumnOperation': {
+                        'ColumnName': 'ColumnId-12',
+                        'NewColumnName': 'Compliance Control'
+                        }
+                    },
+                    {
+                        'RenameColumnOperation': {
+                        'ColumnName': 'ColumnId-6',
+                        'NewColumnName': 'Title'
+                        }
+                    },
+                    {
+                        'RenameColumnOperation': {
+                        'ColumnName': 'ColumnId-11',
+                        'NewColumnName': 'Workflow State'
+                        }
+                    },
+                    {
+                        'RenameColumnOperation': {
+                        'ColumnName': 'ColumnId-7',
+                        'NewColumnName': 'Resource Type'
+                        }
+                    },
+                    {
+                        'RenameColumnOperation': {
+                        'ColumnName': 'ColumnId-4',
+                        'NewColumnName': 'Finding Timestamp'
+                        }
+                    },
+                    {
+                        'RenameColumnOperation': {
+                        'ColumnName': 'ColumnId-5',
+                        'NewColumnName': 'Severity'
+                        }
+                    },
+                    {
+                        'RenameColumnOperation': {
+                        'ColumnName': 'ColumnId-10',
+                        'NewColumnName': 'Compliance Status'
+                        }
+                    },
+                    {
+                        'RenameColumnOperation': {
+                        'ColumnName': 'ColumnId-8',
+                        'NewColumnName': 'Resource ID'
+                        }
+                    },
+                    {
+                        'RenameColumnOperation': {
+                        'ColumnName': 'ColumnId-9',
+                        'NewColumnName': 'Region'
+                        }
+                    },
+                    {
+                        'CastColumnTypeOperation': {
+                        'ColumnName': 'Finding Timestamp',
+                        'NewColumnType': 'DATETIME',
+                        'Format': 'yyyy-MM-dd HH:mm:ss'
+                        }
+                    },
+                    {
+                        'ProjectOperation': {
                             'ProjectedColumns': [
-                                'Compliance Status',
                                 'Region',
+                                'Resource ID',
+                                'Compliance Status',
+                                'Severity',
+                                'Finding Timestamp',
+                                'Resource Type',
                                 'Workflow State',
                                 'Title',
-                                'Severity',
-                                'Resource ID',
                                 'Compliance Control',
-                                'Resource Type',
                                 'Finding Type',
                                 'Account ID',
                                 'Finding ID'
                             ]
-                            }
                         }
-                    ],
-                    'Source': {
-                        'PhysicalTableId': 's3PhysicalTable'
+                    }
+                ],
+                'Source': {
+                    'PhysicalTableId': 's3PhysicalTable'
                     }
                 }
             },
