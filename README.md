@@ -156,11 +156,11 @@ Before starting [attach this IAM policy](https://github.com/jonrau1/ElectricEye/
 
 In this stage we will install and deploy the ElectricEye infrastructure via Terraform. To securely backup your state file, you should explore the usage of a [S3 backend](https://www.terraform.io/docs/backends/index.html), this is also described in this [AWS Security Blog post](https://aws.amazon.com/blogs/security/how-use-ci-cd-deploy-configure-aws-security-services-terraform/).
 
-1. Install the dependencies for Terraform. **Note:** these configuration files are written for `v 0.11.x` and will not work with `v 0.12.x` Terraform installations and rewriting for that spec is not in the immediate roadmap.
+1. Install the dependencies for Terraform.
 
 ```bash
-wget https://releases.hashicorp.com/terraform/0.11.14/terraform_0.11.14_linux_amd64.zip
-unzip terraform_0.11.14_linux_amd64.zip
+wget https://releases.hashicorp.com/terraform/0.14.4/terraform_0.14.4_linux_amd64.zip
+unzip terraform_0.14.4_linux_amd64.zip
 sudo mv terraform /usr/local/bin/
 terraform --version
 ```
