@@ -419,7 +419,7 @@ resource "aws_cloudwatch_event_target" "Electric_Eye_Scheduled_Scans" {
       platform_version    = "LATEST"
       network_configuration {
         subnets         = [element(aws_subnet.Electric_Eye_Public_Subnets[*].id, 0)]
-        security_groups = ["${aws_security_group.Electric_Eye_Sec_Group.id}"]
+        security_groups = [aws_security_group.Electric_Eye_Sec_Group.id]
     }
   }
 }
