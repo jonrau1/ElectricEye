@@ -14,5 +14,5 @@
 # If not, see https://github.com/jonrau1/ElectricEye/blob/master/LICENSE.
 
 provider "aws" {
-  region = "${var.AWS_Region}"
+  region = var.AWS_Region
 }

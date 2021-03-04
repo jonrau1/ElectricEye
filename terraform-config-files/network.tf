@@ -62,7 +62,7 @@ resource "aws_vpc_endpoint" "Electric_Eye_Interface_Interface_ECR-DKR" {
   service_name        = "com.amazonaws.${var.AWS_Region}.ecr.dkr"
   vpc_endpoint_type   = "Interface"
   subnet_ids          = aws_subnet.Electric_Eye_Public_Subnets[*].id
-  security_group_ids  = ["${aws_security_group.Electric_Eye_Sec_Group.id}"]
+  security_group_ids  = [aws_security_group.Electric_Eye_Sec_Group.id]
   private_dns_enabled = true
   tags = {
       Name = "${var.Electric_Eye_VPC_Name_Tag}-ECR-DKR-Endpoint"
