@@ -42,12 +42,9 @@ def firehose_delivery_stream_encryption_check(
         firehoseName = str(deliverystreams)
         try:
             response = firehose.describe_delivery_stream(DeliveryStreamName=firehoseName)
-            firehoseArn = str(response["DeliveryStreamARN"])
-            firehoseEncryptionCheck = str(
-                response["DeliveryStreamDescription"]["DeliveryStreamEncryptionConfiguration"][
-                    "Status"
-                ]
-            )
+            # Pull ARN and check for Encryption
+            firehoseArn = str(response["DeliveryStreamDescription"]["DeliveryStreamARN"])
+            firehoseEncryptionCheck = str(response["DeliveryStreamDescription"]["DeliveryStreamEncryptionConfiguration"]["Status"])
             iso8601Time = (
                 datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
