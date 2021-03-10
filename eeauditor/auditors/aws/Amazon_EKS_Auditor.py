@@ -179,7 +179,7 @@ def eks_latest_k8s_version_check(
             iso8601Time = (
                 datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
-            if k8sVersionCheck != "1.17" or "1.18":
+            if k8sVersionCheck != "1.18" or "1.19":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": clusterArn + "/eks-latest-k8s-version-check",

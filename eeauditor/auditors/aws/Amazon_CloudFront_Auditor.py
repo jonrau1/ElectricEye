@@ -16,25 +16,24 @@
 import datetime
 from dateutil import parser
 import uuid
-
 import boto3
-
 from check_register import CheckRegister, accumulate_paged_results
 
 registry = CheckRegister()
 cloudfront = boto3.client("cloudfront")
 
+paginator = cloudfront.get_paginator("list_distributions")
+response_iterator = paginator.paginate()
+results = {"DistributionList": {"Items": []}}
+for page in response_iterator:
+    page_vals = page["DistributionList"].get("Items", [])
+    results["DistributionList"]["Items"].extend(iter(page_vals))
 
 @registry.register_check("cloudfront")
 def cloudfront_active_trusted_signers_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
-    paginator = cloudfront.get_paginator("list_distributions")
-    response_iterator = paginator.paginate()
-    results = {"DistributionList": {"Items": []}}
-    for page in response_iterator:
-        page_vals = page["DistributionList"].get("Items", [])
-        results["DistributionList"]["Items"].extend(iter(page_vals))
+    
     iso8601Time = (
         datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     )
@@ -42,9 +41,7 @@ def cloudfront_active_trusted_signers_check(
         distributionId = distributionItem["Id"]
         distribution = cloudfront.get_distribution(Id=distributionId)
         try:
-            activeTrustedSigners = distribution["Distribution"]["ActiveTrustedSigners"][
-                "Enabled"
-            ]
+            activeTrustedSigners = distribution["Distribution"]["ActiveTrustedSigners"]["Enabled"]
             distributionArn = distribution["Distribution"]["ARN"]
             generatorUuid = str(uuid.uuid4())
             if not activeTrustedSigners:
