@@ -20,14 +20,16 @@ from check_register import CheckRegister
 registry = CheckRegister()
 # import boto3 clients
 workspaces = boto3.client("workspaces")
+
 # loop through workspaces
+
+
 def describe_workspaces(cache):
     response = cache.get("describe_workspaces", [])
     if response:
         return response
     cache["describe_workspaces"] = workspaces.describe_workspaces()
     return cache["describe_workspaces"]
-    myWorkSpaces = response["describe_workspaces"]
 
 
 @registry.register_check("workspaces")
@@ -35,15 +37,16 @@ def workspaces_user_volume_encryption_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     work = describe_workspaces(cache=cache)
-    myWorkSpaces = work.get("describe_workspaces", [])
-    for workspace in myWorkSpaces:
+    for workspace in work["Workspaces"]:
         workspaceId = str(workspace["WorkspaceId"])
         workspaceArn = (
             f"arn:{awsPartition}:workspaces:{awsRegion}:{awsAccountId}:workspace/{workspaceId}"
         )
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        iso8601Time = datetime.datetime.utcnow().replace(
+            tzinfo=datetime.timezone.utc).isoformat()
         try:
-            userVolumeEncryptionCheck = str(workspace["UserVolumeEncryptionEnabled"])
+            userVolumeEncryptionCheck = str(
+                workspace["UserVolumeEncryptionEnabled"])
             if userVolumeEncryptionCheck == "False":
                 finding = {
                     "SchemaVersion": "2018-10-08",
@@ -155,15 +158,16 @@ def workspaces_root_volume_encryption_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     work = describe_workspaces(cache=cache)
-    myWorkSpaces = work.get("describe_workspaces", [])
-    for workspace in myWorkSpaces:
+    for workspace in work["Workspaces"]:
         workspaceId = str(workspace["WorkspaceId"])
         workspaceArn = (
             f"arn:{awsPartition}:workspaces:{awsRegion}:{awsAccountId}:workspace/{workspaceId}"
         )
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        iso8601Time = datetime.datetime.utcnow().replace(
+            tzinfo=datetime.timezone.utc).isoformat()
         try:
-            rootVolumeEncryptionCheck = str(workspace["RootVolumeEncryptionEnabled"])
+            rootVolumeEncryptionCheck = str(
+                workspace["RootVolumeEncryptionEnabled"])
             if rootVolumeEncryptionCheck == "False":
                 finding = {
                     "SchemaVersion": "2018-10-08",
@@ -180,7 +184,7 @@ def workspaces_root_volume_encryption_check(
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "HIGH"},
                     "Confidence": 99,
-                    "Title": "[WorkSpaces.1] WorkSpaces should have root volume encryption enabled",
+                    "Title": "[WorkSpaces.2] WorkSpaces should have root volume encryption enabled",
                     "Description": "Workspace "
                     + workspaceId
                     + " does not have root volume encryption enabled. Refer to the remediation instructions to remediate this behavior",
@@ -231,7 +235,7 @@ def workspaces_root_volume_encryption_check(
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
-                    "Title": "[WorkSpaces.1] WorkSpaces should have root volume encryption enabled",
+                    "Title": "[WorkSpaces.2] WorkSpaces should have root volume encryption enabled",
                     "Description": "Workspace "
                     + workspaceId
                     + " does not have root volume encryption enabled.",
@@ -275,14 +279,14 @@ def workspaces_running_mode_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     work = describe_workspaces(cache=cache)
-    myWorkSpaces = work.get("describe_workspaces", [])
-    for workspace in myWorkSpaces:
+    for workspace in work["Workspaces"]:
         workspaceId = str(workspace["WorkspaceId"])
         workspaceArn = (
             f"arn:{awsPartition}:workspaces:{awsRegion}:{awsAccountId}:workspace/{workspaceId}"
         )
         runningModeCheck = str(workspace["WorkspaceProperties"]["RunningMode"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        iso8601Time = datetime.datetime.utcnow().replace(
+            tzinfo=datetime.timezone.utc).isoformat()
         if runningModeCheck != "AUTO_STOP":
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -393,8 +397,10 @@ def workspaces_directory_default_internet_check(
     for directory in response["Directories"]:
         workspacesDirectoryId = str(directory["DirectoryId"])
         workspacesDirectoryArn = f"arn:{awsPartition}:workspaces:{awsRegion}:{awsAccountId}:directory/{workspacesDirectoryId}"
-        internetAccessCheck = str(directory["WorkspaceCreationProperties"]["EnableInternetAccess"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        internetAccessCheck = str(
+            directory["WorkspaceCreationProperties"]["EnableInternetAccess"])
+        iso8601Time = datetime.datetime.utcnow().replace(
+            tzinfo=datetime.timezone.utc).isoformat()
         if internetAccessCheck == "True":
             finding = {
                 "SchemaVersion": "2018-10-08",

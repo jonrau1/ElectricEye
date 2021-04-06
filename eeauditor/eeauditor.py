@@ -74,7 +74,8 @@ class EEAuditor(object):
             Path=f"/aws/service/global-infrastructure/services/{service}/regions",
             PaginationConfig={"MaxItems": 1000, "PageSize": 10},
         )
-        results = accumulate_paged_results(page_iterator=response_iterator, key="Parameters")
+        results = accumulate_paged_results(
+            page_iterator=response_iterator, key="Parameters")
         values = []
         for parameter in results["Parameters"]:
             values.append(parameter["Value"])
@@ -85,9 +86,10 @@ class EEAuditor(object):
             if self.awsRegion not in self.get_regions(service_name):
                 print(f"AWS region {self.awsRegion} not supported for {service_name}")
                 next
-            # a dictionary to be used by checks that are part of the same service
-            auditor_cache = {}
+
             for check_name, check in check_list.items():
+                # clearing cache for each control whithin a auditor
+                auditor_cache = {}
                 # if a specific check is requested, only run that one check
                 if (
                     not requested_check_name
