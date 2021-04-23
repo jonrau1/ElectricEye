@@ -26,6 +26,18 @@ rds = boto3.client("rds")
 efs = boto3.client("efs")
 backup = boto3.client("backup")
 
+# loop through DynamoDB tables
+
+
+def paginate(cache):
+    response = cache.get("paginate")
+    if response:
+        return response
+    get_paginators = dynamodb.get_paginator('list_tables')
+    if get_paginators:
+        cache["paginate"] = get_paginators.paginate()
+        return cache["paginate"]
+
 
 @registry.register_check("backup")
 def volume_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -37,10 +49,12 @@ def volume_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
     for volumes in myEbsVolumes:
         volumeId = str(volumes["VolumeId"])
         volumeArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:volume/{volumeId}"
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        iso8601Time = datetime.datetime.utcnow().replace(
+            tzinfo=datetime.timezone.utc).isoformat()
         try:
             # check if ebs volumes are backed up
-            response = backup.describe_protected_resource(ResourceArn=volumeArn)
+            response = backup.describe_protected_resource(
+                ResourceArn=volumeArn)
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": volumeArn + "/ebs-backups",
@@ -169,7 +183,8 @@ def ec2_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
             )
             try:
                 # check if ec2 instances are backed up
-                response = backup.describe_protected_resource(ResourceArn=instanceArn)
+                response = backup.describe_protected_resource(
+                    ResourceArn=instanceArn)
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": instanceArn + "/ec2-backups",
@@ -293,122 +308,123 @@ def ec2_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
 
 @registry.register_check("dynamodb")
 def ddb_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    # loop through dynamodb tables
-    response = dynamodb.list_tables()
-    myDdbTables = response["TableNames"]
-    for tables in myDdbTables:
-        response = dynamodb.describe_table(TableName=tables)
-        tableArn = str(response["Table"]["TableArn"])
-        tableName = str(response["Table"]["TableName"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        try:
-            # check if ddb tables are backed up
-            response = backup.describe_protected_resource(ResourceArn=tableArn)
-            finding = {
-                "SchemaVersion": "2018-10-08",
-                "Id": tableArn + "/dynamodb-backups",
-                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": tableArn,
-                "AwsAccountId": awsAccountId,
-                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                "FirstObservedAt": iso8601Time,
-                "CreatedAt": iso8601Time,
-                "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "INFORMATIONAL"},
-                "Confidence": 99,
-                "Title": "[Backup.3] DynamoDB tables should be protected by AWS Backup",
-                "Description": "DynamoDB table " + tableName + " is protected by AWS Backup.",
-                "Remediation": {
-                    "Recommendation": {
-                        "Text": "For information on creating scheduled backups refer to the Assign Resources to a Backup Plan section of the AWS Backup Developer Guide",
-                        "Url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/create-a-scheduled-backup.html#assign-resources-to-plan",
-                    }
-                },
-                "ProductFields": {"Product Name": "ElectricEye"},
-                "Resources": [
-                    {
-                        "Type": "AwsDynamoDbTable",
-                        "Id": tableArn,
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
-                        "Details": {"Other": {"tableName": tableName}},
-                    }
-                ],
-                "Compliance": {
-                    "Status": "PASSED",
-                    "RelatedRequirements": [
-                        "NIST CSF ID.BE-5",
-                        "NIST CSF PR.PT-5",
-                        "NIST SP 800-53 CP-2",
-                        "NIST SP 800-53 CP-11",
-                        "NIST SP 800-53 SA-13",
-                        "NIST SP 800-53 SA14",
-                        "AICPA TSC CC3.1",
-                        "AICPA TSC A1.2",
-                        "ISO 27001:2013 A.11.1.4",
-                        "ISO 27001:2013 A.17.1.1",
-                        "ISO 27001:2013 A.17.1.2",
-                        "ISO 27001:2013 A.17.2.1",
+    iterator = paginate(cache=cache)
+    for page in iterator:
+        for table in page['TableNames']:
+            response = dynamodb.describe_table(TableName=table)
+            tableArn = str(response["Table"]["TableArn"])
+            tableName = str(response["Table"]["TableName"])
+            iso8601Time = datetime.datetime.utcnow().replace(
+                tzinfo=datetime.timezone.utc).isoformat()
+            try:
+                # check if ddb tables are backed up
+                response = backup.describe_protected_resource(
+                    ResourceArn=tableArn)
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": tableArn + "/dynamodb-backups",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": tableArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Confidence": 99,
+                    "Title": "[Backup.3] DynamoDB tables should be protected by AWS Backup",
+                    "Description": "DynamoDB table " + tableName + " is protected by AWS Backup.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For information on creating scheduled backups refer to the Assign Resources to a Backup Plan section of the AWS Backup Developer Guide",
+                            "Url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/create-a-scheduled-backup.html#assign-resources-to-plan",
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsDynamoDbTable",
+                            "Id": tableArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {"Other": {"tableName": tableName}},
+                        }
                     ],
-                },
-                "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
-            }
-            yield finding
-        except:
-            finding = {
-                "SchemaVersion": "2018-10-08",
-                "Id": tableArn + "/dynamodb-backups",
-                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": tableArn,
-                "AwsAccountId": awsAccountId,
-                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                "FirstObservedAt": iso8601Time,
-                "CreatedAt": iso8601Time,
-                "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "MEDIUM"},
-                "Confidence": 99,
-                "Title": "[Backup.3] DynamoDB tables should be protected by AWS Backup",
-                "Description": "DynamoDB table "
-                + tableName
-                + " is not protected by AWS Backup. Refer to the remediation instructions for information on ensuring disaster recovery and business continuity requirements are fulfilled for DynamoDB tables",
-                "Remediation": {
-                    "Recommendation": {
-                        "Text": "For information on creating scheduled backups refer to the Assign Resources to a Backup Plan section of the AWS Backup Developer Guide",
-                        "Url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/create-a-scheduled-backup.html#assign-resources-to-plan",
-                    }
-                },
-                "ProductFields": {"Product Name": "ElectricEye"},
-                "Resources": [
-                    {
-                        "Type": "AwsDynamoDbTable",
-                        "Id": tableArn,
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
-                        "Details": {"Other": {"tableName": tableName}},
-                    }
-                ],
-                "Compliance": {
-                    "Status": "FAILED",
-                    "RelatedRequirements": [
-                        "NIST CSF ID.BE-5",
-                        "NIST CSF PR.PT-5",
-                        "NIST SP 800-53 CP-2",
-                        "NIST SP 800-53 CP-11",
-                        "NIST SP 800-53 SA-13",
-                        "NIST SP 800-53 SA14",
-                        "AICPA TSC CC3.1",
-                        "AICPA TSC A1.2",
-                        "ISO 27001:2013 A.11.1.4",
-                        "ISO 27001:2013 A.17.1.1",
-                        "ISO 27001:2013 A.17.1.2",
-                        "ISO 27001:2013 A.17.2.1",
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF ID.BE-5",
+                            "NIST CSF PR.PT-5",
+                            "NIST SP 800-53 CP-2",
+                            "NIST SP 800-53 CP-11",
+                            "NIST SP 800-53 SA-13",
+                            "NIST SP 800-53 SA14",
+                            "AICPA TSC CC3.1",
+                            "AICPA TSC A1.2",
+                            "ISO 27001:2013 A.11.1.4",
+                            "ISO 27001:2013 A.17.1.1",
+                            "ISO 27001:2013 A.17.1.2",
+                            "ISO 27001:2013 A.17.2.1",
+                        ],
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED",
+                }
+                yield finding
+            except:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": tableArn + "/dynamodb-backups",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": tableArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "MEDIUM"},
+                    "Confidence": 99,
+                    "Title": "[Backup.3] DynamoDB tables should be protected by AWS Backup",
+                    "Description": "DynamoDB table "
+                    + tableName
+                    + " is not protected by AWS Backup. Refer to the remediation instructions for information on ensuring disaster recovery and business continuity requirements are fulfilled for DynamoDB tables",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For information on creating scheduled backups refer to the Assign Resources to a Backup Plan section of the AWS Backup Developer Guide",
+                            "Url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/create-a-scheduled-backup.html#assign-resources-to-plan",
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsDynamoDbTable",
+                            "Id": tableArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {"Other": {"tableName": tableName}},
+                        }
                     ],
-                },
-                "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
-            }
-            yield finding
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF ID.BE-5",
+                            "NIST CSF PR.PT-5",
+                            "NIST SP 800-53 CP-2",
+                            "NIST SP 800-53 CP-11",
+                            "NIST SP 800-53 SA-13",
+                            "NIST SP 800-53 SA14",
+                            "AICPA TSC CC3.1",
+                            "AICPA TSC A1.2",
+                            "ISO 27001:2013 A.11.1.4",
+                            "ISO 27001:2013 A.17.1.1",
+                            "ISO 27001:2013 A.17.1.2",
+                            "ISO 27001:2013 A.17.2.1",
+                        ],
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE",
+                }
+                yield finding
 
 
 @registry.register_check("backup")
@@ -441,7 +457,8 @@ def reds_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
         dbId = str(databases["DBInstanceIdentifier"])
         dbEngine = str(databases["Engine"])
         dbEngineVersion = str(databases["EngineVersion"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        iso8601Time = datetime.datetime.utcnow().replace(
+            tzinfo=datetime.timezone.utc).isoformat()
         try:
             # check if db instances are backed up
             response = backup.describe_protected_resource(ResourceArn=dbArn)
@@ -572,10 +589,12 @@ def efs_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
     for filesys in myFileSys:
         fileSysId = str(filesys["FileSystemId"])
         fileSysArn = f"arn:{awsPartition}:elasticfilesystem:{awsRegion}:{awsAccountId}:file-system/{fileSysId}"
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        iso8601Time = datetime.datetime.utcnow().replace(
+            tzinfo=datetime.timezone.utc).isoformat()
         try:
             # check if db instances are backed up
-            response = backup.describe_protected_resource(ResourceArn=fileSysArn)
+            response = backup.describe_protected_resource(
+                ResourceArn=fileSysArn)
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": fileSysArn + "/efs-backups",
@@ -681,4 +700,3 @@ def efs_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                 "RecordState": "ACTIVE",
             }
             yield finding
-
