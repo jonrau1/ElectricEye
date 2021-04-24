@@ -283,3 +283,130 @@ def function_tracing_check(cache: dict, awsAccountId: str, awsRegion: str, awsPa
                         "RecordState": "ACTIVE"
                     }
                     yield finding
+
+@registry.register_check("lambda")
+def function_code_signer_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    iterator = paginator.paginate()
+    for page in iterator:
+        iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        # create env vars
+        for function in page["Functions"]:
+            functionName = str(function["FunctionName"])
+            lambdaArn = str(function["FunctionArn"])
+            # This is a passing check
+            try:
+                signingJobArn = str(function["SigningJobArn"])
+                finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": lambdaArn + "/lambda-code-signing-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": lambdaArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "INFORMATIONAL"},
+                        "Confidence": 99,
+                        "Title": "[Lambda.3] Lambda functions should use code signing from AWS Signer to ensure trusted code runs in a Function",
+                        "Description": "Lambda function "
+                        + functionName
+                        + " has an AWS code signing job configured.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "To configure code signing for your Functions refer to the UConfiguring code signing for AWS Lambda section of the Amazon Lambda Developer Guide",
+                                "Url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-codesigning.html"
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsLambdaFunction",
+                                "Id": lambdaArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "AwsLambdaFunction": {
+                                    "FunctionName": functionName
+                                },
+                                "Other": {
+                                    "SigningJobArn": signingJobArn
+                                }
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "PASSED",
+                            "RelatedRequirements": [
+                                "NIST CSF ID.SC-2",
+                                "NIST SP 800-53 RA-2",
+                                "NIST SP 800-53 RA-3",
+                                "NIST SP 800-53 PM-9",
+                                "NIST SP 800-53 SA-12",
+                                "NIST SP 800-53 SA-14",
+                                "NIST SP 800-53 SA-15",
+                                "AICPA TSC CC7.2",
+                                "ISO 27001:2013 A.15.2.1",
+                                "ISO 27001:2013 A.15.2.2",
+                            ],
+                        },
+                        "Workflow": {"Status": "RESOLVED"},
+                        "RecordState": "ARCHIVED",
+                    }
+                    yield finding
+            else:
+                signingJobArn = 'NO_CODE_SIGNING_CONFIGURED'
+                finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": lambdaArn + "/lambda-code-signing-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": lambdaArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "MEDIUM"},
+                        "Confidence": 99,
+                        "Title": "[Lambda.3] Lambda functions should use code signing from AWS Signer to ensure trusted code runs in a Function",
+                        "Description": "Lambda function "
+                        + functionName
+                        + " does not have an AWS code signing job configured. Code signing for AWS Lambda helps to ensure that only trusted code runs in your Lambda functions. When you enable code signing for a function, Lambda checks every code deployment and verifies that the code package is signed by a trusted source. Refer to the remediation instructions if this configuration is not intended.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "To configure code signing for your Functions refer to the UConfiguring code signing for AWS Lambda section of the Amazon Lambda Developer Guide",
+                                "Url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-codesigning.html"
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsLambdaFunction",
+                                "Id": lambdaArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "AwsLambdaFunction": {
+                                    "FunctionName": functionName
+                                },
+                                "Other": {
+                                    "SigningJobArn": signingJobArn
+                                }
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "FAILED",
+                            "RelatedRequirements": [
+                                "NIST CSF ID.SC-2",
+                                "NIST SP 800-53 RA-2",
+                                "NIST SP 800-53 RA-3",
+                                "NIST SP 800-53 PM-9",
+                                "NIST SP 800-53 SA-12",
+                                "NIST SP 800-53 SA-14",
+                                "NIST SP 800-53 SA-15",
+                                "AICPA TSC CC7.2",
+                                "ISO 27001:2013 A.15.2.1",
+                                "ISO 27001:2013 A.15.2.2",
+                            ],
+                        },
+                        "Workflow": {"Status": "NEW"},
+                        "RecordState": "ACTIVE",
+                    }
+                    yield finding
