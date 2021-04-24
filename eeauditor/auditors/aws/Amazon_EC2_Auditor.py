@@ -121,7 +121,7 @@ def ec2_imdsv2_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                                             "ISO 27001:2013 A.9.4.1",
                                             "ISO 27001:2013 A.9.4.4",
                                             "ISO 27001:2013 A.9.4.5",
-                                        ],
+                                        ]
                                     },
                                     "Workflow": {"Status": "NEW"},
                                     "RecordState": "ACTIVE",
@@ -182,7 +182,24 @@ def ec2_imdsv2_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                                     ],
                                     "Compliance": {
                                         "Status": "PASSED",
-                                        "RelatedRequirements": ["NIST CSF PR.PT-3"],
+                                        "RelatedRequirements": [
+                                            "NIST CSF PR.AC-4",
+                                            "NIST SP 800-53 AC-1",
+                                            "NIST SP 800-53 AC-2",
+                                            "NIST SP 800-53 AC-3",
+                                            "NIST SP 800-53 AC-5",
+                                            "NIST SP 800-53 AC-6",
+                                            "NIST SP 800-53 AC-14",
+                                            "NIST SP 800-53 AC-16",
+                                            "NIST SP 800-53 AC-24",
+                                            "AICPA TSC CC6.3",
+                                            "ISO 27001:2013 A.6.1.2",
+                                            "ISO 27001:2013 A.9.1.2",
+                                            "ISO 27001:2013 A.9.2.3",
+                                            "ISO 27001:2013 A.9.4.1",
+                                            "ISO 27001:2013 A.9.4.4",
+                                            "ISO 27001:2013 A.9.4.5",
+                                        ]
                                     },
                                     "Workflow": {"Status": "RESOLVED"},
                                     "RecordState": "ARCHIVED",
@@ -289,7 +306,7 @@ def ec2_secure_enclave_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                                     "ISO 27001:2013 A.9.4.1",
                                     "ISO 27001:2013 A.9.4.4",
                                     "ISO 27001:2013 A.9.4.5",
-                                ],
+                                ]
                             },
                             "Workflow": {"Status": "NEW"},
                             "RecordState": "ACTIVE",
@@ -364,7 +381,7 @@ def ec2_secure_enclave_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                                     "ISO 27001:2013 A.9.4.1",
                                     "ISO 27001:2013 A.9.4.4",
                                     "ISO 27001:2013 A.9.4.5",
-                                ],
+                                ]
                             },
                             "Workflow": {"Status": "RESOLVED"},
                             "RecordState": "ARCHIVED"
