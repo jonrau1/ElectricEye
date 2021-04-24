@@ -1,5 +1,5 @@
-# latest hash as of 20 JULY 2020
-FROM alpine@sha256:a15790640a6690aa1730c38cf0a440e2aa44aaca9b0e8931a9f2b0d7cc90fd65
+# latest hash as of 14 APRIL 2021
+FROM alpine@sha256:a9c28c813336ece5bb98b36af5b66209ed777a394f4f856c6e62267790883820
 
 # This hack is widely applied to avoid python printing issues in docker containers.
 # See: https://github.com/Docker-Hub-frolvlad/docker-alpine-python3/pull/13
@@ -10,7 +10,7 @@ ENV DOPS_CLIENT_ID_PARAM=DOPS_CLIENT_ID_PARAM
 ENV DOPS_API_KEY_PARAM=DOPS_API_KEY_PARAM
 
 LABEL maintainer="https://github.com/jonrau1" \
-    version="2.0" \
+    version="2.1" \
     license="GPL-3.0" \
     description="Continuously monitor your AWS services for configurations that can lead to degradation of confidentiality, integrity or availability. All results will be sent to Security Hub for further aggregation and analysis."
 
