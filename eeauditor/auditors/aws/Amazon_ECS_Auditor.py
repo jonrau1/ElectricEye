@@ -283,3 +283,169 @@ def ecs_cluster_default_provider_strategy_check(
                     yield finding
         except Exception as e:
             print(e)
+
+@registry.register_check("ecs")
+def ecs_task_definition_privileged_container_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    for taskdef in list_task_definitions(status='ACTIVE')['taskDefinitionArns']:
+        try:
+            response = ecs.describe_task_definition(taskDefinition=taskdef)["taskDefinition"]
+            taskDefinitionArn = str(response['taskDefinitionArn'])
+            # Loop container definitions 
+            for cdef in response["containerDefinitions"]:
+                # ISO Time
+                iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+                cdefName = str(cdef["name"])
+                if str(cdef["privileged"]) == 'True': 
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": taskDefinitionArn + "/" + cdefName + "/ecs-task-definition-privileged-container-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": taskDefinitionArn + "/" + cdefName,
+                        "AwsAccountId": awsAccountId,
+                        "Types": [
+                            "Software and Configuration Checks/AWS Security Best Practices",
+                            "TTPs/Privilege Escalation"
+                        ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "MEDIUM"},
+                        "Confidence": 99,
+                        "Title": "[ECS.3] ECS Task Definitions should not run privileged containers if not required",
+                        "Description": "ECS Container Definition "
+                        + cdefName
+                        + " in Task Definition "
+                        + taskDefinitionArn
+                        + " has defined a Privileged container, which should be avoided unless absolutely necessary. Refer to the remediation instructions to remediate this behavior",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "Containers running as Privileged will have Root permissions, this should be avoided if not needed. Refer to the Task definition parameters Security section of the Amazon Elastic Container Service Developer Guide",
+                                "Url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#container_definitions",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsEcsTaskDefinition",
+                                "Id": taskDefinitionArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "Other": {
+                                        "TaskDefinitionArn": taskDefinitionArn,
+                                        "ContainerDefinitionName": cdefName
+                                    }
+                                }
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "FAILED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-1",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-2",
+                                "NIST SP 800-53 IA-1",
+                                "NIST SP 800-53 IA-2",
+                                "NIST SP 800-53 IA-3",
+                                "NIST SP 800-53 IA-4",
+                                "NIST SP 800-53 IA-5",
+                                "NIST SP 800-53 IA-6",
+                                "NIST SP 800-53 IA-7",
+                                "NIST SP 800-53 IA-8",
+                                "NIST SP 800-53 IA-9",
+                                "NIST SP 800-53 IA-10",
+                                "NIST SP 800-53 IA-11",
+                                "AICPA TSC CC6.1",
+                                "AICPA TSC CC6.2",
+                                "ISO 27001:2013 A.9.2.1",
+                                "ISO 27001:2013 A.9.2.2",
+                                "ISO 27001:2013 A.9.2.3",
+                                "ISO 27001:2013 A.9.2.4",
+                                "ISO 27001:2013 A.9.2.6",
+                                "ISO 27001:2013 A.9.3.1",
+                                "ISO 27001:2013 A.9.4.2",
+                                "ISO 27001:2013 A.9.4.3",
+                            ],
+                        },
+                        "Workflow": {"Status": "NEW"},
+                        "RecordState": "ACTIVE",
+                    }
+                    yield finding
+                else:
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": taskDefinitionArn + "/" + cdefName + "/ecs-task-definition-privileged-container-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": taskDefinitionArn + "/" + cdefName,
+                        "AwsAccountId": awsAccountId,
+                        "Types": [
+                            "Software and Configuration Checks/AWS Security Best Practices",
+                            "TTPs/Privilege Escalation"
+                        ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "INFORMATIONAL"},
+                        "Confidence": 99,
+                        "Title": "[ECS.3] ECS Task Definitions should not run privileged containers if not required",
+                        "Description": "ECS Container Definition "
+                        + cdefName
+                        + " in Task Definition "
+                        + taskDefinitionArn
+                        + " has not defined a Privileged container.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "Containers running as Privileged will have Root permissions, this should be avoided if not needed. Refer to the Task definition parameters Security section of the Amazon Elastic Container Service Developer Guide",
+                                "Url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#container_definitions",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsEcsTaskDefinition",
+                                "Id": taskDefinitionArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "Other": {
+                                        "TaskDefinitionArn": taskDefinitionArn,
+                                        "ContainerDefinitionName": cdefName
+                                    }
+                                }
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "PASSED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-1",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-2",
+                                "NIST SP 800-53 IA-1",
+                                "NIST SP 800-53 IA-2",
+                                "NIST SP 800-53 IA-3",
+                                "NIST SP 800-53 IA-4",
+                                "NIST SP 800-53 IA-5",
+                                "NIST SP 800-53 IA-6",
+                                "NIST SP 800-53 IA-7",
+                                "NIST SP 800-53 IA-8",
+                                "NIST SP 800-53 IA-9",
+                                "NIST SP 800-53 IA-10",
+                                "NIST SP 800-53 IA-11",
+                                "AICPA TSC CC6.1",
+                                "AICPA TSC CC6.2",
+                                "ISO 27001:2013 A.9.2.1",
+                                "ISO 27001:2013 A.9.2.2",
+                                "ISO 27001:2013 A.9.2.3",
+                                "ISO 27001:2013 A.9.2.4",
+                                "ISO 27001:2013 A.9.2.6",
+                                "ISO 27001:2013 A.9.3.1",
+                                "ISO 27001:2013 A.9.4.2",
+                                "ISO 27001:2013 A.9.4.3",
+                            ],
+                        },
+                        "Workflow": {"Status": "RESOLVED"},
+                        "RecordState": "ARCHIVED",
+                    }
+                    yield finding
+        except Exception as e:
+            print(e)

@@ -22,6 +22,8 @@ xray = boto3.client('xray')
 @registry.register_check('xray')
 def xray_kms_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     # Check the encryption config for X-Ray. It uses AES-256 by default, but we're looking for KMS
+    # ISO Time
+    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     response = xray.get_encryption_config()['EncryptionConfig']
     if str(response['Type']) == 'NONE':
         # This is a failing finding
