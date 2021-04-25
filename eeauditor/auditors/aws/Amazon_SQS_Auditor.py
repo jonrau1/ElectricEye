@@ -17,6 +17,7 @@ import datetime
 from dateutil import parser
 
 import boto3
+import json
 
 from check_register import CheckRegister
 
@@ -205,9 +206,7 @@ def sqs_queue_encryption_check(
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[SQS.2] SQS queues should use Server Side encryption",
-                "Description": "SQS queue "
-                + queueName
-                + " has Server Side encryption enabled.",
+                "Description": f"SQS queue {queueName} has Server Side encryption enabled.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on best practices for encryption of SQS queues, refer to the Data Encryption section of the Amazon SQS Developer Guide",
@@ -221,7 +220,12 @@ def sqs_queue_encryption_check(
                         "Id": queueArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"AwsSqsQueue": {"QueueName": queueName}}
+                        "Details": {
+                            "AwsSqsQueue": {
+                                "QueueName": queueName,
+                                "KmsMasterKeyId": str(queueEncryption)
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -253,9 +257,7 @@ def sqs_queue_encryption_check(
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
                 "Title": "[SQS.2] SQS queues should use server side encryption",
-                "Description": "SQS queue "
-                + queueName
-                + " has not enabled Server Side encryption.  Refer to the remediation recommendations to rectify.",
+                "Description": f"SQS queue {queueName} has not enabled Server side encryption.  Refer to the recommendations to remediate.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on best practices for encryption of SQS queues, refer to the Data Encryption section of the Amazon SQS Developer Guide",
@@ -286,3 +288,52 @@ def sqs_queue_encryption_check(
                 "RecordState": "ACTIVE",
             }
             yield finding
+
+
+@registry.register_check("sqs")
+def sqs_queue_public_accessibility_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
+    response = list_queues(cache)
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for queueUrl in response["QueueUrls"]:
+        queueName = queueUrl.rsplit("/", 1)[-1]
+        attributes = sqs.get_queue_attributes(
+            QueueUrl=queueUrl, AttributeNames=["QueueArn", "Policy"]
+        )
+        queueArn=attributes["Attributes"]["QueueArn"]
+        queuePolicy=json.loads(attributes["Attributes"]["Policy"])
+
+        publicAccessibility = False
+        # List of condition statements that restrict public access
+        validConditionStatements = ["aws: PrincipalOrgID", "aws: PrincipalArn", "aws: SourceAccount", "aws: SourceArn",
+            "aws: SourceVpc", "aws: SourceVpce", "aws: userId", "aws: username"]
+
+        for statement in queuePolicy["Statement"]:
+            if statement["Effect"] == 'Allow':
+                if statement.get("Principal") == '*':
+                    if statement.get('Condition') == None: 
+                        #Anonymous queue user
+                        publicAccessibility = True
+                    elif for count, compare_statement in enumerate(statement['Condition']):
+                        if [*statement['Condition'][compare_statement]][0] not in validConditionStatements:
+                            publicAccessibility = True
+        
+            elif statement["Effect"] == 'Deny':
+                if statement.get("Principal") == '*':
+                    publicAccessibility = False
+                    
+                
+
+                
+
+
+## valid condition statements
+# aws: PrincipalOrgID
+aws: PrincipalArn
+aws: SourceAccount
+aws: SourceArn
+aws: SourceVpc
+aws: SourceVpce
+aws: userId
+aws: username

@@ -10,6 +10,7 @@ from auditors.aws.Amazon_SQS_Auditor import (
     sqs_old_message_check,
     sqs,
     cloudwatch,
+    sqs_queue_encryption_check
 )
 
 print(sys.path)
