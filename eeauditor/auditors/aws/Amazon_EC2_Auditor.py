@@ -63,7 +63,8 @@ def ec2_imdsv2_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                                     "GeneratorId": instanceArn,
                                     "AwsAccountId": awsAccountId,
                                     "Types": [
-                                        "Software and Configuration Checks/AWS Security Best Practices"
+                                        "Software and Configuration Checks/AWS Security Best Practices",
+                                        "Effects/Data Exposure"
                                     ],
                                     "FirstObservedAt": iso8601Time,
                                     "CreatedAt": iso8601Time,
@@ -135,7 +136,8 @@ def ec2_imdsv2_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                                     "GeneratorId": instanceArn,
                                     "AwsAccountId": awsAccountId,
                                     "Types": [
-                                        "Software and Configuration Checks/AWS Security Best Practices"
+                                        "Software and Configuration Checks/AWS Security Best Practices",
+                                        "Effects/Data Exposure"
                                     ],
                                     "FirstObservedAt": iso8601Time,
                                     "CreatedAt": iso8601Time,
@@ -238,7 +240,8 @@ def ec2_secure_enclave_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                             "GeneratorId": instanceArn,
                             "AwsAccountId": awsAccountId,
                             "Types": [
-                                "Software and Configuration Checks/AWS Security Best Practices"
+                                "Software and Configuration Checks/AWS Security Best Practices",
+                                "Effects/Data Exposure"
                             ],
                             "FirstObservedAt": iso8601Time,
                             "CreatedAt": iso8601Time,
@@ -307,7 +310,8 @@ def ec2_secure_enclave_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                             "GeneratorId": instanceArn,
                             "AwsAccountId": awsAccountId,
                             "Types": [
-                                "Software and Configuration Checks/AWS Security Best Practices"
+                                "Software and Configuration Checks/AWS Security Best Practices",
+                                "Effects/Data Exposure"
                             ],
                             "FirstObservedAt": iso8601Time,
                             "CreatedAt": iso8601Time,
@@ -406,7 +410,8 @@ def ec2_public_facing_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                             "GeneratorId": instanceArn,
                             "AwsAccountId": awsAccountId,
                             "Types": [
-                                "Software and Configuration Checks/AWS Security Best Practices"
+                                "Software and Configuration Checks/AWS Security Best Practices",
+                                "Effects/Data Exposure"
                             ],
                             "FirstObservedAt": iso8601Time,
                             "CreatedAt": iso8601Time,
@@ -471,7 +476,8 @@ def ec2_public_facing_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                             "GeneratorId": instanceArn,
                             "AwsAccountId": awsAccountId,
                             "Types": [
-                                "Software and Configuration Checks/AWS Security Best Practices"
+                                "Software and Configuration Checks/AWS Security Best Practices",
+                                "Effects/Data Exposure"
                             ],
                             "FirstObservedAt": iso8601Time,
                             "CreatedAt": iso8601Time,
