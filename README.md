@@ -94,17 +94,20 @@ These steps are split across their relevant sections. All CLI commands are execu
 1. Update your machine and clone this repository
 
 ```bash
-sudo apt update
-sudo apt upgrade -y
+sudo apt update && sudo apt upgrade -y
 sudo apt install -y unzip awscli docker.ce python3 python3-pip
-pip3 install boto3
+pip3 install --upgrade pip
+pip3 install --upgrade awscli
+pip3 install --upgrade boto3
 git clone https://github.com/jonrau1/ElectricEye.git
 ```
 
 2. Create an ECR Repository with the AWS CLI
 
 ```bash
-aws ecr create-repository --repository-name <REPO_NAME>
+aws ecr create-repository \
+    --repository-name ElectricEye \
+    --image-scanning-configuration scanOnPush=true
 ```
 
 3. Build and push the ElectricEye Docker image. Be sure to replace the values for your region, Account ID and name of the ECR repository
@@ -116,15 +119,19 @@ cd ElectricEye
 aws ecr get-login-password --region <AWS_REGION> | sudo docker login --username AWS --password-stdin <ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com
 ```
 
-**Note**: If you are using AWS CLI v1 use the following in place of the line above `sudo $(aws ecr get-login --no-include-email --region <AWS_REGION>)`
+**Note**: If you are using AWS CLI v1 use the following in place of the line above
 
 ```bash
-sudo docker build -t <REPO_NAME> .
-sudo docker tag <REPO_NAME>:latest <ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/<REPO_NAME>:latest
-sudo docker push <ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/<REPO_NAME>:latest
+sudo $(aws ecr get-login --no-include-email --region <AWS_REGION>)
 ```
 
-4. Navigate to the ECR console and copy the `URI` of your Docker image. It will be in the format of `<ACCOUNT_ID>.dkr.ecr.<AWS_REGION.amazonaws.com/<REPO_NAME>:latest`. Save this as you will need it when configuring Terraform or CloudFormation.
+```bash
+sudo docker build -t ElectricEye .
+sudo docker tag ElectricEye:latest <ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/ElectricEye:latest
+sudo docker push <ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/ElectricEye:latest
+```
+
+4. Navigate to the ECR console and copy the `URI` of your Docker image. It will be in the format of **`<ACCOUNT_ID>.dkr.ecr.<AWS_REGION.amazonaws.com/ElectricEye:latest`**. Save this as you will need it when configuring Terraform or CloudFormation.
 
 ### (OPTIONAL) Setup Shodan.io API Key
 
@@ -135,7 +142,10 @@ This is an **optional** step to setup a Shodan.io API key to determine if your i
 2. Create a Systems Manager Parameter Store `SecureString` parameter for this API key:
 
 ```bash
-aws ssm put-parameter --name electriceye-shodan-api-key --description 'Shodan.io API Key' --type SecureString --value <API-KEY-HERE>`
+aws ssm put-parameter \
+    --name electriceye-shodan-api-key \
+    --description 'Shodan.io API Key' \
+    --type SecureString --value <API-KEY-HERE>
 ```
 
 In both the Terraform config files and CloudFormation templates the value for this key is prepopulated with the value `placeholder`, overwrite them with this parameter you just created to be able to use the Shodan checks.
@@ -147,13 +157,21 @@ This is an optional step to setup for sending findings to DisruptOps.
 1. Create a Systems Manager Parameter Store `SecureString` parameter for the client id: 
 
 ```bash
-aws ssm put-parameter --name dops-client-id --description 'DisruptOps client id' --type SecureString --value <CLIENT-ID-HERE>
+aws ssm put-parameter \
+    --name dops-client-id \
+    --description 'DisruptOps client id' \
+    --type SecureString \
+    --value <CLIENT-ID-HERE>
 ```
 
 2. Create a Systems Manager Parameter Store `SecureString` parameter for this API key: 
 
 ```bash
-aws ssm put-parameter --name dops-api-key  --description 'DisruptOps api key' --type SecureString --value <API-KEY-HERE>
+aws ssm put-parameter \
+    --name dops-api-key \
+    --description 'DisruptOps api key' \
+    --type SecureString \
+    --value <API-KEY-HERE>
 ```
 
 In both the Terraform config files and CloudFormation templates the value for this key is prepopulated with the value `placeholder`, overwrite them with this parameter you just created to be able to use DisruptOps.
@@ -167,6 +185,8 @@ Before starting [attach this IAM policy](https://github.com/jonrau1/ElectricEye/
 In this stage we will install and deploy the ElectricEye infrastructure via Terraform. To securely backup your state file, you should explore the usage of a [S3 backend](https://www.terraform.io/docs/backends/index.html), this is also described in this [AWS Security Blog post](https://aws.amazon.com/blogs/security/how-use-ci-cd-deploy-configure-aws-security-services-terraform/).
 
 1. Install the dependencies for Terraform.
+
+**Note:** Ensure this is the latest version of Terraform, since authoring this tool, I do not make use of it anymore and rely on outside contributors to update the Configs.
 
 ```bash
 wget https://releases.hashicorp.com/terraform/0.14.4/terraform_0.14.4_linux_amd64.zip
