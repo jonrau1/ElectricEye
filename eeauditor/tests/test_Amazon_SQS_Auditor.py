@@ -25,6 +25,19 @@ get_queue_attributes_response = {
     }
 }
 
+get_encrypted_queue_attributes_response = {
+    "Attributes": {
+        "KmsMasterKeyId": "alias/aws/sqs",
+        "QueueArn": "arn:aws:sqs:us-east-2:805574742241:MyQueue",
+    }
+}
+
+get_unencrypted_queue_attributes_response = {
+    "Attributes": {
+        "QueueArn": "arn:aws:sqs:us-east-2:805574742241:MyQueue",
+    }
+}
+
 get_metric_data_params = {
     "EndTime": ANY,
     "MetricDataQueries": ANY,
@@ -133,3 +146,31 @@ def test_pass(sqs_stubber, cloudwatch_stubber):
             assert False
     sqs_stubber.assert_no_pending_responses()
     cloudwatch_stubber.assert_no_pending_responses()
+
+
+def test_encrypted_pass(sqs_stubber): 
+    sqs_stubber.add_response("list_queues", list_queues_response)
+    sqs_stubber.add_response("get_queue_attributes", get_encrypted_queue_attributes_response)
+    results = sqs_queue_encryption_check(
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
+    )
+    for result in results:
+        if "MyQueue" in result["Id"]:
+            assert result["RecordState"] == "ARCHIVED"
+        else:
+            assert False
+    sqs_stubber.assert_no_pending_responses()
+    
+
+def test_encrypted_fail(sqs_stubber): 
+    sqs_stubber.add_response("list_queues", list_queues_response)
+    sqs_stubber.add_response("get_queue_attributes", get_unencrypted_queue_attributes_response)
+    results = sqs_queue_encryption_check(
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
+    )
+    for result in results:
+        if "MyQueue" in result["Id"]:
+            assert result["RecordState"] == "ACTIVE"
+        else:
+            assert False
+    sqs_stubber.assert_no_pending_responses()

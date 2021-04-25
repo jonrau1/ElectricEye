@@ -25,11 +25,19 @@ sqs = boto3.client("sqs")
 cloudwatch = boto3.client("cloudwatch")
 
 
+def list_queues(cache):
+    response = cache.get("list_queues")
+    if response:
+        return response
+    cache["list_queues"] = sqs.list_queues()
+    return cache["list_queues"]
+
+
 @registry.register_check("sqs")
 def sqs_old_message_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
-    response = sqs.list_queues()
+    response = list_queues(cache)
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for queueUrl in response["QueueUrls"]:
         queueName = queueUrl.rsplit("/", 1)[-1]
@@ -161,6 +169,117 @@ def sqs_old_message_check(
                         "ISO 27001:2013 A.8.1.1",
                         "ISO 27001:2013 A.8.1.2",
                         "ISO 27001:2013 A.12.5.1",
+                    ],
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE",
+            }
+            yield finding
+
+
+@registry.register_check("sqs")
+def sqs_queue_encryption_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
+    response = list_queues(cache)
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for queueUrl in response["QueueUrls"]:
+        queueName = queueUrl.rsplit("/", 1)[-1]
+        attributes = sqs.get_queue_attributes(
+            QueueUrl=queueUrl, AttributeNames=["QueueArn", "KmsMasterKeyId"]
+        )
+        queueArn=attributes["Attributes"]["QueueArn"]
+        queueEncryption=attributes["Attributes"].get('KmsMasterKeyId')
+
+        if queueEncryption != None:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": queueArn + "/sqs_queue_encryption_check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": queueArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[SQS.2] SQS queues should use Server Side encryption",
+                "Description": "SQS queue "
+                + queueName
+                + " has Server Side encryption enabled.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on best practices for encryption of SQS queues, refer to the Data Encryption section of the Amazon SQS Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-server-side-encryption.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsSqsQueue",
+                        "Id": queueArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {"AwsSqsQueue": {"QueueName": queueName}}
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.DS-1",
+                        "NIST CSF PR.DS-5",
+                        "NIST CSF PR.PT-3",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3"
+                    ],
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED",
+            }
+            yield finding
+        
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": queueArn + "/sqs_queue_encryption_check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": queueArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "HIGH"},
+                "Confidence": 99,
+                "Title": "[SQS.2] SQS queues should use server side encryption",
+                "Description": "SQS queue "
+                + queueName
+                + " has not enabled Server Side encryption.  Refer to the remediation recommendations to rectify.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on best practices for encryption of SQS queues, refer to the Data Encryption section of the Amazon SQS Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-server-side-encryption.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsSqsQueue",
+                        "Id": queueArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {"AwsSqsQueue": {"QueueName": queueName}}
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.DS-1",
+                        "NIST CSF PR.DS-5",
+                        "NIST CSF PR.PT-3",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3"
                     ],
                 },
                 "Workflow": {"Status": "NEW"},
