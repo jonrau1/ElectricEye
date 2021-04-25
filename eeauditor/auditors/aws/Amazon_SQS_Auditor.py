@@ -322,18 +322,102 @@ def sqs_queue_public_accessibility_check(
             elif statement["Effect"] == 'Deny':
                 if statement.get("Principal") == '*':
                     publicAccessibility = False
-                    
-                
-
-                
-
-
-## valid condition statements
-# aws: PrincipalOrgID
-aws: PrincipalArn
-aws: SourceAccount
-aws: SourceArn
-aws: SourceVpc
-aws: SourceVpce
-aws: userId
-aws: username
+        
+        #Create findings for Security Hub
+        if publicAccessibility == False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": queueArn + "/sqs_queue_public_accessibility_check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": queueArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[SQS.3] SQS queues should not be open to the public",
+                "Description": f"SQS queue {queueName} is not open to the public.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on best practices for SQS Policies, refer to the Identity and Access Management section of the Amazon SQS Developer Guide",
+                        "Url": "https://docs.amazonaws.cn/en_us/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-authentication-and-access-control.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsSqsQueue",
+                        "Id": queueArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": "Details": {"AwsSqsQueue": {"QueueName": queueName}}
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-4",
+                        "NIST CSF PR.DS-5",
+                        "NIST CSF PR.PT-3",
+                        "NIST SP 800-53 AC-1"
+                        "NIST SP 800-53 AC-3"
+                        "NIST SP 800-53 AC-17"
+                        "NIST SP 800-53 AC-22"
+                        "ISO 27001:2013 A.13.1.2"
+                    ],
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED",
+            }
+            yield finding
+        
+        else: 
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": queueArn + "/sqs_queue_public_accessibility_check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": queueArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "HIGH"},
+                "Confidence": 99,
+                "Title": "[SQS.3] SQS queues should not be open to the public",
+                "Description": f"SQS queue {queueName} is open to the public.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on best practices for SQS Policies, refer to the Identity and Access Management section of the Amazon SQS Developer Guide",
+                        "Url": "https://docs.amazonaws.cn/en_us/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-authentication-and-access-control.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsSqsQueue",
+                        "Id": queueArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": "Details": {"AwsSqsQueue": {"QueueName": queueName}}
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-4",
+                        "NIST CSF PR.DS-5",
+                        "NIST CSF PR.PT-3",
+                        "NIST SP 800-53 AC-1"
+                        "NIST SP 800-53 AC-3"
+                        "NIST SP 800-53 AC-17"
+                        "NIST SP 800-53 AC-22"
+                        "ISO 27001:2013 A.13.1.2"
+                    ],
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE",
+            }
+        yield finding
