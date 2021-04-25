@@ -319,12 +319,7 @@ def sqs_queue_public_accessibility_check(
                         for count, compare_statement in enumerate(statement['Condition']):
                             if [*statement['Condition'][compare_statement]][0] not in validConditionStatements:
                                 accessibility = "public"
-
-            # elif statement["Effect"] == 'Deny':
-            #     if statement.get("Principal") == '*':
-            #         accessibility = "not_public"
         
-        #Create findings for Security Hub
         if accessibility == "not_public":
             finding = {
                 "SchemaVersion": "2018-10-08",
