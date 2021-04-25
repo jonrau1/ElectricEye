@@ -10,7 +10,8 @@ from auditors.aws.Amazon_SQS_Auditor import (
     sqs_old_message_check,
     sqs,
     cloudwatch,
-    sqs_queue_encryption_check
+    sqs_queue_encryption_check,
+    sqs_queue_public_accessibility_check
 )
 
 print(sys.path)
@@ -22,19 +23,6 @@ list_queues_response = {
 get_queue_attributes_response = {
     "Attributes": {
         "MessageRetentionPeriod": "345600",
-        "QueueArn": "arn:aws:sqs:us-east-2:805574742241:MyQueue",
-    }
-}
-
-get_encrypted_queue_attributes_response = {
-    "Attributes": {
-        "KmsMasterKeyId": "alias/aws/sqs",
-        "QueueArn": "arn:aws:sqs:us-east-2:805574742241:MyQueue",
-    }
-}
-
-get_unencrypted_queue_attributes_response = {
-    "Attributes": {
         "QueueArn": "arn:aws:sqs:us-east-2:805574742241:MyQueue",
     }
 }
@@ -78,6 +66,76 @@ get_metric_data_pass_response = {
     ],
 }
 
+get_encrypted_queue_attributes_response = {
+    "Attributes": {
+        "KmsMasterKeyId": "alias/aws/sqs",
+        "QueueArn": "arn:aws:sqs:us-east-2:805574742241:MyQueue",
+    }
+}
+
+get_unencrypted_queue_attributes_response = {
+    "Attributes": {
+        "QueueArn": "arn:aws:sqs:us-east-2:805574742241:MyQueue",
+    }
+}
+
+get_attributes_public_access_response = {
+    "Attributes": {
+    "QueueArn": "arn:aws:sqs:us-east-2:805574742241:MyQueue", 
+    "Policy": '{"Version":"2008-10-17","Id":"__default_policy_ID", \
+    "Statement": \
+        [{"Sid":"__owner_statement", \
+        "Effect":"Allow", \
+        "Principal": \
+        {"AWS":"arn:aws:iam::805574742241:root"}, \
+        "Action":"SQS:*", \
+        "Resource":"arn:aws:sqs:us-east-2:805574742241:MyQueue"}]}'
+        }
+    }
+
+get_attributes_condition_restricting_access_response = {
+    "Attributes": {
+    "QueueArn": "arn:aws:sqs:us-east-2:805574742241:MyQueue", 
+    "Policy": '{"Version":"2008-10-17","Id":"__default_policy_ID", \
+    "Statement": \
+        [{"Sid":"__owner_statement", \
+        "Effect":"Allow", \
+        "Principal": \
+        {"AWS":"arn:aws:iam::805574742241:root"}, \
+        "Action":"SQS:*", \
+        "Resource":"arn:aws:sqs:us-east-2:805574742241:MyQueue", \
+        "Condition":{ \
+            "StringEquals":{ \
+                "aws:sourceVpce":"vpce-1a2b3c4d"}}}]}'}
+    }
+
+get_attributes_principal_star_response = {
+    "Attributes": {
+    "QueueArn": "arn:aws:sqs:us-east-2:805574742241:MyQueue", 
+    "Policy": '{"Version":"2008-10-17","Id":"__default_policy_ID", \
+    "Statement": \
+        [{"Sid":"__owner_statement", \
+        "Effect":"Allow", \
+        "Principal": "*",\
+        "Action":"SQS:*", \
+        "Resource":"arn:aws:sqs:us-east-2:805574742241:MyQueue"}]}'
+        }
+    }
+
+get_attributes_condition_not_restricting_access_response = {
+    "Attributes": {
+    "QueueArn": "arn:aws:sqs:us-east-2:805574742241:MyQueue", 
+    "Policy": '{"Version":"2008-10-17","Id":"__default_policy_ID", \
+    "Statement": \
+        [{"Sid":"__owner_statement", \
+        "Effect":"Allow", \
+        "Principal": "*", \
+        "Action":"SQS:*", \
+        "Resource":"arn:aws:sqs:us-east-2:805574742241:MyQueue", \
+        "Condition":{ \
+            "DateGreaterThan":{ \
+                "aws:CurrentTime":"2021-01-01T12:00Z"}}}]}'}
+    }
 
 @pytest.fixture(scope="function")
 def sqs_stubber():
@@ -167,6 +225,66 @@ def test_encrypted_fail(sqs_stubber):
     sqs_stubber.add_response("list_queues", list_queues_response)
     sqs_stubber.add_response("get_queue_attributes", get_unencrypted_queue_attributes_response)
     results = sqs_queue_encryption_check(
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
+    )
+    for result in results:
+        if "MyQueue" in result["Id"]:
+            assert result["RecordState"] == "ACTIVE"
+        else:
+            assert False
+    sqs_stubber.assert_no_pending_responses()
+
+
+# PASS - Owner Principal Only
+def test_public_sqs_pass(sqs_stubber): 
+    sqs_stubber.add_response("list_queues", list_queues_response)
+    sqs_stubber.add_response("get_queue_attributes", get_attributes_public_access_response)
+    results = sqs_queue_public_accessibility_check(
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
+    )
+    for result in results:
+        if "MyQueue" in result["Id"]:
+            assert result["RecordState"] == "ARCHIVED"
+        else:
+            assert False
+    sqs_stubber.assert_no_pending_responses()
+
+
+# PASS - Condition restricting public access 
+def test_public_sqs_condition_restricting_access_pass(sqs_stubber): 
+    sqs_stubber.add_response("list_queues", list_queues_response)
+    sqs_stubber.add_response("get_queue_attributes", get_attributes_condition_restricting_access_response)
+    results = sqs_queue_public_accessibility_check(
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
+    )
+    for result in results:
+        if "MyQueue" in result["Id"]:
+            assert result["RecordState"] == "ARCHIVED"
+        else:
+            assert False
+    sqs_stubber.assert_no_pending_responses()
+
+
+# FAIL - Principal Star no condition
+def test_public_sqs_principal_star_fail(sqs_stubber): 
+    sqs_stubber.add_response("list_queues", list_queues_response)
+    sqs_stubber.add_response("get_queue_attributes", get_attributes_principal_star_response)
+    results = sqs_queue_public_accessibility_check(
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
+    )
+    for result in results:
+        if "MyQueue" in result["Id"]:
+            assert result["RecordState"] == "ACTIVE"
+        else:
+            assert False
+    sqs_stubber.assert_no_pending_responses()
+
+
+# FAIL - Principal Star w/ non public restricting condition
+def test_public_sqs_condition_not_restricting_access_fail(sqs_stubber): 
+    sqs_stubber.add_response("list_queues", list_queues_response)
+    sqs_stubber.add_response("get_queue_attributes", get_attributes_condition_not_restricting_access_response)
+    results = sqs_queue_public_accessibility_check(
         cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
     )
     for result in results:

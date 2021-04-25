@@ -304,8 +304,8 @@ def sqs_queue_public_accessibility_check(
         queueArn=attributes["Attributes"]["QueueArn"]
         queuePolicy=json.loads(attributes["Attributes"]["Policy"])
 
-        publicAccessibility = False
-        # List of condition statements that restrict public access
+        accessibility = "not_public"
+        # List of condition statements that can restrict public access
         validConditionStatements = ["aws: PrincipalOrgID", "aws: PrincipalArn", "aws: SourceAccount", "aws: SourceArn",
             "aws: SourceVpc", "aws: SourceVpce", "aws: userId", "aws: username"]
 
@@ -314,17 +314,18 @@ def sqs_queue_public_accessibility_check(
                 if statement.get("Principal") == '*':
                     if statement.get('Condition') == None: 
                         #Anonymous queue user
-                        publicAccessibility = True
-                    elif for count, compare_statement in enumerate(statement['Condition']):
-                        if [*statement['Condition'][compare_statement]][0] not in validConditionStatements:
-                            publicAccessibility = True
-        
-            elif statement["Effect"] == 'Deny':
-                if statement.get("Principal") == '*':
-                    publicAccessibility = False
+                        accessibility = "public"
+                    else: 
+                        for count, compare_statement in enumerate(statement['Condition']):
+                            if [*statement['Condition'][compare_statement]][0] not in validConditionStatements:
+                                accessibility = "public"
+
+            # elif statement["Effect"] == 'Deny':
+            #     if statement.get("Principal") == '*':
+            #         accessibility = "not_public"
         
         #Create findings for Security Hub
-        if publicAccessibility == False:
+        if accessibility == "not_public":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": queueArn + "/sqs_queue_public_accessibility_check",
@@ -352,8 +353,8 @@ def sqs_queue_public_accessibility_check(
                         "Id": queueArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": "Details": {"AwsSqsQueue": {"QueueName": queueName}}
-                    }
+                        "Details": {"AwsSqsQueue": {"QueueName": queueName}}
+                    },
                 ],
                 "Compliance": {
                     "Status": "PASSED",
@@ -401,7 +402,7 @@ def sqs_queue_public_accessibility_check(
                         "Id": queueArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": "Details": {"AwsSqsQueue": {"QueueName": queueName}}
+                        "Details": {"AwsSqsQueue": {"QueueName": queueName}}
                     }
                 ],
                 "Compliance": {
