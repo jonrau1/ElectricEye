@@ -17,11 +17,20 @@ import boto3
 import datetime
 from check_register import CheckRegister
 from dateutil.parser import parse
+from botocore.config import Config
+
+config = Config(
+   retries = {
+      'max_attempts': 10,
+      'mode': 'adaptive'
+   }
+)
+
 
 registry = CheckRegister()
 # create boto3 clients
-ec2 = boto3.client("ec2")
-ssm = boto3.client("ssm")
+ec2 = boto3.client("ec2",config=config)
+ssm = boto3.client("ssm",config=config)
 
 # loop through ec2 instances
 def describe_instances(cache):

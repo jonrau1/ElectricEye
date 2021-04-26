@@ -295,7 +295,7 @@ def subnet_public_ip_check(cache: dict, awsAccountId: str, awsRegion: str, awsPa
                     "Resources": [
                         {
                             "Type": "AwsEc2Subnet",
-                            "Id": vpcArn,
+                            "Id": snetArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
@@ -352,7 +352,7 @@ def subnet_public_ip_check(cache: dict, awsAccountId: str, awsRegion: str, awsPa
                     "Resources": [
                         {
                             "Type": "AwsEc2Subnet",
-                            "Id": vpcArn,
+                            "Id": snetArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
@@ -423,7 +423,7 @@ def subnet_no_ip_space_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                     "Resources": [
                         {
                             "Type": "AwsEc2Subnet",
-                            "Id": vpcArn,
+                            "Id": snetArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
@@ -482,7 +482,7 @@ def subnet_no_ip_space_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                     "Resources": [
                         {
                             "Type": "AwsEc2Subnet",
-                            "Id": vpcArn,
+                            "Id": snetArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
