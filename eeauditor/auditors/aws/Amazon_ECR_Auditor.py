@@ -501,13 +501,6 @@ def ecr_latest_image_vuln_check(
                             "Description": "The latest image in the ECR repository "
                             + repoName
                             + " does not have any vulnerabilities reported.",
-                            "Remediation": {
-                                "Recommendation": {
-                                    "Text": "Click here to navigate to the ECR Vulnerability console for this image",
-                                    "Url": vulnDeepLink,
-                                }
-                            },
-                            "SourceUrl": vulnDeepLink,
                             "ProductFields": {"Product Name": "ElectricEye"},
                             "Resources": [
                                 {

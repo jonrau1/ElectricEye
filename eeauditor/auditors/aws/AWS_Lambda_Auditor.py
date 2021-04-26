@@ -84,8 +84,10 @@ def unused_function_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
                                 "Id": lambdaArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
-                                "AwsLambdaFunction": {
-                                    "FunctionName": functionName
+                                "Details": {
+                                    "AwsLambdaFunction": {
+                                        "FunctionName": functionName
+                                    }
                                 }
                             }
                         ],
@@ -136,8 +138,10 @@ def unused_function_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
                                 "Id": lambdaArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
-                                "AwsLambdaFunction": {
-                                    "FunctionName": functionName
+                                "Details": {
+                                    "AwsLambdaFunction": {
+                                        "FunctionName": functionName
+                                    }
                                 }
                             }
                         ],
@@ -199,10 +203,12 @@ def function_tracing_check(cache: dict, awsAccountId: str, awsRegion: str, awsPa
                             "Id": lambdaArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
-                            "AwsLambdaFunction": {
-                                "FunctionName": functionName,
-                                "TracingConfig": {
-                                    "TracingConfig.Mode": str(function["TracingConfig"]["Mode"])
+                            "Details": {
+                                "AwsLambdaFunction": {
+                                    "FunctionName": functionName,
+                                    "TracingConfig": {
+                                        "TracingConfig.Mode": str(function["TracingConfig"]["Mode"])
+                                    }
                                 }
                             }
                         }
@@ -256,10 +262,12 @@ def function_tracing_check(cache: dict, awsAccountId: str, awsRegion: str, awsPa
                             "Id": lambdaArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
-                            "AwsLambdaFunction": {
-                                "FunctionName": functionName,
-                                "TracingConfig": {
-                                    "TracingConfig.Mode": str(function["TracingConfig"]["Mode"])
+                            "Details": {
+                                "AwsLambdaFunction": {
+                                    "FunctionName": functionName,
+                                    "TracingConfig": {
+                                        "TracingConfig.Mode": str(function["TracingConfig"]["Mode"])
+                                    }
                                 }
                             }
                         }
@@ -325,11 +333,13 @@ def function_code_signer_check(cache: dict, awsAccountId: str, awsRegion: str, a
                             "Id": lambdaArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
-                            "AwsLambdaFunction": {
-                                "FunctionName": functionName
-                            },
-                            "Other": {
-                                "SigningJobArn": signingJobArn
+                            "Details": {
+                                "AwsLambdaFunction": {
+                                    "FunctionName": functionName
+                                },
+                                "Other": {
+                                    "SigningJobArn": signingJobArn
+                                }
                             }
                         }
                     ],
@@ -383,11 +393,13 @@ def function_code_signer_check(cache: dict, awsAccountId: str, awsRegion: str, a
                             "Id": lambdaArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
-                            "AwsLambdaFunction": {
-                                "FunctionName": functionName
-                            },
-                            "Other": {
-                                "SigningJobArn": signingJobArn
+                            "Details": {
+                                "AwsLambdaFunction": {
+                                    "FunctionName": functionName
+                                },
+                                "Other": {
+                                    "SigningJobArn": signingJobArn
+                                }
                             }
                         }
                     ],
@@ -459,11 +471,13 @@ def public_lambda_layer_check(cache: dict, awsAccountId: str, awsRegion: str, aw
                                     "Id": lambdaArn,
                                     "Partition": awsPartition,
                                     "Region": awsRegion,
-                                    "AwsLambdaFunction": {
-                                        "FunctionName": functionName
-                                    },
-                                    "Other": {
-                                        "SigningJobArn": signingJobArn
+                                    "Details": {
+                                        "AwsLambdaFunction": {
+                                            "FunctionName": functionName
+                                        },
+                                        "Other": {
+                                            "SigningJobArn": signingJobArn
+                                        }
                                     }
                                 }
                             ],
@@ -517,11 +531,13 @@ def public_lambda_layer_check(cache: dict, awsAccountId: str, awsRegion: str, aw
                                     "Id": lambdaArn,
                                     "Partition": awsPartition,
                                     "Region": awsRegion,
-                                    "AwsLambdaFunction": {
-                                        "FunctionName": functionName
-                                    },
-                                    "Other": {
-                                        "SigningJobArn": signingJobArn
+                                    "Details": {
+                                        "AwsLambdaFunction": {
+                                            "FunctionName": functionName
+                                        },
+                                        "Other": {
+                                            "SigningJobArn": signingJobArn
+                                        }
                                     }
                                 }
                             ],

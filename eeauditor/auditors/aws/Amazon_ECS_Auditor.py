@@ -295,7 +295,12 @@ def ecs_task_definition_privileged_container_check(cache: dict, awsAccountId: st
                 # ISO Time
                 iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
                 cdefName = str(cdef["name"])
-                if str(cdef["privileged"]) == 'True': 
+                # We are going to assume that if there is not a privileged flag...that it is ;)
+                try:
+                    privCheck = str(cdef["privileged"])
+                except:
+                    privCheck = 'UNKNOWN'
+                if privCheck != 'False': 
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": taskDefinitionArn + "/" + cdefName + "/ecs-task-definition-privileged-container-check",

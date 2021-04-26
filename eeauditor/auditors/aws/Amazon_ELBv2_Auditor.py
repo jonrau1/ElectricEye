@@ -527,7 +527,10 @@ def elbv2_tls12_listener_policy_check(
             for listeners in myElbv2Listeners:
                 listenerProtocol = str(listeners["Protocol"])
                 if listenerProtocol == "HTTPS" or "TLS":
-                    listenerTlsPolicyCheck = str(listeners["SslPolicy"])
+                    try:
+                        listenerTlsPolicyCheck = str(listeners["SslPolicy"])
+                    except:
+                        continue
                     iso8601Time = (
                         datetime.datetime.utcnow()
                         .replace(tzinfo=datetime.timezone.utc)

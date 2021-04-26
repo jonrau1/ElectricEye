@@ -17,9 +17,8 @@ import inspect
 import json
 import os
 from time import sleep
-
+import re
 import boto3
-
 from check_register import CheckRegister, accumulate_paged_results
 from pluginbase import PluginBase
 
@@ -46,9 +45,12 @@ class EEAuditor(object):
         sts = boto3.client("sts")
         self.awsAccountId = sts.get_caller_identity()["Account"]
         self.awsRegion = os.environ.get("AWS_REGION", sts.meta.region_name)
-        self.awsPartition = "aws"
         if self.awsRegion in ["us-gov-east-1", "us-gov-west-1"]:
             self.awsPartition = "aws-us-gov"
+        elif re.search('cn-', self.awsPartition):
+            self.awsPartition = "aws-cn"
+        else:
+            self.awsPartition = "aws"
         # If there is a desire to add support for multiple clouds, this would be
         # a great place to implement it.
         self.source = self.plugin_base.make_plugin_source(
@@ -69,6 +71,13 @@ class EEAuditor(object):
                     print(f"Failed to load plugin {plugin_name} with exception {e}")
 
     def get_regions(self, service):
+        # Handle the weird v2 services names
+        if service == 'kinesisanalyticsv2':
+            service = 'kinesisanalytics'
+        elif service == 'macie2':
+            service == 'macie'
+        else:
+            service = service
         paginator = ssm.get_paginator("get_parameters_by_path")
         response_iterator = paginator.paginate(
             Path=f"/aws/service/global-infrastructure/services/{service}/regions",
