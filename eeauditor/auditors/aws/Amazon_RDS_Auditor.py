@@ -149,7 +149,7 @@ def rds_instance_ha_check(
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "LOW"},
+                "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[RDS.1] RDS instances should be configured for high availability",
                 "Description": "RDS DB instance "
@@ -468,9 +468,9 @@ def rds_instance_storage_encryption_check(
                                 "DbInstancePort": instancePort,
                                 "Engine": instanceEngine,
                                 "EngineVersion": instanceEngineVersion,
-                                "StorageEncrypted": True,
+                                "StorageEncrypted": True
                             }
-                        },
+                        }
                     }
                 ],
                 "Compliance": {

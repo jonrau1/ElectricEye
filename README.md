@@ -353,7 +353,7 @@ Add the `--help` option for info on running individual checks and auditors and d
 
 ## Supported Services and Checks
 
-These are the following services and checks perform by each Auditor. There are currently **244** checks supported across **74** AWS services / components using **58** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **248** checks supported across **76** AWS services / components using **58** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -499,6 +499,8 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_RDS_Auditor.py                  | RDS DB Instance                | Is database CloudWatch logging enabled                                                 |
 | Amazon_RDS_Auditor.py                  | RDS Snapshot                   | Are snapshots encrypted                                                                |
 | Amazon_RDS_Auditor.py                  | RDS Snapshot                   | Are snapshots public                                                                   |
+| Amazon_RDS_Auditor.py                  | RDS DB Cluster (Aurora)        | Is Database Activity Stream configured                                                 |
+| Amazon_RDS_Auditor.py                  | RDS DB Cluster (Aurora)        | Is the cluster encrypted                                                               |
 | Amazon_Redshift_Auditor.py             | Redshift cluster               | Is the cluster publicly accessible                                                     |
 | Amazon_Redshift_Auditor.py             | Redshift cluster               | Is the cluster encrypted                                                               |
 | Amazon_Redshift_Auditor.py             | Redshift cluster               | Is enhanced VPC routing enabled                                                        |
@@ -530,6 +532,8 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_SQS_Auditor.py                  | SQS Queue                      | Are there old messages                                                                 |
 | Amazon_VPC_Auditor.py                  | VPC                            | Is the default VPC out and about                                                       |
 | Amazon_VPC_Auditor.py                  | VPC                            | Is flow logging enabled                                                                |
+| Amazon_VPC_Auditor.py                  | Subnet                         | Do subnets map public IPs                                                              |
+| Amazon_VPC_Auditor.py                  | Subnet                         | Do subnets have available IP space                                                     |
 | Amazon_WorkSpaces_Auditor.py           | Workspace                      | Is user volume encrypted                                                               |
 | Amazon_WorkSpaces_Auditor.py           | Workspace                      | Is root volume encrypted                                                               |
 | Amazon_WorkSpaces_Auditor.py           | Workspace                      | Is running mode set to auto-off                                                        |
