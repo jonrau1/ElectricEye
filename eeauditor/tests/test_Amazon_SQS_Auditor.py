@@ -93,6 +93,21 @@ get_attributes_public_access_response = {
         }
     }
 
+get_attributes_condition_restricting_access_response = {
+    "Attributes": {
+    "QueueArn": "arn:aws:sqs:us-east-2:805574742241:MyQueue", 
+    "Policy": '{"Version":"2008-10-17","Id":"__default_policy_ID", \
+    "Statement": \
+        [{"Sid":"__owner_statement", \
+        "Effect":"Allow", \
+        "Principal": "*", \
+        "Action":"SQS:*", \
+        "Resource":"arn:aws:sqs:us-east-2:805574742241:MyQueue", \
+        "Condition":{ \
+            "StringEquals":{ \
+                "aws:sourceVpce":"vpce-1a2b3c4d"}}}]}'}
+    }
+
 get_attributes_principal_star_response = {
     "Attributes": {
     "QueueArn": "arn:aws:sqs:us-east-2:805574742241:MyQueue", 
@@ -207,6 +222,20 @@ def test_encrypted_fail(sqs_stubber):
 def test_public_sqs_pass(sqs_stubber): 
     sqs_stubber.add_response("list_queues", list_queues_response)
     sqs_stubber.add_response("get_queue_attributes", get_attributes_public_access_response)
+    results = sqs_queue_public_accessibility_check(
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
+    )
+    for result in results:
+        if "MyQueue" in result["Id"]:
+            assert result["RecordState"] == "ARCHIVED"
+        else:
+            assert False
+    sqs_stubber.assert_no_pending_responses()
+
+
+def test_public_sqs_with_condition_pass(sqs_stubber): 
+    sqs_stubber.add_response("list_queues", list_queues_response)
+    sqs_stubber.add_response("get_queue_attributes", get_attributes_condition_restricting_access_response)
     results = sqs_queue_public_accessibility_check(
         cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
     )
