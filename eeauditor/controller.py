@@ -16,10 +16,8 @@
 import getopt
 import os
 import sys
-
 import boto3
 import click
-
 from insights import create_sechub_insights
 from eeauditor import EEAuditor
 from processor.main import get_providers, process_findings

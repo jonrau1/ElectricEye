@@ -45,12 +45,11 @@ class EEAuditor(object):
         sts = boto3.client("sts")
         self.awsAccountId = sts.get_caller_identity()["Account"]
         self.awsRegion = os.environ.get("AWS_REGION", sts.meta.region_name)
+        self.awsPartition = "aws"
         if self.awsRegion in ["us-gov-east-1", "us-gov-west-1"]:
             self.awsPartition = "aws-us-gov"
-        elif re.search('cn-', self.awsPartition):
+        elif self.awsRegion in ["cn-north-1", "cn-northwest-1"]:
             self.awsPartition = "aws-cn"
-        else:
-            self.awsPartition = "aws"
         # If there is a desire to add support for multiple clouds, this would be
         # a great place to implement it.
         self.source = self.plugin_base.make_plugin_source(
