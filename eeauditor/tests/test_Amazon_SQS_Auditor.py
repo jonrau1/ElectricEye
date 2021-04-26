@@ -93,22 +93,6 @@ get_attributes_public_access_response = {
         }
     }
 
-get_attributes_condition_restricting_access_response = {
-    "Attributes": {
-    "QueueArn": "arn:aws:sqs:us-east-2:805574742241:MyQueue", 
-    "Policy": '{"Version":"2008-10-17","Id":"__default_policy_ID", \
-    "Statement": \
-        [{"Sid":"__owner_statement", \
-        "Effect":"Allow", \
-        "Principal": \
-        {"AWS":"arn:aws:iam::805574742241:root"}, \
-        "Action":"SQS:*", \
-        "Resource":"arn:aws:sqs:us-east-2:805574742241:MyQueue", \
-        "Condition":{ \
-            "StringEquals":{ \
-                "aws:sourceVpce":"vpce-1a2b3c4d"}}}]}'}
-    }
-
 get_attributes_principal_star_response = {
     "Attributes": {
     "QueueArn": "arn:aws:sqs:us-east-2:805574742241:MyQueue", 
@@ -120,21 +104,6 @@ get_attributes_principal_star_response = {
         "Action":"SQS:*", \
         "Resource":"arn:aws:sqs:us-east-2:805574742241:MyQueue"}]}'
         }
-    }
-
-get_attributes_condition_not_restricting_access_response = {
-    "Attributes": {
-    "QueueArn": "arn:aws:sqs:us-east-2:805574742241:MyQueue", 
-    "Policy": '{"Version":"2008-10-17","Id":"__default_policy_ID", \
-    "Statement": \
-        [{"Sid":"__owner_statement", \
-        "Effect":"Allow", \
-        "Principal": "*", \
-        "Action":"SQS:*", \
-        "Resource":"arn:aws:sqs:us-east-2:805574742241:MyQueue", \
-        "Condition":{ \
-            "DateGreaterThan":{ \
-                "aws:CurrentTime":"2021-01-01T12:00Z"}}}]}'}
     }
 
 @pytest.fixture(scope="function")
