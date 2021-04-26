@@ -22,8 +22,7 @@ try:
     apiKeyParam = os.environ["SHODAN_API_KEY_PARAM"]
 except Exception as e:
     if str(e) == "'SHODAN_API_KEY_PARAM'":
-        print("Shodan API Key not supplied, skipping!")
-        pass
+        apiKeyParam = "placeholder"
     else:
         print(e)
 
@@ -1125,7 +1124,8 @@ else:
         iso8601time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
         try:
             paginator = cloudfront.get_paginator("list_distributions")
-            for page in paginator:
+            iterator = paginator.paginate()
+            for page in iterator:
                 for cfront in page["DistributionList"]["Items"]:
                     domainName = str(cfront["DomainName"])
                     cfArn = str(cfront["ARN"])
@@ -1202,7 +1202,7 @@ else:
                             "Severity": {"Label": "MEDIUM"},
                             "Title": "[Shodan.CloudFront.1] CloudFront Distributions should be monitored for being indexed by Shodan",
                             "Description": "CloudFront Distribution "
-                            + ec2Id
+                            + cfId
                             + " has been indexed by Shodan on IP Address (from Domain Name) "
                             + cfDomainIp
                             + ". review the Shodan.io host information in the SourceUrl or ThreatIntelIndicators.SourceUrl fields for information about what ports and services are exposed and then take action to reduce exposure and harden your host.",
