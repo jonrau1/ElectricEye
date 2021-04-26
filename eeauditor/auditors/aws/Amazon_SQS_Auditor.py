@@ -305,21 +305,13 @@ def sqs_queue_public_accessibility_check(
         queuePolicy=json.loads(attributes["Attributes"]["Policy"])
 
         accessibility = "not_public"
-        # List of condition statements that can restrict public access
-        validConditionStatements = ["aws: PrincipalOrgID", "aws: PrincipalArn", "aws: SourceAccount", "aws: SourceArn",
-            "aws: SourceVpc", "aws: SourceVpce", "aws: userId", "aws: username"]
 
         for statement in queuePolicy["Statement"]:
             if statement["Effect"] == 'Allow':
                 if statement.get("Principal") == '*':
                     if statement.get('Condition') == None: 
-                        #Anonymous queue user
                         accessibility = "public"
-                    else: 
-                        for count, compare_statement in enumerate(statement['Condition']):
-                            if [*statement['Condition'][compare_statement]][0] not in validConditionStatements:
-                                accessibility = "public"
-        
+
         if accessibility == "not_public":
             finding = {
                 "SchemaVersion": "2018-10-08",

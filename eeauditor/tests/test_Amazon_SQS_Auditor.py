@@ -235,7 +235,6 @@ def test_encrypted_fail(sqs_stubber):
     sqs_stubber.assert_no_pending_responses()
 
 
-# PASS - Owner Principal Only
 def test_public_sqs_pass(sqs_stubber): 
     sqs_stubber.add_response("list_queues", list_queues_response)
     sqs_stubber.add_response("get_queue_attributes", get_attributes_public_access_response)
@@ -250,40 +249,9 @@ def test_public_sqs_pass(sqs_stubber):
     sqs_stubber.assert_no_pending_responses()
 
 
-# PASS - Condition restricting public access 
-def test_public_sqs_condition_restricting_access_pass(sqs_stubber): 
-    sqs_stubber.add_response("list_queues", list_queues_response)
-    sqs_stubber.add_response("get_queue_attributes", get_attributes_condition_restricting_access_response)
-    results = sqs_queue_public_accessibility_check(
-        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
-    )
-    for result in results:
-        if "MyQueue" in result["Id"]:
-            assert result["RecordState"] == "ARCHIVED"
-        else:
-            assert False
-    sqs_stubber.assert_no_pending_responses()
-
-
-# FAIL - Principal Star no condition
 def test_public_sqs_principal_star_fail(sqs_stubber): 
     sqs_stubber.add_response("list_queues", list_queues_response)
     sqs_stubber.add_response("get_queue_attributes", get_attributes_principal_star_response)
-    results = sqs_queue_public_accessibility_check(
-        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
-    )
-    for result in results:
-        if "MyQueue" in result["Id"]:
-            assert result["RecordState"] == "ACTIVE"
-        else:
-            assert False
-    sqs_stubber.assert_no_pending_responses()
-
-
-# FAIL - Principal Star w/ non public restricting condition
-def test_public_sqs_condition_not_restricting_access_fail(sqs_stubber): 
-    sqs_stubber.add_response("list_queues", list_queues_response)
-    sqs_stubber.add_response("get_queue_attributes", get_attributes_condition_not_restricting_access_response)
     results = sqs_queue_public_accessibility_check(
         cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
     )
