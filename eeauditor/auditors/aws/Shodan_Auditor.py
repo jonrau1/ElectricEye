@@ -18,7 +18,15 @@ dms = boto3.client("dms")
 amzmq = boto3.client("mq")
 cloudfront = boto3.client("cloudfront")
 
-apiKeyParam = os.environ["SHODAN_API_KEY_PARAM"]
+try:
+    apiKeyParam = os.environ["SHODAN_API_KEY_PARAM"]
+except Exception as e:
+    if str(e) == "'SHODAN_API_KEY_PARAM'":
+        print("Shodan API Key not supplied, skipping!")
+        pass
+    else:
+        print(e)
+
 if apiKeyParam == "placeholder":
     print("Shodan API Key not supplied, skipping!")
     pass
