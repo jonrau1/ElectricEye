@@ -8,36 +8,32 @@ Continuously monitor your AWS services for configurations that can lead to degra
 ***Everything you do***<br/>
 <sub>*Judas Priest, 1982*</sub>
 
-[![DepShield Badge](https://depshield.sonatype.org/badges/jonrau1/ElectricEye/depshield.svg)](https://depshield.github.io)
-
 ## Table of Contents
 
-- [Synopsis](https://github.com/jonrau1/ElectricEye#synopsis)
-- [Description](https://github.com/jonrau1/ElectricEye#description)
-- [Solution Architecture](https://github.com/jonrau1/ElectricEye#solution-architecture)
-- [Setting Up](https://github.com/jonrau1/ElectricEye#setting-up)
-  - [Build and push the Docker image](https://github.com/jonrau1/ElectricEye#build-and-push-the-docker-image)
-  - [(OPTIONAL) Setup Shodan.io API Key](https://github.com/jonrau1/ElectricEye#optional-setup-shodanio-api-key)
+- [Synopsis](#synopsis)
+- [Description](#description)
+- [Solution Architecture](#solution-architecture)
+- [Setting Up](#setting-up)
+  - [Build and push the Docker image](#build-and-push-the-docker-image)
+  - [(OPTIONAL) Setup Shodan.io API Key](#optional-setup-shodanio-api-key)
   - [(OPTIONAL) Setup DisruptOps Client Id and API Key](#optional-setup-disruptops-client-id-and-api-key)
-  - [Setup baseline infrastructure via Terraform](https://github.com/jonrau1/ElectricEye#setup-baseline-infrastructure-via-terraform)
-  - [Setup baseline infrastructure via AWS CloudFormation](https://github.com/jonrau1/ElectricEye#setup-baseline-infrastructure-via-aws-cloudformation)
-  - [Manually execute the ElectricEye ECS Task](https://github.com/jonrau1/ElectricEye#manually-execute-the-electriceye-ecs-task-you-only-need-to-do-this-once)
+  - [Setup baseline infrastructure via Terraform](#setup-baseline-infrastructure-via-terraform)
+  - [Setup baseline infrastructure via AWS CloudFormation](#setup-baseline-infrastructure-via-aws-cloudformation)
+  - [Manually execute the ElectricEye ECS Task](#manually-execute-the-electriceye-ecs-task-you-only-need-to-do-this-once)
   - [Running locally](#running-locally)
-- [Supported Services and Checks](https://github.com/jonrau1/ElectricEye#supported-services-and-checks)
-- [Add-on Modules](https://github.com/jonrau1/ElectricEye#add-on-modules)
+- [Supported Services and Checks](#supported-services-and-checks)
+- [Add-on Modules](#add-on-modules)
   - [Config Findings Pruner](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/config-deletion-pruner)
   - [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response)
   - [ElectricEye-ChatOps](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-chatops)
   - [ElectricEye-Pagerduty-Integration](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-pagerduty-integration)
   - [ElectricEye-Reports](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-reports)
-- [Known Issues & Limitiations](https://github.com/jonrau1/ElectricEye#known-issues--limitations)
+- [Known Issues & Limitiations](#known-issues--limitations)
 - [FAQ](https://github.com/jonrau1/ElectricEye#faq)
-  - [13. How much does this solution cost to run?](https://github.com/jonrau1/ElectricEye#13-how-much-does-this-solution-cost-to-run)
-  - [14. What are those other tools you mentioned?](https://github.com/jonrau1/ElectricEye#14-what-are-those-other-tools-you-mentioned)
-- [Contributing](https://github.com/jonrau1/ElectricEye#contributing)
-  - [Auditor testing](#auditor-testing)
-  - [ToDo](https://github.com/jonrau1/ElectricEye#to-do)
-- [License](https://github.com/jonrau1/ElectricEye#license)
+- [Contributing](#contributing)
+- [Developing new Checks](#developer-guide)
+- [Auditor testing](#auditor-testing)
+- [License](#license)
 
 ## Synopsis
 
@@ -879,48 +875,7 @@ The `Compliance.RelatedRequiremens` JSON list only accepts up to 32 strings so w
 
 ~~The mappings list is [located here](https://github.com/jonrau1/ElectricEye/blob/master/compliance-mapping/electriceye-auditor-compliance-mapping.xlsx)~~ Shit, I don't know where I put that...
 
-## Contributing
-
-I am very happy to accept PR's for the following:
-
-- Adding new Auditors
-- Adding new checks to existing Auditors
-- Adding new ElectricEye-Response playbooks
-- Adding new Event Patterns for ElectricEye-ChatOps
-- Fixing my stupid grammar errors, spelling errors and inconsistencies
-- Removing any unused IAM permissions that may have popped up
-- Adding new forms of deployment scripts or IAC (Salt stacks, Ansible playbooks, etc.)
-- Adding Terraform `v0.12.x` support
-- My to-do list
-
-If you are working on another project whether open-source or commercial and want to include parts of ElectricEye (or the full thing) in your product / project, please contact me and at least give me credit. If it is a commercial offering that you'll be charging for, the GPL-3.0 says you should make it fully obvious that the customers can get it for free here.
-
-### Early Contributors
-
-Quick shout-outs to the folks who answered the call early to test out ElectricEye and make it not-a-shit-sandwich.
-
-##### Alpha Testing:
-
-- [Mark Yancey](https://www.linkedin.com/in/mark-yancey-jr-aspiring-cloud-security-professional-a52bb9126/)
-
-##### Beta Testing:
-
-- [Martin Klie](https://www.linkedin.com/in/martin-klie-0600845/)
-- [Joel Castillo](https://www.linkedin.com/in/joelbcastillo/)
-- [Juhi Gupta](https://www.linkedin.com/in/juhi-gupta-09/)
-- [Bulent Yidliz](https://www.linkedin.com/in/bulent-yildiz/)
-- [Guillermo Ojeda](https://www.linkedin.com/in/guillermoojeda/)
-- [Dhilip Anand Shivaji](https://www.linkedin.com/in/dhilipanand/)
-- [Arek Bar](https://www.linkedin.com/in/arkadiuszbar/)
-- [Ryan Russel](https://www.linkedin.com/in/pioneerrussell/)
-- [Jonathan Nguyen](https://www.linkedin.com/in/jonanguyen/)
-- [Jody Brazil](https://www.linkedin.com/in/jodybrazil/)
-- [Dylan Shields](https://www.linkedin.com/in/dylan-shields-6802b1168/)
-- [Manuel Leos Rivas](https://www.linkedin.com/in/manuel-lr/)
-- [Andrew Alaniz](https://www.linkedin.com/in/andrewdalaniz/)
-- [Christopher Childers](https://www.linkedin.com/in/christopher-childers-28950537/)
-
-### Developer Guide
+## Developer Guide
 
 1. Naming an auditor: To keep naming consistent auditor names are based on the name of the service from the [AWS Documentation](https://docs.aws.amazon.com/index.html) and are named after the service being audited.
 
@@ -1043,7 +998,7 @@ from botocore.stub import Stubber, ANY
 
 8. All new checks mapped to Compliance.RelatedRequirements checks
 
-### Auditor testing
+## Auditor testing
 
 1. Install dependencies
 
@@ -1057,6 +1012,47 @@ pip3 install -r requirements-dev.txt
 pytest
 ```
 Tests are located in the [eeauditor tests folder](eeauditor/tests) and individual test can be run by adding the path with the name of the file after pytest.
+
+## Contributing
+
+I am very happy to accept PR's for the following:
+
+- Adding new Auditors
+- Adding new checks to existing Auditors
+- Adding new ElectricEye-Response playbooks
+- Adding new Event Patterns for ElectricEye-ChatOps
+- Fixing my stupid grammar errors, spelling errors and inconsistencies
+- Removing any unused IAM permissions that may have popped up
+- Adding new forms of deployment scripts or IAC (Salt stacks, Ansible playbooks, etc.)
+- Adding Terraform `v0.12.x` support
+- My to-do list
+
+If you are working on another project whether open-source or commercial and want to include parts of ElectricEye (or the full thing) in your product / project, please contact me and at least give me credit. If it is a commercial offering that you'll be charging for, the GPL-3.0 says you should make it fully obvious that the customers can get it for free here.
+
+### Early Contributors
+
+Quick shout-outs to the folks who answered the call early to test out ElectricEye and make it not-a-shit-sandwich.
+
+##### Alpha Testing:
+
+- [Mark Yancey](https://www.linkedin.com/in/mark-yancey-jr-aspiring-cloud-security-professional-a52bb9126/)
+
+##### Beta Testing:
+
+- [Martin Klie](https://www.linkedin.com/in/martin-klie-0600845/)
+- [Joel Castillo](https://www.linkedin.com/in/joelbcastillo/)
+- [Juhi Gupta](https://www.linkedin.com/in/juhi-gupta-09/)
+- [Bulent Yidliz](https://www.linkedin.com/in/bulent-yildiz/)
+- [Guillermo Ojeda](https://www.linkedin.com/in/guillermoojeda/)
+- [Dhilip Anand Shivaji](https://www.linkedin.com/in/dhilipanand/)
+- [Arek Bar](https://www.linkedin.com/in/arkadiuszbar/)
+- [Ryan Russel](https://www.linkedin.com/in/pioneerrussell/)
+- [Jonathan Nguyen](https://www.linkedin.com/in/jonanguyen/)
+- [Jody Brazil](https://www.linkedin.com/in/jodybrazil/)
+- [Dylan Shields](https://www.linkedin.com/in/dylan-shields-6802b1168/)
+- [Manuel Leos Rivas](https://www.linkedin.com/in/manuel-lr/)
+- [Andrew Alaniz](https://www.linkedin.com/in/andrewdalaniz/)
+- [Christopher Childers](https://www.linkedin.com/in/christopher-childers-28950537/)
 
 ### To-Do
 
