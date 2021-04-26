@@ -395,7 +395,7 @@ def subnet_no_ip_space_check(cache: dict, awsAccountId: str, awsRegion: str, aws
             snetArn = str(snet["SubnetArn"])
             snetId = str(snet["SubnetId"])
         
-            if int(snet["AvailableIpAddressCount"]) >= 1:
+            if int(snet["AvailableIpAddressCount"]) <= 1:
                 # This is a failing check
                 finding = {
                     "SchemaVersion": "2018-10-08",
