@@ -201,9 +201,8 @@ def ec2_imdsv2_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                                 print(e)
                     else:
                         pass
-        except Exception as e:
-            print(e)
-            continue
+    except Exception as e:
+        print(e)
 
 @registry.register_check("ec2")
 def ec2_secure_enclave_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -373,7 +372,6 @@ def ec2_secure_enclave_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                         yield finding
     except Exception as e:
         print(e)
-        continue
 
 @registry.register_check("ec2")
 def ec2_public_facing_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -535,7 +533,6 @@ def ec2_public_facing_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                         yield finding
     except Exception as e:
         print(e)
-        continue
 
 @registry.register_check("ec2")
 def ec2_source_dest_verification_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -695,4 +692,3 @@ def ec2_source_dest_verification_check(cache: dict, awsAccountId: str, awsRegion
                         yield finding
     except Exception as e:
         print(e)
-        continue

@@ -170,7 +170,6 @@ def datasync_public_agent_check(cache: dict, awsAccountId: str, awsRegion: str, 
                 continue
     except Exception as e:
         print(e)
-        continue
 
 @registry.register_check("ec2")
 def datasync_task_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -316,4 +315,3 @@ def datasync_task_logging_check(cache: dict, awsAccountId: str, awsRegion: str, 
                 continue
     except Exception as e:
         print(e)
-        continue
