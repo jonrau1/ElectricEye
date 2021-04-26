@@ -374,8 +374,8 @@ def sqs_queue_public_accessibility_check(
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
-                "Title": "[SQS.3] SQS queues should not be open to the public",
-                "Description": f"SQS queue {queueName} is open to the public.",
+                "Title": "[SQS.3] SQS queues should not be unconditionally open to the public",
+                "Description": f"SQS queue {queueName} is unconditionally open to the public.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on best practices for SQS Policies, refer to the Identity and Access Management section of the Amazon SQS Developer Guide",
