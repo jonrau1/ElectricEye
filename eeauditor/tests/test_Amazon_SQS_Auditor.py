@@ -121,6 +121,20 @@ get_attributes_principal_star_response = {
         }
     }
 
+list_queues_blank_response = {
+    "ResponseMetadata":{
+      "RequestId":"aaaa-31a6-5a69-964c-aaaa",
+      "HTTPStatusCode":200,
+      "HTTPHeaders":{
+         "x-amzn-requestid":"aaaa-31a6-5a69-964c-aaaa",
+         "date":"Tues, 27 Apr 2021 10:15:01 AEST",
+         "content-type":"text/xml",
+         "content-length":"340"
+      },
+      "RetryAttempts":0
+   }
+}
+
 @pytest.fixture(scope="function")
 def sqs_stubber():
     sqs_stubber = Stubber(sqs)
@@ -216,6 +230,16 @@ def test_encrypted_fail(sqs_stubber):
             assert result["RecordState"] == "ACTIVE"
         else:
             assert False
+    sqs_stubber.assert_no_pending_responses()
+
+
+def test_blank_queues(sqs_stubber): 
+    sqs_stubber.add_response("list_queues", list_queues_response)
+    #get queue attributes not required because no queues were returned
+    results = sqs_queue_encryption_check(
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
+    )
+    assert len(list(results)) == 0
     sqs_stubber.assert_no_pending_responses()
 
 
