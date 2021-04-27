@@ -396,7 +396,8 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "datasync:ListAgents",
                 "datasync:ListTasks",
                 "fsx:DescribeBackups",
-                "fsx:DescribeFileSystems"
+                "fsx:DescribeFileSystems",
+                "amplify:ListApps"
             ],
             "Resource": "*"
         }

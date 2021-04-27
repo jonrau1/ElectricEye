@@ -170,7 +170,8 @@
                 "datasync:ListAgents",
                 "datasync:ListTasks",
                 "fsx:DescribeBackups",
-                "fsx:DescribeFileSystems"
+                "fsx:DescribeFileSystems",
+                "amplify:ListApps"
             ],
             "Resource": "*"
         }

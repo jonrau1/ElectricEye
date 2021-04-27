@@ -353,7 +353,7 @@ Add the `--help` option for info on running individual checks and auditors and d
 
 ## Supported Services and Checks
 
-These are the following services and checks perform by each Auditor. There are currently **261** checks supported across **77** AWS services / components using **58** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **265** checks supported across **78** AWS services / components using **59** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -542,6 +542,8 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_SNS_Auditor.py                  | SNS Topic                      | Does the topic allow public access                                                  |
 | Amazon_SNS_Auditor.py                  | SNS Topic                      | Does the topic allow cross-account access                                           |
 | Amazon_SQS_Auditor.py                  | SQS Queue                      | Are there old messages                                                              |
+| Amazon_SQS_Auditor.py                  | SQS Queue                      | Is Server Side Encryption Enabled                                                   |
+| Amazon_SQS_Auditor.py                  | SQS Queue                      | Is the SQS Queue publically accessible                                              |
 | Amazon_VPC_Auditor.py                  | VPC                            | Is the default VPC out and about                                                    |
 | Amazon_VPC_Auditor.py                  | VPC                            | Is flow logging enabled                                                             |
 | Amazon_VPC_Auditor.py                  | Subnet                         | Do subnets map public IPs                                                           |
@@ -553,6 +555,8 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_Xray_Auditor.py                 | XRay Encryption Config         | Is KMS CMK encryption used                                                          |
 | AMI_Auditor.py                         | Amazon Machine Image (AMI)     | Are owned AMIs public                                                               |
 | AMI_Auditor.py                         | Amazon Machine Image (AMI)     | Are owned AMIs encrypted                                                            |
+| AWS_Amplify_Auditor.py                 | AWS Amplify                    | Does the app have basic auth enabled on the branches                                |
+| AWS_Amplify_Auditor.py                 | AWS Amplify                    | Does the app have auto deletion for branches enabled                                |
 | AWS_AppMesh_Auditor.py                 | App Mesh mesh                  | Does the mesh egress filter DROP_ALL                                                |
 | AWS_AppMesh_Auditor.py                 | App Mesh virtual node          | Does the backend default client policy enforce TLS                                  |
 | AWS_AppMesh_Auditor.py                 | App Mesh virtual node          | Do virtual node backends have STRICT TLS mode configured for inbound connections    |
