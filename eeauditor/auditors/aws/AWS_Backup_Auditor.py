@@ -27,8 +27,6 @@ efs = boto3.client("efs")
 backup = boto3.client("backup")
 
 # loop through DynamoDB tables
-
-
 def paginate(cache):
     response = cache.get("paginate")
     if response:

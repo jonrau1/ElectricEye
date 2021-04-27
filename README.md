@@ -353,7 +353,7 @@ Add the `--help` option for info on running individual checks and auditors and d
 
 ## Supported Services and Checks
 
-These are the following services and checks perform by each Auditor. There are currently **265** checks supported across **78** AWS services / components using **59** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **272** checks supported across **79** AWS services / components using **59** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -493,6 +493,13 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_MSK_Auditor.py                  | MSK Cluster                    | Is client-broker communications TLS-only                                            |
 | Amazon_MSK_Auditor.py                  | MSK Cluster                    | Is enhanced monitoring used                                                         |
 | Amazon_MSK_Auditor.py                  | MSK Cluster                    | Is Private CA TLS auth used                                                         |
+| Amazon_MWAA(Airflow)_Auditor.py        | Airflow Environment            | Is a KMS CMK used for encryption                                                    |
+| Amazon_MWAA(Airflow)_Auditor.py        | Airflow Environment            | Is the Airflow URL Public                                                           |
+| Amazon_MWAA(Airflow)_Auditor.py        | Airflow Environment            | Are DAG Processing logs configured                                                  |
+| Amazon_MWAA(Airflow)_Auditor.py        | Airflow Environment            | Are Scheduler logs configured                                                       |
+| Amazon_MWAA(Airflow)_Auditor.py        | Airflow Environment            | Are Task logs configured                                                            |
+| Amazon_MWAA(Airflow)_Auditor.py        | Airflow Environment            | Are Webserver logs configured                                                       |
+| Amazon_MWAA(Airflow)_Auditor.py        | Airflow Environment            | Are Worker logs configured                                                          |
 | Amazon_Neptune_Auditor.py              | Neptune instance               | Is Neptune configured for HA                                                        |
 | Amazon_Neptune_Auditor.py              | Neptune instance               | Is Neptune storage encrypted                                                        |
 | Amazon_Neptune_Auditor.py              | Neptune instance               | Does Neptune use IAM DB Auth                                                        |

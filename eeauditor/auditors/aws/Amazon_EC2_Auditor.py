@@ -21,25 +21,22 @@ from dateutil.parser import parse
 registry = CheckRegister()
 
 ec2 = boto3.client("ec2")
-paginator = ec2.get_paginator("describe_instances")
 
+def paginate(cache):
+    response = cache.get("paginate")
+    if response:
+        return response
+    get_paginators = ec2.get_paginator("describe_instances")
+    if get_paginators:
+        cache["paginate"] = get_paginators.paginate(Filters=[{'Name': 'instance-state-name','Values': ['running','stopped']}])
+        return cache["paginate"]
 
 @registry.register_check("ec2")
 def ec2_imdsv2_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     try:
-        iterator = paginator.paginate(
-            Filters=[
-                {
-                    'Name': 'instance-state-name',
-                    'Values': [
-                        'running',
-                        'stopped'
-                    ]
-                },
-            ]
-        )
+        iterator = paginate(cache=cache)
         for page in iterator:
             for r in page["Reservations"]:
                 for i in r["Instances"]:
@@ -209,17 +206,7 @@ def ec2_secure_enclave_check(cache: dict, awsAccountId: str, awsRegion: str, aws
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     try:
-        iterator = paginator.paginate(
-            Filters=[
-                {
-                    'Name': 'instance-state-name',
-                    'Values': [
-                        'running',
-                        'stopped'
-                    ]
-                },
-            ]
-        )
+        iterator = paginate(cache=cache)
         for page in iterator:
             for r in page["Reservations"]:
                 for i in r["Instances"]:
@@ -378,16 +365,7 @@ def ec2_public_facing_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     try:
-        iterator = paginator.paginate(
-            Filters=[
-                {
-                    'Name': 'instance-state-name',
-                    'Values': [
-                        'running'
-                    ]
-                }
-            ]
-        )
+        iterator = paginate(cache=cache)
         for page in iterator:
             for r in page["Reservations"]:
                 for i in r["Instances"]:
@@ -539,16 +517,7 @@ def ec2_source_dest_verification_check(cache: dict, awsAccountId: str, awsRegion
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     try:
-        iterator = paginator.paginate(
-            Filters=[
-                {
-                    'Name': 'instance-state-name',
-                    'Values': [
-                        'running'
-                    ]
-                }
-            ]
-        )
+        iterator = paginate(cache=cache)
         for page in iterator:
             for r in page["Reservations"]:
                 for i in r["Instances"]:

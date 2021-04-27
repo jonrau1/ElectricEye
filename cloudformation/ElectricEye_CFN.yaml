@@ -183,6 +183,8 @@ Resources:
               - Effect: Allow
                 Action:
                   - access-analyzer:ListAnalyzers
+                  - airflow:GetEnvironment
+                  - airflow:ListEnvironments
                   - amplify:ListApps
                   - apigateway:GET
                   - appmesh:DescribeMesh

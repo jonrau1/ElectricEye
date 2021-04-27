@@ -46,11 +46,10 @@ def crawler_s3_encryption_check(
             crawlerSecConfig = str(response["Crawler"]["CrawlerSecurityConfiguration"])
             try:
                 response = glue.get_security_configuration(Name=crawlerSecConfig)
-                s3EncryptionCheck = str(
-                    response["SecurityConfiguration"]["EncryptionConfiguration"]["S3Encryption"][
-                        0
-                    ]["S3EncryptionMode"]
-                )
+                try:
+                    s3EncryptionCheck = str(response["SecurityConfiguration"]["EncryptionConfiguration"]["S3Encryption"][0]["S3EncryptionMode"])
+                except:
+                    s3EncryptionCheck = "DISABLED"
                 if s3EncryptionCheck == "DISABLED":
                     finding = {
                         "SchemaVersion": "2018-10-08",
@@ -185,11 +184,10 @@ def crawler_cloudwatch_encryption_check(
             crawlerSecConfig = str(response["Crawler"]["CrawlerSecurityConfiguration"])
             try:
                 response = glue.get_security_configuration(Name=crawlerSecConfig)
-                cwEncryptionCheck = str(
-                    response["SecurityConfiguration"]["EncryptionConfiguration"][
-                        "CloudWatchEncryption"
-                    ]["CloudWatchEncryptionMode"]
-                )
+                try:
+                    cwEncryptionCheck = str(response["SecurityConfiguration"]["EncryptionConfiguration"]["CloudWatchEncryption"]["CloudWatchEncryptionMode"])
+                except:
+                    cwEncryptionCheck = "DISABLED"
                 if cwEncryptionCheck == "DISABLED":
                     finding = {
                         "SchemaVersion": "2018-10-08",
@@ -324,11 +322,10 @@ def crawler_job_bookmark_encryption_check(
             crawlerSecConfig = str(response["Crawler"]["CrawlerSecurityConfiguration"])
             try:
                 response = glue.get_security_configuration(Name=crawlerSecConfig)
-                jobBookmarkEncryptionCheck = str(
-                    response["SecurityConfiguration"]["EncryptionConfiguration"][
-                        "JobBookmarksEncryption"
-                    ]["JobBookmarksEncryptionMode"]
-                )
+                try:
+                    jobBookmarkEncryptionCheck = str(response["SecurityConfiguration"]["EncryptionConfiguration"]["JobBookmarksEncryption"]["JobBookmarksEncryptionMode"])
+                except:
+                    jobBookmarkEncryptionCheck = "DISABLED"
                 if jobBookmarkEncryptionCheck == "DISABLED":
                     finding = {
                         "SchemaVersion": "2018-10-08",
@@ -456,9 +453,10 @@ def glue_data_catalog_encryption_check(
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
         response = glue.get_data_catalog_encryption_settings()
-        catalogEncryptionCheck = str(
-            response["DataCatalogEncryptionSettings"]["EncryptionAtRest"]["CatalogEncryptionMode"]
-        )
+        try:
+            catalogEncryptionCheck = str(response["DataCatalogEncryptionSettings"]["EncryptionAtRest"]["CatalogEncryptionMode"])
+        except:
+            catalogEncryptionCheck = "DISABLED"
         if catalogEncryptionCheck == "DISABLED":
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -572,11 +570,10 @@ def glue_data_catalog_password_encryption_check(
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
         response = glue.get_data_catalog_encryption_settings()
-        passwordEncryptionCheck = str(
-            response["DataCatalogEncryptionSettings"]["ConnectionPasswordEncryption"][
-                "ReturnConnectionPasswordEncrypted"
-            ]
-        )
+        try:
+            passwordEncryptionCheck = str(response["DataCatalogEncryptionSettings"]["ConnectionPasswordEncryption"]["ReturnConnectionPasswordEncrypted"])
+        except:
+            passwordEncryptionCheck = "False"
         if passwordEncryptionCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",

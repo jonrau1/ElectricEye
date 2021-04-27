@@ -209,6 +209,8 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
             "Sid": "VisualEditor0",
             "Effect": "Allow",
             "Action": [
+                "airflow:GetEnvironment",
+                "airflow:ListEnvironments",
                 "cloudtrail:DescribeTrails",
                 "cloudtrail:ListTrails",
                 "access-analyzer:ListAnalyzers",

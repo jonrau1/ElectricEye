@@ -319,7 +319,7 @@ def function_code_signer_check(cache: dict, awsAccountId: str, awsRegion: str, a
                     "Title": "[Lambda.3] Lambda functions should use code signing from AWS Signer to ensure trusted code runs in a Function",
                     "Description": "Lambda function "
                     + functionName
-                    + " has an AWS code signing job configured.",
+                    + " has an AWS code signing job configured at " + signingJobArn + ".",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "To configure code signing for your Functions refer to the UConfiguring code signing for AWS Lambda section of the Amazon Lambda Developer Guide",
@@ -336,9 +336,6 @@ def function_code_signer_check(cache: dict, awsAccountId: str, awsRegion: str, a
                             "Details": {
                                 "AwsLambdaFunction": {
                                     "FunctionName": functionName
-                                },
-                                "Other": {
-                                    "SigningJobArn": signingJobArn
                                 }
                             }
                         }
@@ -396,9 +393,6 @@ def function_code_signer_check(cache: dict, awsAccountId: str, awsRegion: str, a
                             "Details": {
                                 "AwsLambdaFunction": {
                                     "FunctionName": functionName
-                                },
-                                "Other": {
-                                    "SigningJobArn": signingJobArn
                                 }
                             }
                         }

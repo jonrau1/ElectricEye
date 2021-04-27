@@ -71,13 +71,16 @@ def public_ami_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "Other",
+                        "Type": "AwsEc2Image",
                         "Id": amiArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
-                            "Other": {"imageId": imageId, "imageCreatedDate": imageCreatedDate}
-                        },
+                            "Other": {
+                                "ImageId": imageId, 
+                                "ImageCreatedDate": imageCreatedDate
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -128,13 +131,16 @@ def public_ami_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "Other",
+                        "Type": "AwsEc2Image",
                         "Id": amiArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
-                            "Other": {"imageId": imageId, "imageCreatedDate": imageCreatedDate}
-                        },
+                            "Other": {
+                                "ImageId": imageId, 
+                                "ImageCreatedDate": imageCreatedDate
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -204,13 +210,16 @@ def encrypted_ami_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
                     "ProductFields": {"Product Name": "ElectricEye"},
                     "Resources": [
                         {
-                            "Type": "Other",
+                            "Type": "AwsEc2Image",
                             "Id": amiArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {"imageId": imageId, "imageCreatedDate": imageCreatedDate}
-                            },
+                                "Other": {
+                                    "ImageId": imageId, 
+                                    "ImageCreatedDate": imageCreatedDate
+                                }
+                            }
                         }
                     ],
                     "Compliance": {
@@ -255,13 +264,16 @@ def encrypted_ami_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
                     "ProductFields": {"Product Name": "ElectricEye"},
                     "Resources": [
                         {
-                            "Type": "Other",
+                            "Type": "AwsEc2Image",
                             "Id": amiArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {"imageId": imageId, "imageCreatedDate": imageCreatedDate}
-                            },
+                                "Other": {
+                                    "ImageId": imageId, 
+                                    "ImageCreatedDate": imageCreatedDate
+                                }
+                            }
                         }
                     ],
                     "Compliance": {

@@ -5,6 +5,8 @@
             "Sid": "VisualEditor0",
             "Effect": "Allow",
             "Action": [
+                "airflow:GetEnvironment",
+                "airflow:ListEnvironments",
                 "cloudtrail:DescribeTrails",
                 "cloudtrail:ListTrails",
                 "kms:DescribeKey",
