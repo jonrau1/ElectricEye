@@ -74,7 +74,7 @@ class EEAuditor(object):
         if service == 'kinesisanalyticsv2':
             service = 'kinesisanalytics'
         elif service == 'macie2':
-            service == 'macie'
+            service = 'macie'
         else:
             service = service
         paginator = ssm.get_paginator("get_parameters_by_path")
@@ -90,6 +90,21 @@ class EEAuditor(object):
         return values
 
     def run_checks(self, requested_check_name=None, delay=0):
+        # TODO: Add multi-region capabilities here
+        '''
+        regionList = []
+        ec2regions = boto3.client("ec2")
+        for regions in ec2regions.describe_regions()['Regions']:
+            regionName = str(r['RegionName'])
+                optInStatus = str(r['OptInStatus'])
+                if optInStatus == 'not-opted-in':
+                    pass
+                else:
+                    regionList.append(regionName)
+
+        for region in regionList:
+            ### TODO: Implement Below... ###
+        '''
         for service_name, check_list in self.registry.checks.items():
             if self.awsRegion not in self.get_regions(service_name):
                 print(f"AWS region {self.awsRegion} not supported for {service_name}")
