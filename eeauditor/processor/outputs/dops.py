@@ -12,15 +12,30 @@ class DopsProvider(object):
     def __init__(self):
         ssm = boto3.client("ssm")
 
-        dops_client_id_param = os.environ["DOPS_CLIENT_ID_PARAM"]
-        dops_api_key_param = os.environ["DOPS_API_KEY_PARAM"]
+        try:
+            dops_client_id_param = os.environ["DOPS_CLIENT_ID_PARAM"]
+        except Exception as e:
+            if str(e) == '"DOPS_CLIENT_ID_PARAM"':
+                dops_client_id_param == "placeholder"
+            else:
+                print(e)
+        try:
+            dops_api_key_param = os.environ["DOPS_API_KEY_PARAM"]
+        except Exception as e:
+            if str(e) == '"DOPS_API_KEY_PARAM"':
+                dops_api_key_param == "placeholder"
+            else:
+                print(e)
 
-        client_id_response = ssm.get_parameter(Name=dops_client_id_param, WithDecryption=True)
-        api_key_response = ssm.get_parameter(Name=dops_api_key_param, WithDecryption=True)
+        if dops_api_key_param or dops_client_id_param == "placeholder":
+            print('Either the DisruptOps API Keys were not provided, or the "placeholder" value was kept')
+        else:
+            client_id_response = ssm.get_parameter(Name=dops_client_id_param, WithDecryption=True)
+            api_key_response = ssm.get_parameter(Name=dops_api_key_param, WithDecryption=True)
 
-        self.url = "https://collector.prod.disruptops.com/event"
-        self.client_id = str(client_id_response["Parameter"]["Value"])
-        self.api_key = str(api_key_response["Parameter"]["Value"])
+            self.url = "https://collector.prod.disruptops.com/event"
+            self.client_id = str(client_id_response["Parameter"]["Value"])
+            self.api_key = str(api_key_response["Parameter"]["Value"])
 
     def write_findings(self, findings: list, **kwargs):
         print(f"Writing {len(findings)} results to DisruptOps")

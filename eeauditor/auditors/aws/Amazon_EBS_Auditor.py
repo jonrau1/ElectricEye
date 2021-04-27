@@ -157,7 +157,7 @@ def ebs_volume_attachment_check(
 
 
 @registry.register_check("ec2")
-def EbsVolumeDeleteOnTerminationCheck(
+def ebs_volume_delete_on_termination_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = describe_volumes(cache)
@@ -275,7 +275,7 @@ def EbsVolumeDeleteOnTerminationCheck(
 
 
 @registry.register_check("ec2")
-def EbsVolumeEncryptionCheck(
+def ebs_volume_encryption_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = describe_volumes(cache)
@@ -389,7 +389,7 @@ def EbsVolumeEncryptionCheck(
 
 
 @registry.register_check("ec2")
-def EbsSnapshotEncryptionCheck(
+def ebs_snapshot_encryption_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = describe_snapshots(cache, awsAccountId)
@@ -503,7 +503,7 @@ def EbsSnapshotEncryptionCheck(
 
 
 @registry.register_check("ec2")
-def EbsSnapshotPublicCheck(
+def ebs_snapshot_public_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = describe_snapshots(cache, awsAccountId)
@@ -692,7 +692,7 @@ def EbsSnapshotPublicCheck(
 
 
 @registry.register_check("ec2")
-def EbsAccountEncryptionByDefaultCheck(
+def ebs_account_encryption_by_default_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = ec2.get_ebs_encryption_by_default(DryRun=False)

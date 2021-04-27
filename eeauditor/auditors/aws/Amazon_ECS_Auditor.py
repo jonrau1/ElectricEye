@@ -283,3 +283,340 @@ def ecs_cluster_default_provider_strategy_check(
                     yield finding
         except Exception as e:
             print(e)
+
+@registry.register_check("ecs")
+def ecs_task_definition_privileged_container_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    for taskdef in ecs.list_task_definitions(status='ACTIVE')['taskDefinitionArns']:
+        try:
+            response = ecs.describe_task_definition(taskDefinition=taskdef)["taskDefinition"]
+            taskDefinitionArn = str(response['taskDefinitionArn'])
+            # Loop container definitions 
+            for cdef in response["containerDefinitions"]:
+                # ISO Time
+                iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+                cdefName = str(cdef["name"])
+                # We are going to assume that if there is not a privileged flag...that it is ;)
+                try:
+                    privCheck = str(cdef["privileged"])
+                except:
+                    privCheck = 'UNKNOWN'
+                if privCheck != 'False': 
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": taskDefinitionArn + "/" + cdefName + "/ecs-task-definition-privileged-container-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": taskDefinitionArn + "/" + cdefName,
+                        "AwsAccountId": awsAccountId,
+                        "Types": [
+                            "Software and Configuration Checks/AWS Security Best Practices",
+                            "TTPs/Privilege Escalation"
+                        ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "MEDIUM"},
+                        "Confidence": 99,
+                        "Title": "[ECS.3] ECS Task Definitions should not run privileged containers if not required",
+                        "Description": "ECS Container Definition "
+                        + cdefName
+                        + " in Task Definition "
+                        + taskDefinitionArn
+                        + " has defined a Privileged container, which should be avoided unless absolutely necessary. Refer to the remediation instructions to remediate this behavior",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "Containers running as Privileged will have Root permissions, this should be avoided if not needed. Refer to the Task definition parameters Security section of the Amazon Elastic Container Service Developer Guide",
+                                "Url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#container_definitions",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsEcsTaskDefinition",
+                                "Id": taskDefinitionArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "Other": {
+                                        "TaskDefinitionArn": taskDefinitionArn,
+                                        "ContainerDefinitionName": cdefName
+                                    }
+                                }
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "FAILED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-1",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-2",
+                                "NIST SP 800-53 IA-1",
+                                "NIST SP 800-53 IA-2",
+                                "NIST SP 800-53 IA-3",
+                                "NIST SP 800-53 IA-4",
+                                "NIST SP 800-53 IA-5",
+                                "NIST SP 800-53 IA-6",
+                                "NIST SP 800-53 IA-7",
+                                "NIST SP 800-53 IA-8",
+                                "NIST SP 800-53 IA-9",
+                                "NIST SP 800-53 IA-10",
+                                "NIST SP 800-53 IA-11",
+                                "AICPA TSC CC6.1",
+                                "AICPA TSC CC6.2",
+                                "ISO 27001:2013 A.9.2.1",
+                                "ISO 27001:2013 A.9.2.2",
+                                "ISO 27001:2013 A.9.2.3",
+                                "ISO 27001:2013 A.9.2.4",
+                                "ISO 27001:2013 A.9.2.6",
+                                "ISO 27001:2013 A.9.3.1",
+                                "ISO 27001:2013 A.9.4.2",
+                                "ISO 27001:2013 A.9.4.3",
+                            ],
+                        },
+                        "Workflow": {"Status": "NEW"},
+                        "RecordState": "ACTIVE",
+                    }
+                    yield finding
+                else:
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": taskDefinitionArn + "/" + cdefName + "/ecs-task-definition-privileged-container-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": taskDefinitionArn + "/" + cdefName,
+                        "AwsAccountId": awsAccountId,
+                        "Types": [
+                            "Software and Configuration Checks/AWS Security Best Practices",
+                            "TTPs/Privilege Escalation"
+                        ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "INFORMATIONAL"},
+                        "Confidence": 99,
+                        "Title": "[ECS.3] ECS Task Definitions should not run privileged containers if not required",
+                        "Description": "ECS Container Definition "
+                        + cdefName
+                        + " in Task Definition "
+                        + taskDefinitionArn
+                        + " has not defined a Privileged container.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "Containers running as Privileged will have Root permissions, this should be avoided if not needed. Refer to the Task definition parameters Security section of the Amazon Elastic Container Service Developer Guide",
+                                "Url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#container_definitions",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsEcsTaskDefinition",
+                                "Id": taskDefinitionArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "Other": {
+                                        "TaskDefinitionArn": taskDefinitionArn,
+                                        "ContainerDefinitionName": cdefName
+                                    }
+                                }
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "PASSED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-1",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-2",
+                                "NIST SP 800-53 IA-1",
+                                "NIST SP 800-53 IA-2",
+                                "NIST SP 800-53 IA-3",
+                                "NIST SP 800-53 IA-4",
+                                "NIST SP 800-53 IA-5",
+                                "NIST SP 800-53 IA-6",
+                                "NIST SP 800-53 IA-7",
+                                "NIST SP 800-53 IA-8",
+                                "NIST SP 800-53 IA-9",
+                                "NIST SP 800-53 IA-10",
+                                "NIST SP 800-53 IA-11",
+                                "AICPA TSC CC6.1",
+                                "AICPA TSC CC6.2",
+                                "ISO 27001:2013 A.9.2.1",
+                                "ISO 27001:2013 A.9.2.2",
+                                "ISO 27001:2013 A.9.2.3",
+                                "ISO 27001:2013 A.9.2.4",
+                                "ISO 27001:2013 A.9.2.6",
+                                "ISO 27001:2013 A.9.3.1",
+                                "ISO 27001:2013 A.9.4.2",
+                                "ISO 27001:2013 A.9.4.3",
+                            ],
+                        },
+                        "Workflow": {"Status": "RESOLVED"},
+                        "RecordState": "ARCHIVED",
+                    }
+                    yield finding
+        except Exception as e:
+            print(e)
+
+@registry.register_check("ecs")
+def ecs_task_definition_security_labels_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    for taskdef in ecs.list_task_definitions(status='ACTIVE')['taskDefinitionArns']:
+        try:
+            response = ecs.describe_task_definition(taskDefinition=taskdef)["taskDefinition"]
+            taskDefinitionArn = str(response["taskDefinitionArn"])
+            # If there is a network mode of "awsvpc" it is likely a Fargate task - even though EC2 compute can run with that...
+            # time for some funky edge cases, keep that in mind before you yeet an issue at me, please ;)
+            if str(response["networkMode"]) == 'awsvpc':
+                continue
+            else:
+                # Loop container definitions 
+                for cdef in response["containerDefinitions"]:
+                    # ISO Time
+                    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+                    cdefName = str(cdef["name"])
+                    try:
+                        # This is a passing check
+                        secOpts = str(cdef["dockerSecurityOptions"])
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": taskDefinitionArn + "/" + cdefName + "/ecs-task-definition-security-labels-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": taskDefinitionArn + "/" + cdefName,
+                            "AwsAccountId": awsAccountId,
+                            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "INFORMATIONAL"},
+                            "Confidence": 99,
+                            "Title": "[ECS.4] ECS Task Definitions for EC2 should have Docker Security Options (SELinux or AppArmor) configured",
+                            "Description": "ECS Container Definition "
+                            + cdefName
+                            + " in Task Definition "
+                            + taskDefinitionArn
+                            + " has Docker Security Options configured.",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "Containers running on EC2 Compute-types should have Docker Security Options configured. Refer to the Task definition parameters Security section of the Amazon Elastic Container Service Developer Guide",
+                                    "Url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#container_definitions"
+                                }
+                            },
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsEcsTaskDefinition",
+                                    "Id": taskDefinitionArn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "Other": {
+                                            "TaskDefinitionArn": taskDefinitionArn,
+                                            "ContainerDefinitionName": cdefName,
+                                            'DockerSecurityOptions': secOpts
+                                        }
+                                    }
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "PASSED",
+                                "RelatedRequirements": [
+                                    "NIST CSF PR.IP-1",
+                                    "NIST SP 800-53 CM-2",
+                                    "NIST SP 800-53 CM-3",
+                                    "NIST SP 800-53 CM-4",
+                                    "NIST SP 800-53 CM-5",
+                                    "NIST SP 800-53 CM-6",
+                                    "NIST SP 800-53 CM-7",
+                                    "NIST SP 800-53 CM-9",
+                                    "NIST SP 800-53 SA-10",
+                                    "AICPA TSC A1.3",
+                                    "AICPA TSC CC1.4",
+                                    "AICPA TSC CC5.3",
+                                    "AICPA TSC CC6.2",
+                                    "AICPA TSC CC7.1",
+                                    "AICPA TSC CC7.3",
+                                    "AICPA TSC CC7.4",
+                                    "ISO 27001:2013 A.12.1.2",
+                                    "ISO 27001:2013 A.12.5.1",
+                                    "ISO 27001:2013 A.12.6.2",
+                                    "ISO 27001:2013 A.14.2.2",
+                                    "ISO 27001:2013 A.14.2.3",
+                                    "ISO 27001:2013 A.14.2.4",
+                                ],
+                            },
+                            "Workflow": {"Status": "RESOLVED"},
+                            "RecordState": "ARCHIVED"
+                        }
+                        yield finding
+                    except:
+                        secOpts = str('["NO_OPTIONS"]')
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": taskDefinitionArn + "/" + cdefName + "/ecs-task-definition-security-labels-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": taskDefinitionArn + "/" + cdefName,
+                            "AwsAccountId": awsAccountId,
+                            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "HIGH"},
+                            "Confidence": 99,
+                            "Title": "[ECS.4] ECS Task Definitions for EC2 should have Docker Security Options (SELinux or AppArmor) configured",
+                            "Description": "ECS Container Definition "
+                            + cdefName
+                            + " in Task Definition "
+                            + taskDefinitionArn
+                            + " does not have any Docker Security Options configured. Refer to the remediation instructions to remediate this behavior",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "Containers running on EC2 Compute-types should have Docker Security Options configured. Refer to the Task definition parameters Security section of the Amazon Elastic Container Service Developer Guide",
+                                    "Url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#container_definitions"
+                                }
+                            },
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsEcsTaskDefinition",
+                                    "Id": taskDefinitionArn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "Other": {
+                                            "TaskDefinitionArn": taskDefinitionArn,
+                                            "ContainerDefinitionName": cdefName,
+                                            'DockerSecurityOptions': secOpts
+                                        }
+                                    }
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "FAILED",
+                                "RelatedRequirements": [
+                                    "NIST CSF PR.IP-1",
+                                    "NIST SP 800-53 CM-2",
+                                    "NIST SP 800-53 CM-3",
+                                    "NIST SP 800-53 CM-4",
+                                    "NIST SP 800-53 CM-5",
+                                    "NIST SP 800-53 CM-6",
+                                    "NIST SP 800-53 CM-7",
+                                    "NIST SP 800-53 CM-9",
+                                    "NIST SP 800-53 SA-10",
+                                    "AICPA TSC A1.3",
+                                    "AICPA TSC CC1.4",
+                                    "AICPA TSC CC5.3",
+                                    "AICPA TSC CC6.2",
+                                    "AICPA TSC CC7.1",
+                                    "AICPA TSC CC7.3",
+                                    "AICPA TSC CC7.4",
+                                    "ISO 27001:2013 A.12.1.2",
+                                    "ISO 27001:2013 A.12.5.1",
+                                    "ISO 27001:2013 A.12.6.2",
+                                    "ISO 27001:2013 A.14.2.2",
+                                    "ISO 27001:2013 A.14.2.3",
+                                    "ISO 27001:2013 A.14.2.4",
+                                ],
+                            },
+                            "Workflow": {"Status": "NEW"},
+                            "RecordState": "ACTIVE"
+                        }
+                        yield finding
+        except Exception as e:
+            print(e)

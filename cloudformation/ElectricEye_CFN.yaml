@@ -87,7 +87,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName} Public Subnet (AZ1)
+          Value: !Sub '${EnvironmentName} Public Subnet (AZ1)'
   ElectricEyeScheduledSubnet2:
     Type: AWS::EC2::Subnet
     Properties:
@@ -97,14 +97,14 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName} Public Subnet (AZ2)
+          Value: !Sub '${EnvironmentName} Public Subnet (AZ2)'
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref VPC
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName} Public Routes
+          Value: !Sub '${EnvironmentName} Public Routes'
   DefaultPublicRoute:
     Type: AWS::EC2::Route
     DependsOn: InternetGatewayAttachment
@@ -128,7 +128,7 @@ Resources:
       VpcEndpointType: Gateway
       RouteTableIds:
         - !Ref PublicRouteTable
-      ServiceName: !Sub com.amazonaws.${AWS::Region}.s3
+      ServiceName: !Sub 'com.amazonaws.${AWS::Region}.s3'
       VpcId: !Ref VPC
   ElectricEyeEcrDkrEndpoint:
     Type: AWS::EC2::VPCEndpoint
@@ -140,7 +140,7 @@ Resources:
       SubnetIds:
         - !Ref ElectricEyeScheduledSubnet1
         - !Ref ElectricEyeScheduledSubnet2
-      ServiceName: !Sub com.amazonaws.${AWS::Region}.ecr.dkr
+      ServiceName: !Sub 'com.amazonaws.${AWS::Region}.ecr.dkr'
       VpcId: !Ref VPC
   ElectricEyeSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -225,10 +225,13 @@ Resources:
                   - ec2:DescribeVpcs
                   - ec2:GetEbsDefaultKmsKeyId
                   - ec2:GetEbsEncryptionByDefault
+                  - ec2:GetSerialConsoleAccessStatus
                   - ecs:ListClusters
                   - ecs:DescribeClusters
                   - ecr:DescribeImages
                   - ecr:DescribeRepositories
+                  - ecr:DescribeRegistry
+                  - ecr:GetRegistryPolicy
                   - ecr:GetLifecyclePolicy
                   - ecr:GetRepositoryPolicy
                   - eks:DescribeCluster
@@ -347,6 +350,27 @@ Resources:
                   - sqs:GetQueueAttributes
                   - workspaces:DescribeWorkspaceDirectories
                   - workspaces:DescribeWorkspaces
+                  - xray:GetEncryptionConfig
+                  - cloud9:DescribeEnvironments
+                  - cloud9:ListEnvironments
+                  - cloudsearch:DescribeDomainEndpointOptions
+                  - cloudsearch:DescribeDomains
+                  - lambda:GetFunction
+                  - lambda:GetLayerVersion
+                  - lambda:GetLayerVersionPolicy
+                  - lambda:GetPolicy
+                  - lambda:ListFunctions
+                  - lambda:ListLayerVersions
+                  - lambda:ListLayers
+                  - ecs:DescribeTaskDefinition
+                  - ecs:ListTaskDefinitionFamilies
+                  - ecs:ListTaskDefinitions
+                  - datasync:DescribeAgent
+                  - datasync:DescribeTask
+                  - datasync:ListAgents
+                  - datasync:ListTasks
+                  - fsx:DescribeBackups
+                  - fsx:DescribeFileSystems
                 Resource: "*"
       AssumeRolePolicyDocument:
         Version: 2012-10-17
@@ -435,7 +459,7 @@ Resources:
   ElectricEyeTaskScheduler:
     Type: AWS::Events::Rule
     Properties:
-      ScheduleExpression: "rate(12 hours)"
+      ScheduleExpression: rate(12 hours)
       State: ENABLED
       Targets:
         - Arn: !GetAtt ElectricEyeECSCluster.Arn

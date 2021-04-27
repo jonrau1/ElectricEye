@@ -48,8 +48,7 @@ def artifact_encryption_check(
         artifactCheck = str(projects["artifacts"]["type"])
         # skip projects without artifacts
         if artifactCheck == "NO_ARTIFACTS":
-            print("No artifacts supported, skipping this check")
-            pass
+            continue
         else:
             # check if encryption for artifacts is disabled
             artifactEncryptionCheck = str(projects["artifacts"]["encryptionDisabled"])
@@ -294,8 +293,7 @@ def plaintext_env_var_check(
         # check if this project has any env vars
         envVarCheck = str(projects["environment"]["environmentVariables"])
         if envVarCheck == "[]":
-            print("No env vars, skipping this check")
-            pass
+            continue
         else:
             # loop through env vars
             codeBuildEnvVars = projects["environment"]["environmentVariables"]

@@ -15,6 +15,7 @@
 
 import boto3
 import datetime
+import botocore
 from check_register import CheckRegister
 
 registry = CheckRegister()
@@ -28,7 +29,6 @@ def describe_repositories(cache):
         return response
     cache["describe_repositories"] = ecr.describe_repositories(maxResults=1000)
     return cache["describe_repositories"]
-
 
 @registry.register_check("ecr")
 def ecr_repo_vuln_scan_check(
@@ -134,7 +134,6 @@ def ecr_repo_vuln_scan_check(
                 "RecordState": "ARCHIVED",
             }
             yield finding
-
 
 @registry.register_check("ecr")
 def ecr_repo_image_lifecycle_policy_check(
@@ -250,9 +249,8 @@ def ecr_repo_image_lifecycle_policy_check(
             }
             yield finding
 
-
 @registry.register_check("ecr")
-def ecr_repo_permission_policy(
+def ecr_repo_permission_policy_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = describe_repositories(cache)
@@ -383,7 +381,6 @@ def ecr_repo_permission_policy(
             }
             yield finding
 
-
 @registry.register_check("ecr")
 def ecr_latest_image_vuln_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
@@ -501,13 +498,6 @@ def ecr_latest_image_vuln_check(
                             "Description": "The latest image in the ECR repository "
                             + repoName
                             + " does not have any vulnerabilities reported.",
-                            "Remediation": {
-                                "Recommendation": {
-                                    "Text": "Click here to navigate to the ECR Vulnerability console for this image",
-                                    "Url": vulnDeepLink,
-                                }
-                            },
-                            "SourceUrl": vulnDeepLink,
                             "ProductFields": {"Product Name": "ElectricEye"},
                             "Resources": [
                                 {
@@ -544,3 +534,244 @@ def ecr_latest_image_vuln_check(
                 print(e)
         else:
             pass
+
+@registry.register_check("ecr")
+def ecr_registry_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    try:
+        ecr.get_registry_policy()
+        # This is a passing check
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": awsAccountId + awsRegion + "/ecr-registry-access-policy-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": awsAccountId + awsRegion,
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[ECR.5] ECR Registires should be have a registry policy configured to allow for cross-account recovery",
+            "Description": "ECR Registry "
+            + awsAccountId
+            + " in Region "
+            + awsRegion
+            + " has a registry policy configured.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "If your Registry should be configured to have a Registry policy refer to the Private registry permissions section in the Amazon ECR User Guide",
+                    "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/registry-permissions.html"
+                }
+            },
+            "ProductFields": {"Product Name": "ElectricEye"},
+            "Resources": [
+                {
+                    "Type": "AwsEcrRegistry",
+                    "Id": awsAccountId,
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {"Other": {"RegistryId": awsAccountId}},
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF ID.BE-5",
+                    "NIST CSF PR.PT-5",
+                    "NIST SP 800-53 CP-2",
+                    "NIST SP 800-53 CP-11",
+                    "NIST SP 800-53 SA-13",
+                    "NIST SP 800-53 SA14",
+                    "AICPA TSC CC3.1",
+                    "AICPA TSC A1.2",
+                    "ISO 27001:2013 A.11.1.4",
+                    "ISO 27001:2013 A.17.1.1",
+                    "ISO 27001:2013 A.17.1.2",
+                    "ISO 27001:2013 A.17.2.1",
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED",
+        }
+        yield finding
+    except botocore.exceptions.ClientError as error:
+        if error.response["Error"]["Code"] == "RegistryPolicyNotFoundException":
+            # this is a failing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": awsAccountId + awsRegion + "/ecr-registry-access-policy-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": awsAccountId + awsRegion,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[ECR.5] ECR Registires should be have a registry policy configured to allow for cross-account recovery",
+                "Description": "ECR Registry "
+                + awsAccountId
+                + " in Region "
+                + awsRegion
+                + " does not have a registry policy configured. ECR uses a registry policy to grant permissions to an AWS principal, allowing the replication of the repositories from a source registry to your registry. By default, you have permission to configure cross-Region replication within your own registry. You only need to configure the registry policy if you're granting another account permission to replicate contents to your registry. Refer to the remediation instructions if this configuration is not intended",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your Registry should be configured to have a Registry policy refer to the Private registry permissions section in the Amazon ECR User Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/registry-permissions.html"
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsEcrRegistry",
+                        "Id": awsAccountId,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {"Other": {"RegistryId": awsAccountId}},
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.BE-5",
+                        "NIST CSF PR.PT-5",
+                        "NIST SP 800-53 CP-2",
+                        "NIST SP 800-53 CP-11",
+                        "NIST SP 800-53 SA-13",
+                        "NIST SP 800-53 SA14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1",
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE",
+            }
+            yield finding
+        else:
+            print(error)
+    except Exception as e:
+        print(e)
+
+@registry.register_check("ecr")
+def ecr_registry_backup_rules_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    if str(ecr.describe_registry()["replicationConfiguration"]["rules"]) == "[]":
+        # This is a failing check
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": awsAccountId + awsRegion + "/ecr-registry-image-replication-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": awsAccountId + awsRegion,
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "LOW"},
+            "Confidence": 99,
+            "Title": "[ECR.6] ECR Registires should use image replication to promote disaster recovery readiness",
+            "Description": "ECR Registry "
+            + awsAccountId
+            + " in Region "
+            + awsRegion
+            + " does not use Image replication. Registries can be configured to backup images to other Regions within your own Account or to other AWS Accounts to aid in disaster recovery readiness. Refer to the remediation instructions if this configuration is not intended",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "If your Registry should be configured to for Private image replication refer to the Private image replication section in the Amazon ECR User Guide",
+                    "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/replication.html"
+                }
+            },
+            "ProductFields": {"Product Name": "ElectricEye"},
+            "Resources": [
+                {
+                    "Type": "AwsEcrRegistry",
+                    "Id": awsAccountId,
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {"Other": {"RegistryId": awsAccountId}},
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF ID.BE-5",
+                    "NIST CSF PR.PT-5",
+                    "NIST SP 800-53 CP-2",
+                    "NIST SP 800-53 CP-11",
+                    "NIST SP 800-53 SA-13",
+                    "NIST SP 800-53 SA14",
+                    "AICPA TSC CC3.1",
+                    "AICPA TSC A1.2",
+                    "ISO 27001:2013 A.11.1.4",
+                    "ISO 27001:2013 A.17.1.1",
+                    "ISO 27001:2013 A.17.1.2",
+                    "ISO 27001:2013 A.17.2.1",
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": awsAccountId + awsRegion + "/ecr-registry-image-replication-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": awsAccountId,
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[ECR.6] ECR Registires should use image replication to promote disaster recovery readiness",
+            "Description": "ECR Registry "
+            + awsAccountId
+            + " in Region "
+            + awsRegion
+            + " uses Image replication.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "If your Registry should be configured to for Private image replication refer to the Private image replication section in the Amazon ECR User Guide",
+                    "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/replication.html"
+                }
+            },
+            "ProductFields": {"Product Name": "ElectricEye"},
+            "Resources": [
+                {
+                    "Type": "AwsEcrRegistry",
+                    "Id": awsAccountId,
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {"Other": {"RegistryId": awsAccountId}},
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF ID.BE-5",
+                    "NIST CSF PR.PT-5",
+                    "NIST SP 800-53 CP-2",
+                    "NIST SP 800-53 CP-11",
+                    "NIST SP 800-53 SA-13",
+                    "NIST SP 800-53 SA14",
+                    "AICPA TSC CC3.1",
+                    "AICPA TSC A1.2",
+                    "ISO 27001:2013 A.11.1.4",
+                    "ISO 27001:2013 A.17.1.1",
+                    "ISO 27001:2013 A.17.1.2",
+                    "ISO 27001:2013 A.17.2.1",
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding

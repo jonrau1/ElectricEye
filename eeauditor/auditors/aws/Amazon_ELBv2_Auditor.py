@@ -189,7 +189,7 @@ def elbv2_alb_logging_check(
             except Exception as e:
                 print(e)
         else:
-            pass
+            continue
 
 
 @registry.register_check("elb")
@@ -350,7 +350,7 @@ def elbv2_deletion_protection_check(
                         }
                         yield finding
                 else:
-                    pass
+                    continue
         except Exception as e:
             print(e)
 
@@ -527,7 +527,10 @@ def elbv2_tls12_listener_policy_check(
             for listeners in myElbv2Listeners:
                 listenerProtocol = str(listeners["Protocol"])
                 if listenerProtocol == "HTTPS" or "TLS":
-                    listenerTlsPolicyCheck = str(listeners["SslPolicy"])
+                    try:
+                        listenerTlsPolicyCheck = str(listeners["SslPolicy"])
+                    except:
+                        continue
                     iso8601Time = (
                         datetime.datetime.utcnow()
                         .replace(tzinfo=datetime.timezone.utc)
@@ -991,3 +994,178 @@ def elbv2_nlb_tls_logging_check(
                 print(e)
         else:
             pass
+
+@registry.register_check("elb")
+def elbv2_alb_http_desync_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    response = describe_load_balancers(cache)
+    myElbv2LoadBalancers = response["LoadBalancers"]
+    for loadbalancers in myElbv2LoadBalancers:
+        elbv2Arn = str(loadbalancers["LoadBalancerArn"])
+        elbv2Name = str(loadbalancers["LoadBalancerName"])
+        elbv2DnsName = str(loadbalancers["DNSName"])
+        elbv2LbType = str(loadbalancers["Type"])
+        elbv2Scheme = str(loadbalancers["Scheme"])
+        elbv2VpcId = str(loadbalancers["VpcId"])
+        elbv2IpAddressType = str(loadbalancers["IpAddressType"])
+        if elbv2LbType == "application":
+            try:
+                response = elbv2.describe_load_balancer_attributes(LoadBalancerArn=elbv2Arn)
+                elbv2Attributes = response["Attributes"]
+                for attributes in elbv2Attributes:
+                    if str(attributes["Key"]) == "routing.http.desync_mitigation_mode":
+                        elbv2LoggingCheck = str(attributes["Value"])
+                        iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+                        if elbv2LoggingCheck == "monitor":
+                            finding = {
+                                "SchemaVersion": "2018-10-08",
+                                "Id": elbv2Arn + "/elbv2-alb-http-desync-protection-check",
+                                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                                "GeneratorId": elbv2Arn,
+                                "AwsAccountId": awsAccountId,
+                                "Types": [
+                                    "Software and Configuration Checks/AWS Security Best Practices"
+                                ],
+                                "FirstObservedAt": iso8601Time,
+                                "CreatedAt": iso8601Time,
+                                "UpdatedAt": iso8601Time,
+                                "Severity": {"Label": "HIGH"},
+                                "Confidence": 99,
+                                "Title": "[ELBv2.7] Application Load Balancers should have HTTP Desync protection enabled",
+                                "Description": "Application load balancer "
+                                + elbv2Name
+                                + " does not have HTTP Desync protection enabled (it is set to Monitor). Refer to the remediation instructions to remediate this behavior",
+                                "Remediation": {
+                                    "Recommendation": {
+                                        "Text": "For more information on ELBv2 HTTP Desync protection and how to configure it refer to the Desync mitigation mode section of the Application Load Balancers User Guide.",
+                                        "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancers.html#desync-mitigation-mode"
+                                    }
+                                },
+                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "Resources": [
+                                    {
+                                        "Type": "AwsElbv2LoadBalancer",
+                                        "Id": elbv2Arn,
+                                        "Partition": awsPartition,
+                                        "Region": awsRegion,
+                                        "Details": {
+                                            "AwsElbv2LoadBalancer": {
+                                                "DNSName": elbv2DnsName,
+                                                "IpAddressType": elbv2IpAddressType,
+                                                "Scheme": elbv2Scheme,
+                                                "Type": elbv2LbType,
+                                                "VpcId": elbv2VpcId,
+                                            }
+                                        },
+                                    }
+                                ],
+                                "Compliance": {
+                                    "Status": "FAILED",
+                                    "RelatedRequirements": [
+                                        "NIST CSF PR.IP-1",
+                                        "NIST SP 800-53 CM-2",
+                                        "NIST SP 800-53 CM-3",
+                                        "NIST SP 800-53 CM-4",
+                                        "NIST SP 800-53 CM-5",
+                                        "NIST SP 800-53 CM-6",
+                                        "NIST SP 800-53 CM-7",
+                                        "NIST SP 800-53 CM-9",
+                                        "NIST SP 800-53 SA-10",
+                                        "AICPA TSC A1.3",
+                                        "AICPA TSC CC1.4",
+                                        "AICPA TSC CC5.3",
+                                        "AICPA TSC CC6.2",
+                                        "AICPA TSC CC7.1",
+                                        "AICPA TSC CC7.3",
+                                        "AICPA TSC CC7.4",
+                                        "ISO 27001:2013 A.12.1.2",
+                                        "ISO 27001:2013 A.12.5.1",
+                                        "ISO 27001:2013 A.12.6.2",
+                                        "ISO 27001:2013 A.14.2.2",
+                                        "ISO 27001:2013 A.14.2.3",
+                                        "ISO 27001:2013 A.14.2.4",
+                                    ],
+                                },
+                                "Workflow": {"Status": "NEW"},
+                                "RecordState": "ACTIVE",
+                            }
+                            yield finding
+                        else:
+                            finding = {
+                                "SchemaVersion": "2018-10-08",
+                                "Id": elbv2Arn + "/elbv2-alb-http-desync-protection-check",
+                                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                                "GeneratorId": elbv2Arn,
+                                "AwsAccountId": awsAccountId,
+                                "Types": [
+                                    "Software and Configuration Checks/AWS Security Best Practices"
+                                ],
+                                "FirstObservedAt": iso8601Time,
+                                "CreatedAt": iso8601Time,
+                                "UpdatedAt": iso8601Time,
+                                "Severity": {"Label": "INFORMATIONAL"},
+                                "Confidence": 99,
+                                "Title": "[ELBv2.7] Application Load Balancers should have HTTP Desync protection enabled",
+                                "Description": "Application load balancer "
+                                + elbv2Name
+                                + "has HTTP Desync protection enabled (set to Defensive or Strictest).",
+                                "Remediation": {
+                                    "Recommendation": {
+                                        "Text": "For more information on ELBv2 HTTP Desync protection and how to configure it refer to the Desync mitigation mode section of the Application Load Balancers User Guide.",
+                                        "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancers.html#desync-mitigation-mode"
+                                    }
+                                },
+                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "Resources": [
+                                    {
+                                        "Type": "AwsElbv2LoadBalancer",
+                                        "Id": elbv2Arn,
+                                        "Partition": awsPartition,
+                                        "Region": awsRegion,
+                                        "Details": {
+                                            "AwsElbv2LoadBalancer": {
+                                                "DNSName": elbv2DnsName,
+                                                "IpAddressType": elbv2IpAddressType,
+                                                "Scheme": elbv2Scheme,
+                                                "Type": elbv2LbType,
+                                                "VpcId": elbv2VpcId,
+                                            },
+                                        },
+                                    }
+                                ],
+                                "Compliance": {
+                                    "Status": "PASSED",
+                                    "RelatedRequirements": [
+                                        "NIST CSF PR.IP-1",
+                                        "NIST SP 800-53 CM-2",
+                                        "NIST SP 800-53 CM-3",
+                                        "NIST SP 800-53 CM-4",
+                                        "NIST SP 800-53 CM-5",
+                                        "NIST SP 800-53 CM-6",
+                                        "NIST SP 800-53 CM-7",
+                                        "NIST SP 800-53 CM-9",
+                                        "NIST SP 800-53 SA-10",
+                                        "AICPA TSC A1.3",
+                                        "AICPA TSC CC1.4",
+                                        "AICPA TSC CC5.3",
+                                        "AICPA TSC CC6.2",
+                                        "AICPA TSC CC7.1",
+                                        "AICPA TSC CC7.3",
+                                        "AICPA TSC CC7.4",
+                                        "ISO 27001:2013 A.12.1.2",
+                                        "ISO 27001:2013 A.12.5.1",
+                                        "ISO 27001:2013 A.12.6.2",
+                                        "ISO 27001:2013 A.14.2.2",
+                                        "ISO 27001:2013 A.14.2.3",
+                                        "ISO 27001:2013 A.14.2.4",
+                                    ],
+                                },
+                                "Workflow": {"Status": "RESOLVED"},
+                                "RecordState": "ARCHIVED",
+                            }
+                            yield finding
+                    else:
+                        continue
+            except Exception as e:
+                print(e)
+        else:
+            continue

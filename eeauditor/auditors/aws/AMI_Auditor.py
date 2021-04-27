@@ -154,7 +154,7 @@ def public_ami_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                         "ISO 27001:2013 A.13.2.1",
                     ],
                 },
-                "Workflow": {"Status": "REVOKED"},
+                "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED",
             }
             yield finding

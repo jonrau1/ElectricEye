@@ -40,7 +40,10 @@ def dms_replication_instance_public_access_check(
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": dmsInstanceArn,
                 "AwsAccountId": awsAccountId,
-                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure"
+                ],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -63,7 +66,11 @@ def dms_replication_instance_public_access_check(
                         "Id": dmsInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"replicationInstanceId": dmsInstanceId}},
+                        "Details": {
+                            "Other": {
+                                "ReplicationInstanceId": dmsInstanceId
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -94,7 +101,10 @@ def dms_replication_instance_public_access_check(
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": dmsInstanceArn,
                 "AwsAccountId": awsAccountId,
-                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure"
+                ],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -117,7 +127,11 @@ def dms_replication_instance_public_access_check(
                         "Id": dmsInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"replicationInstanceId": dmsInstanceId}},
+                        "Details": {
+                            "Other": {
+                                "ReplicationInstanceId": dmsInstanceId
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -184,7 +198,11 @@ def dms_replication_instance_multi_az_check(
                         "Id": dmsInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"replicationInstanceId": dmsInstanceId}},
+                        "Details": {
+                            "Other": {
+                                "ReplicationInstanceId": dmsInstanceId
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -238,7 +256,11 @@ def dms_replication_instance_multi_az_check(
                         "Id": dmsInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"replicationInstanceId": dmsInstanceId}},
+                        "Details": {
+                            "Other": {
+                                "ReplicationInstanceId": dmsInstanceId
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -305,7 +327,11 @@ def dms_replication_instance_minor_version_update_check(
                         "Id": dmsInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"replicationInstanceId": dmsInstanceId}},
+                        "Details": {
+                            "Other": {
+                                "ReplicationInstanceId": dmsInstanceId
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -357,7 +383,11 @@ def dms_replication_instance_minor_version_update_check(
                         "Id": dmsInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"replicationInstanceId": dmsInstanceId}},
+                        "Details": {
+                            "Other": {
+                                "ReplicationInstanceId": dmsInstanceId
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -376,7 +406,6 @@ def dms_replication_instance_minor_version_update_check(
                     ],
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
-
