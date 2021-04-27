@@ -372,7 +372,8 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "imagebuilder:ListImagePipelines",
                 "imagebuilder:GetImagePipeline",
                 "imagebuilder:ListImageRecipes",
-                "imagebuilder:GetImageRecipe"
+                "imagebuilder:GetImageRecipe",
+                "amplify:ListApps"
             ],
             "Resource": "*"
         }

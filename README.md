@@ -329,7 +329,7 @@ Add the --help option for info on running individual checks and auditors and dif
 ## Supported Services and Checks
 ---
 
-These are the following services and checks perform by each Auditor. There are currently **231** checks supported across **72** AWS services / components using **56** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **233** checks supported across **73** AWS services / components using **57** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -505,6 +505,8 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_WorkSpaces_Auditor.py           | DS Directory                  | Does directory allow default internet<br>access                                        |
 | AMI_Auditor.py                         | Amazon Machine Image (AMI)    | Are owned AMIs public                                                                  |
 | AMI_Auditor.py                         | Amazon Machine Image (AMI)    | Are owned AMIs encrypted                                                               |
+| AWS_Amplify_Auditor.py                 | AWS Amplify                   | Does the app have basic auth enabled on the branches                                   |
+| AWS_Amplify_Auditor.py                 | AWS Amplify                   | Does the app have auto deletion for branches enabled                                   |
 | AWS_AppMesh_Auditor.py                 | App Mesh mesh                 | Does the mesh egress filter DROP_ALL                                                   |
 | AWS_AppMesh_Auditor.py                 | App Mesh virtual node         | Does the backend default client policy <br>enforce TLS                                 |
 | AWS_AppMesh_Auditor.py                 | App Mesh virtual node         | Do virtual node backends have STRICT TLS mode<br>configured for inbound connections    |

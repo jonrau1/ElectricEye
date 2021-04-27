@@ -183,6 +183,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - access-analyzer:ListAnalyzers
+                  - amplify:ListApps
                   - apigateway:GET
                   - appmesh:DescribeMesh
                   - appmesh:DescribeVirtualNode

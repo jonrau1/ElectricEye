@@ -147,7 +147,8 @@
                 "sqs:GetQueueAttributes",
                 "globalaccelerator:ListAccelerators",
                 "globalaccelerator:ListListeners",
-                "globalaccelerator:ListEndpointGroups"
+                "globalaccelerator:ListEndpointGroups",
+                "amplify:ListApps"
             ],
             "Resource": "*"
         }

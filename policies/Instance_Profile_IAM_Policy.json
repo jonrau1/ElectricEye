@@ -252,7 +252,8 @@
                 "imagebuilder:ListImageRecipes",
                 "imagebuilder:GetImageRecipe",
                 "cloudfront:ListDistributions",
-                "cloudfront:GetDistribution"
+                "cloudfront:GetDistribution",
+                "amplify:ListApps"
             ],
             "Resource": "*"
         }
