@@ -36,9 +36,7 @@ else:
     shodanApiKey = str(response["Parameter"]["Value"])
 
     @registry.register_check("shodan")
-    def public_ec2_shodan_check(
-        cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-    ) -> dict:
+    def public_ec2_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
         try:
             response = ec2.describe_instances(DryRun=False, MaxResults=500)
             for res in response["Reservations"]:
@@ -197,9 +195,7 @@ else:
             print(e)
 
     @registry.register_check("shodan")
-    def public_alb_shodan_check(
-        cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-    ) -> dict:
+    def public_alb_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
         try:
             response = elbv2.describe_load_balancers()
             for lbs in response["LoadBalancers"]:
@@ -351,9 +347,7 @@ else:
             print(e)
 
     @registry.register_check("shodan")
-    def public_rds_shodan_check(
-        cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-    ) -> dict:
+    def public_rds_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
         try:
             response = rds.describe_db_instances()
             for rdsdb in response["DBInstances"]:
@@ -511,9 +505,7 @@ else:
             print(e)
 
     @registry.register_check("shodan")
-    def public_es_domain_shodan_check(
-        cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-    ) -> dict:
+    def public_es_domain_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
         try:
             response = elasticsearch.list_domain_names()
             for domain in response["DomainNames"]:
@@ -682,9 +674,7 @@ else:
             print(e)
 
     @registry.register_check("shodan")
-    def public_clb_shodan_check(
-        cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-    ) -> dict:
+    def public_clb_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
         try:
             response = elb.describe_load_balancers()
             for clbs in response["LoadBalancerDescriptions"]:
@@ -828,9 +818,7 @@ else:
             print(e)
 
     @registry.register_check("shodan")
-    def public_dms_replication_instance_shodan_check(
-        cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-    ) -> dict:
+    def public_dms_replication_instance_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
         try:
             response = dms.describe_replication_instances()
             for repinstances in response["ReplicationInstances"]:
@@ -970,9 +958,7 @@ else:
             print(e)
 
     @registry.register_check("shodan")
-    def public_amazon_mq_broker_shodan_check(
-        cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-    ) -> dict:
+    def public_amazon_mq_broker_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
         try:
             response = amzmq.list_brokers(MaxResults=100)
             myBrokers = response["BrokerSummaries"]
@@ -1227,6 +1213,150 @@ else:
                                     "Details": {
                                         "AwsCloudFrontDistribution": {
                                             "DomainName": domainName
+                                        }
+                                    }
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "FAILED",
+                                "RelatedRequirements": [
+                                    "NIST CSF ID.RA-2",
+                                    "NIST CSF DE.AE-2",
+                                    "NIST SP 800-53 AU-6",
+                                    "NIST SP 800-53 CA-7",
+                                    "NIST SP 800-53 IR-4",
+                                    "NIST SP 800-53 PM-15",
+                                    "NIST SP 800-53 PM-16",
+                                    "NIST SP 800-53 SI-4",
+                                    "NIST SP 800-53 SI-5",
+                                    "AIPCA TSC CC3.2",
+                                    "AIPCA TSC CC7.2",
+                                    "ISO 27001:2013 A.6.1.4",
+                                    "ISO 27001:2013 A.12.4.1",
+                                    "ISO 27001:2013 A.16.1.1",
+                                    "ISO 27001:2013 A.16.1.4",
+                                ],
+                            },
+                            "Workflow": {"Status": "NEW"},
+                            "RecordState": "ACTIVE",
+                        }
+                        yield finding
+        except Exception as e:
+            print(e)
+    
+    @registry.register_check("shodan")
+    def global_accelerator_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+        iso8601time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+        try:
+            # Create a Session is us-west-2 - which is where the Global Accelerator API is in
+            session = boto3.Session(region_name="us-west-2")
+            gax = boto3.session("globalaccelerator")
+            paginator = gax.get_paginator("list_accelerators")
+            iterator = paginator.paginate()
+            for page in iterator:
+                for ga in page["Accelerators"]:
+                    gaxArn = str(ga["AcceleratorArn"])
+                    gaxName = str(ga["Name"])
+                    gaxDns = str(ga["DnsName"])
+                    gaxDomainIp = socket.gethostbyname(gaxDns)
+                    # use requests Library to check the Shodan index for your host
+                    r = requests.get(url=shodanUrl + gaxDomainIp + "?key=" + shodanApiKey)
+                    data = r.json()
+                    shodanOutput = str(data)
+                    if shodanOutput == "{'error': 'No information available for that IP.'}":
+                        # this is a passing check
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": gaxArn + "/" + gaxDns + "/cloudfront-shodan-index-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": gaxArn,
+                            "AwsAccountId": awsAccountId,
+                            "Types": ["Effects/Data Exposure"],
+                            "CreatedAt": iso8601time,
+                            "UpdatedAt": iso8601time,
+                            "Severity": {"Label": "INFORMATIONAL"},
+                            "Title": "[Shodan.CloudFront.1] CloudFront Distributions should be monitored for being indexed by Shodan",
+                            "Description": "CloudFront Distribution "
+                            + cfId
+                            + " has not been indexed by Shodan.",
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsGlobalAcceleratorAccelerator",
+                                    "Id": gaxArn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "Other": {
+                                            "Name": gaxName,
+                                            "DnsName": gaxDns
+                                        }
+                                    }
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "PASSED",
+                                "RelatedRequirements": [
+                                    "NIST CSF ID.RA-2",
+                                    "NIST CSF DE.AE-2",
+                                    "NIST SP 800-53 AU-6",
+                                    "NIST SP 800-53 CA-7",
+                                    "NIST SP 800-53 IR-4",
+                                    "NIST SP 800-53 PM-15",
+                                    "NIST SP 800-53 PM-16",
+                                    "NIST SP 800-53 SI-4",
+                                    "NIST SP 800-53 SI-5",
+                                    "AIPCA TSC CC3.2",
+                                    "AIPCA TSC CC7.2",
+                                    "ISO 27001:2013 A.6.1.4",
+                                    "ISO 27001:2013 A.12.4.1",
+                                    "ISO 27001:2013 A.16.1.1",
+                                    "ISO 27001:2013 A.16.1.4",
+                                ],
+                            },
+                            "Workflow": {"Status": "RESOLVED"},
+                            "RecordState": "ARCHIVED",
+                        }
+                        yield finding
+                    else:
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": gaxArn + "/" + gaxDns + "/cloudfront-shodan-index-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": gaxArn,
+                            "AwsAccountId": awsAccountId,
+                            "Types": ["Effects/Data Exposure"],
+                            "CreatedAt": iso8601time,
+                            "UpdatedAt": iso8601time,
+                            "Severity": {"Label": "MEDIUM"},
+                            "Title": "[Shodan.CloudFront.1] CloudFront Distributions should be monitored for being indexed by Shodan",
+                            "Description": "CloudFront Distribution "
+                            + cfId
+                            + " has been indexed by Shodan on IP Address (from DNS Name) "
+                            + gaxDomainIp
+                            + ". review the Shodan.io host information in the SourceUrl or ThreatIntelIndicators.SourceUrl fields for information about what ports and services are exposed and then take action to reduce exposure and harden your host.",
+                            "SourceUrl": "https://www.shodan.io/host/" + gaxDomainIp,
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ThreatIntelIndicators": [
+                                {
+                                    "Type": "IPV4_ADDRESS",
+                                    "Category": "EXPLOIT_SITE",
+                                    "Value": gaxDomainIp,
+                                    "LastObservedAt": iso8601time,
+                                    "Source": "Shodan.io",
+                                    "SourceUrl": "https://www.shodan.io/host/" + gaxDomainIp,
+                                },
+                            ],
+                            "Resources": [
+                                {
+                                    "Type": "AwsGlobalAcceleratorAccelerator",
+                                    "Id": gaxArn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "Other": {
+                                            "Name": gaxName,
+                                            "DnsName": gaxDns
                                         }
                                     }
                                 }

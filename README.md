@@ -37,10 +37,10 @@ Continuously monitor your AWS services for configurations that can lead to degra
 
 ## Synopsis
 
-- 240+ security & AWS best practice detections including services not covered by Security Hub/Config (AppStream, Cognito, EKS, ECR, DocDB, etc.), all findings are aligned to NIST CSF, NIST 800-53, AICPA TSC and ISO 27001:2013.
-- Supports every AWS Region and Partition (Commercial, AWS GovCloud and AWS China Region)
-- Built with full AWS Security Hub support in mind, can optionally output to JSON or CSV. Can run as a CLI tool, in Fargate, as a standalone Container, or anywhere else you can run Python (K8s, Batch, CodeBuild, EC2, etc.).
-- Multiple add-ons enable automated remediation, ChatOps, finding purging, and integrations with tools such as DisruptOps, Config Recorder, Pagerduty, Slack, ServiceNow Incident Management, Jira, Azure DevOps, Shodan and Microsoft Teams.
+- **260+ security & AWS best practice detections** including services not covered by Security Hub/Config (AppStream, Cognito, EKS, ECR, DocDB, etc.), all findings are **aligned to NIST CSF, NIST 800-53, AICPA TSC and ISO 27001:2013**.
+- Supports every **AWS Region and Partition** (Commercial, AWS GovCloud and AWS China Region)
+- Built with **full AWS Security Hub support** in mind, can optionally output to JSON or CSV. **Can run as a CLI tool, in Fargate, as a standalone Container, or anywhere else** you can run Python (K8s, Batch, CodeBuild, EC2, etc.).
+- **Multiple add-ons enable automated remediation, ChatOps, finding purging, and integrations** with third-party tools such as DisruptOps, Pagerduty, Slack, ServiceNow Incident Management, Jira, Azure DevOps, Shodan and Microsoft Teams.
 
 ## Description
 
@@ -353,12 +353,12 @@ Add the `--help` option for info on running individual checks and auditors and d
 
 ## Supported Services and Checks
 
-These are the following services and checks perform by each Auditor. There are currently **259** checks supported across **77** AWS services / components using **58** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **261** checks supported across **77** AWS services / components using **58** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
-|            Auditor File Name           |           AWS Service          |                               Auditor Scan Description                              |
-|:--------------------------------------:|:------------------------------:|:-----------------------------------------------------------------------------------:|
+| Auditor File Name                      | AWS Service                    | Auditor Scan Description                                                            |
+|----------------------------------------|--------------------------------|-------------------------------------------------------------------------------------|
 | Amazon_APIGW_Auditor.py                | API Gateway Stage              | Are stage metrics enabled                                                           |
 | Amazon_APIGW_Auditor.py                | API Gateway Stage              | Is stage API logging enabled                                                        |
 | Amazon_APIGW_Auditor.py                | API Gateway Stage              | Is stage caching enabled                                                            |
@@ -536,6 +536,7 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_Shield_Advanced_Auditor.py      | Account (DRT IAM Role)         | Does the DRT have account authZ via IAM role                                        |
 | Amazon_Shield_Advanced_Auditor.py      | Account (DRT S3 Access)        | Does the DRT have access to WAF logs S3 buckets                                     |
 | Amazon_Shield_Advanced_Auditor.py      | Account (Shield subscription)  | Is Shield Adv subscription on auto renew                                            |
+| Amazon_Shield_Advanced_Auditor.py      | Global Accelerator Accelerator | Are GA Accelerators protected by Shield Adv                                         |
 | Amazon_SNS_Auditor.py                  | SNS Topic                      | Is the topic encrypted                                                              |
 | Amazon_SNS_Auditor.py                  | SNS Topic                      | Does the topic have plaintext (HTTP) subscriptions                                  |
 | Amazon_SNS_Auditor.py                  | SNS Topic                      | Does the topic allow public access                                                  |
@@ -617,7 +618,8 @@ These are the following services and checks perform by each Auditor. There are c
 | Shodan_Auditor.py                      | ELB (CLB)                      | Are internet-facing CLBs indexed                                                    |
 | Shodan_Auditor.py                      | DMS Replication Instance       | Are public accessible DMS instances indexed                                         |
 | Shodan_Auditor.py                      | Amazon MQ message broker       | Are public accessible message brokers indexed                                       |
-| Shodan_Auditor.py                      | CloudFront Distribution        | Are CloudFront distros index                                                        |
+| Shodan_Auditor.py                      | CloudFront Distribution        | Are CloudFront distros indexed                                                      |
+| Shodan_Auditor.py                      | Global Accelerator Accelerator | Are Global Accelerator Accelerators indexed                                         |
 
 ## Add-on Modules
 
