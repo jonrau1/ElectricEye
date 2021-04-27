@@ -224,10 +224,13 @@ Resources:
                   - ec2:DescribeVpcs
                   - ec2:GetEbsDefaultKmsKeyId
                   - ec2:GetEbsEncryptionByDefault
+                  - ec2:GetSerialConsoleAccessStatus
                   - ecs:ListClusters
                   - ecs:DescribeClusters
                   - ecr:DescribeImages
                   - ecr:DescribeRepositories
+                  - ecr:DescribeRegistry
+                  - ecr:GetRegistryPolicy
                   - ecr:GetLifecyclePolicy
                   - ecr:GetRepositoryPolicy
                   - eks:DescribeCluster

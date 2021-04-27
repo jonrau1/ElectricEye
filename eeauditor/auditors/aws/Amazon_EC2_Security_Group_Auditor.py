@@ -41,20 +41,6 @@ def security_group_all_open_check(
         sgArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:security-group/{sgId}"
         for permissions in secgroup["IpPermissions"]:
             try:
-                fromPort = str(permissions["FromPort"])
-            except Exception as e:
-                if str(e) == "'FromPort'":
-                    pass
-                else:
-                    print(e)
-            try:
-                toPort = str(permissions["ToPort"])
-            except Exception as e:
-                if str(e) == "'ToPort'":
-                    pass
-                else:
-                    print(e)
-            try:
                 ipProtocol = str(permissions["IpProtocol"])
             except Exception as e:
                 print(e)
@@ -183,7 +169,7 @@ def security_group_all_open_check(
                     }
                     yield finding
                 else:
-                    pass
+                    continue
 
 
 @registry.register_check("ec2")
@@ -201,14 +187,14 @@ def security_group_open_ftp_check(
                 fromPort = str(permissions["FromPort"])
             except Exception as e:
                 if str(e) == "'FromPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
                 toPort = str(permissions["ToPort"])
             except Exception as e:
                 if str(e) == "'ToPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
@@ -344,7 +330,7 @@ def security_group_open_ftp_check(
                     }
                     yield finding
                 else:
-                    pass
+                    continue
 
 
 @registry.register_check("ec2")
@@ -362,14 +348,14 @@ def security_group_open_telnet_check(
                 fromPort = str(permissions["FromPort"])
             except Exception as e:
                 if str(e) == "'FromPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
                 toPort = str(permissions["ToPort"])
             except Exception as e:
                 if str(e) == "'ToPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
@@ -505,7 +491,7 @@ def security_group_open_telnet_check(
                     }
                     yield finding
                 else:
-                    pass
+                    continue
 
 
 @registry.register_check("ec2")
@@ -523,14 +509,14 @@ def security_group_open_dcom_rpc_check(
                 fromPort = str(permissions["FromPort"])
             except Exception as e:
                 if str(e) == "'FromPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
                 toPort = str(permissions["ToPort"])
             except Exception as e:
                 if str(e) == "'ToPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
@@ -682,7 +668,7 @@ def security_group_open_dcom_rpc_check(
                     }
                     yield finding
                 else:
-                    pass
+                    continue
 
 
 @registry.register_check("ec2")
@@ -700,14 +686,14 @@ def security_group_open_smb_check(
                 fromPort = str(permissions["FromPort"])
             except Exception as e:
                 if str(e) == "'FromPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
                 toPort = str(permissions["ToPort"])
             except Exception as e:
                 if str(e) == "'ToPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
@@ -871,7 +857,7 @@ def security_group_open_smb_check(
                     }
                     yield finding
                 else:
-                    pass
+                    continue
 
 
 @registry.register_check("ec2")
@@ -889,14 +875,14 @@ def security_group_open_mssql_check(
                 fromPort = str(permissions["FromPort"])
             except Exception as e:
                 if str(e) == "'FromPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
                 toPort = str(permissions["ToPort"])
             except Exception as e:
                 if str(e) == "'ToPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
@@ -1072,7 +1058,7 @@ def security_group_open_mssql_check(
                     }
                     yield finding
                 else:
-                    pass
+                    continue
 
 
 @registry.register_check("ec2")
@@ -1090,14 +1076,14 @@ def security_group_open_oracle_check(
                 fromPort = str(permissions["FromPort"])
             except Exception as e:
                 if str(e) == "'FromPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
                 toPort = str(permissions["ToPort"])
             except Exception as e:
                 if str(e) == "'ToPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
@@ -1233,7 +1219,7 @@ def security_group_open_oracle_check(
                     }
                     yield finding
                 else:
-                    pass
+                    continue
 
 
 @registry.register_check("ec2")
@@ -1251,14 +1237,14 @@ def security_group_open_mysql_mariadb_check(
                 fromPort = str(permissions["FromPort"])
             except Exception as e:
                 if str(e) == "'FromPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
                 toPort = str(permissions["ToPort"])
             except Exception as e:
                 if str(e) == "'ToPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
@@ -1400,7 +1386,7 @@ def security_group_open_mysql_mariadb_check(
                     }
                     yield finding
                 else:
-                    pass
+                    continue
 
 
 @registry.register_check("ec2")
@@ -1418,14 +1404,14 @@ def security_group_open_rdp_check(
                 fromPort = str(permissions["FromPort"])
             except Exception as e:
                 if str(e) == "'FromPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
                 toPort = str(permissions["ToPort"])
             except Exception as e:
                 if str(e) == "'ToPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
@@ -1589,7 +1575,7 @@ def security_group_open_rdp_check(
                     }
                     yield finding
                 else:
-                    pass
+                    continue
 
 
 @registry.register_check("ec2")
@@ -1607,14 +1593,14 @@ def security_group_open_postgresql_check(
                 fromPort = str(permissions["FromPort"])
             except Exception as e:
                 if str(e) == "'FromPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
                 toPort = str(permissions["ToPort"])
             except Exception as e:
                 if str(e) == "'ToPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
@@ -1750,7 +1736,7 @@ def security_group_open_postgresql_check(
                     }
                     yield finding
                 else:
-                    pass
+                    continue
 
 
 @registry.register_check("ec2")
@@ -1768,14 +1754,14 @@ def security_group_open_kibana_check(
                 fromPort = str(permissions["FromPort"])
             except Exception as e:
                 if str(e) == "'FromPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
                 toPort = str(permissions["ToPort"])
             except Exception as e:
                 if str(e) == "'ToPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
@@ -1939,7 +1925,7 @@ def security_group_open_kibana_check(
                     }
                     yield finding
                 else:
-                    pass
+                    continue
 
 
 @registry.register_check("ec2")
@@ -1957,14 +1943,14 @@ def security_group_open_redis_check(
                 fromPort = str(permissions["FromPort"])
             except Exception as e:
                 if str(e) == "'FromPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
                 toPort = str(permissions["ToPort"])
             except Exception as e:
                 if str(e) == "'ToPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
@@ -2128,7 +2114,7 @@ def security_group_open_redis_check(
                     }
                     yield finding
                 else:
-                    pass
+                    continue
 
 
 @registry.register_check("ec2")
@@ -2146,14 +2132,14 @@ def security_group_open_splunkd_check(
                 fromPort = str(permissions["FromPort"])
             except Exception as e:
                 if str(e) == "'FromPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
                 toPort = str(permissions["ToPort"])
             except Exception as e:
                 if str(e) == "'ToPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
@@ -2317,7 +2303,7 @@ def security_group_open_splunkd_check(
                     }
                     yield finding
                 else:
-                    pass
+                    continue
 
 
 @registry.register_check("ec2")
@@ -2335,14 +2321,14 @@ def security_group_open_elasticsearch1_check(
                 fromPort = str(permissions["FromPort"])
             except Exception as e:
                 if str(e) == "'FromPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
                 toPort = str(permissions["ToPort"])
             except Exception as e:
                 if str(e) == "'ToPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
@@ -2484,7 +2470,7 @@ def security_group_open_elasticsearch1_check(
                     }
                     yield finding
                 else:
-                    pass
+                    continue
 
 
 @registry.register_check("ec2")
@@ -2502,14 +2488,14 @@ def security_group_open_elasticsearch2_check(
                 fromPort = str(permissions["FromPort"])
             except Exception as e:
                 if str(e) == "'FromPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
                 toPort = str(permissions["ToPort"])
             except Exception as e:
                 if str(e) == "'ToPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
@@ -2651,7 +2637,7 @@ def security_group_open_elasticsearch2_check(
                     }
                     yield finding
                 else:
-                    pass
+                    continue
 
 
 @registry.register_check("ec2")
@@ -2669,14 +2655,14 @@ def security_group_open_memcached_check(
                 fromPort = str(permissions["FromPort"])
             except Exception as e:
                 if str(e) == "'FromPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
                 toPort = str(permissions["ToPort"])
             except Exception as e:
                 if str(e) == "'ToPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
@@ -2850,7 +2836,7 @@ def security_group_open_memcached_check(
                     }
                     yield finding
                 else:
-                    pass
+                    continue
 
 
 @registry.register_check("ec2")
@@ -2868,14 +2854,14 @@ def security_group_open_redshift_check(
                 fromPort = str(permissions["FromPort"])
             except Exception as e:
                 if str(e) == "'FromPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
                 toPort = str(permissions["ToPort"])
             except Exception as e:
                 if str(e) == "'ToPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
@@ -3011,7 +2997,7 @@ def security_group_open_redshift_check(
                     }
                     yield finding
                 else:
-                    pass
+                    continue
 
 
 @registry.register_check("ec2")
@@ -3029,14 +3015,14 @@ def security_group_open_documentdb_check(
                 fromPort = str(permissions["FromPort"])
             except Exception as e:
                 if str(e) == "'FromPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
                 toPort = str(permissions["ToPort"])
             except Exception as e:
                 if str(e) == "'ToPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
@@ -3129,7 +3115,7 @@ def security_group_open_documentdb_check(
                         "Title": "[SecurityGroup.18] Security groups should not allow unrestricted DocumentDB (TCP 27017) access",
                         "Description": "Security group "
                         + sgName
-                        + " allows unrestricted DocumentDB (TCP 27017) access on "
+                        + " does not allow unrestricted DocumentDB (TCP 27017) access on "
                         + ipProtocol
                         + ". Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.",
                         "Remediation": {
@@ -3172,7 +3158,7 @@ def security_group_open_documentdb_check(
                     }
                     yield finding
                 else:
-                    pass
+                    continue
 
 
 @registry.register_check("ec2")
@@ -3190,14 +3176,14 @@ def security_group_open_cassandra_check(
                 fromPort = str(permissions["FromPort"])
             except Exception as e:
                 if str(e) == "'FromPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
                 toPort = str(permissions["ToPort"])
             except Exception as e:
                 if str(e) == "'ToPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
@@ -3290,7 +3276,7 @@ def security_group_open_cassandra_check(
                         "Title": "[SecurityGroup.19] Security groups should not allow unrestricted Cassandra (TCP 9142) access",
                         "Description": "Security group "
                         + sgName
-                        + " allows unrestricted Cassandra (TCP 9142) access on "
+                        + " does not allow unrestricted Cassandra (TCP 9142) access on "
                         + ipProtocol
                         + ". Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.",
                         "Remediation": {
@@ -3333,7 +3319,7 @@ def security_group_open_cassandra_check(
                     }
                     yield finding
                 else:
-                    pass
+                    continue
 
 
 @registry.register_check("ec2")
@@ -3351,14 +3337,14 @@ def security_group_open_kafka_check(
                 fromPort = str(permissions["FromPort"])
             except Exception as e:
                 if str(e) == "'FromPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
                 toPort = str(permissions["ToPort"])
             except Exception as e:
                 if str(e) == "'ToPort'":
-                    pass
+                    continue
                 else:
                     print(e)
             try:
@@ -3451,7 +3437,7 @@ def security_group_open_kafka_check(
                         "Title": "[SecurityGroup.20] Security groups should not allow unrestricted Kafka streams (TCP 9092) access",
                         "Description": "Security group "
                         + sgName
-                        + " allows unrestricted Kafka streams (TCP 9092) access on "
+                        + " does not allow unrestricted Kafka streams (TCP 9092) access on "
                         + ipProtocol
                         + ". Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.",
                         "Remediation": {
@@ -3494,4 +3480,644 @@ def security_group_open_kafka_check(
                     }
                     yield finding
                 else:
-                    pass
+                    continue
+
+@registry.register_check("ec2")
+def security_group_open_nfs_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
+    response = describe_security_groups(cache)
+    mySgs = response["SecurityGroups"]
+    for secgroup in mySgs:
+        sgName = str(secgroup["GroupName"])
+        sgId = str(secgroup["GroupId"])
+        sgArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:security-group/{sgId}"
+        for permissions in secgroup["IpPermissions"]:
+            try:
+                fromPort = str(permissions["FromPort"])
+            except Exception as e:
+                if str(e) == "'FromPort'":
+                    continue
+                else:
+                    print(e)
+            try:
+                toPort = str(permissions["ToPort"])
+            except Exception as e:
+                if str(e) == "'ToPort'":
+                    continue
+                else:
+                    print(e)
+            try:
+                ipProtocol = str(permissions["IpProtocol"])
+            except Exception as e:
+                print(e)
+            ipRanges = permissions["IpRanges"]
+            for cidrs in ipRanges:
+                cidrIpRange = str(cidrs["CidrIp"])
+                iso8601Time = (
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                )
+                if toPort and fromPort == "2049" and cidrIpRange == "0.0.0.0/0":
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-nfs-open-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": sgArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": [
+                            "Software and Configuration Checks/AWS Security Best Practices",
+                            "Effects/Data Exposure",
+                        ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "MEDIUM"},
+                        "Confidence": 99,
+                        "Title": "[SecurityGroup.21] Security groups should not allow unrestricted NFS (TCP 2049) access",
+                        "Description": "Security group "
+                        + sgName
+                        + " allows unrestricted NFS (TCP 2049) access on "
+                        + ipProtocol
+                        + ". Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For more information on modifying security group rules refer to the Adding, Removing, and Updating Rules section of the Amazon Virtual Private Cloud User Guide",
+                                "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#AddRemoveRules",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsEc2SecurityGroup",
+                                "Id": sgArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
+                                },
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "FAILED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-3",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-17",
+                                "NIST SP 800-53 AC-19",
+                                "NIST SP 800-53 AC-20",
+                                "NIST SP 800-53 SC-15",
+                                "AICPA TSC CC6.6",
+                                "ISO 27001:2013 A.6.2.1",
+                                "ISO 27001:2013 A.6.2.2",
+                                "ISO 27001:2013 A.11.2.6",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1",
+                            ],
+                        },
+                        "Workflow": {"Status": "NEW"},
+                        "RecordState": "ACTIVE",
+                    }
+                    yield finding
+                elif toPort and fromPort == "2049" and cidrIpRange != "0.0.0.0/0":
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-nfs-open-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": sgArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": [
+                            "Software and Configuration Checks/AWS Security Best Practices",
+                            "Effects/Data Exposure",
+                        ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "INFORMATIONAL"},
+                        "Confidence": 99,
+                        "Title": "[SecurityGroup.21] Security groups should not allow unrestricted NFS (TCP 2049) access",
+                        "Description": "Security group "
+                        + sgName
+                        + " does not allow unrestricted NFS (TCP 2049) access on "
+                        + ipProtocol
+                        + ". Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For more information on modifying security group rules refer to the Adding, Removing, and Updating Rules section of the Amazon Virtual Private Cloud User Guide",
+                                "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#AddRemoveRules",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsEc2SecurityGroup",
+                                "Id": sgArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
+                                },
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "PASSED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-3",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-17",
+                                "NIST SP 800-53 AC-19",
+                                "NIST SP 800-53 AC-20",
+                                "NIST SP 800-53 SC-15",
+                                "AICPA TSC CC6.6",
+                                "ISO 27001:2013 A.6.2.1",
+                                "ISO 27001:2013 A.6.2.2",
+                                "ISO 27001:2013 A.11.2.6",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1",
+                            ],
+                        },
+                        "Workflow": {"Status": "RESOLVED"},
+                        "RecordState": "ARCHIVED",
+                    }
+                    yield finding
+                else:
+                    continue
+
+@registry.register_check("ec2")
+def security_group_open_rsync_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
+    response = describe_security_groups(cache)
+    mySgs = response["SecurityGroups"]
+    for secgroup in mySgs:
+        sgName = str(secgroup["GroupName"])
+        sgId = str(secgroup["GroupId"])
+        sgArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:security-group/{sgId}"
+        for permissions in secgroup["IpPermissions"]:
+            try:
+                fromPort = str(permissions["FromPort"])
+            except Exception as e:
+                if str(e) == "'FromPort'":
+                    continue
+                else:
+                    print(e)
+            try:
+                toPort = str(permissions["ToPort"])
+            except Exception as e:
+                if str(e) == "'ToPort'":
+                    continue
+                else:
+                    print(e)
+            try:
+                ipProtocol = str(permissions["IpProtocol"])
+            except Exception as e:
+                print(e)
+            ipRanges = permissions["IpRanges"]
+            for cidrs in ipRanges:
+                cidrIpRange = str(cidrs["CidrIp"])
+                iso8601Time = (
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                )
+                if toPort and fromPort == "873" and cidrIpRange == "0.0.0.0/0":
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-rsync-open-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": sgArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": [
+                            "Software and Configuration Checks/AWS Security Best Practices",
+                            "Effects/Data Exposure",
+                        ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "MEDIUM"},
+                        "Confidence": 99,
+                        "Title": "[SecurityGroup.22] Security groups should not allow unrestricted Rsync (TCP 873) access",
+                        "Description": "Security group "
+                        + sgName
+                        + " allows unrestricted Rsync (TCP 873) access on "
+                        + ipProtocol
+                        + ". Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For more information on modifying security group rules refer to the Adding, Removing, and Updating Rules section of the Amazon Virtual Private Cloud User Guide",
+                                "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#AddRemoveRules",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsEc2SecurityGroup",
+                                "Id": sgArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
+                                },
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "FAILED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-3",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-17",
+                                "NIST SP 800-53 AC-19",
+                                "NIST SP 800-53 AC-20",
+                                "NIST SP 800-53 SC-15",
+                                "AICPA TSC CC6.6",
+                                "ISO 27001:2013 A.6.2.1",
+                                "ISO 27001:2013 A.6.2.2",
+                                "ISO 27001:2013 A.11.2.6",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1",
+                            ],
+                        },
+                        "Workflow": {"Status": "NEW"},
+                        "RecordState": "ACTIVE",
+                    }
+                    yield finding
+                elif toPort and fromPort == "873" and cidrIpRange != "0.0.0.0/0":
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-rsync-open-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": sgArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": [
+                            "Software and Configuration Checks/AWS Security Best Practices",
+                            "Effects/Data Exposure",
+                        ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "INFORMATIONAL"},
+                        "Confidence": 99,
+                        "Title": "[SecurityGroup.22] Security groups should not allow unrestricted Rsync (TCP 873) access",
+                        "Description": "Security group "
+                        + sgName
+                        + " does not allow unrestricted Rsync (TCP 873) access on "
+                        + ipProtocol
+                        + ". Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For more information on modifying security group rules refer to the Adding, Removing, and Updating Rules section of the Amazon Virtual Private Cloud User Guide",
+                                "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#AddRemoveRules",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsEc2SecurityGroup",
+                                "Id": sgArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
+                                },
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "PASSED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-3",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-17",
+                                "NIST SP 800-53 AC-19",
+                                "NIST SP 800-53 AC-20",
+                                "NIST SP 800-53 SC-15",
+                                "AICPA TSC CC6.6",
+                                "ISO 27001:2013 A.6.2.1",
+                                "ISO 27001:2013 A.6.2.2",
+                                "ISO 27001:2013 A.11.2.6",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1",
+                            ],
+                        },
+                        "Workflow": {"Status": "RESOLVED"},
+                        "RecordState": "ARCHIVED",
+                    }
+                    yield finding
+                else:
+                    continue
+
+@registry.register_check("ec2")
+def security_group_open_tftp_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
+    response = describe_security_groups(cache)
+    mySgs = response["SecurityGroups"]
+    for secgroup in mySgs:
+        sgName = str(secgroup["GroupName"])
+        sgId = str(secgroup["GroupId"])
+        sgArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:security-group/{sgId}"
+        for permissions in secgroup["IpPermissions"]:
+            try:
+                fromPort = str(permissions["FromPort"])
+            except Exception as e:
+                if str(e) == "'FromPort'":
+                    continue
+                else:
+                    print(e)
+            try:
+                toPort = str(permissions["ToPort"])
+            except Exception as e:
+                if str(e) == "'ToPort'":
+                    continue
+                else:
+                    print(e)
+            try:
+                ipProtocol = str(permissions["IpProtocol"])
+            except Exception as e:
+                print(e)
+            ipRanges = permissions["IpRanges"]
+            for cidrs in ipRanges:
+                cidrIpRange = str(cidrs["CidrIp"])
+                iso8601Time = (
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                )
+                if toPort and fromPort == "69" and cidrIpRange == "0.0.0.0/0" and ipProtocol == "udp":
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-tftp-open-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": sgArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": [
+                            "Software and Configuration Checks/AWS Security Best Practices",
+                            "Effects/Data Exposure",
+                        ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "MEDIUM"},
+                        "Confidence": 99,
+                        "Title": "[SecurityGroup.23] Security groups should not allow unrestricted TFTP (UDP 69) access",
+                        "Description": "Security group "
+                        + sgName
+                        + " allows unrestricted TFTP (UDP 69) access on "
+                        + ipProtocol
+                        + ". Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For more information on modifying security group rules refer to the Adding, Removing, and Updating Rules section of the Amazon Virtual Private Cloud User Guide",
+                                "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#AddRemoveRules",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsEc2SecurityGroup",
+                                "Id": sgArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
+                                },
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "FAILED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-3",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-17",
+                                "NIST SP 800-53 AC-19",
+                                "NIST SP 800-53 AC-20",
+                                "NIST SP 800-53 SC-15",
+                                "AICPA TSC CC6.6",
+                                "ISO 27001:2013 A.6.2.1",
+                                "ISO 27001:2013 A.6.2.2",
+                                "ISO 27001:2013 A.11.2.6",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1",
+                            ],
+                        },
+                        "Workflow": {"Status": "NEW"},
+                        "RecordState": "ACTIVE",
+                    }
+                    yield finding
+                elif toPort and fromPort == "69" and cidrIpRange != "0.0.0.0/0" and ipProtocol == "udp":
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-tftp-open-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": sgArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": [
+                            "Software and Configuration Checks/AWS Security Best Practices",
+                            "Effects/Data Exposure",
+                        ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "INFORMATIONAL"},
+                        "Confidence": 99,
+                        "Title": "[SecurityGroup.23] Security groups should not allow unrestricted TFTP (UDP 69) access",
+                        "Description": "Security group "
+                        + sgName
+                        + " does not allow unrestricted TFTP (UDP 69) access on "
+                        + ipProtocol
+                        + ". Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For more information on modifying security group rules refer to the Adding, Removing, and Updating Rules section of the Amazon Virtual Private Cloud User Guide",
+                                "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#AddRemoveRules",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsEc2SecurityGroup",
+                                "Id": sgArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
+                                },
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "PASSED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-3",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-17",
+                                "NIST SP 800-53 AC-19",
+                                "NIST SP 800-53 AC-20",
+                                "NIST SP 800-53 SC-15",
+                                "AICPA TSC CC6.6",
+                                "ISO 27001:2013 A.6.2.1",
+                                "ISO 27001:2013 A.6.2.2",
+                                "ISO 27001:2013 A.11.2.6",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1",
+                            ],
+                        },
+                        "Workflow": {"Status": "RESOLVED"},
+                        "RecordState": "ARCHIVED",
+                    }
+                    yield finding
+                else:
+                    continue
+
+@registry.register_check("ec2")
+def security_group_open_docker_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
+    response = describe_security_groups(cache)
+    mySgs = response["SecurityGroups"]
+    for secgroup in mySgs:
+        sgName = str(secgroup["GroupName"])
+        sgId = str(secgroup["GroupId"])
+        sgArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:security-group/{sgId}"
+        for permissions in secgroup["IpPermissions"]:
+            try:
+                fromPort = str(permissions["FromPort"])
+            except Exception as e:
+                if str(e) == "'FromPort'":
+                    continue
+                else:
+                    print(e)
+            try:
+                toPort = str(permissions["ToPort"])
+            except Exception as e:
+                if str(e) == "'ToPort'":
+                    continue
+                else:
+                    print(e)
+            try:
+                ipProtocol = str(permissions["IpProtocol"])
+            except Exception as e:
+                print(e)
+            ipRanges = permissions["IpRanges"]
+            for cidrs in ipRanges:
+                cidrIpRange = str(cidrs["CidrIp"])
+                iso8601Time = (
+                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                )
+                if toPort and fromPort == "2375" and cidrIpRange == "0.0.0.0/0":
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-docker-open-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": sgArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": [
+                            "Software and Configuration Checks/AWS Security Best Practices",
+                            "Effects/Data Exposure",
+                        ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "HIGH"},
+                        "Confidence": 99,
+                        "Title": "[SecurityGroup.24] Security groups should not allow unrestricted Docker (TCP 2375) access",
+                        "Description": "Security group "
+                        + sgName
+                        + " allows unrestricted Docker (TCP 2375) access on "
+                        + ipProtocol
+                        + ". Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For more information on modifying security group rules refer to the Adding, Removing, and Updating Rules section of the Amazon Virtual Private Cloud User Guide",
+                                "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#AddRemoveRules",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsEc2SecurityGroup",
+                                "Id": sgArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
+                                },
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "FAILED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-3",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-17",
+                                "NIST SP 800-53 AC-19",
+                                "NIST SP 800-53 AC-20",
+                                "NIST SP 800-53 SC-15",
+                                "AICPA TSC CC6.6",
+                                "ISO 27001:2013 A.6.2.1",
+                                "ISO 27001:2013 A.6.2.2",
+                                "ISO 27001:2013 A.11.2.6",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1",
+                            ],
+                        },
+                        "Workflow": {"Status": "NEW"},
+                        "RecordState": "ACTIVE",
+                    }
+                    yield finding
+                elif toPort and fromPort == "2375" and cidrIpRange != "0.0.0.0/0":
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-docker-open-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": sgArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": [
+                            "Software and Configuration Checks/AWS Security Best Practices",
+                            "Effects/Data Exposure",
+                        ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "INFORMATIONAL"},
+                        "Confidence": 99,
+                        "Title": "[SecurityGroup.24] Security groups should not allow unrestricted Docker (TCP 2375) access",
+                        "Description": "Security group "
+                        + sgName
+                        + " does not allow unrestricted Docker (TCP 2375) access on "
+                        + ipProtocol
+                        + ". Refer to the remediation instructions to remediate this behavior. Your security group should still be audited to ensure any other rules are compliant with organizational or regulatory requirements.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For more information on modifying security group rules refer to the Adding, Removing, and Updating Rules section of the Amazon Virtual Private Cloud User Guide",
+                                "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#AddRemoveRules",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsEc2SecurityGroup",
+                                "Id": sgArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsEc2SecurityGroup": {"GroupName": sgName, "GroupId": sgId,}
+                                },
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "PASSED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-3",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-17",
+                                "NIST SP 800-53 AC-19",
+                                "NIST SP 800-53 AC-20",
+                                "NIST SP 800-53 SC-15",
+                                "AICPA TSC CC6.6",
+                                "ISO 27001:2013 A.6.2.1",
+                                "ISO 27001:2013 A.6.2.2",
+                                "ISO 27001:2013 A.11.2.6",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1",
+                            ],
+                        },
+                        "Workflow": {"Status": "RESOLVED"},
+                        "RecordState": "ARCHIVED",
+                    }
+                    yield finding
+                else:
+                    continue

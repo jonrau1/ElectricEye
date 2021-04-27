@@ -576,7 +576,7 @@ def ec2_source_dest_verification_check(cache: dict, awsAccountId: str, awsRegion
                             "UpdatedAt": iso8601Time,
                             "Severity": {"Label": "LOW"},
                             "Confidence": 99,
-                            "Title": "[EC2.3] EC2 Instances should not be internet-facing",
+                            "Title": "[EC2.4] EC2 Instances should use Source-Destination checks unless absolutely not required",
                             "Description": "EC2 Instance "
                             + instanceId
                             + " does have have the Source-Destination Check enabled. Typically, this is done for self-managed Network Address Translation (NAT), Forward Proxies (such as Squid, for URL Filtering/DNS Protection) or self-managed Firewalls (ModSecurity). These settings should be verified, and underlying technology must be patched to avoid exploits or availability loss. Refer to the remediation instructions if this configuration is not intended",
@@ -641,7 +641,7 @@ def ec2_source_dest_verification_check(cache: dict, awsAccountId: str, awsRegion
                             "UpdatedAt": iso8601Time,
                             "Severity": {"Label": "INFORMATIONAL"},
                             "Confidence": 99,
-                            "Title": "[EC2.3] EC2 Instances should not be internet-facing",
+                            "Title": "[EC2.4] EC2 Instances should use Source-Destination checks unless absolutely not required",
                             "Description": "EC2 Instance "
                             + instanceId
                             + " has the Source-Destination Check enabled.",
@@ -692,3 +692,126 @@ def ec2_source_dest_verification_check(cache: dict, awsAccountId: str, awsRegion
                         yield finding
     except Exception as e:
         print(e)
+
+@registry.register_check("ec2")
+def ec2_serial_console_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    # ISO Time
+    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+    # This is a failing check
+    if str(ec2.get_serial_console_access_status()["SerialConsoleAccessEnabled"]) == "True":
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": awsAccountId + awsRegion + "/ec2-serial-port-access-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": awsAccountId + awsRegion,
+            "AwsAccountId": awsAccountId,
+            "Types": [
+                "Software and Configuration Checks/AWS Security Best Practices",
+                "Effects/Data Exposure"
+            ],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "HIGH"},
+            "Confidence": 99,
+            "Title": "[EC2.5] Serial port access to EC2 should be prohibited unless absolutely required",
+            "Description": "AWS Account "
+            + awsAccountId
+            + " in Region "
+            + awsRegion
+            + " does not restrict access to the EC2 Serial Console, EC2 Serial Console provides text-based access to an instances’ serial port as though a monitor and keyboard were attached to it, this can be useful for troubleshooting but can also be abused if not properly restricted. Refer to the remediation instructions if this configuration is not intended",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "To learn more about the EC2 Serial Console refer to the EC2 Serial Console for Linux instances section of the Amazon Elastic Compute Cloud User Guide",
+                    "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-serial-console.html"
+                }
+            },
+            "ProductFields": {"Product Name": "ElectricEye"},
+            "Resources": [
+                {
+                    "Type": "AwsAccount",
+                    "Id": awsAccountId,
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.AC-3",
+                    "NIST SP 800-53 AC-1",
+                    "NIST SP 800-53 AC-17",
+                    "NIST SP 800-53 AC-19",
+                    "NIST SP 800-53 AC-20",
+                    "NIST SP 800-53 SC-15",
+                    "AICPA TSC CC6.6",
+                    "ISO 27001:2013 A.6.2.1",
+                    "ISO 27001:2013 A.6.2.2",
+                    "ISO 27001:2013 A.11.2.6",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.13.2.1"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+    else:
+        # create Sec Hub finding
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": awsAccountId + awsRegion + "/ec2-serial-port-access-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": awsAccountId + awsRegion,
+            "AwsAccountId": awsAccountId,
+            "Types": [
+                "Software and Configuration Checks/AWS Security Best Practices",
+                "Effects/Data Exposure"
+            ],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[EC2.5] Serial port access to EC2 should be prohibited unless absolutely required",
+            "Description": "AWS Account "
+            + awsAccountId
+            + " in Region "
+            + awsRegion
+            + " restricts access to the EC2 Serial Console.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "To learn more about the EC2 Serial Console refer to the EC2 Serial Console for Linux instances section of the Amazon Elastic Compute Cloud User Guide",
+                    "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-serial-console.html"
+                }
+            },
+            "ProductFields": {"Product Name": "ElectricEye"},
+            "Resources": [
+                {
+                    "Type": "AwsAccount",
+                    "Id": awsAccountId,
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.AC-3",
+                    "NIST SP 800-53 AC-1",
+                    "NIST SP 800-53 AC-17",
+                    "NIST SP 800-53 AC-19",
+                    "NIST SP 800-53 AC-20",
+                    "NIST SP 800-53 SC-15",
+                    "AICPA TSC CC6.6",
+                    "ISO 27001:2013 A.6.2.1",
+                    "ISO 27001:2013 A.6.2.2",
+                    "ISO 27001:2013 A.11.2.6",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.13.2.1"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
