@@ -441,6 +441,7 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_ECS_Auditor.py                  | ECS Task Definition            | Is the Task Definition using a Privileged container                                 |
 | Amazon_ECS_Auditor.py                  | ECS Task Definition            | Do EC2-ECS containers use SELinux or AppArmor                                       |
 | Amazon_EFS_Auditor.py                  | EFS File System                | Are file systems encrypted                                                          |
+| Amazon_EFS_Auditor.py                  | EFS File System                | Does the File system have a custom policy attached                                  |
 | Amazon_EKS_Auditor.py                  | EKS Cluster                    | Is the API Server publicly accessible                                               |
 | Amazon_EKS_Auditor.py                  | EKS Cluster                    | Is K8s version 1.19 used                                                            |
 | Amazon_EKS_Auditor.py                  | EKS Cluster                    | Are auth or audit logs enabled                                                      |

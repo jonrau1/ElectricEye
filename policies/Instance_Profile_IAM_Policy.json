@@ -256,7 +256,8 @@
                 "imagebuilder:GetImageRecipe",
                 "cloudfront:ListDistributions",
                 "cloudfront:GetDistribution",
-                "amplify:ListApps"
+                "amplify:ListApps",
+                "elasticfilesystem:DescribeFileSystemPolicy"
             ],
             "Resource": "*"
         }

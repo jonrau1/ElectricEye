@@ -373,6 +373,7 @@ Resources:
                   - datasync:ListTasks
                   - fsx:DescribeBackups
                   - fsx:DescribeFileSystems
+                  - elasticfilesystem:DescribeFileSystemPolicy
                 Resource: "*"
       AssumeRolePolicyDocument:
         Version: 2012-10-17
