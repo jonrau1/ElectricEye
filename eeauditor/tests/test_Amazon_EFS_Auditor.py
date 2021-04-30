@@ -29,6 +29,10 @@ describe_file_systems = {
     }]
 }
 
+describe_file_systems_blank = {
+    "FileSystems": []
+}
+
 describe_file_systems_enc_false = {
     "FileSystems": [{
         "FileSystemId": "MyEFS",
@@ -122,4 +126,13 @@ def test_efs_no_policy(efs_stubber):
             assert result["RecordState"] == "ACTIVE"
         else:
             assert False
+    efs_stubber.assert_no_pending_responses()
+
+
+def test_efs_no_fs(efs_stubber):
+    efs_stubber.add_response("describe_file_systems", describe_file_systems_blank)
+    results = efs_filesys_policy_check(
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
+    )
+    assert len(list(results)) == 0
     efs_stubber.assert_no_pending_responses()

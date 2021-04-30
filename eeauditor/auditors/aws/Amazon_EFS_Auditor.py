@@ -213,7 +213,7 @@ def efs_filesys_policy_check(
             }
             yield finding
         
-        except:
+        except efs.exceptions.FileSystemNotFound:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": fileSysArn + "/efs-policy-check",
@@ -266,3 +266,6 @@ def efs_filesys_policy_check(
                 "RecordState": "ACTIVE",
             }
             yield finding
+        
+        except: 
+            pass

@@ -234,7 +234,7 @@ def test_encrypted_fail(sqs_stubber):
 
 
 def test_blank_queues(sqs_stubber): 
-    sqs_stubber.add_response("list_queues", list_queues_response)
+    sqs_stubber.add_response("list_queues", list_queues_blank_response)
     #get queue attributes not required because no queues were returned
     results = sqs_queue_encryption_check(
         cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
