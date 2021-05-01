@@ -16,6 +16,7 @@
 import boto3
 import datetime
 from check_register import CheckRegister
+import json
 
 registry = CheckRegister()
 
@@ -24,7 +25,7 @@ codeartifact = boto3.client("codeartifact")
 
 
 @registry.register_check("codeartifact")
-def codeartifact_repo_iam_check(
+def codeartifact_repo_policy_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
     response = codeartifact.list_repositories()
@@ -33,32 +34,40 @@ def codeartifact_repo_iam_check(
     for repo in response["repositories"]:
         domainName = repo['domainName']
         domainOwner = repo['domainOwner']
-        repositoryName = repo['Name']
+        repositoryName = repo['name']
         repoArn = repo['arn']
 
-        repo_policy = codeartifact.get_repository_permissions_policy(
-            domain=domainName,
-            domainOwner=domainOwner,
-            repository=repositoryName
-        )
-        policy = json.loads(repo_policy)
-        accessibility = "limited"
+        try: 
+            repo_policy = codeartifact.get_repository_permissions_policy(
+                domain=domainName,
+                domainOwner=domainOwner,
+                repository=repositoryName
+            )
+            policy = json.loads(repo_policy['policy']['document'])
+            accessibility = "limited"
 
-        for statement in policy["Statement"]:
-            if statement["Effect"] == 'Allow':
-                if statement.get("Principal") == '*':
-                    if statement.get('Condition') == None: 
-                        accessibility = "not_limited"
+            for statement in policy["Statement"]:
+                if statement["Effect"] == 'Allow':
+                    if statement.get("Principal") == '*' or len([i for i in statement['Principal'].values() if f'arn:aws:iam::{awsAccountId}:root' in i]) > 0: 
+                        if statement.get('Condition') == None: 
+                            # monitor for Update/Delete repo actions with no specified principal
+                            if "PublishPackageVersion" in statement.get('Action') or \
+                                "PutRepositoryPermissionsPolicy" in statement.get('Action') or \
+                                "UpdateRepository" in statement.get('Action') or \
+                                "DisposePackageVersions" in statement.get('Action'):
+                                accessibility = "not_limited"
 
-                    # monitor for Update/Delete repo actions with no specified principal
-                    elif statement.get('Action') == "*" or "PublishPackageVersion", "PutRepositoryPermissionsPolicy", 
-                        "UpdateRepository", "DisposePackageVersions" in statement.get('Action'):
-                         accessibility = "not_limited"
+                            elif statement.get('Action') == "*" or statement.get('Action') == "codeartifact:*":
+                                accessibility = "not_limited"
+
+        except codeartifact.exceptions.ResourceNotFoundException:
+            # If no policy is applied, access is repo owner only.
+            accessibility = "limited"
 
         if accessibility == "limited":
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": appArn + "/codeartifact_repo_iam_check",
+                "Id": repoArn + "/codeartifact_repo_iam_check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": repoArn,
                 "AwsAccountId": awsAccountId,
@@ -109,7 +118,7 @@ def codeartifact_repo_iam_check(
         elif accessibility == "limited":
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": appArn + "/codeartifact_repo_iam_check",
+                "Id": repoArn + "/codeartifact_repo_iam_check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": repoArn,
                 "AwsAccountId": awsAccountId,
@@ -117,7 +126,7 @@ def codeartifact_repo_iam_check(
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "MEDIUM"},
+                "Severity": {"Label": "LOW"},
                 "Confidence": 99,
                 "Title": "[CodeArtifact.1] CodeArtifact repos should have a resource policy with least privilege applied",
                 "Description": f"CodeArtifact repository {repositoryName} has a resource policy with least privilege applied",
