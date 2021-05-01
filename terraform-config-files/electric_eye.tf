@@ -400,7 +400,11 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "fsx:DescribeBackups",
                 "fsx:DescribeFileSystems",
                 "amplify:ListApps",
-                "elasticfilesystem:DescribeFileSystemPolicy"
+                "elasticfilesystem:DescribeFileSystemPolicy",
+                "codeartifact:GetDomainPermissionsPolicy",
+                "codeartifact:ListDomains",
+                "codeartifact:ListRepositories",
+                "codeartifact:GetRepositoryPermissionsPolicy"
             ],
             "Resource": "*"
         }

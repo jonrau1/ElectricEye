@@ -373,6 +373,10 @@ Resources:
                   - fsx:DescribeBackups
                   - fsx:DescribeFileSystems
                   - elasticfilesystem:DescribeFileSystemPolicy
+                  - codeartifact:GetDomainPermissionsPolicy
+                  - codeartifact:ListDomains
+                  - codeartifact:ListRepositories
+                  - codeartifact:GetRepositoryPermissionsPolicy
                 Resource: "*"
       AssumeRolePolicyDocument:
         Version: 2012-10-17

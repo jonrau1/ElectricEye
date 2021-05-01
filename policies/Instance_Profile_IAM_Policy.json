@@ -257,7 +257,11 @@
                 "cloudfront:ListDistributions",
                 "cloudfront:GetDistribution",
                 "amplify:ListApps",
-                "elasticfilesystem:DescribeFileSystemPolicy"
+                "elasticfilesystem:DescribeFileSystemPolicy",
+                "codeartifact:GetDomainPermissionsPolicy",
+                "codeartifact:ListDomains",
+                "codeartifact:ListRepositories",
+                "codeartifact:GetRepositoryPermissionsPolicy"
             ],
             "Resource": "*"
         }
