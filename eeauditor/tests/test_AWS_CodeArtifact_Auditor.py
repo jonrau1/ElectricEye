@@ -329,4 +329,4 @@ def test_domain_root_star(codeartifact_stubber):
         else:
             assert False
     codeartifact_stubber.assert_no_pending_responses()
-
+    
