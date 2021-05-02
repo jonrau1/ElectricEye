@@ -353,7 +353,7 @@ Add the `--help` option for info on running individual checks and auditors and d
 
 ## Supported Services and Checks
 
-These are the following services and checks perform by each Auditor. There are currently **272** checks supported across **79** AWS services / components using **59** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **275** checks supported across **80** AWS services / components using **60** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -441,6 +441,7 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_ECS_Auditor.py                  | ECS Task Definition            | Is the Task Definition using a Privileged container                                 |
 | Amazon_ECS_Auditor.py                  | ECS Task Definition            | Do EC2-ECS containers use SELinux or AppArmor                                       |
 | Amazon_EFS_Auditor.py                  | EFS File System                | Are file systems encrypted                                                          |
+| Amazon_EFS_Auditor.py                  | EFS File System                | Does the File system have a custom policy attached                                  |
 | Amazon_EKS_Auditor.py                  | EKS Cluster                    | Is the API Server publicly accessible                                               |
 | Amazon_EKS_Auditor.py                  | EKS Cluster                    | Is K8s version 1.19 used                                                            |
 | Amazon_EKS_Auditor.py                  | EKS Cluster                    | Are auth or audit logs enabled                                                      |
@@ -581,6 +582,8 @@ These are the following services and checks perform by each Auditor. There are c
 | AWS_CloudTrail_Auditor.py              | CloudTrail                     | Is the trail encrypted by KMS                                                       |
 | AWS_CloudTrail_Auditor.py              | CloudTrail                     | Are global/management events logged                                                 |
 | AWS_CloudTrail_Auditor.py              | CloudTrail                     | Is log file validation enabled                                                      |
+| AWS_CodeArtifact_Auditor.py            | CodeArtifact Repo              | Does the CodeArtifact Repo have a least privilege resource policy attached          |
+| AWS_CodeArtifact_Auditor.py            | CodeArtifact Domain            | Does the CodeArtifact Domain have a least privilege resource policy attached        |
 | AWS_CodeBuild_Auditor.py               | CodeBuild project              | Is artifact encryption enabled                                                      |
 | AWS_CodeBuild_Auditor.py               | CodeBuild project              | Is Insecure SSL enabled                                                             |
 | AWS_CodeBuild_Auditor.py               | CodeBuild project              | Are plaintext environmental variables used                                          |

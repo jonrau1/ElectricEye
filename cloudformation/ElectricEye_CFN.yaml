@@ -276,15 +276,14 @@ Resources:
                   - kafka:ListClusters
                   - kinesis:DescribeStream
                   - kinesis:ListStreams
-                  - kinesisanalyticsv2:ListApplications
-                  - kinesisanalyticsv2:DescribeApplication
+                  - kinesisanalytics:ListApplications
+                  - kinesisanalytics:DescribeApplication
                   - kms:Decrypt
                   - kms:DescribeKey
                   - kms:GetKeyPolicy
                   - kms:GetKeyRotationStatus
                   - kms:ListAliases
                   - kms:ListKeys
-                  - lambda:ListFunctions
                   - license-manager:GetLicenseConfiguration
                   - license-manager:ListLicenseConfigurations
                   - macie2:GetMacieSession
@@ -373,6 +372,11 @@ Resources:
                   - datasync:ListTasks
                   - fsx:DescribeBackups
                   - fsx:DescribeFileSystems
+                  - elasticfilesystem:DescribeFileSystemPolicy
+                  - codeartifact:GetDomainPermissionsPolicy
+                  - codeartifact:ListDomains
+                  - codeartifact:ListRepositories
+                  - codeartifact:GetRepositoryPermissionsPolicy
                 Resource: "*"
       AssumeRolePolicyDocument:
         Version: 2012-10-17

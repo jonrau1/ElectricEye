@@ -372,8 +372,8 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "globalaccelerator:ListEndpointGroups",
                 "globalaccelerator:DescribeAcceleratorAttributes",
                 "ram:GetResourceShares",
-                "kinesisanalyticsv2:ListApplications",
-                "kinesisanalyticsv2:DescribeApplication",
+                "kinesisanalytics:ListApplications",
+                "kinesisanalytics:DescribeApplication",
                 "imagebuilder:ListImagePipelines",
                 "imagebuilder:GetImagePipeline",
                 "imagebuilder:ListImageRecipes",
@@ -399,7 +399,12 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "datasync:ListTasks",
                 "fsx:DescribeBackups",
                 "fsx:DescribeFileSystems",
-                "amplify:ListApps"
+                "amplify:ListApps",
+                "elasticfilesystem:DescribeFileSystemPolicy",
+                "codeartifact:GetDomainPermissionsPolicy",
+                "codeartifact:ListDomains",
+                "codeartifact:ListRepositories",
+                "codeartifact:GetRepositoryPermissionsPolicy"
             ],
             "Resource": "*"
         }

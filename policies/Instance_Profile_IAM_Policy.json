@@ -248,15 +248,20 @@
                 "globalaccelerator:ListEndpointGroups",
                 "globalaccelerator:DescribeAcceleratorAttributes",
                 "ram:GetResourceShares",
-                "kinesisanalyticsv2:ListApplications",
-                "kinesisanalyticsv2:DescribeApplication",
+                "kinesisanalytics:ListApplications",
+                "kinesisanalytics:DescribeApplication",
                 "imagebuilder:ListImagePipelines",
                 "imagebuilder:GetImagePipeline",
                 "imagebuilder:ListImageRecipes",
                 "imagebuilder:GetImageRecipe",
                 "cloudfront:ListDistributions",
                 "cloudfront:GetDistribution",
-                "amplify:ListApps"
+                "amplify:ListApps",
+                "elasticfilesystem:DescribeFileSystemPolicy",
+                "codeartifact:GetDomainPermissionsPolicy",
+                "codeartifact:ListDomains",
+                "codeartifact:ListRepositories",
+                "codeartifact:GetRepositoryPermissionsPolicy"
             ],
             "Resource": "*"
         }

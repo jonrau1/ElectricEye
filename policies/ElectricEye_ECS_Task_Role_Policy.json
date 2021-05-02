@@ -173,7 +173,13 @@
                 "datasync:ListTasks",
                 "fsx:DescribeBackups",
                 "fsx:DescribeFileSystems",
-                "amplify:ListApps"
+                "amplify:ListApps",
+                "elasticfilesystem:DescribeFileSystemPolicy",
+                "codeartifact:GetDomainPermissionsPolicy",
+                "codeartifact:ListDomains",
+                "codeartifact:ListRepositories",
+                "codeartifact:GetRepositoryPermissionsPolicy"
+
             ],
             "Resource": "*"
         }
