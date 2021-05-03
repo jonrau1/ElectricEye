@@ -349,7 +349,11 @@ pip3 install -r requirements.txt
 python3 eeauditor/controller.py
 ```
 
-Add the `--help` option for info on running individual checks and auditors and different outputs options.
+Add the `--help` option for info on running individual checks and auditors and different outputs options. For instance, if you wanted to specify a specific Auditor use the following command to run it, specifiy the *name* of the Auditor **without** the `.py` ending.
+
+```bash
+python3 eeauditor/controller.py -a AWS_IAM_Auditor
+```
 
 ## Supported Services and Checks
 
