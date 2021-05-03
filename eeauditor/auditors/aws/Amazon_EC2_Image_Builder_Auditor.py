@@ -25,6 +25,7 @@ imagebuilder = boto3.client("imagebuilder")
 
 @registry.register_check("imagebuilder")
 def imagebuilder_pipeline_tests_enabled_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ImageBuilder.1] Image pipeline tests should be enabled"""
     pipelines = imagebuilder.list_image_pipelines()
     pipeline_list = pipelines["imagePipelineList"]
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -139,6 +140,7 @@ def imagebuilder_pipeline_tests_enabled_check(cache: dict, awsAccountId: str, aw
 
 @registry.register_check("imagebuilder")
 def imagebuilder_ebs_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ImageBuilder.2] Image recipes should encrypt EBS volumes"""
     recipes = imagebuilder.list_image_recipes()
     recipes_list = recipes["imageRecipeSummaryList"]
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()

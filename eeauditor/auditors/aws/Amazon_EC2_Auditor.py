@@ -33,6 +33,7 @@ def paginate(cache):
 
 @registry.register_check("ec2")
 def ec2_imdsv2_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EC2.1] EC2 Instances should be configured to use instance metadata service V2 (IMDSv2)"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     try:
@@ -203,6 +204,7 @@ def ec2_imdsv2_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
 
 @registry.register_check("ec2")
 def ec2_secure_enclave_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EC2.2] EC2 Instances should be configured to use Secure Enclaves"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     try:
@@ -362,6 +364,7 @@ def ec2_secure_enclave_check(cache: dict, awsAccountId: str, awsRegion: str, aws
 
 @registry.register_check("ec2")
 def ec2_public_facing_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EC2.3] EC2 Instances should not be internet-facing"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     try:
@@ -514,6 +517,7 @@ def ec2_public_facing_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
 
 @registry.register_check("ec2")
 def ec2_source_dest_verification_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EC2.4] EC2 Instances should use Source-Destination checks unless absolutely not required"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     try:
@@ -664,6 +668,7 @@ def ec2_source_dest_verification_check(cache: dict, awsAccountId: str, awsRegion
 
 @registry.register_check("ec2")
 def ec2_serial_console_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EC2.5] Serial port access to EC2 should be prohibited unless absolutely required"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # This is a failing check

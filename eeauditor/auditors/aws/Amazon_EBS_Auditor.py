@@ -39,11 +39,9 @@ def describe_snapshots(cache, awsAccountId):
     cache["describe_snapshots"] = ec2.describe_snapshots(OwnerIds=[awsAccountId], DryRun=False)
     return cache["describe_snapshots"]
 
-
 @registry.register_check("ec2")
-def ebs_volume_attachment_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def ebs_volume_attachment_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EBS.1] EBS Volumes should be in an attached state"""
     response = describe_volumes(cache)
     myEbsVolumes = response["Volumes"]
     for volumes in myEbsVolumes:
@@ -155,11 +153,9 @@ def ebs_volume_attachment_check(
                 }
                 yield finding
 
-
 @registry.register_check("ec2")
-def ebs_volume_delete_on_termination_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def ebs_volume_delete_on_termination_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EBS.2] EBS Volumes should be configured to be deleted on termination"""
     response = describe_volumes(cache)
     myEbsVolumes = response["Volumes"]
     for volumes in myEbsVolumes:
@@ -273,11 +269,9 @@ def ebs_volume_delete_on_termination_check(
                 }
                 yield finding
 
-
 @registry.register_check("ec2")
-def ebs_volume_encryption_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def ebs_volume_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EBS.3] EBS Volumes should be encrypted"""
     response = describe_volumes(cache)
     myEbsVolumes = response["Volumes"]
     for volumes in myEbsVolumes:
@@ -387,11 +381,9 @@ def ebs_volume_encryption_check(
             }
             yield finding
 
-
 @registry.register_check("ec2")
-def ebs_snapshot_encryption_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def ebs_snapshot_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EBS.4] EBS Snapshots should be encrypted"""
     response = describe_snapshots(cache, awsAccountId)
     myEbsSnapshots = response["Snapshots"]
     for snapshots in myEbsSnapshots:
@@ -501,11 +493,9 @@ def ebs_snapshot_encryption_check(
             }
             yield finding
 
-
 @registry.register_check("ec2")
-def ebs_snapshot_public_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def ebs_snapshot_public_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EBS.5] EBS Snapshots should not be public"""
     response = describe_snapshots(cache, awsAccountId)
     myEbsSnapshots = response["Snapshots"]
     for snapshots in myEbsSnapshots:
@@ -690,11 +680,9 @@ def ebs_snapshot_public_check(
                     }
                     yield finding
 
-
 @registry.register_check("ec2")
-def ebs_account_encryption_by_default_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def ebs_account_encryption_by_default_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EBS.6] Account-level EBS Volume encryption should be enabled"""
     response = ec2.get_ebs_encryption_by_default(DryRun=False)
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()

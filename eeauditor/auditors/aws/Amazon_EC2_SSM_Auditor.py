@@ -40,9 +40,8 @@ def describe_instances(cache):
     return cache["describe_instances"]
 
 @registry.register_check("ec2")
-def ec2_instance_ssm_managed_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def ec2_instance_ssm_managed_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EC2-SSM.1] EC2 Instances should be managed by Systems Manager"""
     response = describe_instances(cache)
     myEc2InstanceReservations = response["Reservations"]
     for reservations in myEc2InstanceReservations:
@@ -185,11 +184,9 @@ def ec2_instance_ssm_managed_check(
             except Exception as e:
                 print(e)
 
-
 @registry.register_check("ec2")
-def ssm_instace_agent_update_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def ssm_instace_agent_update_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EC2-SSM.2] EC2 Instances managed by Systems Manager should have the latest SSM Agent installed"""
     response = describe_instances(cache)
     myEc2InstanceReservations = response["Reservations"]
     for reservations in myEc2InstanceReservations:
@@ -328,11 +325,9 @@ def ssm_instace_agent_update_check(
                     }
                     yield finding
 
-
 @registry.register_check("ec2")
-def ssm_instance_association_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def ssm_instance_association_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EC2-SSM.3] EC2 Instances managed by Systems Manager should have a successful Association status"""
     response = describe_instances(cache)
     myEc2InstanceReservations = response["Reservations"]
     for reservations in myEc2InstanceReservations:
@@ -471,11 +466,9 @@ def ssm_instance_association_check(
                     }
                     yield finding
 
-
 @registry.register_check("ec2")
-def ssm_instance_patch_state_state(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def ssm_instance_patch_state_state(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EC2-SSM.4] EC2 Instances managed by Systems Manager should have the latest patches installed by Patch Manager"""
     response = describe_instances(cache)
     myEc2InstanceReservations = response["Reservations"]
     for reservations in myEc2InstanceReservations:

@@ -30,9 +30,8 @@ def describe_security_groups(cache):
 
 
 @registry.register_check("ec2")
-def security_group_all_open_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def security_group_all_open_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SecurityGroup.1] Security groups should not allow unrestricted access to all ports and protocols"""
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
@@ -171,11 +170,9 @@ def security_group_all_open_check(
                 else:
                     continue
 
-
 @registry.register_check("ec2")
-def security_group_open_ftp_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def security_group_open_ftp_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SecurityGroup.2] Security groups should not allow unrestricted File Transfer Protocol (FTP) access"""
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
@@ -332,11 +329,9 @@ def security_group_open_ftp_check(
                 else:
                     continue
 
-
 @registry.register_check("ec2")
-def security_group_open_telnet_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def security_group_open_telnet_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SecurityGroup.3] Security groups should not allow unrestricted TelNet access"""
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
@@ -493,11 +488,9 @@ def security_group_open_telnet_check(
                 else:
                     continue
 
-
 @registry.register_check("ec2")
-def security_group_open_dcom_rpc_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def security_group_open_dcom_rpc_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SecurityGroup.4] Security groups should not allow unrestricted Windows RPC DCOM access"""
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
@@ -670,11 +663,9 @@ def security_group_open_dcom_rpc_check(
                 else:
                     continue
 
-
 @registry.register_check("ec2")
-def security_group_open_smb_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def security_group_open_smb_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SecurityGroup.5] Security groups should not allow unrestricted Server Message Blocks (SMB) access"""
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
@@ -859,11 +850,9 @@ def security_group_open_smb_check(
                 else:
                     continue
 
-
 @registry.register_check("ec2")
-def security_group_open_mssql_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def security_group_open_mssql_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SecurityGroup.6] Security groups should not allow unrestricted Microsoft SQL Server (MSSQL) access"""
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
@@ -1060,11 +1049,9 @@ def security_group_open_mssql_check(
                 else:
                     continue
 
-
 @registry.register_check("ec2")
-def security_group_open_oracle_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def security_group_open_oracle_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SecurityGroup.7] Security groups should not allow unrestricted Oracle database (TCP 1521) access"""
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
@@ -1221,11 +1208,9 @@ def security_group_open_oracle_check(
                 else:
                     continue
 
-
 @registry.register_check("ec2")
-def security_group_open_mysql_mariadb_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def security_group_open_mysql_mariadb_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SecurityGroup.8] Security groups should not allow unrestricted MySQL or MariaDB database (TCP 3306) access"""
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
@@ -1388,11 +1373,9 @@ def security_group_open_mysql_mariadb_check(
                 else:
                     continue
 
-
 @registry.register_check("ec2")
-def security_group_open_rdp_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def security_group_open_rdp_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SecurityGroup.9] Security groups should not allow unrestricted Remote Desktop Protocol (RDP) access"""
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
@@ -1577,11 +1560,9 @@ def security_group_open_rdp_check(
                 else:
                     continue
 
-
 @registry.register_check("ec2")
-def security_group_open_postgresql_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def security_group_open_postgresql_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SecurityGroup.10] Security groups should not allow unrestricted PostgreSQL datbase (TCP 5432) access"""
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
@@ -1738,11 +1719,9 @@ def security_group_open_postgresql_check(
                 else:
                     continue
 
-
 @registry.register_check("ec2")
-def security_group_open_kibana_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def security_group_open_kibana_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SecurityGroup.11] Security groups should not allow unrestricted access to Kibana (TCP 5601)"""
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
@@ -1927,11 +1906,9 @@ def security_group_open_kibana_check(
                 else:
                     continue
 
-
 @registry.register_check("ec2")
-def security_group_open_redis_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def security_group_open_redis_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SecurityGroup.12] Security groups should not allow unrestricted Redis (TCP 6379) access"""
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
@@ -2116,11 +2093,9 @@ def security_group_open_redis_check(
                 else:
                     continue
 
-
 @registry.register_check("ec2")
-def security_group_open_splunkd_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def security_group_open_splunkd_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SecurityGroup.13] Security groups should not allow unrestricted Splunkd (TCP 8089) access"""
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
@@ -2305,11 +2280,9 @@ def security_group_open_splunkd_check(
                 else:
                     continue
 
-
 @registry.register_check("ec2")
-def security_group_open_elasticsearch1_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def security_group_open_elasticsearch1_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SecurityGroup.14] Security groups should not allow unrestricted Elasticsearch (TCP 9200) access"""
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
@@ -2472,11 +2445,9 @@ def security_group_open_elasticsearch1_check(
                 else:
                     continue
 
-
 @registry.register_check("ec2")
-def security_group_open_elasticsearch2_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def security_group_open_elasticsearch2_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SecurityGroup.15] Security groups should not allow unrestricted Elasticsearch (TCP 9300) access"""
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
@@ -2639,11 +2610,9 @@ def security_group_open_elasticsearch2_check(
                 else:
                     continue
 
-
 @registry.register_check("ec2")
-def security_group_open_memcached_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def security_group_open_memcached_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SecurityGroup.16] Security groups should not allow unrestricted Memcached (UDP 11211) access"""
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
@@ -2838,11 +2807,9 @@ def security_group_open_memcached_check(
                 else:
                     continue
 
-
 @registry.register_check("ec2")
-def security_group_open_redshift_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def security_group_open_redshift_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SecurityGroup.17] Security groups should not allow unrestricted Redshift (TCP 5439) access"""
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
@@ -2999,11 +2966,9 @@ def security_group_open_redshift_check(
                 else:
                     continue
 
-
 @registry.register_check("ec2")
-def security_group_open_documentdb_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def security_group_open_documentdb_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SecurityGroup.18] Security groups should not allow unrestricted DocumentDB (TCP 27017) access"""
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
@@ -3160,11 +3125,9 @@ def security_group_open_documentdb_check(
                 else:
                     continue
 
-
 @registry.register_check("ec2")
-def security_group_open_cassandra_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def security_group_open_cassandra_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SecurityGroup.19] Security groups should not allow unrestricted Cassandra (TCP 9142) access"""
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
@@ -3321,11 +3284,9 @@ def security_group_open_cassandra_check(
                 else:
                     continue
 
-
 @registry.register_check("ec2")
-def security_group_open_kafka_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def security_group_open_kafka_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SecurityGroup.20] Security groups should not allow unrestricted Kafka streams (TCP 9092) access"""
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
@@ -3483,9 +3444,8 @@ def security_group_open_kafka_check(
                     continue
 
 @registry.register_check("ec2")
-def security_group_open_nfs_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def security_group_open_nfs_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SecurityGroup.21] Security groups should not allow unrestricted NFS (TCP 2049) access"""
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
@@ -3643,9 +3603,8 @@ def security_group_open_nfs_check(
                     continue
 
 @registry.register_check("ec2")
-def security_group_open_rsync_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def security_group_open_rsync_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SecurityGroup.22] Security groups should not allow unrestricted Rsync (TCP 873) access"""
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
@@ -3803,9 +3762,8 @@ def security_group_open_rsync_check(
                     continue
 
 @registry.register_check("ec2")
-def security_group_open_tftp_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def security_group_open_tftp_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SecurityGroup.23] Security groups should not allow unrestricted TFTP (UDP 69) access"""
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
@@ -3963,9 +3921,8 @@ def security_group_open_tftp_check(
                     continue
 
 @registry.register_check("ec2")
-def security_group_open_docker_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def security_group_open_docker_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SecurityGroup.24] Security groups should not allow unrestricted Docker (TCP 2375) access"""
     response = describe_security_groups(cache)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:

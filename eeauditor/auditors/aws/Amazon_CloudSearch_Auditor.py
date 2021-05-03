@@ -23,6 +23,8 @@ cloudsearch = boto3.client("cloudsearch")
 
 @registry.register_check("cloudsearch")
 def cloudsearch_https_enforcement_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudSearch.1] CloudSearch Domains should be configured to use enforce HTTPS-only communications"""
+    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # If you have one of these you're probably old as dirt lol
     for domain in cloudsearch.describe_domains()["DomainStatusList"]:
         dArn = str(domain["ARN"])
@@ -61,7 +63,7 @@ def cloudsearch_https_enforcement_check(cache: dict, awsAccountId: str, awsRegio
                 "Resources": [
                     {
                         "Type": "AwsCloudSearchDomain",
-                        "Id": instanceArn,
+                        "Id": dArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
@@ -124,7 +126,7 @@ def cloudsearch_https_enforcement_check(cache: dict, awsAccountId: str, awsRegio
                 "Resources": [
                     {
                         "Type": "AwsCloudSearchDomain",
-                        "Id": instanceArn,
+                        "Id": dArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
@@ -159,6 +161,8 @@ def cloudsearch_https_enforcement_check(cache: dict, awsAccountId: str, awsRegio
 
 @registry.register_check("cloudsearch")
 def cloudsearch_tls1dot2_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudSearch.2] CloudSearch Domains that enforce HTTPS-only communications should use TLS 1.2 cipher suites"""
+    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # If you have one of these you're probably old as dirt lol
     for domain in cloudsearch.describe_domains()["DomainStatusList"]:
         dArn = str(domain["ARN"])
@@ -199,7 +203,7 @@ def cloudsearch_tls1dot2_policy_check(cache: dict, awsAccountId: str, awsRegion:
                     "Resources": [
                         {
                             "Type": "AwsCloudSearchDomain",
-                            "Id": instanceArn,
+                            "Id": dArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
@@ -262,7 +266,7 @@ def cloudsearch_tls1dot2_policy_check(cache: dict, awsAccountId: str, awsRegion:
                     "Resources": [
                         {
                             "Type": "AwsCloudSearchDomain",
-                            "Id": instanceArn,
+                            "Id": dArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
