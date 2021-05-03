@@ -148,3 +148,123 @@ def cloudfront_active_trusted_signers_check(
                 yield finding
         except Exception as e:
             print(e)
+
+@registry.register_check("cloudfront")
+def cloudfront_origin_shield_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
+    
+    iso8601Time = (
+        datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    )
+    for distributionItem in results["DistributionList"]["Items"]:
+        distributionId = distributionItem["Id"]
+        distribution = cloudfront.get_distribution(Id=distributionId)
+        try:
+            originShield = distribution["Distribution"]["DistributionConfig"]["Origins"]["Items"]["OriginShield"]["Enabled"]
+            distributionArn = distribution["Distribution"]["ARN"]
+            generatorUuid = str(uuid.uuid4())
+            if not originShield:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": awsAccountId + "/cloudfront-originshield-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": generatorUuid,
+                    "AwsAccountId": awsAccountId,
+                    "Types": [
+                        "Software and Configuration Checks/AWS Security Best Practices"
+                    ],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "LOW"},
+                    "Confidence": 99,
+                    "Title": "[CloudFront.1] Distributions should have Origin Shield enabled",
+                    "Description": "Distribution "
+                    + distributionId
+                    + " has Origin Shield enabled.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on Origin Shield for CloudFront, refer to the Using Amazon CloudFront Origin Shield section of the Amazon CloudFront Developer Guide",
+                            "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/origin-shield.html",
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsCloudFrontDistribution",
+                            "Id": distributionArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF ID.AM-2",
+                            "NIST SP 800-53 CM-8",
+                            "NIST SP 800-53 PM-5",
+                            "AICPA TSC CC3.2",
+                            "AICPA TSC CC6.1",
+                            "ISO 27001:2013 A.8.1.1",
+                            "ISO 27001:2013 A.8.1.2",
+                            "ISO 27001:2013 A.12.5.1",
+                        ],
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE",
+                }
+                yield finding
+            else:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": awsAccountId + "/cloudfront-origin-shield-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": generatorUuid,
+                    "AwsAccountId": awsAccountId,
+                    "Types": [
+                        "Software and Configuration Checks/AWS Security Best Practices"
+                    ],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Confidence": 99,
+                    "Title": "[CloudFront.1] Distributions should have Origin Shield enabled",
+                    "Description": "Distribution "
+                    + distributionId
+                    + " has Origin Shield enabled.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on Origin Shield for CloudFront, refer to the Using Amazon CloudFront Origin Shield section of the Amazon CloudFront Developer Guide",
+                            "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/origin-shield.html",
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsCloudFrontDistribution",
+                            "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF ID.AM-2",
+                            "NIST SP 800-53 CM-8",
+                            "NIST SP 800-53 PM-5",
+                            "AICPA TSC CC3.2",
+                            "AICPA TSC CC6.1",
+                            "ISO 27001:2013 A.8.1.1",
+                            "ISO 27001:2013 A.8.1.2",
+                            "ISO 27001:2013 A.12.5.1",
+                        ],
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED",
+                }
+                yield finding
+        except Exception as e:
+            print(e)
