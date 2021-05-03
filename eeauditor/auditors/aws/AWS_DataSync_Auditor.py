@@ -22,7 +22,7 @@ registry = CheckRegister()
 
 datasync = boto3.client("datasync")
 
-@registry.register_check("ec2")
+@registry.register_check("datasync")
 def datasync_public_agent_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     paginator = datasync.get_paginator("list_agents")
     # ISO Time
@@ -171,7 +171,7 @@ def datasync_public_agent_check(cache: dict, awsAccountId: str, awsRegion: str, 
     except Exception as e:
         print(e)
 
-@registry.register_check("ec2")
+@registry.register_check("datasync")
 def datasync_task_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     paginator = datasync.get_paginator("list_tasks")
     # ISO Time
