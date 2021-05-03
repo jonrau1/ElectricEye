@@ -28,11 +28,9 @@ def list_trails(cache):
     cache["list_trails"] = cloudtrail.list_trails()
     return cache["list_trails"]
 
-
 @registry.register_check("cloudtrail")
-def cloudtrail_multi_region_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def cloudtrail_multi_region_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudTrail.1] CloudTrail trails should be multi-region"""
     trail = list_trails(cache=cache)
     myCloudTrails = trail["Trails"]
     for trails in myCloudTrails:
@@ -143,11 +141,9 @@ def cloudtrail_multi_region_check(
                 }
                 yield finding
 
-
 @registry.register_check("cloudtrail")
-def cloudtrail_cloudwatch_logging_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def cloudtrail_cloudwatch_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudTrail.2] CloudTrail trails should have CloudWatch logging configured"""
     trail = list_trails(cache=cache)
     myCloudTrails = trail["Trails"]
     for trails in myCloudTrails:
@@ -264,11 +260,9 @@ def cloudtrail_cloudwatch_logging_check(
                 else:
                     print(e)
 
-
 @registry.register_check("cloudtrail")
-def cloudtrail_encryption_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def cloudtrail_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudTrail.3] CloudTrail trails should be encrypted by KMS"""
     trail = list_trails(cache=cache)
     myCloudTrails = trail["Trails"]
     for trails in myCloudTrails:
@@ -381,11 +375,9 @@ def cloudtrail_encryption_check(
                 else:
                     print(e)
 
-
 @registry.register_check("cloudtrail")
-def cloudtrail_global_services_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def cloudtrail_global_services_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudTrail.4] CloudTrail trails should log management events"""
     trail = list_trails(cache=cache)
     myCloudTrails = trail["Trails"]
     for trails in myCloudTrails:
@@ -496,11 +488,9 @@ def cloudtrail_global_services_check(
                 }
                 yield finding
 
-
 @registry.register_check("cloudtrail")
-def cloudtrail_log_file_validation_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def cloudtrail_log_file_validation_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudTrail.5] CloudTrail log file validation should be enabled"""
     trail = list_trails(cache=cache)
     myCloudTrails = trail["Trails"]
     for trails in myCloudTrails:
@@ -610,4 +600,3 @@ def cloudtrail_log_file_validation_check(
                     "RecordState": "ARCHIVED",
                 }
                 yield finding
-

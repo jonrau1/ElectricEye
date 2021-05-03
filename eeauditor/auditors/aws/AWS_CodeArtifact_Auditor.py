@@ -23,11 +23,9 @@ registry = CheckRegister()
 # import boto3 clients
 codeartifact = boto3.client("codeartifact")
 
-
 @registry.register_check("codeartifact")
-def codeartifact_repo_policy_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def codeartifact_repo_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CodeArtifact.1] CodeArtifact repos should have a resource policy with least privilege applied"""
     response = codeartifact.list_repositories()
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     
@@ -167,11 +165,9 @@ def codeartifact_repo_policy_check(
             }
             yield finding
 
-
 @registry.register_check("codeartifact")
-def codeartifact_domain_policy_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def codeartifact_domain_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CodeArtifact.2] CodeArtifact domains should have a resource policy with least privilege applied"""
     response = codeartifact.list_domains()
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     

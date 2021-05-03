@@ -21,6 +21,7 @@ xray = boto3.client('xray')
 
 @registry.register_check('xray')
 def xray_kms_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[XRAY.1] X-Ray Encryption Configure should use a KMS CMK"""
     # Check the encryption config for X-Ray. It uses AES-256 by default, but we're looking for KMS
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
@@ -39,7 +40,7 @@ def xray_kms_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, aw
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[XRAY.1] X-Ray Encryption Configure should use a KMS CMK",
+            "Title": "[XRay.1] X-Ray Encryption Configure should use a KMS CMK",
             "Description": "The AWS X-Ray Encryption Configure for Account "
             + awsAccountId
             + " in Region "
@@ -55,7 +56,7 @@ def xray_kms_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, aw
             "Resources": [
                 {
                     "Type": "AwsXrayEncryptionConfigure",
-                    "Id": awsAccountId,
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }
@@ -89,7 +90,7 @@ def xray_kms_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, aw
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[XRAY.1] X-Ray Encryption Configure should use a KMS CMK",
+            "Title": "[XRay.1] X-Ray Encryption Configure should use a KMS CMK",
             "Description": "The AWS X-Ray Encryption Configure for Account "
             + awsAccountId
             + " in Region "
@@ -105,7 +106,7 @@ def xray_kms_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, aw
             "Resources": [
                 {
                     "Type": "AwsXrayEncryptionConfigure",
-                    "Id": awsAccountId,
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }

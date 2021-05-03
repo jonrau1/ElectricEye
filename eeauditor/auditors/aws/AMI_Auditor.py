@@ -30,9 +30,9 @@ def describe_images(cache, awsAccountId):
     )
     return cache["describe_images"]
 
-
-@registry.register_check("ec2")
+@registry.register_check("ami")
 def public_ami_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[AMI.1] Self-managed Amazon Machine Images (AMIs) should not be public"""
     amis = describe_images(cache=cache, awsAccountId=awsAccountId)
     myAmis = amis["Images"]
     for ami in myAmis:
@@ -165,9 +165,9 @@ def public_ami_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
             }
             yield finding
 
-
-@registry.register_check("ec2")
+@registry.register_check("ami")
 def encrypted_ami_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[AMI.2] Self-managed Amazon Machine Images (AMIs) should be encrypted"""
     amis = describe_images(cache=cache, awsAccountId=awsAccountId)
     myAmis = amis["Images"]
     for ami in myAmis:

@@ -28,9 +28,9 @@ def describe_stacks(cache):
     cache["describe_stacks"] = cloudformation.describe_stacks()
     return cache["describe_stacks"]
 
-
 @registry.register_check("cloudformation")
 def cfn_drift_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudFormation.1] CloudFormation stacks should be monitored for configuration drift"""
     stack = describe_stacks(cache=cache)
     myCfnStacks = stack["Stacks"]
     for stacks in myCfnStacks:
@@ -144,11 +144,9 @@ def cfn_drift_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition
             }
             yield finding
 
-
 @registry.register_check("cloudformation")
-def cfn_monitoring_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def cfn_monitoring_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudFormation.2] CloudFormation stacks should be monitored for changes"""
     stack = describe_stacks(cache=cache)
     myCfnStacks = stack["Stacks"]
     for stacks in myCfnStacks:

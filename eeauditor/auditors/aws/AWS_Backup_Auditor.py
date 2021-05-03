@@ -39,6 +39,7 @@ def paginate(cache):
 
 @registry.register_check("backup")
 def volume_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Backup.1] EBS volumes should be protected by AWS Backup"""
     # loop through available or in-use ebs volumes
     response = ec2.describe_volumes(
         Filters=[{"Name": "status", "Values": ["available", "in-use"]}]
@@ -159,9 +160,9 @@ def volume_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
             }
             yield finding
 
-
 @registry.register_check("backup")
 def ec2_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Backup.2] EC2 instances should be protected by AWS Backup"""
     # loop through ec2 instances
     response = ec2.describe_instances(DryRun=False)
     myReservations = response["Reservations"]
@@ -303,9 +304,9 @@ def ec2_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                 }
                 yield finding
 
-
 @registry.register_check("backup")
 def ddb_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Backup.3] DynamoDB tables should be protected by AWS Backup"""
     iterator = paginate(cache=cache)
     for page in iterator:
         for table in page['TableNames']:
@@ -424,9 +425,9 @@ def ddb_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                 }
                 yield finding
 
-
 @registry.register_check("backup")
 def reds_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Backup.4] RDS database instances should be protected by AWS Backup"""
     # loop through rds db instances
     response = rds.describe_db_instances(
         Filters=[
@@ -578,9 +579,9 @@ def reds_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
             }
             yield finding
 
-
 @registry.register_check("backup")
 def efs_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Backup.5] EFS file systems should be protected by AWS Backup"""
     # loop through EFS file systems
     response = efs.describe_file_systems()
     myFileSys = response["FileSystems"]

@@ -24,6 +24,7 @@ datasync = boto3.client("datasync")
 
 @registry.register_check("datasync")
 def datasync_public_agent_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[DataSync.1] AWS DataSync Agents should not be accessible over the Internet"""
     paginator = datasync.get_paginator("list_agents")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
@@ -173,6 +174,7 @@ def datasync_public_agent_check(cache: dict, awsAccountId: str, awsRegion: str, 
 
 @registry.register_check("datasync")
 def datasync_task_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[DataSync.2] AWS DataSync data transfer Tasks should have logging enabled"""
     paginator = datasync.get_paginator("list_tasks")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())

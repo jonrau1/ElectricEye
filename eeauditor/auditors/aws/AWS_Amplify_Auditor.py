@@ -32,9 +32,8 @@ def list_apps(cache):
 
 
 @registry.register_check("amplify")
-def amplify_basic_auth_enabled_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def amplify_basic_auth_enabled_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Amplify.1] AWS Amplify should have basic auth enabled for branches"""
     response = list_apps(cache)
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     
@@ -144,11 +143,9 @@ def amplify_basic_auth_enabled_check(
             }
             yield finding
 
-
 @registry.register_check("amplify")
-def amplify_branch_auto_deletion_enabled_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def amplify_branch_auto_deletion_enabled_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Amplify.2] AWS Amplify apps should have auto-deletion disabled for branches"""
     response = list_apps(cache)
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     

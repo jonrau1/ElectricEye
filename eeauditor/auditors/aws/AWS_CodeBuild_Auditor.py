@@ -33,11 +33,9 @@ def get_code_build_projects(cache):
     else:
         return {}
 
-
 @registry.register_check("codebuild")
-def artifact_encryption_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def artifact_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CodeBuild.1] CodeBuild projects should not have artifact encryption disabled"""
     project = get_code_build_projects(cache=cache)
     myCodeBuildProjects = project.get("projects", [])
     for projects in myCodeBuildProjects:
@@ -155,9 +153,9 @@ def artifact_encryption_check(
                 }
                 yield finding
 
-
 @registry.register_check("codebuild")
 def insecure_ssl_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CodeBuild.2] CodeBuild projects should not have insecure SSL configured"""
     project = get_code_build_projects(cache=cache)
     myCodeBuildProjects = project.get("projects", [])
     for projects in myCodeBuildProjects:
@@ -279,11 +277,9 @@ def insecure_ssl_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartit
             }
             yield finding
 
-
 @registry.register_check("codebuild")
-def plaintext_env_var_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def plaintext_env_var_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CodeBuild.3] CodeBuild projects should not have plaintext environment variables"""
     project = get_code_build_projects(cache=cache)
     myCodeBuildProjects = project.get("projects", [])
     for projects in myCodeBuildProjects:
@@ -441,11 +437,9 @@ def plaintext_env_var_check(
                     }
                     yield finding
 
-
 @registry.register_check("codebuild")
-def s3_logging_encryption_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def s3_logging_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CodeBuild.4] CodeBuild projects should not have S3 log encryption disabled"""
     project = get_code_build_projects(cache=cache)
     myCodeBuildProjects = project.get("projects", [])
     for projects in myCodeBuildProjects:
@@ -557,11 +551,9 @@ def s3_logging_encryption_check(
             }
             yield finding
 
-
 @registry.register_check("codebuild")
-def cloudwatch_logging_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def cloudwatch_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CodeBuild.5] CodeBuild projects should have CloudWatch logging enabled"""
     project = get_code_build_projects(cache=cache)
     myCodeBuildProjects = project.get("projects", [])
     for projects in myCodeBuildProjects:
