@@ -22,7 +22,6 @@ registry = CheckRegister()
 # import boto3 clients
 rds = boto3.client("rds")
 
-
 # loop through all RDS DB instances
 def describe_db_instances(cache):
     response = cache.get("describe_db_instances")
@@ -60,9 +59,8 @@ def describe_db_snapshots(cache):
     return cache["describe_db_snapshots"]
 
 @registry.register_check("rds")
-def rds_instance_ha_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def rds_instance_ha_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.1] RDS instances should be configured for high availability"""
     response = describe_db_instances(cache)
     myRdsInstances = response["DBInstances"]
     response = describe_db_snapshots(cache)
@@ -201,11 +199,9 @@ def rds_instance_ha_check(
             }
             yield finding
 
-
 @registry.register_check("rds")
-def rds_instance_public_access_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def rds_instance_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.2] RDS instances should not be publicly accessible"""
     response = describe_db_instances(cache)
     myRdsInstances = response["DBInstances"]
     response = describe_db_snapshots(cache)
@@ -352,11 +348,9 @@ def rds_instance_public_access_check(
             }
             yield finding
 
-
 @registry.register_check("rds")
-def rds_instance_storage_encryption_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def rds_instance_storage_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.3] RDS instances should have encrypted storage"""
     response = describe_db_instances(cache)
     myRdsInstances = response["DBInstances"]
     response = describe_db_snapshots(cache)
@@ -489,11 +483,9 @@ def rds_instance_storage_encryption_check(
             }
             yield finding
 
-
 @registry.register_check("rds")
-def rds_instance_iam_auth_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def rds_instance_iam_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.4] RDS instances that support IAM Authentication should use IAM Authentication"""
     response = describe_db_instances(cache)
     myRdsInstances = response["DBInstances"]
     response = describe_db_snapshots(cache)
@@ -647,11 +639,9 @@ def rds_instance_iam_auth_check(
         else:
             pass
 
-
 @registry.register_check("rds")
-def rds_instance_domain_join_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def rds_instance_domain_join_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.5] RDS instances that support Kerberos Authentication should be joined to a domain"""
     response = describe_db_instances(cache)
     myRdsInstances = response["DBInstances"]
     response = describe_db_snapshots(cache)
@@ -816,11 +806,9 @@ def rds_instance_domain_join_check(
         else:
             pass
 
-
 @registry.register_check("rds")
-def rds_instance_performance_insights_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def rds_instance_performance_insights_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.6] RDS instances should have performance insights enabled"""
     response = describe_db_instances(cache)
     myRdsInstances = response["DBInstances"]
     response = describe_db_snapshots(cache)
@@ -955,11 +943,9 @@ def rds_instance_performance_insights_check(
             }
             yield finding
 
-
 @registry.register_check("rds")
-def rds_instance_deletion_protection_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def rds_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.7] RDS instances should have deletion protection enabled"""
     response = describe_db_instances(cache)
     myRdsInstances = response["DBInstances"]
     response = describe_db_snapshots(cache)
@@ -1100,11 +1086,9 @@ def rds_instance_deletion_protection_check(
             }
             yield finding
 
-
 @registry.register_check("rds")
-def rds_instance_cloudwatch_logging_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def rds_instance_cloudwatch_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.8] RDS instances should publish database logs to CloudWatch Logs"""
     response = describe_db_instances(cache)
     myRdsInstances = response["DBInstances"]
     response = describe_db_snapshots(cache)
@@ -1242,13 +1226,9 @@ def rds_instance_cloudwatch_logging_check(
             }
             yield finding
 
-
 @registry.register_check("rds")
-def rds_snapshot_encryption_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
-    response = describe_db_instances(cache)
-    myRdsInstances = response["DBInstances"]
+def rds_snapshot_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.9] RDS snapshots should be encrypted"""
     response = describe_db_snapshots(cache)
     myRdsSnapshots = response["DBSnapshots"]
     for snapshot in myRdsSnapshots:
@@ -1357,13 +1337,9 @@ def rds_snapshot_encryption_check(
             }
             yield finding
 
-
 @registry.register_check("rds")
-def rds_snapshot_public_share_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
-    response = describe_db_instances(cache)
-    myRdsInstances = response["DBInstances"]
+def rds_snapshot_public_share_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.10] RDS snapshots should not be publicly shared"""
     response = describe_db_snapshots(cache)
     myRdsSnapshots = response["DBSnapshots"]
     for snapshot in myRdsSnapshots:
@@ -1498,6 +1474,7 @@ def rds_snapshot_public_share_check(
 
 @registry.register_check("rds")
 def rds_aurora_cluster_activity_streams_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.11] RDS Aurora Clusters should use Database Activity Streams"""
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # Loop through clusters npow
     for dbc in rds.describe_db_clusters(MaxRecords=100)["DBClusters"]:
@@ -1634,6 +1611,7 @@ def rds_aurora_cluster_activity_streams_check(cache: dict, awsAccountId: str, aw
 
 @registry.register_check("rds")
 def rds_aurora_cluster_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.12] RDS Aurora Clusters should be encrypted"""
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # Loop through clusters npow
     for dbc in rds.describe_db_clusters(MaxRecords=100)["DBClusters"]:

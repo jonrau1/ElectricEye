@@ -16,19 +16,15 @@
 import datetime
 from dateutil import parser
 import uuid
-
 import boto3
-
 from check_register import CheckRegister, accumulate_paged_results
 
 registry = CheckRegister()
 qldb = boto3.client("qldb")
 
-
 @registry.register_check("qldb")
-def qldb_deletion_protection_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def qldb_deletion_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[QLDB.1] Ledgers should have deletion protection enabled"""
     ledgersList = []
     response = qldb.list_ledgers()
     ledgersList.append(response)
@@ -155,11 +151,9 @@ def qldb_deletion_protection_check(
                 }
                 yield finding
 
-
 @registry.register_check("qldb")
-def qldb_export_export_encryption_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def qldb_export_export_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[QLDB.2] Journal S3 Exports should be encrypted"""
     exportList = []
     response = qldb.list_journal_s3_exports()
     exportList.append(response)
@@ -271,4 +265,3 @@ def qldb_export_export_encryption_check(
                     "RecordState": "ACTIVE",
                 }
                 yield finding
-

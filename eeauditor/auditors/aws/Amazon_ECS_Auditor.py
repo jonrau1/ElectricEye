@@ -31,9 +31,8 @@ def list_clusters(cache):
 
 
 @registry.register_check("ecs")
-def ecs_cluster_container_insights_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def ecs_cluster_container_insights_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ECS.1] ECS clusters should have container insights enabled"""
     response = list_clusters(cache)
     myEcsClusters = response["clusterArns"]
     for clusters in myEcsClusters:
@@ -164,9 +163,8 @@ def ecs_cluster_container_insights_check(
 
 
 @registry.register_check("ecs")
-def ecs_cluster_default_provider_strategy_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def ecs_cluster_default_provider_strategy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ECS.2] ECS clusters should have a default cluster capacity provider strategy configured"""
     response = list_clusters(cache)
     myEcsClusters = response["clusterArns"]
     for clusters in myEcsClusters:
@@ -286,6 +284,7 @@ def ecs_cluster_default_provider_strategy_check(
 
 @registry.register_check("ecs")
 def ecs_task_definition_privileged_container_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ECS.3] ECS Task Definitions should not run privileged containers if not required"""
     for taskdef in ecs.list_task_definitions(status='ACTIVE')['taskDefinitionArns']:
         try:
             response = ecs.describe_task_definition(taskDefinition=taskdef)["taskDefinition"]
@@ -457,6 +456,7 @@ def ecs_task_definition_privileged_container_check(cache: dict, awsAccountId: st
 
 @registry.register_check("ecs")
 def ecs_task_definition_security_labels_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ECS.4] ECS Task Definitions for EC2 should have Docker Security Options (SELinux or AppArmor) configured"""
     for taskdef in ecs.list_task_definitions(status='ACTIVE')['taskDefinitionArns']:
         try:
             response = ecs.describe_task_definition(taskDefinition=taskdef)["taskDefinition"]

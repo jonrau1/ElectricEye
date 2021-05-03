@@ -30,6 +30,7 @@ def list_environments(cache):
 
 @registry.register_check("mwaa")
 def mwaa_kms_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[MWAA.1] Managed Apache Airflow Environments should be encrypted with a KMS CMK"""
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     # Retrieve MWAA Envs from Cache
     for env in list_environments(cache)["Environments"]:
@@ -158,6 +159,7 @@ def mwaa_kms_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, aw
 
 @registry.register_check("mwaa")
 def mwaa_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[MWAA.2] Managed Apache Airflow Environments should be use permit public URL access"""
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     # Retrieve MWAA Envs from Cache
     for env in list_environments(cache)["Environments"]:
@@ -293,6 +295,7 @@ def mwaa_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, aws
 
 @registry.register_check("mwaa")
 def mwaa_dag_processing_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[MWAA.3] Managed Apache Airflow Environments should have DAG Processing logs enabled"""
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     # Retrieve MWAA Envs from Cache
     for env in list_environments(cache)["Environments"]:
@@ -418,6 +421,7 @@ def mwaa_dag_processing_logging_check(cache: dict, awsAccountId: str, awsRegion:
 
 @registry.register_check("mwaa")
 def mwaa_scheduler_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[MWAA.4] Managed Apache Airflow Environments should have Scheduler logs enabled"""
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     # Retrieve MWAA Envs from Cache
     for env in list_environments(cache)["Environments"]:
@@ -543,6 +547,7 @@ def mwaa_scheduler_logging_check(cache: dict, awsAccountId: str, awsRegion: str,
 
 @registry.register_check("mwaa")
 def mwaa_task_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[MWAA.5] Managed Apache Airflow Environments should have Task logs enabled"""
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     # Retrieve MWAA Envs from Cache
     for env in list_environments(cache)["Environments"]:
@@ -668,6 +673,7 @@ def mwaa_task_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
 
 @registry.register_check("mwaa")
 def mwaa_webserver_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[MWAA.6] Managed Apache Airflow Environments should have Webserver logs enabled"""
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     # Retrieve MWAA Envs from Cache
     for env in list_environments(cache)["Environments"]:
@@ -793,6 +799,7 @@ def mwaa_webserver_logging_check(cache: dict, awsAccountId: str, awsRegion: str,
 
 @registry.register_check("mwaa")
 def mwaa_worker_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[MWAA.7] Managed Apache Airflow Environments should have Worker logs enabled"""
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     # Retrieve MWAA Envs from Cache
     for env in list_environments(cache)["Environments"]:

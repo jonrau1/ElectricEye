@@ -7,7 +7,6 @@ registry = CheckRegister()
 # import boto3 clients
 amb = boto3.client("managedblockchain")
 
-
 # loop through AMB Fabric networks
 def list_networks(cache):
     response = cache.get("list_networks")
@@ -16,11 +15,9 @@ def list_networks(cache):
     cache["list_networks"] = amb.list_networks(Framework="HYPERLEDGER_FABRIC")
     return cache["list_networks"]
 
-
 @registry.register_check("managedblockchain")
-def amb_fabric_node_chaincode_logging_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def amb_fabric_node_chaincode_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[AMB.Fabric.1] Amazon Managed Blockchain Fabric peer nodes should have chaincode logging enabled"""
     response = list_networks(cache)
     myFabricNetworks = response["Networks"]
     for networks in myFabricNetworks:
@@ -181,11 +178,9 @@ def amb_fabric_node_chaincode_logging_check(
         except Exception as e:
             print(e)
 
-
 @registry.register_check("managedblockchain")
-def amb_fabric_node_peernode_logging_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def amb_fabric_node_peernode_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[AMB.Fabric.2] Amazon Managed Blockchain Fabric peer nodes should have peer node logging enabled"""
     response = list_networks(cache)
     myFabricNetworks = response["Networks"]
     for networks in myFabricNetworks:
@@ -346,11 +341,9 @@ def amb_fabric_node_peernode_logging_check(
         except Exception as e:
             print(e)
 
-
 @registry.register_check("managedblockchain")
-def amb_fabric_member_ca_logging_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def amb_fabric_member_ca_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[AMB.Fabric.3] Amazon Managed Blockchain Fabric members should have certificate authority (CA) logging enabled"""
     response = list_networks(cache)
     myFabricNetworks = response["Networks"]
     for networks in myFabricNetworks:

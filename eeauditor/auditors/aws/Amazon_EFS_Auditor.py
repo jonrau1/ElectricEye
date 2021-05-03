@@ -31,9 +31,8 @@ def describe_file_systems(cache):
 
 
 @registry.register_check("efs")
-def efs_filesys_encryption_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def efs_filesys_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EFS.1] EFS File Systems should have encryption enabled"""
     response = describe_file_systems(cache)
     myFileSys = response["FileSystems"]
     for filesys in myFileSys:
@@ -143,11 +142,9 @@ def efs_filesys_encryption_check(
             }
             yield finding
 
-    
 @registry.register_check("efs")
-def efs_filesys_policy_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def efs_filesys_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EFS.2] EFS File Systems should not use the default file system policy"""
     response = describe_file_systems(cache)
     myFileSys = response["FileSystems"]
     for filesys in myFileSys:
@@ -175,7 +172,7 @@ def efs_filesys_policy_check(
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[EFS.2] EFS File Systems should not use the default file system policy ",
+                "Title": "[EFS.2] EFS File Systems should not use the default file system policy",
                 "Description": "EFS file system " + fileSysId + " is not using the default file system policy.",
                 "Remediation": {
                     "Recommendation": {
@@ -229,7 +226,7 @@ def efs_filesys_policy_check(
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": "[EFS.2] EFS File Systems should not use the default file system policy ",
+                "Title": "[EFS.2] EFS File Systems should not use the default file system policy",
                 "Description": "EFS file system " + fileSysId + " is using a default file system policy.",
                 "Remediation": {
                     "Recommendation": {

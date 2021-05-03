@@ -28,11 +28,9 @@ def describe_clusters(cache):
     cache["describe_clusters"] = redshift.describe_clusters()
     return cache["describe_clusters"]
 
-
 @registry.register_check("redshift")
-def cluster_public_access_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def cluster_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Redshift.1] Redshift clusters should not be publicly accessible"""
     clusters = describe_clusters(cache=cache)
     myRedshiftClusters = clusters["Clusters"]
     for cluster in myRedshiftClusters:
@@ -152,11 +150,9 @@ def cluster_public_access_check(
             }
             yield finding
 
-
 @registry.register_check("redshift")
-def cluster_encryption_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def cluster_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Redshift.2] Redshift clusters should be encrypted"""
     clusters = describe_clusters(cache=cache)
     myRedshiftClusters = clusters["Clusters"]
     for cluster in myRedshiftClusters:
@@ -264,11 +260,9 @@ def cluster_encryption_check(
             }
             yield finding
 
-
 @registry.register_check("redshift")
-def cluster_enhanced_vpc_routing_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def cluster_enhanced_vpc_routing_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Redshift.3] Redshift clusters should utilize enhanced VPC routing"""
     clusters = describe_clusters(cache=cache)
     myRedshiftClusters = clusters["Clusters"]
     for cluster in myRedshiftClusters:
@@ -380,11 +374,9 @@ def cluster_enhanced_vpc_routing_check(
             }
             yield finding
 
-
 @registry.register_check("redshift")
-def cluster_logging_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Redshift.4] Redshift clusters should have logging enabled"""
     clusters = describe_clusters(cache=cache)
     myRedshiftClusters = clusters["Clusters"]
     for cluster in myRedshiftClusters:
@@ -494,4 +486,3 @@ def cluster_logging_check(
                 "RecordState": "ARCHIVED",
             }
             yield finding
-

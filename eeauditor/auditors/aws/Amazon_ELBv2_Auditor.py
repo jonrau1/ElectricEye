@@ -23,7 +23,6 @@ registry = CheckRegister()
 elbv2 = boto3.client("elbv2")
 # loop through ELBv2 load balancers
 
-
 def describe_load_balancers(cache):
     response = cache.get("describe_load_balancers")
     if response:
@@ -31,11 +30,9 @@ def describe_load_balancers(cache):
     cache["describe_load_balancers"] = elbv2.describe_load_balancers()
     return cache["describe_load_balancers"]
 
-
-@registry.register_check("elb")
-def elbv2_alb_logging_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+@registry.register_check("elbv2")
+def elbv2_alb_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ELBv2.1] Application Load Balancers should have access logging enabled"""
     response = describe_load_balancers(cache)
     myElbv2LoadBalancers = response["LoadBalancers"]
     for loadbalancers in myElbv2LoadBalancers:
@@ -191,11 +188,9 @@ def elbv2_alb_logging_check(
         else:
             continue
 
-
-@registry.register_check("elb")
-def elbv2_deletion_protection_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+@registry.register_check("elbv2")
+def elbv2_deletion_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ELBv2.2] Application and Network Load Balancers should have deletion protection enabled"""
     response = describe_load_balancers(cache)
     myElbv2LoadBalancers = response["LoadBalancers"]
     for loadbalancers in myElbv2LoadBalancers:
@@ -354,11 +349,9 @@ def elbv2_deletion_protection_check(
         except Exception as e:
             print(e)
 
-
-@registry.register_check("elb")
-def elbv2_internet_facing_secure_listeners_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+@registry.register_check("elbv2")
+def elbv2_internet_facing_secure_listeners_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ELBv2.3] Internet-facing Application and Network Load Balancers should have secure listeners configured"""
     response = describe_load_balancers(cache)
     myElbv2LoadBalancers = response["LoadBalancers"]
     for loadbalancers in myElbv2LoadBalancers:
@@ -506,11 +499,9 @@ def elbv2_internet_facing_secure_listeners_check(
         except Exception as e:
             print(e)
 
-
-@registry.register_check("elb")
-def elbv2_tls12_listener_policy_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+@registry.register_check("elbv2")
+def elbv2_tls12_listener_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ELBv2.4] Application and Network Load Balancers with HTTPS or TLS listeners should enforce TLS 1.2 policies"""
     response = describe_load_balancers(cache)
     myElbv2LoadBalancers = response["LoadBalancers"]
     for loadbalancers in myElbv2LoadBalancers:
@@ -676,11 +667,9 @@ def elbv2_tls12_listener_policy_check(
         except Exception as e:
             print(e)
 
-
-@registry.register_check("elb")
-def elbv2_drop_invalid_header_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+@registry.register_check("elbv2")
+def elbv2_drop_invalid_header_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ELBv2.5] Application Load Balancers should drop invalid HTTP header fields"""
     response = describe_load_balancers(cache)
     myElbv2LoadBalancers = response["LoadBalancers"]
     for loadbalancers in myElbv2LoadBalancers:
@@ -826,11 +815,9 @@ def elbv2_drop_invalid_header_check(
             else:
                 pass
 
-
-@registry.register_check("elb")
-def elbv2_nlb_tls_logging_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+@registry.register_check("elbv2")
+def elbv2_nlb_tls_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ELBv2.6] Network Load Balancers with TLS listeners should have access logging enabled"""
     response = describe_load_balancers(cache)
     myElbv2LoadBalancers = response["LoadBalancers"]
     for loadbalancers in myElbv2LoadBalancers:
@@ -995,8 +982,9 @@ def elbv2_nlb_tls_logging_check(
         else:
             pass
 
-@registry.register_check("elb")
+@registry.register_check("elbv2")
 def elbv2_alb_http_desync_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """aaa"""
     response = describe_load_balancers(cache)
     myElbv2LoadBalancers = response["LoadBalancers"]
     for loadbalancers in myElbv2LoadBalancers:

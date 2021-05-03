@@ -18,15 +18,12 @@ import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
-
 # create boto3 clients
 elb = boto3.client("elb")
 
-
 @registry.register_check("elb")
-def internet_facing_clb_https_listener_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def internet_facing_clb_https_listener_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ELB.1] Classic load balancers that are internet-facing should use secure listeners"""
     # loop through classic load balancers
     response = elb.describe_load_balancers()
     for classicbalancer in response["LoadBalancerDescriptions"]:
@@ -149,11 +146,9 @@ def internet_facing_clb_https_listener_check(
             print("Ignoring internal CLB")
             pass
 
-
 @registry.register_check("elb")
-def clb_https_listener_tls12_policy_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def clb_https_listener_tls12_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ELB.2] Classic load balancers should use TLS 1.2 listener policies"""
     # loop through classic load balancers
     response = elb.describe_load_balancers()
     for classicbalancer in response["LoadBalancerDescriptions"]:
@@ -273,11 +268,9 @@ def clb_https_listener_tls12_policy_check(
                 }
                 yield finding
 
-
 @registry.register_check("elb")
-def clb_cross_zone_balancing_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def clb_cross_zone_balancing_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ELB.3] Classic load balancers should have cross-zone load balancing configured"""
     # loop through classic load balancers
     response = elb.describe_load_balancers()
     for classicbalancer in response["LoadBalancerDescriptions"]:
@@ -397,11 +390,9 @@ def clb_cross_zone_balancing_check(
             }
             yield finding
 
-
 @registry.register_check("elb")
-def clb_connection_draining_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def clb_connection_draining_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ELB.4] Classic load balancers should have connection draining configured"""
     # loop through classic load balancers
     response = elb.describe_load_balancers()
     for classicbalancer in response["LoadBalancerDescriptions"]:
@@ -521,11 +512,9 @@ def clb_connection_draining_check(
             }
             yield finding
 
-
 @registry.register_check("elb")
-def clb_access_logging_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def clb_access_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ELB.5] Classic load balancers should enable access logging"""
     # loop through classic load balancers
     response = elb.describe_load_balancers()
     for classicbalancer in response["LoadBalancerDescriptions"]:
@@ -579,11 +568,11 @@ def clb_access_logging_check(
                         "NIST SP 800-53 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
-                        "ISO 27001:2013 A.16.1.7",
-                    ],
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
         else:
@@ -631,10 +620,10 @@ def clb_access_logging_check(
                         "NIST SP 800-53 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
-                        "ISO 27001:2013 A.16.1.7",
-                    ],
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
