@@ -421,6 +421,8 @@ def function_code_signer_check(cache: dict, awsAccountId: str, awsRegion: str, a
                 yield finding
 
 '''
+GOT TO EVENTUAL FIX THIS??
+
 @registry.register_check("lambda")
 def public_lambda_layer_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     iterator = paginator.paginate()
