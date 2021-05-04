@@ -21,19 +21,14 @@ registry = CheckRegister()
 
 acm = boto3.client("acm")
 
-def list_certificates(cache):
-    response = cache.get("list_certificates")
-    if response:
-        return response
-    cache["list_certificates"] = acm.list_certificates()
-    return cache["list_certificates"]
+acmCerts = []
+for c in acm.list_certificates()["CertificateSummaryList"]:
+    certArn = str(c["CertificateArn"])
+    acmCerts.append(certArn)
 
 @registry.register_check("acm")
 def certificate_revocation_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """aaaa"""
-    response = list_certificates(cache)
-    myRepos = response["repositories"]
-    for c in response["CertificateSummaryList"]:
-        certArn = str(c["CertificateArn"])
-        cert = acm.describe_certificate(CertificateArn=certArn)["Certificate"]
+    for carn in acmCerts:
+        cert = acm.describe_certificate(CertificateArn=carn)["Certificate"]
         print(cert)
