@@ -37,6 +37,7 @@ else:
 
     @registry.register_check("shodan")
     def public_ec2_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+        """[Shodan.EC2.1] EC2 instances with public IP addresses should be monitored for being indexed by Shodan"""
         try:
             response = ec2.describe_instances(DryRun=False, MaxResults=500)
             for res in response["Reservations"]:
@@ -196,6 +197,7 @@ else:
 
     @registry.register_check("shodan")
     def public_alb_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+        """[Shodan.ELBv2.1] Internet-facing Application Load Balancers should be monitored for being indexed by Shodan"""
         try:
             response = elbv2.describe_load_balancers()
             for lbs in response["LoadBalancers"]:
@@ -348,6 +350,7 @@ else:
 
     @registry.register_check("shodan")
     def public_rds_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+        """[Shodan.RDS.1] Public accessible RDS instances should be monitored for being indexed by Shodan"""
         try:
             response = rds.describe_db_instances()
             for rdsdb in response["DBInstances"]:
@@ -506,6 +509,7 @@ else:
 
     @registry.register_check("shodan")
     def public_es_domain_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+        """[Shodan.Elasticsearch.1] ElasticSearch Service domains outside of a VPC should be monitored for being indexed by Shodan"""
         try:
             response = elasticsearch.list_domain_names()
             for domain in response["DomainNames"]:
@@ -675,6 +679,7 @@ else:
 
     @registry.register_check("shodan")
     def public_clb_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+        """[Shodan.ELB.1] Internet-facing Classic Load Balancers should be monitored for being indexed by Shodan"""
         try:
             response = elb.describe_load_balancers()
             for clbs in response["LoadBalancerDescriptions"]:
@@ -819,6 +824,7 @@ else:
 
     @registry.register_check("shodan")
     def public_dms_replication_instance_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+        """[Shodan.DMS.1] Publicly accessible Database Migration Service (DMS) Replication Instances should be monitored for being indexed by Shodan"""
         try:
             response = dms.describe_replication_instances()
             for repinstances in response["ReplicationInstances"]:
@@ -959,6 +965,7 @@ else:
 
     @registry.register_check("shodan")
     def public_amazon_mq_broker_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+        """[Shodan.AmazonMQ.1] Publicly accessible Amazon MQ message brokers should be monitored for being indexed by Shodan"""
         try:
             response = amzmq.list_brokers(MaxResults=100)
             myBrokers = response["BrokerSummaries"]
@@ -1107,6 +1114,7 @@ else:
 
     @registry.register_check("shodan")
     def cloudfront_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+        """[Shodan.CloudFront.1] CloudFront Distributions should be monitored for being indexed by Shodan"""
         iso8601time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
         try:
             paginator = cloudfront.get_paginator("list_distributions")
@@ -1246,11 +1254,12 @@ else:
     
     @registry.register_check("shodan")
     def global_accelerator_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+        """[Shodan.CloudFront.1] CloudFront Distributions should be monitored for being indexed by Shodan"""
         iso8601time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
         try:
             # Create a Session is us-west-2 - which is where the Global Accelerator API is in
             session = boto3.Session(region_name="us-west-2")
-            gax = boto3.session("globalaccelerator")
+            gax = session.client("globalaccelerator")
             paginator = gax.get_paginator("list_accelerators")
             iterator = paginator.paginate()
             for page in iterator:
@@ -1275,9 +1284,9 @@ else:
                             "CreatedAt": iso8601time,
                             "UpdatedAt": iso8601time,
                             "Severity": {"Label": "INFORMATIONAL"},
-                            "Title": "[Shodan.CloudFront.1] CloudFront Distributions should be monitored for being indexed by Shodan",
-                            "Description": "CloudFront Distribution "
-                            + cfId
+                            "Title": "[Shodan.GlobalAccelerator.1] Accelerators should be monitored for being indexed by Shodan",
+                            "Description": "Accelerator "
+                            + gaxName
                             + " has not been indexed by Shodan.",
                             "ProductFields": {"Product Name": "ElectricEye"},
                             "Resources": [
@@ -1329,9 +1338,9 @@ else:
                             "CreatedAt": iso8601time,
                             "UpdatedAt": iso8601time,
                             "Severity": {"Label": "MEDIUM"},
-                            "Title": "[Shodan.CloudFront.1] CloudFront Distributions should be monitored for being indexed by Shodan",
-                            "Description": "CloudFront Distribution "
-                            + cfId
+                            "Title": "[Shodan.GlobalAccelerator.1] Accelerators should be monitored for being indexed by Shodan",
+                            "Description": "Accelerator "
+                            + gaxName
                             + " has been indexed by Shodan on IP Address (from DNS Name) "
                             + gaxDomainIp
                             + ". review the Shodan.io host information in the SourceUrl or ThreatIntelIndicators.SourceUrl fields for information about what ports and services are exposed and then take action to reduce exposure and harden your host.",

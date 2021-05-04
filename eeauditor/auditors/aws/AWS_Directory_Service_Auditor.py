@@ -31,9 +31,8 @@ def describe_directories(cache):
 
 
 @registry.register_check("ds")
-def directory_service_radius_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def directory_service_radius_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[DirectoryService.1] Supported directories should have RADIUS enabled for multi-factor authentication (MFA)"""
     directories = describe_directories(cache=cache)
     myDirectories = directories["DirectoryDescriptions"]
     for directory in myDirectories:
@@ -71,11 +70,11 @@ def directory_service_radius_check(
                     "ProductFields": {"Product Name": "ElectricEye"},
                     "Resources": [
                         {
-                            "Type": "Other",
+                            "Type": "AwsDirectoryServiceDirectory",
                             "Id": directoryArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
-                            "Details": {"Other": {"directoryName": directoryName}},
+                            "Details": {"Other": {"DirectoryName": directoryName}},
                         }
                     ],
                     "Compliance": {
@@ -130,11 +129,11 @@ def directory_service_radius_check(
                     "ProductFields": {"Product Name": "ElectricEye"},
                     "Resources": [
                         {
-                            "Type": "Other",
+                            "Type": "AwsDirectoryServiceDirectory",
                             "Id": directoryArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
-                            "Details": {"Other": {"directoryName": directoryName}},
+                            "Details": {"Other": {"DirectoryName": directoryName}},
                         }
                     ],
                     "Compliance": {
@@ -167,11 +166,9 @@ def directory_service_radius_check(
             print("SimpleAD does not support RADIUS, skipping")
             pass
 
-
 @registry.register_check("ds")
-def directory_service_cloudwatch_logs_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def directory_service_cloudwatch_logs_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[DirectoryService.2] Directories should have log forwarding enabled"""
     directories = describe_directories(cache=cache)
     myDirectories = directories["DirectoryDescriptions"]
     for directory in myDirectories:
@@ -206,11 +203,11 @@ def directory_service_cloudwatch_logs_check(
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "Other",
+                        "Type": "AwsDirectoryServiceDirectory",
                         "Id": directoryArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"directoryName": directoryName}},
+                        "Details": {"Other": {"DirectoryName": directoryName}},
                     }
                 ],
                 "Compliance": {
@@ -258,11 +255,11 @@ def directory_service_cloudwatch_logs_check(
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "Other",
+                        "Type": "AwsDirectoryServiceDirectory",
                         "Id": directoryArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"directoryName": directoryName}},
+                        "Details": {"Other": {"DirectoryName": directoryName}},
                     }
                 ],
                 "Compliance": {

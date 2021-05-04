@@ -22,7 +22,6 @@ registry = CheckRegister()
 # import boto3 clients
 securityhub = boto3.client("securityhub")
 
-
 def get_findings(cache, awsAccountId):
     response = cache.get("get_findings")
     if response:
@@ -53,9 +52,8 @@ def get_findings(cache, awsAccountId):
 
 
 @registry.register_check("securityhub")
-def high_critical_findings(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def high_critical_findings(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SecurityHub.1] Security Hub should not have active high or critical severity findings from AWS services"""
     getFindings = get_findings(cache=cache, awsAccountId=awsAccountId)
     generatorId = str(getFindings["ResponseMetadata"]["RequestId"])
     # ISO Time

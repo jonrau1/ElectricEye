@@ -28,14 +28,11 @@ def list_users(cache):
     cache["list_users"] = iam.list_users(MaxItems=1000)
     return cache["list_users"]
 
-
 @registry.register_check("iam")
-def iam_access_key_age_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def iam_access_key_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[IAM.1] IAM Access Keys should be rotated every 90 days"""
     user = list_users(cache=cache)
-    allUsers = user["Users"]
-    for users in allUsers:
+    for users in user["Users"]:
         userName = str(users["UserName"])
         userArn = str(users["Arn"])
         try:
@@ -210,14 +207,11 @@ def iam_access_key_age_check(
         except Exception as e:
             print(e)
 
-
 @registry.register_check("iam")
-def user_permission_boundary_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def user_permission_boundary_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """aaa"""
     user = list_users(cache=cache)
-    allUsers = user["Users"]
-    for users in allUsers:
+    for users in user["Users"]:
         userName = str(users["UserName"])
         userArn = str(users["Arn"])
         # ISO Time
@@ -347,12 +341,11 @@ def user_permission_boundary_check(
             else:
                 print(e)
 
-
 @registry.register_check("iam")
 def user_mfa_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[IAM.3] IAM users should have Multi-Factor Authentication (MFA) enabled"""
     user = list_users(cache=cache)
-    allUsers = user["Users"]
-    for users in allUsers:
+    for users in user["Users"]:
         userName = str(users["UserName"])
         userArn = str(users["Arn"])
         # ISO Time
@@ -492,11 +485,9 @@ def user_mfa_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition:
         except Exception as e:
             print(e)
 
-
 @registry.register_check("iam")
-def user_inline_policy_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def user_inline_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[IAM.4] IAM users should not have attached in-line policies"""
     user = list_users(cache=cache)
     allUsers = user["Users"]
     for users in allUsers:
@@ -641,11 +632,9 @@ def user_inline_policy_check(
         except Exception as e:
             print(e)
 
-
 @registry.register_check("iam")
-def user_direct_attached_policy_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def user_direct_attached_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[IAM.5] IAM users should not have attached managed policies"""
     user = list_users(cache=cache)
     allUsers = user["Users"]
     for users in allUsers:
@@ -790,11 +779,9 @@ def user_direct_attached_policy_check(
         except Exception as e:
             print(e)
 
-
 @registry.register_check("iam")
-def cis_aws_foundation_benchmark_pw_policy_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[IAM.6] The IAM password policy should meet or exceed the AWS CIS Foundations Benchmark standard"""
     try:
         # TODO: if no policy is found, this will throw an exception in
         # which case we need to create an ACTIVE finding
@@ -950,9 +937,9 @@ def cis_aws_foundation_benchmark_pw_policy_check(
     except Exception as e:
         print(e)
 
-
 @registry.register_check("iam")
 def server_certs_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[IAM.7] There should not be any server certificates stored in AWS IAM"""
     try:
         response = iam.list_server_certificates()
         # ISO Time
