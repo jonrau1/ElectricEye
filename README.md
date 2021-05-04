@@ -365,7 +365,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 
 ## Supported Services and Checks
 
-These are the following services and checks perform by each Auditor. There are currently **275** checks supported across **80** AWS services / components using **60** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **278** checks supported across **81** AWS services / components using **61** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -575,6 +575,9 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_Xray_Auditor.py                 | XRay Encryption Config         | Is KMS CMK encryption used                                                          |
 | AMI_Auditor.py                         | Amazon Machine Image (AMI)     | Are owned AMIs public                                                               |
 | AMI_Auditor.py                         | Amazon Machine Image (AMI)     | Are owned AMIs encrypted                                                            |
+| AWS_ACM_Auditor.py                     | ACM Certificate                | Are certificates revoked                                                            |
+| AWS_ACM_Auditor.py                     | ACM Certificate                | Are certificates in use                                                             |
+| AWS_ACM_Auditor.py                     | ACM Certificate                | Is certificate transparency logging enabled                                         |
 | AWS_Amplify_Auditor.py                 | AWS Amplify                    | Does the app have basic auth enabled on the branches                                |
 | AWS_Amplify_Auditor.py                 | AWS Amplify                    | Does the app have auto deletion for branches enabled                                |
 | AWS_AppMesh_Auditor.py                 | App Mesh mesh                  | Does the mesh egress filter DROP_ALL                                                |

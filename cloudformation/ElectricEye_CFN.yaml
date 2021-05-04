@@ -182,6 +182,8 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
+                  - acm:DescribeCertificate
+                  - acm:ListCertificates
                   - access-analyzer:ListAnalyzers
                   - airflow:GetEnvironment
                   - airflow:ListEnvironments

@@ -184,7 +184,7 @@ def mwaa_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
-                "Title": "[MWAA.2] Managed Apache Airflow Environments should be use permit public URL access",
+                "Title": "[MWAA.2] Managed Apache Airflow Environments should not permit public URL access",
                 "Description": "Managed Apache Airflow Environment " 
                 + envName + 
                 " allows public access, this creates a public URL to access the Apache Airflow user interface in the environment. Access to this URL, while managed by AWS IAM, should be restricted to a private network and access given via a Bastion or VPC Endpoint. Refer to the remediation instructions if this configuration is not intended.",
@@ -246,7 +246,7 @@ def mwaa_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[MWAA.2] Managed Apache Airflow Environments should be use permit public URL access",
+                "Title": "[MWAA.2] Managed Apache Airflow Environments should not permit public URL access",
                 "Description": "Managed Apache Airflow Environment " 
                 + envName + 
                 " does not allow public access.",

@@ -27,6 +27,8 @@
                 "dynamodb:ListTables",
                 "detective:ListGraphs",
                 "shield:DescribeSubscription",
+                "acm:DescribeCertificate",
+                "acm:ListCertificates",
                 "ec2:DescribeVolumes",
                 "elasticmapreduce:DescribeCluster",
                 "elasticmapreduce:DescribeSecurityConfiguration",

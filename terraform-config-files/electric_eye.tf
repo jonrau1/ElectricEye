@@ -220,6 +220,8 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "ec2:DescribeSnapshots",
                 "ecs:ListClusters",
                 "ecs:DescribeClusters",
+                "acm:DescribeCertificate",
+                "acm:ListCertificates",
                 "elasticloadbalancing:DescribeLoadBalancers",
                 "kinesis:ListStreams",
                 "cognito-idp:DescribeUserPool",
