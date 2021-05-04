@@ -14,13 +14,13 @@ Continuously monitor your AWS services for configurations that can lead to degra
 - [Description](#description)
 - [Solution Architecture](#solution-architecture)
 - [Setting Up](#setting-up)
+  - [Running locally](#running-locally)
   - [Build and push the Docker image](#build-and-push-the-docker-image)
   - [(OPTIONAL) Setup Shodan.io API Key](#optional-setup-shodanio-api-key)
   - [(OPTIONAL) Setup DisruptOps Client Id and API Key](#optional-setup-disruptops-client-id-and-api-key)
   - [Setup baseline infrastructure via Terraform](#setup-baseline-infrastructure-via-terraform)
   - [Setup baseline infrastructure via AWS CloudFormation](#setup-baseline-infrastructure-via-aws-cloudformation)
   - [Manually execute the ElectricEye ECS Task](#manually-execute-the-electriceye-ecs-task-you-only-need-to-do-this-once)
-  - [Running locally](#running-locally)
 - [Supported Services and Checks](#supported-services-and-checks)
 - [Add-on Modules](#add-on-modules)
   - [Config Findings Pruner](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/config-deletion-pruner)
@@ -82,6 +82,53 @@ These steps are split across their relevant sections. All CLI commands are execu
 **Note 2:** Ensure AWS Security Hub is enabled in the region you are attempting to run ElectricEye
 
 **Note 3:** If you have never used ECS before you'll likely run into a problem with the service-linked role (SLR), or lack thereof, and you should follow the [instructions here](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using-service-linked-roles.html#service-linked-role-permissions) to have it created first
+
+### Running locally
+
+**NOTE:** While this section is titled "Running Locally" - you can use the following setup to run anywhere you can run Python such as EKS, Kubernetes, a self-managed Docker Container, AWS CloudShell, etc. The usage of `venv` for those utilities is optional, but strongly recommended.
+
+1. Navigate to the IAM console and click on **Policies** under **Access management**. Select **Create policy** and under the JSON tab, copy and paste the contents [Instance Profile IAM Policy](policies/Instance_Profile_IAM_Policy.json). Click **Review policy**, create a name, and then click **Create policy**.
+
+2. Have python 3 and pip installed and setup virtualenv
+
+```bash
+pip3 install virtualenv --user
+virtualenv .venv
+```
+
+3. This will create a virtualenv directory called .venv which needs to be activated
+
+```bash
+#For macOS and Linux
+. .venv/bin/activate
+
+#For Windows
+.venv\scripts\activate
+```
+
+4. Install all dependencies
+
+```bash
+pip3 install -r requirements.txt
+```
+
+5. Run the controller
+
+```bash
+python3 eeauditor/controller.py
+```
+
+Add the `--help` option for info on running individual checks and auditors and different outputs options. For instance, if you wanted to specify a specific Auditor use the following command to run it, specifiy the *name* of the Auditor **without** the `.py` ending.
+
+```bash
+python3 eeauditor/controller.py -a AWS_IAM_Auditor
+```
+
+You can get a full name of the auditors (as well as their checks within comments by using the following command).
+
+```bash
+python3 eeauditor/controller.py --list-checks
+```
 
 ### Build and push the Docker image
 
@@ -315,51 +362,6 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 ![ECS task menu](screenshots/ecs-task-menu-modifications.JPG)
 
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
-
-### Running locally
-
-1. Navigate to the IAM console and click on **Policies** under **Access management**. Select **Create policy** and under the JSON tab, copy and paste the contents [Instance Profile IAM Policy](policies/Instance_Profile_IAM_Policy.json). Click **Review policy**, create a name, and then click **Create policy**.
-
-2. Have python 3 and pip installed and setup virtualenv
-
-```bash
-pip3 install virtualenv --user
-virtualenv .venv
-```
-
-3. This will create a virtualenv directory called .venv which needs to be activated
-
-```bash
-#For macOS and Linux
-. .venv/bin/activate
-
-#For Windows
-.venv\scripts\activate
-```
-
-4. Install all dependencies
-
-```bash
-pip3 install -r requirements.txt
-```
-
-5. Run the controller
-
-```bash
-python3 eeauditor/controller.py
-```
-
-Add the `--help` option for info on running individual checks and auditors and different outputs options. For instance, if you wanted to specify a specific Auditor use the following command to run it, specifiy the *name* of the Auditor **without** the `.py` ending.
-
-```bash
-python3 eeauditor/controller.py -a AWS_IAM_Auditor
-```
-
-You can get a full name of the auditors (as well as their checks within comments by using the following command).
-
-```bash
-python3 eeauditor/controller.py --list-checks
-```
 
 ## Supported Services and Checks
 

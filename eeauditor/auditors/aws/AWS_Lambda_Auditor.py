@@ -209,7 +209,7 @@ def function_tracing_check(cache: dict, awsAccountId: str, awsRegion: str, awsPa
                                 "AwsLambdaFunction": {
                                     "FunctionName": functionName,
                                     "TracingConfig": {
-                                        "TracingConfig.Mode": str(function["TracingConfig"]["Mode"])
+                                        "Mode": str(function["TracingConfig"]["Mode"])
                                     }
                                 }
                             }
@@ -268,7 +268,7 @@ def function_tracing_check(cache: dict, awsAccountId: str, awsRegion: str, awsPa
                                 "AwsLambdaFunction": {
                                     "FunctionName": functionName,
                                     "TracingConfig": {
-                                        "TracingConfig.Mode": str(function["TracingConfig"]["Mode"])
+                                        "Mode": str(function["TracingConfig"]["Mode"])
                                     }
                                 }
                             }
