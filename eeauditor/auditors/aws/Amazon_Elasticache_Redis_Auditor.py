@@ -62,7 +62,7 @@ def redis_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                     "Title": "[Elasticache.Redis.1] Elasticache Redis clusters should have an AUTH token enabled",
                     "Description": "Elasticache cluster "
                     + clusterId
-                    + " does not have a Redis AUTH token enabled. Refer to the remediation instructions if this configuration is not intended",
+                    + " does not have a Redis AUTH token enabled. Refer to the remediation instructions if this configuration is not intended.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "If your cluster should have a Redis AUTH token refer to the Modifying the AUTH Token on an Existing ElastiCache for Redis Cluster section of the ElastiCache for Redis User Guide",
