@@ -682,7 +682,7 @@ def mwaa_webserver_logging_check(cache: dict, awsAccountId: str, awsRegion: str,
         envClass = str(response["EnvironmentClass"])
         envName = str(response["Name"])
         # This is a failing check
-        if str(response["LoggingConfiguration"]["Webserver"]["Enabled"]) == "False":
+        if str(response["LoggingConfiguration"]["WebserverLogs"]["Enabled"]) == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": envArn + "/managed-workflow-apache-airflow-webserver-logging-check",
@@ -808,7 +808,7 @@ def mwaa_worker_logging_check(cache: dict, awsAccountId: str, awsRegion: str, aw
         envClass = str(response["EnvironmentClass"])
         envName = str(response["Name"])
         # This is a failing check
-        if str(response["LoggingConfiguration"]["Worker"]["Enabled"]) == "False":
+        if str(response["LoggingConfiguration"]["WorkerLogs"]["Enabled"]) == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": envArn + "/managed-workflow-apache-airflow-worker-logging-check",
