@@ -368,7 +368,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 
 ## Supported Services and Checks
 
-These are the following services and checks perform by each Auditor. There are currently **281** checks supported across **82** AWS services / components using **61** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **287** checks supported across **82** AWS services / components using **62** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -646,6 +646,12 @@ These are the following services and checks perform by each Auditor. There are c
 | AWS_Security_Services_Auditor.py       | Macie2                         | Is Macie enabled                                                                    |
 | AWS_Security_Services_Auditor.py       | AWS WAFv2 (Regional)           | Are Regional Web ACLs configured                                                    |
 | AWS_Security_Services_Auditor.py       | AWS WAFv2 (Global)             | Are Global Web ACLs (for CloudFront) configured                                     |
+| AWS_WAFv2_Auditor.py                   | AWS WAFv2 (Regional)           | Do Regional WAFs use Cloudwatch Metrics                                             |
+| AWS_WAFv2_Auditor.py                   | AWS WAFv2 (Regional)           | Do Regional WAFs use Request Sampling                                               |
+| AWS_WAFv2_Auditor.py                   | AWS WAFv2 (Regional)           | Do Regional WAFs have Logging enabled                                               |
+| AWS_WAFv2_Auditor.py                   | AWS WAFv2 (Global)             | Do Global WAFs use Cloudwatch Metrics                                               |
+| AWS_WAFv2_Auditor.py                   | AWS WAFv2 (Global)             | Do Global WAFs use Request Sampling                                                 |
+| AWS_WAFv2_Auditor.py                   | AWS WAFv2 (Global)             | Do Global WAFs have Logging enabled                                                 |
 | Shodan_Auditor.py                      | EC2 Instance                   | Are EC2 instances w/ public IPs indexed                                             |
 | Shodan_Auditor.py                      | ELBv2 (ALB)                    | Are internet-facing ALBs indexed                                                    |
 | Shodan_Auditor.py                      | RDS Instance                   | Are public accessible RDS instances indexed                                         |

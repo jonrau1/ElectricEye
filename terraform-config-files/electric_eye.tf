@@ -329,6 +329,8 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "ssm:DescribeInstanceInformation",
                 "ssm:GetParameter",
                 "wafv2:ListWebACLs",
+                "wafv2:GetLoggingConfiguration",
+                "wafv2:GetWebACL",
                 "rds:DescribeDBClusterSnapshots",
                 "redshift:DescribeClusters",
                 "cloudfront:ListDistributions",
