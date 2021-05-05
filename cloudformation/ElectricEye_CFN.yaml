@@ -215,18 +215,7 @@ Resources:
                   - dynamodb:ListTables
                   - dynamodb:DescribeContinuousBackups
                   - dynamodb:DescribeTimeToLive
-                  - ec2:DescribeAddresses
-                  - ec2:DescribeFlowLogs
-                  - ec2:DescribeImageAttribute
-                  - ec2:DescribeImages
-                  - ec2:DescribeInstanceAttribute
-                  - ec2:DescribeInstances
-                  - ec2:DescribeSecurityGroupReferences
-                  - ec2:DescribeSecurityGroups
-                  - ec2:DescribeSnapshotAttribute
-                  - ec2:DescribeSnapshots
-                  - ec2:DescribeVolumes
-                  - ec2:DescribeVpcs
+                  - ec2:Describe*
                   - ec2:GetEbsDefaultKmsKeyId
                   - ec2:GetEbsEncryptionByDefault
                   - ec2:GetSerialConsoleAccessStatus
@@ -289,12 +278,8 @@ Resources:
                   - license-manager:GetLicenseConfiguration
                   - license-manager:ListLicenseConfigurations
                   - macie2:GetMacieSession
-                  - managedblockchain:GetNetwork
-                  - managedblockchain:ListMembers
-                  - managedblockchain:ListNetworks
-                  - managedblockchain:GetNode
-                  - managedblockchain:GetMember
-                  - managedblockchain:ListNodes
+                  - managedblockchain:Get*
+                  - managedblockchain:List*
                   - mq:DescribeBroker
                   - mq:ListBrokers
                   - qldb:DescribeLedger

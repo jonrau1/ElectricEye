@@ -307,7 +307,7 @@ def certificate_in_use_check(cache: dict, awsAccountId: str, awsRegion: str, aws
 
 @registry.register_check("acm")
 def certificate_transparency_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """to do"""
+    """[ACM.3] ACM Certificates should have certificate transparency logs enabled"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for carn in acmCerts:
         # Get ACM Cert Details

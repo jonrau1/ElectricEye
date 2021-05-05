@@ -368,7 +368,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 
 ## Supported Services and Checks
 
-These are the following services and checks perform by each Auditor. There are currently **278** checks supported across **81** AWS services / components using **61** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **281** checks supported across **82** AWS services / components using **61** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -634,6 +634,7 @@ These are the following services and checks perform by each Auditor. There are c
 | AWS_Lambda_Auditor.py                  | Lambda function                | Is code signing used                                                                |
 | AWS_Lambda_Auditor.py                  | Lambda layer                   | Is the layer public                                                                 |
 | AWS_License_Manager_Auditor            | License Manager configuration  | Do LM configurations enforce a hard limit on license consumption                    |
+| AWS_License_Manager_Auditor            | License Manager configuration  | Do LM configurations enforce auto-disassociation                                    |
 | AWS_RAM_Auditor.py                     | RAM Resource Share             | Is the resource share status not failed                                             |
 | AWS_RAM_Auditor.py                     | RAM Resource Share             | Does the resource allow external principals                                         |
 | AWS_Secrets_Manager_Auditor.py         | Secrets Manager secret         | Is the secret over 90 days old                                                      |
@@ -643,6 +644,8 @@ These are the following services and checks perform by each Auditor. There are c
 | AWS_Security_Services_Auditor.py       | GuardDuty (Account)            | Is GuardDuty enabled                                                                |
 | AWS_Security_Services_Auditor.py       | Detective (Account)            | Is Detective enabled                                                                |
 | AWS_Security_Services_Auditor.py       | Macie2                         | Is Macie enabled                                                                    |
+| AWS_Security_Services_Auditor.py       | AWS WAFv2 (Regional)           | Are Regional Web ACLs configured                                                    |
+| AWS_Security_Services_Auditor.py       | AWS WAFv2 (Global)             | Are Global Web ACLs (for CloudFront) configured                                     |
 | Shodan_Auditor.py                      | EC2 Instance                   | Are EC2 instances w/ public IPs indexed                                             |
 | Shodan_Auditor.py                      | ELBv2 (ALB)                    | Are internet-facing ALBs indexed                                                    |
 | Shodan_Auditor.py                      | RDS Instance                   | Are public accessible RDS instances indexed                                         |
