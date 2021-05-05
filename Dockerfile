@@ -10,14 +10,14 @@ ENV DOPS_CLIENT_ID_PARAM=DOPS_CLIENT_ID_PARAM
 ENV DOPS_API_KEY_PARAM=DOPS_API_KEY_PARAM
 
 LABEL maintainer="https://github.com/jonrau1" \
-    version="2.1" \
+    version="3.0" \
     license="GPL-3.0" \
     description="Continuously monitor your AWS services for configurations that can lead to degradation of confidentiality, integrity or availability. All results will be sent to Security Hub for further aggregation and analysis."
 
 COPY requirements.txt /tmp/requirements.txt
 # NOTE: This will copy all application files and auditors to the container
 COPY ./eeauditor/ ./eeauditor/
-
+# Installing dependencies
 RUN \
     apk add bash && \
     apk add --no-cache python3 && \
@@ -25,7 +25,14 @@ RUN \
     pip3 install --no-cache --upgrade pip setuptools wheel && \
     rm -r /usr/lib/python*/ensurepip && \
     pip3 install -r /tmp/requirements.txt
-
-CMD \
-    aws s3 cp s3://${SH_SCRIPTS_BUCKET}/ ./eeauditor/auditors --recursive && \
-    python3 eeauditor/controller.py
+# Create a System Group and User for ElectricEye so we don't run as root
+RUN \
+    addgroup -S eeuser && \ 
+    adduser -S -G eeuser eeuser && \
+    chown eeuser ./eeauditor && \
+    chgrp eeuser ./eeauditor && \
+    chown -R eeuser:eeuser ./eeauditor/*
+# Bye bye root :)
+USER eeuser
+# Upon startup we will run all checks and auditors
+CMD python3 eeauditor/controller.py

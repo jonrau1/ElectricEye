@@ -152,7 +152,7 @@ git clone https://github.com/jonrau1/ElectricEye.git
 
 ```bash
 aws ecr create-repository \
-    --repository-name ElectricEye \
+    --repository-name electriceye \
     --image-scanning-configuration scanOnPush=true
 ```
 
@@ -162,22 +162,22 @@ aws ecr create-repository \
 
 ```bash
 cd ElectricEye
-aws ecr get-login-password --region <AWS_REGION> | sudo docker login --username AWS --password-stdin <ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com
+aws ecr get-login-password --region $AWS_REGION | sudo docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 ```
 
 **Note**: If you are using AWS CLI v1 use the following in place of the line above
 
 ```bash
-sudo $(aws ecr get-login --no-include-email --region <AWS_REGION>)
+sudo $(aws ecr get-login --no-include-email --region $AWS_REGION)
 ```
 
 ```bash
-sudo docker build -t ElectricEye .
-sudo docker tag ElectricEye:latest <ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/ElectricEye:latest
-sudo docker push <ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/ElectricEye:latest
+sudo docker build -t electriceye .
+sudo docker tag electriceye:v1 $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/electriceye:v1
+sudo docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/electriceye:v1
 ```
 
-4. Navigate to the ECR console and copy the `URI` of your Docker image. It will be in the format of **`<ACCOUNT_ID>.dkr.ecr.<AWS_REGION.amazonaws.com/ElectricEye:latest`**. Save this as you will need it when configuring Terraform or CloudFormation.
+4. Navigate to the ECR console and copy the `URI` of your Docker image. It will be in the format of **`$AWS_ACCOUNT_ID.dkr.ecr.<AWS_REGION.amazonaws.com/ElectricEye:latest`**. Save this as you will need it when configuring Terraform or CloudFormation.
 
 ### (OPTIONAL) Setup Shodan.io API Key
 
