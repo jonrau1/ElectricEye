@@ -33,7 +33,6 @@ def wafv2_web_acl_metrics_check(cache: dict, awsAccountId: str, awsRegion: str, 
         wafName = str(w["Name"])
         # Get WAF Details
         waf = wafv2.get_web_acl(Name=wafName,Scope='REGIONAL',Id=wafId)["WebACL"]
-        wafRules = waf["Rules"]
         # This is a failing check
         if str(waf["VisibilityConfig"]["CloudWatchMetricsEnabled"]) == "False":
             finding = {
@@ -126,8 +125,7 @@ def wafv2_web_acl_metrics_check(cache: dict, awsAccountId: str, awsRegion: str, 
                         "Details": {
                             "AwsWafWebAcl": {
                                 "Name": wafName,
-                                "WebAclId": wafId,
-                                "Rules": wafRules
+                                "WebAclId": wafId
                             }
                         }
                     }
@@ -197,8 +195,7 @@ def wafv2_web_acl_sampling_check(cache: dict, awsAccountId: str, awsRegion: str,
                         "Details": {
                             "AwsWafWebAcl": {
                                 "Name": wafName,
-                                "WebAclId": wafId,
-                                "Rules": wafRules
+                                "WebAclId": wafId
                             }
                         }
                     }
@@ -255,9 +252,7 @@ def wafv2_web_acl_sampling_check(cache: dict, awsAccountId: str, awsRegion: str,
                         "Details": {
                             "AwsWafWebAcl": {
                                 "Name": wafName,
-                                "WebAclId": wafId,
-                                "Rules": wafRules
-                            }
+                                "WebAclId": wafId
                         }
                     }
                 ],
@@ -291,7 +286,6 @@ def wafv2_web_acl_logging_check(cache: dict, awsAccountId: str, awsRegion: str, 
         wafName = str(w["Name"])
         # Get WAF Details
         waf = wafv2.get_web_acl(Name=wafName,Scope='REGIONAL',Id=wafId)["WebACL"]
-        wafRules = waf["Rules"]
         try:
             # This is a passing check
             wafv2.get_logging_configuration(ResourceArn=wafArn)
@@ -327,8 +321,7 @@ def wafv2_web_acl_logging_check(cache: dict, awsAccountId: str, awsRegion: str, 
                         "Details": {
                             "AwsWafWebAcl": {
                                 "Name": wafName,
-                                "WebAclId": wafId,
-                                "Rules": wafRules
+                                "WebAclId": wafId
                             }
                         }
                     }
@@ -387,8 +380,7 @@ def wafv2_web_acl_logging_check(cache: dict, awsAccountId: str, awsRegion: str, 
                             "Details": {
                                 "AwsWafWebAcl": {
                                     "Name": wafName,
-                                    "WebAclId": wafId,
-                                    "Rules": wafRules
+                                    "WebAclId": wafId
                                 }
                             }
                         }
@@ -428,7 +420,6 @@ def wafv2_web_acl_global_metrics_check(cache: dict, awsAccountId: str, awsRegion
             wafName = str(w["Name"])
             # Get WAF Details
             waf = wafv2.get_web_acl(Name=wafName,Scope='CLOUDFRONT',Id=wafId)["WebACL"]
-            wafRules = waf["Rules"]
             # This is a failing check
             if str(waf["VisibilityConfig"]["CloudWatchMetricsEnabled"]) == "False":
                 finding = {
@@ -463,8 +454,7 @@ def wafv2_web_acl_global_metrics_check(cache: dict, awsAccountId: str, awsRegion
                             "Details": {
                                 "AwsWafWebAcl": {
                                     "Name": wafName,
-                                    "WebAclId": wafId,
-                                    "Rules": wafRules
+                                    "WebAclId": wafId
                                 }
                             }
                         }
@@ -521,8 +511,7 @@ def wafv2_web_acl_global_metrics_check(cache: dict, awsAccountId: str, awsRegion
                             "Details": {
                                 "AwsWafWebAcl": {
                                     "Name": wafName,
-                                    "WebAclId": wafId,
-                                    "Rules": wafRules
+                                    "WebAclId": wafId
                                 }
                             }
                         }
@@ -560,7 +549,6 @@ def wafv2_web_acl_global_sampling_check(cache: dict, awsAccountId: str, awsRegio
             wafName = str(w["Name"])
             # Get WAF Details
             waf = wafv2.get_web_acl(Name=wafName,Scope='CLOUDFRONT',Id=wafId)["WebACL"]
-            wafRules = waf["Rules"]
             # This is a failing check
             if str(waf["VisibilityConfig"]["SampledRequestsEnabled"]) == "False":
                 finding = {
@@ -595,8 +583,7 @@ def wafv2_web_acl_global_sampling_check(cache: dict, awsAccountId: str, awsRegio
                             "Details": {
                                 "AwsWafWebAcl": {
                                     "Name": wafName,
-                                    "WebAclId": wafId,
-                                    "Rules": wafRules
+                                    "WebAclId": wafId
                                 }
                             }
                         }
@@ -653,8 +640,7 @@ def wafv2_web_acl_global_sampling_check(cache: dict, awsAccountId: str, awsRegio
                             "Details": {
                                 "AwsWafWebAcl": {
                                     "Name": wafName,
-                                    "WebAclId": wafId,
-                                    "Rules": wafRules
+                                    "WebAclId": wafId
                                 }
                             }
                         }
@@ -692,7 +678,6 @@ def wafv2_web_acl_global_logging_check(cache: dict, awsAccountId: str, awsRegion
             wafName = str(w["Name"])
             # Get WAF Details
             waf = wafv2.get_web_acl(Name=wafName,Scope='CLOUDFRONT',Id=wafId)["WebACL"]
-            wafRules = waf["Rules"]
             try:
                 # This is a passing check
                 wafv2.get_logging_configuration(ResourceArn=wafArn)
@@ -728,8 +713,7 @@ def wafv2_web_acl_global_logging_check(cache: dict, awsAccountId: str, awsRegion
                             "Details": {
                                 "AwsWafWebAcl": {
                                     "Name": wafName,
-                                    "WebAclId": wafId,
-                                    "Rules": wafRules
+                                    "WebAclId": wafId
                                 }
                             }
                         }
@@ -788,8 +772,7 @@ def wafv2_web_acl_global_logging_check(cache: dict, awsAccountId: str, awsRegion
                                 "Details": {
                                     "AwsWafWebAcl": {
                                         "Name": wafName,
-                                        "WebAclId": wafId,
-                                        "Rules": wafRules
+                                        "WebAclId": wafId
                                     }
                                 }
                             }
