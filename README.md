@@ -72,14 +72,15 @@ Personas who can make use of this tool are DevOps/DevSecOps engineers, SecOps an
 
 5. If configured, ElectricEye will send findings to DisruptOps. DisruptOps is also [integrated with Security Hub](https://disruptops.com/aws-security-management-with-securityhub/) and can optionally enforce guardrails and orchestrate security automation from within the platform.
 
-Refer to the [Supported Services and Checks](https://github.com/jonrau1/ElectricEye#supported-services-and-checks) section for an up-to-date list of supported services and checks performed by the Auditors.
+Refer to the [Supported Services and Checks](#supported-services-and-checks) section for an up-to-date list of supported services and checks performed by the Auditors.
 
 ## Setting Up
 
 These steps are split across their relevant sections. All CLI commands are executed from an Ubuntu 18.04LTS [Cloud9 IDE](https://aws.amazon.com/cloud9/details/), modify them to fit your OS. 
 
 **Note 1:** If you do use Cloud9, navigate to Settings (represented by a Gear icon) > AWS Settings and **unmark** the selection for `AWS managed temporary credentials` (move the toggle to your left-hand side) as shown below. If you do not, you instance profile will not apply properly.
-![Cloud9TempCred](screenshots/cloud9-temp-creds.JPG)
+
+![Cloud9TempCred](./screenshots/cloud9-temp-creds.JPG)
 
 **Note 2:** Ensure AWS Security Hub is enabled in the region you are attempting to run ElectricEye
 
