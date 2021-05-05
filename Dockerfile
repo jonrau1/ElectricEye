@@ -34,5 +34,9 @@ RUN \
     chown -R eeuser:eeuser ./eeauditor/*
 # Bye bye root :)
 USER eeuser
-# Upon startup we will run all checks and auditors
-CMD python3 eeauditor/controller.py
+# Upon startup we will run all checks and auditors - we grab the latest from S3
+# in case there are updates so you can just grab the latest auditors from the
+# bucket versus rebuilding the entire Docker image!
+CMD \
+    aws s3 cp s3://${SH_SCRIPTS_BUCKET}/ ./eeauditor/auditors --recursive && \
+    python3 eeauditor/controller.py
