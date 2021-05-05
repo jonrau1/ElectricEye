@@ -409,7 +409,7 @@ def wafv2_web_acl_logging_check(cache: dict, awsAccountId: str, awsRegion: str, 
 @registry.register_check("wafv2")
 def wafv2_web_acl_global_metrics_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[WAFv2.4] WAFv2 Global Web ACLs should have CloudWatch Metrics enabled"""
-    if awsRegion != 'us-east-1':
+    if awsRegion == "us-east-1":
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         for w in list_wafs_global(cache=cache)["WebACLs"]:
             wafArn = str(w["ARN"])
@@ -538,7 +538,7 @@ def wafv2_web_acl_global_metrics_check(cache: dict, awsAccountId: str, awsRegion
 @registry.register_check("wafv2")
 def wafv2_web_acl_global_sampling_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[WAFv2.5] WAFv2 Global Web ACLs should have Request Sampling enabled"""
-    if awsRegion != 'us-east-1':
+    if awsRegion == "us-east-1":
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         for w in list_wafs_global(cache=cache)["WebACLs"]:
             wafArn = str(w["ARN"])
@@ -667,7 +667,7 @@ def wafv2_web_acl_global_sampling_check(cache: dict, awsAccountId: str, awsRegio
 @registry.register_check("wafv2")
 def wafv2_web_acl_global_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[WAFv2.6] WAFv2 Global Web ACLs should have Logging enabled"""
-    if awsRegion != 'us-east-1':
+    if awsRegion == "us-east-1":
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         for w in list_wafs_global(cache=cache)["WebACLs"]:
             wafArn = str(w["ARN"])
