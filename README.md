@@ -1,5 +1,7 @@
 # ElectricEye
 
+![Logo?!](./screenshots/EE-LogoLarge.png)
+
 Continuously monitor your AWS services for configurations that can lead to degradation of confidentiality, integrity or availability. All results will be sent to Security Hub for further aggregation and analysis.
 
 ***Up here in space***<br/>
