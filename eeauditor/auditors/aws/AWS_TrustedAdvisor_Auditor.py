@@ -570,7 +570,10 @@ def trusted_advisor_failing_exposed_access_keys_check(cache: dict, awsAccountId:
                             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": awsAccountId + checkId,
                             "AwsAccountId": awsAccountId,
-                            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                            "Types": [
+                                "Software and Configuration Checks/AWS Security Best Practices",
+                                "Effects/Data Exposure",
+                            ],
                             "FirstObservedAt": iso8601Time,
                             "CreatedAt": iso8601Time,
                             "UpdatedAt": iso8601Time,
@@ -637,7 +640,10 @@ def trusted_advisor_failing_exposed_access_keys_check(cache: dict, awsAccountId:
                             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": awsAccountId + checkId,
                             "AwsAccountId": awsAccountId,
-                            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                            "Types": [
+                                "Software and Configuration Checks/AWS Security Best Practices",
+                                "Effects/Data Exposure",
+                            ],
                             "FirstObservedAt": iso8601Time,
                             "CreatedAt": iso8601Time,
                             "UpdatedAt": iso8601Time,
