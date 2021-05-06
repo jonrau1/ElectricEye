@@ -159,7 +159,7 @@ def open_health_risk_events_check(cache: dict, awsAccountId: str, awsRegion: str
                 print(error)
     else:
         print('AWS Health Global endpoint is located in us-east-1')
-###
+
 @registry.register_check("health")
 def open_health_security_events_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Health.3] Open Security Events from AWS Health should be investigated"""

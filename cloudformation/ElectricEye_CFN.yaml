@@ -216,9 +216,7 @@ Resources:
                   - dynamodb:DescribeContinuousBackups
                   - dynamodb:DescribeTimeToLive
                   - ec2:Describe*
-                  - ec2:GetEbsDefaultKmsKeyId
-                  - ec2:GetEbsEncryptionByDefault
-                  - ec2:GetSerialConsoleAccessStatus
+                  - ec2:Get*
                   - ecs:ListClusters
                   - ecs:DescribeClusters
                   - ecr:DescribeImages
@@ -252,6 +250,9 @@ Resources:
                   - glue:GetDataCatalogEncryptionSettings
                   - glue:ListCrawlers
                   - guardduty:ListDetectors
+                  - support:DescribeTrustedAdvisorCheckResult
+                  - support:DescribeTrustedAdvisorChecks
+                  - health:DescribeEvents
                   - iam:GetAccountPasswordPolicy
                   - iam:ListUsers
                   - iam:ListAccessKeys

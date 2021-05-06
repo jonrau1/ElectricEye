@@ -15,8 +15,9 @@ Continuously monitor your AWS services for configurations that can lead to degra
 - [Synopsis](#synopsis)
 - [Description](#description)
 - [Solution Architecture](#solution-architecture)
-- [Setting Up](#setting-up)
-  - [Running locally](#running-locally)
+- [Running locally](#running-locally)
+- [Setting Up on Fargate](#setting-up-electriceye-on-fargate)
+  - [Solution Architecture for Fargate](#aws-fargate-solution-architecture)
   - [Build and push the Docker image](#build-and-push-the-docker-image)
   - [(OPTIONAL) Setup Shodan.io API Key](#optional-setup-shodanio-api-key)
   - [(OPTIONAL) Setup DisruptOps Client Id and API Key](#optional-setup-disruptops-client-id-and-api-key)
@@ -39,7 +40,7 @@ Continuously monitor your AWS services for configurations that can lead to degra
 
 ## Synopsis
 
-- **260+ security & AWS best practice detections** including services not covered by Security Hub/Config (AppStream, Cognito, EKS, ECR, DocDB, etc.), all findings are **aligned to NIST CSF, NIST 800-53, AICPA TSC and ISO 27001:2013**.
+- **280+ security & AWS best practice detections** including services not covered by Security Hub/Config (AppStream, Cognito, EKS, ECR, DocDB, etc.), all findings are **aligned to NIST CSF, NIST 800-53, AICPA TSC and ISO 27001:2013**.
 - Supports every **AWS Region and Partition** (Commercial, AWS GovCloud and AWS China Region)
 - Built with **full AWS Security Hub support** in mind, can optionally output to JSON or CSV. **Can run as a CLI tool, in Fargate, as a standalone Container, or anywhere else** you can run Python (K8s, Batch, CodeBuild, EC2, etc.).
 - **Multiple add-ons enable automated remediation, ChatOps, finding purging, and integrations** with third-party tools such as DisruptOps, Pagerduty, Slack, ServiceNow Incident Management, Jira, Azure DevOps, Shodan and Microsoft Teams.
@@ -58,41 +59,25 @@ Personas who can make use of this tool are DevOps/DevSecOps engineers, SecOps an
 
 ## Solution Architecture
 
-**Note:** Despite the focus on AWS Fargate, it is not a requirement anymore as of ElectricEye V2.0!
+**Note:** This high level architecture shows potential places to run ElectricEye, as of V2.0 ElectricEye now uses a controller CLI mechanism that does not rely on running in Fargate (though you can still do that). Theoretically you should be able to run ElectricEye anywhere you have at least `Python 3.6` installed with access to required AWS credentials and IAM Permissions.
 
-![Architecture](screenshots/ElectricEye-Architecture.jpg)
+![High-level Architecture](./screenshots/high-level-architecture.jpg)
 
-1. A [time-based CloudWatch Event](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html) runs ElectricEye every 12 hours (default value).
+> - You run ElectricEye anywhere you have AWS Credentials and the [required IAM Permissions](policies/Instance_Profile_IAM_Policy.json) - this can be on a Raspberry Pi, a Google Compute Engine instance, on AWS EKS or Amazon EC2.
 
-2. The ElectricEye Task will pull the Docker image from [Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/).
+> - ElectricEye will *evaluate* all resources in scope using **Auditors** and write the findings to a local cache
 
-3. Systems Manager Parameter Store passes the bucket name from which Auditors are downloaded. Optionally, ElectricEye will retrieve you API key(s) for [DisruptOps](https://disruptops.com/features/) and [Shodan](https://www.shodan.io/explore), if those integrations are configured.
+> - If supplied, ElectricEye will *evaluate* specific internet-facing AWS services against indexed results on Shodan.io
 
-4. The ElectricEye task will execute all Auditors to scan your AWS infrastructure and deliver both passed and failed findings to Security Hub. **Note:** ElectricEye will query the Shodan APIs to see if there is a match against select internet-facing AWS resources if configured.
+> - ElectricEye will *report* all findings to AWS Security Hub, if configured ElectricEye can also output *reports* to CSV or JSON files. Finally (and optionally) you can *report* findings to the [DisruptOps](https://disruptops.com/electriceye-v2-0/) platform which also has its [own integration with Security Hub](https://disruptops.com/cloud-providers/aws/).
 
-5. If configured, ElectricEye will send findings to DisruptOps. DisruptOps is also [integrated with Security Hub](https://disruptops.com/aws-security-management-with-securityhub/) and can optionally enforce guardrails and orchestrate security automation from within the platform.
-
-Refer to the [Supported Services and Checks](#supported-services-and-checks) section for an up-to-date list of supported services and checks performed by the Auditors.
-
-## Setting Up
-
-These steps are split across their relevant sections. All CLI commands are executed from an Ubuntu 18.04LTS [Cloud9 IDE](https://aws.amazon.com/cloud9/details/), modify them to fit your OS. 
-
-**Note 1:** If you do use Cloud9, navigate to Settings (represented by a Gear icon) > AWS Settings and **unmark** the selection for `AWS managed temporary credentials` (move the toggle to your left-hand side) as shown below. If you do not, you instance profile will not apply properly.
-
-![Cloud9TempCred](./screenshots/cloud9-temp-creds.JPG)
-
-**Note 2:** Ensure AWS Security Hub is enabled in the region you are attempting to run ElectricEye
-
-**Note 3:** If you have never used ECS before you'll likely run into a problem with the service-linked role (SLR), or lack thereof, and you should follow the [instructions here](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using-service-linked-roles.html#service-linked-role-permissions) to have it created first
-
-### Running locally
+## Running locally
 
 **NOTE:** While this section is titled "Running Locally" - you can use the following setup to run anywhere you can run Python such as EKS, Kubernetes, a self-managed Docker Container, AWS CloudShell, etc. The usage of `venv` for those utilities is optional, but strongly recommended.
 
 1. Navigate to the IAM console and click on **Policies** under **Access management**. Select **Create policy** and under the JSON tab, copy and paste the contents [Instance Profile IAM Policy](policies/Instance_Profile_IAM_Policy.json). Click **Review policy**, create a name, and then click **Create policy**.
 
-2. Have python 3 and pip installed and setup virtualenv
+2. Have `Python 3` and `Pip(3)` installed and setup virtualenv
 
 ```bash
 pip3 install virtualenv --user
@@ -115,6 +100,14 @@ virtualenv .venv
 pip3 install -r requirements.txt
 ```
 
+**NOTE:** If using AWS CloudShell you will need to use `pip3` with `sudo`:
+
+```bash
+sudo pip3 install -r requirements.txt
+```
+
+![Cloudshell Installation](./screenshots/cloudshell-install.JPG)
+
 5. Run the controller
 
 ```bash
@@ -132,6 +125,38 @@ You can get a full name of the auditors (as well as their checks within comments
 ```bash
 python3 eeauditor/controller.py --list-checks
 ```
+
+
+## Setting Up ElectricEye on Fargate
+
+### AWS Fargate Solution Architecture
+
+This "old" architecture diagram represents what is deployed by CloudFormation and Terraform to use ElectricEye on Fargate with EventBridge Scheduled Rules. You can opt to use the CLI directly instead of this pattern.
+
+![Architecture](screenshots/ElectricEye-Architecture.jpg)
+
+1. A [time-based CloudWatch Event](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html) runs ElectricEye every 12 hours (default value).
+
+2. The ElectricEye Task will pull the Docker image from [Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/).
+
+3. Systems Manager Parameter Store passes the bucket name from which Auditors are downloaded. Optionally, ElectricEye will retrieve you API key(s) for [DisruptOps](https://disruptops.com/features/) and [Shodan](https://www.shodan.io/explore), if those integrations are configured.
+
+4. The ElectricEye task will execute all Auditors to scan your AWS infrastructure and deliver both passed and failed findings to Security Hub. **Note:** ElectricEye will query the Shodan APIs to see if there is a match against select internet-facing AWS resources if configured.
+
+5. If configured, ElectricEye will send findings to DisruptOps. DisruptOps is also [integrated with Security Hub](https://disruptops.com/aws-security-management-with-securityhub/) and can optionally enforce guardrails and orchestrate security automation from within the platform.
+
+Refer to the [Supported Services and Checks](#supported-services-and-checks) section for an up-to-date list of supported services and checks performed by the Auditors.
+
+These steps are split across their relevant sections. All CLI commands are executed from an Ubuntu 18.04LTS [Cloud9 IDE](https://aws.amazon.com/cloud9/details/), modify them to fit your OS. 
+
+**Note 1:** If you do use Cloud9, navigate to Settings (represented by a Gear icon) > AWS Settings and **unmark** the selection for `AWS managed temporary credentials` (move the toggle to your left-hand side) as shown below. If you do not, you instance profile will not apply properly.
+
+![Cloud9TempCred](./screenshots/cloud9-temp-creds.JPG)
+
+**Note 2:** Ensure AWS Security Hub is enabled in the region you are attempting to run ElectricEye
+
+**Note 3:** If you have never used ECS before you'll likely run into a problem with the service-linked role (SLR), or lack thereof, and you should follow the [instructions here](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using-service-linked-roles.html#service-linked-role-permissions) to have it created first
+
 
 ### Build and push the Docker image
 
@@ -368,9 +393,9 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 
 ## Supported Services and Checks
 
-These are the following services and checks perform by each Auditor. There are currently **287** checks supported across **82** AWS services / components using **62** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **295** checks supported across **84** AWS services / components using **64** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
-**Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
+**Regarding Shield Advanced, Health, and Trusted Advisor checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in `us-east-1` to perform all checks. The Shield, Health and Trusted Advisor APIs only live in `us-east-1`, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
 | Auditor File Name                      | AWS Service                    | Auditor Scan Description                                                            |
 |----------------------------------------|--------------------------------|-------------------------------------------------------------------------------------|
@@ -614,6 +639,9 @@ These are the following services and checks perform by each Auditor. There are c
 | AWS_DMS_Auditor.py                     | DMS Replication Instance       | Are minor version updates configured                                                |
 | AWS_Global_Accelerator_Auditor.py      | Global Accelerator Endpoint    | Is the endpoint healthy                                                             |
 | AWS_Global_Accelerator_Auditor.py      | Global Accelerator Accelerator | Is flow logs enabled for accelerator                                                |
+| AWS_Health_Auditor.py                  | AWS Health Event               | Are there active Security Events                                                    |
+| AWS_Health_Auditor.py                  | AWS Health Event               | Are there active Abuse Events                                                       |
+| AWS_Health_Auditor.py                  | AWS Health Event               | Are there active Risk Events                                                        |
 | AWS_Glue_Auditor.py                    | Glue Crawler                   | Is S3 encryption configured for the crawler                                         |
 | AWS_Glue_Auditor.py                    | Glue Crawler                   | Is CWL encryption configured for the crawler                                        |
 | AWS_Glue_Auditor.py                    | Glue Crawler                   | Is job bookmark encryption configured for the crawler                               |
@@ -646,6 +674,11 @@ These are the following services and checks perform by each Auditor. There are c
 | AWS_Security_Services_Auditor.py       | Macie2                         | Is Macie enabled                                                                    |
 | AWS_Security_Services_Auditor.py       | AWS WAFv2 (Regional)           | Are Regional Web ACLs configured                                                    |
 | AWS_Security_Services_Auditor.py       | AWS WAFv2 (Global)             | Are Global Web ACLs (for CloudFront) configured                                     |
+| AWS_TrustedAdvisor_Auditor.py          | Trusted Advisor Check          | Is the Trusted Advisor check for MFA on Root Account failing                        |
+| AWS_TrustedAdvisor_Auditor.py          | Trusted Advisor Check          | Is the Trusted Advisor check for ELB Listener Security failing                      |
+| AWS_TrustedAdvisor_Auditor.py          | Trusted Advisor Check          | Is the Trusted Advisor check for CloudFront SSL Certs in IAM  Cert Store failing    |
+| AWS_TrustedAdvisor_Auditor.py          | Trusted Advisor Check          | Is the Trusted Advisor check for CloudFront SSL Cert on Origin  Server failing      |
+| AWS_TrustedAdvisor_Auditor.py          | Trusted Advisor Check          | Is the Trusted Advisor check for Exposed Access Keys failing                        |
 | AWS_WAFv2_Auditor.py                   | AWS WAFv2 (Regional)           | Do Regional WAFs use Cloudwatch Metrics                                             |
 | AWS_WAFv2_Auditor.py                   | AWS WAFv2 (Regional)           | Do Regional WAFs use Request Sampling                                               |
 | AWS_WAFv2_Auditor.py                   | AWS WAFv2 (Regional)           | Do Regional WAFs have Logging enabled                                               |
