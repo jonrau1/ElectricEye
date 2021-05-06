@@ -161,7 +161,6 @@ def ecs_cluster_container_insights_check(cache: dict, awsAccountId: str, awsRegi
         except Exception as e:
             print(e)
 
-
 @registry.register_check("ecs")
 def ecs_cluster_default_provider_strategy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ECS.2] ECS clusters should have a default cluster capacity provider strategy configured"""
@@ -289,6 +288,7 @@ def ecs_task_definition_privileged_container_check(cache: dict, awsAccountId: st
         try:
             response = ecs.describe_task_definition(taskDefinition=taskdef)["taskDefinition"]
             taskDefinitionArn = str(response['taskDefinitionArn'])
+            tdefFamily = str(response["family"])
             # Loop container definitions 
             for cdef in response["containerDefinitions"]:
                 # ISO Time
@@ -336,7 +336,7 @@ def ecs_task_definition_privileged_container_check(cache: dict, awsAccountId: st
                                 "Region": awsRegion,
                                 "Details": {
                                     "Other": {
-                                        "TaskDefinitionArn": taskDefinitionArn,
+                                        "Family": tdefFamily,
                                         "ContainerDefinitionName": cdefName
                                     }
                                 }
@@ -412,7 +412,7 @@ def ecs_task_definition_privileged_container_check(cache: dict, awsAccountId: st
                                 "Region": awsRegion,
                                 "Details": {
                                     "Other": {
-                                        "TaskDefinitionArn": taskDefinitionArn,
+                                        "Family": tdefFamily,
                                         "ContainerDefinitionName": cdefName
                                     }
                                 }
@@ -461,6 +461,7 @@ def ecs_task_definition_security_labels_check(cache: dict, awsAccountId: str, aw
         try:
             response = ecs.describe_task_definition(taskDefinition=taskdef)["taskDefinition"]
             taskDefinitionArn = str(response["taskDefinitionArn"])
+            tdefFamily = str(response["family"])
             # If there is a network mode of "awsvpc" it is likely a Fargate task - even though EC2 compute can run with that...
             # time for some funky edge cases, keep that in mind before you yeet an issue at me, please ;)
             if str(response["networkMode"]) == 'awsvpc':
@@ -507,7 +508,7 @@ def ecs_task_definition_security_labels_check(cache: dict, awsAccountId: str, aw
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {
-                                            "TaskDefinitionArn": taskDefinitionArn,
+                                            "Family": tdefFamily,
                                             "ContainerDefinitionName": cdefName,
                                             'DockerSecurityOptions': secOpts
                                         }
@@ -580,7 +581,7 @@ def ecs_task_definition_security_labels_check(cache: dict, awsAccountId: str, aw
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {
-                                            "TaskDefinitionArn": taskDefinitionArn,
+                                            "Family": tdefFamily,
                                             "ContainerDefinitionName": cdefName,
                                             'DockerSecurityOptions': secOpts
                                         }

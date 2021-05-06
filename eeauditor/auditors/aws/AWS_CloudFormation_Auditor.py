@@ -69,7 +69,7 @@ def cfn_drift_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition
                         "Id": stackArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"stackName": stackName}},
+                        "Details": {"Other": {"StackName": stackName}},
                     }
                 ],
                 "Compliance": {
@@ -121,7 +121,7 @@ def cfn_drift_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition
                         "Id": stackArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"stackName": stackName}},
+                        "Details": {"Other": {"StackName": stackName}},
                     }
                 ],
                 "Compliance": {
@@ -185,7 +185,7 @@ def cfn_monitoring_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                         "Id": stackArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"stackName": stackName}},
+                        "Details": {"Other": {"StackName": stackName}},
                     }
                 ],
                 "Compliance": {
@@ -235,7 +235,7 @@ def cfn_monitoring_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                         "Id": stackArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"stackName": stackName}},
+                        "Details": {"Other": {"StackName": stackName}},
                     }
                 ],
                 "Compliance": {
