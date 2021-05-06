@@ -534,13 +534,13 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_MSK_Auditor.py                  | MSK Cluster                    | Is client-broker communications TLS-only                                            |
 | Amazon_MSK_Auditor.py                  | MSK Cluster                    | Is enhanced monitoring used                                                         |
 | Amazon_MSK_Auditor.py                  | MSK Cluster                    | Is Private CA TLS auth used                                                         |
-| Amazon_MWAA(Airflow)_Auditor.py        | Airflow Environment            | Is a KMS CMK used for encryption                                                    |
-| Amazon_MWAA(Airflow)_Auditor.py        | Airflow Environment            | Is the Airflow URL Public                                                           |
-| Amazon_MWAA(Airflow)_Auditor.py        | Airflow Environment            | Are DAG Processing logs configured                                                  |
-| Amazon_MWAA(Airflow)_Auditor.py        | Airflow Environment            | Are Scheduler logs configured                                                       |
-| Amazon_MWAA(Airflow)_Auditor.py        | Airflow Environment            | Are Task logs configured                                                            |
-| Amazon_MWAA(Airflow)_Auditor.py        | Airflow Environment            | Are Webserver logs configured                                                       |
-| Amazon_MWAA(Airflow)_Auditor.py        | Airflow Environment            | Are Worker logs configured                                                          |
+| Amazon_MWAA_Auditor.py                 | Airflow Environment            | Is a KMS CMK used for encryption                                                    |
+| Amazon_MWAA_Auditor.py                 | Airflow Environment            | Is the Airflow URL Public                                                           |
+| Amazon_MWAA_Auditor.py                 | Airflow Environment            | Are DAG Processing logs configured                                                  |
+| Amazon_MWAA_Auditor.py                 | Airflow Environment            | Are Scheduler logs configured                                                       |
+| Amazon_MWAA_Auditor.py                 | Airflow Environment            | Are Task logs configured                                                            |
+| Amazon_MWAA_Auditor.py                 | Airflow Environment            | Are Webserver logs configured                                                       |
+| Amazon_MWAA_Auditor.py                 | Airflow Environment            | Are Worker logs configured                                                          |
 | Amazon_Neptune_Auditor.py              | Neptune instance               | Is Neptune configured for HA                                                        |
 | Amazon_Neptune_Auditor.py              | Neptune instance               | Is Neptune storage encrypted                                                        |
 | Amazon_Neptune_Auditor.py              | Neptune instance               | Does Neptune use IAM DB Auth                                                        |
@@ -685,10 +685,10 @@ These are the following services and checks perform by each Auditor. There are c
 | AWS_WAFv2_Auditor.py                   | AWS WAFv2 (Global)             | Do Global WAFs use Cloudwatch Metrics                                               |
 | AWS_WAFv2_Auditor.py                   | AWS WAFv2 (Global)             | Do Global WAFs use Request Sampling                                                 |
 | AWS_WAFv2_Auditor.py                   | AWS WAFv2 (Global)             | Do Global WAFs have Logging enabled                                                 |
-| Secrets_PII_Auditor.py                 | CodeBuild project              | Do CodeBuild projects have secrets in plaintext env vars                            |
-| Secrets_PII_Auditor.py                 | CloudFormation Stack           | Do CloudFormation Stacks have secrets in parameters                                 |
-| Secrets_PII_Auditor.py                 | ECS Task Definition            | Do ECS Task Definitions have secrets in env vars                                    |
-| Secrets_PII_Auditor.py                 | EC2 Instance                   | Do EC2 instances have secrets in User Data                                          |
+| Secrets_Auditor.py                     | CodeBuild project              | Do CodeBuild projects have secrets in plaintext env vars                            |
+| Secrets_Auditor.py                     | CloudFormation Stack           | Do CloudFormation Stacks have secrets in parameters                                 |
+| Secrets_Auditor.py                     | ECS Task Definition            | Do ECS Task Definitions have secrets in env vars                                    |
+| Secrets_Auditor.py                     | EC2 Instance                   | Do EC2 instances have secrets in User Data                                          |
 | Shodan_Auditor.py                      | EC2 Instance                   | Are EC2 instances w/ public IPs indexed                                             |
 | Shodan_Auditor.py                      | ELBv2 (ALB)                    | Are internet-facing ALBs indexed                                                    |
 | Shodan_Auditor.py                      | RDS Instance                   | Are public accessible RDS instances indexed                                         |

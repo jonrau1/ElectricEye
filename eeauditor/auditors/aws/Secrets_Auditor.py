@@ -122,7 +122,7 @@ def secret_scan_codebuild_envvar_check(cache: dict, awsAccountId: str, awsRegion
             # this is a failing check - we won't actually parse the full payload of potential secrets
             # otherwise we would break the mutability of a finding...so we will sample the first one
             # and note that in the finding itself
-            secretType = str(data["results"]["data-sample.json"][0]["type"])
+            secretType = str(data["results"]["codebuild-data-sample.json"][0]["type"])
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": cbArn + "/codebuild-env-var-secrets-check",
@@ -306,7 +306,7 @@ def secret_scan_cloudformation_parameters_check(cache: dict, awsAccountId: str, 
                     # this is a failing check - we won't actually parse the full payload of potential secrets
                     # otherwise we would break the mutability of a finding...so we will sample the first one
                     # and note that in the finding itself
-                    secretType = str(data["results"]["data-sample.json"][0]["type"])
+                    secretType = str(data["results"]["cloudformation-data-sample.json"][0]["type"])
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": stackArn + "/cloudformation-params-secrets-check",
@@ -487,7 +487,7 @@ def secret_scan_ecs_task_def_envvar_check(cache: dict, awsAccountId: str, awsReg
                 # this is a failing check - we won't actually parse the full payload of potential secrets
                 # otherwise we would break the mutability of a finding...so we will sample the first one
                 # and note that in the finding itself
-                secretType = str(data["results"]["data-sample.json"][0]["type"])
+                secretType = str(data["results"]["ecs-data-sample.json"][0]["type"])
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": t + cdefName + "/ecs-envvar-secrets-check",
@@ -672,7 +672,7 @@ def secret_scan_ec2_userdata_check(cache: dict, awsAccountId: str, awsRegion: st
                     # this is a failing check - we won't actually parse the full payload of potential secrets
                     # otherwise we would break the mutability of a finding...so we will sample the first one
                     # and note that in the finding itself
-                    secretType = str(data["results"]["data-sample.json"][0]["type"])
+                    secretType = str(data["results"]["ec2-data-sample.json"][0]["type"])
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": instanceArn + "/ec2-userdata-secrets-check",
