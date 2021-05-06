@@ -80,7 +80,7 @@ def secret_scan_codebuild_envvar_check(cache: dict, awsAccountId: str, awsRegion
                     }
                 },
                 "ProductFields": {"Product Name": "ElectricEye"},
-                "SourceUrl": "https://console.aws.amazon.com/trustedadvisor/home?region=us-east-1#/category/security",
+                
                 "Resources": [
                     {
                         "Type": "AwsCodeBuildProject",
@@ -151,7 +151,7 @@ def secret_scan_codebuild_envvar_check(cache: dict, awsAccountId: str, awsRegion
                     }
                 },
                 "ProductFields": {"Product Name": "ElectricEye"},
-                "SourceUrl": "https://console.aws.amazon.com/trustedadvisor/home?region=us-east-1#/category/security",
+                
                 "Resources": [
                     {
                         "Type": "AwsCodeBuildProject",
@@ -268,7 +268,7 @@ def secret_scan_cloudformation_parameters_check(cache: dict, awsAccountId: str, 
                             }
                         },
                         "ProductFields": {"Product Name": "ElectricEye"},
-                        "SourceUrl": "https://console.aws.amazon.com/trustedadvisor/home?region=us-east-1#/category/security",
+                        
                         "Resources": [
                             {
                                 "Type": "AwsCloudFormationStack",
@@ -335,7 +335,7 @@ def secret_scan_cloudformation_parameters_check(cache: dict, awsAccountId: str, 
                             }
                         },
                         "ProductFields": {"Product Name": "ElectricEye"},
-                        "SourceUrl": "https://console.aws.amazon.com/trustedadvisor/home?region=us-east-1#/category/security",
+                        
                         "Resources": [
                             {
                                 "Type": "AwsCloudFormationStack",
@@ -447,7 +447,7 @@ def secret_scan_ecs_task_def_envvar_check(cache: dict, awsAccountId: str, awsReg
                         }
                     },
                     "ProductFields": {"Product Name": "ElectricEye"},
-                    "SourceUrl": "https://console.aws.amazon.com/trustedadvisor/home?region=us-east-1#/category/security",
+                    
                     "Resources": [
                         {
                             "Type": "AwsEcsTaskDefinition",
@@ -518,7 +518,7 @@ def secret_scan_ecs_task_def_envvar_check(cache: dict, awsAccountId: str, awsReg
                         }
                     },
                     "ProductFields": {"Product Name": "ElectricEye"},
-                    "SourceUrl": "https://console.aws.amazon.com/trustedadvisor/home?region=us-east-1#/category/security",
+                    
                     "Resources": [
                         {
                             "Type": "AwsEcsTaskDefinition",
@@ -629,7 +629,6 @@ def secret_scan_ec2_userdata_check(cache: dict, awsAccountId: str, awsRegion: st
                             }
                         },
                         "ProductFields": {"Product Name": "ElectricEye"},
-                        "SourceUrl": "https://console.aws.amazon.com/trustedadvisor/home?region=us-east-1#/category/security",
                         "Resources": [
                             {
                                 "Type": "AwsEc2Instance",
@@ -701,7 +700,6 @@ def secret_scan_ec2_userdata_check(cache: dict, awsAccountId: str, awsRegion: st
                             }
                         },
                         "ProductFields": {"Product Name": "ElectricEye"},
-                        "SourceUrl": "https://console.aws.amazon.com/trustedadvisor/home?region=us-east-1#/category/security",
                         "Resources": [
                             {
                                 "Type": "AwsEc2Instance",
