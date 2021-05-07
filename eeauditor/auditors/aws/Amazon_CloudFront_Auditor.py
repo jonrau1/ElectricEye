@@ -33,10 +33,9 @@ for page in response_iterator:
 def cloudfront_active_trusted_signers_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
+    """[CloudFront.1] Trusted signers should have key pairs"""
     
-    iso8601Time = (
-        datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    )
+    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for distributionItem in results["DistributionList"]["Items"]:
         distributionId = distributionItem["Id"]
         distribution = cloudfront.get_distribution(Id=distributionId)

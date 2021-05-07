@@ -18,10 +18,8 @@ import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
-
 # import boto3 clients
 kinesis = boto3.client("kinesis")
-
 
 # loop through kinesis streams
 def list_streams(cache):
@@ -31,11 +29,9 @@ def list_streams(cache):
     cache["list_streams"] = kinesis.list_streams(Limit=100)
     return cache["list_streams"]
 
-
-@registry.register_check("sns")
-def kinesis_stream_encryption_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+@registry.register_check("kinesis")
+def kinesis_stream_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Kinesis.1] Kinesis Data Streams should be encrypted"""
     response = list_streams(cache)
     myKinesisStreams = response["StreamNames"]
     for streams in myKinesisStreams:
@@ -145,11 +141,9 @@ def kinesis_stream_encryption_check(
             }
             yield finding
 
-
-@registry.register_check("sns")
-def kinesis_enhanced_monitoring_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+@registry.register_check("kinesis")
+def kinesis_enhanced_monitoring_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Kinesis.2] Business-critical Kinesis Data Streams should have detailed monitoring configured"""
     response = list_streams(cache)
     myKinesisStreams = response["StreamNames"]
     for streams in myKinesisStreams:

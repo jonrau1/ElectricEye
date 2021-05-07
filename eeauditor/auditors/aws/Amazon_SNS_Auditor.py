@@ -23,7 +23,6 @@ registry = CheckRegister()
 # import boto3 clients
 sns = boto3.client("sns")
 
-
 def list_topics(cache):
     response = cache.get("list_topics")
     if response:
@@ -31,11 +30,9 @@ def list_topics(cache):
     cache["list_topics"] = sns.list_topics()
     return cache["list_topics"]
 
-
 @registry.register_check("sns")
-def sns_topic_encryption_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def sns_topic_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SNS.1] SNS topics should be encrypted"""
     # loop through SNS topics
     response = list_topics(cache)
     mySnsTopics = response["Topics"]
@@ -154,11 +151,9 @@ def sns_topic_encryption_check(
             }
             yield finding
 
-
 @registry.register_check("sns")
-def sns_http_encryption_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def sns_http_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SNS.2] SNS topics should not use HTTP subscriptions"""
     # loop through SNS topics
     response = list_topics(cache)
     mySnsTopics = response["Topics"]
@@ -279,11 +274,9 @@ def sns_http_encryption_check(
                 }
                 yield finding
 
-
 @registry.register_check("sns")
-def sns_public_access_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def sns_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SNS.3] SNS topics should not have public access"""
     # loop through SNS topics
     response = list_topics(cache)
     mySnsTopics = response["Topics"]
@@ -423,11 +416,9 @@ def sns_public_access_check(
             }
             yield finding
 
-
 @registry.register_check("sns")
-def sns_cross_account_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def sns_cross_account_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SNS.4] SNS topics should not allow cross-account access"""
     # loop through SNS topics
     response = list_topics(cache)
     mySnsTopics = response["Topics"]

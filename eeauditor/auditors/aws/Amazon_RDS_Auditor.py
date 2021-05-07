@@ -22,7 +22,6 @@ registry = CheckRegister()
 # import boto3 clients
 rds = boto3.client("rds")
 
-
 # loop through all RDS DB instances
 def describe_db_instances(cache):
     response = cache.get("describe_db_instances")
@@ -51,7 +50,6 @@ def describe_db_instances(cache):
     )
     return cache["describe_db_instances"]
 
-
 # loop through all RDS DB snapshots
 def describe_db_snapshots(cache):
     response = cache.get("describe_db_snapshots")
@@ -60,11 +58,9 @@ def describe_db_snapshots(cache):
     cache["describe_db_snapshots"] = rds.describe_db_snapshots()
     return cache["describe_db_snapshots"]
 
-
 @registry.register_check("rds")
-def rds_instance_ha_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def rds_instance_ha_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.1] RDS instances should be configured for high availability"""
     response = describe_db_instances(cache)
     myRdsInstances = response["DBInstances"]
     response = describe_db_snapshots(cache)
@@ -151,7 +147,7 @@ def rds_instance_ha_check(
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "LOW"},
+                "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[RDS.1] RDS instances should be configured for high availability",
                 "Description": "RDS DB instance "
@@ -203,11 +199,9 @@ def rds_instance_ha_check(
             }
             yield finding
 
-
 @registry.register_check("rds")
-def rds_instance_public_access_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def rds_instance_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.2] RDS instances should not be publicly accessible"""
     response = describe_db_instances(cache)
     myRdsInstances = response["DBInstances"]
     response = describe_db_snapshots(cache)
@@ -354,11 +348,9 @@ def rds_instance_public_access_check(
             }
             yield finding
 
-
 @registry.register_check("rds")
-def rds_instance_storage_encryption_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def rds_instance_storage_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.3] RDS instances should have encrypted storage"""
     response = describe_db_instances(cache)
     myRdsInstances = response["DBInstances"]
     response = describe_db_snapshots(cache)
@@ -470,9 +462,9 @@ def rds_instance_storage_encryption_check(
                                 "DbInstancePort": instancePort,
                                 "Engine": instanceEngine,
                                 "EngineVersion": instanceEngineVersion,
-                                "StorageEncrypted": True,
+                                "StorageEncrypted": True
                             }
-                        },
+                        }
                     }
                 ],
                 "Compliance": {
@@ -491,11 +483,9 @@ def rds_instance_storage_encryption_check(
             }
             yield finding
 
-
 @registry.register_check("rds")
-def rds_instance_iam_auth_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def rds_instance_iam_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.4] RDS instances that support IAM Authentication should use IAM Authentication"""
     response = describe_db_instances(cache)
     myRdsInstances = response["DBInstances"]
     response = describe_db_snapshots(cache)
@@ -649,11 +639,9 @@ def rds_instance_iam_auth_check(
         else:
             pass
 
-
 @registry.register_check("rds")
-def rds_instance_domain_join_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def rds_instance_domain_join_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.5] RDS instances that support Kerberos Authentication should be joined to a domain"""
     response = describe_db_instances(cache)
     myRdsInstances = response["DBInstances"]
     response = describe_db_snapshots(cache)
@@ -818,11 +806,9 @@ def rds_instance_domain_join_check(
         else:
             pass
 
-
 @registry.register_check("rds")
-def rds_instance_performance_insights_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def rds_instance_performance_insights_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.6] RDS instances should have performance insights enabled"""
     response = describe_db_instances(cache)
     myRdsInstances = response["DBInstances"]
     response = describe_db_snapshots(cache)
@@ -957,11 +943,9 @@ def rds_instance_performance_insights_check(
             }
             yield finding
 
-
 @registry.register_check("rds")
-def rds_instance_deletion_protection_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def rds_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.7] RDS instances should have deletion protection enabled"""
     response = describe_db_instances(cache)
     myRdsInstances = response["DBInstances"]
     response = describe_db_snapshots(cache)
@@ -1102,11 +1086,9 @@ def rds_instance_deletion_protection_check(
             }
             yield finding
 
-
 @registry.register_check("rds")
-def rds_instance_cloudwatch_logging_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def rds_instance_cloudwatch_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.8] RDS instances should publish database logs to CloudWatch Logs"""
     response = describe_db_instances(cache)
     myRdsInstances = response["DBInstances"]
     response = describe_db_snapshots(cache)
@@ -1244,13 +1226,9 @@ def rds_instance_cloudwatch_logging_check(
             }
             yield finding
 
-
 @registry.register_check("rds")
-def rds_snapshot_encryption_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
-    response = describe_db_instances(cache)
-    myRdsInstances = response["DBInstances"]
+def rds_snapshot_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.9] RDS snapshots should be encrypted"""
     response = describe_db_snapshots(cache)
     myRdsSnapshots = response["DBSnapshots"]
     for snapshot in myRdsSnapshots:
@@ -1330,7 +1308,7 @@ def rds_snapshot_encryption_check(
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on encrypting RDS snapshots refer to the AWS Premium Support Knowledge Center Entry How do I encrypt Amazon RDS snapshots?",
-                        "Url": "https://aws.amazon.com/premiumsupport/knowledge-center/encrypt-rds-snapshots/",
+                        "Url": "https://aws.amazon.com/premiumsupport/knowledge-center/encrypt-rds-snapshots/"
                     }
                 },
                 "ProductFields": {"Product Name": "ElectricEye"},
@@ -1355,17 +1333,13 @@ def rds_snapshot_encryption_check(
                     ],
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
 
-
 @registry.register_check("rds")
-def rds_snapshot_public_share_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
-    response = describe_db_instances(cache)
-    myRdsInstances = response["DBInstances"]
+def rds_snapshot_public_share_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.10] RDS snapshots should not be publicly shared"""
     response = describe_db_snapshots(cache)
     myRdsSnapshots = response["DBSnapshots"]
     for snapshot in myRdsSnapshots:
@@ -1496,4 +1470,273 @@ def rds_snapshot_public_share_check(
                     yield finding
             else:
                 print("non-supported attribute encountered")
-                pass
+                continue
+
+@registry.register_check("rds")
+def rds_aurora_cluster_activity_streams_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.11] RDS Aurora Clusters should use Database Activity Streams"""
+    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+    # Loop through clusters npow
+    for dbc in rds.describe_db_clusters(MaxRecords=100)["DBClusters"]:
+        ddcArn = str(dbc["DBClusterArn"])
+        dbcId = str(dbc["DBClusterIdentifier"])
+        allocStorage = int(dbc["AllocatedStorage"])
+        dbSubnet = str(dbc["DBSubnetGroup"])
+        endpt = str(dbc["Endpoint"])
+        engine = str(dbc["Engine"])
+        engineVer = str(dbc["EngineVersion"])
+        astreamStat = str(dbc["ActivityStreamStatus"])
+
+        # This is a failing finding
+        if astreamStat != "started" or "starting":
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": ddcArn + "/rds-aurora-cluster-activity-streams-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": ddcArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[RDS.11] RDS Aurora Clusters should use Database Activity Streams",
+                "Description": "RDS Aurora Cluster "
+                + dbcId
+                + " is not using Database Activity Streams. Database Activity Streams allow you to get real-time insights into security and operational behaviors in your DB Cluster so that you can interdict potentially malicious activity. Refer to the remediation instructions to remediate this behavior",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Database Activity Streams refer to the Using Database Activity Streams with Amazon Aurora section of the Amazon Aurora User Guide for Aurora (yes it's called that)",
+                        "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/DBActivityStreams.html"
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsRdsDbCluster",
+                        "Id": ddcArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "AwsRdsDbCluster": {
+                            "ActivityStreamStatus": astreamStat,
+                            "AllocatedStorage": allocStorage,
+                            "DbClusterIdentifier": dbcId,
+                            "DbSubnetGroup": dbSubnet,
+                            "Endpoint": endpt,
+                            "Engine": engine,
+                            "EngineVersion": engineVer
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF DE.AE-3",
+                        "NIST SP 800-53 AU-6",
+                        "NIST SP 800-53 CA-7",
+                        "NIST SP 800-53 IR-4",
+                        "NIST SP 800-53 IR-5",
+                        "NIST SP 800-53 IR-8",
+                        "NIST SP 800-53 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.7",
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": ddcArn + "/rds-aurora-cluster-activity-streams-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": ddcArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[RDS.11] RDS Aurora Clusters should use Database Activity Streams",
+                "Description": "RDS Aurora Cluster "
+                + dbcId
+                + " is using Database Activity Streams.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Database Activity Streams refer to the Using Database Activity Streams with Amazon Aurora section of the Amazon Aurora User Guide for Aurora (yes it's called that)",
+                        "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/DBActivityStreams.html"
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsRdsDbCluster",
+                        "Id": ddcArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "AwsRdsDbCluster": {
+                            "ActivityStreamStatus": astreamStat,
+                            "AllocatedStorage": allocStorage,
+                            "DbClusterIdentifier": dbcId,
+                            "DbSubnetGroup": dbSubnet,
+                            "Endpoint": endpt,
+                            "Engine": engine,
+                            "EngineVersion": engineVer
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF DE.AE-3",
+                        "NIST SP 800-53 AU-6",
+                        "NIST SP 800-53 CA-7",
+                        "NIST SP 800-53 IR-4",
+                        "NIST SP 800-53 IR-5",
+                        "NIST SP 800-53 IR-8",
+                        "NIST SP 800-53 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.7",
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("rds")
+def rds_aurora_cluster_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.12] RDS Aurora Clusters should be encrypted"""
+    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+    # Loop through clusters npow
+    for dbc in rds.describe_db_clusters(MaxRecords=100)["DBClusters"]:
+        ddcArn = str(dbc["DBClusterArn"])
+        dbcId = str(dbc["DBClusterIdentifier"])
+        allocStorage = int(dbc["AllocatedStorage"])
+        dbSubnet = str(dbc["DBSubnetGroup"])
+        endpt = str(dbc["Endpoint"])
+        engine = str(dbc["Engine"])
+        engineVer = str(dbc["EngineVersion"])
+
+        # This is a failing finding
+        if str(dbc["StorageEncrypted"]) == "False":
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": ddcArn + "/rds-aurora-cluster-encryption-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": ddcArn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure"
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "HIGH"},
+                "Confidence": 99,
+                "Title": "[RDS.12] RDS Aurora Clusters should be encrypted",
+                "Description": "RDS Aurora Cluster "
+                + dbcId
+                + " is not using Database Activity Streams. Database Activity Streams allow you to get real-time insights into security and operational behaviors in your DB Cluster so that you can interdict potentially malicious activity. Refer to the remediation instructions to remediate this behavior",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Database Activity Streams refer to the Using Database Activity Streams with Amazon Aurora section of the Amazon Aurora User Guide for Aurora (yes it's called that)",
+                        "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/DBActivityStreams.html"
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsRdsDbCluster",
+                        "Id": ddcArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "AwsRdsDbCluster": {
+                            "AllocatedStorage": allocStorage,
+                            "DbClusterIdentifier": dbcId,
+                            "DbSubnetGroup": dbSubnet,
+                            "Endpoint": endpt,
+                            "Engine": engine,
+                            "EngineVersion": engineVer
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.DS-1",
+                        "NIST SP 800-53 MP-8",
+                        "NIST SP 800-53 SC-12",
+                        "NIST SP 800-53 SC-28",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": ddcArn + "/rds-aurora-cluster-encryption-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": ddcArn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure"
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[RDS.12] RDS Aurora Clusters should be encrypted",
+                "Description": "RDS Aurora Cluster "
+                + dbcId
+                + " is not using Database Activity Streams. Database Activity Streams allow you to get real-time insights into security and operational behaviors in your DB Cluster so that you can interdict potentially malicious activity. Refer to the remediation instructions to remediate this behavior",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Database Activity Streams refer to the Using Database Activity Streams with Amazon Aurora section of the Amazon Aurora User Guide for Aurora (yes it's called that)",
+                        "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/DBActivityStreams.html"
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsRdsDbCluster",
+                        "Id": ddcArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "AwsRdsDbCluster": {
+                            "AllocatedStorage": allocStorage,
+                            "DbClusterIdentifier": dbcId,
+                            "DbSubnetGroup": dbSubnet,
+                            "Endpoint": endpt,
+                            "Engine": engine,
+                            "EngineVersion": engineVer
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.DS-1",
+                        "NIST SP 800-53 MP-8",
+                        "NIST SP 800-53 SC-12",
+                        "NIST SP 800-53 SC-28",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding

@@ -22,6 +22,8 @@ paginator = cloud9.get_paginator("list_environments")
 
 @registry.register_check("cloud9")
 def cloud9_ssm_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Cloud9.1] Cloud9 Environments should be accessed using Session Manager"""
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     iterator = paginator.paginate()
     for page in iterator:
         for e in page["environmentIds"]:
@@ -29,7 +31,12 @@ def cloud9_ssm_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                 c9Arn = str(env["arn"])
                 c9Name = str(env["name"])
                 # This is a failing check - SSM gives you private connection
-                if str(env["connectionType"]) != "CONNECT_SSM":
+                try:
+                    connectEnv = str(env["connectionType"])
+                except:
+                    connectEnv = 'NONE_FOUND'
+                # Try again
+                if connectEnv != "CONNECT_SSM":
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": c9Arn + "/cloud9-ssm-access-check",

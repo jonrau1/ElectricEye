@@ -33,7 +33,7 @@ def describe_users(cache):
 def default_internet_access_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
-    """Find fleets that are configured to provide default internet access"""
+    """[AppStream.1] AppStream 2.0 fleets should not provide default internet access"""
     # loop through AppStream 2.0 fleets
     response = appstream.describe_fleets()
     myAppstreamFleets = response["Fleets"]
@@ -152,12 +152,12 @@ def default_internet_access_check(
 
 @registry.register_check("appstream")
 def public_image_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """Check for appstream images marked public
+    """[AppStream.2] AppStream 2.0 images you build should not be publicly accessible"""
 
-    TODO: Right now, this check is returning all public images including what appear 
-    to be globally public images.  My best guess right now is that we could look at 
-    the arn of public images that don't have an accountId in the arn and ignore those. 
-    """
+    #TODO: Right now, this check is returning all public images including what appear 
+    #to be globally public images.  My best guess right now is that we could look at 
+    #the arn of public images that don't have an accountId in the arn and ignore those. 
+
     # loop through AppStream 2.0 images
     response = appstream.describe_images(Type="PUBLIC", MaxResults=25)
     myAppstreamImages = response["Images"]
@@ -229,7 +229,7 @@ def public_image_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartit
 def compromise_appstream_user_check(
     cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
 ) -> dict:
-    """AppStream 2.0 users should be monitored for signs of compromise"""
+    """[AppStream.3] AppStream 2.0 users should be monitored for signs of compromise"""
     # loop through AppStream 2.0 users
     response = describe_users(cache)
     myAppStreamUsers = response["Users"]
@@ -369,7 +369,7 @@ def compromise_appstream_user_check(
 
 @registry.register_check("appstream")
 def userpool_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """find users that do not auth with SAML.  Basic auth & API access will show as non-compliant"""
+    """[AppStream.4] AppStream 2.0 users should be configured to authenticate using SAML"""
     # loop through AppStream 2.0 users
     response = describe_users(cache)
     myAppStreamUsers = response["Users"]

@@ -31,9 +31,8 @@ def list_clusters(cache):
 
 
 @registry.register_check("ecs")
-def ecs_cluster_container_insights_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def ecs_cluster_container_insights_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ECS.1] ECS clusters should have container insights enabled"""
     response = list_clusters(cache)
     myEcsClusters = response["clusterArns"]
     for clusters in myEcsClusters:
@@ -162,11 +161,9 @@ def ecs_cluster_container_insights_check(
         except Exception as e:
             print(e)
 
-
 @registry.register_check("ecs")
-def ecs_cluster_default_provider_strategy_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def ecs_cluster_default_provider_strategy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ECS.2] ECS clusters should have a default cluster capacity provider strategy configured"""
     response = list_clusters(cache)
     myEcsClusters = response["clusterArns"]
     for clusters in myEcsClusters:
@@ -286,16 +283,23 @@ def ecs_cluster_default_provider_strategy_check(
 
 @registry.register_check("ecs")
 def ecs_task_definition_privileged_container_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ECS.3] ECS Task Definitions should not run privileged containers if not required"""
     for taskdef in ecs.list_task_definitions(status='ACTIVE')['taskDefinitionArns']:
         try:
             response = ecs.describe_task_definition(taskDefinition=taskdef)["taskDefinition"]
             taskDefinitionArn = str(response['taskDefinitionArn'])
+            tdefFamily = str(response["family"])
             # Loop container definitions 
             for cdef in response["containerDefinitions"]:
                 # ISO Time
                 iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
                 cdefName = str(cdef["name"])
-                if str(cdef["privileged"]) == 'True': 
+                # We are going to assume that if there is not a privileged flag...that it is ;)
+                try:
+                    privCheck = str(cdef["privileged"])
+                except:
+                    privCheck = 'UNKNOWN'
+                if privCheck != 'False': 
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": taskDefinitionArn + "/" + cdefName + "/ecs-task-definition-privileged-container-check",
@@ -332,7 +336,7 @@ def ecs_task_definition_privileged_container_check(cache: dict, awsAccountId: st
                                 "Region": awsRegion,
                                 "Details": {
                                     "Other": {
-                                        "TaskDefinitionArn": taskDefinitionArn,
+                                        "Family": tdefFamily,
                                         "ContainerDefinitionName": cdefName
                                     }
                                 }
@@ -408,7 +412,7 @@ def ecs_task_definition_privileged_container_check(cache: dict, awsAccountId: st
                                 "Region": awsRegion,
                                 "Details": {
                                     "Other": {
-                                        "TaskDefinitionArn": taskDefinitionArn,
+                                        "Family": tdefFamily,
                                         "ContainerDefinitionName": cdefName
                                     }
                                 }
@@ -452,10 +456,12 @@ def ecs_task_definition_privileged_container_check(cache: dict, awsAccountId: st
 
 @registry.register_check("ecs")
 def ecs_task_definition_security_labels_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ECS.4] ECS Task Definitions for EC2 should have Docker Security Options (SELinux or AppArmor) configured"""
     for taskdef in ecs.list_task_definitions(status='ACTIVE')['taskDefinitionArns']:
         try:
             response = ecs.describe_task_definition(taskDefinition=taskdef)["taskDefinition"]
             taskDefinitionArn = str(response["taskDefinitionArn"])
+            tdefFamily = str(response["family"])
             # If there is a network mode of "awsvpc" it is likely a Fargate task - even though EC2 compute can run with that...
             # time for some funky edge cases, keep that in mind before you yeet an issue at me, please ;)
             if str(response["networkMode"]) == 'awsvpc':
@@ -502,7 +508,7 @@ def ecs_task_definition_security_labels_check(cache: dict, awsAccountId: str, aw
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {
-                                            "TaskDefinitionArn": taskDefinitionArn,
+                                            "Family": tdefFamily,
                                             "ContainerDefinitionName": cdefName,
                                             'DockerSecurityOptions': secOpts
                                         }
@@ -575,7 +581,7 @@ def ecs_task_definition_security_labels_check(cache: dict, awsAccountId: str, aw
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {
-                                            "TaskDefinitionArn": taskDefinitionArn,
+                                            "Family": tdefFamily,
                                             "ContainerDefinitionName": cdefName,
                                             'DockerSecurityOptions': secOpts
                                         }

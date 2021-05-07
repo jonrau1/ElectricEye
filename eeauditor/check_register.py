@@ -1,6 +1,5 @@
 from functools import wraps
 
-
 class CheckRegister(object):
     checks = {}
 

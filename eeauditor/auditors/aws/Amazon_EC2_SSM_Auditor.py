@@ -17,11 +17,19 @@ import boto3
 import datetime
 from check_register import CheckRegister
 from dateutil.parser import parse
+from botocore.config import Config
+# Adding backoff and retries for SSM - this API gets throttled a lot
+config = Config(
+   retries = {
+      'max_attempts': 10,
+      'mode': 'adaptive'
+   }
+)
 
 registry = CheckRegister()
 # create boto3 clients
-ec2 = boto3.client("ec2")
-ssm = boto3.client("ssm")
+ec2 = boto3.client("ec2",config=config)
+ssm = boto3.client("ssm",config=config)
 
 # loop through ec2 instances
 def describe_instances(cache):
@@ -31,11 +39,9 @@ def describe_instances(cache):
     cache["describe_instances"] = ec2.describe_instances(DryRun=False, MaxResults=1000)
     return cache["describe_instances"]
 
-
 @registry.register_check("ec2")
-def ec2_instance_ssm_managed_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def ec2_instance_ssm_managed_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EC2-SSM.1] EC2 Instances should be managed by Systems Manager"""
     response = describe_instances(cache)
     myEc2InstanceReservations = response["Reservations"]
     for reservations in myEc2InstanceReservations:
@@ -95,9 +101,9 @@ def ec2_instance_ssm_managed_check(
                                         "ImageId": instanceImage,
                                         "VpcId": instanceVpc,
                                         "SubnetId": instanceSubnet,
-                                        "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                        "LaunchedAt": parse(instanceLaunchedAt).isoformat()
                                     }
-                                },
+                                }
                             }
                         ],
                         "Compliance": {
@@ -110,11 +116,11 @@ def ec2_instance_ssm_managed_check(
                                 "AICPA TSC CC6.1",
                                 "ISO 27001:2013 A.8.1.1",
                                 "ISO 27001:2013 A.8.1.2",
-                                "ISO 27001:2013 A.12.5.1",
-                            ],
+                                "ISO 27001:2013 A.12.5.1"
+                            ]
                         },
                         "Workflow": {"Status": "NEW"},
-                        "RecordState": "ACTIVE",
+                        "RecordState": "ACTIVE"
                     }
                     yield finding
                 else:
@@ -153,9 +159,9 @@ def ec2_instance_ssm_managed_check(
                                         "ImageId": instanceImage,
                                         "VpcId": instanceVpc,
                                         "SubnetId": instanceSubnet,
-                                        "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                        "LaunchedAt": parse(instanceLaunchedAt).isoformat()
                                     }
-                                },
+                                }
                             }
                         ],
                         "Compliance": {
@@ -169,20 +175,18 @@ def ec2_instance_ssm_managed_check(
                                 "ISO 27001:2013 A.8.1.1",
                                 "ISO 27001:2013 A.8.1.2",
                                 "ISO 27001:2013 A.12.5.1",
-                            ],
+                            ]
                         },
                         "Workflow": {"Status": "RESOLVED"},
-                        "RecordState": "ARCHIVED",
+                        "RecordState": "ARCHIVED"
                     }
                     yield finding
             except Exception as e:
                 print(e)
 
-
 @registry.register_check("ec2")
-def ssm_instace_agent_update_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def ssm_instace_agent_update_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EC2-SSM.2] EC2 Instances managed by Systems Manager should have the latest SSM Agent installed"""
     response = describe_instances(cache)
     myEc2InstanceReservations = response["Reservations"]
     for reservations in myEc2InstanceReservations:
@@ -240,9 +244,9 @@ def ssm_instace_agent_update_check(
                                         "ImageId": instanceImage,
                                         "VpcId": instanceVpc,
                                         "SubnetId": instanceSubnet,
-                                        "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                        "LaunchedAt": parse(instanceLaunchedAt).isoformat()
                                     }
-                                },
+                                }
                             }
                         ],
                         "Compliance": {
@@ -255,11 +259,11 @@ def ssm_instace_agent_update_check(
                                 "AICPA TSC CC6.1",
                                 "ISO 27001:2013 A.8.1.1",
                                 "ISO 27001:2013 A.8.1.2",
-                                "ISO 27001:2013 A.12.5.1",
-                            ],
+                                "ISO 27001:2013 A.12.5.1"
+                            ]
                         },
                         "Workflow": {"Status": "NEW"},
-                        "RecordState": "ACTIVE",
+                        "RecordState": "ACTIVE"
                     }
                     yield finding
                 else:
@@ -298,9 +302,9 @@ def ssm_instace_agent_update_check(
                                         "ImageId": instanceImage,
                                         "VpcId": instanceVpc,
                                         "SubnetId": instanceSubnet,
-                                        "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                        "LaunchedAt": parse(instanceLaunchedAt).isoformat()
                                     }
-                                },
+                                }
                             }
                         ],
                         "Compliance": {
@@ -313,19 +317,17 @@ def ssm_instace_agent_update_check(
                                 "AICPA TSC CC6.1",
                                 "ISO 27001:2013 A.8.1.1",
                                 "ISO 27001:2013 A.8.1.2",
-                                "ISO 27001:2013 A.12.5.1",
-                            ],
+                                "ISO 27001:2013 A.12.5.1"
+                            ]
                         },
                         "Workflow": {"Status": "RESOLVED"},
-                        "RecordState": "ARCHIVED",
+                        "RecordState": "ARCHIVED"
                     }
                     yield finding
 
-
 @registry.register_check("ec2")
-def ssm_instance_association_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def ssm_instance_association_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EC2-SSM.3] EC2 Instances managed by Systems Manager should have a successful Association status"""
     response = describe_instances(cache)
     myEc2InstanceReservations = response["Reservations"]
     for reservations in myEc2InstanceReservations:
@@ -383,9 +385,9 @@ def ssm_instance_association_check(
                                         "ImageId": instanceImage,
                                         "VpcId": instanceVpc,
                                         "SubnetId": instanceSubnet,
-                                        "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                        "LaunchedAt": parse(instanceLaunchedAt).isoformat()
                                     }
-                                },
+                                }
                             }
                         ],
                         "Compliance": {
@@ -398,11 +400,11 @@ def ssm_instance_association_check(
                                 "AICPA TSC CC6.1",
                                 "ISO 27001:2013 A.8.1.1",
                                 "ISO 27001:2013 A.8.1.2",
-                                "ISO 27001:2013 A.12.5.1",
-                            ],
+                                "ISO 27001:2013 A.12.5.1"
+                            ]
                         },
                         "Workflow": {"Status": "NEW"},
-                        "RecordState": "ACTIVE",
+                        "RecordState": "ACTIVE"
                     }
                     yield finding
                 else:
@@ -441,9 +443,9 @@ def ssm_instance_association_check(
                                         "ImageId": instanceImage,
                                         "VpcId": instanceVpc,
                                         "SubnetId": instanceSubnet,
-                                        "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                        "LaunchedAt": parse(instanceLaunchedAt).isoformat()
                                     }
-                                },
+                                }
                             }
                         ],
                         "Compliance": {
@@ -456,19 +458,17 @@ def ssm_instance_association_check(
                                 "AICPA TSC CC6.1",
                                 "ISO 27001:2013 A.8.1.1",
                                 "ISO 27001:2013 A.8.1.2",
-                                "ISO 27001:2013 A.12.5.1",
-                            ],
+                                "ISO 27001:2013 A.12.5.1"
+                            ]
                         },
                         "Workflow": {"Status": "RESOLVED"},
-                        "RecordState": "ARCHIVED",
+                        "RecordState": "ARCHIVED"
                     }
                     yield finding
 
-
 @registry.register_check("ec2")
-def ssm_instance_patch_state_state(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def ssm_instance_patch_state_state(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EC2-SSM.4] EC2 Instances managed by Systems Manager should have the latest patches installed by Patch Manager"""
     response = describe_instances(cache)
     myEc2InstanceReservations = response["Reservations"]
     for reservations in myEc2InstanceReservations:
@@ -491,7 +491,6 @@ def ssm_instance_patch_state_state(
                     datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
                 if patchStatesCheck == "[]":
-                    print("no patch info")
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": instanceArn + "/ec2-patch-manager-check",
@@ -527,9 +526,9 @@ def ssm_instance_patch_state_state(
                                         "ImageId": instanceImage,
                                         "VpcId": instanceVpc,
                                         "SubnetId": instanceSubnet,
-                                        "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                        "LaunchedAt": parse(instanceLaunchedAt).isoformat()
                                     }
-                                },
+                                }
                             }
                         ],
                         "Compliance": {
@@ -543,10 +542,10 @@ def ssm_instance_patch_state_state(
                                 "ISO 27001:2013 A.8.1.1",
                                 "ISO 27001:2013 A.8.1.2",
                                 "ISO 27001:2013 A.12.5.1",
-                            ],
+                            ]
                         },
                         "Workflow": {"Status": "NEW"},
-                        "RecordState": "ACTIVE",
+                        "RecordState": "ACTIVE"
                     }
                     yield finding
                 else:
@@ -592,9 +591,9 @@ def ssm_instance_patch_state_state(
                                                 "ImageId": instanceImage,
                                                 "VpcId": instanceVpc,
                                                 "SubnetId": instanceSubnet,
-                                                "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                                "LaunchedAt": parse(instanceLaunchedAt).isoformat()
                                             }
-                                        },
+                                        }
                                     }
                                 ],
                                 "Compliance": {
@@ -607,11 +606,11 @@ def ssm_instance_patch_state_state(
                                         "AICPA TSC CC6.1",
                                         "ISO 27001:2013 A.8.1.1",
                                         "ISO 27001:2013 A.8.1.2",
-                                        "ISO 27001:2013 A.12.5.1",
-                                    ],
+                                        "ISO 27001:2013 A.12.5.1"
+                                    ]
                                 },
                                 "Workflow": {"Status": "NEW"},
-                                "RecordState": "ACTIVE",
+                                "RecordState": "ACTIVE"
                             }
                             yield finding
                         else:
@@ -652,9 +651,9 @@ def ssm_instance_patch_state_state(
                                                 "ImageId": instanceImage,
                                                 "VpcId": instanceVpc,
                                                 "SubnetId": instanceSubnet,
-                                                "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                                "LaunchedAt": parse(instanceLaunchedAt).isoformat()
                                             }
-                                        },
+                                        }
                                     }
                                 ],
                                 "Compliance": {
@@ -667,11 +666,11 @@ def ssm_instance_patch_state_state(
                                         "AICPA TSC CC6.1",
                                         "ISO 27001:2013 A.8.1.1",
                                         "ISO 27001:2013 A.8.1.2",
-                                        "ISO 27001:2013 A.12.5.1",
-                                    ],
+                                        "ISO 27001:2013 A.12.5.1"
+                                    ]
                                 },
                                 "Workflow": {"Status": "RESOLVED"},
-                                "RecordState": "ARCHIVED",
+                                "RecordState": "ARCHIVED"
                             }
                             yield finding
             except Exception as e:

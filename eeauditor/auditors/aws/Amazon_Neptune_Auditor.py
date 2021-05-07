@@ -22,7 +22,6 @@ registry = CheckRegister()
 # import boto3 clients
 neptune = boto3.client("neptune")
 
-
 # loop through neptune instances
 def describe_db_instances(cache):
     response = cache.get("describe_db_instances")
@@ -33,11 +32,9 @@ def describe_db_instances(cache):
     )
     return cache["describe_db_instances"]
 
-
 @registry.register_check("neptune")
-def neptune_instance_multi_az_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def neptune_instance_multi_az_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Neptune.1] Neptune database instances should be configured to be highly available"""
     neptune_instances = describe_db_instances(cache)
     for instances in neptune_instances["DBInstances"]:
         neptuneInstanceArn = str(instances["DBInstanceArn"])
@@ -153,11 +150,9 @@ def neptune_instance_multi_az_check(
             }
             yield finding
 
-
 @registry.register_check("neptune")
-def neptune_instance_storage_encryption_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def neptune_instance_storage_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Neptune.2] Neptune database instace storage should be encrypted"""
     neptune_instances = describe_db_instances(cache)
     for instances in neptune_instances["DBInstances"]:
         neptuneInstanceArn = str(instances["DBInstanceArn"])
@@ -267,11 +262,9 @@ def neptune_instance_storage_encryption_check(
             }
             yield finding
 
-
 @registry.register_check("neptune")
-def neptune_instance_iam_authentication_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def neptune_instance_iam_authentication_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Neptune.3] Neptune database instaces storage should use IAM Database Authentication"""
     neptune_instances = describe_db_instances(cache)
     for instances in neptune_instances["DBInstances"]:
         neptuneInstanceArn = str(instances["DBInstanceArn"])
@@ -403,11 +396,9 @@ def neptune_instance_iam_authentication_check(
             }
             yield finding
 
-
 @registry.register_check("neptune")
-def neptune_cluster_parameter_ssl_enforcement_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def neptune_cluster_parameter_ssl_enforcement_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Neptune.4] Neptune cluster parameter groups should enforce SSL connections to Neptune databases"""
     response = neptune.describe_db_cluster_parameter_groups()
     for parametergroup in response["DBClusterParameterGroups"]:
         parameterGroupName = str(parametergroup["DBClusterParameterGroupName"])
@@ -532,11 +523,9 @@ def neptune_cluster_parameter_ssl_enforcement_check(
             else:
                 pass
 
-
 @registry.register_check("neptune")
-def neptune_cluster_parameter_audit_log_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def neptune_cluster_parameter_audit_log_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Neptune.5] Neptune cluster parameter groups should enforce audit logging for Neptune databases"""
     response = neptune.describe_db_cluster_parameter_groups()
     for parametergroup in response["DBClusterParameterGroups"]:
         parameterGroupName = str(parametergroup["DBClusterParameterGroupName"])
