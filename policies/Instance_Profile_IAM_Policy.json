@@ -261,7 +261,8 @@
                 "codeartifact:GetDomainPermissionsPolicy",
                 "codeartifact:ListDomains",
                 "codeartifact:ListRepositories",
-                "codeartifact:GetRepositoryPermissionsPolicy"
+                "codeartifact:GetRepositoryPermissionsPolicy",
+                "shield:ListAttacks"
             ],
             "Resource": "*"
         }
