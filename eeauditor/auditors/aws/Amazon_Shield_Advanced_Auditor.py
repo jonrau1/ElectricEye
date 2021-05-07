@@ -1057,7 +1057,7 @@ def shield_advanced_subscription_autorenew_check(
                 + " is set to auto-renew",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "To update the subscription renewel use the UpdateSubscription API, refer to the link for more details.",
+                        "Text": "To update the subscription renewal use the UpdateSubscription API, refer to the link for more details.",
                         "Url": "https://docs.aws.amazon.com/waf/latest/DDOSAPIReference/API_UpdateSubscription.html",
                     }
                 },
@@ -1085,5 +1085,118 @@ def shield_advanced_subscription_autorenew_check(
                 },
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED",
+            }
+            yield finding
+
+
+@registry.register_check("shield")
+def shield_advanced_subscription_latest_attacks(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
+    if awsRegion != "us-east-1":
+        print("Shield Advanced APIs are only available in North Virginia")
+    else:
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        response = shield.list_attacks(
+            StartTime = {
+                'FromInclusive': datetime.datetime.utcnow() - datetime.timedelta(days=7)
+            },
+            EndTime = {
+                'ToExclusive': datetime.datetime.utcnow()
+            }
+        )
+
+        if len(response['AttackSummaries']) == 0:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": awsAccountId + "/shield-adv-subscription-latest-attacks",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": awsAccountId,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[ShieldAdvanced.9] Resources under attack in the last week",
+                "Description": f"The resources in {awsAccountId} have not had an attack mitigated by AWS Shield Advanced in the last week",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "View the docs for more details about how to ensure your AWS environments are protected against DDOS attacks.",
+                        "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-manage-protected-resources.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsAccount",
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.AM-2",
+                        "NIST SP 800-53 CM-8",
+                        "NIST SP 800-53 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1",
+                    ],
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED",
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": awsAccountId + "/shield-adv-subscription-latest-attacks",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": awsAccountId,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[ShieldAdvanced.9] Resources under attack in the last week",
+                "Description": f"The resources in {awsAccountId} has had at least one attack mitigated by AWS Shield Advanced in the last week",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "View the docs for more details about how to ensure your AWS environments are protected against DDOS attacks.",
+                        "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-manage-protected-resources.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsAccount",
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.AM-2",
+                        "NIST SP 800-53 CM-8",
+                        "NIST SP 800-53 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1",
+                    ],
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE",
             }
             yield finding
