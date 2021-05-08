@@ -666,6 +666,7 @@ def ec2_source_dest_verification_check(cache: dict, awsAccountId: str, awsRegion
     except Exception as e:
         print(e)
 
+
 @registry.register_check("ec2")
 def ec2_serial_console_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EC2.5] Serial port access to EC2 should be prohibited unless absolutely required"""
@@ -789,3 +790,91 @@ def ec2_serial_console_access_check(cache: dict, awsAccountId: str, awsRegion: s
             "RecordState": "ARCHIVED"
         }
         yield finding
+
+
+
+@registry.register_check("ec2")
+def ec2_ami_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EC2.5] EC2 Instances should use AMIs that are less than 6 months old"""
+    # ISO Time
+    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+    try:
+        iterator = paginate(cache=cache)
+        for page in iterator:
+            for r in page["Reservations"]:
+                for i in r["Instances"]:
+                    instanceId = str(i["InstanceId"])
+                    instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
+                    instanceType = str(i["InstanceType"])
+                    instanceImage = str(i["ImageId"])
+                    subnetId = str(i["SubnetId"])
+                    vpcId = str(i["VpcId"])
+                    instanceLaunchedAt = str(i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"])
+                    # If the Public DNS is not empty that means there is an entry, and that is is public facing
+                    dsc_image_date = ec2.describe_images(ImageIds=[instanceImage])['CreationDate']
+                    dt_creation_date = parse(dsc_image_date).replace(tzinfo=None)
+                    AmiAge = datetime.datetime.utcnow() - dt_creation_date
+
+                    if AmiAge.days > 300:
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": instanceArn + "/ec2-ami-age-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": instanceArn,
+                            "AwsAccountId": awsAccountId,
+                            "Types": [
+                                "Software and Configuration Checks/AWS Security Best Practices"
+                            ],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "MEDIUM"},
+                            "Confidence": 99,
+                            "Title": "[EC2.5] EC2 Instances should use AMIs that are less than 6 months old",
+                            "Description": f"EC2 Instance {instanceId} is using an AMI that is {AmiAge.days} days old",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "To learn more about AMI usage, refer to the AMI section of the Amazon Elastic Compute Cloud User Guide",
+                                    "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html"
+                                }
+                            },
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsEc2Instance",
+                                    "Id": instanceArn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "AwsEc2Instance": {
+                                            "Type": instanceType,
+                                            "ImageId": instanceImage,
+                                            "AmiAge": f"{AmiAge.days} days old",
+                                            "VpcId": vpcId,
+                                            "SubnetId": subnetId,
+                                            "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                        }
+                                    },
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "FAILED",
+                                "RelatedRequirements": [
+                                    "NIST CSF PR.AC-3",
+                                    "NIST SP 800-53 AC-1",
+                                    "NIST SP 800-53 AC-17",
+                                    "NIST SP 800-53 AC-19",
+                                    "NIST SP 800-53 AC-20",
+                                    "NIST SP 800-53 SC-15",
+                                    "AICPA TSC CC6.6",
+                                    "ISO 27001:2013 A.6.2.1",
+                                    "ISO 27001:2013 A.6.2.2",
+                                    "ISO 27001:2013 A.11.2.6",
+                                    "ISO 27001:2013 A.13.1.1",
+                                    "ISO 27001:2013 A.13.2.1",
+                                ]
+                            },
+                            "Workflow": {"Status": "NEW"},
+                            "RecordState": "ACTIVE"
+                        }
+                        yield finding
