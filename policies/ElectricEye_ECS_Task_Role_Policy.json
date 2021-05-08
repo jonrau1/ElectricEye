@@ -171,7 +171,9 @@
                 "codeartifact:ListDomains",
                 "codeartifact:ListRepositories",
                 "codeartifact:GetRepositoryPermissionsPolicy",
-                "shield:ListAttacks"
+                "shield:ListAttacks",
+                "cloudhsm:DescribeClusters",
+                "cloudhsm:DescribeBackups"
             ],
             "Resource": "*"
         }

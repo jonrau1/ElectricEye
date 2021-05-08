@@ -159,7 +159,7 @@ def cloudhsm_hsm_degradation_check(cache: dict, awsAccountId: str, awsRegion: st
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for clstr in hsm_clusters["Clusters"]:
         ClusterId = clstr["ClusterId"]
-        for hsm in clustr['Hsms']:
+        for hsm in clstr['Hsms']:
             HsmId = hsm['HsmId']
             if hsm["State"] != "DEGRADED":
                 #Passing Check
@@ -291,7 +291,7 @@ def cloudhsm_cluster_backup_check(cache: dict, awsAccountId: str, awsRegion: str
             }
         )
         activeBackups = [x for x in backups['Backups'] if x['BackupState'] == 'READY']
-        if len(activeBackups) > 1:
+        if len(activeBackups) > 0:
             #Passing Check
             finding = {
                 "SchemaVersion": "2018-10-08",
