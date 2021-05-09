@@ -173,7 +173,8 @@
                 "codeartifact:GetRepositoryPermissionsPolicy",
                 "shield:ListAttacks",
                 "cloudhsm:DescribeClusters",
-                "cloudhsm:DescribeBackups"
+                "cloudhsm:DescribeBackups",
+                "ec2:describe_images"
             ],
             "Resource": "*"
         }

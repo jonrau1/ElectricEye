@@ -371,6 +371,7 @@ Resources:
                   - shield:ListAttacks
                   - cloudhsm:DescribeClusters
                   - cloudhsm:DescribeBackups
+                  - ec2:describe_images
                 Resource: "*"
       AssumeRolePolicyDocument:
         Version: 2012-10-17

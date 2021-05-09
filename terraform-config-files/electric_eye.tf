@@ -377,7 +377,8 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "codeartifact:GetRepositoryPermissionsPolicy",
                 "shield:ListAttacks",
                 "cloudhsm:DescribeClusters",
-                "cloudhsm:DescribeBackups"
+                "cloudhsm:DescribeBackups",
+                "ec2:describe_images"
             ],
             "Resource": "*"
         }

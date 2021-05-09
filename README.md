@@ -393,7 +393,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 
 ## Supported Services and Checks
 
-These are the following services and checks perform by each Auditor. There are currently **305** checks supported across **85** AWS services / components using **66** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **307** checks supported across **85** AWS services / components using **66** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced, Health, and Trusted Advisor checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in `us-east-1` to perform all checks. The Shield, Health and Trusted Advisor APIs only live in `us-east-1`, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -440,6 +440,8 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_EC2_Auditor.py                  | EC2 Instance                   | Is the instance internet-facing                                                     |
 | Amazon_EC2_Auditor.py                  | EC2 Instance                   | Is Source/Dest Check disabled                                                       |
 | Amazon_EC2_Auditor.py                  | AWS Account                    | Is Serial Port Access restricted                                                    |
+| Amazon_EC2_Auditor.py                  | EC2 Instance                   | Is instance using an AMI baked in last 6 months                                     |
+| Amazon_EC2_Auditor.py                  | EC2 Instance                   | Is instance using a correctly registered AMI                                        |
 | Amazon_EC2_Image_Builder_Auditor.py    | Image Builder                  | Are pipeline tests enabled                                                          |
 | Amazon_EC2_Image_Builder_Auditor.py    | Image Builder                  | Is EBS encrypted                                                                    |
 | Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Are all ports (-1) open to the internet                                             |
