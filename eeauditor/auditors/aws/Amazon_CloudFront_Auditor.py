@@ -402,3 +402,129 @@ def cloudfront_default_viewer_check(
                 yield finding
         except Exception as e:
             print(e)
+
+@registry.register_check("cloudfront")
+def cloudfront_georestriction_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
+    
+    iso8601Time = (
+        datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    )
+    for distributionItem in results["DistributionList"]["Items"]:
+        distributionId = distributionItem["Id"]
+        distribution = cloudfront.get_distribution(Id=distributionId)
+        try:
+            geoRestriction = distribution["Distribution"]["DistributionConfig"]["Restrictions"]["GeoRestriction"]["RestrictionType"]["CloudFrontDefaultCertificate": "blacklist"]
+            distributionArn = distribution["Distribution"]["ARN"]
+            generatorUuid = str(uuid.uuid4())
+            if not geoRestriction:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": awsAccountId + "/cloudfront-geo-restriction-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": generatorUuid,
+                    "AwsAccountId": awsAccountId,
+                    "Types": [
+                        "Software and Configuration Checks/AWS Security Best Practices"
+                    ],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "LOW"},
+                    "Confidence": 99,
+                    "Title": "[CloudFront.1] Distributions should have Geo Ristriction in place",
+                    "Description": "Distribution "
+                    + distributionId
+                    + " has Geo Restriction in place.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on Geo Restriction for CloudFront, refer to the Restricting the Geographic Distribution of Your Content section of the Amazon CloudFront Developer Guide",
+                            "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/georestrictions.html",
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsCloudFrontDistribution",
+                            "Id": distributionArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF PR.DS-2",
+                            "NIST SP 800-53 SC-8",
+                            "NIST SP 800-53 SC-11",
+                            "NIST SP 800-53 SC-12",
+                            "AICPA TSC CC6.1",
+                            "ISO 27001:2013 A.8.2.3",
+                            "ISO 27001:2013 A.13.1.1",
+                            "ISO 27001:2013 A.13.2.1",
+                            "ISO 27001:2013 A.13.2.3",
+                            "ISO 27001:2013 A.14.1.2",
+                            "ISO 27001:2013 A.14.1.3",
+                        ],
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE",
+                }
+                yield finding
+            else:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": awsAccountId + "/cloudfront-geo-restriction-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": generatorUuid,
+                    "AwsAccountId": awsAccountId,
+                    "Types": [
+                        "Software and Configuration Checks/AWS Security Best Practices"
+                    ],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "LOW"},
+                    "Confidence": 99,
+                    "Title": "[CloudFront.1] Distributions should have Geo Ristriction in place",
+                    "Description": "Distribution "
+                    + distributionId
+                    + " has Geo Restriction in place.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on Geo Restriction for CloudFront, refer to the Restricting the Geographic Distribution of Your Content section of the Amazon CloudFront Developer Guide",
+                            "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/georestrictions.html",
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsCloudFrontDistribution",
+                            "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF PR.DS-2",
+                            "NIST SP 800-53 SC-8",
+                            "NIST SP 800-53 SC-11",
+                            "NIST SP 800-53 SC-12",
+                            "AICPA TSC CC6.1",
+                            "ISO 27001:2013 A.8.2.3",
+                            "ISO 27001:2013 A.13.1.1",
+                            "ISO 27001:2013 A.13.2.1",
+                            "ISO 27001:2013 A.13.2.3",
+                            "ISO 27001:2013 A.14.1.2",
+                            "ISO 27001:2013 A.14.1.3",
+                        ],
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED",
+                }
+                yield finding
+        except Exception as e:
+            print(e)
