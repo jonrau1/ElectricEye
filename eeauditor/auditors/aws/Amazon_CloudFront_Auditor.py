@@ -541,7 +541,7 @@ def cloudfront_field_level_encryption_check(
         distributionId = distributionItem["Id"]
         distribution = cloudfront.get_distribution(Id=distributionId)
         try:
-            fieldLevelEncryption = distribution["Distribution"]["DistributionConfig"]["DefaultCacheBehavior"]["FieldLevelEncryptionId": ""]
+            fieldLevelEncryption = distribution["Distribution"]["DistributionConfig"]["DefaultCacheBehavior"]["FieldLevelEncryptionId": "string"]
             distributionArn = distribution["Distribution"]["ARN"]
             generatorUuid = str(uuid.uuid4())
             if not fieldLevelEncryption:
@@ -611,6 +611,112 @@ def cloudfront_field_level_encryption_check(
                         "Recommendation": {
                             "Text": "For more information on Field Level Encryption for CloudFront, refer to the Using Field-Level Encryption to Help Protect Sensitive Data section of the Amazon CloudFront Developer Guide",
                             "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/field-level-encryption.html",
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsCloudFrontDistribution",
+                            "Id": distributionArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF PR.DS-2",
+                        ],
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED",
+                }
+                yield finding
+        except Exception as e:
+            print(e)
+
+@registry.register_check("cloudfront")
+def cloudfront_waf_enabled_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
+    
+    iso8601Time = (
+        datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    )
+    for distributionItem in results["DistributionList"]["Items"]:
+        distributionId = distributionItem["Id"]
+        distribution = cloudfront.get_distribution(Id=distributionId)
+        try:
+            wafEnabled = distribution["Distribution"]["DistributionConfig"]["WebACLId": "string"]
+            distributionArn = distribution["Distribution"]["ARN"]
+            generatorUuid = str(uuid.uuid4())
+            if not wafEnabled:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": awsAccountId + "/cloudfront-waf-enabled-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": generatorUuid,
+                    "AwsAccountId": awsAccountId,
+                    "Types": [
+                        "Software and Configuration Checks/AWS Security Best Practices"
+                    ],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "LOW"},
+                    "Confidence": 99,
+                    "Title": "[CloudFront.1] Distributions should have WAF enabled",
+                    "Description": "Distribution "
+                    + distributionId
+                    + " does not have WAF enabled.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on WAF for CloudFront, refer to the Using AWS WAF to Control Access to Your Content section of the Amazon CloudFront Developer Guide",
+                            "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-awswaf.html",
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsCloudFrontDistribution",
+                            "Id": distributionArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF PR.DS-2",
+                        ],
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE",
+                }
+                yield finding
+            else:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": awsAccountId + "/cloudfront-waf-enabled-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": generatorUuid,
+                    "AwsAccountId": awsAccountId,
+                    "Types": [
+                        "Software and Configuration Checks/AWS Security Best Practices"
+                    ],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "LOW"},
+                    "Confidence": 99,
+                    "Title": "[CloudFront.1] Distributions should have WAF enabled",
+                    "Description": "Distribution "
+                    + distributionId
+                    + " does has WAF enabled.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on WAF for CloudFront, refer to the Using AWS WAF to Control Access to Your Content section of the Amazon CloudFront Developer Guide",
+                            "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-awswaf.html",
                         }
                     },
                     "ProductFields": {"Product Name": "ElectricEye"},
