@@ -1092,41 +1092,41 @@ def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                 PolicyArn=policy_arn,
                 VersionId=version_id
             )['PolicyVersion']['Document']
-
+            #handle policies docs returned as strings
             if type(policy_doc) == str:
                 policy_doc = json.loads(policy_doc)
 
             least_priv_rating = 'passing'
-            for statement in policy_doc:
+            for statement in policy_doc['Statement']:
                 if statement["Effect"] == 'Allow':
                     if statement.get('Condition') == None: 
                         # action structure could be a string or a list
                         if type(statement['Action']) == list: 
-                            if ['True' for x in statement['Action'] if ":*" in x or '*' == x][0] == 'True':
+                            if len(['True' for x in statement['Action'] if ":*" in x or '*' == x]) > 0:
                                 if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                    least_priv_rating == 'failed_high'
+                                    least_priv_rating = 'failed_high'
                                     # Means that an initial failure will not be overwritten by a lower finding later
                                     next
                                 elif type(statement['Resource']) == list: 
-                                    least_priv_rating == 'failed_low'
+                                    least_priv_rating = 'failed_low'
 
                         # Single action in a statement
                         elif type(statement['Action']) == str:
                             if ":*" in statement['Action'] or statement['Action'] == '*':
                                 if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                    least_priv_rating == 'failed_high'
+                                    least_priv_rating = 'failed_high'
                                     # Means that an initial failure will not be overwritten by a lower finding later
                                     next
                                 elif type(statement['Resource']) == list: 
-                                    least_priv_rating == 'failed_low'
+                                    least_priv_rating = 'failed_low'
 
             iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             if least_priv_rating == 'passing':
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": awsAccountId + "/mngd_policy_least_priv",
+                    "Id": policy_arn + "/mngd_policy_least_priv",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": awsAccountId + "mngd_policy_least_priv",
+                    "GeneratorId": policy_arn + "mngd_policy_least_priv",
                     "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
@@ -1177,9 +1177,9 @@ def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
             elif least_priv_rating == 'failed_low':
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": awsAccountId + "/mngd_policy_least_priv",
+                    "Id": policy_arn + "/mngd_policy_least_priv",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": awsAccountId + "mngd_policy_least_priv",
+                    "GeneratorId": policy_arn + "mngd_policy_least_priv",
                     "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
@@ -1230,9 +1230,9 @@ def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
             elif least_priv_rating == 'failed_high':
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": awsAccountId + "/mngd_policy_least_priv",
+                    "Id": policy_arn + "/mngd_policy_least_priv",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": awsAccountId + "mngd_policy_least_priv",
+                    "GeneratorId": policy_arn + "mngd_policy_least_priv",
                     "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
