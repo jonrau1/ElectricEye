@@ -1294,7 +1294,7 @@ def shield_advanced_subscription_latest_attacks(
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
                 "Title": "[ShieldAdvanced.9] Resources under attack in the last week",
-                "Description": f"The resources in {awsAccountId} has had at least one attack mitigated by AWS Shield Advanced in the last week",
+                "Description": f"The resources in {awsAccountId} have had at least one attack mitigated by AWS Shield Advanced in the last week",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "View the docs for more details about how to ensure your AWS environments are protected against DDOS attacks.",

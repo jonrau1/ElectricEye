@@ -154,7 +154,7 @@ def cloudhsm_cluster_degradation_check(cache: dict, awsAccountId: str, awsRegion
 
 @registry.register_check("cloudhsm")
 def cloudhsm_hsm_degradation_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[CloudHsm.2] CloudHsm HSM's should not be degraded"""
+    """[CloudHsm.2] CloudHsm HSMs should not be degraded"""
     hsm_clusters = describe_clusters(cache=cache)
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for clstr in hsm_clusters["Clusters"]:
@@ -177,8 +177,8 @@ def cloudhsm_hsm_degradation_check(cache: dict, awsAccountId: str, awsRegion: st
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
-                    "Title": "[CloudHsm.2] CloudHsm HSM's should not be in a degraded state",
-                    "Description": f"CloudHSM HSM's {HsmId} is not in a degraded state",
+                    "Title": "[CloudHsm.2] CloudHsm HSMs should not be in a degraded state",
+                    "Description": f"CloudHSM HSM {HsmId} is not in a degraded state",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For more information on HSM Clusters refer to the AWS CloudHsm User Guide on managing Hsms",
@@ -233,8 +233,8 @@ def cloudhsm_hsm_degradation_check(cache: dict, awsAccountId: str, awsRegion: st
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "HIGH"},
                     "Confidence": 99,
-                    "Title": "[CloudHsm.2] CloudHsm HSM's should not be in a degraded state",
-                    "Description": f"CloudHSM HSM's {HsmId} is in a degraded state",
+                    "Title": "[CloudHsm.2] CloudHsm HSMs should not be in a degraded state",
+                    "Description": f"CloudHSM HSM {HsmId} is in a degraded state",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For more information on HSM Clusters refer to the AWS CloudHsm User Guide on managing Hsms",

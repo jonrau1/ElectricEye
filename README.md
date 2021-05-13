@@ -625,9 +625,9 @@ These are the following services and checks perform by each Auditor. There are c
 | AWS_Cloud9_Auditor.py                  | Cloud9 Environment             | Are Cloud9 Envs using SSM for access                                                |
 | AWS_CloudFormation_Auditor.py          | CloudFormation Stack           | Is drift detection enabled                                                          |
 | AWS_CloudFormation_Auditor.py          | CloudFormation Stack           | Are stacks monitored                                                                |
-| AWS_CloudHSM_Auditor.py                | CloudHSM Cluster               | Is the CloudHSM Cluster in a degraded state?                                        |
-| AWS_CloudHSM_Auditor.py                | CloudHSM HSM Module            | Is the CloudHSM hardware security module in a degraded state?                       |
-| AWS_CloudHSM_Auditor.py                | CloudHSM Backups               | Is there at least one cluster in a READY state                                      |
+| AWS_CloudHSM_Auditor.py                | CloudHSM Cluster               | Is the CloudHSM Cluster in a degraded state                                         |
+| AWS_CloudHSM_Auditor.py                | CloudHSM HSM Module            | Is the CloudHSM hardware security module in a degraded state                        |
+| AWS_CloudHSM_Auditor.py                | CloudHSM Backups               | Is there at least one backup in a READY state                                       |
 | AWS_CloudTrail_Auditor.py              | CloudTrail                     | Is the trail multi-region                                                           |
 | AWS_CloudTrail_Auditor.py              | CloudTrail                     | Does the trail send logs to CWL                                                     |
 | AWS_CloudTrail_Auditor.py              | CloudTrail                     | Is the trail encrypted by KMS                                                       |
