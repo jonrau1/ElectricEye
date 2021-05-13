@@ -84,13 +84,16 @@ list_distributions_response = {
                                 'StatusCodes': {
                                     'Quantity': 123,
                                     'Items': [
-                                        123,
+                                        500,
                                     ]
                                 }
                             },
                             'Members': {
-                                'Quantity': 1,
+                                'Quantity': 2,
                                 'Items': [
+                                    {
+                                        'OriginId': 'string'
+                                    },
                                     {
                                         'OriginId': 'string'
                                     },
