@@ -846,3 +846,109 @@ def cloudfront_default_tls_check(
                 yield finding
         except Exception as e:
             print(e)
+
+@registry.register_check("cloudfront")
+def cloudfront_custom_origin_tls_check(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
+    
+    iso8601Time = (
+        datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    )
+    for distributionItem in results["DistributionList"]["Items"]:
+        distributionId = distributionItem["Id"]
+        distribution = cloudfront.get_distribution(Id=distributionId)
+        try:
+            customOriginTls = distribution["Distribution"]["DistributionConfig"]["Origins"]["Items"]["Origins"]["CustomOriginConfig"]["OriginSslProtocols"]["Items": "TLSv1.2"]
+            distributionArn = distribution["Distribution"]["ARN"]
+            generatorUuid = str(uuid.uuid4())
+            if not customOriginTls:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": awsAccountId + "/cloudfront-custom-origin-tls-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": generatorUuid,
+                    "AwsAccountId": awsAccountId,
+                    "Types": [
+                        "Software and Configuration Checks/AWS Security Best Practices"
+                    ],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "LOW"},
+                    "Confidence": 99,
+                    "Title": "[CloudFront.1] Distributions using Custom Origins should be using TLSv1.2",
+                    "Description": "Distribution "
+                    + distributionId
+                    + " has Custom Origins not using TLSv1.2.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on Custom Origin TLS settings for CloudFront, refer to the Values That You Specify When You Create or Update a Distribution section of the Amazon CloudFront Developer Guide",
+                            "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesOriginSSLProtocols",
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsCloudFrontDistribution",
+                            "Id": distributionArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF PR.DS-2",
+                        ],
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE",
+                }
+                yield finding
+            else:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": awsAccountId + "/cloudfront-custom-origin-tls-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": generatorUuid,
+                    "AwsAccountId": awsAccountId,
+                    "Types": [
+                        "Software and Configuration Checks/AWS Security Best Practices"
+                    ],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "LOW"},
+                    "Confidence": 99,
+                    "Title": "[CloudFront.1] Distributions using Custom Origins should be using TLSv1.2",
+                    "Description": "Distribution "
+                    + distributionId
+                    + " has Custom Origins using TLSv1.2.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on Custom Origin TLS settings for CloudFront, refer to the Values That You Specify When You Create or Update a Distribution section of the Amazon CloudFront Developer Guide",
+                            "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesOriginSSLProtocols",
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsCloudFrontDistribution",
+                            "Id": distributionArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF PR.DS-2",
+                        ],
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED",
+                }
+                yield finding
+        except Exception as e:
+            print(e)
