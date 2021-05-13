@@ -21,11 +21,6 @@ from auditors.aws.Amazon_CloudFront_Auditor import (
 
 list_distributions_response = {
     'DistributionList': {
-        'Marker': 'string',
-        'NextMarker': 'string',
-        'MaxItems': 123,
-        'IsTruncated': True,
-        'Quantity': 123,
         'Items': [
             {
                 'Id': 'string',
@@ -94,7 +89,7 @@ list_distributions_response = {
                                 }
                             },
                             'Members': {
-                                'Quantity': 123,
+                                'Quantity': 1,
                                 'Items': [
                                     {
                                         'OriginId': 'string'
