@@ -174,7 +174,15 @@
                 "shield:ListAttacks",
                 "cloudhsm:DescribeClusters",
                 "cloudhsm:DescribeBackups",
-                "ec2:describe_images"
+                "iam:ListRolePolicies",
+                "iam:ListRoles",
+                "iam:GetRolePolicy",
+                "iam:GetUserPolicy",
+                "iam:ListGroupPolicies",
+                "iam:ListGroups",
+                "iam:GetGroupPolicy",
+                "iam:ListPolicies",
+                "iam:GetPolicyVersion"
             ],
             "Resource": "*"
         }

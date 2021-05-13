@@ -260,6 +260,15 @@ Resources:
                   - iam:ListUserPolicies
                   - iam:ListAttachedUserPolicies
                   - iam:ListServerCertificates
+                  - iam:ListRolePolicies
+                  - iam:ListRoles
+                  - iam:GetRolePolicy
+                  - iam:GetUserPolicy
+                  - iam:ListGroupPolicies
+                  - iam:ListGroups
+                  - iam:GetGroupPolicy
+                  - iam:ListPolicies
+                  - iam:GetPolicyVersion
                   - imagebuilder:ListImagePipelines
                   - imagebuilder:GetImagePipeline
                   - imagebuilder:ListImageRecipes
@@ -371,7 +380,6 @@ Resources:
                   - shield:ListAttacks
                   - cloudhsm:DescribeClusters
                   - cloudhsm:DescribeBackups
-                  - ec2:describe_images
                 Resource: "*"
       AssumeRolePolicyDocument:
         Version: 2012-10-17

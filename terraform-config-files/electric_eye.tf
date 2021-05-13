@@ -378,7 +378,15 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "shield:ListAttacks",
                 "cloudhsm:DescribeClusters",
                 "cloudhsm:DescribeBackups",
-                "ec2:describe_images"
+                "iam:ListRolePolicies",
+                "iam:ListRoles",
+                "iam:GetRolePolicy",
+                "iam:GetUserPolicy",
+                "iam:ListGroupPolicies",
+                "iam:ListGroups",
+                "iam:GetGroupPolicy",
+                "iam:ListPolicies",
+                "iam:GetPolicyVersion"
             ],
             "Resource": "*"
         }
