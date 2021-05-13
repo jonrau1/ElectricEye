@@ -31,7 +31,7 @@ list_distributions_response = {
                 'Id': 'string',
                 'ARN': 'string',
                 'Status': 'string',
-                'LastModifiedTime': datetime(2015, 1, 1),
+                'LastModifiedTime': datetime.datetime(2015, 1, 1),
                 'DomainName': 'string',
                 'Aliases': {
                     'Quantity': 123,
@@ -61,11 +61,11 @@ list_distributions_response = {
                             'CustomOriginConfig': {
                                 'HTTPPort': 123,
                                 'HTTPSPort': 123,
-                                'OriginProtocolPolicy': 'http-only'|'match-viewer'|'https-only',
+                                'OriginProtocolPolicy': 'https-only',
                                 'OriginSslProtocols': {
                                     'Quantity': 123,
                                     'Items': [
-                                        'SSLv3'|'TLSv1'|'TLSv1.1'|'TLSv1.2',
+                                        'TLSv1.2',
                                     ]
                                 },
                                 'OriginReadTimeout': 123,
@@ -74,7 +74,7 @@ list_distributions_response = {
                             'ConnectionAttempts': 123,
                             'ConnectionTimeout': 123,
                             'OriginShield': {
-                                'Enabled': True|False,
+                                'Enabled': True,
                                 'OriginShieldRegion': 'string'
                             }
                         },
@@ -107,20 +107,20 @@ list_distributions_response = {
                 'DefaultCacheBehavior': {
                     'TargetOriginId': 'string',
                     'TrustedSigners': {
-                        'Enabled': True|False,
+                        'Enabled': True,
                         'Quantity': 123,
                         'Items': [
                             'string',
                         ]
                     },
                     'TrustedKeyGroups': {
-                        'Enabled': True|False,
+                        'Enabled': True,
                         'Quantity': 123,
                         'Items': [
                             'string',
                         ]
                     },
-                    'ViewerProtocolPolicy': 'allow-all'|'https-only'|'redirect-to-https',
+                    'ViewerProtocolPolicy': 'redirect-to-https',
                     'AllowedMethods': {
                         'Quantity': 123,
                         'Items': [
@@ -133,15 +133,15 @@ list_distributions_response = {
                             ]
                         }
                     },
-                    'SmoothStreaming': True|False,
-                    'Compress': True|False,
+                    'SmoothStreaming': True,
+                    'Compress': True,
                     'LambdaFunctionAssociations': {
                         'Quantity': 123,
                         'Items': [
                             {
                                 'LambdaFunctionARN': 'string',
-                                'EventType': 'viewer-request'|'viewer-response'|'origin-request'|'origin-response',
-                                'IncludeBody': True|False
+                                'EventType': 'viewer-request',
+                                'IncludeBody': True
                             },
                         ]
                     },
@@ -150,7 +150,7 @@ list_distributions_response = {
                         'Items': [
                             {
                                 'FunctionARN': 'string',
-                                'EventType': 'viewer-request'|'viewer-response'|'origin-request'|'origin-response'
+                                'EventType': 'viewer-request'
                             },
                         ]
                     },
@@ -159,9 +159,9 @@ list_distributions_response = {
                     'CachePolicyId': 'string',
                     'OriginRequestPolicyId': 'string',
                     'ForwardedValues': {
-                        'QueryString': True|False,
+                        'QueryString': True,
                         'Cookies': {
-                            'Forward': 'none'|'whitelist'|'all',
+                            'Forward': 'all',
                             'WhitelistedNames': {
                                 'Quantity': 123,
                                 'Items': [
