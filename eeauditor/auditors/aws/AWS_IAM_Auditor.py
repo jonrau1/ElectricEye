@@ -1282,3 +1282,650 @@ def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                 yield finding
     except: 
         pass
+
+
+@registry.register_check("iam")
+def iam_user_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[IAM.8] User inline policies should follow least privilege principles"""
+    try:
+        Users = iam.list_users()
+        for user in Users['Users']:
+            user_arn = user['Arn']
+            UserName = user['UserName']
+
+            policy_names = iam.list_user_policies(
+                UserName=UserName
+            )['PolicyNames']
+            for policy_name in policy_names:
+                policy_doc = iam.get_user_policy(
+                    UserName=UserName,
+                    PolicyName=policy_name
+                )['PolicyDocument']
+
+                #handle policies docs returned as strings
+                if type(policy_doc) == str:
+                    policy_doc = json.loads(policy_doc)
+
+                least_priv_rating = 'passing'
+                for statement in policy_doc['Statement']:
+                    if statement["Effect"] == 'Allow':
+                        if statement.get('Condition') == None: 
+                            # action structure could be a string or a list
+                            if type(statement['Action']) == list: 
+                                if len(['True' for x in statement['Action'] if ":*" in x or '*' == x]) > 0:
+                                    if type(statement['Resource']) == str and statement['Resource'] == '*':
+                                        least_priv_rating = 'failed_high'
+                                        # Means that an initial failure will not be overwritten by a lower finding later
+                                        next
+                                    elif type(statement['Resource']) == list: 
+                                        least_priv_rating = 'failed_low'
+
+                            # Single action in a statement
+                            elif type(statement['Action']) == str:
+                                if ":*" in statement['Action'] or statement['Action'] == '*':
+                                    if type(statement['Resource']) == str and statement['Resource'] == '*':
+                                        least_priv_rating = 'failed_high'
+                                        # Means that an initial failure will not be overwritten by a lower finding later
+                                        next
+                                    elif type(statement['Resource']) == list: 
+                                        least_priv_rating = 'failed_low'
+
+                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                if least_priv_rating == 'passing':
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": user_arn + "/user_policy_least_priv",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": user_arn + "user_policy_least_priv",
+                        "AwsAccountId": awsAccountId,
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "INFORMATIONAL"},
+                        "Confidence": 99,
+                        "Title": "[IAM.8] User inline policies should follow least privilege principles",
+                        "Description": f"The user {user_arn} inline policy {policy_name} is following least privilege principles.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For information on IAM least privilege refer to the inline policy section of the AWS IAM User Guide",
+                                "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AWSIamPolicy",
+                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {"Other": {
+                                    "PolicyName": policy_name,
+                                    "UserArn": user_arn}},
+
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "PASSED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-3",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-17",
+                                "NIST SP 800-53 AC-19",
+                                "NIST SP 800-53 AC-20",
+                                "NIST SP 800-53 SC-15",
+                                "AICPA TSC CC6.6",
+                                "ISO 27001:2013 A.6.2.1",
+                                "ISO 27001:2013 A.6.2.2",
+                                "ISO 27001:2013 A.11.2.6",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1"
+                            ],
+                        },
+                        "Workflow": {"Status": "RESOLVED"},
+                        "RecordState": "ARCHIVED",
+                    }
+                    yield finding
+                elif least_priv_rating == 'failed_low':
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": user_arn + "/user_policy_least_priv",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": user_arn + "user_policy_least_priv",
+                        "AwsAccountId": awsAccountId,
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "LOW"},
+                        "Confidence": 99,
+                        "Title": "[IAM.8] User inline policies should follow least privilege principles",
+                        "Description": f"The user {user_arn} inline policy {policy_name} is not following least privilege principles.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For information on IAM least privilege refer to the inline policy section of the AWS IAM User Guide",
+                                "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AWSIamPolicy",
+                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {"Other": {
+                                    "PolicyName": policy_name,
+                                    "UserArn": user_arn}},
+
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "FAILED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-3",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-17",
+                                "NIST SP 800-53 AC-19",
+                                "NIST SP 800-53 AC-20",
+                                "NIST SP 800-53 SC-15",
+                                "AICPA TSC CC6.6",
+                                "ISO 27001:2013 A.6.2.1",
+                                "ISO 27001:2013 A.6.2.2",
+                                "ISO 27001:2013 A.11.2.6",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1"
+                            ],
+                        },
+                        "Workflow": {"Status": "NEW"},
+                        "RecordState": "ACTIVE",
+                    }
+                    yield finding
+                elif least_priv_rating == 'failed_high':
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": user_arn + "/user_policy_least_priv",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": user_arn + "user_policy_least_priv",
+                        "AwsAccountId": awsAccountId,
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "HIGH"},
+                        "Confidence": 99,
+                        "Title": "[IAM.8] User inline policies should follow least privilege principles",
+                        "Description": f"The user {user_arn} inline policy {policy_name} is not following least privilege principles.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For information on IAM least privilege refer to the inline policy section of the AWS IAM User Guide",
+                                "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AWSIamPolicy",
+                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {"Other": {
+                                    "PolicyName": policy_name,
+                                    "UserArn": user_arn}},
+
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "FAILED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-3",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-17",
+                                "NIST SP 800-53 AC-19",
+                                "NIST SP 800-53 AC-20",
+                                "NIST SP 800-53 SC-15",
+                                "AICPA TSC CC6.6",
+                                "ISO 27001:2013 A.6.2.1",
+                                "ISO 27001:2013 A.6.2.2",
+                                "ISO 27001:2013 A.11.2.6",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1"
+                            ],
+                        },
+                        "Workflow": {"Status": "NEW"},
+                        "RecordState": "ACTIVE",
+                    }
+                    yield finding
+    except: 
+        pass
+
+
+@registry.register_check("iam")
+def iam_group_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[IAM.9] Group inline policies should follow least privilege principles"""
+    try:
+        Groups = iam.list_groups()
+        for group in Groups['Groups']:
+            group_arn = group['Arn']
+            GroupName = group['GroupName']
+
+            policy_names = iam.list_group_policies(
+                GroupName=GroupName
+            )['PolicyNames']
+            for policy_name in policy_names:
+                policy_doc = iam.get_group_policy(
+                    GroupName=GroupName,
+                    PolicyName=policy_name
+                )['PolicyDocument']
+
+                #handle policies docs returned as strings
+                if type(policy_doc) == str:
+                    policy_doc = json.loads(policy_doc)
+
+                least_priv_rating = 'passing'
+                for statement in policy_doc['Statement']:
+                    if statement["Effect"] == 'Allow':
+                        if statement.get('Condition') == None: 
+                            # action structure could be a string or a list
+                            if type(statement['Action']) == list: 
+                                if len(['True' for x in statement['Action'] if ":*" in x or '*' == x]) > 0:
+                                    if type(statement['Resource']) == str and statement['Resource'] == '*':
+                                        least_priv_rating = 'failed_high'
+                                        # Means that an initial failure will not be overwritten by a lower finding later
+                                        next
+                                    elif type(statement['Resource']) == list: 
+                                        least_priv_rating = 'failed_low'
+
+                            # Single action in a statement
+                            elif type(statement['Action']) == str:
+                                if ":*" in statement['Action'] or statement['Action'] == '*':
+                                    if type(statement['Resource']) == str and statement['Resource'] == '*':
+                                        least_priv_rating = 'failed_high'
+                                        # Means that an initial failure will not be overwritten by a lower finding later
+                                        next
+                                    elif type(statement['Resource']) == list: 
+                                        least_priv_rating = 'failed_low'
+
+                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                if least_priv_rating == 'passing':
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": group_arn + "/group_policy_least_priv",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": group_arn + "group_policy_least_priv",
+                        "AwsAccountId": awsAccountId,
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "INFORMATIONAL"},
+                        "Confidence": 99,
+                        "Title": "[IAM.9] Group inline policies should follow least privilege principles",
+                        "Description": f"The group {group_arn} inline policy {policy_name} is following least privilege principles.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For information on IAM least privilege refer to the inline policy section of the AWS IAM User Guide",
+                                "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AWSIamPolicy",
+                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {"Other": {
+                                    "PolicyName": policy_name,
+                                    "GroupArn": group_arn}},
+
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "PASSED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-3",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-17",
+                                "NIST SP 800-53 AC-19",
+                                "NIST SP 800-53 AC-20",
+                                "NIST SP 800-53 SC-15",
+                                "AICPA TSC CC6.6",
+                                "ISO 27001:2013 A.6.2.1",
+                                "ISO 27001:2013 A.6.2.2",
+                                "ISO 27001:2013 A.11.2.6",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1"
+                            ],
+                        },
+                        "Workflow": {"Status": "RESOLVED"},
+                        "RecordState": "ARCHIVED",
+                    }
+                    yield finding
+                elif least_priv_rating == 'failed_low':
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": group_arn + "/group_policy_least_priv",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": group_arn + "group_policy_least_priv",
+                        "AwsAccountId": awsAccountId,
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "LOW"},
+                        "Confidence": 99,
+                        "Title": "[IAM.9] Group inline policies should follow least privilege principles",
+                        "Description": f"The group {group_arn} inline policy {policy_name} is not following least privilege principles.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For information on IAM least privilege refer to the inline policy section of the AWS IAM User Guide",
+                                "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AWSIamPolicy",
+                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {"Other": {
+                                    "PolicyName": policy_name,
+                                    "GroupArn": group_arn}},
+
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "FAILED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-3",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-17",
+                                "NIST SP 800-53 AC-19",
+                                "NIST SP 800-53 AC-20",
+                                "NIST SP 800-53 SC-15",
+                                "AICPA TSC CC6.6",
+                                "ISO 27001:2013 A.6.2.1",
+                                "ISO 27001:2013 A.6.2.2",
+                                "ISO 27001:2013 A.11.2.6",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1"
+                            ],
+                        },
+                        "Workflow": {"Status": "NEW"},
+                        "RecordState": "ACTIVE",
+                    }
+                    yield finding
+                elif least_priv_rating == 'failed_high':
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": group_arn + "/group_policy_least_priv",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": group_arn + "group_policy_least_priv",
+                        "AwsAccountId": awsAccountId,
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "HIGH"},
+                        "Confidence": 99,
+                        "Title": "[IAM.9] Group inline policies should follow least privilege principles",
+                        "Description": f"The group {group_arn} inline policy {policy_name} is not following least privilege principles.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For information on IAM least privilege refer to the inline policy section of the AWS IAM User Guide",
+                                "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AWSIamPolicy",
+                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {"Other": {
+                                    "PolicyName": policy_name,
+                                    "GroupArn": group_arn}},
+
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "FAILED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-3",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-17",
+                                "NIST SP 800-53 AC-19",
+                                "NIST SP 800-53 AC-20",
+                                "NIST SP 800-53 SC-15",
+                                "AICPA TSC CC6.6",
+                                "ISO 27001:2013 A.6.2.1",
+                                "ISO 27001:2013 A.6.2.2",
+                                "ISO 27001:2013 A.11.2.6",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1"
+                            ],
+                        },
+                        "Workflow": {"Status": "NEW"},
+                        "RecordState": "ACTIVE",
+                    }
+                    yield finding
+    except: 
+        pass
+
+
+@registry.register_check("iam")
+def iam_role_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[IAM.10] Role inline policies should follow least privilege principles"""
+    try:
+        Roles = iam.list_roles()
+        for role in Roles['Roles']:
+            role_arn = role['Arn']
+            RoleName = role['RoleName']
+
+            policy_names = iam.list_role_policies(
+                RoleName=RoleName
+            )['PolicyNames']
+            for policy_name in policy_names:
+                policy_doc = iam.get_role_policy(
+                    RoleName=RoleName,
+                    PolicyName=policy_name
+                )['PolicyDocument']
+
+                #handle policies docs returned as strings
+                if type(policy_doc) == str:
+                    policy_doc = json.loads(policy_doc)
+
+                least_priv_rating = 'passing'
+                for statement in policy_doc['Statement']:
+                    if statement["Effect"] == 'Allow':
+                        if statement.get('Condition') == None: 
+                            # action structure could be a string or a list
+                            if type(statement['Action']) == list: 
+                                if len(['True' for x in statement['Action'] if ":*" in x or '*' == x]) > 0:
+                                    if type(statement['Resource']) == str and statement['Resource'] == '*':
+                                        least_priv_rating = 'failed_high'
+                                        # Means that an initial failure will not be overwritten by a lower finding later
+                                        next
+                                    elif type(statement['Resource']) == list: 
+                                        least_priv_rating = 'failed_low'
+
+                            # Single action in a statement
+                            elif type(statement['Action']) == str:
+                                if ":*" in statement['Action'] or statement['Action'] == '*':
+                                    if type(statement['Resource']) == str and statement['Resource'] == '*':
+                                        least_priv_rating = 'failed_high'
+                                        # Means that an initial failure will not be overwritten by a lower finding later
+                                        next
+                                    elif type(statement['Resource']) == list: 
+                                        least_priv_rating = 'failed_low'
+
+                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                if least_priv_rating == 'passing':
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": role_arn + "/role_policy_least_priv",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": role_arn + "role_policy_least_priv",
+                        "AwsAccountId": awsAccountId,
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "INFORMATIONAL"},
+                        "Confidence": 99,
+                        "Title": "[IAM.10] Role inline policies should follow least privilege principles",
+                        "Description": f"The role {role_arn} inline policy {policy_name} is following least privilege principles.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For information on IAM least privilege refer to the inline policy section of the AWS IAM User Guide",
+                                "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AWSIamPolicy",
+                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {"Other": {
+                                    "PolicyName": policy_name,
+                                    "roleArn": role_arn}},
+
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "PASSED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-3",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-17",
+                                "NIST SP 800-53 AC-19",
+                                "NIST SP 800-53 AC-20",
+                                "NIST SP 800-53 SC-15",
+                                "AICPA TSC CC6.6",
+                                "ISO 27001:2013 A.6.2.1",
+                                "ISO 27001:2013 A.6.2.2",
+                                "ISO 27001:2013 A.11.2.6",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1"
+                            ],
+                        },
+                        "Workflow": {"Status": "RESOLVED"},
+                        "RecordState": "ARCHIVED",
+                    }
+                    yield finding
+                elif least_priv_rating == 'failed_low':
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": role_arn + "/role_policy_least_priv",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": role_arn + "role_policy_least_priv",
+                        "AwsAccountId": awsAccountId,
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "LOW"},
+                        "Confidence": 99,
+                        "Title": "[IAM.10] Role inline policies should follow least privilege principles",
+                        "Description": f"The role {role_arn} inline policy {policy_name} is not following least privilege principles.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For information on IAM least privilege refer to the inline policy section of the AWS IAM User Guide",
+                                "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AWSIamPolicy",
+                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {"Other": {
+                                    "PolicyName": policy_name,
+                                    "roleArn": role_arn}},
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "FAILED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-3",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-17",
+                                "NIST SP 800-53 AC-19",
+                                "NIST SP 800-53 AC-20",
+                                "NIST SP 800-53 SC-15",
+                                "AICPA TSC CC6.6",
+                                "ISO 27001:2013 A.6.2.1",
+                                "ISO 27001:2013 A.6.2.2",
+                                "ISO 27001:2013 A.11.2.6",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1"
+                            ],
+                        },
+                        "Workflow": {"Status": "NEW"},
+                        "RecordState": "ACTIVE",
+                    }
+                    yield finding
+                elif least_priv_rating == 'failed_high':
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": role_arn + "/role_policy_least_priv",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": role_arn + "role_policy_least_priv",
+                        "AwsAccountId": awsAccountId,
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "HIGH"},
+                        "Confidence": 99,
+                        "Title": "[IAM.10] Role inline policies should follow least privilege principles",
+                        "Description": f"The role {role_arn} inline policy {policy_name} is not following least privilege principles.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For information on IAM least privilege refer to the inline policy section of the AWS IAM User Guide",
+                                "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AWSIamPolicy",
+                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {"Other": {
+                                    "PolicyName": policy_name,
+                                    "roleArn": role_arn}},
+
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "FAILED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-3",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-17",
+                                "NIST SP 800-53 AC-19",
+                                "NIST SP 800-53 AC-20",
+                                "NIST SP 800-53 SC-15",
+                                "AICPA TSC CC6.6",
+                                "ISO 27001:2013 A.6.2.1",
+                                "ISO 27001:2013 A.6.2.2",
+                                "ISO 27001:2013 A.11.2.6",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1"
+                            ],
+                        },
+                        "Workflow": {"Status": "NEW"},
+                        "RecordState": "ACTIVE",
+                    }
+                    yield finding
+    except:
+        pass
