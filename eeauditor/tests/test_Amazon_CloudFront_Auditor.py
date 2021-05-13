@@ -124,12 +124,12 @@ list_distributions_response = {
                     'AllowedMethods': {
                         'Quantity': 123,
                         'Items': [
-                            'GET'|'HEAD'|'POST'|'PUT'|'PATCH'|'OPTIONS'|'DELETE',
+                            'GET',
                         ],
                         'CachedMethods': {
                             'Quantity': 123,
                             'Items': [
-                                'GET'|'HEAD'|'POST'|'PUT'|'PATCH'|'OPTIONS'|'DELETE',
+                                'GET',
                             ]
                         }
                     },
@@ -193,29 +193,29 @@ list_distributions_response = {
                             'PathPattern': 'string',
                             'TargetOriginId': 'string',
                             'TrustedSigners': {
-                                'Enabled': True|False,
+                                'Enabled': True,
                                 'Quantity': 123,
                                 'Items': [
                                     'string',
                                 ]
                             },
                             'TrustedKeyGroups': {
-                                'Enabled': True|False,
+                                'Enabled': True,
                                 'Quantity': 123,
                                 'Items': [
                                     'string',
                                 ]
                             },
-                            'ViewerProtocolPolicy': 'allow-all'|'https-only'|'redirect-to-https',
+                            'ViewerProtocolPolicy': 'redirect-to-https',
                             'AllowedMethods': {
                                 'Quantity': 123,
                                 'Items': [
-                                    'GET'|'HEAD'|'POST'|'PUT'|'PATCH'|'OPTIONS'|'DELETE',
+                                    'GET',
                                 ],
                                 'CachedMethods': {
                                     'Quantity': 123,
                                     'Items': [
-                                        'GET'|'HEAD'|'POST'|'PUT'|'PATCH'|'OPTIONS'|'DELETE',
+                                        'GET',
                                     ]
                                 }
                             },
@@ -226,8 +226,8 @@ list_distributions_response = {
                                 'Items': [
                                     {
                                         'LambdaFunctionARN': 'string',
-                                        'EventType': 'viewer-request'|'viewer-response'|'origin-request'|'origin-response',
-                                        'IncludeBody': True|False
+                                        'EventType': 'viewer-request',
+                                        'IncludeBody': True
                                     },
                                 ]
                             },
@@ -236,7 +236,7 @@ list_distributions_response = {
                                 'Items': [
                                     {
                                         'FunctionARN': 'string',
-                                        'EventType': 'viewer-request'|'viewer-response'|'origin-request'|'origin-response'
+                                        'EventType': 'viewer-request'
                                     },
                                 ]
                             },
@@ -245,9 +245,9 @@ list_distributions_response = {
                             'CachePolicyId': 'string',
                             'OriginRequestPolicyId': 'string',
                             'ForwardedValues': {
-                                'QueryString': True|False,
+                                'QueryString': True,
                                 'Cookies': {
-                                    'Forward': 'none'|'whitelist'|'all',
+                                    'Forward': 'none',
                                     'WhitelistedNames': {
                                         'Quantity': 123,
                                         'Items': [
@@ -286,20 +286,20 @@ list_distributions_response = {
                     ]
                 },
                 'Comment': 'string',
-                'PriceClass': 'PriceClass_100'|'PriceClass_200'|'PriceClass_All',
-                'Enabled': True|False,
+                'PriceClass': 'PriceClass_100',
+                'Enabled': True,
                 'ViewerCertificate': {
-                    'CloudFrontDefaultCertificate': True|False,
+                    'CloudFrontDefaultCertificate': True,
                     'IAMCertificateId': 'string',
                     'ACMCertificateArn': 'string',
-                    'SSLSupportMethod': 'sni-only'|'vip'|'static-ip',
-                    'MinimumProtocolVersion': 'SSLv3'|'TLSv1'|'TLSv1_2016'|'TLSv1.1_2016'|'TLSv1.2_2018'|'TLSv1.2_2019',
+                    'SSLSupportMethod': 'sni-only',
+                    'MinimumProtocolVersion': 'TLSv1.2_2019',
                     'Certificate': 'string',
-                    'CertificateSource': 'cloudfront'|'iam'|'acm'
+                    'CertificateSource': 'cloudfront'
                 },
                 'Restrictions': {
                     'GeoRestriction': {
-                        'RestrictionType': 'blacklist'|'whitelist'|'none',
+                        'RestrictionType': 'blacklist',
                         'Quantity': 123,
                         'Items': [
                             'string',
@@ -307,12 +307,12 @@ list_distributions_response = {
                     }
                 },
                 'WebACLId': 'string',
-                'HttpVersion': 'http1.1'|'http2',
-                'IsIPV6Enabled': True|False,
+                'HttpVersion': 'http1.1',
+                'IsIPV6Enabled': True,
                 'AliasICPRecordals': [
                     {
                         'CNAME': 'string',
-                        'ICPRecordalStatus': 'APPROVED'|'SUSPENDED'|'PENDING'
+                        'ICPRecordalStatus': 'PENDING'
                     },
                 ]
             },
