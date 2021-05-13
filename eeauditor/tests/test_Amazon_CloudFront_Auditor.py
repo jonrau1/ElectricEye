@@ -20,353 +20,53 @@ from auditors.aws.Amazon_CloudFront_Auditor import (
 )
 
 list_distributions_response = {
-    'DistributionList': {
-        'Marker': 'string',
-        'NextMarker': 'string',
-        'MaxItems': 12,
-        'IsTruncated': True,
-        'Quantity': 12,
-        'Items': [
+    "DistributionList": {
+        "Marker": "string",
+        "MaxItems": 123,
+        "IsTruncated": True,
+        "Quantity": 1,
+        "Items": [
             {
-                'Id': 'string',
-                'ARN': 'string',
-                'Status': 'string',
-                'LastModifiedTime': datetime.datetime(2015, 1, 1),
-                'DomainName': 'string',
-                'Aliases': {
-                    'Quantity': 12,
-                    'Items': [
-                        'string',
-                    ]
+                "Id": "string",
+                "ARN": "string",
+                "Status": "string",
+                "LastModifiedTime": datetime.datetime(2015, 1, 1),
+                "DomainName": "string",
+                "Aliases": {"Quantity": 1, "Items": ["string",]},
+                "Origins": {
+                    "Quantity": 1,
+                    "Items": [{"Id": "string", "DomainName": "string",}],
                 },
-                'Origins': {
-                    'Quantity': 12,
-                    'Items': [
-                        {
-                            'Id': 'string',
-                            'DomainName': 'string',
-                            'OriginPath': 'string',
-                            'CustomHeaders': {
-                                'Quantity': 12,
-                                'Items': [
-                                    {
-                                        'HeaderName': 'string',
-                                        'HeaderValue': 'string'
-                                    },
-                                ]
-                            },
-                            'S3OriginConfig': {
-                                'OriginAccessIdentity': 'string'
-                            },
-                            'CustomOriginConfig': {
-                                'HTTPPort': 12,
-                                'HTTPSPort': 12,
-                                'OriginProtocolPolicy': 'https-only',
-                                'OriginSslProtocols': {
-                                    'Quantity': 12,
-                                    'Items': [
-                                        'TLSv1.2',
-                                    ]
-                                },
-                                'OriginReadTimeout': 12,
-                                'OriginKeepaliveTimeout': 12
-                            },
-                            'ConnectionAttempts': 12,
-                            'ConnectionTimeout': 12,
-                            'OriginShield': {
-                                'Enabled': True,
-                                'OriginShieldRegion': 'string'
-                            }
-                        },
-                    ]
-                },
-                'OriginGroups': {
-                    'Quantity': 12,
-                    'Items': [
-                        {
-                            'Id': 'string',
-                            'FailoverCriteria': {
-                                'StatusCodes': {
-                                    'Quantity': 12,
-                                    'Items': [
-                                        12,
-                                    ]
-                                }
-                            },
-                            'Members': {
-                                'Quantity': 12,
-                                'Items': [
-                                    {
-                                        'OriginId': 'string'
-                                    },
-                                ]
-                            }
-                        },
-                    ]
-                },
-                'DefaultCacheBehavior': {
-                    'TargetOriginId': 'string',
-                    'TrustedSigners': {
-                        'Enabled': True,
-                        'Quantity': 12,
-                        'Items': [
-                            'string',
-                        ]
+                "DefaultCacheBehavior": {
+                    "TargetOriginId": "string",
+                    "ForwardedValues": {
+                        "QueryString": True,
+                        "Cookies": {"Forward": "none"},
                     },
-                    'TrustedKeyGroups': {
-                        'Enabled': True,
-                        'Quantity': 12,
-                        'Items': [
-                            'string',
-                        ]
-                    },
-                    'ViewerProtocolPolicy': 'redirect-to-https',
-                    'AllowedMethods': {
-                        'Quantity': 12,
-                        'Items': [
-                            'GET',
-                        ],
-                        'CachedMethods': {
-                            'Quantity': 12,
-                            'Items': [
-                                'GET',
-                            ]
-                        }
-                    },
-                    'SmoothStreaming': True,
-                    'Compress': True,
-                    'LambdaFunctionAssociations': {
-                        'Quantity': 12,
-                        'Items': [
-                            {
-                                'LambdaFunctionARN': 'string',
-                                'EventType': 'viewer-request',
-                                'IncludeBody': True
-                            },
-                        ]
-                    },
-                    'FunctionAssociations': {
-                        'Quantity': 12,
-                        'Items': [
-                            {
-                                'FunctionARN': 'string',
-                                'EventType': 'viewer-request'
-                            },
-                        ]
-                    },
-                    'FieldLevelEncryptionId': 'string',
-                    'RealtimeLogConfigArn': 'string',
-                    'CachePolicyId': 'string',
-                    'OriginRequestPolicyId': 'string',
-                    'ForwardedValues': {
-                        'QueryString': True,
-                        'Cookies': {
-                            'Forward': 'all',
-                            'WhitelistedNames': {
-                                'Quantity': 12,
-                                'Items': [
-                                    'string',
-                                ]
-                            }
-                        },
-                        'Headers': {
-                            'Quantity': 12,
-                            'Items': [
-                                'string',
-                            ]
-                        },
-                        'QueryStringCacheKeys': {
-                            'Quantity': 12,
-                            'Items': [
-                                'string',
-                            ]
-                        }
-                    },
-                    'MinTTL': 12,
-                    'DefaultTTL': 12,
-                    'MaxTTL': 12
+                    "TrustedSigners": {"Enabled": True, "Quantity": 1,},
+                    "ViewerProtocolPolicy": "allow-all",
+                    "MinTTL": 123,
                 },
-                'CacheBehaviors': {
-                    'Quantity': 12,
-                    'Items': [
-                        {
-                            'PathPattern': 'string',
-                            'TargetOriginId': 'string',
-                            'TrustedSigners': {
-                                'Enabled': True,
-                                'Quantity': 12,
-                                'Items': [
-                                    'string',
-                                ]
-                            },
-                            'TrustedKeyGroups': {
-                                'Enabled': True,
-                                'Quantity': 12,
-                                'Items': [
-                                    'string',
-                                ]
-                            },
-                            'ViewerProtocolPolicy': 'redirect-to-https',
-                            'AllowedMethods': {
-                                'Quantity': 12,
-                                'Items': [
-                                    'GET',
-                                ],
-                                'CachedMethods': {
-                                    'Quantity': 12,
-                                    'Items': [
-                                        'GET',
-                                    ]
-                                }
-                            },
-                            'SmoothStreaming': True,
-                            'Compress': True,
-                            'LambdaFunctionAssociations': {
-                                'Quantity': 12,
-                                'Items': [
-                                    {
-                                        'LambdaFunctionARN': 'string',
-                                        'EventType': 'viewer-request',
-                                        'IncludeBody': True
-                                    },
-                                ]
-                            },
-                            'FunctionAssociations': {
-                                'Quantity': 12,
-                                'Items': [
-                                    {
-                                        'FunctionARN': 'string',
-                                        'EventType': 'viewer-request'
-                                    },
-                                ]
-                            },
-                            'FieldLevelEncryptionId': 'string',
-                            'RealtimeLogConfigArn': 'string',
-                            'CachePolicyId': 'string',
-                            'OriginRequestPolicyId': 'string',
-                            'ForwardedValues': {
-                                'QueryString': True,
-                                'Cookies': {
-                                    'Forward': 'none',
-                                    'WhitelistedNames': {
-                                        'Quantity': 12,
-                                        'Items': [
-                                            'string',
-                                        ]
-                                    }
-                                },
-                                'Headers': {
-                                    'Quantity': 12,
-                                    'Items': [
-                                        'string',
-                                    ]
-                                },
-                                'QueryStringCacheKeys': {
-                                    'Quantity': 12,
-                                    'Items': [
-                                        'string',
-                                    ]
-                                }
-                            },
-                            'MinTTL': 12,
-                            'DefaultTTL': 12,
-                            'MaxTTL': 12
-                        },
-                    ]
-                },
-                'CustomErrorResponses': {
-                    'Quantity': 12,
-                    'Items': [
-                        {
-                            'ErrorCode': 12,
-                            'ResponsePagePath': 'string',
-                            'ResponseCode': 'string',
-                            'ErrorCachingMinTTL': 12
-                        },
-                    ]
-                },
-                'Comment': 'string',
-                'PriceClass': 'PriceClass_100',
-                'Enabled': True,
-                'ViewerCertificate': {
-                    'CloudFrontDefaultCertificate': True,
-                    'IAMCertificateId': 'string',
-                    'ACMCertificateArn': 'string',
-                    'SSLSupportMethod': 'sni-only',
-                    'MinimumProtocolVersion': 'TLSv1.2_2019',
-                    'Certificate': 'string',
-                    'CertificateSource': 'cloudfront'
-                },
-                'Restrictions': {
-                    'GeoRestriction': {
-                        'RestrictionType': 'blacklist',
-                        'Quantity': 12,
-                        'Items': [
-                            'string',
-                        ]
+                "CacheBehaviors": {"Quantity": 123,},
+                "CustomErrorResponses": {"Quantity": 123,},
+                "Comment": "string",
+                "PriceClass": "PriceClass_100",
+                "Enabled": True,
+                "ViewerCertificate": {"CloudFrontDefaultCertificate": True,},
+                "Restrictions": {
+                    "GeoRestriction": {
+                        "RestrictionType": "blacklist",
+                        "Quantity": 123,
+                        "Items": ["string",],
                     }
                 },
-                'WebACLId': 'string',
-                'HttpVersion': 'http1.1',
-                'IsIPV6Enabled': True,
-                'AliasICPRecordals': [
-                    {
-                        'CNAME': 'string',
-                        'ICPRecordalStatus': 'PENDING'
-                    },
-                ]
-            },
-        ]
+                "WebACLId": "string",
+                "HttpVersion": "http1.1",
+                "IsIPV6Enabled": True,
+            }
+        ],
     }
 }
-
-#     "DistributionList": {
-#         "Marker": "string",
-#         "MaxItems": 12,
-#         "IsTruncated": True,
-#         "Quantity": 1,
-#         "Items": [
-#             {
-#                 "Id": "string",
-#                 "ARN": "string",
-#                 "Status": "string",
-#                 "LastModifiedTime": datetime.datetime(2015, 1, 1),
-#                 "DomainName": "string",
-#                 "Aliases": {"Quantity": 1, "Items": ["string",]},
-#                 "Origins": {
-#                     "Quantity": 1,
-#                     "Items": [{"Id": "string", "DomainName": "string",}],
-#                 },
-#                 "DefaultCacheBehavior": {
-#                     "TargetOriginId": "string",
-#                     "ForwardedValues": {
-#                         "QueryString": True,
-#                         "Cookies": {"Forward": "none"},
-#                     },
-#                     "TrustedSigners": {"Enabled": True, "Quantity": 1,},
-#                     "ViewerProtocolPolicy": "allow-all",
-#                     "MinTTL": 12,
-#                 },
-#                 "CacheBehaviors": {"Quantity": 12,},
-#                 "CustomErrorResponses": {"Quantity": 12,},
-#                 "Comment": "string",
-#                 "PriceClass": "PriceClass_100",
-#                 "Enabled": True,
-#                 "ViewerCertificate": {"CloudFrontDefaultCertificate": True,},
-#                 "Restrictions": {
-#                     "GeoRestriction": {
-#                         "RestrictionType": "blacklist",
-#                         "Quantity": 12,
-#                         "Items": ["string",],
-#                     }
-#                 },
-#                 "WebACLId": "string",
-#                 "HttpVersion": "http1.1",
-#                 "IsIPV6Enabled": True,
-#             }
-#         ],
-#     }
-# }
 
 get_distribution_response_trusted_user_pass = {
     "Distribution": {
@@ -374,24 +74,24 @@ get_distribution_response_trusted_user_pass = {
         "ARN": "string",
         "Status": "string",
         "LastModifiedTime": datetime.datetime(2015, 1, 1),
-        "InProgressInvalidationBatches": 12,
+        "InProgressInvalidationBatches": 123,
         "DomainName": "string",
-        "ActiveTrustedSigners": {"Enabled": True, "Quantity": 12,},
+        "ActiveTrustedSigners": {"Enabled": True, "Quantity": 123,},
         "DistributionConfig": {
             "CallerReference": "string",
             "CustomErrorResponses": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {
-                        "ErrorCode": 12,
+                        "ErrorCode": 123,
                         "ResponsePagePath": "string",
                         "ResponseCode": "string",
-                        "ErrorCachingMinTTL": 12,
+                        "ErrorCachingMinTTL": 123,
                     },
                 ],
             },
             "Origins": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {"Id": "string", "DomainName": "string", "OriginPath": "string",}
                 ],
@@ -404,15 +104,15 @@ get_distribution_response_trusted_user_pass = {
                 },
                 "TrustedSigners": {
                     "Enabled": True,
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["string",],
                 },
                 "ViewerProtocolPolicy": "allow-all",
-                "MinTTL": 12,
+                "MinTTL": 123,
                 "AllowedMethods": {
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["GET",],
-                    "CachedMethods": {"Quantity": 12, "Items": ["GET",]},
+                    "CachedMethods": {"Quantity": 123, "Items": ["GET",]},
                 },
             },
             "Comment": "string",
@@ -426,7 +126,7 @@ get_distribution_response_trusted_user_pass = {
             "Enabled": True,
             "ViewerCertificate": {"CloudFrontDefaultCertificate": True,},
             "Restrictions": {
-                "GeoRestriction": {"RestrictionType": "blacklist", "Quantity": 12,}
+                "GeoRestriction": {"RestrictionType": "blacklist", "Quantity": 123,}
             },
             "WebACLId": "string",
             "HttpVersion": "http1.1",
@@ -441,24 +141,24 @@ get_distribution_response_trusted_user_fail = {
         "ARN": "string",
         "Status": "string",
         "LastModifiedTime": datetime.datetime(2015, 1, 1),
-        "InProgressInvalidationBatches": 12,
+        "InProgressInvalidationBatches": 123,
         "DomainName": "string",
-        "ActiveTrustedSigners": {"Enabled": False, "Quantity": 12,},
+        "ActiveTrustedSigners": {"Enabled": False, "Quantity": 123,},
         "DistributionConfig": {
             "CallerReference": "string",
             "CustomErrorResponses": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {
-                        "ErrorCode": 12,
+                        "ErrorCode": 123,
                         "ResponsePagePath": "string",
                         "ResponseCode": "string",
-                        "ErrorCachingMinTTL": 12,
+                        "ErrorCachingMinTTL": 123,
                     },
                 ],
             },
             "Origins": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {"Id": "string", "DomainName": "string", "OriginPath": "string",}
                 ],
@@ -471,15 +171,15 @@ get_distribution_response_trusted_user_fail = {
                 },
                 "TrustedSigners": {
                     "Enabled": True,
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["string",],
                 },
                 "ViewerProtocolPolicy": "allow-all",
-                "MinTTL": 12,
+                "MinTTL": 123,
                 "AllowedMethods": {
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["GET",],
-                    "CachedMethods": {"Quantity": 12, "Items": ["GET",]},
+                    "CachedMethods": {"Quantity": 123, "Items": ["GET",]},
                 },
             },
             "Comment": "string",
@@ -493,7 +193,7 @@ get_distribution_response_trusted_user_fail = {
             "Enabled": True,
             "ViewerCertificate": {"CloudFrontDefaultCertificate": True,},
             "Restrictions": {
-                "GeoRestriction": {"RestrictionType": "blacklist", "Quantity": 12,}
+                "GeoRestriction": {"RestrictionType": "blacklist", "Quantity": 123,}
             },
             "WebACLId": "string",
             "HttpVersion": "http1.1",
@@ -503,210 +203,29 @@ get_distribution_response_trusted_user_fail = {
 }
 
 get_distribution_response_origin_shield_pass = {
-    "ETag": "E2QWRUHEXAMPLE",
-    "Distribution": {
-        "Id": "EDFDVBD6EXAMPLE",
-        "ARN": "arn:aws:cloudfront::12456789012:distribution/EDFDVBD6EXAMPLE",
-        "Status": "Deployed",
-        "LastModifiedTime": "2019-12-04T23:35:41.433Z",
-        "InProgressInvalidationBatches": 0,
-        "DomainName": "d111111abcdef8.cloudfront.net",
-        "ActiveTrustedSigners": {
-            "Enabled": "false",
-            "Quantity": 0
-        },
-        "DistributionConfig": {
-            "CallerReference": "cli-example",
-            "Aliases": {
-                "Quantity": 0
-            },
-            "DefaultRootObject": "index.html",
-            "Origins": {
-                "Quantity": 1,
-                "Items": [
-                    {
-                        "Id": "awsexamplebucket.s3.amazonaws.com-cli-example",
-                        "DomainName": "awsexamplebucket.s3.amazonaws.com",
-                        "OriginPath": "",
-                        "CustomHeaders": {
-                            "Quantity": 0
-                        },
-                        "S3OriginConfig": {
-                            "OriginAccessIdentity": ""
-                        }
-                    }
-                ]
-            },
-            "OriginGroups": {
-                "Quantity": 0
-            },
-            "DefaultCacheBehavior": {
-                "TargetOriginId": "awsexamplebucket.s3.amazonaws.com-cli-example",
-                "ForwardedValues": {
-                    "QueryString": "false",
-                    "Cookies": {
-                        "Forward": "none"
-                    },
-                    "Headers": {
-                        "Quantity": 0
-                    },
-                    "QueryStringCacheKeys": {
-                        "Quantity": 0
-                    }
-                },
-                "TrustedSigners": {
-                    "Enabled": "false",
-                    "Quantity": 0
-                },
-                "ViewerProtocolPolicy": "allow-all",
-                "MinTTL": 0,
-                "AllowedMethods": {
-                    "Quantity": 2,
-                    "Items": [
-                        "HEAD",
-                        "GET"
-                    ],
-                    "CachedMethods": {
-                        "Quantity": 2,
-                        "Items": [
-                            "HEAD",
-                            "GET"
-                        ]
-                    }
-                },
-                "SmoothStreaming": "false",
-                "DefaultTTL": 86400,
-                "MaxTTL": 31536000,
-                "Compress": "false",
-                "LambdaFunctionAssociations": {
-                    "Quantity": 0
-                },
-                "FieldLevelEncryptionId": ""
-            },
-            "CacheBehaviors": {
-                "Quantity": 0
-            },
-            "CustomErrorResponses": {
-                "Quantity": 0
-            },
-            "Comment": "",
-            "Logging": {
-                "Enabled": "false",
-                "IncludeCookies": "false",
-                "Bucket": "",
-                "Prefix": ""
-            },
-            "PriceClass": "PriceClass_All",
-            "Enabled": "true",
-            "ViewerCertificate": {
-                "CloudFrontDefaultCertificate": "true",
-                "MinimumProtocolVersion": "TLSv1",
-                "CertificateSource": "cloudfront"
-            },
-            "Restrictions": {
-                "GeoRestriction": {
-                    "RestrictionType": "none",
-                    "Quantity": 0
-                }
-            },
-            "WebACLId": "",
-            "HttpVersion": "http2",
-            "IsIPV6Enabled": "true"
-        }
-    }
-}
-
-# get_distribution_response_origin_shield_pass = {
-#     "Distribution": {
-#         "Id": "string",
-#         "ARN": "string",
-#         "Status": "string",
-#         "LastModifiedTime": datetime.datetime(2015, 1, 1),
-#         "InProgressInvalidationBatches": 12,
-#         "DomainName": "string",
-#         "ActiveTrustedSigners": {"Enabled": True, "Quantity": 12,},
-#         "DistributionConfig": {
-#             "CallerReference": "string",
-#             "CustomErrorResponses": {
-#                 "Quantity": 12,
-#                 "Items": [
-#                     {
-#                         "ErrorCode": 12,
-#                         "ResponsePagePath": "string",
-#                         "ResponseCode": "string",
-#                         "ErrorCachingMinTTL": 12,
-#                     },
-#                 ],
-#             },
-#             "Origins": {
-#                 "Quantity": 12,
-#                 "Items": [
-#                     {"Id": "string", "DomainName": "string", "OriginPath": "string",}
-#                 ],
-#             },
-#             "DefaultCacheBehavior": {
-#                 "TargetOriginId": "string",
-#                 "ForwardedValues": {
-#                     "QueryString": True,
-#                     "Cookies": {"Forward": "none"},
-#                 },
-#                 "TrustedSigners": {
-#                     "Enabled": True,
-#                     "Quantity": 12,
-#                     "Items": ["string",],
-#                 },
-#                 "ViewerProtocolPolicy": "allow-all",
-#                 "MinTTL": 12,
-#                 "AllowedMethods": {
-#                     "Quantity": 12,
-#                     "Items": ["GET",],
-#                     "CachedMethods": {"Quantity": 12, "Items": ["GET",]},
-#                 },
-#             },
-#             "Comment": "string",
-#             "Logging": {
-#                 "Enabled": True,
-#                 "IncludeCookies": True,
-#                 "Bucket": "string",
-#                 "Prefix": "string",
-#             },
-#             "PriceClass": "PriceClass_100",
-#             "Enabled": True,
-#             "ViewerCertificate": {"CloudFrontDefaultCertificate": True,},
-#             "Restrictions": {
-#                 "GeoRestriction": {"RestrictionType": "blacklist", "Quantity": 12,}
-#             },
-#             "WebACLId": "string",
-#             "HttpVersion": "http1.1",
-#             "IsIPV6Enabled": True,
-#         },
-#     },
-# }
-
-get_distribution_response_origin_shield_fail = {
     "Distribution": {
         "Id": "string",
         "ARN": "string",
         "Status": "string",
         "LastModifiedTime": datetime.datetime(2015, 1, 1),
-        "InProgressInvalidationBatches": 12,
+        "InProgressInvalidationBatches": 123,
         "DomainName": "string",
-        "ActiveTrustedSigners": {"Enabled": False, "Quantity": 12,},
+        "ActiveTrustedSigners": {"Enabled": True, "Quantity": 123,},
         "DistributionConfig": {
             "CallerReference": "string",
             "CustomErrorResponses": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {
-                        "ErrorCode": 12,
+                        "ErrorCode": 123,
                         "ResponsePagePath": "string",
                         "ResponseCode": "string",
-                        "ErrorCachingMinTTL": 12,
+                        "ErrorCachingMinTTL": 123,
                     },
                 ],
             },
             "Origins": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {"Id": "string", "DomainName": "string", "OriginPath": "string",}
                 ],
@@ -719,15 +238,15 @@ get_distribution_response_origin_shield_fail = {
                 },
                 "TrustedSigners": {
                     "Enabled": True,
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["string",],
                 },
                 "ViewerProtocolPolicy": "allow-all",
-                "MinTTL": 12,
+                "MinTTL": 123,
                 "AllowedMethods": {
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["GET",],
-                    "CachedMethods": {"Quantity": 12, "Items": ["GET",]},
+                    "CachedMethods": {"Quantity": 123, "Items": ["GET",]},
                 },
             },
             "Comment": "string",
@@ -741,7 +260,74 @@ get_distribution_response_origin_shield_fail = {
             "Enabled": True,
             "ViewerCertificate": {"CloudFrontDefaultCertificate": True,},
             "Restrictions": {
-                "GeoRestriction": {"RestrictionType": "blacklist", "Quantity": 12,}
+                "GeoRestriction": {"RestrictionType": "blacklist", "Quantity": 123,}
+            },
+            "WebACLId": "string",
+            "HttpVersion": "http1.1",
+            "IsIPV6Enabled": True,
+        },
+    },
+}
+
+get_distribution_response_origin_shield_fail = {
+    "Distribution": {
+        "Id": "string",
+        "ARN": "string",
+        "Status": "string",
+        "LastModifiedTime": datetime.datetime(2015, 1, 1),
+        "InProgressInvalidationBatches": 123,
+        "DomainName": "string",
+        "ActiveTrustedSigners": {"Enabled": False, "Quantity": 123,},
+        "DistributionConfig": {
+            "CallerReference": "string",
+            "CustomErrorResponses": {
+                "Quantity": 123,
+                "Items": [
+                    {
+                        "ErrorCode": 123,
+                        "ResponsePagePath": "string",
+                        "ResponseCode": "string",
+                        "ErrorCachingMinTTL": 123,
+                    },
+                ],
+            },
+            "Origins": {
+                "Quantity": 123,
+                "Items": [
+                    {"Id": "string", "DomainName": "string", "OriginPath": "string",}
+                ],
+            },
+            "DefaultCacheBehavior": {
+                "TargetOriginId": "string",
+                "ForwardedValues": {
+                    "QueryString": True,
+                    "Cookies": {"Forward": "none"},
+                },
+                "TrustedSigners": {
+                    "Enabled": True,
+                    "Quantity": 123,
+                    "Items": ["string",],
+                },
+                "ViewerProtocolPolicy": "allow-all",
+                "MinTTL": 123,
+                "AllowedMethods": {
+                    "Quantity": 123,
+                    "Items": ["GET",],
+                    "CachedMethods": {"Quantity": 123, "Items": ["GET",]},
+                },
+            },
+            "Comment": "string",
+            "Logging": {
+                "Enabled": True,
+                "IncludeCookies": True,
+                "Bucket": "string",
+                "Prefix": "string",
+            },
+            "PriceClass": "PriceClass_100",
+            "Enabled": True,
+            "ViewerCertificate": {"CloudFrontDefaultCertificate": True,},
+            "Restrictions": {
+                "GeoRestriction": {"RestrictionType": "blacklist", "Quantity": 123,}
             },
             "WebACLId": "string",
             "HttpVersion": "http1.1",
@@ -756,24 +342,24 @@ get_distribution_response_default_viewer_pass = {
         "ARN": "string",
         "Status": "string",
         "LastModifiedTime": datetime.datetime(2015, 1, 1),
-        "InProgressInvalidationBatches": 12,
+        "InProgressInvalidationBatches": 123,
         "DomainName": "string",
-        "ActiveTrustedSigners": {"Enabled": True, "Quantity": 12,},
+        "ActiveTrustedSigners": {"Enabled": True, "Quantity": 123,},
         "DistributionConfig": {
             "CallerReference": "string",
             "CustomErrorResponses": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {
-                        "ErrorCode": 12,
+                        "ErrorCode": 123,
                         "ResponsePagePath": "string",
                         "ResponseCode": "string",
-                        "ErrorCachingMinTTL": 12,
+                        "ErrorCachingMinTTL": 123,
                     },
                 ],
             },
             "Origins": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {"Id": "string", "DomainName": "string", "OriginPath": "string",}
                 ],
@@ -786,15 +372,15 @@ get_distribution_response_default_viewer_pass = {
                 },
                 "TrustedSigners": {
                     "Enabled": True,
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["string",],
                 },
                 "ViewerProtocolPolicy": "allow-all",
-                "MinTTL": 12,
+                "MinTTL": 123,
                 "AllowedMethods": {
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["GET",],
-                    "CachedMethods": {"Quantity": 12, "Items": ["GET",]},
+                    "CachedMethods": {"Quantity": 123, "Items": ["GET",]},
                 },
             },
             "Comment": "string",
@@ -808,7 +394,7 @@ get_distribution_response_default_viewer_pass = {
             "Enabled": True,
             "ViewerCertificate": {"CloudFrontDefaultCertificate": True,},
             "Restrictions": {
-                "GeoRestriction": {"RestrictionType": "blacklist", "Quantity": 12,}
+                "GeoRestriction": {"RestrictionType": "blacklist", "Quantity": 123,}
             },
             "WebACLId": "string",
             "HttpVersion": "http1.1",
@@ -823,24 +409,24 @@ get_distribution_response_default_viewer_fail = {
         "ARN": "string",
         "Status": "string",
         "LastModifiedTime": datetime.datetime(2015, 1, 1),
-        "InProgressInvalidationBatches": 12,
+        "InProgressInvalidationBatches": 123,
         "DomainName": "string",
-        "ActiveTrustedSigners": {"Enabled": False, "Quantity": 12,},
+        "ActiveTrustedSigners": {"Enabled": False, "Quantity": 123,},
         "DistributionConfig": {
             "CallerReference": "string",
             "CustomErrorResponses": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {
-                        "ErrorCode": 12,
+                        "ErrorCode": 123,
                         "ResponsePagePath": "string",
                         "ResponseCode": "string",
-                        "ErrorCachingMinTTL": 12,
+                        "ErrorCachingMinTTL": 123,
                     },
                 ],
             },
             "Origins": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {"Id": "string", "DomainName": "string", "OriginPath": "string",}
                 ],
@@ -853,15 +439,15 @@ get_distribution_response_default_viewer_fail = {
                 },
                 "TrustedSigners": {
                     "Enabled": True,
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["string",],
                 },
                 "ViewerProtocolPolicy": "allow-all",
-                "MinTTL": 12,
+                "MinTTL": 123,
                 "AllowedMethods": {
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["GET",],
-                    "CachedMethods": {"Quantity": 12, "Items": ["GET",]},
+                    "CachedMethods": {"Quantity": 123, "Items": ["GET",]},
                 },
             },
             "Comment": "string",
@@ -875,7 +461,7 @@ get_distribution_response_default_viewer_fail = {
             "Enabled": True,
             "ViewerCertificate": {"CloudFrontDefaultCertificate": False,},
             "Restrictions": {
-                "GeoRestriction": {"RestrictionType": "blacklist", "Quantity": 12,}
+                "GeoRestriction": {"RestrictionType": "blacklist", "Quantity": 123,}
             },
             "WebACLId": "string",
             "HttpVersion": "http1.1",
@@ -890,24 +476,24 @@ get_distribution_response_geo_restriction_pass = {
         "ARN": "string",
         "Status": "string",
         "LastModifiedTime": datetime.datetime(2015, 1, 1),
-        "InProgressInvalidationBatches": 12,
+        "InProgressInvalidationBatches": 123,
         "DomainName": "string",
-        "ActiveTrustedSigners": {"Enabled": True, "Quantity": 12,},
+        "ActiveTrustedSigners": {"Enabled": True, "Quantity": 123,},
         "DistributionConfig": {
             "CallerReference": "string",
             "CustomErrorResponses": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {
-                        "ErrorCode": 12,
+                        "ErrorCode": 123,
                         "ResponsePagePath": "string",
                         "ResponseCode": "string",
-                        "ErrorCachingMinTTL": 12,
+                        "ErrorCachingMinTTL": 123,
                     },
                 ],
             },
             "Origins": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {"Id": "string", "DomainName": "string", "OriginPath": "string",}
                 ],
@@ -920,15 +506,15 @@ get_distribution_response_geo_restriction_pass = {
                 },
                 "TrustedSigners": {
                     "Enabled": True,
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["string",],
                 },
                 "ViewerProtocolPolicy": "allow-all",
-                "MinTTL": 12,
+                "MinTTL": 123,
                 "AllowedMethods": {
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["GET",],
-                    "CachedMethods": {"Quantity": 12, "Items": ["GET",]},
+                    "CachedMethods": {"Quantity": 123, "Items": ["GET",]},
                 },
             },
             "Comment": "string",
@@ -942,7 +528,7 @@ get_distribution_response_geo_restriction_pass = {
             "Enabled": True,
             "ViewerCertificate": {"CloudFrontDefaultCertificate": True,},
             "Restrictions": {
-                "GeoRestriction": {"RestrictionType": "blacklist", "Quantity": 12,}
+                "GeoRestriction": {"RestrictionType": "blacklist", "Quantity": 123,}
             },
             "WebACLId": "string",
             "HttpVersion": "http1.1",
@@ -957,24 +543,24 @@ get_distribution_response_geo_restriction_fail = {
         "ARN": "string",
         "Status": "string",
         "LastModifiedTime": datetime.datetime(2015, 1, 1),
-        "InProgressInvalidationBatches": 12,
+        "InProgressInvalidationBatches": 123,
         "DomainName": "string",
-        "ActiveTrustedSigners": {"Enabled": False, "Quantity": 12,},
+        "ActiveTrustedSigners": {"Enabled": False, "Quantity": 123,},
         "DistributionConfig": {
             "CallerReference": "string",
             "CustomErrorResponses": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {
-                        "ErrorCode": 12,
+                        "ErrorCode": 123,
                         "ResponsePagePath": "string",
                         "ResponseCode": "string",
-                        "ErrorCachingMinTTL": 12,
+                        "ErrorCachingMinTTL": 123,
                     },
                 ],
             },
             "Origins": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {"Id": "string", "DomainName": "string", "OriginPath": "string",}
                 ],
@@ -987,15 +573,15 @@ get_distribution_response_geo_restriction_fail = {
                 },
                 "TrustedSigners": {
                     "Enabled": True,
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["string",],
                 },
                 "ViewerProtocolPolicy": "allow-all",
-                "MinTTL": 12,
+                "MinTTL": 123,
                 "AllowedMethods": {
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["GET",],
-                    "CachedMethods": {"Quantity": 12, "Items": ["GET",]},
+                    "CachedMethods": {"Quantity": 123, "Items": ["GET",]},
                 },
             },
             "Comment": "string",
@@ -1024,24 +610,24 @@ get_distribution_response_field_level_encryption_pass = {
         "ARN": "string",
         "Status": "string",
         "LastModifiedTime": datetime.datetime(2015, 1, 1),
-        "InProgressInvalidationBatches": 12,
+        "InProgressInvalidationBatches": 123,
         "DomainName": "string",
-        "ActiveTrustedSigners": {"Enabled": True, "Quantity": 12,},
+        "ActiveTrustedSigners": {"Enabled": True, "Quantity": 123,},
         "DistributionConfig": {
             "CallerReference": "string",
             "CustomErrorResponses": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {
-                        "ErrorCode": 12,
+                        "ErrorCode": 123,
                         "ResponsePagePath": "string",
                         "ResponseCode": "string",
-                        "ErrorCachingMinTTL": 12,
+                        "ErrorCachingMinTTL": 123,
                     },
                 ],
             },
             "Origins": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {"Id": "string", "DomainName": "string", "OriginPath": "string",}
                 ],
@@ -1054,15 +640,15 @@ get_distribution_response_field_level_encryption_pass = {
                 },
                 "TrustedSigners": {
                     "Enabled": True,
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["string",],
                 },
                 "ViewerProtocolPolicy": "allow-all",
-                "MinTTL": 12,
+                "MinTTL": 123,
                 "AllowedMethods": {
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["GET",],
-                    "CachedMethods": {"Quantity": 12, "Items": ["GET",]},
+                    "CachedMethods": {"Quantity": 123, "Items": ["GET",]},
                 },
                 "FieldLevelEncryptionId": "string"
             },
@@ -1077,7 +663,7 @@ get_distribution_response_field_level_encryption_pass = {
             "Enabled": True,
             "ViewerCertificate": {"CloudFrontDefaultCertificate": True,},
             "Restrictions": {
-                "GeoRestriction": {"RestrictionType": "blacklist", "Quantity": 12,}
+                "GeoRestriction": {"RestrictionType": "blacklist", "Quantity": 123,}
             },
             "WebACLId": "string",
             "HttpVersion": "http1.1",
@@ -1092,24 +678,24 @@ get_distribution_response_field_level_encryption_fail = {
         "ARN": "string",
         "Status": "string",
         "LastModifiedTime": datetime.datetime(2015, 1, 1),
-        "InProgressInvalidationBatches": 12,
+        "InProgressInvalidationBatches": 123,
         "DomainName": "string",
-        "ActiveTrustedSigners": {"Enabled": False, "Quantity": 12,},
+        "ActiveTrustedSigners": {"Enabled": False, "Quantity": 123,},
         "DistributionConfig": {
             "CallerReference": "string",
             "CustomErrorResponses": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {
-                        "ErrorCode": 12,
+                        "ErrorCode": 123,
                         "ResponsePagePath": "string",
                         "ResponseCode": "string",
-                        "ErrorCachingMinTTL": 12,
+                        "ErrorCachingMinTTL": 123,
                     },
                 ],
             },
             "Origins": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {"Id": "string", "DomainName": "string", "OriginPath": "string",}
                 ],
@@ -1122,15 +708,15 @@ get_distribution_response_field_level_encryption_fail = {
                 },
                 "TrustedSigners": {
                     "Enabled": True,
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["string",],
                 },
                 "ViewerProtocolPolicy": "allow-all",
-                "MinTTL": 12,
+                "MinTTL": 123,
                 "AllowedMethods": {
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["GET",],
-                    "CachedMethods": {"Quantity": 12, "Items": ["GET",]},
+                    "CachedMethods": {"Quantity": 123, "Items": ["GET",]},
                 },
                 "FieldLevelEncryptionId": ""
             },
@@ -1160,24 +746,24 @@ get_distribution_response_waf_enabled_pass = {
         "ARN": "string",
         "Status": "string",
         "LastModifiedTime": datetime.datetime(2015, 1, 1),
-        "InProgressInvalidationBatches": 12,
+        "InProgressInvalidationBatches": 123,
         "DomainName": "string",
-        "ActiveTrustedSigners": {"Enabled": True, "Quantity": 12,},
+        "ActiveTrustedSigners": {"Enabled": True, "Quantity": 123,},
         "DistributionConfig": {
             "CallerReference": "string",
             "CustomErrorResponses": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {
-                        "ErrorCode": 12,
+                        "ErrorCode": 123,
                         "ResponsePagePath": "string",
                         "ResponseCode": "string",
-                        "ErrorCachingMinTTL": 12,
+                        "ErrorCachingMinTTL": 123,
                     },
                 ],
             },
             "Origins": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {"Id": "string", "DomainName": "string", "OriginPath": "string",}
                 ],
@@ -1190,15 +776,15 @@ get_distribution_response_waf_enabled_pass = {
                 },
                 "TrustedSigners": {
                     "Enabled": True,
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["string",],
                 },
                 "ViewerProtocolPolicy": "allow-all",
-                "MinTTL": 12,
+                "MinTTL": 123,
                 "AllowedMethods": {
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["GET",],
-                    "CachedMethods": {"Quantity": 12, "Items": ["GET",]},
+                    "CachedMethods": {"Quantity": 123, "Items": ["GET",]},
                 },
                 "FieldLevelEncryptionId": "string"
             },
@@ -1213,7 +799,7 @@ get_distribution_response_waf_enabled_pass = {
             "Enabled": True,
             "ViewerCertificate": {"CloudFrontDefaultCertificate": True,},
             "Restrictions": {
-                "GeoRestriction": {"RestrictionType": "blacklist", "Quantity": 12,}
+                "GeoRestriction": {"RestrictionType": "blacklist", "Quantity": 123,}
             },
             "WebACLId": "string",
             "HttpVersion": "http1.1",
@@ -1228,24 +814,24 @@ get_distribution_response_waf_enabled_fail = {
         "ARN": "string",
         "Status": "string",
         "LastModifiedTime": datetime.datetime(2015, 1, 1),
-        "InProgressInvalidationBatches": 12,
+        "InProgressInvalidationBatches": 123,
         "DomainName": "string",
-        "ActiveTrustedSigners": {"Enabled": False, "Quantity": 12,},
+        "ActiveTrustedSigners": {"Enabled": False, "Quantity": 123,},
         "DistributionConfig": {
             "CallerReference": "string",
             "CustomErrorResponses": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {
-                        "ErrorCode": 12,
+                        "ErrorCode": 123,
                         "ResponsePagePath": "string",
                         "ResponseCode": "string",
-                        "ErrorCachingMinTTL": 12,
+                        "ErrorCachingMinTTL": 123,
                     },
                 ],
             },
             "Origins": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {"Id": "string", "DomainName": "string", "OriginPath": "string",}
                 ],
@@ -1258,15 +844,15 @@ get_distribution_response_waf_enabled_fail = {
                 },
                 "TrustedSigners": {
                     "Enabled": True,
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["string",],
                 },
                 "ViewerProtocolPolicy": "allow-all",
-                "MinTTL": 12,
+                "MinTTL": 123,
                 "AllowedMethods": {
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["GET",],
-                    "CachedMethods": {"Quantity": 12, "Items": ["GET",]},
+                    "CachedMethods": {"Quantity": 123, "Items": ["GET",]},
                 },
                 "FieldLevelEncryptionId": ""
             },
@@ -1296,24 +882,24 @@ get_distribution_response_default_tls_pass = {
         "ARN": "string",
         "Status": "string",
         "LastModifiedTime": datetime.datetime(2015, 1, 1),
-        "InProgressInvalidationBatches": 12,
+        "InProgressInvalidationBatches": 123,
         "DomainName": "string",
-        "ActiveTrustedSigners": {"Enabled": True, "Quantity": 12,},
+        "ActiveTrustedSigners": {"Enabled": True, "Quantity": 123,},
         "DistributionConfig": {
             "CallerReference": "string",
             "CustomErrorResponses": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {
-                        "ErrorCode": 12,
+                        "ErrorCode": 123,
                         "ResponsePagePath": "string",
                         "ResponseCode": "string",
-                        "ErrorCachingMinTTL": 12,
+                        "ErrorCachingMinTTL": 123,
                     },
                 ],
             },
             "Origins": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {"Id": "string", "DomainName": "string", "OriginPath": "string",}
                 ],
@@ -1326,15 +912,15 @@ get_distribution_response_default_tls_pass = {
                 },
                 "TrustedSigners": {
                     "Enabled": True,
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["string",],
                 },
                 "ViewerProtocolPolicy": "allow-all",
-                "MinTTL": 12,
+                "MinTTL": 123,
                 "AllowedMethods": {
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["GET",],
-                    "CachedMethods": {"Quantity": 12, "Items": ["GET",]},
+                    "CachedMethods": {"Quantity": 123, "Items": ["GET",]},
                 },
                 "FieldLevelEncryptionId": "string"
             },
@@ -1352,7 +938,7 @@ get_distribution_response_default_tls_pass = {
                 "MinimumProtocolVersion": "TLSv1",
             },
             "Restrictions": {
-                "GeoRestriction": {"RestrictionType": "blacklist", "Quantity": 12,}
+                "GeoRestriction": {"RestrictionType": "blacklist", "Quantity": 123,}
             },
             "WebACLId": "string",
             "HttpVersion": "http1.1",
@@ -1367,24 +953,24 @@ get_distribution_response_default_tls_fail = {
         "ARN": "string",
         "Status": "string",
         "LastModifiedTime": datetime.datetime(2015, 1, 1),
-        "InProgressInvalidationBatches": 12,
+        "InProgressInvalidationBatches": 123,
         "DomainName": "string",
-        "ActiveTrustedSigners": {"Enabled": False, "Quantity": 12,},
+        "ActiveTrustedSigners": {"Enabled": False, "Quantity": 123,},
         "DistributionConfig": {
             "CallerReference": "string",
             "CustomErrorResponses": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {
-                        "ErrorCode": 12,
+                        "ErrorCode": 123,
                         "ResponsePagePath": "string",
                         "ResponseCode": "string",
-                        "ErrorCachingMinTTL": 12,
+                        "ErrorCachingMinTTL": 123,
                     },
                 ],
             },
             "Origins": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {"Id": "string", "DomainName": "string", "OriginPath": "string",}
                 ],
@@ -1397,15 +983,15 @@ get_distribution_response_default_tls_fail = {
                 },
                 "TrustedSigners": {
                     "Enabled": True,
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["string",],
                 },
                 "ViewerProtocolPolicy": "allow-all",
-                "MinTTL": 12,
+                "MinTTL": 123,
                 "AllowedMethods": {
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["GET",],
-                    "CachedMethods": {"Quantity": 12, "Items": ["GET",]},
+                    "CachedMethods": {"Quantity": 123, "Items": ["GET",]},
                 },
                 "FieldLevelEncryptionId": ""
             },
@@ -1438,24 +1024,24 @@ get_distribution_response_custom_origin_tls_pass = {
         "ARN": "string",
         "Status": "string",
         "LastModifiedTime": datetime.datetime(2015, 1, 1),
-        "InProgressInvalidationBatches": 12,
+        "InProgressInvalidationBatches": 123,
         "DomainName": "string",
-        "ActiveTrustedSigners": {"Enabled": True, "Quantity": 12,},
+        "ActiveTrustedSigners": {"Enabled": True, "Quantity": 123,},
         "DistributionConfig": {
             "CallerReference": "string",
             "CustomErrorResponses": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {
-                        "ErrorCode": 12,
+                        "ErrorCode": 123,
                         "ResponsePagePath": "string",
                         "ResponseCode": "string",
-                        "ErrorCachingMinTTL": 12,
+                        "ErrorCachingMinTTL": 123,
                     },
                 ],
             },
             "Origins": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {
                         "Id": "string",
@@ -1486,15 +1072,15 @@ get_distribution_response_custom_origin_tls_pass = {
                 },
                 "TrustedSigners": {
                     "Enabled": True,
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["string",],
                 },
                 "ViewerProtocolPolicy": "allow-all",
-                "MinTTL": 12,
+                "MinTTL": 123,
                 "AllowedMethods": {
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["GET",],
-                    "CachedMethods": {"Quantity": 12, "Items": ["GET",]},
+                    "CachedMethods": {"Quantity": 123, "Items": ["GET",]},
                 },
                 "FieldLevelEncryptionId": "string"
             },
@@ -1512,7 +1098,7 @@ get_distribution_response_custom_origin_tls_pass = {
                 "MinimumProtocolVersion": "",
             },
             "Restrictions": {
-                "GeoRestriction": {"RestrictionType": "blacklist", "Quantity": 12,}
+                "GeoRestriction": {"RestrictionType": "blacklist", "Quantity": 123,}
             },
             "WebACLId": "string",
             "HttpVersion": "http1.1",
@@ -1527,24 +1113,24 @@ get_distribution_response_custom_origin_tls_fail = {
         "ARN": "string",
         "Status": "string",
         "LastModifiedTime": datetime.datetime(2015, 1, 1),
-        "InProgressInvalidationBatches": 12,
+        "InProgressInvalidationBatches": 123,
         "DomainName": "string",
-        "ActiveTrustedSigners": {"Enabled": False, "Quantity": 12,},
+        "ActiveTrustedSigners": {"Enabled": False, "Quantity": 123,},
         "DistributionConfig": {
             "CallerReference": "string",
             "CustomErrorResponses": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {
-                        "ErrorCode": 12,
+                        "ErrorCode": 123,
                         "ResponsePagePath": "string",
                         "ResponseCode": "string",
-                        "ErrorCachingMinTTL": 12,
+                        "ErrorCachingMinTTL": 123,
                     },
                 ],
             },
             "Origins": {
-                "Quantity": 12,
+                "Quantity": 123,
                 "Items": [
                     {
                         "Id": "string",
@@ -1575,15 +1161,15 @@ get_distribution_response_custom_origin_tls_fail = {
                 },
                 "TrustedSigners": {
                     "Enabled": True,
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["string",],
                 },
                 "ViewerProtocolPolicy": "allow-all",
-                "MinTTL": 12,
+                "MinTTL": 123,
                 "AllowedMethods": {
-                    "Quantity": 12,
+                    "Quantity": 123,
                     "Items": ["GET",],
-                    "CachedMethods": {"Quantity": 12, "Items": ["GET",]},
+                    "CachedMethods": {"Quantity": 123, "Items": ["GET",]},
                 },
                 "FieldLevelEncryptionId": ""
             },
@@ -1624,7 +1210,7 @@ def test_trusted_signers_pass(cloudfront_stubber):
         "get_distribution", get_distribution_response_trusted_user_pass
     )
     results = cloudfront_active_trusted_signers_check(
-        cache={}, awsAccountId="01245678901", awsRegion="us-east-1", awsPartition="aws"
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
     )
     for result in results:
         assert result["RecordState"] == "ARCHIVED"
@@ -1637,7 +1223,7 @@ def test_trusted_signers_fail(cloudfront_stubber):
         "get_distribution", get_distribution_response_trusted_user_fail
     )
     results = cloudfront_active_trusted_signers_check(
-        cache={}, awsAccountId="01245678901", awsRegion="us-east-1", awsPartition="aws"
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
     )
     for result in results:
         assert result["RecordState"] == "ACTIVE"
@@ -1649,7 +1235,7 @@ def test_origin_shield_pass(cloudfront_stubber):
         "get_distribution", get_distribution_response_origin_shield_pass
     )
     results = cloudfront_origin_shield_check(
-        cache={}, awsAccountId="01245678901", awsRegion="us-east-1", awsPartition="aws"
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
     )
     for result in results:
         assert result["RecordState"] == "ARCHIVED"
@@ -1661,7 +1247,7 @@ def test_origin_shield_fail(cloudfront_stubber):
         "get_distribution", get_distribution_response_origin_shield_fail
     )
     results = cloudfront_origin_shield_check(
-        cache={}, awsAccountId="01245678901", awsRegion="us-east-1", awsPartition="aws"
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
     )
     for result in results:
         assert result["RecordState"] == "ACTIVE"
@@ -1673,7 +1259,7 @@ def test_default_viewer_pass(cloudfront_stubber):
         "get_distribution", get_distribution_response_default_viewer_pass
     )
     results = cloudfront_default_viewer_check(
-        cache={}, awsAccountId="01245678901", awsRegion="us-east-1", awsPartition="aws"
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
     )
     for result in results:
         assert result["RecordState"] == "ARCHIVED"
@@ -1685,7 +1271,7 @@ def test_default_viewer_fail(cloudfront_stubber):
         "get_distribution", get_distribution_response_default_viewer_fail
     )
     results = cloudfront_default_viewer_check(
-        cache={}, awsAccountId="01245678901", awsRegion="us-east-1", awsPartition="aws"
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
     )
     for result in results:
         assert result["RecordState"] == "ACTIVE"
@@ -1697,7 +1283,7 @@ def test_geo_restriction_pass(cloudfront_stubber):
         "get_distribution", get_distribution_response_geo_restriction_pass
     )
     results = cloudfront_georestriction_check(
-        cache={}, awsAccountId="01245678901", awsRegion="us-east-1", awsPartition="aws"
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
     )
     for result in results:
         assert result["RecordState"] == "ARCHIVED"
@@ -1709,7 +1295,7 @@ def test_geo_restriction_fail(cloudfront_stubber):
         "get_distribution", get_distribution_response_geo_restriction_fail
     )
     results = cloudfront_georestriction_check(
-        cache={}, awsAccountId="01245678901", awsRegion="us-east-1", awsPartition="aws"
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
     )
     for result in results:
         assert result["RecordState"] == "ACTIVE"
@@ -1721,7 +1307,7 @@ def test_field_level_encryption_pass(cloudfront_stubber):
         "get_distribution", get_distribution_response_field_level_encryption_pass
     )
     results = cloudfront_field_level_encryption_check(
-        cache={}, awsAccountId="01245678901", awsRegion="us-east-1", awsPartition="aws"
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
     )
     for result in results:
         assert result["RecordState"] == "ARCHIVED"
@@ -1733,7 +1319,7 @@ def test_field_level_encryption_fail(cloudfront_stubber):
         "get_distribution", get_distribution_response_field_level_encryption_fail
     )
     results = cloudfront_field_level_encryption_check(
-        cache={}, awsAccountId="01245678901", awsRegion="us-east-1", awsPartition="aws"
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
     )
     for result in results:
         assert result["RecordState"] == "ACTIVE"
@@ -1745,7 +1331,7 @@ def test_waf_enabled_pass(cloudfront_stubber):
         "get_distribution", get_distribution_response_waf_enabled_pass
     )
     results = cloudfront_waf_enabled_check(
-        cache={}, awsAccountId="01245678901", awsRegion="us-east-1", awsPartition="aws"
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
     )
     for result in results:
         assert result["RecordState"] == "ARCHIVED"
@@ -1757,7 +1343,7 @@ def test_waf_enabled_fail(cloudfront_stubber):
         "get_distribution", get_distribution_response_waf_enabled_fail
     )
     results = cloudfront_waf_enabled_check(
-        cache={}, awsAccountId="01245678901", awsRegion="us-east-1", awsPartition="aws"
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
     )
     for result in results:
         assert result["RecordState"] == "ACTIVE"
@@ -1769,7 +1355,7 @@ def test_default_tls_pass(cloudfront_stubber):
         "get_distribution", get_distribution_response_default_tls_pass
     )
     results = cloudfront_default_tls_check(
-        cache={}, awsAccountId="01245678901", awsRegion="us-east-1", awsPartition="aws"
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
     )
     for result in results:
         assert result["RecordState"] == "ARCHIVED"
@@ -1781,7 +1367,7 @@ def test_default_tls_fail(cloudfront_stubber):
         "get_distribution", get_distribution_response_default_tls_fail
     )
     results = cloudfront_default_tls_check(
-        cache={}, awsAccountId="01245678901", awsRegion="us-east-1", awsPartition="aws"
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
     )
     for result in results:
         assert result["RecordState"] == "ACTIVE"
@@ -1793,7 +1379,7 @@ def test_custom_origin_tls_pass(cloudfront_stubber):
         "get_distribution", get_distribution_response_custom_origin_tls_pass
     )
     results = cloudfront_custom_origin_tls_check(
-        cache={}, awsAccountId="01245678901", awsRegion="us-east-1", awsPartition="aws"
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
     )
     for result in results:
         assert result["RecordState"] == "ARCHIVED"
@@ -1805,7 +1391,7 @@ def test_custom_origin_tls_fail(cloudfront_stubber):
         "get_distribution", get_distribution_response_custom_origin_tls_fail
     )
     results = cloudfront_custom_origin_tls_check(
-        cache={}, awsAccountId="01245678901", awsRegion="us-east-1", awsPartition="aws"
+        cache={}, awsAccountId="012345678901", awsRegion="us-east-1", awsPartition="aws"
     )
     for result in results:
         assert result["RecordState"] == "ACTIVE"
