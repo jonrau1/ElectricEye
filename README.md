@@ -440,7 +440,7 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_EC2_Auditor.py                  | EC2 Instance                   | Is the instance internet-facing                                                     |
 | Amazon_EC2_Auditor.py                  | EC2 Instance                   | Is Source/Dest Check disabled                                                       |
 | Amazon_EC2_Auditor.py                  | AWS Account                    | Is Serial Port Access restricted                                                    |
-| Amazon_EC2_Auditor.py                  | EC2 Instance                   | Is instance using an AMI baked in last 6 months                                     |
+| Amazon_EC2_Auditor.py                  | EC2 Instance                   | Is instance using an AMI baked in last 3 months                                     |
 | Amazon_EC2_Auditor.py                  | EC2 Instance                   | Is instance using a correctly registered AMI                                        |
 | Amazon_EC2_Image_Builder_Auditor.py    | Image Builder                  | Are pipeline tests enabled                                                          |
 | Amazon_EC2_Image_Builder_Auditor.py    | Image Builder                  | Is EBS encrypted                                                                    |

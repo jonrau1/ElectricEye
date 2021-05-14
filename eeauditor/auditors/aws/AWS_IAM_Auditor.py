@@ -1145,12 +1145,10 @@ def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                     "ProductFields": {"Product Name": "ElectricEye"},
                     "Resources": [
                         {
-                            "Type": "AWSIamPolicy",
-                            "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                            "Type": "AwsIamPolicy",
+                            "Id": policy_arn,
                             "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {"Other": {"PolicyArn": policy_arn}},
-
+                            "Region": awsRegion
                         }
                     ],
                     "Compliance": {
@@ -1198,12 +1196,10 @@ def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                     "ProductFields": {"Product Name": "ElectricEye"},
                     "Resources": [
                         {
-                            "Type": "AWSIamPolicy",
-                            "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                            "Type": "AwsIamPolicy",
+                            "Id": policy_arn,
                             "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {"Other": {"PolicyArn": policy_arn}},
-
+                            "Region": awsRegion
                         }
                     ],
                     "Compliance": {
@@ -1251,12 +1247,10 @@ def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                     "ProductFields": {"Product Name": "ElectricEye"},
                     "Resources": [
                         {
-                            "Type": "AWSIamPolicy",
-                            "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                            "Type": "AwsIamPolicy",
+                            "Id": policy_arn,
                             "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {"Other": {"PolicyArn": policy_arn}},
-
+                            "Region": awsRegion
                         }
                     ],
                     "Compliance": {
@@ -1354,15 +1348,15 @@ def iam_user_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         },
                         "ProductFields": {"Product Name": "ElectricEye"},
                         "Resources": [
-                            {
-                                "Type": "AWSIamPolicy",
-                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
-                                "Partition": awsPartition,
-                                "Region": awsRegion,
-                                "Details": {"Other": {
-                                    "PolicyName": policy_name,
-                                    "UserArn": user_arn}},
-
+                        {
+                        "Type": "AwsIamUser",
+                        "Id": user_arn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "PrincipalName": UserName}
+                                },
                             }
                         ],
                         "Compliance": {
@@ -1409,15 +1403,14 @@ def iam_user_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         },
                         "ProductFields": {"Product Name": "ElectricEye"},
                         "Resources": [
-                            {
-                                "Type": "AWSIamPolicy",
-                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
-                                "Partition": awsPartition,
-                                "Region": awsRegion,
-                                "Details": {"Other": {
-                                    "PolicyName": policy_name,
-                                    "UserArn": user_arn}},
-
+                        {
+                        "Type": "AwsIamUser",
+                        "Id": user_arn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {"PrincipalName": UserName}
+                                },
                             }
                         ],
                         "Compliance": {
@@ -1464,15 +1457,15 @@ def iam_user_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         },
                         "ProductFields": {"Product Name": "ElectricEye"},
                         "Resources": [
-                            {
-                                "Type": "AWSIamPolicy",
-                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
-                                "Partition": awsPartition,
-                                "Region": awsRegion,
-                                "Details": {"Other": {
-                                    "PolicyName": policy_name,
-                                    "UserArn": user_arn}},
-
+                        {
+                        "Type": "AwsIamUser",
+                        "Id": user_arn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "PrincipalName": UserName}
+                                },
                             }
                         ],
                         "Compliance": {
@@ -1571,14 +1564,11 @@ def iam_group_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion:
                         "ProductFields": {"Product Name": "ElectricEye"},
                         "Resources": [
                             {
-                                "Type": "AWSIamPolicy",
-                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                                "Type": "AwsIamGroup",
+                                "Id": group_arn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
-                                "Details": {"Other": {
-                                    "PolicyName": policy_name,
-                                    "GroupArn": group_arn}},
-
+                                "Details": {"Other": {"PolicyName": policy_name}},
                             }
                         ],
                         "Compliance": {
@@ -1626,14 +1616,11 @@ def iam_group_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion:
                         "ProductFields": {"Product Name": "ElectricEye"},
                         "Resources": [
                             {
-                                "Type": "AWSIamPolicy",
-                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                                "Type": "AwsIamGroup",
+                                "Id": group_arn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
-                                "Details": {"Other": {
-                                    "PolicyName": policy_name,
-                                    "GroupArn": group_arn}},
-
+                                "Details": {"Other": {"PolicyName": policy_name}},
                             }
                         ],
                         "Compliance": {
@@ -1681,14 +1668,11 @@ def iam_group_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion:
                         "ProductFields": {"Product Name": "ElectricEye"},
                         "Resources": [
                             {
-                                "Type": "AWSIamPolicy",
-                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                                "Type": "AwsIamGroup",
+                                "Id": group_arn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
-                                "Details": {"Other": {
-                                    "PolicyName": policy_name,
-                                    "GroupArn": group_arn}},
-
+                                "Details": {"Other": {"PolicyName": policy_name}},
                             }
                         ],
                         "Compliance": {
@@ -1787,14 +1771,12 @@ def iam_role_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         "ProductFields": {"Product Name": "ElectricEye"},
                         "Resources": [
                             {
-                                "Type": "AWSIamPolicy",
-                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                                "Type": "AwsIamRole",
+                                "Id": role_arn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {"Other": {
-                                    "PolicyName": policy_name,
-                                    "roleArn": role_arn}},
-
+                                    "PolicyName": policy_name}},
                             }
                         ],
                         "Compliance": {
@@ -1842,13 +1824,12 @@ def iam_role_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         "ProductFields": {"Product Name": "ElectricEye"},
                         "Resources": [
                             {
-                                "Type": "AWSIamPolicy",
-                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                                "Type": "AwsIamRole",
+                                "Id": role_arn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {"Other": {
-                                    "PolicyName": policy_name,
-                                    "roleArn": role_arn}},
+                                    "PolicyName": policy_name}},
                             }
                         ],
                         "Compliance": {
@@ -1896,14 +1877,12 @@ def iam_role_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         "ProductFields": {"Product Name": "ElectricEye"},
                         "Resources": [
                             {
-                                "Type": "AWSIamPolicy",
-                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                                "Type": "AwsIamRole",
+                                "Id": role_arn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {"Other": {
-                                    "PolicyName": policy_name,
-                                    "roleArn": role_arn}},
-
+                                    "PolicyName": policy_name}},
                             }
                         ],
                         "Compliance": {

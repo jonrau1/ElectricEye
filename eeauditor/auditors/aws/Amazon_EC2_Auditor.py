@@ -794,7 +794,7 @@ def ec2_serial_console_access_check(cache: dict, awsAccountId: str, awsRegion: s
 
 @registry.register_check("ec2")
 def ec2_ami_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EC2.5] EC2 Instances should use AMIs that are less than 6 months old"""
+    """[EC2.5] EC2 Instances should use AMIs that are less than 3 months old"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     iterator = paginate(cache=cache)
@@ -814,7 +814,7 @@ def ec2_ami_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
                     dt_creation_date = parse(dsc_image_date).replace(tzinfo=None)
                     AmiAge = datetime.datetime.utcnow() - dt_creation_date
 
-                    if AmiAge.days > 180:
+                    if AmiAge.days > 90:
                         finding = {
                             "SchemaVersion": "2018-10-08",
                             "Id": instanceArn + "/ec2-ami-age-check",
@@ -829,7 +829,7 @@ def ec2_ami_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
                             "UpdatedAt": iso8601Time,
                             "Severity": {"Label": "MEDIUM"},
                             "Confidence": 99,
-                            "Title": "[EC2.5] EC2 Instances should use AMIs that are less than 6 months old",
+                            "Title": "[EC2.5] EC2 Instances should use AMIs that are less than 3 months old",
                             "Description": f"EC2 Instance {instanceId} is using an AMI that is {AmiAge.days} days old",
                             "Remediation": {
                                 "Recommendation": {
@@ -890,7 +890,7 @@ def ec2_ami_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
                             "UpdatedAt": iso8601Time,
                             "Severity": {"Label": "INFORMATIONAL"},
                             "Confidence": 99,
-                            "Title": "[EC2.5] EC2 Instances should use AMIs that are less than 6 months old",
+                            "Title": "[EC2.5] EC2 Instances should use AMIs that are less than 3 months old",
                             "Description": f"EC2 Instance {instanceId} is using an AMI that is {AmiAge.days} days old",
                             "Remediation": {
                                 "Recommendation": {
