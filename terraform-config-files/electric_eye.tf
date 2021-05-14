@@ -374,7 +374,19 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "codeartifact:GetDomainPermissionsPolicy",
                 "codeartifact:ListDomains",
                 "codeartifact:ListRepositories",
-                "codeartifact:GetRepositoryPermissionsPolicy"
+                "codeartifact:GetRepositoryPermissionsPolicy",
+                "shield:ListAttacks",
+                "cloudhsm:DescribeClusters",
+                "cloudhsm:DescribeBackups",
+                "iam:ListRolePolicies",
+                "iam:ListRoles",
+                "iam:GetRolePolicy",
+                "iam:GetUserPolicy",
+                "iam:ListGroupPolicies",
+                "iam:ListGroups",
+                "iam:GetGroupPolicy",
+                "iam:ListPolicies",
+                "iam:GetPolicyVersion"
             ],
             "Resource": "*"
         }

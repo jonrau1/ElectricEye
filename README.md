@@ -393,7 +393,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 
 ## Supported Services and Checks
 
-These are the following services and checks perform by each Auditor. There are currently **299** checks supported across **84** AWS services / components using **65** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **311** checks supported across **85** AWS services / components using **66** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced, Health, and Trusted Advisor checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in `us-east-1` to perform all checks. The Shield, Health and Trusted Advisor APIs only live in `us-east-1`, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -440,6 +440,8 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_EC2_Auditor.py                  | EC2 Instance                   | Is the instance internet-facing                                                     |
 | Amazon_EC2_Auditor.py                  | EC2 Instance                   | Is Source/Dest Check disabled                                                       |
 | Amazon_EC2_Auditor.py                  | AWS Account                    | Is Serial Port Access restricted                                                    |
+| Amazon_EC2_Auditor.py                  | EC2 Instance                   | Is instance using an AMI baked in last 3 months                                     |
+| Amazon_EC2_Auditor.py                  | EC2 Instance                   | Is instance using a correctly registered AMI                                        |
 | Amazon_EC2_Image_Builder_Auditor.py    | Image Builder                  | Are pipeline tests enabled                                                          |
 | Amazon_EC2_Image_Builder_Auditor.py    | Image Builder                  | Is EBS encrypted                                                                    |
 | Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Are all ports (-1) open to the internet                                             |
@@ -585,6 +587,7 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_Shield_Advanced_Auditor.py      | Account (DRT S3 Access)        | Does the DRT have access to WAF logs S3 buckets                                     |
 | Amazon_Shield_Advanced_Auditor.py      | Account (Shield subscription)  | Is Shield Adv subscription on auto renew                                            |
 | Amazon_Shield_Advanced_Auditor.py      | Global Accelerator Accelerator | Are GA Accelerators protected by Shield Adv                                         |
+| Amazon_Shield_Advanced_Auditor.py      | Account                        | Has Shield Adv mitigated any attacks in the last 7 days                             |
 | Amazon_SNS_Auditor.py                  | SNS Topic                      | Is the topic encrypted                                                              |
 | Amazon_SNS_Auditor.py                  | SNS Topic                      | Does the topic have plaintext (HTTP) subscriptions                                  |
 | Amazon_SNS_Auditor.py                  | SNS Topic                      | Does the topic allow public access                                                  |
@@ -606,6 +609,8 @@ These are the following services and checks perform by each Auditor. There are c
 | AWS_ACM_Auditor.py                     | ACM Certificate                | Are certificates revoked                                                            |
 | AWS_ACM_Auditor.py                     | ACM Certificate                | Are certificates in use                                                             |
 | AWS_ACM_Auditor.py                     | ACM Certificate                | Is certificate transparency logging enabled                                         |
+| AWS_ACM_Auditor.py                     | ACM Certificate                | Have certificates been correctly renewed                                            |
+| AWS_ACM_Auditor.py                     | ACM Certificate                | Are certificates correctly validated                                                |
 | AWS_Amplify_Auditor.py                 | AWS Amplify                    | Does the app have basic auth enabled on the branches                                |
 | AWS_Amplify_Auditor.py                 | AWS Amplify                    | Does the app have auto deletion for branches enabled                                |
 | AWS_AppMesh_Auditor.py                 | App Mesh mesh                  | Does the mesh egress filter DROP_ALL                                                |
@@ -620,6 +625,9 @@ These are the following services and checks perform by each Auditor. There are c
 | AWS_Cloud9_Auditor.py                  | Cloud9 Environment             | Are Cloud9 Envs using SSM for access                                                |
 | AWS_CloudFormation_Auditor.py          | CloudFormation Stack           | Is drift detection enabled                                                          |
 | AWS_CloudFormation_Auditor.py          | CloudFormation Stack           | Are stacks monitored                                                                |
+| AWS_CloudHSM_Auditor.py                | CloudHSM Cluster               | Is the CloudHSM Cluster in a degraded state                                         |
+| AWS_CloudHSM_Auditor.py                | CloudHSM HSM Module            | Is the CloudHSM hardware security module in a degraded state                        |
+| AWS_CloudHSM_Auditor.py                | CloudHSM Backups               | Is there at least one backup in a READY state                                       |
 | AWS_CloudTrail_Auditor.py              | CloudTrail                     | Is the trail multi-region                                                           |
 | AWS_CloudTrail_Auditor.py              | CloudTrail                     | Does the trail send logs to CWL                                                     |
 | AWS_CloudTrail_Auditor.py              | CloudTrail                     | Is the trail encrypted by KMS                                                       |
@@ -655,6 +663,10 @@ These are the following services and checks perform by each Auditor. There are c
 | AWS_IAM_Auditor.py                     | IAM User                       | Do users have managed policies attached                                             |
 | AWS_IAM_Auditor.py                     | Password policy (Account)      | Does the IAM password policy meet or exceed AWS CIS Foundations Benchmark standards |
 | AWS_IAM_Auditor.py                     | Server certs (Account)         | Are they any Server certificates stored by IAM                                      |
+| AWS_IAM_Auditor.py                     | IAM Policy                     | Do managed IAM policies adhere to least privilege principles                        |
+| AWS_IAM_Auditor.py                     | IAM User                       | Do User IAM inline policies adhere to least privilege principles                    |
+| AWS_IAM_Auditor.py                     | IAM Group                      | Do Group IAM inline policies adhere to least privilege principles                   |
+| AWS_IAM_Auditor.py                     | IAM Role                       | Do Role IAM inline policies adhere to least privilege principles                    |
 | AWS_KMS_Auditor.py                     | KMS key                        | Is key rotation enabled                                                             |
 | AWS_KMS_Auditor.py                     | KMS key                        | Does the key allow public access                                                    |
 | AWS_Lambda_Auditor.py                  | Lambda function                | Has function been used or updated in the last 30 days                               |

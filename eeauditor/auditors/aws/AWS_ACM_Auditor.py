@@ -27,6 +27,14 @@ for c in acm.list_certificates()["CertificateSummaryList"]:
     certArn = str(c["CertificateArn"])
     acmCerts.append(certArn)
 
+def list_certificates(cache):
+    response = cache.get("list_certificates")
+    if response:
+        return response
+    cache["list_certificates"] = [x["CertificateArn"] for x in acm.list_certificates()['CertificateSummaryList']]
+    return cache["list_certificates"]
+
+
 @registry.register_check("acm")
 def certificate_revocation_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ACM.1] ACM Certificates should be monitored for revocation"""
@@ -436,5 +444,335 @@ def certificate_transparency_logging_check(cache: dict, awsAccountId: str, awsRe
                 },
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+
+@registry.register_check("acm")
+def certificate_renewal_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ACM.4] ACM Certificates should be renewed successfully"""
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    try:    
+        acm_certs = list_certificates(cache=cache)
+        for carn in acm_certs:
+            # Get ACM Cert Details
+            cert = acm.describe_certificate(CertificateArn=carn)["Certificate"]
+            cDomainName = str(cert['DomainName'])
+            cIssuer = str(cert['Issuer'])
+            cSerial = str(cert['Serial'])
+            cStatus = str(cert['Status'])
+            cKeyAlgo = str(cert['KeyAlgorithm'])
+        
+            #Will trigger key error if certificate type is not AMAZON_ISSUED
+            renewal_status = cert['RenewalSummary'].get('RenewalStatus', '')
+            if renewal_status == 'FAILED':
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": carn + "/acm-cert-renewal-status-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": carn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "HIGH"},
+                    "Confidence": 99,
+                    "Title": "[ACM.4] ACM Certificates should be renewed successfully",
+                    "Description": f"ACM Certificate {carn} renewal has failed",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on certificate renewals, please refer to the Managed Renewal section of the AWS Certificate Manager User Guide.",
+                            "Url": "https://docs.aws.amazon.com/acm/latest/userguide/check-certificate-renewal-status.html"
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsCertificateManagerCertificate",
+                            "Id": carn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsCertificateManagerCertificate": {
+                                    "DomainName": cDomainName,
+                                    "Issuer": cIssuer,
+                                    "Serial": cSerial,
+                                    "KeyAlgorithm": cKeyAlgo,
+                                    "Status": cStatus
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF PR.MA-1",
+                            "NIST SP 800-53 MA-2",
+                            "NIST SP 800-53 MA-3",
+                            "NIST SP 800-53 MA-5",
+                            "NIST SP 800-53 MA-6",
+                            "AICPA TSC CC8.1",
+                            "ISO 27001:2013 A.11.1.2",
+                            "ISO 27001:2013 A.11.2.4",
+                            "ISO 27001:2013 A.11.2.5",
+                            "ISO 27001:2013 A.11.2.6"
+                        ]
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE"
+                }
+                yield finding
+            elif renewal_status == 'PENDING_VALIDATION':
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": carn + "/acm-cert-renewal-status-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": carn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "LOW"},
+                    "Confidence": 99,
+                    "Title": "[ACM.4] ACM Certificates should be renewed successfully",
+                    "Description": f"ACM Certificate {carn} renewal is pending user validation",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on certificate renewals, please refer to the Managed Renewal section of the AWS Certificate Manager User Guide.",
+                            "Url": "https://docs.aws.amazon.com/acm/latest/userguide/check-certificate-renewal-status.html"
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsCertificateManagerCertificate",
+                            "Id": carn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsCertificateManagerCertificate": {
+                                    "DomainName": cDomainName,
+                                    "Issuer": cIssuer,
+                                    "Serial": cSerial,
+                                    "KeyAlgorithm": cKeyAlgo,
+                                    "Status": cStatus
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF PR.MA-1",
+                            "NIST SP 800-53 MA-2",
+                            "NIST SP 800-53 MA-3",
+                            "NIST SP 800-53 MA-5",
+                            "NIST SP 800-53 MA-6",
+                            "AICPA TSC CC8.1",
+                            "ISO 27001:2013 A.11.1.2",
+                            "ISO 27001:2013 A.11.2.4",
+                            "ISO 27001:2013 A.11.2.5",
+                            "ISO 27001:2013 A.11.2.6"
+                        ]
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE"
+                }
+                yield finding
+            elif renewal_status == 'PENDING_AUTO_RENEWAL' or renewal_status == 'SUCCESS':
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": carn + "/acm-cert-renewal-status-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": carn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Confidence": 99,
+                    "Title": "[ACM.4] ACM Certificates should be renewed successfully",
+                    "Description": f"ACM Certificate {carn} renewal is in a {str(cert['RenewalSummary']['RenewalStatus'])} state",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on certificate renewals, please refer to the Managed Renewal section of the AWS Certificate Manager User Guide.",
+                            "Url": "https://docs.aws.amazon.com/acm/latest/userguide/check-certificate-renewal-status.html"
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsCertificateManagerCertificate",
+                            "Id": carn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsCertificateManagerCertificate": {
+                                    "DomainName": cDomainName,
+                                    "Issuer": cIssuer,
+                                    "Serial": cSerial,
+                                    "KeyAlgorithm": cKeyAlgo,
+                                    "Status": cStatus
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF PR.MA-1",
+                            "NIST SP 800-53 MA-2",
+                            "NIST SP 800-53 MA-3",
+                            "NIST SP 800-53 MA-5",
+                            "NIST SP 800-53 MA-6",
+                            "AICPA TSC CC8.1",
+                            "ISO 27001:2013 A.11.1.2",
+                            "ISO 27001:2013 A.11.2.4",
+                            "ISO 27001:2013 A.11.2.5",
+                            "ISO 27001:2013 A.11.2.6"
+                        ]
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED"
+                }
+                yield finding
+    except KeyError as e:
+        pass
+
+
+@registry.register_check("acm")
+def certificate_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ACM.5] ACM Certificates should be correctly validated"""
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    acm_certs = list_certificates(cache=cache)
+    for carn in acm_certs:
+        # Get ACM Cert Details
+        cert = acm.describe_certificate(CertificateArn=carn)["Certificate"]
+        cDomainName = str(cert['DomainName'])
+        cIssuer = str(cert['Issuer'])
+        cSerial = str(cert['Serial'])
+        cStatus = str(cert['Status'])
+        cKeyAlgo = str(cert['KeyAlgorithm'])
+        # this is a passing check
+        if cStatus == 'ISSUED':
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": carn + "/acm-cert-status-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": carn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[ACM.5] ACM Certificates should be correctly validated",
+                "Description": f"ACM Certificate {carn} is successfully issued",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on certificate issuing, please refer to the Issuing Certificates section of the AWS Certificate Manager User Guide.",
+                        "Url": "https://docs.aws.amazon.com/acm/latest/userguide/gs.html"
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsCertificateManagerCertificate",
+                        "Id": carn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsCertificateManagerCertificate": {
+                                "DomainName": cDomainName,
+                                "Issuer": cIssuer,
+                                "Serial": cSerial,
+                                "KeyAlgorithm": cKeyAlgo,
+                                "Status": cStatus
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.MA-1",
+                        "NIST SP 800-53 MA-2",
+                        "NIST SP 800-53 MA-3",
+                        "NIST SP 800-53 MA-5",
+                        "NIST SP 800-53 MA-6",
+                        "AICPA TSC CC8.1",
+                        "ISO 27001:2013 A.11.1.2",
+                        "ISO 27001:2013 A.11.2.4",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.6"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+        elif cStatus == 'EXPIRED' or \
+            cStatus == 'VALIDATION_TIMED_OUT' or \
+            cStatus == 'REVOKED' or \
+            cStatus == 'FAILED':
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": carn + "/acm-cert-renewal-status-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": carn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "HIGH"},
+                "Confidence": 99,
+                "Title": "[ACM.5] ACM Certificates should be correctly validated",
+                "Description": f"ACM Certificate {carn} has not been successfully issued.  State: {cStatus}",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on certificate issuing, please refer to the Issuing Certificates section of the AWS Certificate Manager User Guide.",
+                        "Url": "https://docs.aws.amazon.com/acm/latest/userguide/gs.html"
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsCertificateManagerCertificate",
+                        "Id": carn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsCertificateManagerCertificate": {
+                                "DomainName": cDomainName,
+                                "Issuer": cIssuer,
+                                "Serial": cSerial,
+                                "KeyAlgorithm": cKeyAlgo,
+                                "Status": cStatus
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.MA-1",
+                        "NIST SP 800-53 MA-2",
+                        "NIST SP 800-53 MA-3",
+                        "NIST SP 800-53 MA-5",
+                        "NIST SP 800-53 MA-6",
+                        "AICPA TSC CC8.1",
+                        "ISO 27001:2013 A.11.1.2",
+                        "ISO 27001:2013 A.11.2.4",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.6"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
             }
             yield finding
