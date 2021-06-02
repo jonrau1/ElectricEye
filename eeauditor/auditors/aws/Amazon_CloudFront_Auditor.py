@@ -636,7 +636,6 @@ def cloudfront_field_level_encryption_check(
                             "NIST SP 800-53 SC-28",
                             "AICPA TSC CC6.1",
                             "ISO 27001:2013 A.8.2.3",
- 
                         ],
                     },
                     "Workflow": {"Status": "RESOLVED"},
@@ -707,7 +706,6 @@ def cloudfront_waf_enabled_check(
                             "ISO 27001:2013 A.12.4.1",
                             "ISO 27001:2013 A.16.1.1",
                             "ISO 27001:2013 A.16.1.4",
-
                         ],
                     },
                     "Workflow": {"Status": "NEW"},
@@ -1012,7 +1010,6 @@ def cloudfront_custom_origin_tls_check(
                             "ISO 27001:2013 A.13.2.3",
                             "ISO 27001:2013 A.14.1.2",
                             "ISO 27001:2013 A.14.1.3",                            
-
                         ],
                     },
                     "Workflow": {"Status": "RESOLVED"},
