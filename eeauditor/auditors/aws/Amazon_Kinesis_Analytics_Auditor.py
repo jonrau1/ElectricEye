@@ -16,19 +16,15 @@
 import datetime
 from dateutil import parser
 import uuid
-
 import boto3
-
 from check_register import CheckRegister, accumulate_paged_results
 
 registry = CheckRegister()
 kinesisanalyticsv2 = boto3.client("kinesisanalyticsv2")
 
-
 @registry.register_check("kinesisanalyticsv2")
-def kda_log_to_cloudwatch_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def kda_log_to_cloudwatch_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[KinesisAnalytics.1] Applications should log to CloudWatch"""
     paginator = kinesisanalyticsv2.get_paginator("list_applications")
     response_iterator = paginator.paginate()
     responses = accumulate_paged_results(

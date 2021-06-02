@@ -25,6 +25,7 @@ paginator = lambdas.get_paginator('list_functions')
 
 @registry.register_check("lambda")
 def unused_function_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Lambda.1] Lambda functions should be deleted after 30 days of no use"""
     iterator = paginator.paginate()
     for page in iterator:
         iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -165,6 +166,7 @@ def unused_function_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
 
 @registry.register_check("lambda")
 def function_tracing_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Lambda.2] Lambda functions should use active tracing with AWS X-Ray"""
     iterator = paginator.paginate()
     for page in iterator:
         iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -207,7 +209,7 @@ def function_tracing_check(cache: dict, awsAccountId: str, awsRegion: str, awsPa
                                 "AwsLambdaFunction": {
                                     "FunctionName": functionName,
                                     "TracingConfig": {
-                                        "TracingConfig.Mode": str(function["TracingConfig"]["Mode"])
+                                        "Mode": str(function["TracingConfig"]["Mode"])
                                     }
                                 }
                             }
@@ -266,7 +268,7 @@ def function_tracing_check(cache: dict, awsAccountId: str, awsRegion: str, awsPa
                                 "AwsLambdaFunction": {
                                     "FunctionName": functionName,
                                     "TracingConfig": {
-                                        "TracingConfig.Mode": str(function["TracingConfig"]["Mode"])
+                                        "Mode": str(function["TracingConfig"]["Mode"])
                                     }
                                 }
                             }
@@ -294,6 +296,7 @@ def function_tracing_check(cache: dict, awsAccountId: str, awsRegion: str, awsPa
 
 @registry.register_check("lambda")
 def function_code_signer_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Lambda.3] Lambda functions should use code signing from AWS Signer to ensure trusted code runs in a Function"""
     iterator = paginator.paginate()
     for page in iterator:
         iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -418,6 +421,8 @@ def function_code_signer_check(cache: dict, awsAccountId: str, awsRegion: str, a
                 yield finding
 
 '''
+GOT TO EVENTUAL FIX THIS??
+
 @registry.register_check("lambda")
 def public_lambda_layer_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     iterator = paginator.paginate()

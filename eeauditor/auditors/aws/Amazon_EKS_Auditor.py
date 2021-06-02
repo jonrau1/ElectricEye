@@ -24,9 +24,8 @@ eks = boto3.client("eks")
 
 
 @registry.register_check("eks")
-def eks_public_endpoint_access_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def eks_public_endpoint_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EKS.1] Elastic Kubernetes Service (EKS) cluster API servers should not be accessible from the internet"""
     # loop through EKS clusters
     for clusters in eks.list_clusters(maxResults=100)["clusters"]:
         cluster = str(clusters)
@@ -159,9 +158,8 @@ def eks_public_endpoint_access_check(
             print(e)
 
 @registry.register_check("eks")
-def eks_latest_k8s_version_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def eks_latest_k8s_version_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EKS.2] Elastic Kubernetes Service (EKS) clusters should use the latest Kubernetes version"""
     # loop through EKS clusters
     for clusters in eks.list_clusters(maxResults=100)["clusters"]:
         cluster = str(clusters)
@@ -281,9 +279,8 @@ def eks_latest_k8s_version_check(
             print(e)
 
 @registry.register_check("eks")
-def eks_logging_audit_auth_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def eks_logging_audit_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EKS.3] Elastic Kubernetes Service (EKS) clusters should have authenticator and/or audit logging enabled"""
     # loop through EKS clusters
     for clusters in eks.list_clusters(maxResults=100)["clusters"]:
         cluster = str(clusters)
@@ -415,9 +412,8 @@ def eks_logging_audit_auth_check(
             print(e)
 
 @registry.register_check("eks")
-def eks_secrets_envelope_encryption_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def eks_secrets_envelope_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EKS.4] Elastic Kubernetes Service (EKS) clusters API servers should have envelope encryption for secrets configured"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # loop through EKS clusters

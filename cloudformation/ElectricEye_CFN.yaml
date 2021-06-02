@@ -182,6 +182,8 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
+                  - acm:DescribeCertificate
+                  - acm:ListCertificates
                   - access-analyzer:ListAnalyzers
                   - airflow:GetEnvironment
                   - airflow:ListEnvironments
@@ -213,21 +215,8 @@ Resources:
                   - dynamodb:ListTables
                   - dynamodb:DescribeContinuousBackups
                   - dynamodb:DescribeTimeToLive
-                  - ec2:DescribeAddresses
-                  - ec2:DescribeFlowLogs
-                  - ec2:DescribeImageAttribute
-                  - ec2:DescribeImages
-                  - ec2:DescribeInstanceAttribute
-                  - ec2:DescribeInstances
-                  - ec2:DescribeSecurityGroupReferences
-                  - ec2:DescribeSecurityGroups
-                  - ec2:DescribeSnapshotAttribute
-                  - ec2:DescribeSnapshots
-                  - ec2:DescribeVolumes
-                  - ec2:DescribeVpcs
-                  - ec2:GetEbsDefaultKmsKeyId
-                  - ec2:GetEbsEncryptionByDefault
-                  - ec2:GetSerialConsoleAccessStatus
+                  - ec2:Describe*
+                  - ec2:Get*
                   - ecs:ListClusters
                   - ecs:DescribeClusters
                   - ecr:DescribeImages
@@ -261,6 +250,9 @@ Resources:
                   - glue:GetDataCatalogEncryptionSettings
                   - glue:ListCrawlers
                   - guardduty:ListDetectors
+                  - support:DescribeTrustedAdvisorCheckResult
+                  - support:DescribeTrustedAdvisorChecks
+                  - health:DescribeEvents
                   - iam:GetAccountPasswordPolicy
                   - iam:ListUsers
                   - iam:ListAccessKeys
@@ -268,6 +260,15 @@ Resources:
                   - iam:ListUserPolicies
                   - iam:ListAttachedUserPolicies
                   - iam:ListServerCertificates
+                  - iam:ListRolePolicies
+                  - iam:ListRoles
+                  - iam:GetRolePolicy
+                  - iam:GetUserPolicy
+                  - iam:ListGroupPolicies
+                  - iam:ListGroups
+                  - iam:GetGroupPolicy
+                  - iam:ListPolicies
+                  - iam:GetPolicyVersion
                   - imagebuilder:ListImagePipelines
                   - imagebuilder:GetImagePipeline
                   - imagebuilder:ListImageRecipes
@@ -287,12 +288,8 @@ Resources:
                   - license-manager:GetLicenseConfiguration
                   - license-manager:ListLicenseConfigurations
                   - macie2:GetMacieSession
-                  - managedblockchain:GetNetwork
-                  - managedblockchain:ListMembers
-                  - managedblockchain:ListNetworks
-                  - managedblockchain:GetNode
-                  - managedblockchain:GetMember
-                  - managedblockchain:ListNodes
+                  - managedblockchain:Get*
+                  - managedblockchain:List*
                   - mq:DescribeBroker
                   - mq:ListBrokers
                   - qldb:DescribeLedger
@@ -377,6 +374,12 @@ Resources:
                   - codeartifact:ListDomains
                   - codeartifact:ListRepositories
                   - codeartifact:GetRepositoryPermissionsPolicy
+                  - wafv2:ListWebACLs
+                  - wafv2:GetLoggingConfiguration
+                  - wafv2:GetWebACL
+                  - shield:ListAttacks
+                  - cloudhsm:DescribeClusters
+                  - cloudhsm:DescribeBackups
                 Resource: "*"
       AssumeRolePolicyDocument:
         Version: 2012-10-17

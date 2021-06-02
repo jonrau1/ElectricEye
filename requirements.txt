@@ -3,3 +3,4 @@ boto3
 requests
 pluginbase
 click
+detect-secrets

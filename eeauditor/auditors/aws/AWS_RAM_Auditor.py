@@ -16,14 +16,11 @@
 import datetime
 from dateutil import parser
 import uuid
-
 import boto3
-
 from check_register import CheckRegister, accumulate_paged_results
 
 registry = CheckRegister()
 ram = boto3.client("ram")
-
 
 def get_resource_shares(cache):
     response = cache.get("get_resource_shares")
@@ -39,9 +36,8 @@ def get_resource_shares(cache):
 
 
 @registry.register_check("ram")
-def ram_resource_shares_status_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def ram_resource_shares_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RAM.1] Resource share should not have a failed status"""
     responses = []
     responses.append(get_resource_shares(cache))
     paginator = ram.get_paginator("get_resource_shares")
@@ -160,11 +156,9 @@ def ram_resource_shares_status_check(
                 }
                 yield finding
 
-
 @registry.register_check("ram")
-def ram_allow_external_principals_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def ram_allow_external_principals_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RAM.2] Resource share should not allow external principals"""
     response = get_resource_shares(cache)
     resourceShares = response["resourceShares"]
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()

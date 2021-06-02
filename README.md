@@ -1,5 +1,7 @@
 # ElectricEye
 
+![Logo?!](./screenshots/EE-LogoLarge.png)
+
 Continuously monitor your AWS services for configurations that can lead to degradation of confidentiality, integrity or availability. All results will be sent to Security Hub for further aggregation and analysis.
 
 ***Up here in space***<br/>
@@ -13,14 +15,15 @@ Continuously monitor your AWS services for configurations that can lead to degra
 - [Synopsis](#synopsis)
 - [Description](#description)
 - [Solution Architecture](#solution-architecture)
-- [Setting Up](#setting-up)
+- [Running locally](#running-locally)
+- [Setting Up on Fargate](#setting-up-electriceye-on-fargate)
+  - [Solution Architecture for Fargate](#aws-fargate-solution-architecture)
   - [Build and push the Docker image](#build-and-push-the-docker-image)
   - [(OPTIONAL) Setup Shodan.io API Key](#optional-setup-shodanio-api-key)
   - [(OPTIONAL) Setup DisruptOps Client Id and API Key](#optional-setup-disruptops-client-id-and-api-key)
   - [Setup baseline infrastructure via Terraform](#setup-baseline-infrastructure-via-terraform)
   - [Setup baseline infrastructure via AWS CloudFormation](#setup-baseline-infrastructure-via-aws-cloudformation)
   - [Manually execute the ElectricEye ECS Task](#manually-execute-the-electriceye-ecs-task-you-only-need-to-do-this-once)
-  - [Running locally](#running-locally)
 - [Supported Services and Checks](#supported-services-and-checks)
 - [Add-on Modules](#add-on-modules)
   - [Config Findings Pruner](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/config-deletion-pruner)
@@ -37,7 +40,7 @@ Continuously monitor your AWS services for configurations that can lead to degra
 
 ## Synopsis
 
-- **260+ security & AWS best practice detections** including services not covered by Security Hub/Config (AppStream, Cognito, EKS, ECR, DocDB, etc.), all findings are **aligned to NIST CSF, NIST 800-53, AICPA TSC and ISO 27001:2013**.
+- **280+ security & AWS best practice detections** including services not covered by Security Hub/Config (AppStream, Cognito, EKS, ECR, DocDB, etc.), all findings are **aligned to NIST CSF, NIST 800-53, AICPA TSC and ISO 27001:2013**.
 - Supports every **AWS Region and Partition** (Commercial, AWS GovCloud and AWS China Region)
 - Built with **full AWS Security Hub support** in mind, can optionally output to JSON or CSV. **Can run as a CLI tool, in Fargate, as a standalone Container, or anywhere else** you can run Python (K8s, Batch, CodeBuild, EC2, etc.).
 - **Multiple add-ons enable automated remediation, ChatOps, finding purging, and integrations** with third-party tools such as DisruptOps, Pagerduty, Slack, ServiceNow Incident Management, Jira, Azure DevOps, Shodan and Microsoft Teams.
@@ -56,7 +59,79 @@ Personas who can make use of this tool are DevOps/DevSecOps engineers, SecOps an
 
 ## Solution Architecture
 
-**Note:** Despite the focus on AWS Fargate, it is not a requirement anymore as of ElectricEye V2.0!
+**Note:** This high level architecture shows potential places to run ElectricEye, as of V2.0 ElectricEye now uses a controller CLI mechanism that does not rely on running in Fargate (though you can still do that). Theoretically you should be able to run ElectricEye anywhere you have at least `Python 3.6` installed with access to required AWS credentials and IAM Permissions.
+
+![High-level Architecture](./screenshots/high-level-architecture.jpg)
+
+> - You run ElectricEye anywhere you have AWS Credentials and the [required IAM Permissions](policies/Instance_Profile_IAM_Policy.json) - this can be on a Raspberry Pi, a Google Compute Engine instance, on AWS EKS or Amazon EC2.
+
+> - ElectricEye will *evaluate* all resources in scope using **Auditors** and write the findings to a local cache
+
+> - If supplied, ElectricEye will *evaluate* specific internet-facing AWS services against indexed results on Shodan.io
+
+> - ElectricEye will *report* all findings to AWS Security Hub, if configured ElectricEye can also output *reports* to CSV or JSON files. Finally (and optionally) you can *report* findings to the [DisruptOps](https://disruptops.com/electriceye-v2-0/) platform which also has its [own integration with Security Hub](https://disruptops.com/cloud-providers/aws/).
+
+## Running locally
+
+**NOTE:** While this section is titled "Running Locally" - you can use the following setup to run anywhere you can run Python such as EKS, Kubernetes, a self-managed Docker Container, AWS CloudShell, etc. The usage of `venv` for those utilities is optional, but strongly recommended.
+
+1. Navigate to the IAM console and click on **Policies** under **Access management**. Select **Create policy** and under the JSON tab, copy and paste the contents [Instance Profile IAM Policy](policies/Instance_Profile_IAM_Policy.json). Click **Review policy**, create a name, and then click **Create policy**.
+
+2. Have `Python 3` and `Pip(3)` installed and setup virtualenv
+
+```bash
+pip3 install virtualenv --user
+virtualenv .venv
+```
+
+3. This will create a virtualenv directory called .venv which needs to be activated
+
+```bash
+#For macOS and Linux
+. .venv/bin/activate
+
+#For Windows
+.venv\scripts\activate
+```
+
+4. Install all dependencies
+
+```bash
+pip3 install -r requirements.txt
+```
+
+**NOTE:** If using AWS CloudShell you will need to use `pip3` with `sudo`:
+
+```bash
+sudo pip3 install -r requirements.txt
+```
+
+![Cloudshell Installation](./screenshots/cloudshell-install.JPG)
+
+5. Run the controller
+
+```bash
+python3 eeauditor/controller.py
+```
+
+Add the `--help` option for info on running individual checks and auditors and different outputs options. For instance, if you wanted to specify a specific Auditor use the following command to run it, specifiy the *name* of the Auditor **without** the `.py` ending.
+
+```bash
+python3 eeauditor/controller.py -a AWS_IAM_Auditor
+```
+
+You can get a full name of the auditors (as well as their checks within comments by using the following command).
+
+```bash
+python3 eeauditor/controller.py --list-checks
+```
+
+
+## Setting Up ElectricEye on Fargate
+
+### AWS Fargate Solution Architecture
+
+This "old" architecture diagram represents what is deployed by CloudFormation and Terraform to use ElectricEye on Fargate with EventBridge Scheduled Rules. You can opt to use the CLI directly instead of this pattern.
 
 ![Architecture](screenshots/ElectricEye-Architecture.jpg)
 
@@ -70,18 +145,18 @@ Personas who can make use of this tool are DevOps/DevSecOps engineers, SecOps an
 
 5. If configured, ElectricEye will send findings to DisruptOps. DisruptOps is also [integrated with Security Hub](https://disruptops.com/aws-security-management-with-securityhub/) and can optionally enforce guardrails and orchestrate security automation from within the platform.
 
-Refer to the [Supported Services and Checks](https://github.com/jonrau1/ElectricEye#supported-services-and-checks) section for an up-to-date list of supported services and checks performed by the Auditors.
-
-## Setting Up
+Refer to the [Supported Services and Checks](#supported-services-and-checks) section for an up-to-date list of supported services and checks performed by the Auditors.
 
 These steps are split across their relevant sections. All CLI commands are executed from an Ubuntu 18.04LTS [Cloud9 IDE](https://aws.amazon.com/cloud9/details/), modify them to fit your OS. 
 
 **Note 1:** If you do use Cloud9, navigate to Settings (represented by a Gear icon) > AWS Settings and **unmark** the selection for `AWS managed temporary credentials` (move the toggle to your left-hand side) as shown below. If you do not, you instance profile will not apply properly.
-![Cloud9TempCred](screenshots/cloud9-temp-creds.JPG)
+
+![Cloud9TempCred](./screenshots/cloud9-temp-creds.JPG)
 
 **Note 2:** Ensure AWS Security Hub is enabled in the region you are attempting to run ElectricEye
 
 **Note 3:** If you have never used ECS before you'll likely run into a problem with the service-linked role (SLR), or lack thereof, and you should follow the [instructions here](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using-service-linked-roles.html#service-linked-role-permissions) to have it created first
+
 
 ### Build and push the Docker image
 
@@ -102,7 +177,7 @@ git clone https://github.com/jonrau1/ElectricEye.git
 
 ```bash
 aws ecr create-repository \
-    --repository-name ElectricEye \
+    --repository-name electriceye \
     --image-scanning-configuration scanOnPush=true
 ```
 
@@ -112,22 +187,22 @@ aws ecr create-repository \
 
 ```bash
 cd ElectricEye
-aws ecr get-login-password --region <AWS_REGION> | sudo docker login --username AWS --password-stdin <ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com
+aws ecr get-login-password --region $AWS_REGION | sudo docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 ```
 
 **Note**: If you are using AWS CLI v1 use the following in place of the line above
 
 ```bash
-sudo $(aws ecr get-login --no-include-email --region <AWS_REGION>)
+sudo $(aws ecr get-login --no-include-email --region $AWS_REGION)
 ```
 
 ```bash
-sudo docker build -t ElectricEye .
-sudo docker tag ElectricEye:latest <ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/ElectricEye:latest
-sudo docker push <ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/ElectricEye:latest
+sudo docker build -t electriceye .
+sudo docker tag electriceye:v1 $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/electriceye:v1
+sudo docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/electriceye:v1
 ```
 
-4. Navigate to the ECR console and copy the `URI` of your Docker image. It will be in the format of **`<ACCOUNT_ID>.dkr.ecr.<AWS_REGION.amazonaws.com/ElectricEye:latest`**. Save this as you will need it when configuring Terraform or CloudFormation.
+4. Navigate to the ECR console and copy the `URI` of your Docker image. It will be in the format of **`$AWS_ACCOUNT_ID.dkr.ecr.<AWS_REGION.amazonaws.com/ElectricEye:latest`**. Save this as you will need it when configuring Terraform or CloudFormation.
 
 ### (OPTIONAL) Setup Shodan.io API Key
 
@@ -316,46 +391,11 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 
 3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
 
-### Running locally
-
-1. Navigate to the IAM console and click on **Policies** under **Access management**. Select **Create policy** and under the JSON tab, copy and paste the contents [Instance Profile IAM Policy](policies/Instance_Profile_IAM_Policy.json). Click **Review policy**, create a name, and then click **Create policy**.
-
-2. Have python 3 and pip installed and setup virtualenv
-
-```bash
-pip3 install virtualenv --user
-virtualenv .venv
-```
-
-3. This will create a virtualenv directory called .venv which needs to be activated
-
-```bash
-#For macOS and Linux
-. .venv/bin/activate
-
-#For Windows
-.venv\scripts\activate
-```
-
-4. Install all dependencies
-
-```bash
-pip3 install -r requirements.txt
-```
-
-5. Run the controller
-
-```bash
-python3 eeauditor/controller.py
-```
-
-Add the `--help` option for info on running individual checks and auditors and different outputs options.
-
 ## Supported Services and Checks
 
-These are the following services and checks perform by each Auditor. There are currently **275** checks supported across **80** AWS services / components using **60** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **311** checks supported across **85** AWS services / components using **66** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
-**Regarding Shield Advanced checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in us-east-1 to perform all checks. The Shield Adv API only lives in us-east-1, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
+**Regarding Shield Advanced, Health, and Trusted Advisor checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in `us-east-1` to perform all checks. The Shield, Health and Trusted Advisor APIs only live in `us-east-1`, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
 | Auditor File Name                      | AWS Service                    | Auditor Scan Description                                                            |
 |----------------------------------------|--------------------------------|-------------------------------------------------------------------------------------|
@@ -407,6 +447,8 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_EC2_Auditor.py                  | EC2 Instance                   | Is the instance internet-facing                                                     |
 | Amazon_EC2_Auditor.py                  | EC2 Instance                   | Is Source/Dest Check disabled                                                       |
 | Amazon_EC2_Auditor.py                  | AWS Account                    | Is Serial Port Access restricted                                                    |
+| Amazon_EC2_Auditor.py                  | EC2 Instance                   | Is instance using an AMI baked in last 3 months                                     |
+| Amazon_EC2_Auditor.py                  | EC2 Instance                   | Is instance using a correctly registered AMI                                        |
 | Amazon_EC2_Image_Builder_Auditor.py    | Image Builder                  | Are pipeline tests enabled                                                          |
 | Amazon_EC2_Image_Builder_Auditor.py    | Image Builder                  | Is EBS encrypted                                                                    |
 | Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Are all ports (-1) open to the internet                                             |
@@ -501,13 +543,13 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_MSK_Auditor.py                  | MSK Cluster                    | Is client-broker communications TLS-only                                            |
 | Amazon_MSK_Auditor.py                  | MSK Cluster                    | Is enhanced monitoring used                                                         |
 | Amazon_MSK_Auditor.py                  | MSK Cluster                    | Is Private CA TLS auth used                                                         |
-| Amazon_MWAA(Airflow)_Auditor.py        | Airflow Environment            | Is a KMS CMK used for encryption                                                    |
-| Amazon_MWAA(Airflow)_Auditor.py        | Airflow Environment            | Is the Airflow URL Public                                                           |
-| Amazon_MWAA(Airflow)_Auditor.py        | Airflow Environment            | Are DAG Processing logs configured                                                  |
-| Amazon_MWAA(Airflow)_Auditor.py        | Airflow Environment            | Are Scheduler logs configured                                                       |
-| Amazon_MWAA(Airflow)_Auditor.py        | Airflow Environment            | Are Task logs configured                                                            |
-| Amazon_MWAA(Airflow)_Auditor.py        | Airflow Environment            | Are Webserver logs configured                                                       |
-| Amazon_MWAA(Airflow)_Auditor.py        | Airflow Environment            | Are Worker logs configured                                                          |
+| Amazon_MWAA_Auditor.py                 | Airflow Environment            | Is a KMS CMK used for encryption                                                    |
+| Amazon_MWAA_Auditor.py                 | Airflow Environment            | Is the Airflow URL Public                                                           |
+| Amazon_MWAA_Auditor.py                 | Airflow Environment            | Are DAG Processing logs configured                                                  |
+| Amazon_MWAA_Auditor.py                 | Airflow Environment            | Are Scheduler logs configured                                                       |
+| Amazon_MWAA_Auditor.py                 | Airflow Environment            | Are Task logs configured                                                            |
+| Amazon_MWAA_Auditor.py                 | Airflow Environment            | Are Webserver logs configured                                                       |
+| Amazon_MWAA_Auditor.py                 | Airflow Environment            | Are Worker logs configured                                                          |
 | Amazon_Neptune_Auditor.py              | Neptune instance               | Is Neptune configured for HA                                                        |
 | Amazon_Neptune_Auditor.py              | Neptune instance               | Is Neptune storage encrypted                                                        |
 | Amazon_Neptune_Auditor.py              | Neptune instance               | Does Neptune use IAM DB Auth                                                        |
@@ -552,6 +594,7 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_Shield_Advanced_Auditor.py      | Account (DRT S3 Access)        | Does the DRT have access to WAF logs S3 buckets                                     |
 | Amazon_Shield_Advanced_Auditor.py      | Account (Shield subscription)  | Is Shield Adv subscription on auto renew                                            |
 | Amazon_Shield_Advanced_Auditor.py      | Global Accelerator Accelerator | Are GA Accelerators protected by Shield Adv                                         |
+| Amazon_Shield_Advanced_Auditor.py      | Account                        | Has Shield Adv mitigated any attacks in the last 7 days                             |
 | Amazon_SNS_Auditor.py                  | SNS Topic                      | Is the topic encrypted                                                              |
 | Amazon_SNS_Auditor.py                  | SNS Topic                      | Does the topic have plaintext (HTTP) subscriptions                                  |
 | Amazon_SNS_Auditor.py                  | SNS Topic                      | Does the topic allow public access                                                  |
@@ -570,6 +613,11 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_Xray_Auditor.py                 | XRay Encryption Config         | Is KMS CMK encryption used                                                          |
 | AMI_Auditor.py                         | Amazon Machine Image (AMI)     | Are owned AMIs public                                                               |
 | AMI_Auditor.py                         | Amazon Machine Image (AMI)     | Are owned AMIs encrypted                                                            |
+| AWS_ACM_Auditor.py                     | ACM Certificate                | Are certificates revoked                                                            |
+| AWS_ACM_Auditor.py                     | ACM Certificate                | Are certificates in use                                                             |
+| AWS_ACM_Auditor.py                     | ACM Certificate                | Is certificate transparency logging enabled                                         |
+| AWS_ACM_Auditor.py                     | ACM Certificate                | Have certificates been correctly renewed                                            |
+| AWS_ACM_Auditor.py                     | ACM Certificate                | Are certificates correctly validated                                                |
 | AWS_Amplify_Auditor.py                 | AWS Amplify                    | Does the app have basic auth enabled on the branches                                |
 | AWS_Amplify_Auditor.py                 | AWS Amplify                    | Does the app have auto deletion for branches enabled                                |
 | AWS_AppMesh_Auditor.py                 | App Mesh mesh                  | Does the mesh egress filter DROP_ALL                                                |
@@ -584,6 +632,9 @@ These are the following services and checks perform by each Auditor. There are c
 | AWS_Cloud9_Auditor.py                  | Cloud9 Environment             | Are Cloud9 Envs using SSM for access                                                |
 | AWS_CloudFormation_Auditor.py          | CloudFormation Stack           | Is drift detection enabled                                                          |
 | AWS_CloudFormation_Auditor.py          | CloudFormation Stack           | Are stacks monitored                                                                |
+| AWS_CloudHSM_Auditor.py                | CloudHSM Cluster               | Is the CloudHSM Cluster in a degraded state                                         |
+| AWS_CloudHSM_Auditor.py                | CloudHSM HSM Module            | Is the CloudHSM hardware security module in a degraded state                        |
+| AWS_CloudHSM_Auditor.py                | CloudHSM Backups               | Is there at least one backup in a READY state                                       |
 | AWS_CloudTrail_Auditor.py              | CloudTrail                     | Is the trail multi-region                                                           |
 | AWS_CloudTrail_Auditor.py              | CloudTrail                     | Does the trail send logs to CWL                                                     |
 | AWS_CloudTrail_Auditor.py              | CloudTrail                     | Is the trail encrypted by KMS                                                       |
@@ -603,6 +654,9 @@ These are the following services and checks perform by each Auditor. There are c
 | AWS_DMS_Auditor.py                     | DMS Replication Instance       | Are minor version updates configured                                                |
 | AWS_Global_Accelerator_Auditor.py      | Global Accelerator Endpoint    | Is the endpoint healthy                                                             |
 | AWS_Global_Accelerator_Auditor.py      | Global Accelerator Accelerator | Is flow logs enabled for accelerator                                                |
+| AWS_Health_Auditor.py                  | AWS Health Event               | Are there active Security Events                                                    |
+| AWS_Health_Auditor.py                  | AWS Health Event               | Are there active Abuse Events                                                       |
+| AWS_Health_Auditor.py                  | AWS Health Event               | Are there active Risk Events                                                        |
 | AWS_Glue_Auditor.py                    | Glue Crawler                   | Is S3 encryption configured for the crawler                                         |
 | AWS_Glue_Auditor.py                    | Glue Crawler                   | Is CWL encryption configured for the crawler                                        |
 | AWS_Glue_Auditor.py                    | Glue Crawler                   | Is job bookmark encryption configured for the crawler                               |
@@ -616,6 +670,10 @@ These are the following services and checks perform by each Auditor. There are c
 | AWS_IAM_Auditor.py                     | IAM User                       | Do users have managed policies attached                                             |
 | AWS_IAM_Auditor.py                     | Password policy (Account)      | Does the IAM password policy meet or exceed AWS CIS Foundations Benchmark standards |
 | AWS_IAM_Auditor.py                     | Server certs (Account)         | Are they any Server certificates stored by IAM                                      |
+| AWS_IAM_Auditor.py                     | IAM Policy                     | Do managed IAM policies adhere to least privilege principles                        |
+| AWS_IAM_Auditor.py                     | IAM User                       | Do User IAM inline policies adhere to least privilege principles                    |
+| AWS_IAM_Auditor.py                     | IAM Group                      | Do Group IAM inline policies adhere to least privilege principles                   |
+| AWS_IAM_Auditor.py                     | IAM Role                       | Do Role IAM inline policies adhere to least privilege principles                    |
 | AWS_KMS_Auditor.py                     | KMS key                        | Is key rotation enabled                                                             |
 | AWS_KMS_Auditor.py                     | KMS key                        | Does the key allow public access                                                    |
 | AWS_Lambda_Auditor.py                  | Lambda function                | Has function been used or updated in the last 30 days                               |
@@ -623,6 +681,7 @@ These are the following services and checks perform by each Auditor. There are c
 | AWS_Lambda_Auditor.py                  | Lambda function                | Is code signing used                                                                |
 | AWS_Lambda_Auditor.py                  | Lambda layer                   | Is the layer public                                                                 |
 | AWS_License_Manager_Auditor            | License Manager configuration  | Do LM configurations enforce a hard limit on license consumption                    |
+| AWS_License_Manager_Auditor            | License Manager configuration  | Do LM configurations enforce auto-disassociation                                    |
 | AWS_RAM_Auditor.py                     | RAM Resource Share             | Is the resource share status not failed                                             |
 | AWS_RAM_Auditor.py                     | RAM Resource Share             | Does the resource allow external principals                                         |
 | AWS_Secrets_Manager_Auditor.py         | Secrets Manager secret         | Is the secret over 90 days old                                                      |
@@ -632,6 +691,23 @@ These are the following services and checks perform by each Auditor. There are c
 | AWS_Security_Services_Auditor.py       | GuardDuty (Account)            | Is GuardDuty enabled                                                                |
 | AWS_Security_Services_Auditor.py       | Detective (Account)            | Is Detective enabled                                                                |
 | AWS_Security_Services_Auditor.py       | Macie2                         | Is Macie enabled                                                                    |
+| AWS_Security_Services_Auditor.py       | AWS WAFv2 (Regional)           | Are Regional Web ACLs configured                                                    |
+| AWS_Security_Services_Auditor.py       | AWS WAFv2 (Global)             | Are Global Web ACLs (for CloudFront) configured                                     |
+| AWS_TrustedAdvisor_Auditor.py          | Trusted Advisor Check          | Is the Trusted Advisor check for MFA on Root Account failing                        |
+| AWS_TrustedAdvisor_Auditor.py          | Trusted Advisor Check          | Is the Trusted Advisor check for ELB Listener Security failing                      |
+| AWS_TrustedAdvisor_Auditor.py          | Trusted Advisor Check          | Is the Trusted Advisor check for CloudFront SSL Certs in IAM  Cert Store failing    |
+| AWS_TrustedAdvisor_Auditor.py          | Trusted Advisor Check          | Is the Trusted Advisor check for CloudFront SSL Cert on Origin  Server failing      |
+| AWS_TrustedAdvisor_Auditor.py          | Trusted Advisor Check          | Is the Trusted Advisor check for Exposed Access Keys failing                        |
+| AWS_WAFv2_Auditor.py                   | AWS WAFv2 (Regional)           | Do Regional WAFs use Cloudwatch Metrics                                             |
+| AWS_WAFv2_Auditor.py                   | AWS WAFv2 (Regional)           | Do Regional WAFs use Request Sampling                                               |
+| AWS_WAFv2_Auditor.py                   | AWS WAFv2 (Regional)           | Do Regional WAFs have Logging enabled                                               |
+| AWS_WAFv2_Auditor.py                   | AWS WAFv2 (Global)             | Do Global WAFs use Cloudwatch Metrics                                               |
+| AWS_WAFv2_Auditor.py                   | AWS WAFv2 (Global)             | Do Global WAFs use Request Sampling                                                 |
+| AWS_WAFv2_Auditor.py                   | AWS WAFv2 (Global)             | Do Global WAFs have Logging enabled                                                 |
+| Secrets_Auditor.py                     | CodeBuild project              | Do CodeBuild projects have secrets in plaintext env vars                            |
+| Secrets_Auditor.py                     | CloudFormation Stack           | Do CloudFormation Stacks have secrets in parameters                                 |
+| Secrets_Auditor.py                     | ECS Task Definition            | Do ECS Task Definitions have secrets in env vars                                    |
+| Secrets_Auditor.py                     | EC2 Instance                   | Do EC2 instances have secrets in User Data                                          |
 | Shodan_Auditor.py                      | EC2 Instance                   | Are EC2 instances w/ public IPs indexed                                             |
 | Shodan_Auditor.py                      | ELBv2 (ALB)                    | Are internet-facing ALBs indexed                                                    |
 | Shodan_Auditor.py                      | RDS Instance                   | Are public accessible RDS instances indexed                                         |
@@ -942,7 +1018,7 @@ from check_register import CheckRegister
 registry = CheckRegister()
 ```
 
-The boto3 client will also need imported for whichever service is being audited. For example for EC2 ImageBuilder it is
+The boto3 client will also need imported for whichever service is being audited. You can get these from the `Boto3` Documentation website, but for example, the client for EC2 Image Build is below. To match the style of other Auditors, the variable name should closely (preferably, exactly) match the name of the Client.
 
 ```python
 imagebuilder = boto3.client("imagebuilder")
@@ -959,62 +1035,102 @@ def list_topics(cache):
     return cache["list_topics"]
 ```
 
-3. Registering and Defining Checks: All checks are registered by the same tag and checks should describe what is being checked with the word check at the end. Example from ImageBuilder.
+**NOTE 2:** For Auditors that expect to scan dozens or hundreds of potential resources, it is apt to use a Paginator instead of the standard Describe call due to upper limits (usually 100-500 per "regular" call). The below example is a cached Paginator from the EC2 Auditor with filters.
+
+```python
+def paginate(cache):
+    response = cache.get("paginate")
+    if response:
+        return response
+    get_paginators = ec2.get_paginator("describe_instances")
+    if get_paginators:
+        cache["paginate"] = get_paginators.paginate(Filters=[{'Name': 'instance-state-name','Values': ['running','stopped']}])
+        return cache["paginate"]
+```
+
+3. Registering and Defining Checks: All checks are registered by the same tag and checks should describe what is being checked with the word check at the end. Example from ImageBuilder. Directly underneath the `function` that defines the Check should be a single-line, double-quoted comment which contains the **`Title`** of the Check. This is outputted by the `--list-checks` flag in the **Controller**.
 
 ```python
 @registry.register_check("imagebuilder")
 def imagebuilder_pipeline_tests_enabled_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+"""[ImageBuilder.1] Image pipeline tests should be enabled"""
 ```
 
-4. Formatting Findings: Findings will be formatted for AWS Security Hub, [ASSF](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html). Look to other auditors findings format for more specifics on ElectricEye formatting. Parts that will stay consistent across checks are: SchemaVersion, ProductArn, AwsAccountId, Params with iso8601Time, ProductFields, and the Partition and Region within Resources. Example finding formatting from Amazon_SNS_Auditor:
+4. Formatting Findings: Findings will be formatted for AWS Security Hub, [ASSF](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html). Look to other auditors findings format for more specifics on ElectricEye formatting. Parts that will stay consistent across checks are: `SchemaVersion`, `ProductArn`, `AwsAccountId`, `FirstObservedAt`, `CreatedAt`, `UpdatedAt`, `ProductFields.Product Name` (ElectricEye), and the `Resources` array. Example finding formatting from Amazon_EC2_Auditor's IMDSv2 Check:
+
+**NOTE:** While not required by ASFF, it is required by ElectricEye that all checks are mapped to the supported compliance standards. It is recommended to use the mapped `Compliance.Requirements` from an existing Check within an Auditor that is similar to yours - for instance - if you are developing a check around TLS, look for an example of a Check for encryption in transit. If you are developing a check to enable Logging, look for a Check that deals with Logging.
+
+**NOTE 2:** The `Resources.Type` should **ALWAYS** be an ARN, not ever Boto3 Client nor Function within will return an ARN and you may need to look up what the ARN looks like, refer to the **[Actions, resources, and condition keys for AWS services](https://docs.aws.amazon.com/service-authorization/latest/reference/reference_policies_actions-resources-contextkeys.html)** section of the Service Authorization Reference.
+
+**NOTE 3:** When possible, **ALWAYS** use the AWS Documentation for the `Remediation.Recommendation.Text` and `Remediation.Recommendation.Url` sections of the ASFF. You should include a short description and note what Section and which Guide you are using. This additional meta-descriptiveness sould also be applied to the `Description` of a *failing* finding, as demonstrated below.
 
 ```python
 finding = {
     "SchemaVersion": "2018-10-08",
-    "Id": topicarn + "/sns-topic-encryption-check",
+    "Id": instanceArn + "/ec2-imdsv2-check",
     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-    "GeneratorId": topicarn,
+    "GeneratorId": instanceArn,
     "AwsAccountId": awsAccountId,
     "Types": [
         "Software and Configuration Checks/AWS Security Best Practices",
-        "Effects/Data Exposure",
+        "Effects/Data Exposure"
     ],
     "FirstObservedAt": iso8601Time,
     "CreatedAt": iso8601Time,
     "UpdatedAt": iso8601Time,
-    "Severity": {"Label": "INFORMATIONAL"},
+    "Severity": {"Label": "MEDIUM"},
     "Confidence": 99,
-    "Title": "[SNS.1] SNS topics should be encrypted",
-    "Description": "SNS topic " + topicName + " is encrypted.",
+    "Title": "[EC2.1] EC2 Instances should be configured to use instance metadata service V2 (IMDSv2)",
+    "Description": "EC2 Instance "
+    + instanceId
+    + " is not configured to use instance metadata service V2 (IMDSv2). IMDSv2 adds new “belt and suspenders” protections for four types of vulnerabilities that could be used to try to access the IMDS. These new protections go well beyond other types of mitigations, while working seamlessly with existing mitigations such as restricting IAM roles and using local firewall rules to restrict access to the IMDS. Refer to the remediation instructions if this configuration is not intended",
     "Remediation": {
         "Recommendation": {
-            "Text": "For more information on SNS encryption at rest and how to configure it refer to the Encryption at Rest section of the Amazon Simple Notification Service Developer Guide.",
-            "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-server-side-encryption.html",
+            "Text": "To learn how to configure IMDSv2 refer to the Transitioning to Using Instance Metadata Service Version 2 section of the Amazon EC2 User Guide",
+            "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html#instance-metadata-transition-to-version-2",
         }
     },
     "ProductFields": {"Product Name": "ElectricEye"},
     "Resources": [
         {
-            "Type": "AwsSnsTopic",
-            "Id": topicarn,
+            "Type": "AwsEc2Instance",
+            "Id": instanceArn,
             "Partition": awsPartition,
             "Region": awsRegion,
-            "Details": {"AwsSnsTopic": {"TopicName": topicName}},
+            "Details": {
+                "AwsEc2Instance": {
+                    "Type": instanceType,
+                    "ImageId": instanceImage,
+                    "VpcId": vpcId,
+                    "SubnetId": subnetId,
+                    "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                }
+            },
         }
     ],
     "Compliance": {
-        "Status": "PASSED",
+        "Status": "FAILED",
         "RelatedRequirements": [
-            "NIST CSF PR.DS-1",
-            "NIST SP 800-53 MP-8",
-            "NIST SP 800-53 SC-12",
-            "NIST SP 800-53 SC-28",
-            "AICPA TSC CC6.1",
-            "ISO 27001:2013 A.8.2.3",
-        ],
+            "NIST CSF PR.AC-4",
+            "NIST SP 800-53 AC-1",
+            "NIST SP 800-53 AC-2",
+            "NIST SP 800-53 AC-3",
+            "NIST SP 800-53 AC-5",
+            "NIST SP 800-53 AC-6",
+            "NIST SP 800-53 AC-14",
+            "NIST SP 800-53 AC-16",
+            "NIST SP 800-53 AC-24",
+            "AICPA TSC CC6.3",
+            "ISO 27001:2013 A.6.1.2",
+            "ISO 27001:2013 A.9.1.2",
+            "ISO 27001:2013 A.9.2.3",
+            "ISO 27001:2013 A.9.4.1",
+            "ISO 27001:2013 A.9.4.4",
+            "ISO 27001:2013 A.9.4.5",
+        ]
     },
-    "Workflow": {"Status": "RESOLVED"},
-    "RecordState": "ARCHIVED",
+    "Workflow": {"Status": "NEW"},
+    "RecordState": "ACTIVE",
 }
 yield finding
 ```
@@ -1030,11 +1146,9 @@ import sys
 from botocore.stub import Stubber, ANY
 ```
 
-6. Update all three IAM permissions with the new required boto permissions.
+6. Update the three IAM Permissions documents within `policies/ElectricEye_ECS_Task_Role_Policy.json`, `cloudformation/ElectricEye_CFN.yaml` (in the **`ElectricEyeTaskRole`** Logical ID), and `terraform-config-files/electric_eye.tf` (in the **`Electric_Eye_Task_Role_Policy`** Resource).
 
-7. Update Readme for total count of auditors/checks and the new checks are added to the list.
-
-8. All new checks mapped to Compliance.RelatedRequirements checks
+7. Update the Table within the [Supported Services and Checks](#supported-services-and-checks) section and its above description above for total count of auditors/checks and the new checks are added to the list. It is recommended to use [Markdown Tables generator](https://www.tablesgenerator.com/markdown_tables) by copying and pasting the current table into the website's UI (underneath the `File/Paste table data...` dropdown menu) and remove the whitespace / added columns for this task.
 
 ## Auditor testing
 

@@ -31,9 +31,8 @@ def list_domain_names(cache):
 
 
 @registry.register_check("es")
-def dedicated_master_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def dedicated_master_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Elasticsearch.1] Elasticsearch Service domains should use dedicated master nodes"""
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
@@ -168,9 +167,9 @@ def dedicated_master_check(
             }
             yield finding
 
-
 @registry.register_check("es")
 def cognito_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Elasticsearch.2] Elasticsearch Service domains should use Cognito authentication for Kibana"""
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
@@ -317,9 +316,8 @@ def cognito_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: 
             yield finding
 
 @registry.register_check("es")
-def encryption_at_rest_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Elasticsearch.3] Elasticsearch Service domains should be encrypted at rest"""
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
@@ -449,9 +447,8 @@ def encryption_at_rest_check(
             yield finding
 
 @registry.register_check("es")
-def node2node_encryption_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def node2node_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Elasticsearch.4] Elasticsearch Service domains should use node-to-node encryption"""
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
@@ -593,9 +590,8 @@ def node2node_encryption_check(
             yield finding
 
 @registry.register_check("es")
-def https_enforcement_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def https_enforcement_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Elasticsearch.5] Elasticsearch Service domains should enforce HTTPS-only communications"""
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
@@ -738,6 +734,7 @@ def https_enforcement_check(
 
 @registry.register_check("es")
 def tls_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Elasticsearch.6] Elasticsearch Service domains that enforce HTTPS-only communications should use a TLS 1.2 security policy"""
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
@@ -893,9 +890,8 @@ def tls_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
             pass
 
 @registry.register_check("es")
-def elastic_update_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def elastic_update_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Elasticsearch.7] Elasticsearch Service domains should be updated to the latest service software version"""
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
@@ -1030,6 +1026,7 @@ def elastic_update_check(
 
 @registry.register_check("es")
 def elasticsearch_in_vpc_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Elasticsearch.8] Elasticsearch Service domains should be in a VPC"""
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
@@ -1174,6 +1171,7 @@ def elasticsearch_in_vpc_check(cache: dict, awsAccountId: str, awsRegion: str, a
 
 @registry.register_check("es")
 def elasticsearch_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Elasticsearch.9] Elasticsearch Service domains should not be exposed to the public"""
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:

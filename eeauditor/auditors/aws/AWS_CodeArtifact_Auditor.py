@@ -23,11 +23,9 @@ registry = CheckRegister()
 # import boto3 clients
 codeartifact = boto3.client("codeartifact")
 
-
 @registry.register_check("codeartifact")
-def codeartifact_repo_policy_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def codeartifact_repo_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CodeArtifact.1] CodeArtifact repos should have a resource policy with least privilege applied"""
     response = codeartifact.list_repositories()
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     
@@ -83,7 +81,7 @@ def codeartifact_repo_policy_check(
                 "Remediation": {
                     "Recommendation": {
                         "Text": "CodeArtifact repos should use resource policies to further protect repositories from unauthorized access.  See the CodeArtifact docs for more details",
-                        "Url": "https://docs.aws.amazon.com/codeartifact/latest/ug/repo-policies.html",
+                        "Url": "https://docs.aws.amazon.com/codeartifact/latest/ug/repo-policies.html"
                     }
                 },
                 "ProductFields": {"Product Name": "ElectricEye"},
@@ -93,26 +91,33 @@ def codeartifact_repo_policy_check(
                         "Id": repoArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {
-                            "name": repositoryName,
-                            "domain": domainName}},
+                        "Details": {
+                            "Other": {
+                                "RepositoryName": repositoryName,
+                                "DomainName": domainName
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                            "NIST CSF PR.AC-4",
-                            "NIST CSF PR.DS-5",
-                            "NIST CSF PR.PT-3",
-                            "NIST SP 800-53 AC-1"
-                            "NIST SP 800-53 AC-3"
-                            "NIST SP 800-53 AC-17"
-                            "NIST SP 800-53 AC-22"
-                            "ISO 27001:2013 A.13.1.2"
-                    ],
+                        "NIST CSF PR.AC-3",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-17",
+                        "NIST SP 800-53 AC-19",
+                        "NIST SP 800-53 AC-20",
+                        "NIST SP 800-53 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
         
@@ -134,7 +139,7 @@ def codeartifact_repo_policy_check(
                 "Remediation": {
                     "Recommendation": {
                         "Text": "CodeArtifact repos should use resource policies to further protect repositories from unauthorized access.  See the CodeArtifact docs for more details",
-                        "Url": "https://docs.aws.amazon.com/codeartifact/latest/ug/repo-policies.html",
+                        "Url": "https://docs.aws.amazon.com/codeartifact/latest/ug/repo-policies.html"
                     }
                 },
                 "ProductFields": {"Product Name": "ElectricEye"},
@@ -144,34 +149,39 @@ def codeartifact_repo_policy_check(
                         "Id": repoArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {
-                            "name": repositoryName,
-                            "domain": domainName}},
+                        "Details": {
+                            "Other": {
+                                "RepositoryName": repositoryName,
+                                "DomainName": domainName
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                            "NIST CSF PR.AC-4",
-                            "NIST CSF PR.DS-5",
-                            "NIST CSF PR.PT-3",
-                            "NIST SP 800-53 AC-1"
-                            "NIST SP 800-53 AC-3"
-                            "NIST SP 800-53 AC-17"
-                            "NIST SP 800-53 AC-22"
-                            "ISO 27001:2013 A.13.1.2"
-                    ],
+                        "NIST CSF PR.AC-3",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-17",
+                        "NIST SP 800-53 AC-19",
+                        "NIST SP 800-53 AC-20",
+                        "NIST SP 800-53 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
 
-
 @registry.register_check("codeartifact")
-def codeartifact_domain_policy_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def codeartifact_domain_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CodeArtifact.2] CodeArtifact domains should have a resource policy with least privilege applied"""
     response = codeartifact.list_domains()
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     
@@ -230,7 +240,7 @@ def codeartifact_domain_policy_check(
                 "Remediation": {
                     "Recommendation": {
                         "Text": "CodeArtifact domains should use resource policies to further protect repositories from unauthorized access.  See the CodeArtifact docs for more details",
-                        "Url": "https://docs.aws.amazon.com/codeartifact/latest/ug/domain-policies.html",
+                        "Url": "https://docs.aws.amazon.com/codeartifact/latest/ug/domain-policies.html"
                     }
                 },
                 "ProductFields": {"Product Name": "ElectricEye"},
@@ -240,26 +250,33 @@ def codeartifact_domain_policy_check(
                         "Id": domainArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {
-                            "name": domainName,
-                            "status": status}},
+                        "Details": {
+                            "Other": {
+                                "DomainName": domainName,
+                                "Status": status
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                            "NIST CSF PR.AC-4",
-                            "NIST CSF PR.DS-5",
-                            "NIST CSF PR.PT-3",
-                            "NIST SP 800-53 AC-1"
-                            "NIST SP 800-53 AC-3"
-                            "NIST SP 800-53 AC-17"
-                            "NIST SP 800-53 AC-22"
-                            "ISO 27001:2013 A.13.1.2"
-                    ],
+                        "NIST CSF PR.AC-3",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-17",
+                        "NIST SP 800-53 AC-19",
+                        "NIST SP 800-53 AC-20",
+                        "NIST SP 800-53 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
         
@@ -281,7 +298,7 @@ def codeartifact_domain_policy_check(
                 "Remediation": {
                     "Recommendation": {
                         "Text": "CodeArtifact domains should use resource policies to further protect repositories from unauthorized access.  See the CodeArtifact docs for more details",
-                        "Url": "https://docs.aws.amazon.com/codeartifact/latest/ug/domain-policies.html",
+                        "Url": "https://docs.aws.amazon.com/codeartifact/latest/ug/domain-policies.html"
                     }
                 },
                 "ProductFields": {"Product Name": "ElectricEye"},
@@ -291,25 +308,32 @@ def codeartifact_domain_policy_check(
                         "Id": domainArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {
-                            "name": domainName,
-                            "status": status}},
+                        "Details": {
+                            "Other": {
+                                "DomainName": domainName,
+                                "Status": status
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                            "NIST CSF PR.AC-4",
-                            "NIST CSF PR.DS-5",
-                            "NIST CSF PR.PT-3",
-                            "NIST SP 800-53 AC-1"
-                            "NIST SP 800-53 AC-3"
-                            "NIST SP 800-53 AC-17"
-                            "NIST SP 800-53 AC-22"
-                            "ISO 27001:2013 A.13.1.2"
-                    ],
+                        "NIST CSF PR.AC-3",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-17",
+                        "NIST SP 800-53 AC-19",
+                        "NIST SP 800-53 AC-20",
+                        "NIST SP 800-53 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding

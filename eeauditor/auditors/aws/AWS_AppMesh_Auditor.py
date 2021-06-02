@@ -32,9 +32,8 @@ def list_meshes(cache):
 
 
 @registry.register_check("appmesh")
-def appmesh_mesh_egress_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def appmesh_mesh_egress_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[AppMesh.1] App Mesh meshes should have the egress filter configured to DROP_ALL"""
     mesh = list_meshes(cache=cache)
     myMesh = mesh["meshes"]
     for meshes in myMesh:
@@ -161,11 +160,9 @@ def appmesh_mesh_egress_check(
         except Exception as e:
             print(e)
 
-
 @registry.register_check("appmesh")
-def appmesh_virt_node_backed_default_tls_policy_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def appmesh_virt_node_backed_default_tls_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[AppMesh.2] App Mesh virtual nodes should enforce TLS by default for all backends"""
     mesh = list_meshes(cache=cache)
     myMesh = mesh["meshes"]
     for meshes in myMesh:
@@ -386,11 +383,9 @@ def appmesh_virt_node_backed_default_tls_policy_check(
         except Exception as e:
             print(e)
 
-
 @registry.register_check("appmesh")
-def appmesh_virt_node_listener_strict_tls_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def appmesh_virt_node_listener_strict_tls_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[AppMesh.3] App Mesh virtual node listeners should only accept connections with TLS enabled"""
     mesh = list_meshes(cache=cache)
     myMesh = mesh["meshes"]
     for meshes in myMesh:
@@ -547,11 +542,9 @@ def appmesh_virt_node_listener_strict_tls_check(
         except Exception as e:
             print(e)
 
-
 @registry.register_check("appmesh")
-def appmesh_logging_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def appmesh_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[AppMesh.4] App Mesh virtual nodes should define an HTTP access log path to enable log exports for Envoy proxies"""
     mesh = list_meshes(cache=cache)
     myMesh = mesh["meshes"]
     for meshes in myMesh:

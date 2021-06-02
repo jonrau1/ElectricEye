@@ -24,6 +24,7 @@ globalaccelerator = boto3.client("globalaccelerator")
 
 @registry.register_check("globalaccelerator")
 def unhealthy_endpoint_group_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[GlobalAccelerator.1] Endpoint should not be unhealthy"""
     if awsRegion != "us-west-2":
         pass
     else:
@@ -157,9 +158,9 @@ def unhealthy_endpoint_group_check(cache: dict, awsAccountId: str, awsRegion: st
                             }
                             yield finding
 
-
 @registry.register_check("globalaccelerator")
 def flow_logs_enabled_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[GlobalAccelerator.2] Accelerator should have flow logs enabled"""
     if awsRegion != "us-west-2":
         pass
     else:

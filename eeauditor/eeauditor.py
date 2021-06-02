@@ -75,6 +75,10 @@ class EEAuditor(object):
             service = 'kinesisanalytics'
         elif service == 'macie2':
             service = 'macie'
+        elif service == 'elbv2':
+            service = 'elb'
+        elif service == 'wafv2':
+            service = 'waf'
         else:
             service = service
         paginator = ssm.get_paginator("get_parameters_by_path")

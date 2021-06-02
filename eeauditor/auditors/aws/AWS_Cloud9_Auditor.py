@@ -22,6 +22,7 @@ paginator = cloud9.get_paginator("list_environments")
 
 @registry.register_check("cloud9")
 def cloud9_ssm_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Cloud9.1] Cloud9 Environments should be accessed using Session Manager"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     iterator = paginator.paginate()
     for page in iterator:

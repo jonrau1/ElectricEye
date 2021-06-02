@@ -18,10 +18,8 @@ import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
-
 # import boto3 clients
 firehose = boto3.client("firehose")
-
 
 # loop through Firehose delivery streams
 def list_delivery_streams(cache):
@@ -31,11 +29,9 @@ def list_delivery_streams(cache):
     cache["list_delivery_streams"] = firehose.list_delivery_streams(Limit=100)
     return cache["list_delivery_streams"]
 
-
 @registry.register_check("firehose")
-def firehose_delivery_stream_encryption_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def firehose_delivery_stream_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Firehose.1] AWS Kinesis Firehose delivery streams should be encrypted"""
     response = list_delivery_streams(cache)
     myFirehoseStreams = response["DeliveryStreamNames"]
     for deliverystreams in myFirehoseStreams:

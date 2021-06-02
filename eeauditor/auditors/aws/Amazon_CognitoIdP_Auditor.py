@@ -35,9 +35,8 @@ def list_user_pools(cache):
 
 
 @registry.register_check("sns")
-def cognitoidp_cis_password_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def cognitoidp_cis_password_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Cognito-IdP.1] Cognito user pools should have a password policy that meets or exceed AWS CIS Foundations Benchmark standards"""
     response = list_user_pools(cache)
     myCognitoUserPools = response["UserPools"]
     for userpools in myCognitoUserPools:
@@ -197,9 +196,8 @@ def cognitoidp_cis_password_check(
 
 
 @registry.register_check("sns")
-def cognitoidp_temp_password_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def cognitoidp_temp_password_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Cognito-IdP.2] Cognito user pools should not allow temporary passwords to stay valid beyond 24 hours"""
     response = list_user_pools(cache)
     myCognitoUserPools = response["UserPools"]
     for userpools in myCognitoUserPools:
@@ -347,9 +345,8 @@ def cognitoidp_temp_password_check(
 
 
 @registry.register_check("sns")
-def cognitoidp_mfa_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def cognitoidp_mfa_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Cognito-IdP.3] Cognito user pools should enforce multi factor authentication (MFA)"""
     response = list_user_pools(cache)
     myCognitoUserPools = response["UserPools"]
     for userpools in myCognitoUserPools:

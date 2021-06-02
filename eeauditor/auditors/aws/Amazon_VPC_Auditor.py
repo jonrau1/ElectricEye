@@ -28,12 +28,11 @@ def describe_vpcs(cache):
     cache["describe_vpcs"] = ec2.describe_vpcs(DryRun=False)
     return cache["describe_vpcs"]
 
-
 @registry.register_check("ec2")
 def vpc_default_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[VPC.1] Consider deleting the Default VPC if unused"""
     vpc = describe_vpcs(cache=cache)
-    myVpcs = vpc["Vpcs"]
-    for vpcs in myVpcs:
+    for vpcs in vpc["Vpcs"]:
         vpcId = str(vpcs["VpcId"])
         vpcArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}vpc/{vpcId}"
         defaultVpcCheck = str(vpcs["IsDefault"])
@@ -54,7 +53,7 @@ def vpc_default_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
                 "Title": "[VPC.1] Consider deleting the Default VPC if unused",
                 "Description": "VPC "
                 + vpcId
-                + " has been identified as the Default VPC, consider deleting this VPC if it is not necessary for daily operations. Refer to the remediation instructions if this configuration is not intended",
+                + " has been identified as the Default VPC, consider deleting this VPC if it is not necessary for daily operations. The Default VPC in AWS Regions not typically used can serve as a persistence area for malicious actors, additionally, many services will automatically use this VPC which can lead to a degraded security posture. Refer to the remediation instructions if this configuration is not intended",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on the default VPC refer to the Deleting Your Default Subnets and Default VPC section of the Amazon Virtual Private Cloud User Guide",
@@ -143,9 +142,9 @@ def vpc_default_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
 
 @registry.register_check("ec2")
 def vpc_flow_logs_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[VPC.2] Flow Logs should be enabled for all VPCs"""
     vpc = describe_vpcs(cache=cache)
-    myVpcs = vpc["Vpcs"]
-    for vpcs in myVpcs:
+    for vpcs in vpc["Vpcs"]:
         vpcId = str(vpcs["VpcId"])
         vpcArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}vpc/{vpcId}"
         response = ec2.describe_flow_logs(
@@ -257,6 +256,7 @@ def vpc_flow_logs_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
 
 @registry.register_check("ec2")
 def subnet_public_ip_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[VPC.3] Subnets should not automatically map Public IP addresses on launch"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     vpc = describe_vpcs(cache=cache)
     myVpcs = vpc["Vpcs"]
@@ -385,6 +385,7 @@ def subnet_public_ip_check(cache: dict, awsAccountId: str, awsRegion: str, awsPa
 
 @registry.register_check("ec2")
 def subnet_no_ip_space_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[VPC.4] Subnets should be monitored for available IP address space"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     vpc = describe_vpcs(cache=cache)
     myVpcs = vpc["Vpcs"]

@@ -15,16 +15,13 @@
 
 import datetime
 from dateutil import parser
-
 import boto3
 import json
-
 from check_register import CheckRegister
 
 registry = CheckRegister()
 sqs = boto3.client("sqs")
 cloudwatch = boto3.client("cloudwatch")
-
 
 def list_queues(cache):
     response = cache.get("list_queues")
@@ -33,11 +30,9 @@ def list_queues(cache):
     cache["list_queues"] = sqs.list_queues()
     return cache["list_queues"]
 
-
 @registry.register_check("sqs")
-def sqs_old_message_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def sqs_old_message_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SQS.1] SQS messages should not be older than 80 percent of message retention"""
     response = list_queues(cache)
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     if 'QueueUrls' in response:
@@ -182,9 +177,8 @@ def sqs_old_message_check(
         pass
 
 @registry.register_check("sqs")
-def sqs_queue_encryption_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def sqs_queue_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SQS.2] SQS queues should use Server Side encryption"""
     response = list_queues(cache)
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     if 'QueueUrls' in response:
@@ -297,9 +291,8 @@ def sqs_queue_encryption_check(
         pass
 
 @registry.register_check("sqs")
-def sqs_queue_public_accessibility_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def sqs_queue_public_accessibility_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SQS.3] SQS queues should not be unconditionally open to the public"""
     response = list_queues(cache)
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     if 'QueueUrls' in response:

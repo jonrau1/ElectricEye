@@ -31,9 +31,8 @@ def describe_db_instances(cache):
 
 
 @registry.register_check("docdb")
-def docdb_public_instance_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def docdb_public_instance_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[DocumentDB.1] DocumentDB instances should not be exposed to the public"""
     response = describe_db_instances(cache)
     myDocDbs = response["DBInstances"]
     for docdb in myDocDbs:
@@ -58,7 +57,7 @@ def docdb_public_instance_check(
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "CRITICAL"},
                 "Confidence": 99,
-                "Title": "[DocDb.1] DocumentDB instances should not be exposed to the public",
+                "Title": "[DocumentDB.1] DocumentDB instances should not be exposed to the public",
                 "Description": "DocumentDB instance "
                 + docdbId
                 + " is exposed to the public. Refer to the remediation instructions if this configuration is not intended",
@@ -115,7 +114,7 @@ def docdb_public_instance_check(
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[DocDb.1] DocumentDB instances should not be exposed to the public",
+                "Title": "[DocumentDB.1] DocumentDB instances should not be exposed to the public",
                 "Description": "DocumentDB instance " + docdbId + " is not exposed to the public.",
                 "Remediation": {
                     "Recommendation": {
@@ -157,9 +156,8 @@ def docdb_public_instance_check(
 
 
 @registry.register_check("docdb")
-def docdb_instance_encryption_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def docdb_instance_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[DocumentDB.2] DocumentDB instances should be encrypted"""
     response = describe_db_instances(cache)
     myDocDbs = response["DBInstances"]
     for docdb in myDocDbs:
@@ -184,7 +182,7 @@ def docdb_instance_encryption_check(
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
-                "Title": "[DocDb.2] DocumentDB instances should be encrypted",
+                "Title": "[DocumentDB.2] DocumentDB instances should be encrypted",
                 "Description": "DocumentDB instance "
                 + docdbId
                 + " is not encrypted. You encrypt data at rest in your Amazon DocumentDB cluster by specifying the storage encryption option when you create your cluster. Storage encryption is enabled cluster-wide and is applied to all instances, including the primary instance and any replicas. It is also applied to your cluster’s storage volume, data, indexes, logs, automated backups, and snapshots. Refer to the remediation instructions if this configuration is not intended",
@@ -235,7 +233,7 @@ def docdb_instance_encryption_check(
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[DocDb.2] DocumentDB instances should be encrypted",
+                "Title": "[DocumentDB.2] DocumentDB instances should be encrypted",
                 "Description": "DocumentDB instance " + docdbId + " is encrypted.",
                 "Remediation": {
                     "Recommendation": {
@@ -271,9 +269,8 @@ def docdb_instance_encryption_check(
 
 
 @registry.register_check("docdb")
-def docdb_instance_audit_logging_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def docdb_instance_audit_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[DocumentDB.3] DocumentDB instances should have audit logging configured"""
     response = describe_db_instances(cache)
     myDocDbs = response["DBInstances"]
     for docdb in myDocDbs:
@@ -296,7 +293,7 @@ def docdb_instance_audit_logging_check(
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[DocDb.3] DocumentDB instances should have audit logging configured",
+                "Title": "[DocumentDB.3] DocumentDB instances should have audit logging configured",
                 "Description": "DocumentDB instance " + docdbId + " has audit logging configured.",
                 "Remediation": {
                     "Recommendation": {
@@ -346,7 +343,7 @@ def docdb_instance_audit_logging_check(
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[DocDb.3] DocumentDB instances should have audit logging configured",
+                "Title": "[DocumentDB.3] DocumentDB instances should have audit logging configured",
                 "Description": "DocumentDB instance "
                 + docdbId
                 + " does not have audit logging configured. Profiler is useful for monitoring the slowest operations on your cluster to help you improve individual query performance and overall cluster performance. When enabled, operations are logged to Amazon CloudWatch Logs and you can use CloudWatch Insight to analyze, monitor, and archive your Amazon DocumentDB profiling data. Refer to the remediation instructions if this configuration is not intended",
@@ -388,9 +385,8 @@ def docdb_instance_audit_logging_check(
 
 
 @registry.register_check("docdb")
-def docdb_cluster_multiaz_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def docdb_cluster_multiaz_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[DocumentDB.4] DocumentDB clusters should be configured for Multi-AZ"""
     # find document db clusters
     response = documentdb.describe_db_clusters(MaxRecords=100)
     myDocDbClusters = response["DBClusters"]
@@ -413,7 +409,7 @@ def docdb_cluster_multiaz_check(
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[DocDb.4] DocumentDB clusters should be configured for Multi-AZ",
+                "Title": "[DocumentDB.4] DocumentDB clusters should be configured for Multi-AZ",
                 "Description": "DocumentDB cluster "
                 + docdbclusterId
                 + " is not configured for Multi-AZ. Amazon DocumentDB helps ensure that there are instances available in your cluster in the unlikely event of an Availability Zone failure. The cluster volume for your Amazon DocumentDB cluster always spans three Availability Zones to provide durable storage with less possibility of data loss. Refer to the remediation instructions if this configuration is not intended",
@@ -467,7 +463,7 @@ def docdb_cluster_multiaz_check(
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[DocDb.4] DocumentDB clusters should be configured for Multi-AZ",
+                "Title": "[DocumentDB.4] DocumentDB clusters should be configured for Multi-AZ",
                 "Description": "DocumentDB cluster "
                 + docdbclusterId
                 + " is configured for Multi-AZ.",
@@ -511,9 +507,8 @@ def docdb_cluster_multiaz_check(
 
 
 @registry.register_check("docdb")
-def docdb_cluster_deletion_protection_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def docdb_cluster_deletion_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[DocumentDB.5] DocumentDB clusters should have deletion protection enabled"""
     # find document db instances
     response = documentdb.describe_db_clusters(MaxRecords=100)
     myDocDbClusters = response["DBClusters"]
@@ -536,7 +531,7 @@ def docdb_cluster_deletion_protection_check(
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[DocDb.5] DocumentDB clusters should have deletion protection enabled",
+                "Title": "[DocumentDB.5] DocumentDB clusters should have deletion protection enabled",
                 "Description": "DocumentDB cluster "
                 + docdbclusterId
                 + " does not have deletion protection enabled. To protect your cluster from accidental deletion, you can enable deletion protection. Deletion protection is enabled by default when you create a cluster using the console. However, deletion protection is disabled by default if you create a cluster using the AWS CLI. Refer to the remediation instructions if this configuration is not intended",
@@ -590,7 +585,7 @@ def docdb_cluster_deletion_protection_check(
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[DocDb.5] DocumentDB clusters should have deletion protection enabled",
+                "Title": "[DocumentDB.5] DocumentDB clusters should have deletion protection enabled",
                 "Description": "DocumentDB cluster "
                 + docdbclusterId
                 + " has deletion protection enabled.",
@@ -634,9 +629,8 @@ def docdb_cluster_deletion_protection_check(
 
 
 @registry.register_check("docdb")
-def documentdb_parameter_group_audit_log_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def documentdb_parameter_group_audit_log_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[DocumentDB.6] DocumentDB cluster parameter groups should enforce audit logging for DocumentDB databases"""
     response = documentdb.describe_db_cluster_parameter_groups()
     dbClusterParameters = response["DBClusterParameterGroups"]
     for parametergroup in dbClusterParameters:
@@ -671,7 +665,7 @@ def documentdb_parameter_group_audit_log_check(
                             "UpdatedAt": iso8601Time,
                             "Severity": {"Label": "MEDIUM"},
                             "Confidence": 99,
-                            "Title": "[DocDb.6] DocumentDB cluster parameter groups should enforce audit logging for DocumentDB databases",
+                            "Title": "[DocumentDB.6] DocumentDB cluster parameter groups should enforce audit logging for DocumentDB databases",
                             "Description": "DocumentDB cluster parameter group "
                             + parameterGroupName
                             + " does not enforce audit logging. Examples of logged events include successful and failed authentication attempts, dropping a collection in a database, or creating an index. By default, auditing is disabled on Amazon DocumentDB and requires that you opt in to use this feature. Refer to the remediation instructions to remediate this behavior",
@@ -728,7 +722,7 @@ def documentdb_parameter_group_audit_log_check(
                             "UpdatedAt": iso8601Time,
                             "Severity": {"Label": "INFORMATIONAL"},
                             "Confidence": 99,
-                            "Title": "[DocDb.6] DocumentDB cluster parameter groups should enforce audit logging for DocumentDB databases",
+                            "Title": "[DocumentDB.6] DocumentDB cluster parameter groups should enforce audit logging for DocumentDB databases",
                             "Description": "DocumentDB cluster parameter group "
                             + parameterGroupName
                             + " enforces audit logging.",
@@ -776,9 +770,8 @@ def documentdb_parameter_group_audit_log_check(
 
 
 @registry.register_check("docdb")
-def documentdb_parameter_group_tls_enforcement_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def documentdb_parameter_group_tls_enforcement_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[DocumentDB.7] DocumentDB cluster parameter groups should enforce TLS connections to DocumentDB databases"""
     response = documentdb.describe_db_cluster_parameter_groups()
     dbClusterParameters = response["DBClusterParameterGroups"]
     for parametergroup in dbClusterParameters:
@@ -813,7 +806,7 @@ def documentdb_parameter_group_tls_enforcement_check(
                             "UpdatedAt": iso8601Time,
                             "Severity": {"Label": "MEDIUM"},
                             "Confidence": 99,
-                            "Title": "[DocDb.7] DocumentDB cluster parameter groups should enforce TLS connections to DocumentDB databases",
+                            "Title": "[DocumentDB.7] DocumentDB cluster parameter groups should enforce TLS connections to DocumentDB databases",
                             "Description": "DocumentDB cluster parameter group "
                             + parameterGroupName
                             + " does not enforce TLS connections. When encryption in transit is enabled, secure connections using TLS are required to connect to the cluster. Encryption in transit for an Amazon DocumentDB cluster is managed via the TLS parameter in a cluster parameter group. Refer to the remediation instructions to remediate this behavior",
@@ -871,7 +864,7 @@ def documentdb_parameter_group_tls_enforcement_check(
                             "UpdatedAt": iso8601Time,
                             "Severity": {"Label": "INFORMATIONAL"},
                             "Confidence": 99,
-                            "Title": "[DocDb.7] DocumentDB cluster parameter groups should enforce TLS connections to DocumentDB databases",
+                            "Title": "[DocumentDB.7] DocumentDB cluster parameter groups should enforce TLS connections to DocumentDB databases",
                             "Description": "DocumentDB cluster parameter group "
                             + parameterGroupName
                             + " enforces TLS connections.",
@@ -920,9 +913,8 @@ def documentdb_parameter_group_tls_enforcement_check(
 
 
 @registry.register_check("docdb")
-def documentdb_cluster_snapshot_encryption_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def documentdb_cluster_snapshot_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[DocumentDB.8] DocumentDB cluster snapshots should be encrypted"""
     response = documentdb.describe_db_clusters(Filters=[{"Name": "engine", "Values": ["docdb"]}])
     for clusters in response["DBClusters"]:
         clusterId = str(clusters["DBClusterIdentifier"])
@@ -951,7 +943,7 @@ def documentdb_cluster_snapshot_encryption_check(
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "HIGH"},
                     "Confidence": 99,
-                    "Title": "[DocDb.8] DocumentDB cluster snapshots should be encrypted",
+                    "Title": "[DocumentDB.8] DocumentDB cluster snapshots should be encrypted",
                     "Description": "DocumentDB cluster snapshot "
                     + clusterSnapshotId
                     + " is not encrypted. You encrypt data at rest in your Amazon DocumentDB cluster by specifying the storage encryption option when you create your cluster. Storage encryption is enabled cluster-wide and is applied to all instances, including the primary instance and any replicas. It is also applied to your cluster’s storage volume, data, indexes, logs, automated backups, and snapshots. Refer to the remediation instructions to remediate this behavior",
@@ -1002,7 +994,7 @@ def documentdb_cluster_snapshot_encryption_check(
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
-                    "Title": "[DocDb.8] DocumentDB cluster snapshots should be encrypted",
+                    "Title": "[DocumentDB.8] DocumentDB cluster snapshots should be encrypted",
                     "Description": "DocumentDB cluster snapshot "
                     + clusterSnapshotId
                     + " is encrypted.",
@@ -1040,9 +1032,8 @@ def documentdb_cluster_snapshot_encryption_check(
 
 
 @registry.register_check("docdb")
-def documentdb_cluster_snapshot_public_share_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def documentdb_cluster_snapshot_public_share_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[DocumentDB.9] DocumentDB cluster snapshots should not be publicly shared"""
     response = documentdb.describe_db_clusters(Filters=[{"Name": "engine", "Values": ["docdb"]}])
     for clusters in response["DBClusters"]:
         clusterId = str(clusters["DBClusterIdentifier"])
@@ -1081,7 +1072,7 @@ def documentdb_cluster_snapshot_public_share_check(
                             "UpdatedAt": iso8601Time,
                             "Severity": {"Label": "CRITICAL"},
                             "Confidence": 99,
-                            "Title": "[DocDb.9] DocumentDB cluster snapshots should not be publicly shared",
+                            "Title": "[DocumentDB.9] DocumentDB cluster snapshots should not be publicly shared",
                             "Description": "DocumentDB cluster snapshot "
                             + clusterSnapshotId
                             + " is publicly shared. You can share a manual snapshot with up to 20 other AWS accounts. You can also share an unencrypted manual snapshot as public, which makes the snapshot available to all accounts. Take care when sharing a snapshot as public so that none of your private information is included in any of your public snapshots. Refer to the remediation instructions to remediate this behavior",
@@ -1139,7 +1130,7 @@ def documentdb_cluster_snapshot_public_share_check(
                             "UpdatedAt": iso8601Time,
                             "Severity": {"Label": "INFORMATIONAL"},
                             "Confidence": 99,
-                            "Title": "[DocDb.9] DocumentDB cluster snapshots should not be publicly shared",
+                            "Title": "[DocumentDB.9] DocumentDB cluster snapshots should not be publicly shared",
                             "Description": "DocumentDB cluster snapshot "
                             + clusterSnapshotId
                             + " is not publicly shared, however, it may be shared with other accounts. You should periodically review who has snapshots shared with them to ensure they are still authorized",

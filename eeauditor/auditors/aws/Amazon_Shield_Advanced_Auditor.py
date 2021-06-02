@@ -30,6 +30,7 @@ cloudfront = boto3.client("cloudfront")
 
 @registry.register_check("shield")
 def shield_advanced_route_53_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ShieldAdvanced.1] Route 53 Hosted Zones should be protected by Shield Advanced"""
     if awsRegion != "us-east-1":
         print("Shield APIs only available in us-east-1!")
     else:
@@ -160,6 +161,7 @@ def shield_advanced_route_53_protection_check(cache: dict, awsAccountId: str, aw
 
 @registry.register_check("shield")
 def shield_advanced_elb_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ShieldAdvanced.2] Classic Load Balancers should be protected by Shield Advanced"""
     if awsRegion != "us-east-1":
         print("Shield APIs only available in us-east-1!")
     else:
@@ -289,6 +291,7 @@ def shield_advanced_elb_protection_check(cache: dict, awsAccountId: str, awsRegi
 
 @registry.register_check("shield")
 def shield_advanced_elb_v2_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ShieldAdvanced.3] ELBv2 Load Balancers should be protected by Shield Advanced"""
     if awsRegion != "us-east-1":
         print("Shield APIs only available in us-east-1!")
     else:
@@ -443,6 +446,7 @@ def shield_advanced_elb_v2_protection_check(cache: dict, awsAccountId: str, awsR
 
 @registry.register_check("shield")
 def shield_advanced_eip_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ShieldAdvanced.4] Elastic IPs should be protected by Shield Advanced"""
     if awsRegion != "us-east-1":
         print("Shield APIs only available in us-east-1!")
     else:
@@ -574,6 +578,7 @@ def shield_advanced_eip_protection_check(cache: dict, awsAccountId: str, awsRegi
 
 @registry.register_check("shield")
 def shield_advanced_cloudfront_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ShieldAdvanced.5] CloudFront distributions should be protected by Shield Advanced"""
     if awsRegion != "us-east-1":
         print("Shield APIs only available in us-east-1!")
     else:
@@ -710,6 +715,8 @@ def shield_advanced_cloudfront_protection_check(cache: dict, awsAccountId: str, 
 
 @registry.register_check("shield")
 def shield_advanced_drt_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ShieldAdvanced.6] The DDoS Response Team (DRT) should be authorized to take action in your account"""
+
     if awsRegion != "us-east-1":
         print("Shield APIs only available in us-east-1!")
     else:
@@ -837,6 +844,7 @@ def shield_advanced_drt_access_check(cache: dict, awsAccountId: str, awsRegion: 
 
 @registry.register_check("shield")
 def shield_advanced_drt_s3_bucket_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ShieldAdvanced.7] The DDoS Response Team (DRT) should be authorized to view your AWS Web Application Firewall (WAF) logging buckets"""
     response = shield.describe_drt_access()
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
@@ -959,6 +967,7 @@ def shield_advanced_drt_s3_bucket_check(cache: dict, awsAccountId: str, awsRegio
 
 @registry.register_check("shield")
 def shield_advanced_subscription_autorenew_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ShieldAdvanced.8] Shield Advanced subscription should be set to auto-renew"""
     if awsRegion != "us-east-1":
         print("Shield APIs only available in us-east-1!")
     else:
@@ -1033,7 +1042,7 @@ def shield_advanced_subscription_autorenew_check(cache: dict, awsAccountId: str,
                 + " is set to auto-renew",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "To update the subscription renewel use the UpdateSubscription API, refer to the link for more details.",
+                        "Text": "To update the subscription renewal use the UpdateSubscription API, refer to the link for more details.",
                         "Url": "https://docs.aws.amazon.com/waf/latest/DDOSAPIReference/API_UpdateSubscription.html",
                     }
                 },
@@ -1064,14 +1073,16 @@ def shield_advanced_subscription_autorenew_check(cache: dict, awsAccountId: str,
             }
             yield finding
 
+
 @registry.register_check("shield")
 def shield_advanced_global_accelerator_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ShieldAdvanced.9] Global Accelerator Accelerators should be protected by Shield Advanced"""
     if awsRegion != "us-east-1":
         print("Shield APIs only available in us-east-1!")
     else:
         # Create a Session is us-west-2 - which is where the Global Accelerator API is in
         session = boto3.Session(region_name="us-west-2")
-        gax = boto3.session("globalaccelerator")
+        gax = session.client("globalaccelerator")
         paginator = gax.get_paginator("list_accelerators")
         iterator = paginator.paginate()
         for page in iterator:
@@ -1203,3 +1214,116 @@ def shield_advanced_global_accelerator_protection_check(cache: dict, awsAccountI
                         yield finding
                     else:
                         print(e)
+
+
+@registry.register_check("shield")
+def shield_advanced_subscription_latest_attacks(
+    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
+) -> dict:
+    if awsRegion != "us-east-1":
+        print("Shield Advanced APIs are only available in North Virginia")
+    else:
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        response = shield.list_attacks(
+            StartTime = {
+                'FromInclusive': datetime.datetime.utcnow() - datetime.timedelta(days=7)
+            },
+            EndTime = {
+                'ToExclusive': datetime.datetime.utcnow()
+            }
+        )
+
+        if len(response['AttackSummaries']) == 0:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": awsAccountId + "/shield-adv-subscription-latest-attacks",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": awsAccountId,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[ShieldAdvanced.9] Resources under attack in the last week",
+                "Description": f"The resources in {awsAccountId} have not had an attack mitigated by AWS Shield Advanced in the last week",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "View the docs for more details about how to ensure your AWS environments are protected against DDOS attacks.",
+                        "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-manage-protected-resources.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsAccount",
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.AM-2",
+                        "NIST SP 800-53 CM-8",
+                        "NIST SP 800-53 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1",
+                    ],
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED",
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": awsAccountId + "/shield-adv-subscription-latest-attacks",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": awsAccountId,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[ShieldAdvanced.9] Resources under attack in the last week",
+                "Description": f"The resources in {awsAccountId} have had at least one attack mitigated by AWS Shield Advanced in the last week",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "View the docs for more details about how to ensure your AWS environments are protected against DDOS attacks.",
+                        "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-manage-protected-resources.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsAccount",
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.AM-2",
+                        "NIST SP 800-53 CM-8",
+                        "NIST SP 800-53 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1",
+                    ],
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE",
+            }
+            yield finding
