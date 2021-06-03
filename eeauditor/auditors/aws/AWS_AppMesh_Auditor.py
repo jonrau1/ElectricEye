@@ -32,9 +32,8 @@ def list_meshes(cache):
 
 
 @registry.register_check("appmesh")
-def appmesh_mesh_egress_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def appmesh_mesh_egress_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[AppMesh.1] App Mesh meshes should have the egress filter configured to DROP_ALL"""
     mesh = list_meshes(cache=cache)
     myMesh = mesh["meshes"]
     for meshes in myMesh:
@@ -51,7 +50,10 @@ def appmesh_mesh_egress_check(
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": meshArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "Types": [
+                        "Software and Configuration Checks/AWS Security Best Practices",
+                        "Effects/Data Exposure"
+                    ],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -70,11 +72,11 @@ def appmesh_mesh_egress_check(
                     "ProductFields": {"Product Name": "ElectricEye"},
                     "Resources": [
                         {
-                            "Type": "Other",
+                            "Type": "AwsAppMeshMesh",
                             "Id": meshArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
-                            "Details": {"Other": {"meshName": meshName}},
+                            "Details": {"Other": {"MeshName": meshName}},
                         }
                     ],
                     "Compliance": {
@@ -105,7 +107,10 @@ def appmesh_mesh_egress_check(
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": meshArn,
                     "AwsAccountId": awsAccountId,
-                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "Types": [
+                        "Software and Configuration Checks/AWS Security Best Practices",
+                        "Effects/Data Exposure"
+                    ],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
@@ -124,11 +129,11 @@ def appmesh_mesh_egress_check(
                     "ProductFields": {"Product Name": "ElectricEye"},
                     "Resources": [
                         {
-                            "Type": "Other",
+                            "Type": "AwsAppMeshMesh",
                             "Id": meshArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
-                            "Details": {"Other": {"meshName": meshName}},
+                            "Details": {"Other": {"MeshName": meshName}},
                         }
                     ],
                     "Compliance": {
@@ -155,11 +160,9 @@ def appmesh_mesh_egress_check(
         except Exception as e:
             print(e)
 
-
 @registry.register_check("appmesh")
-def appmesh_virt_node_backed_default_tls_policy_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def appmesh_virt_node_backed_default_tls_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[AppMesh.2] App Mesh virtual nodes should enforce TLS by default for all backends"""
     mesh = list_meshes(cache=cache)
     myMesh = mesh["meshes"]
     for meshes in myMesh:
@@ -188,7 +191,8 @@ def appmesh_virt_node_backed_default_tls_policy_check(
                             "GeneratorId": nodeArn,
                             "AwsAccountId": awsAccountId,
                             "Types": [
-                                "Software and Configuration Checks/AWS Security Best Practices"
+                                "Software and Configuration Checks/AWS Security Best Practices",
+                                "Effects/Data Exposure"
                             ],
                             "FirstObservedAt": iso8601Time,
                             "CreatedAt": iso8601Time,
@@ -210,14 +214,14 @@ def appmesh_virt_node_backed_default_tls_policy_check(
                             "ProductFields": {"Product Name": "ElectricEye"},
                             "Resources": [
                                 {
-                                    "Type": "Other",
+                                    "Type": "AwsAppMeshVirtualNode",
                                     "Id": nodeArn,
                                     "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {
-                                            "meshName": meshName,
-                                            "virtualNodeName": nodeName,
+                                            "MeshName": meshName,
+                                            "VirtualNodeName": nodeName,
                                         }
                                     },
                                 }
@@ -256,7 +260,8 @@ def appmesh_virt_node_backed_default_tls_policy_check(
                                 "GeneratorId": nodeArn,
                                 "AwsAccountId": awsAccountId,
                                 "Types": [
-                                    "Software and Configuration Checks/AWS Security Best Practices"
+                                    "Software and Configuration Checks/AWS Security Best Practices",
+                                    "Effects/Data Exposure"
                                 ],
                                 "FirstObservedAt": iso8601Time,
                                 "CreatedAt": iso8601Time,
@@ -278,14 +283,14 @@ def appmesh_virt_node_backed_default_tls_policy_check(
                                 "ProductFields": {"Product Name": "ElectricEye"},
                                 "Resources": [
                                     {
-                                        "Type": "Other",
+                                        "Type": "AwsAppMeshVirtualNode",
                                         "Id": nodeArn,
                                         "Partition": awsPartition,
                                         "Region": awsRegion,
                                         "Details": {
                                             "Other": {
-                                                "meshName": meshName,
-                                                "virtualNodeName": nodeName,
+                                                "MeshName": meshName,
+                                                "VirtualNodeName": nodeName,
                                             }
                                         },
                                     }
@@ -318,7 +323,8 @@ def appmesh_virt_node_backed_default_tls_policy_check(
                                 "GeneratorId": nodeArn,
                                 "AwsAccountId": awsAccountId,
                                 "Types": [
-                                    "Software and Configuration Checks/AWS Security Best Practices"
+                                    "Software and Configuration Checks/AWS Security Best Practices",
+                                    "Effects/Data Exposure"
                                 ],
                                 "FirstObservedAt": iso8601Time,
                                 "CreatedAt": iso8601Time,
@@ -340,14 +346,14 @@ def appmesh_virt_node_backed_default_tls_policy_check(
                                 "ProductFields": {"Product Name": "ElectricEye"},
                                 "Resources": [
                                     {
-                                        "Type": "Other",
+                                        "Type": "AwsAppMeshVirtualNode",
                                         "Id": nodeArn,
                                         "Partition": awsPartition,
                                         "Region": awsRegion,
                                         "Details": {
                                             "Other": {
-                                                "meshName": meshName,
-                                                "virtualNodeName": nodeName,
+                                                "MeshName": meshName,
+                                                "VirtualNodeName": nodeName,
                                             }
                                         },
                                     }
@@ -377,11 +383,9 @@ def appmesh_virt_node_backed_default_tls_policy_check(
         except Exception as e:
             print(e)
 
-
 @registry.register_check("appmesh")
-def appmesh_virt_node_listener_strict_tls_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def appmesh_virt_node_listener_strict_tls_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[AppMesh.3] App Mesh virtual node listeners should only accept connections with TLS enabled"""
     mesh = list_meshes(cache=cache)
     myMesh = mesh["meshes"]
     for meshes in myMesh:
@@ -411,7 +415,8 @@ def appmesh_virt_node_listener_strict_tls_check(
                                 "GeneratorId": nodeArn,
                                 "AwsAccountId": awsAccountId,
                                 "Types": [
-                                    "Software and Configuration Checks/AWS Security Best Practices"
+                                    "Software and Configuration Checks/AWS Security Best Practices",
+                                    "Effects/Data Exposure"
                                 ],
                                 "FirstObservedAt": iso8601Time,
                                 "CreatedAt": iso8601Time,
@@ -433,14 +438,14 @@ def appmesh_virt_node_listener_strict_tls_check(
                                 "ProductFields": {"Product Name": "ElectricEye"},
                                 "Resources": [
                                     {
-                                        "Type": "Other",
+                                        "Type": "AwsAppMeshVirtualNode",
                                         "Id": nodeArn,
                                         "Partition": awsPartition,
                                         "Region": awsRegion,
                                         "Details": {
                                             "Other": {
-                                                "meshName": meshName,
-                                                "virtualNodeName": nodeName,
+                                                "MeshName": meshName,
+                                                "VirtualNodeName": nodeName,
                                             }
                                         },
                                     }
@@ -474,7 +479,8 @@ def appmesh_virt_node_listener_strict_tls_check(
                                 "GeneratorId": nodeArn,
                                 "AwsAccountId": awsAccountId,
                                 "Types": [
-                                    "Software and Configuration Checks/AWS Security Best Practices"
+                                    "Software and Configuration Checks/AWS Security Best Practices",
+                                    "Effects/Data Exposure"
                                 ],
                                 "FirstObservedAt": iso8601Time,
                                 "CreatedAt": iso8601Time,
@@ -496,14 +502,14 @@ def appmesh_virt_node_listener_strict_tls_check(
                                 "ProductFields": {"Product Name": "ElectricEye"},
                                 "Resources": [
                                     {
-                                        "Type": "Other",
+                                        "Type": "AwsAppMeshVirtualNode",
                                         "Id": nodeArn,
                                         "Partition": awsPartition,
                                         "Region": awsRegion,
                                         "Details": {
                                             "Other": {
-                                                "meshName": meshName,
-                                                "virtualNodeName": nodeName,
+                                                "MeshName": meshName,
+                                                "VirtualNodeName": nodeName,
                                             }
                                         },
                                     }
@@ -536,11 +542,9 @@ def appmesh_virt_node_listener_strict_tls_check(
         except Exception as e:
             print(e)
 
-
 @registry.register_check("appmesh")
-def appmesh_logging_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def appmesh_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[AppMesh.4] App Mesh virtual nodes should define an HTTP access log path to enable log exports for Envoy proxies"""
     mesh = list_meshes(cache=cache)
     myMesh = mesh["meshes"]
     for meshes in myMesh:
@@ -585,15 +589,15 @@ def appmesh_logging_check(
                         "ProductFields": {"Product Name": "ElectricEye"},
                         "Resources": [
                             {
-                                "Type": "Other",
+                                "Type": "AwsAppMeshVirtualNode",
                                 "Id": nodeArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
                                     "Other": {
-                                        "meshName": meshName,
-                                        "virtualNodeName": nodeName,
-                                        "accessLogPath": loggingCheck,
+                                        "MeshName": meshName,
+                                        "VirtualNodeName": nodeName,
+                                        "AccessLogPath": loggingCheck,
                                     }
                                 },
                             }
@@ -648,14 +652,14 @@ def appmesh_logging_check(
                             "ProductFields": {"Product Name": "ElectricEye"},
                             "Resources": [
                                 {
-                                    "Type": "Other",
+                                    "Type": "AwsAppMeshVirtualNode",
                                     "Id": nodeArn,
                                     "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {
-                                            "meshName": meshName,
-                                            "virtualNodeName": nodeName,
+                                            "MeshName": meshName,
+                                            "VirtualNodeName": nodeName,
                                         }
                                     },
                                 }

@@ -22,14 +22,12 @@ from check_register import CheckRegister
 registry = CheckRegister()
 kms = boto3.client("kms")
 
-
 def list_keys(cache):
     response = cache.get("list_keys")
     if response:
         return response
     cache["list_keys"] = kms.list_keys()
     return cache["list_keys"]
-
 
 def list_aliases(cache):
     response = cache.get("list_aliases")
@@ -40,13 +38,11 @@ def list_aliases(cache):
 
 
 @registry.register_check("kms")
-def kms_key_rotation_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def kms_key_rotation_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[KMS.1] KMS keys should have key rotation enabled"""
     keys = list_keys(cache=cache)
-    my_keys = keys["Keys"]
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for key in my_keys:
+    for key in keys["Keys"]:
         keyid = key["KeyId"]
         keyarn = key["KeyArn"]
         key_rotation = kms.get_key_rotation_status(KeyId=keyid)
@@ -185,15 +181,12 @@ def kms_key_rotation_check(
             }
             yield finding
 
-
 @registry.register_check("kms")
-def kms_key_exposed_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def kms_key_exposed_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[KMS.2] KMS keys should not have public access"""
     response = list_aliases(cache=cache)
-    aliasList = response["Aliases"]
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for alias in aliasList:
+    for alias in response["Aliases"]:
         if "TargetKeyId" in alias:
             aliasArn = alias["AliasArn"]
             keyid = alias["TargetKeyId"]
@@ -265,7 +258,7 @@ def kms_key_exposed_check(
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "HIGH"},
+                    "Severity": {"Label": "CRITICAL"},
                     "Confidence": 99,
                     "Title": "[KMS.2] KMS keys should not have public access",
                     "Description": "KMS key "

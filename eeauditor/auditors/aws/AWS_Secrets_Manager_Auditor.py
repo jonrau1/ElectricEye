@@ -21,7 +21,6 @@ registry = CheckRegister()
 # import boto3 clients
 secretsmanager = boto3.client("secretsmanager")
 
-
 def list_secrets(cache):
     response = cache.get("list_secrets")
     if response:
@@ -29,12 +28,11 @@ def list_secrets(cache):
     cache["list_secrets"] = secretsmanager.list_secrets(MaxResults=100)
     return cache["list_secrets"]
 
-
 @registry.register_check("secretsmanager")
 def secret_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SecretsManager.1] Secrets over 90 days old should be rotated"""
     secret = list_secrets(cache=cache)
-    myAsmSecrets = secret["SecretList"]
-    for secrets in myAsmSecrets:
+    for secrets in secret["SecretList"]:
         secretArn = str(secrets["ARN"])
         secretName = str(secrets["Name"])
         lastChangedDate = secrets["LastChangedDate"]
@@ -172,14 +170,11 @@ def secret_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
             }
             yield finding
 
-
 @registry.register_check("secretsmanager")
-def secret_changed_in_last_90_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def secret_changed_in_last_90_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[SecretsManager.2] Secrets should have automatic rotation configured"""
     secret = list_secrets(cache=cache)
-    myAsmSecrets = secret["SecretList"]
-    for secrets in myAsmSecrets:
+    for secrets in secret["SecretList"]:
         secretArn = str(secrets["ARN"])
         secretName = str(secrets["Name"])
         # ISO Time

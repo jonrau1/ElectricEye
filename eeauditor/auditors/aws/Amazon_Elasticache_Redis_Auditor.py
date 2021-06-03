@@ -25,6 +25,7 @@ elasticache = boto3.client("elasticache")
 
 @registry.register_check("elasticache")
 def redis_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Elasticache.Redis.1] Elasticache Redis clusters should have an AUTH token enabled"""
     # loop through EC clusters
     response = elasticache.describe_cache_clusters(MaxRecords=100)
     myElasticacheClusters = response["CacheClusters"]
@@ -61,7 +62,7 @@ def redis_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                     "Title": "[Elasticache.Redis.1] Elasticache Redis clusters should have an AUTH token enabled",
                     "Description": "Elasticache cluster "
                     + clusterId
-                    + " does not have a Redis AUTH token enabled. Refer to the remediation instructions if this configuration is not intended",
+                    + " does not have a Redis AUTH token enabled. Refer to the remediation instructions if this configuration is not intended.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "If your cluster should have a Redis AUTH token refer to the Modifying the AUTH Token on an Existing ElastiCache for Redis Cluster section of the ElastiCache for Redis User Guide",
@@ -171,11 +172,9 @@ def redis_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                 }
                 yield finding
 
-
 @registry.register_check("elasticache")
-def encryption_at_rest_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Elasticache.Redis.2] Elasticache Redis clusters should have encryption at rest enabled"""
     # loop through EC clusters
     response = elasticache.describe_cache_clusters(MaxRecords=100)
     myElasticacheClusters = response["CacheClusters"]
@@ -301,11 +300,9 @@ def encryption_at_rest_check(
                 }
                 yield finding
 
-
 @registry.register_check("elasticache")
-def encryption_in_transit_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def encryption_in_transit_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Elasticache.Redis.3] Elasticache Redis clusters should have encryption in transit enabled"""
     # loop through EC clusters
     response = elasticache.describe_cache_clusters(MaxRecords=100)
     myElasticacheClusters = response["CacheClusters"]

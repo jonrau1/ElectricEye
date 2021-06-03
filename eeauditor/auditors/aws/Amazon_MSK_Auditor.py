@@ -22,7 +22,6 @@ registry = CheckRegister()
 # import boto3 clients
 kafka = boto3.client("kafka")
 
-
 # loop through managed kafka clusters
 def list_clusters(cache):
     response = cache.get("list_clusters")
@@ -31,11 +30,9 @@ def list_clusters(cache):
     cache["list_clusters"] = kafka.list_clusters()
     return cache["list_clusters"]
 
-
 @registry.register_check("kafka")
-def inter_cluster_encryption_in_transit_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def inter_cluster_encryption_in_transit_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[MSK.1] Managed Kafka Stream clusters should have inter-cluster encryption in transit enabled"""
     response = list_clusters(cache)
     myMskClusters = response["ClusterInfoList"]
     for clusters in myMskClusters:
@@ -150,11 +147,9 @@ def inter_cluster_encryption_in_transit_check(
             }
             yield finding
 
-
 @registry.register_check("kafka")
-def client_broker_encryption_in_transit_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def client_broker_encryption_in_transit_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[MSK.2] Managed Kafka Stream clusters should enforce TLS-only communications between clients and brokers"""
     response = list_clusters(cache)
     myMskClusters = response["ClusterInfoList"]
     for clusters in myMskClusters:
@@ -271,11 +266,9 @@ def client_broker_encryption_in_transit_check(
             }
             yield finding
 
-
 @registry.register_check("kafka")
-def client_authentication_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def client_authentication_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[MSK.3] Managed Kafka Stream clusters should use TLS for client authentication"""
     response = list_clusters(cache)
     myMskClusters = response["ClusterInfoList"]
     for clusters in myMskClusters:
@@ -392,11 +385,9 @@ def client_authentication_check(
             }
             yield finding
 
-
 @registry.register_check("kafka")
-def cluster_enhanced_monitoring_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def cluster_enhanced_monitoring_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[MSK.4] Managed Kafka Stream clusters should use enhanced monitoring"""
     response = list_clusters(cache)
     myMskClusters = response["ClusterInfoList"]
     for clusters in myMskClusters:

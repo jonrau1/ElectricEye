@@ -18,10 +18,8 @@ import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
-
 # import boto3 clients
 amzmq = boto3.client("mq")
-
 
 # loop through Amazon MQ Brokers
 def list_brokers(cache):
@@ -31,11 +29,9 @@ def list_brokers(cache):
     cache["list_brokers"] = amzmq.list_brokers(MaxResults=100)
     return cache["list_brokers"]
 
-
 @registry.register_check("mq")
-def broker_kms_cmk_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def broker_kms_cmk_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[AmazonMQ.1] AmazonMQ message brokers should use customer-managed KMS CMKs for encryption"""
     response = list_brokers(cache)
     myBrokers = response["BrokerSummaries"]
     for broker in myBrokers:
@@ -156,11 +152,9 @@ def broker_kms_cmk_check(
         except Exception as e:
             print(e)
 
-
 @registry.register_check("mq")
-def broker_audit_logging_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def broker_audit_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[AmazonMQ.2] AmazonMQ message brokers should have audit logging enabled"""
     response = list_brokers(cache)
     myBrokers = response["BrokerSummaries"]
     for broker in myBrokers:
@@ -282,11 +276,9 @@ def broker_audit_logging_check(
         except Exception as e:
             print(e)
 
-
 @registry.register_check("mq")
-def broker_general_logging_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def broker_general_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[AmazonMQ.3] AmazonMQ message brokers should have general logging enabled"""
     response = list_brokers(cache)
     myBrokers = response["BrokerSummaries"]
     for broker in myBrokers:
@@ -410,11 +402,9 @@ def broker_general_logging_check(
         except Exception as e:
             print(e)
 
-
 @registry.register_check("mq")
-def broker_public_access_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def broker_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[AmazonMQ.4] AmazonMQ message brokers should not be publicly accessible"""
     response = list_brokers(cache)
     myBrokers = response["BrokerSummaries"]
     for broker in myBrokers:
@@ -548,11 +538,9 @@ def broker_public_access_check(
         except Exception as e:
             print(e)
 
-
 @registry.register_check("mq")
-def broker_minor_version_auto_upgrade_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def broker_minor_version_auto_upgrade_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[AmazonMQ.5] AmazonMQ message brokers should be configured to automatically upgrade to the latest minor version"""
     response = list_brokers(cache)
     myBrokers = response["BrokerSummaries"]
     for broker in myBrokers:

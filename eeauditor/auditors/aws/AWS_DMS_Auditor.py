@@ -23,9 +23,8 @@ dms = boto3.client("dms")
 
 
 @registry.register_check("dms")
-def dms_replication_instance_public_access_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def dms_replication_instance_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[DMS.1] Database Migration Service instances should not be publicly accessible"""
     # loop through dms replication instances
     response = dms.describe_replication_instances()
     for repinstances in response["ReplicationInstances"]:
@@ -40,7 +39,10 @@ def dms_replication_instance_public_access_check(
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": dmsInstanceArn,
                 "AwsAccountId": awsAccountId,
-                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure"
+                ],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -63,7 +65,11 @@ def dms_replication_instance_public_access_check(
                         "Id": dmsInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"replicationInstanceId": dmsInstanceId}},
+                        "Details": {
+                            "Other": {
+                                "ReplicationInstanceId": dmsInstanceId
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -94,7 +100,10 @@ def dms_replication_instance_public_access_check(
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": dmsInstanceArn,
                 "AwsAccountId": awsAccountId,
-                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure"
+                ],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -117,7 +126,11 @@ def dms_replication_instance_public_access_check(
                         "Id": dmsInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"replicationInstanceId": dmsInstanceId}},
+                        "Details": {
+                            "Other": {
+                                "ReplicationInstanceId": dmsInstanceId
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -142,11 +155,9 @@ def dms_replication_instance_public_access_check(
             }
             yield finding
 
-
 @registry.register_check("dms")
-def dms_replication_instance_multi_az_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def dms_replication_instance_multi_az_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[DMS.2] Database Migration Service instances should have Multi-AZ configured"""
     # loop through dms replication instances
     response = dms.describe_replication_instances()
     for repinstances in response["ReplicationInstances"]:
@@ -184,7 +195,11 @@ def dms_replication_instance_multi_az_check(
                         "Id": dmsInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"replicationInstanceId": dmsInstanceId}},
+                        "Details": {
+                            "Other": {
+                                "ReplicationInstanceId": dmsInstanceId
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -238,7 +253,11 @@ def dms_replication_instance_multi_az_check(
                         "Id": dmsInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"replicationInstanceId": dmsInstanceId}},
+                        "Details": {
+                            "Other": {
+                                "ReplicationInstanceId": dmsInstanceId
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -263,11 +282,9 @@ def dms_replication_instance_multi_az_check(
             }
             yield finding
 
-
 @registry.register_check("dms")
-def dms_replication_instance_minor_version_update_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def dms_replication_instance_minor_version_update_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[DMS.3] Database Migration Service instances should be configured to have minor version updates be automatically applied"""
     # loop through dms replication instances
     response = dms.describe_replication_instances()
     for repinstances in response["ReplicationInstances"]:
@@ -288,7 +305,7 @@ def dms_replication_instance_minor_version_update_check(
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[DMS.2] Database Migration Service instances should be configured to have minor version updates be automatically applied",
+                "Title": "[DMS.3] Database Migration Service instances should be configured to have minor version updates be automatically applied",
                 "Description": "Database Migration Service instance "
                 + dmsInstanceId
                 + " is not configured to have minor version updates be automatically applied. Refer to the remediation instructions to remediate this behavior",
@@ -305,7 +322,11 @@ def dms_replication_instance_minor_version_update_check(
                         "Id": dmsInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"replicationInstanceId": dmsInstanceId}},
+                        "Details": {
+                            "Other": {
+                                "ReplicationInstanceId": dmsInstanceId
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -340,7 +361,7 @@ def dms_replication_instance_minor_version_update_check(
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[DMS.2] Database Migration Service instances should be configured to have minor version updates be automatically applied",
+                "Title": "[DMS.3] Database Migration Service instances should be configured to have minor version updates be automatically applied",
                 "Description": "Database Migration Service instance "
                 + dmsInstanceId
                 + " is configured to have minor version updates be automatically applied.",
@@ -357,7 +378,11 @@ def dms_replication_instance_minor_version_update_check(
                         "Id": dmsInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"replicationInstanceId": dmsInstanceId}},
+                        "Details": {
+                            "Other": {
+                                "ReplicationInstanceId": dmsInstanceId
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -376,7 +401,6 @@ def dms_replication_instance_minor_version_update_check(
                     ],
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
-

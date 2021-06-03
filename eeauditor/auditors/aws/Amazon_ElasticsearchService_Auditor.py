@@ -31,9 +31,8 @@ def list_domain_names(cache):
 
 
 @registry.register_check("es")
-def dedicated_master_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def dedicated_master_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Elasticsearch.1] Elasticsearch Service domains should use dedicated master nodes"""
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
@@ -168,9 +167,9 @@ def dedicated_master_check(
             }
             yield finding
 
-
 @registry.register_check("es")
 def cognito_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Elasticsearch.2] Elasticsearch Service domains should use Cognito authentication for Kibana"""
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
@@ -179,7 +178,10 @@ def cognito_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: 
         esVersion = str(response["DomainStatus"]["ElasticsearchVersion"])
         domainId = str(response["DomainStatus"]["DomainId"])
         domainArn = str(response["DomainStatus"]["ARN"])
-        cognitoEnabledCheck = str(response["DomainStatus"]["CognitoOptions"]["Enabled"])
+        try:
+            cognitoEnabledCheck = str(response["DomainStatus"]["CognitoOptions"]["Enabled"])
+        except:
+            cognitoEnabledCheck = "False"
         # ISO Time
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if cognitoEnabledCheck == "False":
@@ -313,11 +315,9 @@ def cognito_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: 
             }
             yield finding
 
-
 @registry.register_check("es")
-def encryption_at_rest_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Elasticsearch.3] Elasticsearch Service domains should be encrypted at rest"""
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
@@ -446,11 +446,9 @@ def encryption_at_rest_check(
             }
             yield finding
 
-
 @registry.register_check("es")
-def node2node_encryption_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def node2node_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Elasticsearch.4] Elasticsearch Service domains should use node-to-node encryption"""
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
@@ -591,11 +589,9 @@ def node2node_encryption_check(
             }
             yield finding
 
-
 @registry.register_check("es")
-def https_enforcement_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def https_enforcement_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Elasticsearch.5] Elasticsearch Service domains should enforce HTTPS-only communications"""
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
@@ -736,9 +732,9 @@ def https_enforcement_check(
             }
             yield finding
 
-
 @registry.register_check("es")
 def tls_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Elasticsearch.6] Elasticsearch Service domains that enforce HTTPS-only communications should use a TLS 1.2 security policy"""
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
@@ -893,11 +889,9 @@ def tls_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
         else:
             pass
 
-
 @registry.register_check("es")
-def elastic_update_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def elastic_update_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Elasticsearch.7] Elasticsearch Service domains should be updated to the latest service software version"""
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
@@ -913,14 +907,11 @@ def elastic_update_check(
         if updateCheck == "True":
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": domainArn + "/elasticsearch-enforce-https-check",
+                "Id": domainArn + "/elasticsearch-version-update-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": domainArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices",
-                    "Effects/Data Exposure",
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -976,14 +967,11 @@ def elastic_update_check(
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": domainArn + "/elasticsearch-enforce-https-check",
+                "Id": domainArn + "/elasticsearch-version-update-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": domainArn,
                 "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices",
-                    "Effects/Data Exposure",
-                ],
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
@@ -1033,5 +1021,328 @@ def elastic_update_check(
                 },
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED",
+            }
+            yield finding
+
+@registry.register_check("es")
+def elasticsearch_in_vpc_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Elasticsearch.8] Elasticsearch Service domains should be in a VPC"""
+    response = list_domain_names(cache)
+    myDomainNames = response["DomainNames"]
+    for domains in myDomainNames:
+        esDomainName = str(domains["DomainName"])
+        response = elasticsearch.describe_elasticsearch_domain(DomainName=esDomainName)
+        esVersion = str(response["DomainStatus"]["ElasticsearchVersion"])
+        domainId = str(response["DomainStatus"]["DomainId"])
+        domainArn = str(response["DomainStatus"]["ARN"])
+        try:
+            vpcId = str(info["VPCOptions"]["VPCId"])
+        except:
+            vpcId = "NO_VPC"
+        # ISO Time
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        # This is a failing check
+        if vpcId == "NO_VPC":
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": domainArn + "/elasticsearch-in-vpc-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": domainArn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure"
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "HIGH"},
+                "Confidence": 99,
+                "Title": "[Elasticsearch.8] Elasticsearch Service domains should be in a VPC",
+                "Description": "Elasticsearch Service domain "
+                + esDomainName
+                + " is not in a VPC, Placing an Amazon ES domain within a VPC enables secure communication between Amazon ES and other services within the VPC without the need for an internet gateway, NAT device, or VPN connection. All traffic remains securely within the AWS Cloud. Because of their logical isolation, domains that reside within a VPC have an extra layer of security when compared to domains that use public endpoints. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on placing Domains in a VPC refer to the Launching your Amazon Elasticsearch Service domains using a VPC section of the Amazon Elasticsearch Service Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-vpc.html"
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsElasticSearchDomain",
+                        "Id": domainArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsElasticSearchDomain": {
+                                "DomainId": domainId,
+                                "DomainName": esDomainName,
+                                "ElasticsearchVersion": esVersion
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-3",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-17",
+                        "NIST SP 800-53 AC-19",
+                        "NIST SP 800-53 AC-20",
+                        "NIST SP 800-53 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": domainArn + "/elasticsearch-in-vpc-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": domainArn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure"
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Elasticsearch.8] Elasticsearch Service domains should be in a VPC",
+                "Description": "Elasticsearch Service domain "
+                + esDomainName
+                + " is in a VPC.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on placing Domains in a VPC refer to the Launching your Amazon Elasticsearch Service domains using a VPC section of the Amazon Elasticsearch Service Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-vpc.html"
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsElasticSearchDomain",
+                        "Id": domainArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsElasticSearchDomain": {
+                                "DomainId": domainId,
+                                "DomainName": esDomainName,
+                                "ElasticsearchVersion": esVersion
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-3",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-17",
+                        "NIST SP 800-53 AC-19",
+                        "NIST SP 800-53 AC-20",
+                        "NIST SP 800-53 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("es")
+def elasticsearch_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Elasticsearch.9] Elasticsearch Service domains should not be exposed to the public"""
+    response = list_domain_names(cache)
+    myDomainNames = response["DomainNames"]
+    for domains in myDomainNames:
+        esDomainName = str(domains["DomainName"])
+        response = elasticsearch.describe_elasticsearch_domain(DomainName=esDomainName)
+        esVersion = str(response["DomainStatus"]["ElasticsearchVersion"])
+        domainId = str(response["DomainStatus"]["DomainId"])
+        domainArn = str(response["DomainStatus"]["ARN"])
+        # Determine if ES has Cognito Enabled
+        try:
+            cognitoEnabledCheck = str(response["DomainStatus"]["CognitoOptions"]["Enabled"])
+        except:
+            cognitoEnabledCheck = "False"
+        # Determine if ES is in a VPC
+        try:
+            vpcId = str(info["VPCOptions"]["VPCId"])
+        except:
+            vpcId = "NO_VPC"
+        # Determine if there is a policy and then parse through it. If the "AWS": "*" principal is allowed (anonymous access) without
+        # any conditions we can assume there is not anything else to stop them
+        try:
+            policyDoc = info["AccessPolicies"]
+            policyJson = json.loads(policyDoc.encode().decode("unicode_escape"))
+            hasPolicy = "True"
+            for sid in policyJson["Statement"]:
+                try:
+                    conditionCheck = str(sid["Condition"])
+                    hasCondition = "True"
+                except:
+                    conditionCheck = ""
+                    hasCondition = "False"
+                if str(sid["Principal"]) == '{"AWS": "*"}' and hasCondition == "False":
+                    policyAllowAnon = "True"
+                else:
+                    policyAllowAnon = "False"
+        except:
+            policyDoc = ""
+            policyJson = "NO_POLICY"
+            policyAllowAnon = "NO_POLICY"
+            hasPolicy = "False"
+        # Full Public Check
+        if policyAllowAnon == "True" and vpcId == "NO_VPC" and cognitoEnabledCheck == "False":
+            fullPublic = "True"
+        else:
+            fullPublic = "False"
+        # ISO Time
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        # This is a failing check
+        if fullPublic == "True":
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": domainArn + "/elasticsearch-public-access-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": domainArn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure"
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "CRITICAL"},
+                "Confidence": 99,
+                "Title": "[Elasticsearch.9] Elasticsearch Service domains should not be exposed to the public",
+                "Description": "Elasticsearch Service domain "
+                + esDomainName
+                + " is open to public due to not using a VPC, Cognito, or any additional conditions within the resource policy. Public access will allow malicious actors to attack the confidentiality, integrity or availability of documents indexed in your Domain. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on protecting Domains with a Resource-based Policy refer to the Identity and Access Management in Amazon Elasticsearch Service section of the Amazon Elasticsearch Service Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-ac.html"
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsElasticSearchDomain",
+                        "Id": domainArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsElasticSearchDomain": {
+                                "DomainId": domainId,
+                                "DomainName": esDomainName,
+                                "ElasticsearchVersion": esVersion
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-3",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-17",
+                        "NIST SP 800-53 AC-19",
+                        "NIST SP 800-53 AC-20",
+                        "NIST SP 800-53 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": domainArn + "/elasticsearch-public-access-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": domainArn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure"
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "CRITICAL"},
+                "Confidence": 99,
+                "Title": "[Elasticsearch.9] Elasticsearch Service domains should not be exposed to the public",
+                "Description": "Elasticsearch Service domain "
+                + esDomainName
+                + " is not to the public due to using a VPC, Cognito, or any additional conditions within the resource policy.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on protecting Domains with a Resource-based Policy refer to the Identity and Access Management in Amazon Elasticsearch Service section of the Amazon Elasticsearch Service Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-ac.html"
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsElasticSearchDomain",
+                        "Id": domainArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsElasticSearchDomain": {
+                                "DomainId": domainId,
+                                "DomainName": esDomainName,
+                                "ElasticsearchVersion": esVersion
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-3",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-17",
+                        "NIST SP 800-53 AC-19",
+                        "NIST SP 800-53 AC-20",
+                        "NIST SP 800-53 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
             }
             yield finding

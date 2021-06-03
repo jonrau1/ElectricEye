@@ -33,6 +33,7 @@ def paginate(cache):
 
 @registry.register_check("dynamodb")
 def ddb_kms_cmk_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[DynamoDB.1] DynamoDB tables should use KMS CMKs for encryption at rest"""
     iterator = paginate(cache=cache)
     for page in iterator:
         for table in page['TableNames']:
@@ -212,6 +213,7 @@ def ddb_kms_cmk_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
 
 @registry.register_check("dynamodb")
 def ddb_pitr_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[DynamoDB.2] DynamoDB tables should have Point-in-Time Recovery (PITR) enabled"""
     iterator = paginate(cache=cache)
     for page in iterator:
         for table in page['TableNames']:
@@ -347,6 +349,7 @@ def ddb_pitr_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition:
 
 @registry.register_check("dynamodb")
 def ddb_ttl_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[DynamoDB.3] DynamoDB tables should have Time to Live (TTL) enabled"""
     iterator = paginate(cache=cache)
     for page in iterator:
         for table in page['TableNames']:
