@@ -155,7 +155,7 @@ def imagebuilder_ebs_encryption_check(cache: dict, awsAccountId: str, awsRegion:
         if ebs_encryption == True:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": recipeArn + "/imagebuilder-pipeline-tests-enabled-check",
+                "Id": recipeArn + "/imagebuilder-ebs-encryption-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": recipeArn,
                 "AwsAccountId": awsAccountId,
@@ -206,7 +206,7 @@ def imagebuilder_ebs_encryption_check(cache: dict, awsAccountId: str, awsRegion:
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": recipeArn + "/imagebuilder-pipeline-tests-enabled-check",
+                "Id": recipeArn + "/imagebuilder-ebs-encryption-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": recipeArn,
                 "AwsAccountId": awsAccountId,

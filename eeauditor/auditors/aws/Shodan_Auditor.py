@@ -1276,7 +1276,7 @@ else:
                         # this is a passing check
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": gaxArn + "/" + gaxDns + "/cloudfront-shodan-index-check",
+                            "Id": gaxArn + "/" + gaxDns + "/global-accelerator-shodan-check",
                             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": gaxArn,
                             "AwsAccountId": awsAccountId,
@@ -1330,7 +1330,7 @@ else:
                     else:
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": gaxArn + "/" + gaxDns + "/cloudfront-shodan-index-check",
+                            "Id": gaxArn + "/" + gaxDns + "/global-accelerator-shodan-check",
                             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": gaxArn,
                             "AwsAccountId": awsAccountId,
