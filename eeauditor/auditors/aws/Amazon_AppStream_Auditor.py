@@ -383,7 +383,7 @@ def userpool_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
         if userAuthType != "SAML":
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": userArn + "/appstream-compromised-user",
+                "Id": userArn + "/appstream-userpool-auth-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": userArn,
                 "AwsAccountId": awsAccountId,
@@ -442,7 +442,7 @@ def userpool_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": userArn + "/appstream-compromised-user",
+                "Id": userArn + "/appstream-userpool-auth-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": userArn,
                 "AwsAccountId": awsAccountId,

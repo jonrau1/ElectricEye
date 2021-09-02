@@ -525,7 +525,7 @@ def security_group_open_dcom_rpc_check(cache: dict, awsAccountId: str, awsRegion
                 if toPort and fromPort == "135" and cidrIpRange == "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn + "/" + ipProtocol + "/security-group-telnet-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-rpc-dcom-open-check",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,
@@ -594,7 +594,7 @@ def security_group_open_dcom_rpc_check(cache: dict, awsAccountId: str, awsRegion
                 if toPort and fromPort == "135" and cidrIpRange != "0.0.0.0/0":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": sgArn + "/" + ipProtocol + "/security-group-wsrpc-dcom-open-check",
+                        "Id": sgArn + "/" + ipProtocol + "/security-group-rpc-dcom-open-check",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": sgArn,
                         "AwsAccountId": awsAccountId,

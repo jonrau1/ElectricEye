@@ -196,7 +196,7 @@ def encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str, aws
             if atRestEncryptionCheck == "False":
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": clusterId + "/no-redis-auth-token",
+                    "Id": clusterId + "/no-encryption-at-rest",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": clusterId,
                     "AwsAccountId": awsAccountId,
@@ -249,7 +249,7 @@ def encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str, aws
             else:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": clusterId + "/no-redis-auth-token",
+                    "Id": clusterId + "/no-encryption-at-rest",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": clusterId,
                     "AwsAccountId": awsAccountId,
@@ -324,7 +324,7 @@ def encryption_in_transit_check(cache: dict, awsAccountId: str, awsRegion: str, 
             if inTransitEncryptionCheck == "False":
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": clusterId + "/no-redis-auth-token",
+                    "Id": clusterId + "/no-encryption-in-transit",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": clusterId,
                     "AwsAccountId": awsAccountId,
@@ -382,7 +382,7 @@ def encryption_in_transit_check(cache: dict, awsAccountId: str, awsRegion: str, 
             else:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": clusterId + "/no-redis-auth-token",
+                    "Id": clusterId + "/no-encryption-in-transit",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": clusterId,
                     "AwsAccountId": awsAccountId,
