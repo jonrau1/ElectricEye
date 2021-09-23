@@ -968,7 +968,7 @@ def ec2_ami_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                         dsc_image_state == 'error':
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": instanceArn + "/ec2-ami-status-check",
+                            "Id": instanceArn + "/ec2-registered-ami-check",
                             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": instanceArn,
                             "AwsAccountId": awsAccountId,
@@ -1031,7 +1031,7 @@ def ec2_ami_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                     elif dsc_image_state == 'available':
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": instanceArn + "/ec2-ami-age-check",
+                            "Id": instanceArn + "/ec2-registered-ami-check",
                             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": instanceArn,
                             "AwsAccountId": awsAccountId,
@@ -1095,7 +1095,7 @@ def ec2_ami_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                     # Pending and Transient states will result in a Low finding - expectation is that registration will eventually succeed
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": instanceArn + "/ec2-ami-age-check",
+                            "Id": instanceArn + "/ec2-registered-ami-check",
                             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": instanceArn,
                             "AwsAccountId": awsAccountId,

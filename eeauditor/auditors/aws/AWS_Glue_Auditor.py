@@ -160,9 +160,15 @@ def crawler_s3_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, 
                     }
                     yield finding
             except Exception as e:
-                print(e)
+                if str(e) == "'CrawlerSecurityConfiguration'":
+                    pass
+                else:
+                    print(e)
         except Exception as e:
-            print(e)
+            if str(e) == "'CrawlerSecurityConfiguration'":
+                pass
+            else:
+                print(e)
 
 @registry.register_check("glue")
 def crawler_cloudwatch_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -296,9 +302,15 @@ def crawler_cloudwatch_encryption_check(cache: dict, awsAccountId: str, awsRegio
                     }
                     yield finding
             except Exception as e:
-                print(e)
+                if str(e) == "'CrawlerSecurityConfiguration'":
+                    pass
+                else:
+                    print(e)
         except Exception as e:
-            print(e)
+            if str(e) == "'CrawlerSecurityConfiguration'":
+                pass
+            else:
+                print(e)
 
 @registry.register_check("glue")
 def crawler_job_bookmark_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -432,9 +444,15 @@ def crawler_job_bookmark_encryption_check(cache: dict, awsAccountId: str, awsReg
                     }
                     yield finding
             except Exception as e:
-                print(e)
+                if str(e) == "'CrawlerSecurityConfiguration'":
+                    pass
+                else:
+                    print(e)
         except Exception as e:
-            print(e)
+            if str(e) == "'CrawlerSecurityConfiguration'":
+                pass
+            else:
+                print(e)
 
 @registry.register_check("glue")
 def glue_data_catalog_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -549,7 +567,10 @@ def glue_data_catalog_encryption_check(cache: dict, awsAccountId: str, awsRegion
             }
             yield finding
     except Exception as e:
-        print(e)
+        if str(e) == "'CrawlerSecurityConfiguration'":
+            pass
+        else:
+            print(e)
 
 @registry.register_check("glue")
 def glue_data_catalog_password_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -664,7 +685,10 @@ def glue_data_catalog_password_encryption_check(cache: dict, awsAccountId: str, 
             }
             yield finding
     except Exception as e:
-        print(e)
+        if str(e) == "'CrawlerSecurityConfiguration'":
+            pass
+        else:
+            print(e)
 
 @registry.register_check("glue")
 def glue_data_catalog_resource_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
