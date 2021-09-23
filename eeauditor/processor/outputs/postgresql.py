@@ -84,7 +84,7 @@ class PostgresProvider(object):
                 engine.commit()
                 
                 # Create a new table for the ElectricEye findings. Everything is set as Text
-                cursor.execute("""CREATE TABLE IF NOT EXISTS electriceye_findings( schemaversion TEXT, findingid TEXT, awsaccountid TEXT, productarn TEXT, generatorid TEXT, types TEXT, createdat TEXT, severitylabel TEXT, confidence TEXT, title TEXT, description TEXT, remediationtext TEXT, remediationurl TEXT, resourcetype TEXT, resourceid TEXT, resourceregion TEXT, resourcepartition TEXT, compliancestatus TEXT, compliancecontrols TEXT, workflowstatus TEXT, recordstate TEXT);""")
+                cursor.execute("""CREATE TABLE IF NOT EXISTS electriceye_findings( schemaversion TEXT, findingid TEXT, awsaccountid TEXT, productarn TEXT, generatorid TEXT, types TEXT, createdat TEXT, severitylabel TEXT, confidence TEXT, title TEXT, description TEXT, resourcetype TEXT, resourceid TEXT, resourceregion TEXT, resourcepartition TEXT, compliancestatus TEXT, compliancecontrols TEXT, workflowstatus TEXT, recordstate TEXT);""")
 
                 for finding in findings:
                     # Basic parsing of ASFF to prepare for INSERT into PSQL
@@ -109,8 +109,6 @@ class PostgresProvider(object):
                         confidence = '99'
                     title = str(finding['Title'])
                     description = str(finding['Description'])
-                    remediationtext = str(finding['Remediation']['Recommendation']['Text'])
-                    remediationurl = str(finding['Remediation']['Recommendation']['Url'])
                     resourcetype = str(finding['Resources'][0]['Type'])
                     resourceid = str(finding['Resources'][0]['Id'])
                     resourceregion = str(finding['Resources'][0]['Region'])
@@ -125,7 +123,7 @@ class PostgresProvider(object):
                     recordstate = str(finding['RecordState'])
 
                     # Write into Postgres
-                    cursor.execute("INSERT INTO electriceye_findings( schemaversion, findingid, awsaccountid, productarn, generatorid, types, createdat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, compliancecontrols, workflowstatus, recordstate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (schemaversion, findingid, awsaccountid, productarn, generatorid, types, createdat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, compliancecontrols, workflowstatus, recordstate))
+                    cursor.execute("INSERT INTO electriceye_findings( schemaversion, findingid, awsaccountid, productarn, generatorid, types, createdat, severitylabel, confidence, title, description, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, compliancecontrols, workflowstatus, recordstate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (schemaversion, findingid, awsaccountid, productarn, generatorid, types, createdat, severitylabel, confidence, title, description, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, compliancecontrols, workflowstatus, recordstate))
                 
                 # commit the changes
                 engine.commit()
