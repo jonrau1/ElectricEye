@@ -223,7 +223,7 @@ def ec2_secure_enclave_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                         # create Sec Hub finding
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": instanceArn + "/ec2-public-facing-check",
+                            "Id": instanceArn + "/ec2-secure-enclave",
                             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": instanceArn,
                             "AwsAccountId": awsAccountId,
@@ -293,7 +293,7 @@ def ec2_secure_enclave_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                         # create Sec Hub finding
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": instanceArn + "/ec2-enclave-check",
+                            "Id": instanceArn + "/ec2-secure-enclave",
                             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": instanceArn,
                             "AwsAccountId": awsAccountId,
@@ -450,7 +450,7 @@ def ec2_public_facing_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                         # create Sec Hub finding
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": instanceArn + "/ec2-enclave-check",
+                            "Id": instanceArn + "/ec2-public-facing-check",
                             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": instanceArn,
                             "AwsAccountId": awsAccountId,
