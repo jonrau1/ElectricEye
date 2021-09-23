@@ -46,8 +46,6 @@ class PostgresProvider(object):
             dbEndpoint = str(rdsInfo["Endpoint"]["Address"])
             dbPort = str(rdsInfo["Endpoint"]["Port"])
 
-            print('Connection host for Postgres: ' + dbEndpoint + ':' + dbPort)
-
             self.db_endpoint = dbEndpoint
             self.db_port = dbPort
             self.db_username = psqlUsername
@@ -102,6 +100,8 @@ class PostgresProvider(object):
                     compliancestatus = str(finding['Compliance']['Status'])
                     workflowstatus = str(finding['Workflow']['Status'])
                     recordstate = str(finding['RecordState'])
+
+                    print(schemaversion, id, awsaccountid, productarn, generatorid, types, firstobservedat, createdat, updatedat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, workflowstatus, recordstate)
 
                     cursor.execute("INSERT INTO electriceye_findings (schemaversion, id, awsaccountid, productarn, generatorid, types, firstobservedat, createdat, updatedat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, workflowstatus, recordstate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (schemaversion, id, awsaccountid, productarn, generatorid, types, firstobservedat, createdat, updatedat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, workflowstatus, recordstate))
 
