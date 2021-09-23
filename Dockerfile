@@ -20,11 +20,14 @@ COPY ./eeauditor/ ./eeauditor/
 # Installing dependencies
 RUN \
     apk add bash && \
+    apk add --no-cache postgresql-libs && \
+    apk add --no-cache --virtual .build-deps gcc musl-dev postgresql-dev && \
     apk add --no-cache python3 && \
     python3 -m ensurepip && \
     pip3 install --no-cache --upgrade pip setuptools wheel && \
     rm -r /usr/lib/python*/ensurepip && \
-    pip3 install -r /tmp/requirements.txt
+    pip3 install -r /tmp/requirements.txt --no-cache-dir && \
+    apk --purge del .build-deps
 # Create a System Group and User for ElectricEye so we don't run as root
 RUN \
     addgroup -S eeuser && \ 
