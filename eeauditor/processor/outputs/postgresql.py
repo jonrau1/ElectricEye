@@ -112,7 +112,11 @@ class PostgresProvider(object):
                     resourceregion = str(finding['Resources'][0]['Region'])
                     resourcepartition = str(finding['Resources'][0]['Partition'])
                     compliancestatus = str(finding['Compliance']['Status'])
-                    compliancecontrols = str(finding['Compliance']['RelatedRequirements'])
+                    #TODO: Find which findings aren't mapped...
+                    try:
+                        compliancecontrols = str(finding['Compliance']['RelatedRequirements'])
+                    except Exception:
+                        compliancecontrols = str('[]')
                     workflowstatus = str(finding['Workflow']['Status'])
                     recordstate = str(finding['RecordState'])
 
