@@ -113,13 +113,14 @@ class PostgresProvider(object):
 
                         # Write into Postgres
                         cursor.execute("INSERT INTO electriceye_findings( schemaversion, findingid, awsaccountid, productarn, generatorid, types, createdat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, compliancecontrols, workflowstatus, recordstate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (schemaversion, findingid, awsaccountid, productarn, generatorid, types, createdat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, compliancecontrols, workflowstatus, recordstate))
+
+                        # commit the changes
+                        engine.commit()
                     except Exception:
                         pass
 
                 # close communication with the postgres server (rds)
                 cursor.close()
-                # commit the changes
-                engine.commit()
 
             except psql.OperationalError:
                 print("Cannot connect to PostgreSQL! Review your Security Group settings and/or information provided to connect")
