@@ -2,5 +2,6 @@ awscli
 boto3
 requests
 pluginbase
+psycopg2
 click
 detect-secrets
