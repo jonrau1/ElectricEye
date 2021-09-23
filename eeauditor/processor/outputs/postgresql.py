@@ -102,7 +102,11 @@ class PostgresProvider(object):
                     types = str(finding['Types'][0])
                     createdat = str(finding['CreatedAt'])
                     severitylabel = str(finding['Severity']['Label'])
-                    confidence = str(finding['Confidence'])
+                    #TODO: Find which findings aren't mapped...
+                    try:
+                        confidence = str(finding['Confidence'])
+                    except Exception:
+                        confidence = '99'
                     title = str(finding['Title'])
                     description = str(finding['Description'])
                     remediationtext = str(finding['Remediation']['Recommendation']['Text'])
