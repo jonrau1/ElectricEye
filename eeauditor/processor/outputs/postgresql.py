@@ -66,7 +66,9 @@ class PostgresProvider(object):
                 )
                 cursor = engine.cursor()
                 
+                # drop previously existing tables
                 cursor.execute("""DROP TABLE IF EXISTS electriceye_findings""")
+                engine.commit()
                 
                 # Create a new table for the ElectricEye findings. ID will be the Primary Key, all other elements will be parsed as text
                 cursor.execute("""CREATE TABLE IF NOT EXISTS electriceye_findings( schemaversion TEXT, id TEXT PRIMARY KEY, awsaccountid TEXT, productarn TEXT, generatorid TEXT, types TEXT, firstobservedat TEXT, createdat TEXT, updatedat TEXT, severitylabel TEXT, confidence TEXT, title TEXT, description TEXT, remediationtext TEXT, remediationurl TEXT, resourcetype TEXT, resourceid TEXT, resourceregion TEXT, resourcepartition TEXT, compliancestatus TEXT, workflowstatus TEXT, recordstate TEXT);""")
@@ -99,8 +101,6 @@ class PostgresProvider(object):
                     compliancestatus = str(finding['Compliance']['Status'])
                     workflowstatus = str(finding['Workflow']['Status'])
                     recordstate = str(finding['RecordState'])
-
-                    print(schemaversion, id, awsaccountid, productarn, generatorid, types, firstobservedat, createdat, updatedat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, workflowstatus, recordstate)
 
                     cursor.execute("INSERT INTO electriceye_findings (schemaversion, id, awsaccountid, productarn, generatorid, types, firstobservedat, createdat, updatedat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, workflowstatus, recordstate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (schemaversion, id, awsaccountid, productarn, generatorid, types, firstobservedat, createdat, updatedat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, workflowstatus, recordstate))
 
