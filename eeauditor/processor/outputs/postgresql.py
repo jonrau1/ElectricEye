@@ -81,10 +81,7 @@ class PostgresProvider(object):
                     # Basic parsing of ASFF to prepare for INSERT into PSQL
                     schemaversion = str(finding['SchemaVersion'])
                     findingid = str(finding['Id'])
-                    try:
-                        awsaccountid = str(finding['AwsAccountId'])
-                    except Exception:
-                        continue
+                    awsaccountid = str(finding['AwsAccountId'])
                     productarn = str(finding['ProductArn'])
                     generatorid = str(finding['GeneratorId'])
                     types = str(finding['Types'][0])
@@ -103,7 +100,7 @@ class PostgresProvider(object):
                     workflowstatus = str(finding['Workflow']['Status'])
                     recordstate = str(finding['RecordState'])
 
-                    cursor.execute("INSERT INTO electriceye_findings (schemaversion, findingid, awsaccountid, productarn, generatorid, types, createdat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, workflowstatus, recordstate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (schemaversion, findingid, awsaccountid, productarn, generatorid, types, createdat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, workflowstatus, recordstate))
+                    cursor.execute("INSERT INTO electriceye_findings (schemaversion, findingid, awsaccountid, productarn, generatorid, types, createdat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, workflowstatus, recordstate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (schemaversion, findingid, awsaccountid, productarn, generatorid, types, createdat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, workflowstatus, recordstate))
 
                 # close communication with the postgres server (rds)
                 cursor.close()
