@@ -67,7 +67,7 @@ class PostgresProvider(object):
 
     def write_findings(self, findings: list, **kwargs):
         print(f"Writing {len(findings)} results to PostgreSQL")
-        if self.db_endpoint and self.db_port and self.db_username and self.db_password and self.db_name:
+        if (self.db_endpoint and self.db_port and self.db_username and self.db_password and self.db_name):
             try:
                 # Connect to DB and create a Cursor
                 engine = psql.connect(
@@ -114,11 +114,11 @@ class PostgresProvider(object):
                         # Write into Postgres
                         cursor.execute("INSERT INTO electriceye_findings( schemaversion, findingid, awsaccountid, productarn, generatorid, types, createdat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, compliancecontrols, workflowstatus, recordstate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (schemaversion, findingid, awsaccountid, productarn, generatorid, types, createdat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, compliancecontrols, workflowstatus, recordstate))
 
-                        # commit the changes
-                        engine.commit()
                     except Exception:
-                        pass
-
+                        continue
+                
+                # commit the changes
+                engine.commit()
                 # close communication with the postgres server (rds)
                 cursor.close()
 
