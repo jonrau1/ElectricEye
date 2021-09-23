@@ -103,11 +103,8 @@ class PostgresProvider(object):
                         recordstate = str(finding['RecordState'])
                     except Exception:
                         pass
-                    
-                    try:
-                        cursor.execute("INSERT INTO electriceye_findings (schemaversion, findingid, awsaccountid, productarn, generatorid, types, createdat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, workflowstatus, recordstate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (schemaversion, findingid, awsaccountid, productarn, generatorid, types, createdat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, workflowstatus, recordstate))
-                    except Exception:
-                        engine.rollback
+
+                    cursor.execute("INSERT INTO electriceye_findings (schemaversion, findingid, awsaccountid, productarn, generatorid, types, createdat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, workflowstatus, recordstate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (schemaversion, findingid, awsaccountid, productarn, generatorid, types, createdat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, workflowstatus, recordstate))
 
                 # close communication with the postgres server (rds)
                 cursor.close()
