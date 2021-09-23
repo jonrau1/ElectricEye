@@ -66,10 +66,6 @@ class PostgresProvider(object):
                 )
                 cursor = engine.cursor()
                 
-                # drop previously existing tables
-                cursor.execute("""DROP TABLE IF EXISTS electriceye_findings""")
-                engine.commit()
-                
                 # Create a new table for the ElectricEye findings. ID will be the Primary Key, all other elements will be parsed as text
                 cursor.execute("""CREATE TABLE IF NOT EXISTS electriceye_findings( schemaversion TEXT, id TEXT PRIMARY KEY, awsaccountid TEXT, productarn TEXT, generatorid TEXT, types TEXT, firstobservedat TEXT, createdat TEXT, updatedat TEXT, severitylabel TEXT, confidence TEXT, title TEXT, description TEXT, remediationtext TEXT, remediationurl TEXT, resourcetype TEXT, resourceid TEXT, resourceregion TEXT, resourcepartition TEXT, compliancestatus TEXT, workflowstatus TEXT, recordstate TEXT);""")
 
