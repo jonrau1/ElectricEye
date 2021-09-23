@@ -1081,7 +1081,7 @@ def server_certs_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartit
 
 @registry.register_check("iam")
 def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[IAM.7] Managed policies should follow least privilege principles"""
+    """[IAM.8] Managed policies should follow least privilege principles"""
     try:
         policies = iam.list_policies(Scope='Local')
         for mngd_policy in policies['Policies']:
@@ -1134,7 +1134,7 @@ def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
-                    "Title": "[IAM.7] Managed policies should follow least privilege principles",
+                    "Title": "[IAM.8] Managed policies should follow least privilege principles",
                     "Description": f"The customer managed policy {policy_arn} is following least privilege principles.",
                     "Remediation": {
                         "Recommendation": {
@@ -1185,7 +1185,7 @@ def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "LOW"},
                     "Confidence": 99,
-                    "Title": "[IAM.7] Managed policies should follow least privilege principles",
+                    "Title": "[IAM.8] Managed policies should follow least privilege principles",
                     "Description": f"The customer managed policy {policy_arn} is not following least privilege principles and has been rated: {least_priv_rating}.",
                     "Remediation": {
                         "Recommendation": {
@@ -1236,7 +1236,7 @@ def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "HIGH"},
                     "Confidence": 99,
-                    "Title": "[IAM.7] Managed policies should follow least privilege principles",
+                    "Title": "[IAM.8] Managed policies should follow least privilege principles",
                     "Description": f"The customer managed policy {policy_arn} is not following least privilege principles and has been rated: {least_priv_rating}.",
                     "Remediation": {
                         "Recommendation": {
@@ -1280,7 +1280,7 @@ def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
 
 @registry.register_check("iam")
 def iam_user_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[IAM.8] User inline policies should follow least privilege principles"""
+    """[IAM.9] User inline policies should follow least privilege principles"""
     try:
         Users = iam.list_users()
         for user in Users['Users']:
@@ -1338,7 +1338,7 @@ def iam_user_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         "UpdatedAt": iso8601Time,
                         "Severity": {"Label": "INFORMATIONAL"},
                         "Confidence": 99,
-                        "Title": "[IAM.8] User inline policies should follow least privilege principles",
+                        "Title": "[IAM.9] User inline policies should follow least privilege principles",
                         "Description": f"The user {user_arn} inline policy {policy_name} is following least privilege principles.",
                         "Remediation": {
                             "Recommendation": {
@@ -1355,7 +1355,8 @@ def iam_user_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         "Region": awsRegion,
                         "Details": {
                             "Other": {
-                                "PrincipalName": UserName}
+                                "PrincipalName": UserName
+                                    }
                                 },
                             }
                         ],
@@ -1393,7 +1394,7 @@ def iam_user_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         "UpdatedAt": iso8601Time,
                         "Severity": {"Label": "LOW"},
                         "Confidence": 99,
-                        "Title": "[IAM.8] User inline policies should follow least privilege principles",
+                        "Title": "[IAM.9] User inline policies should follow least privilege principles",
                         "Description": f"The user {user_arn} inline policy {policy_name} is not following least privilege principles.",
                         "Remediation": {
                             "Recommendation": {
@@ -1409,7 +1410,9 @@ def iam_user_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
-                            "Other": {"PrincipalName": UserName}
+                            "Other": {
+                                "PrincipalName": UserName
+                                    }
                                 },
                             }
                         ],
@@ -1447,7 +1450,7 @@ def iam_user_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         "UpdatedAt": iso8601Time,
                         "Severity": {"Label": "HIGH"},
                         "Confidence": 99,
-                        "Title": "[IAM.8] User inline policies should follow least privilege principles",
+                        "Title": "[IAM.9] User inline policies should follow least privilege principles",
                         "Description": f"The user {user_arn} inline policy {policy_name} is not following least privilege principles.",
                         "Remediation": {
                             "Recommendation": {
@@ -1464,8 +1467,9 @@ def iam_user_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         "Region": awsRegion,
                         "Details": {
                             "Other": {
-                                "PrincipalName": UserName}
-                                },
+                                    "PrincipalName": UserName
+                                    }
+                                }
                             }
                         ],
                         "Compliance": {
@@ -1495,7 +1499,7 @@ def iam_user_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
 
 @registry.register_check("iam")
 def iam_group_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[IAM.9] Group inline policies should follow least privilege principles"""
+    """[IAM.10] Group inline policies should follow least privilege principles"""
     try:
         Groups = iam.list_groups()
         for group in Groups['Groups']:
@@ -1553,7 +1557,7 @@ def iam_group_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion:
                         "UpdatedAt": iso8601Time,
                         "Severity": {"Label": "INFORMATIONAL"},
                         "Confidence": 99,
-                        "Title": "[IAM.9] Group inline policies should follow least privilege principles",
+                        "Title": "[IAM.10] Group inline policies should follow least privilege principles",
                         "Description": f"The group {group_arn} inline policy {policy_name} is following least privilege principles.",
                         "Remediation": {
                             "Recommendation": {
@@ -1605,7 +1609,7 @@ def iam_group_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion:
                         "UpdatedAt": iso8601Time,
                         "Severity": {"Label": "LOW"},
                         "Confidence": 99,
-                        "Title": "[IAM.9] Group inline policies should follow least privilege principles",
+                        "Title": "[IAM.10] Group inline policies should follow least privilege principles",
                         "Description": f"The group {group_arn} inline policy {policy_name} is not following least privilege principles.",
                         "Remediation": {
                             "Recommendation": {
@@ -1657,7 +1661,7 @@ def iam_group_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion:
                         "UpdatedAt": iso8601Time,
                         "Severity": {"Label": "HIGH"},
                         "Confidence": 99,
-                        "Title": "[IAM.9] Group inline policies should follow least privilege principles",
+                        "Title": "[IAM.10] Group inline policies should follow least privilege principles",
                         "Description": f"The group {group_arn} inline policy {policy_name} is not following least privilege principles.",
                         "Remediation": {
                             "Recommendation": {
@@ -1702,7 +1706,7 @@ def iam_group_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion:
 
 @registry.register_check("iam")
 def iam_role_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[IAM.10] Role inline policies should follow least privilege principles"""
+    """[IAM.11] Role inline policies should follow least privilege principles"""
     try:
         Roles = iam.list_roles()
         for role in Roles['Roles']:
@@ -1760,7 +1764,7 @@ def iam_role_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         "UpdatedAt": iso8601Time,
                         "Severity": {"Label": "INFORMATIONAL"},
                         "Confidence": 99,
-                        "Title": "[IAM.10] Role inline policies should follow least privilege principles",
+                        "Title": "[IAM.11] Role inline policies should follow least privilege principles",
                         "Description": f"The role {role_arn} inline policy {policy_name} is following least privilege principles.",
                         "Remediation": {
                             "Recommendation": {
@@ -1813,7 +1817,7 @@ def iam_role_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         "UpdatedAt": iso8601Time,
                         "Severity": {"Label": "LOW"},
                         "Confidence": 99,
-                        "Title": "[IAM.10] Role inline policies should follow least privilege principles",
+                        "Title": "[IAM.11] Role inline policies should follow least privilege principles",
                         "Description": f"The role {role_arn} inline policy {policy_name} is not following least privilege principles.",
                         "Remediation": {
                             "Recommendation": {
@@ -1866,7 +1870,7 @@ def iam_role_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         "UpdatedAt": iso8601Time,
                         "Severity": {"Label": "HIGH"},
                         "Confidence": 99,
-                        "Title": "[IAM.10] Role inline policies should follow least privilege principles",
+                        "Title": "[IAM.11] Role inline policies should follow least privilege principles",
                         "Description": f"The role {role_arn} inline policy {policy_name} is not following least privilege principles.",
                         "Remediation": {
                             "Recommendation": {

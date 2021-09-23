@@ -66,8 +66,10 @@ def cloud9_ssm_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                                 "Id": c9Arn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
-                                "Other": {
-                                    "Cloud9Name": c9Name
+                                "Details": {
+                                    "Other": {
+                                        "Cloud9Name": c9Name
+                                    }
                                 }
                             }
                         ],
@@ -122,8 +124,10 @@ def cloud9_ssm_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                                 "Id": c9Arn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
-                                "Other": {
-                                    "Cloud9Name": c9Name
+                                "Details": {
+                                    "Other": {
+                                        "Cloud9Name": c9Name
+                                    }
                                 }
                             }
                         ],
