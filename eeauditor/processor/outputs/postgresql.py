@@ -46,7 +46,7 @@ class PostgresProvider(object):
             dbEndpoint = str(rdsInfo["Endpoint"]["Address"])
             dbPort = str(rdsInfo["Endpoint"]["Port"])
 
-            print('Connection host for Postgres: ' + dbEndpoint)
+            print('Connection host for Postgres: ' + dbEndpoint + ':' + dbPort)
 
             self.db_endpoint = dbEndpoint
             self.db_port = dbPort
