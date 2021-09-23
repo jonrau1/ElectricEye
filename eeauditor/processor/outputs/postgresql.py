@@ -84,7 +84,7 @@ class PostgresProvider(object):
                 engine.commit()
                 
                 # Create a new table for the ElectricEye findings. ID will be the Primary Key, all other elements will be parsed as text
-                cursor.execute("""CREATE TABLE IF NOT EXISTS electriceye_findings( schemaversion TEXT, findingid TEXT PRIMARY KEY, awsaccountid TEXT, productarn TEXT, generatorid TEXT, types TEXT, createdat TEXT, severitylabel TEXT, confidence TEXT, title TEXT, description TEXT, remediationtext TEXT, remediationurl TEXT, resourcetype TEXT, resourceid TEXT, resourceregion TEXT, resourcepartition TEXT, compliancestatus TEXT, workflowstatus TEXT, recordstate TEXT);""")
+                cursor.execute("""CREATE TABLE IF NOT EXISTS electriceye_findings( schemaversion TEXT, findingid TEXT PRIMARY KEY, awsaccountid TEXT, productarn TEXT, generatorid TEXT, types TEXT, createdat TEXT, severitylabel TEXT, confidence TEXT, title TEXT, description TEXT, remediationtext TEXT, remediationurl TEXT, resourcetype TEXT, resourceid TEXT, resourceregion TEXT, resourcepartition TEXT, compliancestatus TEXT, compliancecontrols TEXT, workflowstatus TEXT, recordstate TEXT);""")
 
                 for finding in findings:
                     # Basic parsing of ASFF to prepare for INSERT into PSQL
@@ -107,12 +107,14 @@ class PostgresProvider(object):
                         resourceregion = str(finding['Resources'][0]['Region'])
                         resourcepartition = str(finding['Resources'][0]['Partition'])
                         compliancestatus = str(finding['Compliance']['Status'])
+                        compliancecontrols = str(finding['Compliance']['RelatedRequirements'])
                         workflowstatus = str(finding['Workflow']['Status'])
                         recordstate = str(finding['RecordState'])
+
+                        # Write into Postgres
+                        cursor.execute("INSERT INTO electriceye_findings( schemaversion, findingid, awsaccountid, productarn, generatorid, types, createdat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, compliancecontrols, workflowstatus, recordstate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (schemaversion, findingid, awsaccountid, productarn, generatorid, types, createdat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, compliancecontrols, workflowstatus, recordstate))
                     except Exception:
                         pass
-
-                    cursor.execute("INSERT INTO electriceye_findings( schemaversion, findingid, awsaccountid, productarn, generatorid, types, createdat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, workflowstatus, recordstate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (schemaversion, findingid, awsaccountid, productarn, generatorid, types, createdat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, workflowstatus, recordstate))
 
                 # close communication with the postgres server (rds)
                 cursor.close()
