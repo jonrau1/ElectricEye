@@ -5,9 +5,17 @@ FROM alpine@sha256:e15947432b813e8ffa90165da919953e2ce850bef511a0ad1287d7cb86de8
 # See: https://github.com/Docker-Hub-frolvlad/docker-alpine-python3/pull/13
 ENV PYTHONUNBUFFERED=1
 ENV SH_SCRIPTS_BUCKET=SH_SCRIPTS_BUCKET
+# SHODAN ENV VARS
 ENV SHODAN_API_KEY_PARAM=SHODAN_API_KEY_PARAM
+# DISRUPTOPS ENV VARS
 ENV DOPS_CLIENT_ID_PARAM=DOPS_CLIENT_ID_PARAM
 ENV DOPS_API_KEY_PARAM=DOPS_API_KEY_PARAM
+# POSTGRES ENV VARS
+ENV POSTGRES_USERNAME=POSTGRES_USERNAME
+ENV ELECTRICEYE_POSTGRESQL_DB_NAME=ELECTRICEYE_POSTGRESQL_DB_NAME
+ENV POSTGRES_DB_ENDPOINT=POSTGRES_DB_ENDPOINT
+ENV POSTGRES_DB_PORT=POSTGRES_DB_PORT
+ENV POSTGRES_PASSWORD_SSM_PARAM_NAME=POSTGRES_PASSWORD_SSM_PARAM_NAME
 
 LABEL maintainer="https://github.com/jonrau1" \
     version="3.0" \
@@ -20,11 +28,13 @@ COPY ./eeauditor/ ./eeauditor/
 # Installing dependencies
 RUN \
     apk add bash && \
-    apk add --no-cache python3 && \
+    apk add --no-cache python3 postgresql-libs && \
+    apk add --no-cache --virtual .build-deps gcc python3-dev musl-dev postgresql-dev && \
     python3 -m ensurepip && \
     pip3 install --no-cache --upgrade pip setuptools wheel && \
     rm -r /usr/lib/python*/ensurepip && \
-    pip3 install -r /tmp/requirements.txt
+    pip3 install -r /tmp/requirements.txt --no-cache-dir && \
+    apk --purge del .build-deps
 # Create a System Group and User for ElectricEye so we don't run as root
 RUN \
     addgroup -S eeuser && \ 

@@ -223,7 +223,7 @@ def ec2_secure_enclave_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                         # create Sec Hub finding
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": instanceArn + "/ec2-public-facing-check",
+                            "Id": instanceArn + "/ec2-secure-enclave",
                             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": instanceArn,
                             "AwsAccountId": awsAccountId,
@@ -293,7 +293,7 @@ def ec2_secure_enclave_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                         # create Sec Hub finding
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": instanceArn + "/ec2-enclave-check",
+                            "Id": instanceArn + "/ec2-secure-enclave",
                             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": instanceArn,
                             "AwsAccountId": awsAccountId,
@@ -450,7 +450,7 @@ def ec2_public_facing_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                         # create Sec Hub finding
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": instanceArn + "/ec2-enclave-check",
+                            "Id": instanceArn + "/ec2-public-facing-check",
                             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": instanceArn,
                             "AwsAccountId": awsAccountId,
@@ -848,12 +848,14 @@ def ec2_ami_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
                                         "AwsEc2Instance": {
                                             "Type": instanceType,
                                             "ImageId": instanceImage,
-                                            "AmiAge": f"{AmiAge.days} days old",
                                             "VpcId": vpcId,
                                             "SubnetId": subnetId,
                                             "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                        },
+                                        "Other": {
+                                            "AmiAge": f"{AmiAge.days} days old"
                                         }
-                                    },
+                                    }
                                 }
                             ],
                             "Compliance": {
@@ -909,12 +911,14 @@ def ec2_ami_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
                                         "AwsEc2Instance": {
                                             "Type": instanceType,
                                             "ImageId": instanceImage,
-                                            "AmiAge": f"{AmiAge.days} days old",
                                             "VpcId": vpcId,
                                             "SubnetId": subnetId,
                                             "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                        },
+                                        "Other": {
+                                            "AmiAge": f"{AmiAge.days} days old"
                                         }
-                                    },
+                                    }
                                 }
                             ],
                             "Compliance": {
@@ -964,7 +968,7 @@ def ec2_ami_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                         dsc_image_state == 'error':
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": instanceArn + "/ec2-ami-status-check",
+                            "Id": instanceArn + "/ec2-registered-ami-check",
                             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": instanceArn,
                             "AwsAccountId": awsAccountId,
@@ -995,12 +999,14 @@ def ec2_ami_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                                         "AwsEc2Instance": {
                                             "Type": instanceType,
                                             "ImageId": instanceImage,
-                                            "AmiStatus": f"{dsc_image_state}",
                                             "VpcId": vpcId,
                                             "SubnetId": subnetId,
                                             "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                        },
+                                        "Other": {
+                                            "AmiStatus": f"{dsc_image_state}",
                                         }
-                                    },
+                                    }
                                 }
                             ],
                             "Compliance": {
@@ -1025,7 +1031,7 @@ def ec2_ami_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                     elif dsc_image_state == 'available':
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": instanceArn + "/ec2-ami-age-check",
+                            "Id": instanceArn + "/ec2-registered-ami-check",
                             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": instanceArn,
                             "AwsAccountId": awsAccountId,
@@ -1056,12 +1062,14 @@ def ec2_ami_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                                         "AwsEc2Instance": {
                                             "Type": instanceType,
                                             "ImageId": instanceImage,
-                                            "AmiStatus": f"{dsc_image_state}",
                                             "VpcId": vpcId,
                                             "SubnetId": subnetId,
                                             "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                        },
+                                        "Other": {
+                                            "AmiStatus": f"{dsc_image_state}",
                                         }
-                                    },
+                                    }
                                 }
                             ],
                             "Compliance": {
@@ -1087,7 +1095,7 @@ def ec2_ami_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                     # Pending and Transient states will result in a Low finding - expectation is that registration will eventually succeed
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": instanceArn + "/ec2-ami-age-check",
+                            "Id": instanceArn + "/ec2-registered-ami-check",
                             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": instanceArn,
                             "AwsAccountId": awsAccountId,
@@ -1118,12 +1126,14 @@ def ec2_ami_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                                         "AwsEc2Instance": {
                                             "Type": instanceType,
                                             "ImageId": instanceImage,
-                                            "AmiStatus": f"{dsc_image_state}",
                                             "VpcId": vpcId,
                                             "SubnetId": subnetId,
                                             "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                        },
+                                        "Other": {
+                                            "AmiStatus": f"{dsc_image_state}",
                                         }
-                                    },
+                                    }
                                 }
                             ],
                             "Compliance": {
@@ -1180,12 +1190,14 @@ def ec2_ami_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                                     "AwsEc2Instance": {
                                         "Type": instanceType,
                                         "ImageId": instanceImage,
-                                        "AmiStatus": f"Deregistered",
                                         "VpcId": vpcId,
                                         "SubnetId": subnetId,
                                         "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                    },
+                                    "Other": {
+                                        "AmiStatus": "Deregistered",
                                     }
-                                },
+                                }
                             }
                         ],
                         "Compliance": {

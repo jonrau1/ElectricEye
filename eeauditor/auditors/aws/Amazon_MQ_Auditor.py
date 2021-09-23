@@ -75,7 +75,7 @@ def broker_kms_cmk_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {"brokerName": brokerName, "brokerId": brokerId,}
+                                "Other": {"BrokerName": brokerName, "BrokerId": brokerId,}
                             },
                         }
                     ],
@@ -127,8 +127,8 @@ def broker_kms_cmk_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                             "Region": awsRegion,
                             "Details": {
                                 "Other": {
-                                    "brokerName": brokerName,
-                                    "brokerId": brokerId,
+                                    "BrokerName": brokerName,
+                                    "BrokerId": brokerId,
                                     "kmsKeyId": kmsKeyId,
                                 }
                             },
@@ -198,7 +198,7 @@ def broker_audit_logging_check(cache: dict, awsAccountId: str, awsRegion: str, a
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {"brokerName": brokerName, "brokerId": brokerId,}
+                                "Other": {"BrokerName": brokerName, "BrokerId": brokerId,}
                             },
                         }
                     ],
@@ -250,7 +250,7 @@ def broker_audit_logging_check(cache: dict, awsAccountId: str, awsRegion: str, a
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {"brokerName": brokerName, "brokerId": brokerId,}
+                                "Other": {"BrokerName": brokerName, "BrokerId": brokerId,}
                             },
                         }
                     ],
@@ -322,7 +322,7 @@ def broker_general_logging_check(cache: dict, awsAccountId: str, awsRegion: str,
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {"brokerName": brokerName, "brokerId": brokerId,}
+                                "Other": {"BrokerName": brokerName, "BrokerId": brokerId,}
                             },
                         }
                     ],
@@ -376,7 +376,7 @@ def broker_general_logging_check(cache: dict, awsAccountId: str, awsRegion: str,
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {"brokerName": brokerName, "brokerId": brokerId,}
+                                "Other": {"BrokerName": brokerName, "BrokerId": brokerId,}
                             },
                         }
                     ],
@@ -451,7 +451,7 @@ def broker_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, a
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {"brokerName": brokerName, "brokerId": brokerId,}
+                                "Other": {"BrokerName": brokerName, "BrokerId": brokerId,}
                             },
                         }
                     ],
@@ -510,7 +510,7 @@ def broker_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, a
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {"brokerName": brokerName, "brokerId": brokerId,}
+                                "Other": {"BrokerName": brokerName, "BrokerId": brokerId,}
                             },
                         }
                     ],
@@ -584,7 +584,7 @@ def broker_minor_version_auto_upgrade_check(cache: dict, awsAccountId: str, awsR
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {"brokerName": brokerName, "brokerId": brokerId,}
+                                "Other": {"BrokerName": brokerName, "BrokerId": brokerId,}
                             },
                         }
                     ],
@@ -638,7 +638,7 @@ def broker_minor_version_auto_upgrade_check(cache: dict, awsAccountId: str, awsR
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {"brokerName": brokerName, "brokerId": brokerId,}
+                                "Other": {"BrokerName": brokerName, "BrokerId": brokerId,}
                             },
                         }
                     ],

@@ -48,6 +48,27 @@ variable "Dops_api_key_SSM_Parameter" {
   default =     "placeholder"
   description = "The SSM Secure String Parameter containing your DisruptOps API key. Leave the default value if you will not be using DisruptOps"
 }
+# PostgreSQL
+variable "postgres_username" {
+  default =     "placeholder"
+  description = "Main PostgreSQL User Name used for DB Authentication. Leave the default value if you will not be sending findings to PostgreSQL"
+}
+variable "postgres_endpoint" {
+  default =     "placeholder"
+  description = "Hostname of your PostgreSQL Database. Leave the default value if you will not be sending findings to PostgreSQL"
+}
+variable "postgres_db_name" {
+  default =     "placeholder"
+  description = "Database Name within PostgreSQL to place ElectricEye table. Leave the default value if you will not be using PostgreSQL"
+}
+variable "postgres_port" {
+  default =     "placeholder"
+  description = "The Port Number of your PostgreSQL Database. Leave the default value if you will not be using PostgreSQL"
+}
+variable "postgre_password_SSM_Parameter" {
+  default =     "placeholder"
+  description = "The SSM Secure String Parameter containing your PostgreSQL Password. Leave the default value if you will not be using PostgreSQL"
+}
 variable "Electric_Eye_Schedule_Task_Expression" {
   default = "rate(12 hours)"
 }

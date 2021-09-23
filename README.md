@@ -16,6 +16,7 @@ Continuously monitor your AWS services for configurations that can lead to degra
 - [Description](#description)
 - [Solution Architecture](#solution-architecture)
 - [Running locally](#running-locally)
+  - [ElectricEye and Custom Outputs](#electriceye-and-custom-outputs)
 - [Setting Up on Fargate](#setting-up-electriceye-on-fargate)
   - [Solution Architecture for Fargate](#aws-fargate-solution-architecture)
   - [Build and push the Docker image](#build-and-push-the-docker-image)
@@ -65,11 +66,11 @@ Personas who can make use of this tool are DevOps/DevSecOps engineers, SecOps an
 
 > - You run ElectricEye anywhere you have AWS Credentials and the [required IAM Permissions](policies/Instance_Profile_IAM_Policy.json) - this can be on a Raspberry Pi, a Google Compute Engine instance, on AWS EKS or Amazon EC2.
 
-> - ElectricEye will *evaluate* all resources in scope using **Auditors** and write the findings to a local cache
+> - ElectricEye will evaluate all resources in scope using **Auditors** and write the findings to a local cache
 
-> - If supplied, ElectricEye will *evaluate* specific internet-facing AWS services against indexed results on Shodan.io
+> - If supplied, ElectricEye will evaluate specific internet-facing AWS services against indexed results on Shodan.io as additional enrichment.
 
-> - ElectricEye will *report* all findings to AWS Security Hub, if configured ElectricEye can also output *reports* to CSV or JSON files. Finally (and optionally) you can *report* findings to the [DisruptOps](https://disruptops.com/electriceye-v2-0/) platform which also has its [own integration with Security Hub](https://disruptops.com/cloud-providers/aws/).
+> - ElectricEye will report all findings to AWS Security Hub, if configured ElectricEye can also output to CSV and JSON files or to a PostgreSQL Database (hosted on AWS RDS, or otherwise). Finally (and optionally) you can report findings to the [DisruptOps](https://disruptops.com/electriceye-v2-0/) platform which also has its [own integration with Security Hub](https://disruptops.com/cloud-providers/aws/).
 
 ## Running locally
 
@@ -126,6 +127,77 @@ You can get a full name of the auditors (as well as their checks within comments
 python3 eeauditor/controller.py --list-checks
 ```
 
+### ElectricEye and Custom Outputs
+
+While running on AWS Fargate and creating the infrastructure with CloudFormation or Terraform gives you the benefits of encapsulating environment variables you need, you may need to do configurations of your own different outputs. Using these different outputs like PostgreSQL, JSON, or CSV is great for any downstream use cases such as SIEM-ingestion, external tool reporting, business intelligence, machine learning, or loading a graph. Outputs are subject to change by release and will be updated here.
+
+To list all currently available outputs: `python3 eeauditor/controller.py --list-options`, it will return a list of valid output locations such as `['postgres', 'sechub', 'json', 'csv', 'dops']`, by default findings go to AWS Security Hub (`sechub`).
+
+Some considerations...
+
+- To output to JSON, add the following arguments to your call to `controller.py`: `-o json --output-file electriceye-findings.json`
+
+- To output to CSV, add the following arguments to your call to `controller.py`: `-o csv --output-file electriceye-findings.csv`
+
+- To output to a PostgreSQL database, add the following arguement to your call to `controller.py`: `-o postgres`. You will also need to ensure that your IP Address (or AWS Security Group ID, if using Amazon RDS/Aurora) is allowed to communicate with your database. Plaintext passwords are frowned upon, so create an AWS Systems Manager Parameter Store secure parameter with the below command.
+
+```bash
+aws ssm put-parameter \
+    --name $PLACEHOLDER \
+    --description 'PostgreSQL Database Password' \
+    --type SecureString --value $PLACEHOLDER
+```
+
+- To configure your ENV to have the proper outputs for PostgreSQL (provided youre on a Linux system) use the below `EXPORT` commands and switch any value that says `$PLACEHOLDER`, but keep the double quotes (`"`).
+
+```bash
+export POSTGRES_USERNAME="$PLACEHOLDER"
+export ELECTRICEYE_POSTGRESQL_DB_NAME="$PLACEHOLDER"
+export POSTGRES_DB_ENDPOINT="$PLACEHOLDER"
+export POSTGRES_DB_PORT="$PLACEHOLDER"
+export POSTGRES_PASSWORD_SSM_PARAM_NAME="$PLACEHOLDER"
+```
+
+- To output to the DisruptOps Platform , add the following arguement to your call to `controller.py`: `-o dops`. You will need to create two AWS Systems Manager Parameter Store secure parameters for your API Key and Client ID within the DisruptOps platform, as shown below. Only change the `--value` entry for either, the names can stay the same.
+
+```bash
+aws ssm put-parameter \
+    --name dops-client-id \
+    --description 'DisruptOps client id' \
+    --type SecureString \
+    --value <CLIENT-ID-HERE>
+```
+
+```bash
+aws ssm put-parameter \
+    --name dops-api-key \
+    --description 'DisruptOps api key' \
+    --type SecureString \
+    --value <API-KEY-HERE>
+```
+
+- To configure your ENV to have the proper outputs for DisruptOps (provided youre on a Linux system) use the below `EXPORT` commands.
+
+```bash
+export DOPS_CLIENT_ID_PARAM="dops-client-id"
+export DOPS_API_KEY_PARAM="dops-api-key"
+```
+
+- If you will be using Shodan.io to gain information about your public facing assets, retrieve your API key [from your account here](https://developer.shodan.io/dashboard), and then create an AWS Systems Manager Parameter Store secure parameter with the below command. Only change the `--value` entry for either, the name can stay the same.
+
+```bash
+aws ssm put-parameter \
+    --name electriceye-shodan-api-key \
+    --description 'Shodan.io API Key' \
+    --type SecureString \
+    --value <API-KEY-HERE>
+```
+
+- To configure your ENV to have the proper values for Shodan (provided youre on a Linux system) use the below `EXPORT` commands.
+
+```bash
+export SHODAN_API_KEY_PARAM="electriceye-shodan-api-key"
+```
 
 ## Setting Up ElectricEye on Fargate
 
@@ -216,7 +288,8 @@ This is an **optional** step to setup a Shodan.io API key to determine if your i
 aws ssm put-parameter \
     --name electriceye-shodan-api-key \
     --description 'Shodan.io API Key' \
-    --type SecureString --value <API-KEY-HERE>
+    --type SecureString \
+    --value <API-KEY-HERE>
 ```
 
 In both the Terraform config files and CloudFormation templates the value for this key is prepopulated with the value `placeholder`, overwrite them with this parameter you just created to be able to use the Shodan checks.

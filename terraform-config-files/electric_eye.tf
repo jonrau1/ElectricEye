@@ -104,7 +104,27 @@ resource "aws_ecs_task_definition" "Electric_Eye_ECS_Task_Definition" {
       {
         "value": "${var.Dops_api_key_SSM_Parameter}",
         "name": "DOPS_API_KEY_PARAM"
-      }
+      },
+      {
+        "value": "${var.postgres_username}",
+        "name": "POSTGRES_USERNAME"
+      },
+      {
+        "value": "${var.postgres_endpoint}",
+        "name": "POSTGRES_DB_ENDPOINT"
+      },
+      {
+        "value": "${var.postgres_db_name}",
+        "name": "ELECTRICEYE_POSTGRESQL_DB_NAME"
+      },
+      {
+        "value": "${var.postgres_port}",
+        "name": "POSTGRES_DB_PORT"
+      },
+      {
+        "value": "${var.postgre_password_SSM_Parameter}",
+        "name": "POSTGRES_PASSWORD_SSM_PARAM_NAME"
+      },
     ],
     "name": "${var.Electric_Eye_ECS_Resources_Name}",
     "networkMode": "awsvpc",
