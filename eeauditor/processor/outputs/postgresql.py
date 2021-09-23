@@ -11,22 +11,15 @@ class PostgresProvider(object):
 
     def __init__(self):
         ssm = boto3.client("ssm")
-        rds = boto3.client("rds")
-
+        # Username
         try:
-            psqlRdsDbArn = os.environ["PSQL_RDS_DB_ARN"]
+            psqlUsername = os.environ["POSTGRES_USERNAME"]
         except Exception as e:
-            if str(e) == '"PSQL_RDS_DB_ARN"':
-                psqlRdsDbArn = "placeholder"
+            if str(e) == '"POSTGRES_USERNAME"':
+                psqlUsername = "placeholder"
             else:
                 print(e)
-        try:
-            psqlRdsPwSsmParamName = os.environ["PSQL_RDS_PW_SSM_PARAM_NAME"]
-        except Exception as e:
-            if str(e) == '"PSQL_RDS_PW_SSM_PARAM_NAME"':
-                psqlRdsPwSsmParamName = "placeholder"
-            else:
-                print(e)
+        # DB Name
         try:
             eePsqlDbName = os.environ["ELECTRICEYE_POSTGRESQL_DB_NAME"]
         except Exception as e:
@@ -34,18 +27,38 @@ class PostgresProvider(object):
                 eePsqlDbName = "placeholder"
             else:
                 print(e)
+        # DB Endpoint
+        try:
+            dbEndpoint = os.environ["POSTGRES_DB_ENDPOINT"]
+        except Exception as e:
+            if str(e) == '"POSTGRES_DB_ENDPOINT"':
+                dbEndpoint = "placeholder"
+            else:
+                print(e)
+        # DB Port
+        try:
+            dbPort = os.environ["POSTGRES_DB_PORT"]
+        except Exception as e:
+            if str(e) == '"POSTGRES_DB_PORT"':
+                dbPort = "placeholder"
+            else:
+                print(e)
+        # Secret Parameter
+        try:
+            psqlRdsPwSsmParamName = os.environ["POSTGRES_PASSWORD_SSM_PARAM_NAME"]
+        except Exception as e:
+            if str(e) == '"POSTGRES_PASSWORD_SSM_PARAM_NAME"':
+                psqlRdsPwSsmParamName = "placeholder"
+            else:
+                print(e)
+        
 
-        if (psqlRdsDbArn or psqlRdsPwSsmParamName or eePsqlDbName) == "placeholder":
+        if (psqlUsername or eePsqlDbName or dbEndpoint or dbPort or psqlRdsPwSsmParamName) == "placeholder":
             print('Either the required RDS Information was not provided, or the "placeholder" values were kept')
             exit(2)
         else:
             # Retrieve and Decrypt DB PW from SSM
             psqlDbPw = ssm.get_parameter(Name=psqlRdsPwSsmParamName, WithDecryption=True)["Parameter"]["Value"]
-            # Get endpoint and username from RDS API
-            rdsInfo = rds.describe_db_instances(DBInstanceIdentifier=psqlRdsDbArn)["DBInstances"][0]
-            psqlUsername = str(rdsInfo["MasterUsername"])
-            dbEndpoint = str(rdsInfo["Endpoint"]["Address"])
-            dbPort = str(rdsInfo["Endpoint"]["Port"])
 
             self.db_endpoint = dbEndpoint
             self.db_port = dbPort
@@ -74,10 +87,6 @@ class PostgresProvider(object):
                 # Create a new table for the ElectricEye findings. ID will be the Primary Key, all other elements will be parsed as text
                 cursor.execute("""CREATE TABLE IF NOT EXISTS electriceye_findings( schemaversion TEXT, findingid TEXT PRIMARY KEY, awsaccountid TEXT, productarn TEXT, generatorid TEXT, types TEXT, createdat TEXT, severitylabel TEXT, confidence TEXT, title TEXT, description TEXT, remediationtext TEXT, remediationurl TEXT, resourcetype TEXT, resourceid TEXT, resourceregion TEXT, resourcepartition TEXT, compliancestatus TEXT, workflowstatus TEXT, recordstate TEXT);""")
 
-                '''# This is to check all of the created Tables for T-shooting. Or just use psql CLI / pgAdmin4 to check the DB
-                cursor.execute("select relname from pg_class where relkind='r' and relname !~ '^(pg_|sql_)';")
-                print(cursor.fetchall())'''
-
                 for finding in findings:
                     # Basic parsing of ASFF to prepare for INSERT into PSQL
                     try:
@@ -104,7 +113,7 @@ class PostgresProvider(object):
                     except Exception:
                         pass
 
-                    cursor.execute("INSERT INTO electriceye_findings (schemaversion, findingid, awsaccountid, productarn, generatorid, types, createdat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, workflowstatus, recordstate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (schemaversion, findingid, awsaccountid, productarn, generatorid, types, createdat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, workflowstatus, recordstate))
+                    cursor.execute("INSERT INTO electriceye_findings (schemaversion, findingid, awsaccountid, productarn, generatorid, types, createdat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, workflowstatus, recordstate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (schemaversion, findingid, awsaccountid, productarn, generatorid, types, createdat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, workflowstatus, recordstate))
 
                 # close communication with the postgres server (rds)
                 cursor.close()
