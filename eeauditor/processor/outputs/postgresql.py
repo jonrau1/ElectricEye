@@ -81,7 +81,10 @@ class PostgresProvider(object):
                     # Basic parsing of ASFF to prepare for INSERT into PSQL
                     schemaversion = str(finding['SchemaVersion'])
                     findingid = str(finding['Id'])
-                    awsaccountid = str(finding['AwsAccountId'])
+                    try:
+                        awsaccountid = str(finding['AwsAccountId'])
+                    except Exception:
+                        continue
                     productarn = str(finding['ProductArn'])
                     generatorid = str(finding['GeneratorId'])
                     types = str(finding['Types'][0])
