@@ -34,11 +34,7 @@ class PostgresProvider(object):
             else:
                 print(e)
 
-        if (
-            psqlRdsDbArn or 
-            psqlRdsPwSsmParamName or 
-            eePsqlDbName
-            ) == "placeholder":
+        if (psqlRdsDbArn or psqlRdsPwSsmParamName or eePsqlDbName) == "placeholder":
             print('Either the required RDS Information was not provided, or the "placeholder" values were kept')
         else:
             # Retrieve and Decrypt DB PW from SSM
@@ -48,6 +44,8 @@ class PostgresProvider(object):
             psqlUsername = str(rdsInfo["MasterUsername"])
             dbEndpoint = str(rdsInfo["Endpoint"]["Address"])
             dbPort = str(rdsInfo["Endpoint"]["Port"])
+
+            print('Connection host for Postgres: ' + dbEndpoint)
 
             self.db_endpoint = dbEndpoint
             self.db_port = dbPort
@@ -115,7 +113,5 @@ class PostgresProvider(object):
                 print("Cannot connect to PostgreSQL! Review your Security Group settings and/or information provided to connect")
             except Exception:
                 print("Another exception found " + Exception)
-            finally:
-                cursor.close()
         else:
             raise ValueError("Missing credentials or database parameters")
