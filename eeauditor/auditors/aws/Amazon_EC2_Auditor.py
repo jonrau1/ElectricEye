@@ -848,12 +848,14 @@ def ec2_ami_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
                                         "AwsEc2Instance": {
                                             "Type": instanceType,
                                             "ImageId": instanceImage,
-                                            "AmiAge": f"{AmiAge.days} days old",
                                             "VpcId": vpcId,
                                             "SubnetId": subnetId,
                                             "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                        },
+                                        "Other": {
+                                            "AmiAge": f"{AmiAge.days} days old"
                                         }
-                                    },
+                                    }
                                 }
                             ],
                             "Compliance": {
@@ -909,12 +911,14 @@ def ec2_ami_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
                                         "AwsEc2Instance": {
                                             "Type": instanceType,
                                             "ImageId": instanceImage,
-                                            "AmiAge": f"{AmiAge.days} days old",
                                             "VpcId": vpcId,
                                             "SubnetId": subnetId,
                                             "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                        },
+                                        "Other": {
+                                            "AmiAge": f"{AmiAge.days} days old"
                                         }
-                                    },
+                                    }
                                 }
                             ],
                             "Compliance": {
@@ -995,12 +999,14 @@ def ec2_ami_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                                         "AwsEc2Instance": {
                                             "Type": instanceType,
                                             "ImageId": instanceImage,
-                                            "AmiStatus": f"{dsc_image_state}",
                                             "VpcId": vpcId,
                                             "SubnetId": subnetId,
                                             "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                        },
+                                        "Other": {
+                                            "AmiStatus": f"{dsc_image_state}",
                                         }
-                                    },
+                                    }
                                 }
                             ],
                             "Compliance": {
@@ -1056,12 +1062,14 @@ def ec2_ami_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                                         "AwsEc2Instance": {
                                             "Type": instanceType,
                                             "ImageId": instanceImage,
-                                            "AmiStatus": f"{dsc_image_state}",
                                             "VpcId": vpcId,
                                             "SubnetId": subnetId,
                                             "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                        },
+                                        "Other": {
+                                            "AmiStatus": f"{dsc_image_state}",
                                         }
-                                    },
+                                    }
                                 }
                             ],
                             "Compliance": {
@@ -1118,12 +1126,14 @@ def ec2_ami_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                                         "AwsEc2Instance": {
                                             "Type": instanceType,
                                             "ImageId": instanceImage,
-                                            "AmiStatus": f"{dsc_image_state}",
                                             "VpcId": vpcId,
                                             "SubnetId": subnetId,
                                             "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                        },
+                                        "Other": {
+                                            "AmiStatus": f"{dsc_image_state}",
                                         }
-                                    },
+                                    }
                                 }
                             ],
                             "Compliance": {
@@ -1180,12 +1190,14 @@ def ec2_ami_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                                     "AwsEc2Instance": {
                                         "Type": instanceType,
                                         "ImageId": instanceImage,
-                                        "AmiStatus": f"Deregistered",
                                         "VpcId": vpcId,
                                         "SubnetId": subnetId,
                                         "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                    },
+                                    "Other": {
+                                        "AmiStatus": "Deregistered",
                                     }
-                                },
+                                }
                             }
                         ],
                         "Compliance": {
