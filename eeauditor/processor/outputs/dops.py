@@ -16,19 +16,20 @@ class DopsProvider(object):
             dops_client_id_param = os.environ["DOPS_CLIENT_ID_PARAM"]
         except Exception as e:
             if str(e) == '"DOPS_CLIENT_ID_PARAM"':
-                dops_client_id_param == "placeholder"
+                dops_client_id_param = "placeholder"
             else:
                 print(e)
         try:
             dops_api_key_param = os.environ["DOPS_API_KEY_PARAM"]
         except Exception as e:
             if str(e) == '"DOPS_API_KEY_PARAM"':
-                dops_api_key_param == "placeholder"
+                dops_api_key_param = "placeholder"
             else:
                 print(e)
 
         if dops_api_key_param or dops_client_id_param == "placeholder":
             print('Either the DisruptOps API Keys were not provided, or the "placeholder" value was kept')
+            exit(2)
         else:
             client_id_response = ssm.get_parameter(Name=dops_client_id_param, WithDecryption=True)
             api_key_response = ssm.get_parameter(Name=dops_api_key_param, WithDecryption=True)

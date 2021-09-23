@@ -1,7 +1,5 @@
 import boto3
-import json
 import os
-import requests
 import psycopg2 as psql
 from processor.outputs.output_base import ElectricEyeOutput
 
@@ -36,7 +34,11 @@ class PostgresProvider(object):
             else:
                 print(e)
 
-        if psqlRdsDbArn or psqlRdsPwSsmParamName or eePsqlDbName == "placeholder":
+        if (
+            psqlRdsDbArn or 
+            psqlRdsPwSsmParamName or 
+            eePsqlDbName
+            ) == "placeholder":
             print('Either the required RDS Information was not provided, or the "placeholder" values were kept')
         else:
             # Retrieve and Decrypt DB PW from SSM

@@ -1,5 +1,4 @@
 import itertools
-
 import boto3
 from processor.outputs.output_base import ElectricEyeOutput
 
