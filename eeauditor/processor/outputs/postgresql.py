@@ -7,7 +7,7 @@ from processor.outputs.output_base import ElectricEyeOutput
 
 
 @ElectricEyeOutput
-class DopsProvider(object):
+class PostgresProvider(object):
     __provider__ = "postgres"
 
     def __init__(self):
