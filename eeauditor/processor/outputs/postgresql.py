@@ -99,8 +99,7 @@ class PostgresProvider(object):
                     resourceregion = str(finding['Resources'][0]['Region'])
                     resourcepartition = str(finding['Resources'][0]['Partition'])
                     compliancestatus = str(finding['Compliance']['Status'])
-                    compliancecontrols = str(finding['Compliance']['RelatedRequirements']).replace('[','').replace(']','')
-                    print(compliancecontrols)
+                    compliancecontrols = str(finding['Compliance']['RelatedRequirements'])
                     workflowstatus = str(finding['Workflow']['Status'])
                     recordstate = str(finding['RecordState'])
 
