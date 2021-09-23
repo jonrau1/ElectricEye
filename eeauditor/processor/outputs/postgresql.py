@@ -80,29 +80,29 @@ class PostgresProvider(object):
 
                 for finding in findings:
                     # Basic parsing of ASFF to prepare for INSERT into PSQL
-                    schemaversion = str(finding['SchemaVersion'])
-                    findingid = str(finding['Id'])
                     try:
                         awsaccountid = str(finding['AwsAccountId'])
+                        schemaversion = str(finding['SchemaVersion'])
+                        findingid = str(finding['Id'])
+                        productarn = str(finding['ProductArn'])
+                        generatorid = str(finding['GeneratorId'])
+                        types = str(finding['Types'][0])
+                        createdat = str(finding['CreatedAt'])
+                        severitylabel = str(finding['Severity']['Label'])
+                        confidence = str(finding['Confidence'])
+                        title = str(finding['Title'])
+                        description = str(finding['Description'])
+                        remediationtext = str(finding['Remediation']['Recommendation']['Text'])
+                        remediationurl = str(finding['Remediation']['Recommendation']['Url'])
+                        resourcetype = str(finding['Resources'][0]['Type'])
+                        resourceid = str(finding['Resources'][0]['Id'])
+                        resourceregion = str(finding['Resources'][0]['Region'])
+                        resourcepartition = str(finding['Resources'][0]['Partition'])
+                        compliancestatus = str(finding['Compliance']['Status'])
+                        workflowstatus = str(finding['Workflow']['Status'])
+                        recordstate = str(finding['RecordState'])
                     except Exception:
                         pass
-                    productarn = str(finding['ProductArn'])
-                    generatorid = str(finding['GeneratorId'])
-                    types = str(finding['Types'][0])
-                    createdat = str(finding['CreatedAt'])
-                    severitylabel = str(finding['Severity']['Label'])
-                    confidence = str(finding['Confidence'])
-                    title = str(finding['Title'])
-                    description = str(finding['Description'])
-                    remediationtext = str(finding['Remediation']['Recommendation']['Text'])
-                    remediationurl = str(finding['Remediation']['Recommendation']['Url'])
-                    resourcetype = str(finding['Resources'][0]['Type'])
-                    resourceid = str(finding['Resources'][0]['Id'])
-                    resourceregion = str(finding['Resources'][0]['Region'])
-                    resourcepartition = str(finding['Resources'][0]['Partition'])
-                    compliancestatus = str(finding['Compliance']['Status'])
-                    workflowstatus = str(finding['Workflow']['Status'])
-                    recordstate = str(finding['RecordState'])
 
                     cursor.execute("INSERT INTO electriceye_findings (schemaversion, findingid, awsaccountid, productarn, generatorid, types, createdat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, workflowstatus, recordstate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (schemaversion, findingid, awsaccountid, productarn, generatorid, types, createdat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, workflowstatus, recordstate))
 
