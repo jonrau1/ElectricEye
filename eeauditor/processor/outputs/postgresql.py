@@ -39,7 +39,7 @@ class PostgresProvider(object):
             exit(2)
         else:
             # Retrieve and Decrypt DB PW from SSM
-            psqlDbPw = ssm.get_parameter(Name=psqlRdsPwSsmParamName, WithDecryption=True)
+            psqlDbPw = ssm.get_parameter(Name=psqlRdsPwSsmParamName, WithDecryption=True)["Parameter"]["Value"]
             # Get endpoint and username from RDS API
             rdsInfo = rds.describe_db_instances(DBInstanceIdentifier=psqlRdsDbArn)["DBInstances"][0]
             psqlUsername = str(rdsInfo["MasterUsername"])
