@@ -18,18 +18,42 @@ Description: This Template will create the supporting infrastructure for Electri
 Metadata:
   License: GPL-3.0
 Parameters:
+  # THREAT INTEL
   ShodanApiKeySSMParam:
     Type: String
     Description: The SSM Secure String Parameter containing your Shodan API key. Leave the default value if you will not be using Shodan
     Default: placeholder
+  # DISRUPTOPS
   DopsClientIdSSMParam:
     Type: String
     Description: The SSM Secure String Parameter containing your DisruptOps Client ID. Leave the default value if you will not be using DisruptOps
     Default: placeholder
   DopsApiKeySSMParam:
-      Type: String
-      Description: The SSM Secure String Parameter containing your DisruptOps API key. Leave the default value if you will not be using DisruptOps
-      Default: placeholder
+    Type: String
+    Description: The SSM Secure String Parameter containing your DisruptOps API key. Leave the default value if you will not be using DisruptOps
+    Default: placeholder
+  # POSTGRESQL
+  PostgresUsername:
+    Type: String
+    Description: Main PostgreSQL User Name used for DB Authentication. Leave the default value if you will not be sending findings to PostgreSQL
+    Default: placeholder
+  PostgresDbName:
+    Type: String
+    Description: Database Name within PostgreSQL to place ElectricEye table. Leave the default value if you will not be using PostgreSQL
+    Default: placeholder
+  PostgresEndpoint:
+    Type: String
+    Description: Hostname of your PostgreSQL Database. Leave the default value if you will not be sending findings to PostgreSQL
+    Default: placeholder
+  PostgresPort:
+    Type: String
+    Description: The Port Number of your PostgreSQL Database. Leave the default value if you will not be using PostgreSQL
+    Default: placeholder
+  PostgresPasswordSSMParam:
+    Type: String
+    Description: The SSM Secure String Parameter containing your PostgreSQL Password. Leave the default value if you will not be using PostgreSQL
+    Default: placeholder
+  # ELECTRICEYE CORE
   ElectricEyeClusterName:
     Type: String
     Description: Name of the ECS Cluster that the ElectricEye Fargate Task will run in
@@ -445,12 +469,25 @@ Resources:
             - Name: SH_SCRIPTS_BUCKET
               ValueFrom: !Ref ElectricEyeBucketParameter
           Environment:
+            # THREAT INTEL
             - Name: SHODAN_API_KEY_PARAM
               Value: !Ref ShodanApiKeySSMParam
+            # DISRUPTOPS
             - Name: DOPS_CLIENT_ID_PARAM
               Value: !Ref DopsClientIdSSMParam
             - Name: DOPS_API_KEY_PARAM
               Value: !Ref DopsApiKeySSMParam
+            # POSTGRES
+            - Name: POSTGRES_USERNAME
+              Value: !Ref PostgresUsername
+            - Name: ELECTRICEYE_POSTGRESQL_DB_NAME
+              Value: !Ref PostgresDbName
+            - Name: POSTGRES_DB_ENDPOINT
+              Value: !Ref PostgresEndpoint
+            - Name: POSTGRES_DB_PORT
+              Value: !Ref PostgresPort
+            - Name: POSTGRES_PASSWORD_SSM_PARAM_NAME
+              Value: !Ref PostgresPasswordSSMParam
           LogConfiguration:
             LogDriver: awslogs
             Options:
