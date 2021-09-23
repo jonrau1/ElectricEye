@@ -71,7 +71,7 @@ class PostgresProvider(object):
                 engine.commit()
                 
                 # Create a new table for the ElectricEye findings. ID will be the Primary Key, all other elements will be parsed as text
-                cursor.execute("""CREATE TABLE IF NOT EXISTS electriceye_findings( schemaversion TEXT, findingid TEXT PRIMARY KEY, awsaccountid TEXT, productarn TEXT, generatorid TEXT, types TEXT, firstobservedat TEXT, createdat TEXT, updatedat TEXT, severitylabel TEXT, confidence TEXT, title TEXT, description TEXT, remediationtext TEXT, remediationurl TEXT, resourcetype TEXT, resourceid TEXT, resourceregion TEXT, resourcepartition TEXT, compliancestatus TEXT, workflowstatus TEXT, recordstate TEXT);""")
+                cursor.execute("""CREATE TABLE IF NOT EXISTS electriceye_findings( schemaversion TEXT, findingid TEXT PRIMARY KEY, awsaccountid TEXT, productarn TEXT, generatorid TEXT, types TEXT, createdat TEXT, severitylabel TEXT, confidence TEXT, title TEXT, description TEXT, remediationtext TEXT, remediationurl TEXT, resourcetype TEXT, resourceid TEXT, resourceregion TEXT, resourcepartition TEXT, compliancestatus TEXT, workflowstatus TEXT, recordstate TEXT);""")
 
                 '''# This is to check all of the created Tables for T-shooting. Or just use psql CLI / pgAdmin4 to check the DB
                 cursor.execute("select relname from pg_class where relkind='r' and relname !~ '^(pg_|sql_)';")
@@ -85,9 +85,7 @@ class PostgresProvider(object):
                     productarn = str(finding['ProductArn'])
                     generatorid = str(finding['GeneratorId'])
                     types = str(finding['Types'][0])
-                    firstobservedat = str(finding['FirstObservedAt'])
                     createdat = str(finding['CreatedAt'])
-                    updatedat = str(finding['UpdatedAt'])
                     severitylabel = str(finding['Severity']['Label'])
                     confidence = str(finding['Confidence'])
                     title = str(finding['Title'])
@@ -102,7 +100,7 @@ class PostgresProvider(object):
                     workflowstatus = str(finding['Workflow']['Status'])
                     recordstate = str(finding['RecordState'])
 
-                    cursor.execute("INSERT INTO electriceye_findings (schemaversion, findingid, awsaccountid, productarn, generatorid, types, firstobservedat, createdat, updatedat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, workflowstatus, recordstate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (schemaversion, findingid, awsaccountid, productarn, generatorid, types, firstobservedat, createdat, updatedat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, workflowstatus, recordstate))
+                    cursor.execute("INSERT INTO electriceye_findings (schemaversion, findingid, awsaccountid, productarn, generatorid, types, createdat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, workflowstatus, recordstate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (schemaversion, findingid, awsaccountid, productarn, generatorid, types, createdat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, workflowstatus, recordstate))
 
                 # close communication with the postgres server (rds)
                 cursor.close()
