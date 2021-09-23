@@ -71,7 +71,7 @@ class PostgresProvider(object):
                 engine.commit()
                 
                 # Create a new table for the ElectricEye findings. ID will be the Primary Key, all other elements will be parsed as text
-                cursor.execute("""CREATE TABLE IF NOT EXISTS electriceye_findings( schemaversion TEXT, id TEXT PRIMARY KEY, awsaccountid TEXT, productarn TEXT, generatorid TEXT, types TEXT, firstobservedat TEXT, createdat TEXT, updatedat TEXT, severitylabel TEXT, confidence TEXT, title TEXT, description TEXT, remediationtext TEXT, remediationurl TEXT, resourcetype TEXT, resourceid TEXT, resourceregion TEXT, resourcepartition TEXT, compliancestatus TEXT, workflowstatus TEXT, recordstate TEXT);""")
+                cursor.execute("""CREATE TABLE IF NOT EXISTS electriceye_findings( schemaversion TEXT, findingid TEXT PRIMARY KEY, awsaccountid TEXT, productarn TEXT, generatorid TEXT, types TEXT, firstobservedat TEXT, createdat TEXT, updatedat TEXT, severitylabel TEXT, confidence TEXT, title TEXT, description TEXT, remediationtext TEXT, remediationurl TEXT, resourcetype TEXT, resourceid TEXT, resourceregion TEXT, resourcepartition TEXT, compliancestatus TEXT, compliancecontrols TEXT, workflowstatus TEXT, recordstate TEXT);""")
 
                 '''# This is to check all of the created Tables for T-shooting. Or just use psql CLI / pgAdmin4 to check the DB
                 cursor.execute("select relname from pg_class where relkind='r' and relname !~ '^(pg_|sql_)';")
@@ -80,7 +80,7 @@ class PostgresProvider(object):
                 for finding in findings:
                     # Basic parsing of ASFF to prepare for INSERT into PSQL
                     schemaversion = str(finding['SchemaVersion'])
-                    id = str(finding['Id'])
+                    findingid = str(finding['Id'])
                     awsaccountid = str(finding['AwsAccountId'])
                     productarn = str(finding['ProductArn'])
                     generatorid = str(finding['GeneratorId'])
@@ -99,10 +99,11 @@ class PostgresProvider(object):
                     resourceregion = str(finding['Resources'][0]['Region'])
                     resourcepartition = str(finding['Resources'][0]['Partition'])
                     compliancestatus = str(finding['Compliance']['Status'])
+                    compliancecontrols = str(finding['Compliance']['RelatedRequirements']).replace('[','').replace(']','')
                     workflowstatus = str(finding['Workflow']['Status'])
                     recordstate = str(finding['RecordState'])
 
-                    cursor.execute("INSERT INTO electriceye_findings (schemaversion, id, awsaccountid, productarn, generatorid, types, firstobservedat, createdat, updatedat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, workflowstatus, recordstate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (schemaversion, id, awsaccountid, productarn, generatorid, types, firstobservedat, createdat, updatedat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, workflowstatus, recordstate))
+                    cursor.execute("INSERT INTO electriceye_findings (schemaversion, findingid, awsaccountid, productarn, generatorid, types, firstobservedat, createdat, updatedat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, compliancecontrols, workflowstatus, recordstate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (schemaversion, findingid, awsaccountid, productarn, generatorid, types, firstobservedat, createdat, updatedat, severitylabel, confidence, title, description, remediationtext, remediationurl, resourcetype, resourceid, resourceregion, resourcepartition, compliancestatus, compliancecontrols, workflowstatus, recordstate))
 
                 # close communication with the postgres server (rds)
                 cursor.close()
