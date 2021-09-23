@@ -85,7 +85,7 @@ class PostgresProvider(object):
                     try:
                         awsaccountid = str(finding['AwsAccountId'])
                     except Exception:
-                        continue
+                        pass
                     productarn = str(finding['ProductArn'])
                     generatorid = str(finding['GeneratorId'])
                     types = str(finding['Types'][0])
