@@ -655,8 +655,8 @@ def memorydb_user_admin_check(cache: dict, awsAccountId: str, awsRegion: str, aw
                         "ProductFields": {"Product Name": "ElectricEye"},
                         "Resources": [
                             {
-                                "Type": "AwsMemoryDBCluster",
-                                "Id": memDbArn,
+                                "Type": "AwsMemoryDBClusterUser",
+                                "Id": userArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
@@ -734,8 +734,8 @@ def memorydb_user_admin_check(cache: dict, awsAccountId: str, awsRegion: str, aw
                         "ProductFields": {"Product Name": "ElectricEye"},
                         "Resources": [
                             {
-                                "Type": "AwsMemoryDBCluster",
-                                "Id": memDbArn,
+                                "Type": "AwsMemoryDBClusterUser",
+                                "Id": userArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
@@ -837,8 +837,8 @@ def memorydb_user_password_check(cache: dict, awsAccountId: str, awsRegion: str,
                         "ProductFields": {"Product Name": "ElectricEye"},
                         "Resources": [
                             {
-                                "Type": "AwsMemoryDBCluster",
-                                "Id": memDbArn,
+                                "Type": "AwsMemoryDBClusterUser",
+                                "Id": userArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
@@ -916,8 +916,8 @@ def memorydb_user_password_check(cache: dict, awsAccountId: str, awsRegion: str,
                         "ProductFields": {"Product Name": "ElectricEye"},
                         "Resources": [
                             {
-                                "Type": "AwsMemoryDBCluster",
-                                "Id": memDbArn,
+                                "Type": "AwsMemoryDBClusterUser",
+                                "Id": userArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
