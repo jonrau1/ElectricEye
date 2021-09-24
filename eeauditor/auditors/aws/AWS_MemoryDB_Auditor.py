@@ -808,11 +808,13 @@ def memorydb_user_password_check(cache: dict, awsAccountId: str, awsRegion: str,
                 userArn = str(userData["ARN"])
                 userName = str(userData["Name"])
 
+                print(userPwPolicy)
+
                 # This is a failing check
                 if userPwPolicy == "no-password":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": memDbArn + "-" + userArn + "/memorydb-user-password-check",
+                        "Id": userArn + "/memorydb-user-password-check",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": memDbArn + "-" + userArn,
                         "AwsAccountId": awsAccountId,
@@ -891,7 +893,7 @@ def memorydb_user_password_check(cache: dict, awsAccountId: str, awsRegion: str,
                 else:
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": memDbArn + "-" + userArn + "/memorydb-user-password-check",
+                        "Id": userArn + "/memorydb-user-password-check",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": memDbArn + "-" + userArn,
                         "AwsAccountId": awsAccountId,
