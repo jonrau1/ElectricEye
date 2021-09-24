@@ -320,6 +320,7 @@ Resources:
                   - managedblockchain:List*
                   - mq:DescribeBroker
                   - mq:ListBrokers
+                  - memorydb:Describe
                   - qldb:DescribeLedger
                   - qldb:ListJournalS3Exports
                   - qldb:ListLedgers

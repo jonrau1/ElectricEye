@@ -808,8 +808,6 @@ def memorydb_user_password_check(cache: dict, awsAccountId: str, awsRegion: str,
                 userArn = str(userData["ARN"])
                 userName = str(userData["Name"])
 
-                print(userPwPolicy)
-
                 # This is a failing check
                 if userPwPolicy == "no-password":
                     finding = {

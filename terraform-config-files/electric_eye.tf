@@ -305,6 +305,7 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "ds:ListLogSubscriptions",
                 "s3:GetObject",
                 "eks:DescribeCluster",
+                "memorydb:Describe",
                 "eks:ListClusters",
                 "elasticache:DescribeCacheClusters",
                 "shield:DescribeDRTAccess",
