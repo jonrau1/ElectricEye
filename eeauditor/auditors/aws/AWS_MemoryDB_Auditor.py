@@ -23,13 +23,6 @@ import boto3
 import datetime
 from check_register import CheckRegister
 
-# [MemoryDB.1] MemoryDB Clusters should configured to use encryption in transit HIGH
-# [MemoryDB.2] MemoryDB Clusters should used KMS CMKs for encryption at rest MEDIUM
-# [MemoryDB.3] MemoryDB Clusters should be configured for automatic minor version updates LOW
-# [MemoryDB.4] MemoryDB Clusters should be actively monitored with SNS LOW
-# [MemoryDB.5] MemoryDB Cluster Users with administrative privileges should be validated HIGH
-# [MemoryDB.6] MemoryDB Cluster Users should require additional password authentication MEDIUM 
-
 registry = CheckRegister()
 
 memorydb = boto3.client("memorydb")
@@ -471,7 +464,7 @@ def memorydb_auto_minor_version_update_check(cache: dict, awsAccountId: str, aws
 
 @registry.register_check("memorydb")
 def memorydb_sns_notification_tracking_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """MemoryDB Clusters should be actively monitored with SNS"""
+    """[MemoryDB.4] MemoryDB Clusters should be actively monitored with SNS"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for c in describe_clusters(cache=cache)["Clusters"]:
         # Gather basic information
@@ -501,7 +494,7 @@ def memorydb_sns_notification_tracking_check(cache: dict, awsAccountId: str, aws
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "MemoryDB Clusters should be actively monitored with SNS",
+                "Title": "[MemoryDB.4] MemoryDB Clusters should be actively monitored with SNS",
                 "Description": "MemoryDB Cluster "
                 + memDbName
                 + " is not configured to be monitored for Event Notifications with Amazon SNS. Refer to the remediation instructions to remediate this behavior",
@@ -562,7 +555,7 @@ def memorydb_sns_notification_tracking_check(cache: dict, awsAccountId: str, aws
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "MemoryDB Clusters should be actively monitored with SNS",
+                "Title": "[MemoryDB.4] MemoryDB Clusters should be actively monitored with SNS",
                 "Description": "MemoryDB Cluster "
                 + memDbName
                 + " is configured to be monitored for Event Notifications with Amazon SNS. Refer to the remediation instructions to remediate this behavior",
@@ -610,3 +603,365 @@ def memorydb_sns_notification_tracking_check(cache: dict, awsAccountId: str, aws
                 "RecordState": "ARCHIVED"
             }
             yield finding
+
+@registry.register_check("memorydb")
+def memorydb_user_admin_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[MemoryDB.5] MemoryDB Cluster Users with administrative privileges should be validated"""
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for c in describe_clusters(cache=cache)["Clusters"]:
+        # Gather basic information
+        memDbArn = str(c["ARN"])
+        memDbName = str(c["Name"])
+        memDbStatus = str(c["Status"])
+        memDbNodeType = str(c["NodeType"])
+        memDbEngineVersion = str(c["EngineVersion"])
+        memDbPgName = str(c["ParameterGroupName"])
+        memDbSnetGrpName = str(c["SubnetGroupName"])
+        # Parse ACL, check the ACLs for Users to associate to the Cluster and evaluate the User's ACL Access String
+        aclName = str(c['ACLName'])
+        for acl in memorydb.describe_acls(ACLName=aclName,MaxResults=50)['ACLs']:
+            for user in acl['UserNames']:
+                userArn = str(user["ARN"])
+                userName = str(user["Name"])
+                userAccessString = memorydb.describe_users(UserName=user)['Users'][0]['AccessString']
+
+                # This is a failing check - "on ~* &* +@all" means the user can have access to everything
+                if userAccessString == "on ~* &* +@all":
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": memDbArn + "-" + userArn + "/memorydb-user-admin-validation-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": memDbArn + "-" + userArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": [ "Software and Configuration Checks/AWS Security Best Practices" ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "CRITICAL"},
+                        "Confidence": 99,
+                        "Title": "[MemoryDB.5] MemoryDB Cluster Users with administrative privileges should be validated",
+                        "Description": "MemoryDB User "
+                        + userName
+                        + " for MemoryDB Cluster "
+                        + memDbName
+                        + " currently has full admin privileges via ACL Access String of 'on ~* &* +@all' and should be reviewed. Refer to the remediation instructions to remediate this behavior",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "Access control lists (ACLs) are designed as a way to organize access to clusters. With ACLs, you create users and assign them specific permissions by using an access string, as described following. You assign the users to Access control lists aligned with a specific role that are then deployed to one or more MemoryDB clusters. To configure this see the Authenticating users with Access Control Lists (ACLs) section in the Amazon MemoryDB Developer Guide for more information.",
+                                "Url": "https://docs.aws.amazon.com/memorydb/latest/devguide/clusters.acls.html#access-string"
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsMemoryDBCluster",
+                                "Id": memDbArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "Other": {
+                                        "Name": memDbName,
+                                        "Status": memDbStatus,
+                                        "NodeType": memDbNodeType,
+                                        "EngineVersion": memDbEngineVersion,
+                                        "ParameterGroupName": memDbPgName,
+                                        "SubnetGroupName": memDbSnetGrpName,
+                                        "ACLName": aclName,
+                                        "UserName": userName
+                                    }
+                                }
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "FAILED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-1",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-2",
+                                "NIST SP 800-53 IA-1",
+                                "NIST SP 800-53 IA-2",
+                                "NIST SP 800-53 IA-3",
+                                "NIST SP 800-53 IA-4",
+                                "NIST SP 800-53 IA-5",
+                                "NIST SP 800-53 IA-6",
+                                "NIST SP 800-53 IA-7",
+                                "NIST SP 800-53 IA-8",
+                                "NIST SP 800-53 IA-9",
+                                "NIST SP 800-53 IA-10",
+                                "NIST SP 800-53 IA-11",
+                                "AICPA TSC CC6.1",
+                                "AICPA TSC CC6.2",
+                                "ISO 27001:2013 A.9.2.1",
+                                "ISO 27001:2013 A.9.2.2",
+                                "ISO 27001:2013 A.9.2.3",
+                                "ISO 27001:2013 A.9.2.4",
+                                "ISO 27001:2013 A.9.2.6",
+                                "ISO 27001:2013 A.9.3.1",
+                                "ISO 27001:2013 A.9.4.2",
+                                "ISO 27001:2013 A.9.4.3",
+                            ]
+                        },
+                        "Workflow": {"Status": "NEW"},
+                        "RecordState": "ACTIVE"
+                    }
+                    yield finding
+                else:
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": memDbArn + "-" + userArn + "/memorydb-user-admin-validation-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": memDbArn + "-" + userArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": [ "Software and Configuration Checks/AWS Security Best Practices" ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "INFORMATIONAL"},
+                        "Confidence": 75,
+                        "Title": "[MemoryDB.5] MemoryDB Cluster Users with administrative privileges should be validated",
+                        "Description": "MemoryDB User "
+                        + userName
+                        + " for MemoryDB Cluster "
+                        + memDbName
+                        + " does not have full admin privileges via ACL Access String of 'on ~* &* +@all', but should still be reviewed for existing permissions. Refer to the remediation instructions to remediate this behavior",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "Access control lists (ACLs) are designed as a way to organize access to clusters. With ACLs, you create users and assign them specific permissions by using an access string, as described following. You assign the users to Access control lists aligned with a specific role that are then deployed to one or more MemoryDB clusters. To configure this see the Authenticating users with Access Control Lists (ACLs) section in the Amazon MemoryDB Developer Guide for more information.",
+                                "Url": "https://docs.aws.amazon.com/memorydb/latest/devguide/clusters.acls.html#access-string"
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsMemoryDBCluster",
+                                "Id": memDbArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "Other": {
+                                        "Name": memDbName,
+                                        "Status": memDbStatus,
+                                        "NodeType": memDbNodeType,
+                                        "EngineVersion": memDbEngineVersion,
+                                        "ParameterGroupName": memDbPgName,
+                                        "SubnetGroupName": memDbSnetGrpName,
+                                        "ACLName": aclName,
+                                        "UserName": userName
+                                    }
+                                }
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "PASSED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-1",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-2",
+                                "NIST SP 800-53 IA-1",
+                                "NIST SP 800-53 IA-2",
+                                "NIST SP 800-53 IA-3",
+                                "NIST SP 800-53 IA-4",
+                                "NIST SP 800-53 IA-5",
+                                "NIST SP 800-53 IA-6",
+                                "NIST SP 800-53 IA-7",
+                                "NIST SP 800-53 IA-8",
+                                "NIST SP 800-53 IA-9",
+                                "NIST SP 800-53 IA-10",
+                                "NIST SP 800-53 IA-11",
+                                "AICPA TSC CC6.1",
+                                "AICPA TSC CC6.2",
+                                "ISO 27001:2013 A.9.2.1",
+                                "ISO 27001:2013 A.9.2.2",
+                                "ISO 27001:2013 A.9.2.3",
+                                "ISO 27001:2013 A.9.2.4",
+                                "ISO 27001:2013 A.9.2.6",
+                                "ISO 27001:2013 A.9.3.1",
+                                "ISO 27001:2013 A.9.4.2",
+                                "ISO 27001:2013 A.9.4.3",
+                            ]
+                        },
+                        "Workflow": {"Status": "RESOLVED"},
+                        "RecordState": "ARCHIVED"
+                    }
+                    yield finding
+
+@registry.register_check("memorydb")
+def memorydb_user_password_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[MemoryDB.6] MemoryDB Cluster Users should require additional password authentication"""
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for c in describe_clusters(cache=cache)["Clusters"]:
+        # Gather basic information
+        memDbArn = str(c["ARN"])
+        memDbName = str(c["Name"])
+        memDbStatus = str(c["Status"])
+        memDbNodeType = str(c["NodeType"])
+        memDbEngineVersion = str(c["EngineVersion"])
+        memDbPgName = str(c["ParameterGroupName"])
+        memDbSnetGrpName = str(c["SubnetGroupName"])
+        # Parse ACL, check the ACLs for Users to associate to the Cluster and evaluate the User's ACL Access String
+        aclName = str(c['ACLName'])
+        for acl in memorydb.describe_acls(ACLName=aclName,MaxResults=50)['ACLs']:
+            for user in acl['UserNames']:
+                userArn = str(user["ARN"])
+                userName = str(user["Name"])
+                userPwPolicy = memorydb.describe_users(UserName=user)['Users'][0]['Authentication']['Type']
+
+                # This is a failing check
+                if userPwPolicy == "no-password":
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": memDbArn + "-" + userArn + "/memorydb-user-password-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": memDbArn + "-" + userArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": [ "Software and Configuration Checks/AWS Security Best Practices" ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "HIGH"},
+                        "Confidence": 99,
+                        "Title": "[MemoryDB.6] MemoryDB Cluster Users should require additional password authentication",
+                        "Description": "MemoryDB User "
+                        + userName
+                        + " for MemoryDB Cluster "
+                        + memDbName
+                        + " does not currently require a password when authenticating to MemoryDB. Refer to the remediation instructions to remediate this behavior",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "The user information for ACLs users is a user name, and optionally a password and an access string. The access string provides the permission level on keys and commands. The name is unique to the user and is what is passed to the engine. When creating a user, you can set up to two passwords. When you modify a password, any existing connections to clusters are maintained. To configure this see the Authenticating users with Access Control Lists (ACLs) section in the Amazon MemoryDB Developer Guide for more information.",
+                                "Url": "https://docs.aws.amazon.com/memorydb/latest/devguide/clusters.acls.html#rbac-using"
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsMemoryDBCluster",
+                                "Id": memDbArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "Other": {
+                                        "Name": memDbName,
+                                        "Status": memDbStatus,
+                                        "NodeType": memDbNodeType,
+                                        "EngineVersion": memDbEngineVersion,
+                                        "ParameterGroupName": memDbPgName,
+                                        "SubnetGroupName": memDbSnetGrpName,
+                                        "ACLName": aclName,
+                                        "UserName": userName
+                                    }
+                                }
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "FAILED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-1",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-2",
+                                "NIST SP 800-53 IA-1",
+                                "NIST SP 800-53 IA-2",
+                                "NIST SP 800-53 IA-3",
+                                "NIST SP 800-53 IA-4",
+                                "NIST SP 800-53 IA-5",
+                                "NIST SP 800-53 IA-6",
+                                "NIST SP 800-53 IA-7",
+                                "NIST SP 800-53 IA-8",
+                                "NIST SP 800-53 IA-9",
+                                "NIST SP 800-53 IA-10",
+                                "NIST SP 800-53 IA-11",
+                                "AICPA TSC CC6.1",
+                                "AICPA TSC CC6.2",
+                                "ISO 27001:2013 A.9.2.1",
+                                "ISO 27001:2013 A.9.2.2",
+                                "ISO 27001:2013 A.9.2.3",
+                                "ISO 27001:2013 A.9.2.4",
+                                "ISO 27001:2013 A.9.2.6",
+                                "ISO 27001:2013 A.9.3.1",
+                                "ISO 27001:2013 A.9.4.2",
+                                "ISO 27001:2013 A.9.4.3",
+                            ]
+                        },
+                        "Workflow": {"Status": "NEW"},
+                        "RecordState": "ACTIVE"
+                    }
+                    yield finding
+                else:
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": memDbArn + "-" + userArn + "/memorydb-user-password-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": memDbArn + "-" + userArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": [ "Software and Configuration Checks/AWS Security Best Practices" ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "INFORMATIONAL"},
+                        "Confidence": 99,
+                        "Title": "[MemoryDB.6] MemoryDB Cluster Users should require additional password authentication",
+                        "Description": "MemoryDB User "
+                        + userName
+                        + " for MemoryDB Cluster "
+                        + memDbName
+                        + " does not currently require a password when authenticating to MemoryDB. Refer to the remediation instructions to remediate this behavior",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "The user information for ACLs users is a user name, and optionally a password and an access string. The access string provides the permission level on keys and commands. The name is unique to the user and is what is passed to the engine. When creating a user, you can set up to two passwords. When you modify a password, any existing connections to clusters are maintained. To configure this see the Authenticating users with Access Control Lists (ACLs) section in the Amazon MemoryDB Developer Guide for more information.",
+                                "Url": "https://docs.aws.amazon.com/memorydb/latest/devguide/clusters.acls.html#rbac-using"
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsMemoryDBCluster",
+                                "Id": memDbArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "Other": {
+                                        "Name": memDbName,
+                                        "Status": memDbStatus,
+                                        "NodeType": memDbNodeType,
+                                        "EngineVersion": memDbEngineVersion,
+                                        "ParameterGroupName": memDbPgName,
+                                        "SubnetGroupName": memDbSnetGrpName,
+                                        "ACLName": aclName,
+                                        "UserName": userName
+                                    }
+                                }
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "PASSED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-1",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-2",
+                                "NIST SP 800-53 IA-1",
+                                "NIST SP 800-53 IA-2",
+                                "NIST SP 800-53 IA-3",
+                                "NIST SP 800-53 IA-4",
+                                "NIST SP 800-53 IA-5",
+                                "NIST SP 800-53 IA-6",
+                                "NIST SP 800-53 IA-7",
+                                "NIST SP 800-53 IA-8",
+                                "NIST SP 800-53 IA-9",
+                                "NIST SP 800-53 IA-10",
+                                "NIST SP 800-53 IA-11",
+                                "AICPA TSC CC6.1",
+                                "AICPA TSC CC6.2",
+                                "ISO 27001:2013 A.9.2.1",
+                                "ISO 27001:2013 A.9.2.2",
+                                "ISO 27001:2013 A.9.2.3",
+                                "ISO 27001:2013 A.9.2.4",
+                                "ISO 27001:2013 A.9.2.6",
+                                "ISO 27001:2013 A.9.3.1",
+                                "ISO 27001:2013 A.9.4.2",
+                                "ISO 27001:2013 A.9.4.3",
+                            ]
+                        },
+                        "Workflow": {"Status": "RESOLVED"},
+                        "RecordState": "ARCHIVED"
+                    }
+                    yield finding

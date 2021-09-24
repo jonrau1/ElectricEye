@@ -278,7 +278,7 @@ def compromise_appstream_user_check(
                         "Id": userArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"userName": userName}},
+                        "Details": {"Other": {"UserName": userName}},
                     }
                 ],
                 "Compliance": {
@@ -297,7 +297,8 @@ def compromise_appstream_user_check(
                         "NIST SP 800-53 PM-16",
                         "NIST SP 800-53 RA-3",
                         "NIST SP 800-53 SI-4",
-                        "NIST SP 800-53 SI-5" "AICPA TSC CC3.2",
+                        "NIST SP 800-53 SI-5",
+                        "AICPA TSC CC3.2",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 Clause 6.1.2",
                         "ISO 27001:2013 A.12.4.1",
@@ -340,7 +341,7 @@ def compromise_appstream_user_check(
                         "Id": userArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"userName": userName}},
+                        "Details": {"Other": {"UserName": userName}},
                     }
                 ],
                 "Compliance": {
@@ -359,7 +360,8 @@ def compromise_appstream_user_check(
                         "NIST SP 800-53 PM-16",
                         "NIST SP 800-53 RA-3",
                         "NIST SP 800-53 SI-4",
-                        "NIST SP 800-53 SI-5" "AICPA TSC CC3.2",
+                        "NIST SP 800-53 SI-5",
+                        "AICPA TSC CC3.2",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 Clause 6.1.2",
                         "ISO 27001:2013 A.12.4.1",
@@ -416,7 +418,7 @@ def userpool_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
                         "Id": userArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"userName": userName}},
+                        "Details": {"Other": {"UserName": userName}},
                     }
                 ],
                 "Compliance": {
@@ -475,7 +477,7 @@ def userpool_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
                         "Id": userArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"userName": userName}},
+                        "Details": {"Other": {"UserName": userName}},
                     }
                 ],
                 "Compliance": {
