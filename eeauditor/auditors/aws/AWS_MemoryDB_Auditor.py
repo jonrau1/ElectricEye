@@ -46,43 +46,58 @@ def memorydb_cluster_tls_encryption_check(cache: dict, awsAccountId: str, awsReg
     """[MemoryDB.1] MemoryDB Clusters should configured to use encryption in transit"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for c in describe_clusters(cache=cache)["Clusters"]:
-        print(c)
-    
-    '''
-    for clstr in hsm_clusters["Clusters"]:
-        if connectEnv != "CONNECT_SSM":
+        # Gather basic information
+        memDbArn = str(c["ARN"])
+        memDbName = str(c["Name"])
+        memDbStatus = str(c["Status"])
+        memDbNodeType = str(c["NodeType"])
+        memDbEngineVersion = str(c["EngineVersion"])
+        memDbPgName = str(c["ParameterGroupName"])
+        memDbSnetGrpName = str(c["SubnetGroupName"])
+
+        # This is a failing check
+        if str(c["TLSEnabled"]) != "true":
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": c9Arn + "/memorydb-cluster-tls-check",
+                "Id": memDbArn + "/memorydb-cluster-tls-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": c9Arn,
+                "GeneratorId": memDbArn,
                 "AwsAccountId": awsAccountId,
-                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure",
+                ],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "MEDIUM"},
+                "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
-                "Title": "[Cloud9.1] Cloud9 Environments should be accessed using Session Manager",
-                "Description": "Cloud9 Environments "
-                + c9Name
-                + " is not using Session Manager Access. Refer to the remediation instructions to remediate this behavior",
+                "Title": "[MemoryDB.1] MemoryDB Clusters should configured to use encryption in transit",
+                "Description": "MemoryDB Cluster "
+                + memDbName
+                + " is not configured to use Encryption in Transit with TLS. Refer to the remediation instructions to remediate this behavior",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "A no-ingress EC2 instance that's created for an EC2 environment enables AWS Cloud9 to connect to its Amazon EC2 instance without the need to open any inbound ports on that instance. To configure this see the Accessing no-ingress EC2 instances with AWS Systems Manager in the AWS Cloud 9 User Guide for more information.",
-                        "Url": "https://docs.aws.amazon.com/cloud9/latest/user-guide/ec2-ssm.html"
+                        "Text": "To help keep your data secure, MemoryDB for Redis and Amazon EC2 provide mechanisms to guard against unauthorized access of your data on the server. By providing in-transit encryption capability, MemoryDB gives you a tool you can use to help protect your data when it is moving from one location to another. To configure this see the In-transit encryption (TLS) in MemoryDB section in the Amazon MemoryDB Developer Guide for more information.",
+                        "Url": "https://docs.aws.amazon.com/memorydb/latest/devguide/in-transit-encryption.html"
                     }
                 },
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "AwsCloud9Environment",
-                        "Id": c9Arn,
+                        "Type": "AwsMemoryDBCluster",
+                        "Id": memDbArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "Other": {
-                                "Cloud9Name": c9Name
+                                "Name": memDbName,
+                                "Status": memDbStatus,
+                                "NodeType": memDbNodeType,
+                                "EngineVersion": memDbEngineVersion,
+                                "ParameterGroupName": memDbPgName,
+                                "SubnetGroupName": memDbSnetGrpName,
+                                "TLSEnabled": str(c["TLSEnabled"])
                             }
                         }
                     }
@@ -90,19 +105,18 @@ def memorydb_cluster_tls_encryption_check(cache: dict, awsAccountId: str, awsReg
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.AC-3",
-                        "NIST SP 800-53 AC-1",
-                        "NIST SP 800-53 AC-17",
-                        "NIST SP 800-53 AC-19",
-                        "NIST SP 800-53 AC-20",
-                        "NIST SP 800-53 SC-15",
-                        "AICPA TSC CC6.6",
-                        "ISO 27001:2013 A.6.2.1",
-                        "ISO 27001:2013 A.6.2.2",
-                        "ISO 27001:2013 A.11.2.6",
+                        "NIST CSF PR.DS-2",
+                        "NIST SP 800-53 SC-8",
+                        "NIST SP 800-53 SC-11",
+                        "NIST SP 800-53 SC-12",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
                         "ISO 27001:2013 A.13.1.1",
                         "ISO 27001:2013 A.13.2.1",
-                    ],
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3",
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
                 "RecordState": "ACTIVE"
@@ -111,59 +125,68 @@ def memorydb_cluster_tls_encryption_check(cache: dict, awsAccountId: str, awsReg
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": c9Arn + "/cloud9-ssm-access-check",
+                "Id": memDbArn + "/memorydb-cluster-tls-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": c9Arn,
+                "GeneratorId": memDbArn,
                 "AwsAccountId": awsAccountId,
-                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure",
+                ],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Cloud9.1] Cloud9 Environments should be accessed using Session Manager",
-                "Description": "Cloud9 Environments "
-                + c9Name
-                + " is using Session Manager Access.",
+                "Title": "[MemoryDB.1] MemoryDB Clusters should configured to use encryption in transit",
+                "Description": "MemoryDB Cluster "
+                + memDbName
+                + " is configured to use Encryption in Transit with TLS.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "A no-ingress EC2 instance that's created for an EC2 environment enables AWS Cloud9 to connect to its Amazon EC2 instance without the need to open any inbound ports on that instance. To configure this see the Accessing no-ingress EC2 instances with AWS Systems Manager in the AWS Cloud 9 User Guide for more information.",
-                        "Url": "https://docs.aws.amazon.com/cloud9/latest/user-guide/ec2-ssm.html"
+                        "Text": "To help keep your data secure, MemoryDB for Redis and Amazon EC2 provide mechanisms to guard against unauthorized access of your data on the server. By providing in-transit encryption capability, MemoryDB gives you a tool you can use to help protect your data when it is moving from one location to another. To configure this see the In-transit encryption (TLS) in MemoryDB section in the Amazon MemoryDB Developer Guide for more information.",
+                        "Url": "https://docs.aws.amazon.com/memorydb/latest/devguide/in-transit-encryption.html"
                     }
                 },
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "AwsCloud9Environment",
-                        "Id": c9Arn,
+                        "Type": "AwsMemoryDBCluster",
+                        "Id": memDbArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
                             "Other": {
-                                "Cloud9Name": c9Name
+                                "Name": memDbName,
+                                "Status": memDbStatus,
+                                "NodeType": memDbNodeType,
+                                "EngineVersion": memDbEngineVersion,
+                                "ParameterGroupName": memDbPgName,
+                                "SubnetGroupName": memDbSnetGrpName,
+                                "TLSEnabled": str(c["TLSEnabled"])
                             }
                         }
                     }
                 ],
                 "Compliance": {
-                    "Status": "PASSED",
+                    "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.AC-3",
-                        "NIST SP 800-53 AC-1",
-                        "NIST SP 800-53 AC-17",
-                        "NIST SP 800-53 AC-19",
-                        "NIST SP 800-53 AC-20",
-                        "NIST SP 800-53 SC-15",
-                        "AICPA TSC CC6.6",
-                        "ISO 27001:2013 A.6.2.1",
-                        "ISO 27001:2013 A.6.2.2",
-                        "ISO 27001:2013 A.11.2.6",
+                        "NIST CSF PR.DS-2",
+                        "NIST SP 800-53 SC-8",
+                        "NIST SP 800-53 SC-11",
+                        "NIST SP 800-53 SC-12",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
                         "ISO 27001:2013 A.13.1.1",
                         "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3",
                     ]
                 },
-                "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED"
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
             }
             yield finding
-    '''
+
+    print(finding)
