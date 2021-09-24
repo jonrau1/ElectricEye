@@ -1,17 +1,23 @@
-# This file is part of ElectricEye.
+'''
+This file is part of ElectricEye.
 
-# ElectricEye is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
 
-# ElectricEye is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+http://www.apache.org/licenses/LICENSE-2.0
 
-# You should have received a copy of the GNU General Public License along with ElectricEye.
-# If not, see https://github.com/jonrau1/ElectricEye/blob/master/LICENSE.
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+'''
 
 import boto3
 import datetime
@@ -272,7 +278,7 @@ def compromise_appstream_user_check(
                         "Id": userArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"userName": userName}},
+                        "Details": {"Other": {"UserName": userName}},
                     }
                 ],
                 "Compliance": {
@@ -291,7 +297,8 @@ def compromise_appstream_user_check(
                         "NIST SP 800-53 PM-16",
                         "NIST SP 800-53 RA-3",
                         "NIST SP 800-53 SI-4",
-                        "NIST SP 800-53 SI-5" "AICPA TSC CC3.2",
+                        "NIST SP 800-53 SI-5",
+                        "AICPA TSC CC3.2",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 Clause 6.1.2",
                         "ISO 27001:2013 A.12.4.1",
@@ -334,7 +341,7 @@ def compromise_appstream_user_check(
                         "Id": userArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"userName": userName}},
+                        "Details": {"Other": {"UserName": userName}},
                     }
                 ],
                 "Compliance": {
@@ -353,7 +360,8 @@ def compromise_appstream_user_check(
                         "NIST SP 800-53 PM-16",
                         "NIST SP 800-53 RA-3",
                         "NIST SP 800-53 SI-4",
-                        "NIST SP 800-53 SI-5" "AICPA TSC CC3.2",
+                        "NIST SP 800-53 SI-5",
+                        "AICPA TSC CC3.2",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 Clause 6.1.2",
                         "ISO 27001:2013 A.12.4.1",
@@ -410,7 +418,7 @@ def userpool_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
                         "Id": userArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"userName": userName}},
+                        "Details": {"Other": {"UserName": userName}},
                     }
                 ],
                 "Compliance": {
@@ -469,7 +477,7 @@ def userpool_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
                         "Id": userArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"userName": userName}},
+                        "Details": {"Other": {"UserName": userName}},
                     }
                 ],
                 "Compliance": {

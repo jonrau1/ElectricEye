@@ -1,3 +1,22 @@
+#This file is part of ElectricEye.
+
+#Licensed to the Apache Software Foundation (ASF) under one
+#or more contributor license agreements.  See the NOTICE file
+#distributed with this work for additional information
+#regarding copyright ownership.  The ASF licenses this file
+#to you under the Apache License, Version 2.0 (the
+#"License"); you may not use this file except in compliance
+#with the License.  You may obtain a copy of the License at
+
+#http://www.apache.org/licenses/LICENSE-2.0
+
+#Unless required by applicable law or agreed to in writing,
+#software distributed under the License is distributed on an
+#"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+#KIND, either express or implied.  See the License for the
+#specific language governing permissions and limitations
+#under the License.
+
 # latest hash as of 2 SEPTEMBER 2021
 FROM alpine@sha256:e15947432b813e8ffa90165da919953e2ce850bef511a0ad1287d7cb86de84b5
 
@@ -19,7 +38,7 @@ ENV POSTGRES_PASSWORD_SSM_PARAM_NAME=POSTGRES_PASSWORD_SSM_PARAM_NAME
 
 LABEL maintainer="https://github.com/jonrau1" \
     version="3.0" \
-    license="GPL-3.0" \
+    license="Apache-2.0" \
     description="Continuously monitor your AWS services for configurations that can lead to degradation of confidentiality, integrity or availability. All results will be sent to Security Hub for further aggregation and analysis."
 
 COPY requirements.txt /tmp/requirements.txt

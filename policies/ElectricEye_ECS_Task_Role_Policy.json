@@ -58,6 +58,7 @@
                 "managedblockchain:List*",
                 "mq:DescribeBroker",
                 "mq:ListBrokers",
+                "memorydb:Describe",
                 "license-manager:GetLicenseConfiguration",
                 "license-manager:ListLicenseConfigurations",
                 "ecr:DescribeImages",
