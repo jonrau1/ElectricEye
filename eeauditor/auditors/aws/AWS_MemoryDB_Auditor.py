@@ -55,6 +55,8 @@ def memorydb_cluster_tls_encryption_check(cache: dict, awsAccountId: str, awsReg
         memDbPgName = str(c["ParameterGroupName"])
         memDbSnetGrpName = str(c["SubnetGroupName"])
 
+        print(str(c["TLSEnabled"]))
+
         # This is a failing check
         if str(c["TLSEnabled"]) != "True":
             finding = {
