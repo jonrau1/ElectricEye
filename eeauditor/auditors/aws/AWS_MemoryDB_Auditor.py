@@ -55,8 +55,6 @@ def memorydb_cluster_tls_encryption_check(cache: dict, awsAccountId: str, awsReg
         memDbPgName = str(c["ParameterGroupName"])
         memDbSnetGrpName = str(c["SubnetGroupName"])
 
-        print(str(c["TLSEnabled"]))
-
         # This is a failing check
         if str(c["TLSEnabled"]) != "True":
             finding = {
@@ -367,7 +365,7 @@ def memorydb_auto_minor_version_update_check(cache: dict, awsAccountId: str, aws
                 + " is not configured to conduct automatic minor version updates. Refer to the remediation instructions to remediate this behavior",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "MemoryDB by default automatically manages the patch version of your running clusters through service updates. You can additionally opt out from auto minor version upgrade if you set the AutoMinorVersionUpgrade property of your clusters to false. However, you can not opt out from auto patch version upgrade.. To configure this see the Engine versions and upgrading section in the Amazon MemoryDB Developer Guide for more information.",
+                        "Text": "MemoryDB by default automatically manages the patch version of your running clusters through service updates. You can additionally opt out from auto minor version upgrade if you set the AutoMinorVersionUpgrade property of your clusters to false. However, you can not opt out from auto patch version upgrade. To configure this see the Engine versions and upgrading section in the Amazon MemoryDB Developer Guide for more information.",
                         "Url": "https://docs.aws.amazon.com/memorydb/latest/devguide/engine-versions.html"
                     }
                 },
@@ -428,8 +426,150 @@ def memorydb_auto_minor_version_update_check(cache: dict, awsAccountId: str, aws
                 + " is configured to conduct automatic minor version updates.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "MemoryDB by default automatically manages the patch version of your running clusters through service updates. You can additionally opt out from auto minor version upgrade if you set the AutoMinorVersionUpgrade property of your clusters to false. However, you can not opt out from auto patch version upgrade.. To configure this see the Engine versions and upgrading section in the Amazon MemoryDB Developer Guide for more information.",
+                        "Text": "MemoryDB by default automatically manages the patch version of your running clusters through service updates. You can additionally opt out from auto minor version upgrade if you set the AutoMinorVersionUpgrade property of your clusters to false. However, you can not opt out from auto patch version upgrade. To configure this see the Engine versions and upgrading section in the Amazon MemoryDB Developer Guide for more information.",
                         "Url": "https://docs.aws.amazon.com/memorydb/latest/devguide/engine-versions.html"
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsMemoryDBCluster",
+                        "Id": memDbArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "Name": memDbName,
+                                "Status": memDbStatus,
+                                "NodeType": memDbNodeType,
+                                "EngineVersion": memDbEngineVersion,
+                                "ParameterGroupName": memDbPgName,
+                                "SubnetGroupName": memDbSnetGrpName
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.MA-1",
+                        "NIST SP 800-53 MA-2",
+                        "NIST SP 800-53 MA-3",
+                        "NIST SP 800-53 MA-5",
+                        "NIST SP 800-53 MA-6",
+                        "AICPA TSC CC8.1",
+                        "ISO 27001:2013 A.11.1.2",
+                        "ISO 27001:2013 A.11.2.4",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.6",
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("memorydb")
+def memorydb_sns_notification_tracking_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """MemoryDB Clusters should be actively monitored with SNS"""
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for c in describe_clusters(cache=cache)["Clusters"]:
+        # Gather basic information
+        memDbArn = str(c["ARN"])
+        memDbName = str(c["Name"])
+        memDbStatus = str(c["Status"])
+        memDbNodeType = str(c["NodeType"])
+        memDbEngineVersion = str(c["EngineVersion"])
+        memDbPgName = str(c["ParameterGroupName"])
+        memDbSnetGrpName = str(c["SubnetGroupName"])
+
+        try:
+            snsMonitoring = str(c["SnsTopicArn"])
+        except Exception:
+            snsMonitoring = "False"
+        # This is a failing check
+        if snsMonitoring == "False":
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": memDbArn + "/memorydb-cluster-sns-monitoring-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": memDbArn,
+                "AwsAccountId": awsAccountId,
+                "Types": [ "Software and Configuration Checks/AWS Security Best Practices" ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "MemoryDB Clusters should be actively monitored with SNS",
+                "Description": "MemoryDB Cluster "
+                + memDbName
+                + " is not configured to be monitored for Event Notifications with Amazon SNS. Refer to the remediation instructions to remediate this behavior",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "MemoryDB can publish messages using Amazon Simple Notification Service (SNS) when significant events happen on a cluster. This feature can be used to refresh the server-lists on client machines connected to individual node endpoints of a cluster. To configure this see the Event Notifications and Amazon SNS section in the Amazon MemoryDB Developer Guide for more information.",
+                        "Url": "https://docs.aws.amazon.com/memorydb/latest/devguide/memorydbsns.html"
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsMemoryDBCluster",
+                        "Id": memDbArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "Name": memDbName,
+                                "Status": memDbStatus,
+                                "NodeType": memDbNodeType,
+                                "EngineVersion": memDbEngineVersion,
+                                "ParameterGroupName": memDbPgName,
+                                "SubnetGroupName": memDbSnetGrpName
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.MA-1",
+                        "NIST SP 800-53 MA-2",
+                        "NIST SP 800-53 MA-3",
+                        "NIST SP 800-53 MA-5",
+                        "NIST SP 800-53 MA-6",
+                        "AICPA TSC CC8.1",
+                        "ISO 27001:2013 A.11.1.2",
+                        "ISO 27001:2013 A.11.2.4",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.6",
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": memDbArn + "/memorydb-cluster-sns-monitoring-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": memDbArn,
+                "AwsAccountId": awsAccountId,
+                "Types": [ "Software and Configuration Checks/AWS Security Best Practices" ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "MemoryDB Clusters should be actively monitored with SNS",
+                "Description": "MemoryDB Cluster "
+                + memDbName
+                + " is configured to be monitored for Event Notifications with Amazon SNS. Refer to the remediation instructions to remediate this behavior",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "MemoryDB can publish messages using Amazon Simple Notification Service (SNS) when significant events happen on a cluster. This feature can be used to refresh the server-lists on client machines connected to individual node endpoints of a cluster. To configure this see the Event Notifications and Amazon SNS section in the Amazon MemoryDB Developer Guide for more information.",
+                        "Url": "https://docs.aws.amazon.com/memorydb/latest/devguide/memorydbsns.html"
                     }
                 },
                 "ProductFields": {"Product Name": "ElectricEye"},
