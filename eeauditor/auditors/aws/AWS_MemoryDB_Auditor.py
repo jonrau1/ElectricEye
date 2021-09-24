@@ -621,9 +621,10 @@ def memorydb_user_admin_check(cache: dict, awsAccountId: str, awsRegion: str, aw
         aclName = str(c['ACLName'])
         for acl in memorydb.describe_acls(ACLName=aclName,MaxResults=50)['ACLs']:
             for user in acl['UserNames']:
-                userArn = str(user["ARN"])
-                userName = str(user["Name"])
-                userAccessString = memorydb.describe_users(UserName=user)['Users'][0]['AccessString']
+                userData = memorydb.describe_users(UserName=user)['Users'][0]
+                userAccessString = str(userData["AccessString"])
+                userArn = str(userData["ARN"])
+                userName = str(userData["Name"])
 
                 # This is a failing check - "on ~* &* +@all" means the user can have access to everything
                 if userAccessString == "on ~* &* +@all":
@@ -802,9 +803,10 @@ def memorydb_user_password_check(cache: dict, awsAccountId: str, awsRegion: str,
         aclName = str(c['ACLName'])
         for acl in memorydb.describe_acls(ACLName=aclName,MaxResults=50)['ACLs']:
             for user in acl['UserNames']:
-                userArn = str(user["ARN"])
-                userName = str(user["Name"])
-                userPwPolicy = memorydb.describe_users(UserName=user)['Users'][0]['Authentication']['Type']
+                userData = memorydb.describe_users(UserName=user)['Users'][0]
+                userPwPolicy = str(userData["Authentication"]["Type"])
+                userArn = str(userData["ARN"])
+                userName = str(userData["Name"])
 
                 # This is a failing check
                 if userPwPolicy == "no-password":
