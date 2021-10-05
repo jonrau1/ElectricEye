@@ -1,4 +1,5 @@
 #This file is part of ElectricEye.
+#SPDX-License-Identifier: Apache-2.0
 
 #Licensed to the Apache Software Foundation (ASF) under one
 #or more contributor license agreements.  See the NOTICE file
@@ -19,6 +20,8 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: >-
   Deploys the ElectricEye-Reports Add-on Solution with all necessary services including CodeBuild and EventBridge.
+Metadata:
+  License: Apache-2.0
 Parameters:
   ReportRefreshRate:
     Type: String
