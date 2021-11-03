@@ -183,7 +183,7 @@ def sqs_old_message_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
 
 @registry.register_check("sqs")
 def sqs_queue_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[SQS.2] SQS queues should use Server Side encryption"""
+    """[SQS.2] SQS queues should use server side encryption"""
     response = list_queues(cache)
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     if 'QueueUrls' in response:
@@ -208,7 +208,7 @@ def sqs_queue_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, a
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
-                    "Title": "[SQS.2] SQS queues should use Server Side encryption",
+                    "Title": "[SQS.2] SQS queues should use server side encryption",
                     "Description": f"SQS queue {queueName} has Server Side encryption enabled.",
                     "Remediation": {
                         "Recommendation": {

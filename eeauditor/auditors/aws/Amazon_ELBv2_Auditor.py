@@ -537,6 +537,13 @@ def elbv2_tls12_listener_policy_check(cache: dict, awsAccountId: str, awsRegion:
                         or "ELBSecurityPolicy-TLS-1-2-Ext-2018-06"
                         or "ELBSecurityPolicy-FS-1-2-2019-08"
                         or "ELBSecurityPolicy-FS-1-2-Res-2019-08"
+                        # New TLS 1.3 Policies - 3 NOV 2021
+                        or "ELBSecurityPolicy-FS-1-2-Res-2020-10"
+                        or "ELBSecurityPolicy-TLS13-1-3-2021-06"
+                        or "ELBSecurityPolicy-TLS13-1-2-Ext2-2021-06"
+                        or "ELBSecurityPolicy-TLS13-1-2-Ext1-2021-06"
+                        or "ELBSecurityPolicy-TLS13-1-2-Res-2021-06"
+                        or "ELBSecurityPolicy-TLS13-1-2-2021-06"  
                     ):
                         finding = {
                             "SchemaVersion": "2018-10-08",
