@@ -28,20 +28,8 @@ class JsonProvider(object):
     __provider__ = "json"
 
     def write_findings(self, findings: list, output_file: str, **kwargs):
-        first = True
+        print(f"Writing {len(findings)} findings to JSON file")
         jsonfile = output_file + ".json"
-        json_out_location = ""
-        with open(jsonfile, "w") as json_out:
-            print(f"Writing {len(findings)} findings to {jsonfile}")
-            print('{"Findings":[', file=json_out)
-            json_out_location = os.path.abspath(json_out.name)
-            for finding in findings:
-                # print a comma separation between findings except before first finding
-                if first:
-                    first = False
-                else:
-                    print(",", file=json_out)
-                json.dump(finding, json_out, indent=2)
-            print("]}", file=json_out)
-        json_out.close()
+        with open(jsonfile, "w") as jsonfile:
+            json.dump(findings, jsonfile, indent=4, default=str)
         return True
