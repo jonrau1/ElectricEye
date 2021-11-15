@@ -43,11 +43,11 @@ Continuously monitor your AWS services for configurations that can lead to degra
 
 - **320+ security & AWS best practice detections** including services not covered by Security Hub/Config (MemoryDB, Cognito, EKS, ECR, DocDB, Amazon Managed Blockchain, etc.), all findings are **aligned to NIST CSF, NIST 800-53, AICPA TSC and ISO 27001:2013**.
 
-- Supports every **AWS Region and Partition** (Commercial, AWS GovCloud and AWS China Region).
+- Supports every **AWS Region and Partition** (Commercial, AWS GovCloud, AWS China, AWS Secret (`ISO B`) and AWS Top Secret (`ISO`)).
 
 - Built with **full AWS Security Hub support** in mind, can optionally output to JSON or CSV. **Can run as a CLI tool, in Fargate, as a standalone Container, or anywhere else** you can run Python (K8s, Batch, CodeBuild, EC2, etc.).
 
-- **Multiple add-ons enable automated remediation, ChatOps, and other integrations** with third-party tools such as DisruptOps (a FireMon company), PagerDuty, Slack, ServiceNow Incident Management, Atlassian Jira, Azure DevOps Boards, Shodan.io and Microsoft Teams.
+- **Multiple add-ons enable automated remediation, ChatOps, and other integrations** with third-party tools such as [DisruptOps (a FireMon company)](https://www.firemon.com/products/disruptops/), [PagerDuty](https://www.pagerduty.com/), [Slack](https://slack.com/), [ServiceNow Incident Management](https://docs.servicenow.com/bundle/rome-it-service-management/page/product/incident-management/concept/c_IncidentManagement.html), [Atlassian Jira](https://www.atlassian.com/software/jira), [Azure DevOps Boards](https://azure.microsoft.com/en-us/services/devops/boards/), [Shodan](https://www.shodan.io/) and [Microsoft Teams](https://www.microsoft.com/en-us/microsoft-teams/group-chat-software).
 
 ## Description
 
@@ -55,7 +55,7 @@ ElectricEye is a set of Python scripts (affectionately called **Auditors**) that
 
 ElectricEye was designed to run on AWS Fargate, which is a serverless container orchestration service, however you can also run it via a CLI anywhere you have the required dependencies installed and IAM Permissions. On a schedule, Fargate will download all of the auditor scripts from a S3 bucket, run the checks and send results to Security Hub. All infrastructure will be deployed via CloudFormation or Terraform to help you apply this solution to many accounts and/or regions. All findings (passed or failed) will contain AWS documentation references in the `Remediation.Recommendation` section of the ASFF (and the **Remediation** section of the Security Hub UI) to further educate yourself and others on.
 
-ElectricEye comes with several add-on modules to extend the core model which provides dozens of detection-based controls. ElectricEye-Response provides a multi-account response and remediation platform (also known as SOAR), ElectricEye-ChatOps integrates with Slack/Pagerduty/Microsoft Teams, and ElectricEye-Reports integrates with QuickSight, and the Config-Deletion-Pruner will auto-archive findings as Config-supported resources are deleted. All add-ons are supported by both CloudFormation and Terraform and can also be used independently of the core module itself.
+ElectricEye comes with several add-on modules to extend the core model which provides dozens of detection-based controls. ElectricEye-Response provides a multi-account response and remediation platform (also known as SOAR), ElectricEye-ChatOps integrates with Slack/Pagerduty/Microsoft Teams, and ElectricEye-Reports integrates with QuickSight. All add-ons are supported by both CloudFormation and Terraform and can also be used independently of the core module itself.
 
 Personas who can make use of this tool are DevOps/DevSecOps engineers, SecOps analysts, Cloud Center-of-Excellence personnel, Site Reliability Engineers (SREs), Internal Audit and/or Compliance Analysts.
 
@@ -134,13 +134,15 @@ python3 eeauditor/controller.py --list-checks
 
 While running on AWS Fargate and creating the infrastructure with CloudFormation or Terraform gives you the benefits of encapsulating environment variables you need, you may need to do configurations of your own different outputs. Using these different outputs like PostgreSQL, JSON, or CSV is great for any downstream use cases such as SIEM-ingestion, external tool reporting, business intelligence, machine learning, or loading a graph. Outputs are subject to change by release and will be updated here.
 
-To list all currently available outputs: `python3 eeauditor/controller.py --list-options`, it will return a list of valid output locations such as `['postgres', 'sechub', 'json', 'csv', 'dops']`, by default findings go to AWS Security Hub (`sechub`).
+To list all currently available outputs: `python3 eeauditor/controller.py --list-options`, it will return a list of valid output locations such as `['postgres', 'sechub', 'json', 'csv', 'json_normalized', 'dops']`, by default findings go to AWS Security Hub (`sechub`).
 
 Some considerations...
 
-- To output to JSON, add the following arguments to your call to `controller.py`: `-o json --output-file electriceye-findings.json`
+- To output to JSON, add the following arguments to your call to `controller.py`: `-o json --output-file electriceye-findings` (**Note:** `.json` will be automatically appended)
 
-- To output to CSV, add the following arguments to your call to `controller.py`: `-o csv --output-file electriceye-findings.csv`
+  - Normalized / flatteneded JSON can output instead using `-o json_normalized`. This is better suited for sending findings to BI tools as the structure eliminates all nested lists and dicts.
+
+- To output to CSV, add the following arguments to your call to `controller.py`: `-o csv --output-file electriceye-findings` (**Note:** `.csv` will be automatically appended)
 
 - To output to a PostgreSQL database, add the following arguement to your call to `controller.py`: `-o postgres`. You will also need to ensure that your IP Address (or AWS Security Group ID, if using Amazon RDS/Aurora) is allowed to communicate with your database. Plaintext passwords are frowned upon, so create an AWS Systems Manager Parameter Store secure parameter with the below command.
 
