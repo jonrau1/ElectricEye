@@ -41,11 +41,6 @@ class JsonProvider(object):
                 resourceDetails = str(fi["Resources"][0]["Details"])
             except KeyError:
                 resourceDetails = "NoAdditionalDetails"
-            # TODO: Find remaining Auditors without related requirements added...
-            try:
-                relatedRequirements = fi["Compliance"]["RelatedRequirements"]
-            except KeyError:
-                relatedRequirements = []
 
             try:
                 # create the new dict which will receive parsed values
@@ -72,7 +67,7 @@ class JsonProvider(object):
                     "ResourceRegion": str(fi["Resources"][0]["Region"]),
                     "ResourceDetails": resourceDetails,
                     "ComplianceStatus": str(fi["Compliance"]["Status"]),
-                    "ComplianceRelatedRequirements": relatedRequirements,
+                    "ComplianceRelatedRequirements": fi["Compliance"]["RelatedRequirements"],
                     "WorkflowStatus": str(fi["Workflow"]["Status"]),
                     "RecordState": str(fi["RecordState"])
                 }

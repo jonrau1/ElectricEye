@@ -73,6 +73,7 @@ def high_critical_findings(cache: dict, awsAccountId: str, awsRegion: str, awsPa
             "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
             "CreatedAt": iso8601Time,
             "UpdatedAt": iso8601Time,
+            "FirstObservedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Title": "[SecurityHub.1] Security Hub should not have active high or critical severity findings from AWS services",
             "Description": "High or critical findings were not found in the Security Hub hub for AWS account "
@@ -114,6 +115,7 @@ def high_critical_findings(cache: dict, awsAccountId: str, awsRegion: str, awsPa
             "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
             "CreatedAt": iso8601Time,
             "UpdatedAt": iso8601Time,
+            "FirstObservedAt": iso8601Time,
             "Severity": {"Label": "CRITICAL"},
             "Title": "[SecurityHub.1] Security Hub should not have active high or critical severity findings from AWS services",
             "Description": "High or critical findings were found in the Security Hub hub for AWS account "
