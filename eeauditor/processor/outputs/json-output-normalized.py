@@ -37,7 +37,7 @@ class JsonProvider(object):
         for fi in findings:
             # some values may not always be present (Details, etc.) - write in fake values to handle this
             try:
-                resourceDetails = str(fi["Resources"][0]["Details"])
+                resourceDetails = fi["Resources"][0]["Details"]
             except KeyError:
                 resourceDetails = "NoAdditionalDetails"
             # create the new dict which will receive parsed values
@@ -52,7 +52,7 @@ class JsonProvider(object):
                 "CreatedAt": str(fi["CreatedAt"]),
                 "UpdatedAt": str(fi["UpdatedAt"]),
                 "SeverityLabel": str(fi["Severity"]["Label"]),
-                "Confidence": str(fi["Confidence"]),
+                "Confidence": int(fi["Confidence"]),
                 "Title": str(fi["Title"]),
                 "Description": str(fi["Description"]),
                 "RecommendationText": str(fi["Remediation"]["Recommendation"]["Text"]),
@@ -64,7 +64,7 @@ class JsonProvider(object):
                 "ResourceRegion": str(fi["Resources"][0]["Region"]),
                 "ResourceDetails": resourceDetails,
                 "ComplianceStatus": str(fi["Compliance"]["Status"]),
-                "ComplianceRelatedRequirements": str(fi["Compliance"]["RelatedRequirements"]),
+                "ComplianceRelatedRequirements": fi["Compliance"]["RelatedRequirements"],
                 "WorkflowStatus": str(fi["Workflow"]["Status"]),
                 "RecordState": str(fi["RecordState"])
             }
@@ -74,6 +74,6 @@ class JsonProvider(object):
         del findings
 
         with open(jsonfile, "w") as jsonfile:
-            json.dump(newFindings, jsonfile, indent=4, default=str)
+            json.dump(newFindings, jsonfile, indent=4)
 
         return True
