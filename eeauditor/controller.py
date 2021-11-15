@@ -18,8 +18,6 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import getopt
-import os
 import sys
 import boto3
 import click
@@ -33,7 +31,6 @@ def print_checks():
     app.load_plugins()
     app.print_checks_md()
 
-
 def run_auditor(auditor_name=None, check_name=None, delay=0, outputs=None, output_file=""):
     if not outputs:
         outputs = ["sechub"]
@@ -43,25 +40,24 @@ def run_auditor(auditor_name=None, check_name=None, delay=0, outputs=None, outpu
     result = process_findings(findings=findings, outputs=outputs, output_file=output_file)
     print(f"Done.")
 
-
 @click.command()
-@click.option("-p", "--profile-name", default="", help="User profile to use")
+@click.option("-p", "--profile-name", default="", help="User profile to use if set using awscli. Defaults to no specification")
 @click.option(
-    "-a", "--auditor-name", default="", help="Auditor to test defaulting to all auditors"
+    "-a", "--auditor-name", default="", help="Specify which Auditor you want to run by using its name NOT INCLUDING .py. Defaults to ALL Auditors"
 )
-@click.option("-c", "--check-name", default="", help="Check to test defaulting to all checks")
-@click.option("-d", "--delay", default=0, help="Delay between auditors defaulting to 0")
+@click.option("-c", "--check-name", default="", help="Specify which specific Check in a speciifc Auditor you want to run. Defaults to ALL Checks")
+@click.option("-d", "--delay", default=0, help="Time in seconds to sleep between Auditors being ran, defaults to 0")
 @click.option(
     "-o",
     "--outputs",
     multiple=True,
     default=(["sechub"]),
     show_default=True,
-    help="Outputs for findings",
+    help="Where to output findings to, defaults to Security Hub ('sechub')",
 )
-@click.option("--output-file", default="output", show_default=True, help="File to output findings")
-@click.option("--list-options", is_flag=True, help="List output options")
-@click.option("--list-checks", is_flag=True, help="List all checks")
+@click.option("--output-file", default="output", show_default=True, help="Name of the file for output, if using anything other than SecHub or Dops")
+@click.option("--list-options", is_flag=True, help="Lists all valid Output locations")
+@click.option("--list-checks", is_flag=True, help="List all Checks")
 @click.option(
     "--create-insights",
     is_flag=True,
@@ -100,7 +96,6 @@ def main(
         outputs=outputs,
         output_file=output_file,
     )
-
 
 if __name__ == "__main__":
     main(sys.argv[1:])
