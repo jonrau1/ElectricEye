@@ -35,6 +35,7 @@ class JsonProvider(object):
 
         # loop the findings and create a flatter structure - better for indexing without the nested lists
         for fi in findings:
+            findingId = str(fi["Id"])
             # some values may not always be present (Details, etc.) - write in fake values to handle this
             try:
                 resourceDetails = str(fi["Resources"][0]["Details"])
@@ -46,36 +47,39 @@ class JsonProvider(object):
             except KeyError:
                 relatedRequirements = []
 
-            # create the new dict which will receive parsed values
-            fDict = {
-                "SchemaVersion": str(fi["SchemaVersion"]),
-                "Id": str(fi["Id"]),
-                "ProductArn": str(fi["ProductArn"]),
-                "GeneratorId": str(fi["GeneratorId"]),
-                "AwsAccountId": str(fi["AwsAccountId"]),
-                "Types": str(fi["Types"]),
-                "FirstObservedAt": str(fi["FirstObservedAt"]),
-                "CreatedAt": str(fi["CreatedAt"]),
-                "UpdatedAt": str(fi["UpdatedAt"]),
-                "SeverityLabel": str(fi["Severity"]["Label"]),
-                "Confidence": int(fi["Confidence"]),
-                "Title": str(fi["Title"]),
-                "Description": str(fi["Description"]),
-                "RecommendationText": str(fi["Remediation"]["Recommendation"]["Text"]),
-                "RecommendationUrl": str(fi["Remediation"]["Recommendation"]["Url"]),
-                "ProductName": "ElectricEye",
-                "ResourceType": str(fi["Resources"][0]["Type"]),
-                "ResourceId": str(fi["Resources"][0]["Id"]),
-                "ResourcePartition": str(fi["Resources"][0]["Partition"]),
-                "ResourceRegion": str(fi["Resources"][0]["Region"]),
-                "ResourceDetails": resourceDetails,
-                "ComplianceStatus": str(fi["Compliance"]["Status"]),
-                "ComplianceRelatedRequirements": relatedRequirements,
-                "WorkflowStatus": str(fi["Workflow"]["Status"]),
-                "RecordState": str(fi["RecordState"])
-            }
-            # append new dict to list
-            newFindings.append(fDict)
+            try:
+                # create the new dict which will receive parsed values
+                fDict = {
+                    "SchemaVersion": str(fi["SchemaVersion"]),
+                    "Id": findingId,
+                    "ProductArn": str(fi["ProductArn"]),
+                    "GeneratorId": str(fi["GeneratorId"]),
+                    "AwsAccountId": str(fi["AwsAccountId"]),
+                    "Types": str(fi["Types"]),
+                    "FirstObservedAt": str(fi["FirstObservedAt"]),
+                    "CreatedAt": str(fi["CreatedAt"]),
+                    "UpdatedAt": str(fi["UpdatedAt"]),
+                    "SeverityLabel": str(fi["Severity"]["Label"]),
+                    "Confidence": int(fi["Confidence"]),
+                    "Title": str(fi["Title"]),
+                    "Description": str(fi["Description"]),
+                    "RecommendationText": str(fi["Remediation"]["Recommendation"]["Text"]),
+                    "RecommendationUrl": str(fi["Remediation"]["Recommendation"]["Url"]),
+                    "ProductName": "ElectricEye",
+                    "ResourceType": str(fi["Resources"][0]["Type"]),
+                    "ResourceId": str(fi["Resources"][0]["Id"]),
+                    "ResourcePartition": str(fi["Resources"][0]["Partition"]),
+                    "ResourceRegion": str(fi["Resources"][0]["Region"]),
+                    "ResourceDetails": resourceDetails,
+                    "ComplianceStatus": str(fi["Compliance"]["Status"]),
+                    "ComplianceRelatedRequirements": relatedRequirements,
+                    "WorkflowStatus": str(fi["Workflow"]["Status"]),
+                    "RecordState": str(fi["RecordState"])
+                }
+                # append new dict to list
+                newFindings.append(fDict)
+            except KeyError as e:
+                print(f"Issue with Finding ID {findingId} due to missing value {e}")
         # once complete with parsing findings - write to file and purge findings from memory
         del findings
 
