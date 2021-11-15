@@ -49,12 +49,25 @@ class EEAuditor(object):
         # vendor specific credentials dictionary
         sts = boto3.client("sts")
         self.awsAccountId = sts.get_caller_identity()["Account"]
+        # pull Region from STS Meta - we can use this to cheese which partition we are in
         self.awsRegion = os.environ.get("AWS_REGION", sts.meta.region_name)
+        # default to Commercial AWS Partition
         self.awsPartition = "aws"
+        
+        # GovCloud partition override
         if self.awsRegion in ["us-gov-east-1", "us-gov-west-1"]:
             self.awsPartition = "aws-us-gov"
+        # China partition override
         elif self.awsRegion in ["cn-north-1", "cn-northwest-1"]:
             self.awsPartition = "aws-cn"
+        # AWS Secret Region override
+        elif self.awsRegion in ["us-isob-east-1"]:
+            self.awsPartition = "aws-isob"
+        # AWS Top Secret Region override
+        elif self.awsRegion in ["us-iso-east-1"]:
+            self.awsPartition = "aws-iso"
+
+
         # If there is a desire to add support for multiple clouds, this would be
         # a great place to implement it.
         self.source = self.plugin_base.make_plugin_source(
@@ -75,49 +88,46 @@ class EEAuditor(object):
                     print(f"Failed to load plugin {plugin_name} with exception {e}")
 
     def get_regions(self, service):
-        # Handle the weird v2 services names
-        if service == 'kinesisanalyticsv2':
-            service = 'kinesisanalytics'
-        elif service == 'macie2':
-            service = 'macie'
-        elif service == 'elbv2':
-            service = 'elb'
-        elif service == 'wafv2':
-            service = 'waf'
-        else:
-            service = service
-        paginator = ssm.get_paginator("get_parameters_by_path")
-        response_iterator = paginator.paginate(
-            Path=f"/aws/service/global-infrastructure/services/{service}/regions",
-            PaginationConfig={"MaxItems": 1000, "PageSize": 10},
-        )
-        results = accumulate_paged_results(
-            page_iterator=response_iterator, key="Parameters")
+        # create an empty list for Commercial Region lookups
         values = []
-        for parameter in results["Parameters"]:
-            values.append(parameter["Value"])
+        if self.awsPartition == "aws":
+            # only check validity for AWS Commercial Region
+            # Handle the weird v2 services names - global service overrides for lookup
+            if service == 'kinesisanalyticsv2':
+                service = 'kinesisanalytics'
+            elif service == 'macie2':
+                service = 'macie'
+            elif service == 'elbv2':
+                service = 'elb'
+            elif service == 'wafv2':
+                service = 'waf'
+            else:
+                service = service
+            paginator = ssm.get_paginator("get_parameters_by_path")
+            response_iterator = paginator.paginate(
+                Path=f"/aws/service/global-infrastructure/services/{service}/regions",
+                PaginationConfig={"MaxItems": 1000, "PageSize": 10},
+            )
+            results = accumulate_paged_results(
+                page_iterator=response_iterator, key="Parameters")
+            
+            for parameter in results["Parameters"]:
+                values.append(parameter["Value"])
+        else:
+            print(f"Your partition is {self.awsPartition} and therfore service endpoint validity cannot be checked which may lead to a lot of Boto3 errors, sorry!")
+            values = values
+
         return values
 
     def run_checks(self, requested_check_name=None, delay=0):
-        # TODO: Add multi-region capabilities here
-        '''
-        regionList = []
-        ec2regions = boto3.client("ec2")
-        for regions in ec2regions.describe_regions()['Regions']:
-            regionName = str(r['RegionName'])
-                optInStatus = str(r['OptInStatus'])
-                if optInStatus == 'not-opted-in':
-                    pass
-                else:
-                    regionList.append(regionName)
+        print(f"Running ElectricEye in {self.awsRegion} in Partition {self.awsPartition}")
 
-        for region in regionList:
-            ### TODO: Implement Below... ###
-        '''
         for service_name, check_list in self.registry.checks.items():
-            if self.awsRegion not in self.get_regions(service_name):
-                print(f"AWS region {self.awsRegion} not supported for {service_name}")
-                next
+            # only check regions if in AWS Commerical Partition
+            if self.awsPartition == "aws":
+                if self.awsRegion not in self.get_regions(service_name):
+                    print(f"AWS region {self.awsRegion} not supported for {service_name}")
+                    next
 
             for check_name, check in check_list.items():
                 # clearing cache for each control whithin a auditor
@@ -129,7 +139,7 @@ class EEAuditor(object):
                     and requested_check_name == check_name
                 ):
                     try:
-                        # print(f"Executing check {self.name}.{check_name}")
+                        print(f"Executing check {self.name}.{check_name}")
                         for finding in check(
                             cache=auditor_cache,
                             awsAccountId=self.awsAccountId,
@@ -139,6 +149,7 @@ class EEAuditor(object):
                             yield finding
                     except Exception as e:
                         print(f"Failed to execute check {check_name} with exception {e}")
+            # optional sleep if specified - hardcode to 0 seconds
             sleep(delay)
 
     def print_checks_md(self):
