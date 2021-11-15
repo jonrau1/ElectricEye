@@ -349,147 +349,156 @@ def user_permission_boundary_check(cache: dict, awsAccountId: str, awsRegion: st
 
 @registry.register_check("iam")
 def user_mfa_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[IAM.3] IAM users should have Multi-Factor Authentication (MFA) enabled"""
+    """[IAM.3] IAM users with passwords should have Multi-Factor Authentication (MFA) enabled"""
     user = list_users(cache=cache)
     for users in user["Users"]:
         userName = str(users["UserName"])
         userArn = str(users["Arn"])
+        # check if the user has a password
+        try:
+            pwCheck = str(users["PasswordLastUsed"])
+        except KeyError:
+            pwCheck = "False"
         # ISO Time
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        try:
-            response = iam.list_mfa_devices(UserName=userName)
-            if str(response["MFADevices"]) == "[]":
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": userArn + "/iam-user-mfa-check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": userArn,
-                    "AwsAccountId": awsAccountId,
-                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                    "FirstObservedAt": iso8601Time,
-                    "CreatedAt": iso8601Time,
-                    "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "MEDIUM"},
-                    "Confidence": 99,
-                    "Title": "[IAM.3] IAM users should have Multi-Factor Authentication (MFA) enabled",
-                    "Description": "IAM user "
-                    + userName
-                    + " does not have MFA enabled. For increased security, AWS recommends that you configure multi-factor authentication (MFA) to help protect your AWS resources. Refer to the remediation section to remediate this behavior.",
-                    "Remediation": {
-                        "Recommendation": {
-                            "Text": "For information on MFA refer to the Using Multi-Factor Authentication (MFA) in AWS section of the AWS IAM User Guide",
-                            "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa.html",
-                        }
-                    },
-                    "ProductFields": {"Product Name": "ElectricEye"},
-                    "Resources": [
-                        {
-                            "Type": "AwsIamUser",
-                            "Id": userArn,
-                            "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {"Other": {"PrincipalName": userName}},
-                        }
-                    ],
-                    "Compliance": {
-                        "Status": "FAILED",
-                        "RelatedRequirements": [
-                            "NIST CSF PR.AC-1",
-                            "NIST SP 800-53 AC-1",
-                            "NIST SP 800-53 AC-2",
-                            "NIST SP 800-53 IA-1",
-                            "NIST SP 800-53 IA-2",
-                            "NIST SP 800-53 IA-3",
-                            "NIST SP 800-53 IA-4",
-                            "NIST SP 800-53 IA-5",
-                            "NIST SP 800-53 IA-6",
-                            "NIST SP 800-53 IA-7",
-                            "NIST SP 800-53 IA-8",
-                            "NIST SP 800-53 IA-9",
-                            "NIST SP 800-53 IA-10",
-                            "NIST SP 800-53 IA-11",
-                            "AICPA TSC CC6.1",
-                            "AICPA TSC CC6.2",
-                            "ISO 27001:2013 A.9.2.1",
-                            "ISO 27001:2013 A.9.2.2",
-                            "ISO 27001:2013 A.9.2.3",
-                            "ISO 27001:2013 A.9.2.4",
-                            "ISO 27001:2013 A.9.2.6",
-                            "ISO 27001:2013 A.9.3.1",
-                            "ISO 27001:2013 A.9.4.2",
-                            "ISO 27001:2013 A.9.4.3",
+
+        if pwCheck != "False":
+            try:
+                response = iam.list_mfa_devices(UserName=userName)
+                if str(response["MFADevices"]) == "[]":
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": userArn + "/iam-user-mfa-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": userArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "MEDIUM"},
+                        "Confidence": 99,
+                        "Title": "[IAM.3] IAM users should have Multi-Factor Authentication (MFA) enabled",
+                        "Description": "IAM user "
+                        + userName
+                        + " does not have MFA enabled. For increased security, AWS recommends that you configure multi-factor authentication (MFA) to help protect your AWS resources. Refer to the remediation section to remediate this behavior.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For information on MFA refer to the Using Multi-Factor Authentication (MFA) in AWS section of the AWS IAM User Guide",
+                                "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa.html",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsIamUser",
+                                "Id": userArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {"Other": {"PrincipalName": userName}},
+                            }
                         ],
-                    },
-                    "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
-                }
-                yield finding
-            else:
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": userArn + "/iam-user-mfa-check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": userArn,
-                    "AwsAccountId": awsAccountId,
-                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                    "FirstObservedAt": iso8601Time,
-                    "CreatedAt": iso8601Time,
-                    "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "INFORMATIONAL"},
-                    "Confidence": 99,
-                    "Title": "[IAM.3] IAM users should have Multi-Factor Authentication (MFA) enabled",
-                    "Description": "IAM user " + userName + " has MFA enabled.",
-                    "Remediation": {
-                        "Recommendation": {
-                            "Text": "For information on MFA refer to the Using Multi-Factor Authentication (MFA) in AWS section of the AWS IAM User Guide",
-                            "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa.html",
-                        }
-                    },
-                    "ProductFields": {"Product Name": "ElectricEye"},
-                    "Resources": [
-                        {
-                            "Type": "AwsIamUser",
-                            "Id": userArn,
-                            "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {"Other": {"PrincipalName": userName}},
-                        }
-                    ],
-                    "Compliance": {
-                        "Status": "PASSED",
-                        "RelatedRequirements": [
-                            "NIST CSF PR.AC-1",
-                            "NIST SP 800-53 AC-1",
-                            "NIST SP 800-53 AC-2",
-                            "NIST SP 800-53 IA-1",
-                            "NIST SP 800-53 IA-2",
-                            "NIST SP 800-53 IA-3",
-                            "NIST SP 800-53 IA-4",
-                            "NIST SP 800-53 IA-5",
-                            "NIST SP 800-53 IA-6",
-                            "NIST SP 800-53 IA-7",
-                            "NIST SP 800-53 IA-8",
-                            "NIST SP 800-53 IA-9",
-                            "NIST SP 800-53 IA-10",
-                            "NIST SP 800-53 IA-11",
-                            "AICPA TSC CC6.1",
-                            "AICPA TSC CC6.2",
-                            "ISO 27001:2013 A.9.2.1",
-                            "ISO 27001:2013 A.9.2.2",
-                            "ISO 27001:2013 A.9.2.3",
-                            "ISO 27001:2013 A.9.2.4",
-                            "ISO 27001:2013 A.9.2.6",
-                            "ISO 27001:2013 A.9.3.1",
-                            "ISO 27001:2013 A.9.4.2",
-                            "ISO 27001:2013 A.9.4.3",
+                        "Compliance": {
+                            "Status": "FAILED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-1",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-2",
+                                "NIST SP 800-53 IA-1",
+                                "NIST SP 800-53 IA-2",
+                                "NIST SP 800-53 IA-3",
+                                "NIST SP 800-53 IA-4",
+                                "NIST SP 800-53 IA-5",
+                                "NIST SP 800-53 IA-6",
+                                "NIST SP 800-53 IA-7",
+                                "NIST SP 800-53 IA-8",
+                                "NIST SP 800-53 IA-9",
+                                "NIST SP 800-53 IA-10",
+                                "NIST SP 800-53 IA-11",
+                                "AICPA TSC CC6.1",
+                                "AICPA TSC CC6.2",
+                                "ISO 27001:2013 A.9.2.1",
+                                "ISO 27001:2013 A.9.2.2",
+                                "ISO 27001:2013 A.9.2.3",
+                                "ISO 27001:2013 A.9.2.4",
+                                "ISO 27001:2013 A.9.2.6",
+                                "ISO 27001:2013 A.9.3.1",
+                                "ISO 27001:2013 A.9.4.2",
+                                "ISO 27001:2013 A.9.4.3",
+                            ],
+                        },
+                        "Workflow": {"Status": "NEW"},
+                        "RecordState": "ACTIVE",
+                    }
+                    yield finding
+                else:
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": userArn + "/iam-user-mfa-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": userArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "INFORMATIONAL"},
+                        "Confidence": 99,
+                        "Title": "[IAM.3] IAM users should have Multi-Factor Authentication (MFA) enabled",
+                        "Description": "IAM user " + userName + " has MFA enabled.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For information on MFA refer to the Using Multi-Factor Authentication (MFA) in AWS section of the AWS IAM User Guide",
+                                "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa.html",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsIamUser",
+                                "Id": userArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {"Other": {"PrincipalName": userName}},
+                            }
                         ],
-                    },
-                    "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED",
-                }
-                yield finding
-        except Exception as e:
-            print(e)
+                        "Compliance": {
+                            "Status": "PASSED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-1",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-2",
+                                "NIST SP 800-53 IA-1",
+                                "NIST SP 800-53 IA-2",
+                                "NIST SP 800-53 IA-3",
+                                "NIST SP 800-53 IA-4",
+                                "NIST SP 800-53 IA-5",
+                                "NIST SP 800-53 IA-6",
+                                "NIST SP 800-53 IA-7",
+                                "NIST SP 800-53 IA-8",
+                                "NIST SP 800-53 IA-9",
+                                "NIST SP 800-53 IA-10",
+                                "NIST SP 800-53 IA-11",
+                                "AICPA TSC CC6.1",
+                                "AICPA TSC CC6.2",
+                                "ISO 27001:2013 A.9.2.1",
+                                "ISO 27001:2013 A.9.2.2",
+                                "ISO 27001:2013 A.9.2.3",
+                                "ISO 27001:2013 A.9.2.4",
+                                "ISO 27001:2013 A.9.2.6",
+                                "ISO 27001:2013 A.9.3.1",
+                                "ISO 27001:2013 A.9.4.2",
+                                "ISO 27001:2013 A.9.4.3",
+                            ],
+                        },
+                        "Workflow": {"Status": "RESOLVED"},
+                        "RecordState": "ARCHIVED",
+                    }
+                    yield finding
+            except Exception as e:
+                print(e)
+        else:
+            continue
 
 @registry.register_check("iam")
 def user_inline_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -940,8 +949,72 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, awsAccountId: str,
                 "RecordState": "ACTIVE",
             }
             yield finding
-    except Exception as e:
-        print(e)
+    except Exception:
+        # create a HIGH alert if there is not one at all
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": awsAccountId + "/cis-aws-foundations-benchmark-pw-policy-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": awsAccountId + "iam-password-policy",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "HIGH"},
+            "Confidence": 99,
+            "Title": "[IAM.6] The IAM password policy should meet or exceed the AWS CIS Foundations Benchmark standard",
+            "Description": "The IAM password policy for account "
+            + awsAccountId
+            + " was not found! Refer to the remediation instructions if this configuration is not intended.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For information on the CIS AWS Foundations Benchmark standard for the password policy refer to the linked Standard",
+                    "Url": "https://d1.awsstatic.com/whitepapers/compliance/AWS_CIS_Foundations_Benchmark.pdf",
+                }
+            },
+            "ProductFields": {"Product Name": "ElectricEye"},
+            "Resources": [
+                {
+                    "Type": "AwsAccount",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.AC-1",
+                    "NIST SP 800-53 AC-1",
+                    "NIST SP 800-53 AC-2",
+                    "NIST SP 800-53 IA-1",
+                    "NIST SP 800-53 IA-2",
+                    "NIST SP 800-53 IA-3",
+                    "NIST SP 800-53 IA-4",
+                    "NIST SP 800-53 IA-5",
+                    "NIST SP 800-53 IA-6",
+                    "NIST SP 800-53 IA-7",
+                    "NIST SP 800-53 IA-8",
+                    "NIST SP 800-53 IA-9",
+                    "NIST SP 800-53 IA-10",
+                    "NIST SP 800-53 IA-11",
+                    "AICPA TSC CC6.1",
+                    "AICPA TSC CC6.2",
+                    "ISO 27001:2013 A.9.2.1",
+                    "ISO 27001:2013 A.9.2.2",
+                    "ISO 27001:2013 A.9.2.3",
+                    "ISO 27001:2013 A.9.2.4",
+                    "ISO 27001:2013 A.9.2.6",
+                    "ISO 27001:2013 A.9.3.1",
+                    "ISO 27001:2013 A.9.4.2",
+                    "ISO 27001:2013 A.9.4.3",
+                ],
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE",
+        }
+        yield finding
 
 @registry.register_check("iam")
 def server_certs_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:

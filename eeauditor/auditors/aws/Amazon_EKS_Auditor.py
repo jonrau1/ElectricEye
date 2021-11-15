@@ -27,7 +27,6 @@ registry = CheckRegister()
 # import boto3 clients
 eks = boto3.client("eks")
 
-
 @registry.register_check("eks")
 def eks_public_endpoint_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EKS.1] Elastic Kubernetes Service (EKS) cluster API servers should not be accessible from the internet"""
@@ -177,7 +176,7 @@ def eks_latest_k8s_version_check(cache: dict, awsAccountId: str, awsRegion: str,
             iso8601Time = (
                 datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
-            if k8sVersionCheck != "1.19":
+            if k8sVersionCheck != ("1.20" or "1.21"):
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": clusterArn + "/eks-latest-k8s-version-check",
