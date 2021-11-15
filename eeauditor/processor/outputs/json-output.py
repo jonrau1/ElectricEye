@@ -29,7 +29,12 @@ class JsonProvider(object):
 
     def write_findings(self, findings: list, output_file: str, **kwargs):
         print(f"Writing {len(findings)} findings to JSON file")
-        jsonfile = output_file + ".json"
+        
+        # create output file based on inputs
+        jsonfile = f"{output_file}.json"
+        print(f"Your filename is called {jsonfile}")
+        
         with open(jsonfile, "w") as jsonfile:
             json.dump(findings, jsonfile, indent=4, default=str)
+            
         return True
