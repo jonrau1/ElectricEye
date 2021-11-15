@@ -75,6 +75,7 @@ def high_critical_findings(cache: dict, awsAccountId: str, awsRegion: str, awsPa
             "UpdatedAt": iso8601Time,
             "FirstObservedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
             "Title": "[SecurityHub.1] Security Hub should not have active high or critical severity findings from AWS services",
             "Description": "High or critical findings were not found in the Security Hub hub for AWS account "
             + awsAccountId,
@@ -117,6 +118,7 @@ def high_critical_findings(cache: dict, awsAccountId: str, awsRegion: str, awsPa
             "UpdatedAt": iso8601Time,
             "FirstObservedAt": iso8601Time,
             "Severity": {"Label": "CRITICAL"},
+            "Confidence": 99,
             "Title": "[SecurityHub.1] Security Hub should not have active high or critical severity findings from AWS services",
             "Description": "High or critical findings were found in the Security Hub hub for AWS account "
             + awsAccountId,
