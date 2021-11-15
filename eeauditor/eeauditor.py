@@ -139,7 +139,7 @@ class EEAuditor(object):
                     and requested_check_name == check_name
                 ):
                     try:
-                        print(f"Executing check {self.name}.{check_name}")
+                        print(f"Executing Check: {check_name}")
                         for finding in check(
                             cache=auditor_cache,
                             awsAccountId=self.awsAccountId,

@@ -797,9 +797,10 @@ def user_direct_attached_policy_check(cache: dict, awsAccountId: str, awsRegion:
 @registry.register_check("iam")
 def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[IAM.6] The IAM password policy should meet or exceed the AWS CIS Foundations Benchmark standard"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+
     try:
-        # TODO: if no policy is found, this will throw an exception in
-        # which case we need to create an ACTIVE finding
         response = iam.get_account_password_policy()
         pwPolicy = response["PasswordPolicy"]
         minPwLength = int(pwPolicy["MinimumPasswordLength"])
@@ -809,8 +810,7 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, awsAccountId: str,
         lowercaseReq = str(pwPolicy["RequireLowercaseCharacters"])
         maxPwAge = int(pwPolicy["MaxPasswordAge"])
         pwReuse = int(pwPolicy["PasswordReusePrevention"])
-        # ISO Time
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        
         if (
             minPwLength >= 14
             and maxPwAge <= 90
