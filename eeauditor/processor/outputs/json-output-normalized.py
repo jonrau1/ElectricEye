@@ -37,7 +37,7 @@ class JsonProvider(object):
         for fi in findings:
             # some values may not always be present (Details, etc.) - write in fake values to handle this
             try:
-                resourceDetails = fi["Resources"][0]["Details"]
+                resourceDetails = str(fi["Resources"][0]["Details"])
             except KeyError:
                 resourceDetails = "NoAdditionalDetails"
             # create the new dict which will receive parsed values
