@@ -46,7 +46,7 @@ class JsonProvider(object):
                 "FirstObservedAt": str(fi["FirstObservedAt"]),
                 "CreatedAt": str(fi["CreatedAt"]),
                 "UpdatedAt": str(fi["UpdatedAt"]),
-                "SeverityLabel": str(fi["SeverityLabel"]["Label"]),
+                "SeverityLabel": str(fi["Severity"]["Label"]),
                 "Confidence": str(fi["Confidence"]),
                 "Title": str(fi["Title"]),
                 "Description": str(fi["Description"]),
