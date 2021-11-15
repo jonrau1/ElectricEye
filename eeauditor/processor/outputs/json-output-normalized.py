@@ -35,6 +35,11 @@ class JsonProvider(object):
 
         # loop the findings and create a flatter structure - better for indexing without the nested lists
         for fi in findings:
+            # some values may not always be present (Details, etc.) - write in fake values to handle this
+            try:
+                resourceDetails = str(fi["Resources"][0]["Details"])
+            except KeyError:
+                resourceDetails = "NoAdditionalDetails"
             # create the new dict which will receive parsed values
             fDict = {
                 "SchemaVersion": str(fi["SchemaVersion"]),
@@ -57,7 +62,7 @@ class JsonProvider(object):
                 "ResourceId": str(fi["Resources"][0]["Id"]),
                 "ResourcePartition": str(fi["Resources"][0]["Partition"]),
                 "ResourceRegion": str(fi["Resources"][0]["Region"]),
-                "ResourceDetails": str(fi["Resources"][0]["Details"]),
+                "ResourceDetails": resourceDetails,
                 "ComplianceStatus": str(fi["Compliance"]["Status"]),
                 "ComplianceRelatedRequirements": str(fi["Compliance"]["RelatedRequirements"]),
                 "WorkflowStatus": str(fi["Workflow"]["Status"]),
