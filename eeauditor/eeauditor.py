@@ -119,7 +119,13 @@ class EEAuditor(object):
         return values
 
     def run_checks(self, requested_check_name=None, delay=0):
-        print(f"Running ElectricEye in {self.awsRegion} in Partition {self.awsPartition} with the following Credentials: {sts.get_caller_identity()}")
+        # Gather STS information
+        details = sts.get_caller_identity()
+        userId = str(details["UserId"])
+        awsAccount = str(details["Account"])
+        awsArn = str(details["Arn"])
+        # Print some very basic orientation data
+        print(f"Running ElectricEye in AWS Region: {self.awsRegion}. Located in Partition: {self.awsPartition}. Profile User ID is: {userId}, Profile AWS Account is {awsAccount}, with the following ARN: {awsArn}")
 
         for service_name, check_list in self.registry.checks.items():
             # only check regions if in AWS Commerical Partition
