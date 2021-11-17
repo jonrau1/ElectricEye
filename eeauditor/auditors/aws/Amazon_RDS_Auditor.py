@@ -1745,3 +1745,23 @@ def rds_aurora_cluster_encryption_check(cache: dict, awsAccountId: str, awsRegio
                 "RecordState": "ARCHIVED"
             }
             yield finding
+
+@registry.register_check("rds")
+def rds_instance_snapshot_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.13] RDS instances should be have snapshots"""
+    response = describe_db_instances(cache)
+    myRdsInstances = response["DBInstances"]
+    response = describe_db_snapshots(cache)
+    myRdsSnapshots = response["DBSnapshots"]
+    for dbinstances in myRdsInstances:
+        instanceArn = str(dbinstances["DBInstanceArn"])
+        instanceId = str(dbinstances["DBInstanceIdentifier"])
+        instanceClass = str(dbinstances["DBInstanceClass"])
+        instancePort = int(dbinstances["Endpoint"]["Port"])
+        instanceEngine = str(dbinstances["Engine"])
+        instanceEngineVersion = str(dbinstances["EngineVersion"])
+        highAvailabilityCheck = str(dbinstances["MultiAZ"])
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+
+        snapshots = rds.describe_db_snapshots(DBInstanceIdentifier=instanceId)
+        print(snapshots["DBSnapshots"])
