@@ -30,7 +30,7 @@ class JsonProvider(object):
         # create another list to hold Finding IDs, this is to prevent duplicates by looking up values later on
         allIds = []
 
-        print(f"Writing {len(findings)} findings to JSON file")
+        print(f"Writing {len(findings)} findings to Normalized JSON file (final total may be different due to dedupe)")
         # create output file based on inputs
         jsonfile = f"{output_file}-normalized.json"
 
@@ -39,8 +39,6 @@ class JsonProvider(object):
         # loop the findings and create a flatter structure - better for indexing without the nested lists
         for fi in findings:
             findingId = str(fi["Id"])
-            # write finding ID to list for later check
-            allIds.append(findingId)
             # some values may not always be present (Details, etc.) - write in fake values to handle this
             try:
                 resourceDetails = str(fi["Resources"][0]["Details"])
@@ -79,11 +77,16 @@ class JsonProvider(object):
                 # append new dict to list if we have not already
                 if findingId not in allIds:
                     newFindings.append(fDict)
+                    # write finding ID to list for later check
+                    allIds.append(findingId)
                 continue
             except KeyError as e:
                 print(f"Issue with Finding ID {findingId} due to missing value {e}")
         # once complete with parsing findings - write to file and purge findings from memory
         del findings
+
+        print(f"Wrote {len(allIds)} findings to Normalized JSON file")
+
         del allIds
 
         with open(jsonfile, "w") as jsonfile:
