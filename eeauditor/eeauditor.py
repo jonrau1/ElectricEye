@@ -19,7 +19,6 @@
 #under the License.
 from functools import partial
 import inspect
-import json
 import os
 from time import sleep
 import re
@@ -30,7 +29,7 @@ from pluginbase import PluginBase
 here = os.path.abspath(os.path.dirname(__file__))
 get_path = partial(os.path.join, here)
 ssm = boto3.client("ssm")
-
+sts = boto3.client("sts")
 
 class EEAuditor(object):
     """ElectricEye controller
@@ -120,13 +119,13 @@ class EEAuditor(object):
         return values
 
     def run_checks(self, requested_check_name=None, delay=0):
-        print(f"Running ElectricEye in {self.awsRegion} in Partition {self.awsPartition}")
+        print(f"Running ElectricEye in {self.awsRegion} in Partition {self.awsPartition} with the following Credentials: {sts.get_caller_identity()}")
 
         for service_name, check_list in self.registry.checks.items():
             # only check regions if in AWS Commerical Partition
             if self.awsPartition == "aws":
                 if self.awsRegion not in self.get_regions(service_name):
-                    print(f"AWS region {self.awsRegion} not supported for {service_name}")
+                    #print(f"AWS region {self.awsRegion} not supported for {service_name}")
                     next
 
             for check_name, check in check_list.items():
