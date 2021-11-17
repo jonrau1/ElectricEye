@@ -86,7 +86,7 @@ def run_auditor(auditor_name=None, check_name=None, delay=0, outputs=None, outpu
 )
 # List Output Options
 @click.option(
-    "--list-outputs",
+    "--list-options",
     is_flag=True,
     help="Lists all valid Output locations"
 )
