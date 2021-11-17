@@ -511,6 +511,19 @@ def elbv2_tls12_listener_policy_check(cache: dict, awsAccountId: str, awsRegion:
     """[ELBv2.4] Application and Network Load Balancers with HTTPS or TLS listeners should enforce TLS 1.2 policies"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+    # valid TLS 1.2 and 1.3 Policies
+    goodTls = [
+        "ELBSecurityPolicy-TLS-1-2-2017-01",
+        "ELBSecurityPolicy-TLS-1-2-Ext-2018-06",
+        "ELBSecurityPolicy-FS-1-2-2019-08",
+        "ELBSecurityPolicy-FS-1-2-Res-2019-08",
+        "ELBSecurityPolicy-FS-1-2-Res-2020-10",
+        "ELBSecurityPolicy-TLS13-1-3-2021-06",
+        "ELBSecurityPolicy-TLS13-1-2-Ext2-2021-06",
+        "ELBSecurityPolicy-TLS13-1-2-Ext1-2021-06",
+        "ELBSecurityPolicy-TLS13-1-2-Res-2021-06",
+        "ELBSecurityPolicy-TLS13-1-2-2021-06" 
+    ]
 
     response = describe_load_balancers(cache)
     myElbv2LoadBalancers = response["LoadBalancers"]
@@ -534,19 +547,7 @@ def elbv2_tls12_listener_policy_check(cache: dict, awsAccountId: str, awsRegion:
                         # ignore ALB/NLB without HTTPS/TLS
                         continue
                     # Evaluate listener
-                    if (
-                        listenerTlsPolicyCheck != "ELBSecurityPolicy-TLS-1-2-2017-01"
-                        or "ELBSecurityPolicy-TLS-1-2-Ext-2018-06"
-                        or "ELBSecurityPolicy-FS-1-2-2019-08"
-                        or "ELBSecurityPolicy-FS-1-2-Res-2019-08"
-                        # New TLS 1.3 Policies - 3 NOV 2021
-                        or "ELBSecurityPolicy-FS-1-2-Res-2020-10"
-                        or "ELBSecurityPolicy-TLS13-1-3-2021-06"
-                        or "ELBSecurityPolicy-TLS13-1-2-Ext2-2021-06"
-                        or "ELBSecurityPolicy-TLS13-1-2-Ext1-2021-06"
-                        or "ELBSecurityPolicy-TLS13-1-2-Res-2021-06"
-                        or "ELBSecurityPolicy-TLS13-1-2-2021-06"  
-                    ):
+                    if listenerTlsPolicyCheck not in goodTls:
                         finding = {
                             "SchemaVersion": "2018-10-08",
                             "Id": elbv2Arn + "/secure-listener-tls12-check",
@@ -561,12 +562,12 @@ def elbv2_tls12_listener_policy_check(cache: dict, awsAccountId: str, awsRegion:
                             "UpdatedAt": iso8601Time,
                             "Severity": {"Label": "HIGH"},
                             "Confidence": 99,
-                            "Title": "[ELBv2.4] Application and Network Load Balancers with HTTPS or TLS listeners should enforce TLS 1.2 policies",
+                            "Title": "[ELBv2.4] Application and Network Load Balancers with HTTPS or TLS listeners should enforce TLS 1.2 or TLS 1.3 policies",
                             "Description": "ELB "
                             + elbv2LbType
                             + " load balancer "
                             + elbv2Name
-                            + " does not enforce a TLS 1.2 policy. Refer to the remediation instructions to remediate this behavior",
+                            + " does not enforce a TLS 1.2 or TLS 1.3 policy. Refer to the remediation instructions to remediate this behavior",
                             "Remediation": {
                                 "Recommendation": {
                                     "Text": "For more information on ELBv2 Access Logging and how to configure it refer to the Security Policies section of the Application Load Balancers User Guide. For Network Load Balancer logging please refer to the NLB User Guide",
@@ -629,12 +630,12 @@ def elbv2_tls12_listener_policy_check(cache: dict, awsAccountId: str, awsRegion:
                             "UpdatedAt": iso8601Time,
                             "Severity": {"Label": "INFORMATIONAL"},
                             "Confidence": 99,
-                            "Title": "[ELBv2.4] Application and Network Load Balancers with HTTPS or TLS listeners should enforce TLS 1.2 policies",
+                            "Title": "[ELBv2.4] Application and Network Load Balancers with HTTPS or TLS listeners should enforce TLS 1.2 or TLS 1.3 policies",
                             "Description": "ELB "
                             + elbv2LbType
                             + " load balancer "
                             + elbv2Name
-                            + " enforces a TLS 1.2 policy.",
+                            + " enforces a TLS 1.2 or TLS 1.3 policy.",
                             "Remediation": {
                                 "Recommendation": {
                                     "Text": "For more information on ELBv2 Access Logging and how to configure it refer to the Security Policies section of the Application Load Balancers User Guide. For Network Load Balancer logging please refer to the NLB User Guide",
