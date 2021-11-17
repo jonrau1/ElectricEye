@@ -38,31 +38,73 @@ def run_auditor(auditor_name=None, check_name=None, delay=0, outputs=None, outpu
     app.load_plugins(plugin_name=auditor_name)
     findings = list(app.run_checks(requested_check_name=check_name, delay=delay))
     result = process_findings(findings=findings, outputs=outputs, output_file=output_file)
-    print(f"Done.")
+    print("Done running Checks!")
 
 @click.command()
-@click.option("-p", "--profile-name", default="", help="User profile to use if set using awscli. Defaults to no specification")
+# AWSCLI Profile
 @click.option(
-    "-a", "--auditor-name", default="", help="Specify which Auditor you want to run by using its name NOT INCLUDING .py. Defaults to ALL Auditors"
+    "-p",
+    "--profile-name",
+    default="",
+    help="User profile to use if set using AWS CLI. Defaults to no specification"
 )
-@click.option("-c", "--check-name", default="", help="Specify which specific Check in a speciifc Auditor you want to run. Defaults to ALL Checks")
-@click.option("-d", "--delay", default=0, help="Time in seconds to sleep between Auditors being ran, defaults to 0")
+# Run Specific Auditor
+@click.option(
+    "-a",
+    "--auditor-name",
+    default="",
+    help="Specify which Auditor you want to run by using its name NOT INCLUDING .py. Defaults to ALL Auditors"
+)
+# Run Specific Check
+@click.option(
+    "-c",
+    "--check-name",
+    default="",
+    help="Specify which specific Check in a speciifc Auditor you want to run. Defaults to ALL Checks")
+# Delay
+@click.option(
+    "-d", 
+    "--delay", 
+    default=0, 
+    help="Time in seconds to sleep between Auditors being ran, defaults to 0"
+)
+# Outputs
 @click.option(
     "-o",
     "--outputs",
     multiple=True,
     default=(["sechub"]),
     show_default=True,
-    help="Where to output findings to, defaults to Security Hub ('sechub')",
+    help="Where to send the findings to (another platform or to file)",
 )
-@click.option("--output-file", default="output", show_default=True, help="Name of the file for output, if using anything other than SecHub or Dops")
-@click.option("--list-options", is_flag=True, help="Lists all valid Output locations")
-@click.option("--list-checks", is_flag=True, help="List all Checks")
+# Output File Name
+@click.option(
+    "--output-file",
+    "--filename",
+    default="output", 
+    show_default=True, 
+    help="Name of the file for output, if using anything other than SecHub or Dops"
+)
+# List Output Options
+@click.option(
+    "--list-options",
+    "--list-outputs",
+    is_flag=True,
+    help="Lists all valid Output locations"
+)
+# List Checks
+@click.option(
+    "--list-checks",
+    is_flag=True,
+    help="List all Checks within every Auditor"
+)
+# Insights
 @click.option(
     "--create-insights",
     is_flag=True,
-    help="Create SecurityHub insights for ElectricEye.  This only needs to be done once per SecurityHub instance",
+    help="Create SecurityHub insights for ElectricEye.  This only needs to be done once per Security Hub instance",
 )
+
 def main(
     profile_name,
     auditor_name,

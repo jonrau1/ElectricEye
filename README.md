@@ -650,6 +650,7 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_RDS_Auditor.py                  | RDS Snapshot                   | Are snapshots public                                                                |
 | Amazon_RDS_Auditor.py                  | RDS DB Cluster (Aurora)        | Is Database Activity Stream configured                                              |
 | Amazon_RDS_Auditor.py                  | RDS DB Cluster (Aurora)        | Is the cluster encrypted                                                            |
+| Amazon_RDS_Auditor.py                  | RDS DB Instance                | Does Instance have any snapshots                                                    |
 | Amazon_Redshift_Auditor.py             | Redshift cluster               | Is the cluster publicly accessible                                                  |
 | Amazon_Redshift_Auditor.py             | Redshift cluster               | Is the cluster encrypted                                                            |
 | Amazon_Redshift_Auditor.py             | Redshift cluster               | Is enhanced VPC routing enabled                                                     |

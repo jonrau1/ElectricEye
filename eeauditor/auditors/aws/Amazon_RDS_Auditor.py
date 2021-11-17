@@ -1764,4 +1764,128 @@ def rds_instance_snapshot_check(cache: dict, awsAccountId: str, awsRegion: str, 
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
 
         snapshots = rds.describe_db_snapshots(DBInstanceIdentifier=instanceId)
-        print(snapshots["DBSnapshots"])
+        # this is a passing check, we're just interested in the existance of Snapshots, not their configuration (other checks do it)
+        if snapshots["DBSnapshots"]:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": instanceArn + "/instance-snapshot-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": instanceArn,
+                "AwsAccountId": awsAccountId,
+                "Types": [ "Software and Configuration Checks/AWS Security Best Practices" ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[RDS.13] RDS instances should be have snapshots",
+                "Description": "RDS DB instance "
+                + instanceId
+                + " has at least one snapshot.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on RDS instance resilience and snapshotting or recovery refer to the Resilience in Amazon RDS section of the Amazon Relational Database Service User Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/disaster-recovery-resiliency.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsRdsDbInstance",
+                        "Id": instanceArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsRdsDbInstance": {
+                                "DBInstanceIdentifier": instanceId,
+                                "DBInstanceClass": instanceClass,
+                                "DbInstancePort": instancePort,
+                                "Engine": instanceEngine,
+                                "EngineVersion": instanceEngineVersion
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.BE-5",
+                        "NIST CSF PR.PT-5",
+                        "NIST SP 800-53 CP-2",
+                        "NIST SP 800-53 CP-11",
+                        "NIST SP 800-53 SA-13",
+                        "NIST SP 800-53 SA14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1",
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": instanceArn + "/instance-snapshot-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": instanceArn,
+                "AwsAccountId": awsAccountId,
+                "Types": [ "Software and Configuration Checks/AWS Security Best Practices" ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[RDS.13] RDS instances should be have snapshots",
+                "Description": "RDS DB instance "
+                + instanceId
+                + " does not have a snapshot which can reduce cyber resilience due to a lack of a viable backup. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on RDS instance resilience and snapshotting or recovery refer to the Resilience in Amazon RDS section of the Amazon Relational Database Service User Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/disaster-recovery-resiliency.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsRdsDbInstance",
+                        "Id": instanceArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsRdsDbInstance": {
+                                "DBInstanceIdentifier": instanceId,
+                                "DBInstanceClass": instanceClass,
+                                "DbInstancePort": instancePort,
+                                "Engine": instanceEngine,
+                                "EngineVersion": instanceEngineVersion
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.BE-5",
+                        "NIST CSF PR.PT-5",
+                        "NIST SP 800-53 CP-2",
+                        "NIST SP 800-53 CP-11",
+                        "NIST SP 800-53 SA-13",
+                        "NIST SP 800-53 SA14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1",
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE",
+            }
+            yield finding
