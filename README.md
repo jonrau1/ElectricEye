@@ -51,15 +51,17 @@ Continuously monitor your AWS services for configurations that can lead to degra
 
 ## Description
 
-ElectricEye is a set of Python scripts (affectionately called **Auditors**) that continuously monitor your AWS infrastructure looking for configurations related to confidentiality, integrity and availability that do not align with AWS best practices. All **Auditors** are controlled via a centralized controller in the CLI, and can be expanded to cover more services, new checks, or customization of the AWS Security Finding Format (ASFF). All findings from these scans will be sent to AWS Security Hub where you can perform basic correlation against other AWS and 3rd Party services that send findings to Security Hub (optionally you can send findings to DisruptOps, CSV, JSON or PostgreSQL). Security Hub also provides a centralized view from which account owners and other responsible parties can view and take action on findings. ElectricEye supports all AWS commercial, AWS China, and GovCloud Regions.
+ElectricEye is a set of Python scripts (affectionately called **Auditors**) that continuously monitor your AWS infrastructure looking for configurations related to confidentiality, integrity and availability that do not align with AWS best practices. All **Auditors** are controlled via a centralized controller in the CLI, and can be expanded to cover more services, new checks, or customization of the AWS Security Finding Format (ASFF). All findings from these scans will be sent to AWS Security Hub where you can perform basic correlation against other AWS and 3rd Party services that send findings to Security Hub (optionally you can send findings to DisruptOps, CSV, JSON or PostgreSQL). Security Hub also provides a centralized view from which account owners and other responsible parties can view and take action on findings. ElectricEye supports all AWS Partitions as well, even ones it is not in yet, like the Secret / Top Secret Regions.
 
-ElectricEye was designed to run on AWS Fargate, which is a serverless container orchestration service, however you can also run it via a CLI anywhere you have the required dependencies installed and IAM Permissions. On a schedule, Fargate will download all of the auditor scripts from a S3 bucket, run the checks and send results to Security Hub. All infrastructure will be deployed via CloudFormation or Terraform to help you apply this solution to many accounts and/or regions. All findings (passed or failed) will contain AWS documentation references in the `Remediation.Recommendation` section of the ASFF (and the **Remediation** section of the Security Hub UI) to further educate yourself and others on.
+ElectricEye was originally designed to run on AWS Fargate, which is a serverless container orchestration service, however you can also run it via a CLI anywhere you have the required dependencies installed and IAM Permissions. On a schedule, Fargate will download all of the auditor scripts from a S3 bucket, run the checks and send results to Security Hub. All infrastructure will be deployed via CloudFormation or Terraform to help you apply this solution to many accounts and/or regions. All findings (passed or failed) will contain AWS documentation references in the `Remediation.Recommendation` section of the ASFF (and the **Remediation** section of the Security Hub UI) to further educate yourself and others on.
 
 ElectricEye comes with several add-on modules to extend the core model which provides dozens of detection-based controls. ElectricEye-Response provides a multi-account response and remediation platform (also known as SOAR), ElectricEye-ChatOps integrates with Slack/Pagerduty/Microsoft Teams, and ElectricEye-Reports integrates with QuickSight. All add-ons are supported by both CloudFormation and Terraform and can also be used independently of the core module itself.
 
-Personas who can make use of this tool are DevOps/DevSecOps engineers, SecOps analysts, Cloud Center-of-Excellence personnel, Site Reliability Engineers (SREs), Internal Audit and/or Compliance Analysts.
+Numerous personas can make effective usage of ElectricEye such as: Security Operations (SecOps), DevOps, DevSecOps, IT Audit, Governance/Risk/Compliance (GRC) Analysts, Enterprise Architects, Security Architects, Cloud Center of Excellence (CCOE) Engineers, Software Development Engineers (SDEs) using Cloud-native services, Red Teamers, Purple Teamers, and Security Engineering.
 
 **Note**: If you would like to use the "classic" version of ElectricEye it is available in [this branch](https://github.com/jonrau1/ElectricEye/tree/electriceye-classic), however, it will not include any new auditors for services such as QLDB, RAM, etc. Some screenshots may not work correctly due to the linking, sorry about that.
+
+**Note:**: If you are working on another project whether open-source or commercial and want to include parts of ElectricEye (or the full thing) in your product / project, please contact me and at least give me credit. At the very least I can help you integrate and I'd appreciate any cool features you add being partially added back upstream!
 
 ## Solution Architecture
 
@@ -471,9 +473,9 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 
 ## Supported Services and Checks
 
-These are the following services and checks perform by each Auditor. There are currently **324** checks supported across **86** AWS services / components using **67** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **325** checks supported across **86** AWS services / components using **67** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
-**Regarding Shield Advanced, Health, and Trusted Advisor checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in `us-east-1` to perform all checks. The Shield, Health and Trusted Advisor APIs only live in `us-east-1`, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
+**Regarding Shield Advanced, Health, and Trusted Advisor checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in `us-east-1` to perform all checks. The **AWS Shield Advanced**, **AWS Health** and **AWS Trusted Advisor** APIs only live in `us-east-1`, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
 | Auditor File Name                      | AWS Service                    | Auditor Scan Description                                                            |
 |----------------------------------------|--------------------------------|-------------------------------------------------------------------------------------|
@@ -520,6 +522,7 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_EBS_Auditor.py                  | EBS Snapshot                   | Is the Snapshot encrypted                                                           |
 | Amazon_EBS_Auditor.py                  | EBS Snapshot                   | Is the Snapshot public                                                              |
 | Amazon_EBS_Auditor.py                  | Account                        | Is account level encryption by default enabled                                      |
+| Amazon_EBS_Auditor.py                  | EBS Volume                     | Does the Volume have a snapshot                                                     |
 | Amazon_EC2_Auditor.py                  | EC2 Instance                   | Is IMDSv2 enabled                                                                   |
 | Amazon_EC2_Auditor.py                  | EC2 Instance                   | Is Secure Enclave used                                                              |
 | Amazon_EC2_Auditor.py                  | EC2 Instance                   | Is the instance internet-facing                                                     |
@@ -1256,11 +1259,7 @@ I am very happy to accept PR's for the following:
 - Adding new Event Patterns for ElectricEye-ChatOps
 - Fixing my stupid grammar errors, spelling errors and inconsistencies
 - Removing any unused IAM permissions that may have popped up
-- Adding new forms of deployment scripts or IAC (Salt stacks, Ansible playbooks, etc.)
-- Adding Terraform `v0.12.x` support
-- My to-do list
-
-If you are working on another project whether open-source or commercial and want to include parts of ElectricEye (or the full thing) in your product / project, please contact me and at least give me credit. If it is a commercial offering that you'll be charging for, the GPL-3.0 says you should make it fully obvious that the customers can get it for free here.
+- ~~Adding Terraform `v0.12.x` support~~
 
 ### Early Contributors
 
@@ -1291,15 +1290,13 @@ Quick shout-outs to the folks who answered the call early to test out ElectricEy
 
 As of 12 MAR 2020, most of these items will be tracked on the [roadmap project board](https://github.com/jonrau1/ElectricEye/projects/1)
 
-- [] Create an ElectricEye Logo
+- [X] Create an ElectricEye Logo
 - [X] Add in Shodan.io checks for internet-facing resources (RDS, Redshift, DocDB, Elasticsearch, EC2, ELBv2, etc)
-  - Need to test out DocDB, Redshift and MSK
 - [X] Upload response and remediation playbooks and IAC for them - Custom Action Version (Semi Auto)
 - [X] Upload response and remediation playbooks and IAC for them - Imported Findings (Full Auto)
 - [X] Create an Alerting framework with ~~ChatBot~~ Slack for Critical findings
 - [X] Create a Reporting module for use with QuickSight
-- [] Localization of ReadMe in: Spanish, Arabic, German, Italian, French, Japenese, etc.
 
 ## License
 
-This library is licensed under the GNU General Public License v3.0 (GPL-3.0) License. See the LICENSE file.
+This library is licensed under the Apache-2.0 License. See the LICENSE file.

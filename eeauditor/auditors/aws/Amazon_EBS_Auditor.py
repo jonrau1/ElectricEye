@@ -789,3 +789,143 @@ def ebs_account_encryption_by_default_check(cache: dict, awsAccountId: str, awsR
             "RecordState": "ARCHIVED",
         }
         yield finding
+
+@registry.register_check("ec2")
+def ebs_volume_snapshot_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EBS.7] EBS Volumes should have snapshots"""
+    # ISO Time
+    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+    # Hit Cache
+    response = describe_volumes(cache)
+    myEbsVolumes = response["Volumes"]
+    for volumes in myEbsVolumes:
+        ebsVolumeId = str(volumes["VolumeId"])
+        ebsVolumeArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}/{ebsVolumeId}"
+        # Check if there is a volume
+        try:
+            snapshotId = str(volumes["SnapshotId"])
+        except KeyError:
+            snapshotId = 'NoSnapshot'
+        # This is a passing finding        
+        if snapshotId != "NoSnapshot":
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": ebsVolumeArn + "/ebs-volume-snapshot-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ebsVolumeArn}/{snapshotId}",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[EBS.7] EBS Volumes should have snapshots",
+                "Description": "EBS Volume "
+                + ebsVolumeId
+                + " has a snapshot which can promote cyber resilience due to a viable backup.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your EBS volume should be backed up via Snapshots refer to the Amazon EBS snapshots section of the Amazon Elastic Compute Cloud User Guide",
+                        "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSSnapshots.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsEc2Volume",
+                        "Id": ebsVolumeArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsEc2Volume": {
+                                "SnapshotId": snapshotId
+                            },
+                            "Other": {
+                                "VolumeId": ebsVolumeId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.BE-5",
+                        "NIST CSF PR.PT-5",
+                        "NIST SP 800-53 CP-2",
+                        "NIST SP 800-53 CP-11",
+                        "NIST SP 800-53 SA-13",
+                        "NIST SP 800-53 SA14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1",
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": ebsVolumeArn + "/ebs-volume-snapshot-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{ebsVolumeArn}/{snapshotId}",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[EBS.7] EBS Volumes should have snapshots",
+                "Description": "EBS Volume "
+                + ebsVolumeId
+                + " does not have a snapshot which can reduce cyber resilience due to a lack of a viable backup. Refer to the remediation instructions if this configuration is not intended",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your EBS volume should be backed up via Snapshots refer to the Amazon EBS snapshots section of the Amazon Elastic Compute Cloud User Guide",
+                        "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSSnapshots.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsEc2Volume",
+                        "Id": ebsVolumeArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsEc2Volume": {
+                                "SnapshotId": snapshotId
+                            },
+                            "Other": {
+                                "VolumeId": ebsVolumeId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.BE-5",
+                        "NIST CSF PR.PT-5",
+                        "NIST SP 800-53 CP-2",
+                        "NIST SP 800-53 CP-11",
+                        "NIST SP 800-53 SA-13",
+                        "NIST SP 800-53 SA14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1",
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
