@@ -38,7 +38,7 @@ def run_auditor(auditor_name=None, check_name=None, delay=0, outputs=None, outpu
     app.load_plugins(plugin_name=auditor_name)
     findings = list(app.run_checks(requested_check_name=check_name, delay=delay))
     result = process_findings(findings=findings, outputs=outputs, output_file=output_file)
-    print("Done running Checks!")
+    print("Done running Checks")
 
 @click.command()
 # AWSCLI Profile
@@ -79,23 +79,22 @@ def run_auditor(auditor_name=None, check_name=None, delay=0, outputs=None, outpu
 )
 # Output File Name
 @click.option(
+    "-f",
     "--output-file",
-    "--filename",
-    multiple=True,
     default="output", 
     show_default=True, 
     help="Name of the file for output, if using anything other than SecHub or Dops"
 )
 # List Output Options
 @click.option(
-    "--list-options",
+    "-lo",
     "--list-outputs",
-    multiple=True,
     is_flag=True,
     help="Lists all valid Output locations"
 )
 # List Checks
 @click.option(
+    "-lc",
     "--list-checks",
     is_flag=True,
     help="List all Checks within every Auditor"
