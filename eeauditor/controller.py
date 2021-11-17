@@ -81,6 +81,7 @@ def run_auditor(auditor_name=None, check_name=None, delay=0, outputs=None, outpu
 @click.option(
     "--output-file",
     "--filename",
+    multiple=True,
     default="output", 
     show_default=True, 
     help="Name of the file for output, if using anything other than SecHub or Dops"
@@ -89,6 +90,7 @@ def run_auditor(auditor_name=None, check_name=None, delay=0, outputs=None, outpu
 @click.option(
     "--list-options",
     "--list-outputs",
+    multiple=True,
     is_flag=True,
     help="Lists all valid Output locations"
 )
