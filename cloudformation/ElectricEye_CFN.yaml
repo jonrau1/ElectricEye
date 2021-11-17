@@ -319,23 +319,14 @@ Resources:
                   - macie2:GetMacieSession
                   - managedblockchain:Get*
                   - managedblockchain:List*
-                  - mq:DescribeBroker
-                  - mq:ListBrokers
-                  - memorydb:Describe
+                  - mq:Describe*
+                  - mq:List*
+                  - memorydb:Describe*
                   - qldb:DescribeLedger
                   - qldb:ListJournalS3Exports
                   - qldb:ListLedgers
                   - ram:GetResourceShares
-                  - rds:DescribeDBClusterParameterGroups
-                  - rds:DescribeDBClusterParameters
-                  - rds:DescribeDBClusters
-                  - rds:DescribeDBClusterSnapshotAttributes
-                  - rds:DescribeDBClusterSnapshots
-                  - rds:DescribeDBInstances
-                  - rds:DescribeDBParameterGroups
-                  - rds:DescribeDBParameters
-                  - rds:DescribeDBSnapshotAttributes
-                  - rds:DescribeDBSnapshots
+                  - rds:DescribeDB*
                   - redshift:DescribeClusters
                   - redshift:DescribeLoggingStatus
                   - route53:ListHostedZones
@@ -365,14 +356,8 @@ Resources:
                   - sns:ListSubscriptions
                   - sns:ListSubscriptionsByTopic
                   - sns:ListTopics
-                  - ssm:GetParameter
-                  - ssm:GetParameters
-                  - ssm:GetParametersByPath
-                  - ssm:DescribeInstanceAssociationsStatus
-                  - ssm:DescribeInstanceInformation
-                  - ssm:DescribeInstancePatches
-                  - ssm:DescribeInstancePatchStates
-                  - ssm:DescribeInstanceProperties
+                  - ssm:GetP*
+                  - ssm:DescribeInstance*
                   - sts:GetCallerIdentity
                   - sqs:ListQueues
                   - sqs:GetQueueAttributes
