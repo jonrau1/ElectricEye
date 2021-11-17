@@ -26,6 +26,7 @@ registry = CheckRegister()
 
 # import boto3 clients
 rds = boto3.client("rds")
+ec2 = boto3.client("ec2")
 
 # loop through all RDS DB instances
 def describe_db_instances(cache):
@@ -1750,6 +1751,8 @@ def rds_aurora_cluster_encryption_check(cache: dict, awsAccountId: str, awsRegio
 def rds_instance_snapshot_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.13] RDS instances should be have snapshots"""
     response = describe_db_instances(cache)
+    # ISO time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     myRdsInstances = response["DBInstances"]
     response = describe_db_snapshots(cache)
     myRdsSnapshots = response["DBSnapshots"]
@@ -1760,9 +1763,7 @@ def rds_instance_snapshot_check(cache: dict, awsAccountId: str, awsRegion: str, 
         instancePort = int(dbinstances["Endpoint"]["Port"])
         instanceEngine = str(dbinstances["Engine"])
         instanceEngineVersion = str(dbinstances["EngineVersion"])
-        highAvailabilityCheck = str(dbinstances["MultiAZ"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-
+        # evaluate snapshots
         snapshots = rds.describe_db_snapshots(DBInstanceIdentifier=instanceId)
         # this is a passing check, we're just interested in the existance of Snapshots, not their configuration (other checks do it)
         if snapshots["DBSnapshots"]:
@@ -1889,3 +1890,174 @@ def rds_instance_snapshot_check(cache: dict, awsAccountId: str, awsRegion: str, 
                 "RecordState": "ACTIVE",
             }
             yield finding
+
+@registry.register_check("rds")
+def rds_instance_secgroup_risk_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.14] RDS instance security groups should not allow public access to DB ports"""
+    response = describe_db_instances(cache)
+    # ISO time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    myRdsInstances = response["DBInstances"]
+    response = describe_db_snapshots(cache)
+    myRdsSnapshots = response["DBSnapshots"]
+    for dbinstances in myRdsInstances:
+        instanceArn = str(dbinstances["DBInstanceArn"])
+        instanceId = str(dbinstances["DBInstanceIdentifier"])
+        instanceClass = str(dbinstances["DBInstanceClass"])
+        instancePort = int(dbinstances["Endpoint"]["Port"])
+        instanceEngine = str(dbinstances["Engine"])
+        instanceEngineVersion = str(dbinstances["EngineVersion"])
+        # details for SG comparison
+        endpointPort = str(dbinstances["Endpoint"]["Port"])
+        # loop list of SGs
+        for dbsg in dbinstances["VpcSecurityGroups"]:
+            sgId = dbsg["VpcSecurityGroupId"]
+            # lookup in EC2
+            for sgr in ec2.describe_security_group_rules(Filters=[{'Name': 'group-id','Values': [sgId]}])["SecurityGroupRules"]:
+                # pull out specific SG rules
+                if str(sgr["IsEgress"]) == 'True':
+                    continue
+                else:
+                    # grab port numbers for comparisons
+                    toPort = str(sgr["ToPort"])
+                    fromPort = str(sgr["FromPort"])
+                    # handle the fact that there may not be inbound IPv4/6 rules
+                    try:
+                        ipV4Cidr = str(sgr["CidrIpv4"])
+                    except KeyError:
+                        ipV4Cidr = "NoCidrHereBoss"
+                    try:
+                        ipV6Cidr = str(sgr["CidrIpv6"])
+                    except KeyError:
+                        ipV6Cidr = "NoCidrHereBoss"
+                    # Rule evaluation time - check if ports match DB ports
+                    if (toPort or fromPort == endpointPort):
+                        # keep going we found a SG rule that matches DB port
+                        if (ipV4Cidr == "0.0.0.0/0" or ipV6Cidr == "::/0"):
+                            # open access found - this is a failing finding
+                            finding = {
+                                "SchemaVersion": "2018-10-08",
+                                "Id": instanceArn + "/db-sg-risk-check",
+                                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                                "GeneratorId": instanceArn,
+                                "AwsAccountId": awsAccountId,
+                                "Types": [ "Software and Configuration Checks/AWS Security Best Practices" ],
+                                "FirstObservedAt": iso8601Time,
+                                "CreatedAt": iso8601Time,
+                                "UpdatedAt": iso8601Time,
+                                "Severity": {"Label": "HIGH"},
+                                "Confidence": 99,
+                                "Title": "[RDS.14] RDS instance security groups should not allow public access to DB ports",
+                                "Description": "RDS DB instance "
+                                + instanceId
+                                + " allows open access to DB ports via the Security Group which can allow for lateral movement and data exfiltration. Refer to the remediation instructions if this configuration is not intended.",
+                                "Remediation": {
+                                    "Recommendation": {
+                                        "Text": "For more information on RDS network security refer to the Controlling access with security groups section of the Amazon Relational Database Service User Guide",
+                                        "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.RDSSecurityGroups.html",
+                                    }
+                                },
+                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "Resources": [
+                                    {
+                                        "Type": "AwsRdsDbInstance",
+                                        "Id": instanceArn,
+                                        "Partition": awsPartition,
+                                        "Region": awsRegion,
+                                        "Details": {
+                                            "AwsRdsDbInstance": {
+                                                "DBInstanceIdentifier": instanceId,
+                                                "DBInstanceClass": instanceClass,
+                                                "DbInstancePort": instancePort,
+                                                "Engine": instanceEngine,
+                                                "EngineVersion": instanceEngineVersion
+                                            }
+                                        }
+                                    }
+                                ],
+                                "Compliance": {
+                                    "Status": "FAILED",
+                                    "RelatedRequirements": [
+                                        "NIST CSF PR.AC-3",
+                                        "NIST SP 800-53 AC-1",
+                                        "NIST SP 800-53 AC-17",
+                                        "NIST SP 800-53 AC-19",
+                                        "NIST SP 800-53 AC-20",
+                                        "NIST SP 800-53 SC-15",
+                                        "AICPA TSC CC6.6",
+                                        "ISO 27001:2013 A.6.2.1",
+                                        "ISO 27001:2013 A.6.2.2",
+                                        "ISO 27001:2013 A.11.2.6",
+                                        "ISO 27001:2013 A.13.1.1",
+                                        "ISO 27001:2013 A.13.2.1"
+                                    ]
+                                },
+                                "Workflow": {"Status": "NEW"},
+                                "RecordState": "ACTIVE"
+                            }
+                            yield finding
+                        else:
+                            # this is a passing finding
+                            finding = {
+                                "SchemaVersion": "2018-10-08",
+                                "Id": instanceArn + "/db-sg-risk-check",
+                                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                                "GeneratorId": instanceArn,
+                                "AwsAccountId": awsAccountId,
+                                "Types": [ "Software and Configuration Checks/AWS Security Best Practices" ],
+                                "FirstObservedAt": iso8601Time,
+                                "CreatedAt": iso8601Time,
+                                "UpdatedAt": iso8601Time,
+                                "Severity": {"Label": "INFORMATIONAL"},
+                                "Confidence": 99,
+                                "Title": "[RDS.14] RDS instance security groups should not allow public access to DB ports",
+                                "Description": "RDS DB instance "
+                                + instanceId
+                                + " does not allow open access to DB ports via the Security Group.",
+                                "Remediation": {
+                                    "Recommendation": {
+                                        "Text": "For more information on RDS network security refer to the Controlling access with security groups section of the Amazon Relational Database Service User Guide",
+                                        "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.RDSSecurityGroups.html",
+                                    }
+                                },
+                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "Resources": [
+                                    {
+                                        "Type": "AwsRdsDbInstance",
+                                        "Id": instanceArn,
+                                        "Partition": awsPartition,
+                                        "Region": awsRegion,
+                                        "Details": {
+                                            "AwsRdsDbInstance": {
+                                                "DBInstanceIdentifier": instanceId,
+                                                "DBInstanceClass": instanceClass,
+                                                "DbInstancePort": instancePort,
+                                                "Engine": instanceEngine,
+                                                "EngineVersion": instanceEngineVersion
+                                            }
+                                        }
+                                    }
+                                ],
+                                "Compliance": {
+                                    "Status": "PASSED",
+                                    "RelatedRequirements": [
+                                        "NIST CSF PR.AC-3",
+                                        "NIST SP 800-53 AC-1",
+                                        "NIST SP 800-53 AC-17",
+                                        "NIST SP 800-53 AC-19",
+                                        "NIST SP 800-53 AC-20",
+                                        "NIST SP 800-53 SC-15",
+                                        "AICPA TSC CC6.6",
+                                        "ISO 27001:2013 A.6.2.1",
+                                        "ISO 27001:2013 A.6.2.2",
+                                        "ISO 27001:2013 A.11.2.6",
+                                        "ISO 27001:2013 A.13.1.1",
+                                        "ISO 27001:2013 A.13.2.1"
+                                    ]
+                                },
+                                "Workflow": {"Status": "RESOLVED"},
+                                "RecordState": "ARCHIVED"
+                            }
+                            yield finding
+                    else:
+                        continue
