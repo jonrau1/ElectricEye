@@ -375,7 +375,9 @@ def elbv2_internet_facing_secure_listeners_check(cache: dict, awsAccountId: str,
                 iso8601Time = (
                     datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
-                if elbv2Scheme == "internet-facing" and listenerProtocol != "HTTPS" or "TLS":
+                if (elbv2Scheme == "internet-facing" 
+                    and listenerProtocol != "HTTPS" or "TLS"
+                ):
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": elbv2Arn + "/internet-facing-secure-listeners-check",
@@ -507,6 +509,9 @@ def elbv2_internet_facing_secure_listeners_check(cache: dict, awsAccountId: str,
 @registry.register_check("elbv2")
 def elbv2_tls12_listener_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELBv2.4] Application and Network Load Balancers with HTTPS or TLS listeners should enforce TLS 1.2 policies"""
+    # ISO Time
+    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+
     response = describe_load_balancers(cache)
     myElbv2LoadBalancers = response["LoadBalancers"]
     for loadbalancers in myElbv2LoadBalancers:
@@ -525,13 +530,10 @@ def elbv2_tls12_listener_policy_check(cache: dict, awsAccountId: str, awsRegion:
                 if listenerProtocol == "HTTPS" or "TLS":
                     try:
                         listenerTlsPolicyCheck = str(listeners["SslPolicy"])
-                    except:
+                    except KeyError:
+                        # ignore ALB/NLB without HTTPS/TLS
                         continue
-                    iso8601Time = (
-                        datetime.datetime.utcnow()
-                        .replace(tzinfo=datetime.timezone.utc)
-                        .isoformat()
-                    )
+                    # Evaluate listener
                     if (
                         listenerTlsPolicyCheck != "ELBSecurityPolicy-TLS-1-2-2017-01"
                         or "ELBSecurityPolicy-TLS-1-2-Ext-2018-06"
@@ -586,6 +588,9 @@ def elbv2_tls12_listener_policy_check(cache: dict, awsAccountId: str, awsRegion:
                                             "Type": elbv2LbType,
                                             "VpcId": elbv2VpcId,
                                         },
+                                        "Other": {
+                                            "SslPolicy": listenerTlsPolicyCheck
+                                        }
                                     },
                                 }
                             ],
@@ -651,7 +656,10 @@ def elbv2_tls12_listener_policy_check(cache: dict, awsAccountId: str, awsRegion:
                                             "Type": elbv2LbType,
                                             "VpcId": elbv2VpcId,
                                         },
-                                    },
+                                        "Other": {
+                                            "SslPolicy": listenerTlsPolicyCheck
+                                        }
+                                    }
                                 }
                             ],
                             "Compliance": {
@@ -667,11 +675,11 @@ def elbv2_tls12_listener_policy_check(cache: dict, awsAccountId: str, awsRegion:
                                     "ISO 27001:2013 A.13.2.1",
                                     "ISO 27001:2013 A.13.2.3",
                                     "ISO 27001:2013 A.14.1.2",
-                                    "ISO 27001:2013 A.14.1.3",
-                                ],
+                                    "ISO 27001:2013 A.14.1.3"
+                                ]
                             },
                             "Workflow": {"Status": "RESOLVED"},
-                            "RecordState": "ARCHIVED",
+                            "RecordState": "ARCHIVED"
                         }
                         yield finding
                 else:
