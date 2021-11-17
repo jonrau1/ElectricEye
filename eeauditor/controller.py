@@ -79,7 +79,6 @@ def run_auditor(auditor_name=None, check_name=None, delay=0, outputs=None, outpu
 )
 # Output File Name
 @click.option(
-    "-f",
     "--output-file",
     default="output", 
     show_default=True, 
@@ -87,14 +86,12 @@ def run_auditor(auditor_name=None, check_name=None, delay=0, outputs=None, outpu
 )
 # List Output Options
 @click.option(
-    "-lo",
     "--list-outputs",
     is_flag=True,
     help="Lists all valid Output locations"
 )
 # List Checks
 @click.option(
-    "-lc",
     "--list-checks",
     is_flag=True,
     help="List all Checks within every Auditor"
