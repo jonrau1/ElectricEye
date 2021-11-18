@@ -8,7 +8,7 @@ ElectricEye won't take the place of a crack squad of principal security engineer
 
 Or, you could just not do security at all and look like pic below:
 
-![ThreatActorKittens](screenshots/plz-no.jpg)
+![ThreatActorKittens](../screenshots/plz-no.jpg)
 
 ## 1. Why should I use this tool?
 
@@ -17,7 +17,7 @@ Primarily because it is free to *use* (you still need to pay for the infrastruct
 There is logic that will auto-archive findings as they move in and out of compliance, there are also other add-ons such as multi-account response & remediation playbooks, Config Recorder integration, Shodan integration, Slack integration and others that even if you do not use ElectricEye you can get some usage from the other stuff. Or just, you know, steal the code?
 
 Finally, you can look like the GIF below, where your security team is Jacob Trouba (New York Rangers #8 in white) laying sick open-ice hits on pesky security violations represented by Dal Colle (New York Islanders #28 in that ugly uniform).
-![OpenIceHit](screenshots/old-school-hockey-trouba.gif)
+![OpenIceHit](../screenshots/old-school-hockey-trouba.gif)
 
 ## 2. Will this tool help me become compliant with (insert framework of some sort here)?
 
@@ -211,9 +211,7 @@ You should consider taking a look at all of these:
 
 ## 15. Why did you swap the Dockerfile to being Alpine Linux-based?
 
-The original (V1.0) Dockerfile used the `ubuntu:latest` image as its base image and was chunky (~450MB) where the Alpine image is a tiny bit under a 10th of that (41.95MB). It is also much faster to create and push the image since `apk` adds only what is needed and isn't bloated by the Ubuntu dependencies from `apt` or that come prepackaged. Lastly, the build logs are a lot less chatty with the (hacky) ENV value set for Python and Pip related logs. Oh, and as of 13 MARCH 2020 there are no vulns in this image. (Reminder for me to periodically update and confirm this)
-
-![AlpineVulns](https://github.com/jonrau1/ElectricEye/blob/master/screenshots/alpine-ecr-vulns.JPG)
+The original (V1.0) Dockerfile used the `ubuntu:latest` image as its base image and was chunky (~450MB) where the Alpine image is a tiny bit under a 10th of that (41.95MB). It is also much faster to create and push the image since `apk` adds only what is needed and isn't bloated by the Ubuntu dependencies from `apt` or that come prepackaged. Lastly, the build logs are a lot less chatty with the (hacky) ENV value set for Python and Pip related logs. I have added a Trivy GitHub Action that will pipe to Security Findings any high / critical findings, Dependabot will also catch things
 
 ## 16. I thought you said that ElectricEye will not help me pass an audit!?
 
