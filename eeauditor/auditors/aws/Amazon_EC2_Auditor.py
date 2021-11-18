@@ -1224,3 +1224,188 @@ def ec2_ami_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                         "RecordState": "ACTIVE"
                     }
                     yield finding
+
+@registry.register_check("ec2")
+def ec2_concentration_risk(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EC2.7] EC2 Instances should be deployed across multiple Availability Zones"""
+    # Create empty list to hold unique Subnet IDs - for future lookup against AZs
+    uSubnets = []
+    # Create another empty list to hold unique AZs based on Subnets
+    uAzs = []
+    # ISO Time
+    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+    # Evaluation time - grab all unique subnets per EC2 instance in Region
+    iterator = paginate(cache=cache)
+    for page in iterator:
+        for r in page["Reservations"]:
+            for i in r["Instances"]:
+                subnetId = str(i["SubnetId"])
+                # write subnets to list if it's not there
+                if subnetId not in uSubnets:
+                    uSubnets.append(subnetId)
+                else:
+                    continue
+    # After done grabbing all subnets, perform super scientific AZ analysis
+    for subnet in ec2.describe_subnets(SubnetIds=uSubnets)["Subnets"]:
+        azId = str(subnet["AvailabilityZone"])
+        if azId not in uAzs:
+            uAzs.append(azId)
+        else:
+            continue
+    # Final judgement - need to handle North Cali (us-west-1) separately
+    # this is a failing check
+    if (awsRegion == 'us-west-1' and len(uAzs) < 1):
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{awsAccountId}:{awsRegion}/ec2-az-resilience-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"{awsAccountId}:{awsRegion}",
+            "AwsAccountId": awsAccountId,
+            "Types": [ "Software and Configuration Checks/AWS Security Best Practices" ],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "LOW"},
+            "Confidence": 99,
+            "Title": "[EC2.7] EC2 Instances should be deployed across multiple Availability Zones",
+            "Description": f"AWS Account {awsAccountId} in AWS Region {awsRegion} only utilizes {len(uAzs)} Availability Zones for all currently Running and stopped EC2 Instances. To maintain a higher standard of cyber resilience you should use at least 3 (or 2 in North California) to host your workloads on. If your applications required higher cyber resilience standards refer to the remediation instructions for more information.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "To learn more about cyber resilience and reliability, such as the usage of multi-AZ architecture, refer to the Reliability Pillar of AWS Well-Architected Framework",
+                    "Url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html"
+                }
+            },
+            "ProductFields": {"Product Name": "ElectricEye"},
+            "Resources": [
+                {
+                    "Type": "AwsAccount",
+                    "Id": awsAccountId,
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF ID.BE-5",
+                    "NIST CSF PR.PT-5",
+                    "NIST SP 800-53 CP-2",
+                    "NIST SP 800-53 CP-11",
+                    "NIST SP 800-53 SA-13",
+                    "NIST SP 800-53 SA14",
+                    "AICPA TSC CC3.1",
+                    "AICPA TSC A1.2",
+                    "ISO 27001:2013 A.11.1.4",
+                    "ISO 27001:2013 A.17.1.1",
+                    "ISO 27001:2013 A.17.1.2",
+                    "ISO 27001:2013 A.17.2.1"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+    # this is a failing check
+    elif (awsRegion != 'us-west-1' and len(uAzs) < 2):
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{awsAccountId}:{awsRegion}/ec2-az-resilience-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"{awsAccountId}:{awsRegion}",
+            "AwsAccountId": awsAccountId,
+            "Types": [ "Software and Configuration Checks/AWS Security Best Practices" ],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "LOW"},
+            "Confidence": 99,
+            "Title": "[EC2.7] EC2 Instances should be deployed across multiple Availability Zones",
+            "Description": f"AWS Account {awsAccountId} in AWS Region {awsRegion} only utilizes {len(uAzs)} Availability Zones for all currently Running and stopped EC2 Instances. To maintain a higher standard of cyber resilience you should use at least 3 (or 2 in North California) to host your workloads on. If your applications required higher cyber resilience standards refer to the remediation instructions for more information.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "To learn more about cyber resilience and reliability, such as the usage of multi-AZ architecture, refer to the Reliability Pillar of AWS Well-Architected Framework",
+                    "Url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html"
+                }
+            },
+            "ProductFields": {"Product Name": "ElectricEye"},
+            "Resources": [
+                {
+                    "Type": "AwsAccount",
+                    "Id": awsAccountId,
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF ID.BE-5",
+                    "NIST CSF PR.PT-5",
+                    "NIST SP 800-53 CP-2",
+                    "NIST SP 800-53 CP-11",
+                    "NIST SP 800-53 SA-13",
+                    "NIST SP 800-53 SA14",
+                    "AICPA TSC CC3.1",
+                    "AICPA TSC A1.2",
+                    "ISO 27001:2013 A.11.1.4",
+                    "ISO 27001:2013 A.17.1.1",
+                    "ISO 27001:2013 A.17.1.2",
+                    "ISO 27001:2013 A.17.2.1"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+    # this is a passing check
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{awsAccountId}:{awsRegion}/ec2-az-resilience-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"{awsAccountId}:{awsRegion}",
+            "AwsAccountId": awsAccountId,
+            "Types": [ "Software and Configuration Checks/AWS Security Best Practices" ],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[EC2.7] EC2 Instances should be deployed across multiple Availability Zones",
+            "Description": f"AWS Account {awsAccountId} in AWS Region {awsRegion} utilizes {len(uAzs)} Availability Zones for all currently Running and stopped EC2 Instances which can help maintain a higher standard of cyber resilience.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "To learn more about cyber resilience and reliability, such as the usage of multi-AZ architecture, refer to the Reliability Pillar of AWS Well-Architected Framework",
+                    "Url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html"
+                }
+            },
+            "ProductFields": {"Product Name": "ElectricEye"},
+            "Resources": [
+                {
+                    "Type": "AwsAccount",
+                    "Id": awsAccountId,
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF ID.BE-5",
+                    "NIST CSF PR.PT-5",
+                    "NIST SP 800-53 CP-2",
+                    "NIST SP 800-53 CP-11",
+                    "NIST SP 800-53 SA-13",
+                    "NIST SP 800-53 SA14",
+                    "AICPA TSC CC3.1",
+                    "AICPA TSC A1.2",
+                    "ISO 27001:2013 A.11.1.4",
+                    "ISO 27001:2013 A.17.1.1",
+                    "ISO 27001:2013 A.17.1.2",
+                    "ISO 27001:2013 A.17.2.1"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
