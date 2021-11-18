@@ -710,7 +710,7 @@ def ec2_serial_console_access_check(cache: dict, awsAccountId: str, awsRegion: s
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": awsAccountId,
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }
@@ -769,7 +769,7 @@ def ec2_serial_console_access_check(cache: dict, awsAccountId: str, awsRegion: s
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": awsAccountId,
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }
@@ -1279,7 +1279,7 @@ def ec2_concentration_risk(cache: dict, awsAccountId: str, awsRegion: str, awsPa
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": awsAccountId,
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }
@@ -1331,7 +1331,7 @@ def ec2_concentration_risk(cache: dict, awsAccountId: str, awsRegion: str, awsPa
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": awsAccountId,
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }
@@ -1383,7 +1383,7 @@ def ec2_concentration_risk(cache: dict, awsAccountId: str, awsRegion: str, awsPa
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": awsAccountId,
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }

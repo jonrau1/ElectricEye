@@ -327,6 +327,7 @@ Resources:
                   - qldb:ListLedgers
                   - ram:GetResourceShares
                   - rds:DescribeDB*
+                  - rds:DescribeEventCategories
                   - redshift:DescribeClusters
                   - redshift:DescribeLoggingStatus
                   - route53:ListHostedZones

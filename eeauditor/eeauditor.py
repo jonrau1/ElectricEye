@@ -21,7 +21,6 @@ from functools import partial
 import inspect
 import os
 from time import sleep
-import re
 import boto3
 from check_register import CheckRegister, accumulate_paged_results
 from pluginbase import PluginBase

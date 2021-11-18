@@ -90,6 +90,7 @@
                 "elasticfilesystem:DescribeFileSystems",
                 "apigateway:GET",
                 "rds:DescribeDB*",
+                "rds:DescribeEventCategories",
                 "s3:ListBucket",
                 "backup:DescribeProtectedResource",
                 "s3:GetEncryptionConfiguration",

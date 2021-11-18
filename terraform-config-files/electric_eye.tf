@@ -319,6 +319,7 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "elasticfilesystem:DescribeFileSystems",
                 "apigateway:GET",
                 "rds:DescribeDB*",
+                "rds:DescribeEventCategories",
                 "s3:ListBucket",
                 "backup:DescribeProtectedResource",
                 "s3:GetEncryptionConfiguration",

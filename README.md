@@ -472,7 +472,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 
 ## Supported Services and Checks
 
-These are the following services and checks perform by each Auditor. There are currently **329** checks supported across **86** AWS services / components using **67** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **331** checks supported across **87** AWS services / components using **67** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced, Health, and Trusted Advisor checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in `us-east-1` to perform all checks. The **AWS Shield Advanced**, **AWS Health** and **AWS Trusted Advisor** APIs only live in `us-east-1`, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -651,7 +651,9 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_RDS_Auditor.py                  | RDS DB Cluster (Aurora)        | Is Database Activity Stream configured                                              |
 | Amazon_RDS_Auditor.py                  | RDS DB Cluster (Aurora)        | Is the cluster encrypted                                                            |
 | Amazon_RDS_Auditor.py                  | RDS DB Instance                | Does Instance have any snapshots                                                    |
-| Amazon_RDS_Auditor.py                  | RDS DB Instance                | Does the instance security group allow risk access                                  |
+| Amazon_RDS_Auditor.py                  | RDS DB Instance                | Does the instance security group allow risky access                                 |
+| Amazon_RDS_Auditor.py                  | Event Subscription (Account)   | Does an Event Subscription to monitor DB instances exist                            |
+| Amazon_RDS_Auditor.py                  | Event Subscription (Account)   | Does an Event Subscription to monitor paramter groups exist                         |
 | Amazon_Redshift_Auditor.py             | Redshift cluster               | Is the cluster publicly accessible                                                  |
 | Amazon_Redshift_Auditor.py             | Redshift cluster               | Is the cluster encrypted                                                            |
 | Amazon_Redshift_Auditor.py             | Redshift cluster               | Is enhanced VPC routing enabled                                                     |
@@ -915,7 +917,7 @@ def imagebuilder_pipeline_tests_enabled_check(cache: dict, awsAccountId: str, aw
 
 **NOTE:** While not required by ASFF, it is required by ElectricEye that all checks are mapped to the supported compliance standards. It is recommended to use the mapped `Compliance.Requirements` from an existing Check within an Auditor that is similar to yours - for instance - if you are developing a check around TLS, look for an example of a Check for encryption in transit. If you are developing a check to enable Logging, look for a Check that deals with Logging.
 
-**NOTE 2:** The `Resources.Type` should **ALWAYS** be an ARN, not ever Boto3 Client nor Function within will return an ARN and you may need to look up what the ARN looks like, refer to the **[Actions, resources, and condition keys for AWS services](https://docs.aws.amazon.com/service-authorization/latest/reference/reference_policies_actions-resources-contextkeys.html)** section of the Service Authorization Reference.
+**NOTE 2:** The `Resources.Id` should **ALWAYS** be an ARN, not every Boto3 Client nor Function within will return an ARN and you may need to look up what the ARN looks like, refer to the **[Actions, resources, and condition keys for AWS services](https://docs.aws.amazon.com/service-authorization/latest/reference/reference_policies_actions-resources-contextkeys.html)** section of the Service Authorization Reference.
 
 **NOTE 3:** When possible, **ALWAYS** use the AWS Documentation for the `Remediation.Recommendation.Text` and `Remediation.Recommendation.Url` sections of the ASFF. You should include a short description and note what Section and which Guide you are using. This additional meta-descriptiveness sould also be applied to the `Description` of a *failing* finding, as demonstrated below.
 
@@ -981,11 +983,11 @@ finding = {
             "ISO 27001:2013 A.9.2.3",
             "ISO 27001:2013 A.9.4.1",
             "ISO 27001:2013 A.9.4.4",
-            "ISO 27001:2013 A.9.4.5",
+            "ISO 27001:2013 A.9.4.5"
         ]
     },
     "Workflow": {"Status": "NEW"},
-    "RecordState": "ACTIVE",
+    "RecordState": "ACTIVE"
 }
 yield finding
 ```
