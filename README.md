@@ -76,6 +76,8 @@ Numerous personas can make effective usage of ElectricEye such as: Security Oper
 
 > - ElectricEye will report all findings to AWS Security Hub, if configured ElectricEye can also output to CSV and JSON files or to a PostgreSQL Database (hosted on AWS RDS, or otherwise). Finally (and optionally) you can report findings to the [DisruptOps](https://disruptops.com/electriceye-v2-0/) platform which also has its [own integration with Security Hub](https://disruptops.com/cloud-providers/aws/).
 
+> - Using add-ons and native AWS Security Hub integrations, you can extend your findings into other workflows using tools such as Azure DevOps Boards, Slack, PagerDuty, Teams, or otherwise.
+
 ## Running locally
 
 **NOTE:** While this section is titled "Running Locally" - you can use the following setup to run anywhere you can run Python such as EKS, Kubernetes, a self-managed Docker Container, AWS CloudShell, etc. The usage of `venv` for those utilities is optional, but strongly recommended.
