@@ -18,9 +18,9 @@
 #specific language governing permissions and limitations
 #under the License.
 
-# latest hash as of 19 NOV 2021 - Alpine 3.15
-# https://hub.docker.com/layers/alpine/library/alpine/3.15/images/sha256-3eea5acfa729637baeedf1059a2a03d5a29356aac6baf65fea08762afa72321b?context=explore
-FROM alpine@sha256:3eea5acfa729637baeedf1059a2a03d5a29356aac6baf65fea08762afa72321b
+# latest hash as of 12 NOV 2021 - Alpine 3.14.3
+# https://hub.docker.com/layers/alpine/library/alpine/3.14.3/images/sha256-5e604d3358ab7b6b734402ce2e19ddd822a354dc14843f34d36c603521dbb4f9?context=explore
+FROM alpine@sha256:5e604d3358ab7b6b734402ce2e19ddd822a354dc14843f34d36c603521dbb4f9
 
 # This hack is widely applied to avoid python printing issues in docker containers.
 # See: https://github.com/Docker-Hub-frolvlad/docker-alpine-python3/pull/13
