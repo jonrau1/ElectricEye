@@ -74,6 +74,20 @@ variable "postgre_password_SSM_Parameter" {
   default =     "placeholder"
   description = "The SSM Secure String Parameter containing your PostgreSQL Password. Leave the default value if you will not be using PostgreSQL"
 }
+# DOCDB
+variable "mongo_username" {
+  default =     "placeholder"
+  description = "Main Mongo User Name used for DocDB Authentication. Leave the default value if you will not be sending findings to DocDB"
+}
+variable "mongo_hostname" {
+  default =     "placeholder"
+  description = "Hostname of your DocDB Database. Leave the default value if you will not be sending findings to DocDB"
+}
+variable "mongo_password_parameter" {
+  default =     "placeholder"
+  description = "SSM Parameter name containing your DocDB Mongo Password. Leave the default value if you will not be using DocDB"
+}
+# Schedule
 variable "Electric_Eye_Schedule_Task_Expression" {
   default = "rate(12 hours)"
 }

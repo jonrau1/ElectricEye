@@ -191,6 +191,23 @@ export DOPS_CLIENT_ID_PARAM="dops-client-id"
 export DOPS_API_KEY_PARAM="dops-api-key"
 ```
 
+- To output to a AWS DocumentDB database, add the following arguement to your call to `controller.py`: `-o docdb`. You will also need to ensure that your DocDB security group allows you to communicate with your database. Plaintext passwords are frowned upon, so create an AWS Systems Manager Parameter Store secure parameter with the below command, switch any value that says `$PLACEHOLDER`, but keep the double quotes (`"`)..
+
+```bash
+aws ssm put-parameter \
+    --name $PLACEHOLDER \
+    --description 'AWS DocDB Database Password' \
+    --type SecureString --value $PLACEHOLDER
+```
+
+- To configure your ENV to have the proper outputs for AWS DocumentDB use the below `EXPORT` commands and switch any value that says `$PLACEHOLDER`, but keep the double quotes (`"`).
+
+```bash
+export MONGODB_USERNAME="$PLACEHOLDER"
+export MONGODB_HOSTNAME="$PLACEHOLDER"
+export MONGODB_PASSWORD_PARAMETER="$PLACEHOLDER"
+```
+
 - If you will be using Shodan.io to gain information about your public facing assets, retrieve your API key [from your account here](https://developer.shodan.io/dashboard), and then create an AWS Systems Manager Parameter Store secure parameter with the below command. Only change the `--value` entry for either, the name can stay the same.
 
 ```bash

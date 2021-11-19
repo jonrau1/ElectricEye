@@ -58,6 +58,19 @@ Parameters:
     Type: String
     Description: The SSM Secure String Parameter containing your PostgreSQL Password. Leave the default value if you will not be using PostgreSQL
     Default: placeholder
+  # AWS DocDB
+  MongoUsername:
+    Type: String
+    Description: Main Mongo User Name used for DocDB Authentication. Leave the default value if you will not be sending findings to DocDB
+    Default: placeholder
+  MongoPasswordSSMParamter:
+    Type: String
+    Description: SSM Parameter name containing your DocDB Mongo Password. Leave the default value if you will not be using DocDB
+    Default: placeholder
+  DocDbHostname:
+    Type: String
+    Description: Hostname of your DocDB Database. Leave the default value if you will not be sending findings to DocDB
+    Default: placeholder
   # ELECTRICEYE CORE
   ElectricEyeClusterName:
     Type: String
@@ -418,8 +431,6 @@ Resources:
                   - ecr:BatchCheckLayerAvailability
                   - ecr:GetDownloadUrlForLayer
                   - ecr:BatchGetImage
-                  - kms:Decrypt
-                  - kms:DescribeKey
                   - logs:CreateLogStream
                   - logs:PutLogEvents
                   - ssm:GetParameter
@@ -480,6 +491,13 @@ Resources:
               Value: !Ref PostgresPort
             - Name: POSTGRES_PASSWORD_SSM_PARAM_NAME
               Value: !Ref PostgresPasswordSSMParam
+            # DOCDB
+            - Name: MONGODB_USERNAME
+              Value: !Ref MongoUsername
+            - Name: MONGODB_HOSTNAME
+              Value: !Ref DocDbHostname
+            - Name: MONGODB_PASSWORD_PARAMETER
+              Value: !Ref MongoPasswordSSMParamter
           LogConfiguration:
             LogDriver: awslogs
             Options:

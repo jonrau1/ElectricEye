@@ -130,6 +130,18 @@ resource "aws_ecs_task_definition" "Electric_Eye_ECS_Task_Definition" {
         "value": "${var.postgre_password_SSM_Parameter}",
         "name": "POSTGRES_PASSWORD_SSM_PARAM_NAME"
       },
+      {
+        "value": "${var.mongo_hostname}",
+        "name": "MONGODB_HOSTNAME"
+      },
+      {
+        "value": "${var.mongo_username}",
+        "name": "MONGODB_USERNAME"
+      },
+      {
+        "value": "${var.mongo_password_parameter}",
+        "name": "MONGODB_PASSWORD_PARAMETER"
+      },
     ],
     "name": "${var.Electric_Eye_ECS_Resources_Name}",
     "networkMode": "awsvpc",
