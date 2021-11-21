@@ -28,7 +28,7 @@ resource "aws_lambda_function" "ElectricEye_ChatOps_Lambda_Function" {
   timeout       = 61
   environment {
     variables = {
-      SLACK_WEBHOOK_PARAMETER = "${var.Slack_Webhook_Parameter}"
+      SSM_PARAMETER_NAME = "${var.SSM_PARAMETER_NAME}"
     }
   }
 }
