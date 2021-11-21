@@ -20,26 +20,126 @@
 import os
 import boto3
 import json
-import urllib3
+import requests
+
 def lambda_handler(event, context):
     # create ssm client
     ssm = boto3.client('ssm')
     # create env var for SSM Parameter containing Slack Webhook URL
-    webhookParam = os.environ['SLACK_WEBHOOK_PARAMETER']
-    http = urllib3.PoolManager()
-    # retrieve slack webhook from SSM
+    ssm_parameter_name = os.environ['SSM_PARAMETER_NAME']
+    bot_token = ""
+    slack_channel_id = ""
+    slack_icon_emoji = ':see_no_evil:'
+    slack_user_name = 'ElectricEye'
     try:
-        response = ssm.get_parameter(Name=webhookParam)
-        slackWebhook = str(response['Parameter']['Value'])
+        response = ssm.get_parameter(Name=ssm_parameter_name)
+        response_object = str(response['Parameter']['Value'])
+        response_object_dict = json.loads(response_object)
+        bot_token = response_object_dict.get('bot_token')
+        slack_channel_id = response_object_dict.get("slack_channel_id")
+
     except Exception as e:
         print(e)
-    slackHeaders = { 'Content-Type': 'application/json' }
+
     for findings in event['detail']['findings']:
-        severityLabel = str(findings['Severity']['Label'])
-        electricEyeCheck = str(findings['Title'])
-        awsAccountId = str(findings['AwsAccountId'])
-        for resources in findings['Resources']:
-            resourceId = str(resources['Id'])
-            slackMessage = 'A new ' + severityLabel + ' severity finding for ' + resourceId + ' in acccount ' + awsAccountId + ' has been created in Security Hub due to failing the check: ' + electricEyeCheck
-            message = { 'text': slackMessage }
-            http.request('POST', slackWebhook,  headers=slackHeaders, body=json.dumps(message).encode('utf-8'))
+        if findings.get("Compliance").get("Status") == "FAILED":
+            severityLabel = findings['Severity']['Label']
+            title = findings['Title']
+            awsAccountId = findings['AwsAccountId']
+            for resources in findings['Resources']:
+                resourceId = resources['Id']
+                resourceType = resources['Type']
+                resourceRegion = resources['Region']
+                blocks = [
+                    {
+                        "type": "header",
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Finding"
+                        }
+                    },
+                    {
+                        "type": "section",
+                        "fields": [
+                            {
+                                "type": "mrkdwn",
+                                "text": "*Resource:* " + resourceId
+                            },
+                            {
+                                "type": "mrkdwn",
+                                "text": "*Resource Type:* " + resourceType
+                            }
+                        ]
+                    },
+                    {
+                        "type": "section",
+                        "fields": [
+                            {
+                                "type": "mrkdwn",
+                                "text": "*Region:* " + resourceRegion
+                            },
+                            {
+                                "type": "mrkdwn",
+                                "text": "*Time:* " + event.get("time")
+                            }
+                        ]
+                    },
+                    {
+                        "type": "section",
+                        "fields": [
+                            {
+                                "type": "mrkdwn",
+                                "text": "*Account:* " + awsAccountId
+                            },
+                            {
+                                "type": "mrkdwn",
+                                "text": "*Compliance Status:* " + findings.get("Compliance").get("Status")
+                            }
+                        ]
+                    },
+                    {
+                        "type": "section",
+                        "fields": [
+                            {
+                                "type": "mrkdwn",
+                                "text": "*Severity:* " + severityLabel
+                            },
+                            {
+                                "type": "mrkdwn",
+                                "text": "*FindingId:* " + findings.get("Id")
+                            },
+
+                        ]
+                    },
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": "*Check:* " + title
+                        }
+                    },
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": "<" + findings.get('Remediation').get('Recommendation').get(
+                                'Url') + "|*Recommendation:* " + findings.get('Remediation').get('Recommendation').get(
+                                'Text') + ">"
+                        }
+                    }
+                ]
+                slack_payload = {
+                    'token': bot_token,
+                    'channel': slack_channel_id,
+                    'text': "ElectricEye",
+                    'icon_emoji': slack_icon_emoji,
+                    'username': slack_user_name,
+                    'blocks': json.dumps(blocks) if blocks else None
+                }
+                status = requests.post('https://slack.com/api/chat.postMessage', slack_payload).json()
+                print(status)
+
+
+        else:
+            print("Compliance Status is either passed or None " + findings.get("Compliance").get(
+                "Status") + " for " + findings.get("Id"))
