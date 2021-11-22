@@ -25,6 +25,9 @@ Parameters:
   SSMParameterName:
     Type: String
     Description: The name of the SSM Parameter that contains the Slack App Webhook URL for ElectricEye-ChatOps
+  RequestsPackageKlayersArn:
+    Type: String
+    Descripton: Arn of Keith Layers for requests package. Visit https://github.com/keithrozario/Klayers for more info.
 Resources:
   ElectricEyeChatOpsRRLambdaFunction:
     Type: AWS::Lambda::Function
@@ -32,6 +35,7 @@ Resources:
       FunctionName: ElectricEye-ChatOps-Slack
       Description: Sends the results of high-severity ElectricEye findings to a Slack Channel - Managed by CloudFormation
       Handler: index.lambda_handler
+      Layers: !Ref RequestsPackageKlayersArn
       MemorySize: 256
       Role: !GetAtt ElectricEyeChatOpsExecRole.Arn
       Runtime: python3.7
