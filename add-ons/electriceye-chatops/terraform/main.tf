@@ -23,12 +23,13 @@ resource "aws_lambda_function" "ElectricEye_ChatOps_Lambda_Function" {
   description   = "Sends the results of high-severity ElectricEye findings to a Slack Channel - Managed by Terraform"
   role          = "${aws_iam_role.ElectricEye_ChatOps_Lambda_Role.arn}"
   handler       = "lambda_function.lambda_handler"
+  layers        = "${var.RequestsPackageKlayersArn}"
   runtime       = "python3.8"
   memory_size   = 256
   timeout       = 61
   environment {
     variables = {
-      SLACK_WEBHOOK_PARAMETER = "${var.Slack_Webhook_Parameter}"
+      SSM_PARAMETER_NAME = "${var.SSMParameterName}"
     }
   }
 }

@@ -20,7 +20,11 @@
 variable "AWS_REGION" {
   default = "us-east-1"
 }
-variable "Slack_Webhook_Parameter" {
+variable "SSMParameterName" {
   default     = ""
-  description = "The name of the SSM Parameter that contains the Slack App Webhook URL for ElectricEye-ChatOps"
+  description = "The name of the SSM Parameter that contains the Slack bot token and channel Id for ElectricEye-ChatOps"
+}
+variable "RequestsPackageKlayersArn" {
+  default     = ""
+  description = "Arn of Keith Layers for requests package. Visit https://github.com/keithrozario/Klayers for more info"
 }
