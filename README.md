@@ -40,13 +40,13 @@ Continuously monitor your AWS services for configurations that can lead to degra
 
 ## Synopsis
 
-- **320+ security & AWS best practice detections** including services not covered by Security Hub/Config (MemoryDB, Cognito, EKS, ECR, DocDB, Amazon Managed Blockchain, etc.), all findings are **aligned to NIST CSF, NIST 800-53, AICPA TSC and ISO 27001:2013**.
+- **320+ security & AWS best practice detections** including services not covered by Security Hub/Config (MemoryDB, Cognito, EKS, ECR, DocDB, Amazon Managed Blockchain, etc.), all findings are **aligned to NIST CSF, NIST 800-53, AICPA TSC and ISO 27001:2013**
 
-- Supports every **AWS Region and Partition** (Commercial, AWS GovCloud, AWS China, AWS Secret (`ISO B`) and AWS Top Secret (`ISO`)).
+- Supports every **AWS Region and Partition**: Commercial (`aws`), AWS GovCloud (`aws-gov`), AWS China (`aws-cn`), AWS Secret (`aws-iso-b`) and AWS Top Secret (`aws-iso`). AWS Commercial partition supports selective muting of unsupported Regions for services supported by ElectricEye.
 
-- Built with **full AWS Security Hub support** in mind, can optionally output to JSON or CSV. **Can run as a CLI tool, in Fargate, as a standalone Container, or anywhere else** you can run Python (K8s, Batch, CodeBuild, EC2, etc.).
+- Built with **full AWS Security Hub support** in mind, can optionally output to JSON or CSV. **Can run as a CLI tool, in Fargate, as a standalone Container, or anywhere else** you can run Python (K8s, Batch, CodeBuild, EC2, etc.)
 
-- **Multiple add-ons enable automated remediation, ChatOps, and other integrations** with third-party tools such as [DisruptOps (a FireMon company)](https://www.firemon.com/products/disruptops/), [PagerDuty](https://www.pagerduty.com/), [Slack](https://slack.com/), [ServiceNow Incident Management](https://docs.servicenow.com/bundle/rome-it-service-management/page/product/incident-management/concept/c_IncidentManagement.html), [Atlassian Jira](https://www.atlassian.com/software/jira), [Azure DevOps Boards](https://azure.microsoft.com/en-us/services/devops/boards/), [Shodan](https://www.shodan.io/) and [Microsoft Teams](https://www.microsoft.com/en-us/microsoft-teams/group-chat-software).
+- **Multiple add-ons enable automated remediation, ChatOps, and other integrations** with third-party tools such as [DisruptOps (a FireMon company)](https://www.firemon.com/products/disruptops/), [PagerDuty](https://www.pagerduty.com/), [Slack](https://slack.com/), [ServiceNow Incident Management](https://docs.servicenow.com/bundle/rome-it-service-management/page/product/incident-management/concept/c_IncidentManagement.html), [Atlassian Jira](https://www.atlassian.com/software/jira), [Azure DevOps Boards](https://azure.microsoft.com/en-us/services/devops/boards/), [Shodan](https://www.shodan.io/) and [Microsoft Teams](https://www.microsoft.com/en-us/microsoft-teams/group-chat-software)
 
 ## Description
 
@@ -54,7 +54,7 @@ ElectricEye is a set of Python scripts (affectionately called **Auditors**) that
 
 ElectricEye was originally designed to run on AWS Fargate, which is a serverless container orchestration service, however you can also run it via a CLI anywhere you have the required dependencies installed and IAM Permissions. On a schedule, Fargate will download all of the auditor scripts from a S3 bucket, run the checks and send results to Security Hub. All infrastructure will be deployed via CloudFormation or Terraform to help you apply this solution to many accounts and/or regions. All findings (passed or failed) will contain AWS documentation references in the `Remediation.Recommendation` section of the ASFF (and the **Remediation** section of the Security Hub UI) to further educate yourself and others on.
 
-ElectricEye comes with several add-on modules to extend the core model which provides dozens of detection-based controls. ElectricEye-Response provides a multi-account response and remediation platform (also known as SOAR), ElectricEye-ChatOps integrates with Slack/Pagerduty/Microsoft Teams, and ElectricEye-Reports integrates with QuickSight. All add-ons are supported by both CloudFormation and Terraform and can also be used independently of the core module itself.
+ElectricEye comes with several add-on modules to extend the core model which provides dozens of detection-based controls. ElectricEye-Response provides a multi-account response and remediation platform (also known as SOAR), ElectricEye-ChatOps integrates with Slack/Pagerduty/Microsoft Teams, and ElectricEye-Reports integrates with QuickSight. All add-ons are supported by both CloudFormation and Terraform and can also be used independently of the core module itself. ElectricEye also serves an unofficial integration of sorts for other AWS Services who have not yet integrated with AWS Security Hub, such as AWS Health, AWS Trusted Advisor, AWS Shield Advanced, and AWS IOT Device Defender.
 
 Numerous personas can make effective usage of ElectricEye such as: Security Operations (SecOps), DevOps, DevSecOps, IT Audit, Governance/Risk/Compliance (GRC) Analysts, Enterprise Architects, Security Architects, Cloud Center of Excellence (CCOE) Engineers, Software Development Engineers (SDEs) using Cloud-native services, Red Teamers, Purple Teamers, and Security Engineering.
 
@@ -491,7 +491,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 
 ## Supported Services and Checks
 
-These are the following services and checks perform by each Auditor. There are currently **331** checks supported across **87** AWS services / components using **67** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **332** checks supported across **87** AWS services / components using **67** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced, Health, and Trusted Advisor checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in `us-east-1` to perform all checks. The **AWS Shield Advanced**, **AWS Health** and **AWS Trusted Advisor** APIs only live in `us-east-1`, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -598,15 +598,15 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_Elasticache_Redis_Auditor.py    | Elasticache Redis Cluster      | Is an AUTH Token used                                                               |
 | Amazon_Elasticache_Redis_Auditor.py    | Elasticache Redis Cluster      | Is the cluster encrypted at rest                                                    |
 | Amazon_Elasticache_Redis_Auditor.py    | Elasticache Redis Cluster      | Does the cluster encrypt in transit                                                 |
-| Amazon_ElasticsearchService_Auditor.py | OpenSearch Domain              | Are dedicated masters used                                                          |
-| Amazon_ElasticsearchService_Auditor.py | OpenSearch Domain              | Is Cognito auth used                                                                |
-| Amazon_ElasticsearchService_Auditor.py | OpenSearch Domain              | Is encryption at rest used                                                          |
-| Amazon_ElasticsearchService_Auditor.py | OpenSearch Domain              | Is Node2Node encryption used                                                        |
-| Amazon_ElasticsearchService_Auditor.py | OpenSearch Domain              | Is HTTPS-only enforced                                                              |
-| Amazon_ElasticsearchService_Auditor.py | OpenSearch Domain              | Is a TLS 1.2 policy used                                                            |
-| Amazon_ElasticsearchService_Auditor.py | OpenSearch Domain              | Are there available version updates                                                 |
-| Amazon_ElasticsearchService_Auditor.py | OpenSearch Domain              | Is ES in a VPC                                                                      |
-| Amazon_ElasticsearchService_Auditor.py | OpenSearch Domain              | Is ES Publicly Accessible                                                           |
+| Amazon_ElasticsearchService_Auditor.py | ElasticSearch Domain           | Are dedicated masters used                                                          |
+| Amazon_ElasticsearchService_Auditor.py | ElasticSearch Domain           | Is Cognito auth used                                                                |
+| Amazon_ElasticsearchService_Auditor.py | ElasticSearch Domain           | Is encryption at rest used                                                          |
+| Amazon_ElasticsearchService_Auditor.py | ElasticSearch Domain           | Is Node2Node encryption used                                                        |
+| Amazon_ElasticsearchService_Auditor.py | ElasticSearch Domain           | Is HTTPS-only enforced                                                              |
+| Amazon_ElasticsearchService_Auditor.py | ElasticSearch Domain           | Is a TLS 1.2 policy used                                                            |
+| Amazon_ElasticsearchService_Auditor.py | ElasticSearch Domain           | Are there available version updates                                                 |
+| Amazon_ElasticsearchService_Auditor.py | ElasticSearch Domain           | Is ES in a VPC                                                                      |
+| Amazon_ElasticsearchService_Auditor.py | ElasticSearch Domain           | Is ES Publicly Accessible                                                           |
 | Amazon_ELB_Auditor.py                  | ELB (Classic Load Balancer)    | Do internet facing ELBs have a secure listener                                      |
 | Amazon_ELB_Auditor.py                  | ELB (Classic Load Balancer)    | Do secure listeners enforce TLS 1.2                                                 |
 | Amazon_ELB_Auditor.py                  | ELB (Classic Load Balancer)    | Is cross zone load balancing enabled                                                |
@@ -618,7 +618,8 @@ These are the following services and checks perform by each Auditor. There are c
 | Amazon_ELBv2_Auditor.py                | ELBv2 (ALB/NLB)                | Do secure listeners enforce TLS 1.2                                                 |
 | Amazon_ELBv2_Auditor.py                | ELBv2 (ALB/NLB)                | Are invalid HTTP headers dropped                                                    |
 | Amazon_ELBv2_Auditor.py                | ELBv2 (NLB)                    | Do NLBs with TLS listeners have access logging enabled                              |
-| Amazon_ELBv2_Auditor.py                | Amazon_ELBv2_Auditor.py        | Do ALBs have HTTP Desync protection enabled                                         |
+| Amazon_ELBv2_Auditor.py                | ELBv2 (ALB)                    | Do ALBs have HTTP Desync protection enabled                                         |
+| Amazon_ELBv2_Auditor.py                | ELBv2 (ALB)                    | Do ALBs SGs allow access to non-Listener ports                                      |
 | Amazon_EMR_Auditor.py                  | EMR Cluster                    | Do clusters have a sec configuration attached                                       |
 | Amazon_EMR_Auditor.py                  | EMR Cluster                    | Do cluster sec configs enforce encryption in transit                                |
 | Amazon_EMR_Auditor.py                  | EMR Cluster                    | Do cluster sec configs enforce encryption at rest for EMRFS                         |
@@ -821,7 +822,7 @@ These are the following services and checks perform by each Auditor. There are c
 | Shodan_Auditor.py                      | EC2 Instance                   | Are EC2 instances w/ public IPs indexed                                             |
 | Shodan_Auditor.py                      | ELBv2 (ALB)                    | Are internet-facing ALBs indexed                                                    |
 | Shodan_Auditor.py                      | RDS Instance                   | Are public accessible RDS instances indexed                                         |
-| Shodan_Auditor.py                      | OpenSearch Domain              | Are ES Domains outside a VPC indexed                                                |
+| Shodan_Auditor.py                      | ElasticSearch Domain           | Are ES Domains outside a VPC indexed                                                |
 | Shodan_Auditor.py                      | ELB (CLB)                      | Are internet-facing CLBs indexed                                                    |
 | Shodan_Auditor.py                      | DMS Replication Instance       | Are public accessible DMS instances indexed                                         |
 | Shodan_Auditor.py                      | Amazon MQ message broker       | Are public accessible message brokers indexed                                       |

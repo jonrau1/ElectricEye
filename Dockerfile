@@ -32,8 +32,8 @@ COPY requirements.txt /tmp/requirements.txt
 COPY ./eeauditor/ ./eeauditor/
 # Installing dependencies
 RUN \
-    apk add bash && \
-    apk add --no-cache python3 postgresql-libs && \
+    apk update && \
+    apk add --no-cache python3 postgresql-libs bash && \
     apk add --no-cache --virtual .build-deps gcc python3-dev musl-dev postgresql-dev && \
     python3 -m ensurepip && \
     pip3 install --no-cache --upgrade pip setuptools wheel && \

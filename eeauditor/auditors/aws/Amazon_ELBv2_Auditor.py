@@ -24,11 +24,12 @@ from check_register import CheckRegister
 
 registry = CheckRegister()
 
-# import boto3 clients
+# boto3 clients
 elbv2 = boto3.client("elbv2")
-# loop through ELBv2 load balancers
+ec2 = boto3.client("ec2")
 
 def describe_load_balancers(cache):
+    # loop through ELBv2 load balancers
     response = cache.get("describe_load_balancers")
     if response:
         return response
@@ -1005,7 +1006,7 @@ def elbv2_nlb_tls_logging_check(cache: dict, awsAccountId: str, awsRegion: str, 
 
 @registry.register_check("elbv2")
 def elbv2_alb_http_desync_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """aaa"""
+    """[ELBv2.7] Application Load Balancers should have HTTP Desync protection enabled"""
     response = describe_load_balancers(cache)
     myElbv2LoadBalancers = response["LoadBalancers"]
     for loadbalancers in myElbv2LoadBalancers:
@@ -1176,5 +1177,182 @@ def elbv2_alb_http_desync_protection_check(cache: dict, awsAccountId: str, awsRe
                         continue
             except Exception as e:
                 print(e)
+        else:
+            continue
+
+@registry.register_check("elbv2")
+def elbv2_alb_sg_risk_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ELBv2.8] Application Load Balancer security groups should not allow non-Listener ports access"""
+    # ISO Time
+    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+    # Evaluations
+    response = describe_load_balancers(cache)
+    myElbv2LoadBalancers = response["LoadBalancers"]
+    for loadbalancers in myElbv2LoadBalancers:
+        elbv2LbType = str(loadbalancers["Type"])
+        # only applicable for ALBs...
+        if elbv2LbType == "application":
+            elbv2Arn = str(loadbalancers["LoadBalancerArn"])
+            elbv2Name = str(loadbalancers["LoadBalancerName"])
+            elbv2DnsName = str(loadbalancers["DNSName"])
+            elbv2Scheme = str(loadbalancers["Scheme"])
+            elbv2VpcId = str(loadbalancers["VpcId"])
+            elbv2IpAddressType = str(loadbalancers["IpAddressType"])
+            # Create empty list per ELB to store all Listener Ports and SG IDs
+            lbSgs = []
+            listenerPorts = []
+            for sg in loadbalancers["SecurityGroups"]:
+                lbSgs.append(str(sg))
+            # feed ARN into Listener Call to find all Listeners
+            for listener in elbv2.describe_listeners(LoadBalancerArn=elbv2Arn)["Listeners"]:
+                # we will stick regular ports AND the redirect action ports (if they exist) into the Port List
+                portNumber = str(listener["Port"])
+                if portNumber not in listenerPorts:
+                    listenerPorts.append(portNumber)
+                # now loop the redirects (if there)
+                for actions in listener["DefaultActions"]:
+                    try:
+                        redirectPort = str(actions["RedirectConfig"]["Port"])
+                        if redirectPort not in listenerPorts:
+                            listenerPorts.append(redirectPort)
+                    except KeyError:
+                        continue
+            # Now we can start to perform evaluations per SG
+            for sgid in lbSgs:
+                # pass SG ID to Describe SG Rules API via filter and loop each rule
+                for sgrs in ec2.describe_security_group_rules(Filters=[{'Name': 'group-id','Values': [sgid]}])["SecurityGroupRules"]:
+                    # if the from port or to port range is not within the Listener or Redirect Ports then it's a failing check
+                    # we will skip egress rules though
+                    if str(sgrs["IsEgress"]) == "True":
+                        continue
+                    if (str(sgrs["FromPort"]) or str(sgrs["ToPort"])) not in listenerPorts:
+                        # this is a failing check - we will stop at the first fail
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": elbv2Arn + "/elbv2-alb-http-desync-protection-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": elbv2Arn,
+                            "AwsAccountId": awsAccountId,
+                            "Types": [
+                                "Software and Configuration Checks/AWS Security Best Practices"
+                            ],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "HIGH"},
+                            "Confidence": 99,
+                            "Title": "[ELBv2.8] Application Load Balancer security groups should not allow non-Listener ports access",
+                            "Description": f"Application load balancer {elbv2Arn} has a Security Group {sgid} that allows access to Ports not associated with any Listener or Redirect Rules. This may allow adversaries to circumvent your load balancer and directly discover or access downstream resources. If this configuration is not intended refer to the remediation guidance.",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "For more information on ALB security group reccomendations refer to the Security groups for your Application Load Balancer section of the Application Load Balancers User Guide.",
+                                    "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-update-security-groups.html#security-group-recommended-rules"
+                                }
+                            },
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsElbv2LoadBalancer",
+                                    "Id": elbv2Arn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "AwsElbv2LoadBalancer": {
+                                            "DNSName": elbv2DnsName,
+                                            "IpAddressType": elbv2IpAddressType,
+                                            "Scheme": elbv2Scheme,
+                                            "Type": elbv2LbType,
+                                            "VpcId": elbv2VpcId,
+                                            "SecurityGroups": lbSgs
+                                        }
+                                    },
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "FAILED",
+                                "RelatedRequirements": [
+                                    "NIST CSF PR.AC-3",
+                                    "NIST SP 800-53 AC-1",
+                                    "NIST SP 800-53 AC-17",
+                                    "NIST SP 800-53 AC-19",
+                                    "NIST SP 800-53 AC-20",
+                                    "NIST SP 800-53 SC-15",
+                                    "AICPA TSC CC6.6",
+                                    "ISO 27001:2013 A.6.2.1",
+                                    "ISO 27001:2013 A.6.2.2",
+                                    "ISO 27001:2013 A.11.2.6",
+                                    "ISO 27001:2013 A.13.1.1",
+                                    "ISO 27001:2013 A.13.2.1"
+                                ]
+                            },
+                            "Workflow": {"Status": "NEW"},
+                            "RecordState": "ACTIVE"
+                        }
+                        yield finding
+                        break
+                    else:
+                        # this is a passign check
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": elbv2Arn + "/elbv2-alb-http-desync-protection-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": elbv2Arn,
+                            "AwsAccountId": awsAccountId,
+                            "Types": [
+                                "Software and Configuration Checks/AWS Security Best Practices"
+                            ],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "INFORMATIONAL"},
+                            "Confidence": 99,
+                            "Title": "[ELBv2.8] Application Load Balancer security groups should not allow non-Listener ports access",
+                            "Description": f"Application load balancer {elbv2Arn} does not allow access to Ports not associated with any Listener or Redirect Rules.",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "For more information on ALB security group reccomendations refer to the Security groups for your Application Load Balancer section of the Application Load Balancers User Guide.",
+                                    "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-update-security-groups.html#security-group-recommended-rules"
+                                }
+                            },
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsElbv2LoadBalancer",
+                                    "Id": elbv2Arn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "AwsElbv2LoadBalancer": {
+                                            "DNSName": elbv2DnsName,
+                                            "IpAddressType": elbv2IpAddressType,
+                                            "Scheme": elbv2Scheme,
+                                            "Type": elbv2LbType,
+                                            "VpcId": elbv2VpcId,
+                                            "SecurityGroups": lbSgs
+                                        }
+                                    },
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "PASSED",
+                                "RelatedRequirements": [
+                                    "NIST CSF PR.AC-3",
+                                    "NIST SP 800-53 AC-1",
+                                    "NIST SP 800-53 AC-17",
+                                    "NIST SP 800-53 AC-19",
+                                    "NIST SP 800-53 AC-20",
+                                    "NIST SP 800-53 SC-15",
+                                    "AICPA TSC CC6.6",
+                                    "ISO 27001:2013 A.6.2.1",
+                                    "ISO 27001:2013 A.6.2.2",
+                                    "ISO 27001:2013 A.11.2.6",
+                                    "ISO 27001:2013 A.13.1.1",
+                                    "ISO 27001:2013 A.13.2.1"
+                                ]
+                            },
+                            "Workflow": {"Status": "RESOLVED"},
+                            "RecordState": "ARCHIVED"
+                        }
+                        yield finding
         else:
             continue
