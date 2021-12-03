@@ -31,44 +31,43 @@ class JsonProvider(object):
     __provider__ = "docdb"
 
     def write_findings(self, findings: list, output_file: str, **kwargs):
-        # Bring in required vars
         # Ensure that the required variables are present
-            try:
-                mongoUname = os.environ["MONGODB_USERNAME"]
-                if mongoUname == "placeholder":
-                    print("Missing required MongoDB parameters")
-            except KeyError:
+        try:
+            mongoUname = os.environ["MONGODB_USERNAME"]
+            if mongoUname == "placeholder":
                 print("Missing required MongoDB parameters")
+        except KeyError:
+            print("Missing required MongoDB parameters")
 
-            try:
-                mongoHostname = os.environ["MONGODB_HOSTNAME"]
-                if mongoHostname == "placeholder":
-                    print("Missing required MongoDB parameters")
-            except KeyError:
+        try:
+            mongoHostname = os.environ["MONGODB_HOSTNAME"]
+            if mongoHostname == "placeholder":
                 print("Missing required MongoDB parameters")
+        except KeyError:
+            print("Missing required MongoDB parameters")
 
-            try:
-                mongoPwParam = os.environ["MONGODB_PASSWORD_PARAMETER"]
-                if mongoPwParam == "placeholder":
-                    print("Missing required MongoDB parameters")
-            except KeyError:
+        try:
+            mongoPwParam = os.environ["MONGODB_PASSWORD_PARAMETER"]
+            if mongoPwParam == "placeholder":
                 print("Missing required MongoDB parameters")
+        except KeyError:
+            print("Missing required MongoDB parameters")
 
-            # pull out the MongoDB Password from SSM
-            mongoPw = str(ssm.get_parameter(Name=mongoPwParam)["Parameter"]["Value"])
+        # pull out the MongoDB Password from SSM
+        mongoPw = str(ssm.get_parameter(Name=mongoPwParam)["Parameter"]["Value"])
 
-            # Download the latest AWS Mongo TLS cert bundle
-            url = "https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem"
-            r = requests.get(url)
+        # Download the latest AWS Mongo TLS cert bundle
+        url = "https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem"
+        r = requests.get(url)
 
-            print(f"Downloaded CA bundle")
-            # Write it to where the output is happening
-            with open("./rds-combined-ca-bundle.pem", "wb") as f:
-                f.write(r.content)
+        print(f"Downloaded CA bundle")
+        # Write it to where the output is happening
+        with open("./rds-combined-ca-bundle.pem", "wb") as f:
+            f.write(r.content)
 
-            mongoTlsCertPath = "./rds-combined-ca-bundle.pem"
-            # Build hostname - these are the default options for TLS sign-on into Mongo
-            fullMongoHost = f"mongodb://{mongoUname}:{mongoPw}@{mongoHostname}:27017/?ssl=true&ssl_ca_certs={mongoTlsCertPath}&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false"
+        mongoTlsCertPath = "./rds-combined-ca-bundle.pem"
+        # Build hostname - these are the default options for TLS sign-on into Mongo
+        fullMongoHost = f"mongodb://{mongoUname}:{mongoPw}@{mongoHostname}:27017/?ssl=true&ssl_ca_certs={mongoTlsCertPath}&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false"
 
         print(f"Writing {len(findings)} findings to MongoDB")
         try:
