@@ -44,7 +44,6 @@ class JsonProvider(object):
             print("Missing required MongoDB parameters")
     except KeyError:
         print("Missing required MongoDB parameters")
-        sys.exit(2)
 
     try:
         mongoPwParam = os.environ["MONGODB_PASSWORD_PARAMETER"]
@@ -52,7 +51,6 @@ class JsonProvider(object):
             print("Missing required MongoDB parameters")
     except KeyError:
         print("Missing required MongoDB parameters")
-        sys.exit(2)
 
     # pull out the MongoDB Password from SSM
     mongoPw = str(ssm.get_parameter(Name=mongoPwParam)["Parameter"]["Value"])
