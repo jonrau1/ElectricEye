@@ -158,13 +158,7 @@ def default_internet_access_check(
 @registry.register_check("appstream")
 def public_image_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AppStream.2] AppStream 2.0 images you build should not be publicly accessible"""
-
-    #TODO: Right now, this check is returning all public images including what appear 
-    #to be globally public images.  My best guess right now is that we could look at 
-    #the arn of public images that don't have an accountId in the arn and ignore those. 
-
-    # loop through AppStream 2.0 images
-    response = appstream.describe_images(Type="PUBLIC", MaxResults=25)
+    response = appstream.describe_images()
     myAppstreamImages = response["Images"]
     for images in myAppstreamImages:
         imageName = str(images["Name"])
