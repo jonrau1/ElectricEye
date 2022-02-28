@@ -5,3 +5,4 @@ pluginbase
 psycopg2-binary
 click
 detect-secrets
+pymongo
