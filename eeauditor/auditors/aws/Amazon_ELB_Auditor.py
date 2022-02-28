@@ -160,13 +160,13 @@ def clb_https_listener_tls12_policy_check(cache: dict, awsAccountId: str, awsReg
         clbName = str(classicbalancer["LoadBalancerName"])
         clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
         for listeners in classicbalancer["ListenerDescriptions"]:
-            listenerPolicies = str(listeners["PolicyNames"])
+            listenerPolicies = listeners["PolicyNames"]
             iso8601Time = (
                 datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
-            if listenerPolicies == "[]":
-                pass
-            elif listenerPolicies == "ELBSecurityPolicy-TLS-1-2-2017-01":
+            if not listenerPolicies:
+                continue
+            elif "ELBSecurityPolicy-TLS-1-2-2017-01" in listenerPolicies:
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": clbArn + "/classic-loadbalancer-tls12-policy-check",
