@@ -71,7 +71,12 @@ def imagebuilder_pipeline_tests_enabled_check(cache: dict, awsAccountId: str, aw
                         "Id": pipelineArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"AwsImageBuilderPipeline": {"PipelineName": pipeline_name}},
+                        "Details": {
+                            "Other": 
+                            {
+                                "PipelineName": pipeline_name
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -122,7 +127,12 @@ def imagebuilder_pipeline_tests_enabled_check(cache: dict, awsAccountId: str, aw
                         "Id": pipelineArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"AwsImageBuilderPipeline": {"PipelineName": pipeline_name}},
+                        "Details": {
+                            "Other": 
+                            {
+                                "PipelineName": pipeline_name
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -188,7 +198,12 @@ def imagebuilder_ebs_encryption_check(cache: dict, awsAccountId: str, awsRegion:
                         "Id": recipeArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"AwsImageBuilderRecipe": {"RecipeName": recipe_name}},
+                        "Details": {
+                            "Other": 
+                            {
+                                "RecipeName": recipe_name
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -239,7 +254,12 @@ def imagebuilder_ebs_encryption_check(cache: dict, awsAccountId: str, awsRegion:
                         "Id": recipeArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"AwsImageBuilderRecipe": {"RecipeName": recipe_name}},
+                        "Details": {
+                            "Other": 
+                            {
+                                "RecipeName": recipe_name
+                            }
+                        }
                     }
                 ],
                 "Compliance": {

@@ -56,18 +56,25 @@ ENV ELECTRICEYE_POSTGRESQL_DB_NAME=ELECTRICEYE_POSTGRESQL_DB_NAME
 ENV POSTGRES_DB_ENDPOINT=POSTGRES_DB_ENDPOINT
 ENV POSTGRES_DB_PORT=POSTGRES_DB_PORT
 ENV POSTGRES_PASSWORD_SSM_PARAM_NAME=POSTGRES_PASSWORD_SSM_PARAM_NAME
+# DOCUMENTDB/MONGO ENV VARS
+ENV MONGODB_USERNAME=MONGODB_USERNAME
+ENV MONGODB_HOSTNAME=MONGODB_HOSTNAME
+ENV MONGODB_PASSWORD_PARAMETER=MONGODB_PASSWORD_PARAMETER
+
 # Labels
 LABEL maintainer="https://github.com/jonrau1" \
     version="3.0" \
     license="Apache-2.0" \
     description="Continuously monitor your AWS services for configurations that can lead to degradation of confidentiality, integrity or availability. All results will be sent to Security Hub for further aggregation and analysis."
+
 # Create a System Group and User for ElectricEye so we don't run as root
 RUN \
     addgroup -S eeuser && \ 
     adduser -S -G eeuser eeuser && \
     chown eeuser ./eeauditor && \
     chgrp eeuser ./eeauditor && \
-    chown -R eeuser:eeuser ./eeauditor/*
+    chown -R eeuser:eeuser ./eeauditor/* && \
+    chown -R eeuser:eeuser ./eeauditor
 # Bye bye root :)
 USER eeuser
 # Upon startup we will run all checks and auditors - we grab the latest from S3
