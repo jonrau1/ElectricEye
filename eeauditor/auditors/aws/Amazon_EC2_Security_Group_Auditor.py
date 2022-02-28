@@ -25,6 +25,7 @@ from check_register import CheckRegister
 registry = CheckRegister()
 
 ec2 = boto3.client("ec2")
+
 # loop through security groups
 def describe_security_groups(cache):
     response = cache.get("describe_security_groups")
@@ -32,7 +33,6 @@ def describe_security_groups(cache):
         return response
     cache["describe_security_groups"] = ec2.describe_security_groups()
     return cache["describe_security_groups"]
-
 
 @registry.register_check("ec2")
 def security_group_all_open_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
