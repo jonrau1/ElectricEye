@@ -18,6 +18,7 @@
 #specific language governing permissions and limitations
 #under the License.
 import boto3
+import sys
 import os
 import psycopg2 as psql
 from processor.outputs.output_base import ElectricEyeOutput
@@ -32,48 +33,39 @@ class PostgresProvider(object):
         # Username
         try:
             psqlUsername = os.environ["POSTGRES_USERNAME"]
-        except Exception as e:
-            if str(e) == '"POSTGRES_USERNAME"':
-                psqlUsername = "placeholder"
-            else:
-                print(e)
+        except KeyError:
+            psqlUsername = "placeholder"
         # DB Name
         try:
             eePsqlDbName = os.environ["ELECTRICEYE_POSTGRESQL_DB_NAME"]
-        except Exception as e:
-            if str(e) == '"ELECTRICEYE_POSTGRESQL_DB_NAME"':
-                eePsqlDbName = "placeholder"
-            else:
-                print(e)
+        except KeyError:
+            eePsqlDbName = "placeholder"
         # DB Endpoint
         try:
             dbEndpoint = os.environ["POSTGRES_DB_ENDPOINT"]
-        except Exception as e:
-            if str(e) == '"POSTGRES_DB_ENDPOINT"':
-                dbEndpoint = "placeholder"
-            else:
-                print(e)
+        except KeyError:
+            dbEndpoint = "placeholder"
         # DB Port
         try:
             dbPort = os.environ["POSTGRES_DB_PORT"]
-        except Exception as e:
-            if str(e) == '"POSTGRES_DB_PORT"':
-                dbPort = "placeholder"
-            else:
-                print(e)
+        except KeyError:
+            dbPort = "placeholder"
         # Secret Parameter
         try:
             psqlRdsPwSsmParamName = os.environ["POSTGRES_PASSWORD_SSM_PARAM_NAME"]
-        except Exception as e:
-            if str(e) == '"POSTGRES_PASSWORD_SSM_PARAM_NAME"':
-                psqlRdsPwSsmParamName = "placeholder"
-            else:
-                print(e)
+        except KeyError:
+            psqlRdsPwSsmParamName = "placeholder"
         
 
-        if (psqlUsername or eePsqlDbName or dbEndpoint or dbPort or psqlRdsPwSsmParamName) == "placeholder":
+        if (
+            psqlUsername or 
+            eePsqlDbName or 
+            dbEndpoint or 
+            dbPort or 
+            psqlRdsPwSsmParamName
+        ) == ("placeholder" or None):
             print('Either the required RDS Information was not provided, or the "placeholder" values were kept')
-            exit(2)
+            sys.exit(2)
         else:
             # Retrieve and Decrypt DB PW from SSM
             psqlDbPw = ssm.get_parameter(Name=psqlRdsPwSsmParamName, WithDecryption=True)["Parameter"]["Value"]
