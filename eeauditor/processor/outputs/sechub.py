@@ -17,10 +17,8 @@
 #KIND, either express or implied.  See the License for the
 #specific language governing permissions and limitations
 #under the License.
-import itertools
 import boto3
 from processor.outputs.output_base import ElectricEyeOutput
-
 
 @ElectricEyeOutput
 class SecHubProvider(object):
@@ -29,7 +27,8 @@ class SecHubProvider(object):
     def write_findings(self, findings: list, **kwargs):
         print(f"Writing {len(findings)} results to SecurityHub")
         if findings:
-            sechub_client = boto3.client("securityhub")
+            sechub = boto3.client("securityhub")
+            # write to securityhub in batches of 100
             for i in range(0, len(findings), 100):
-                sechub_client.batch_import_findings(Findings=findings[i : i + 100])
+                sechub.batch_import_findings(Findings=findings[i : i + 100])
         return

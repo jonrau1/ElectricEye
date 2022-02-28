@@ -22,9 +22,12 @@ Description: This Template will create the supporting infrastructure for the Ele
 Metadata:
   License: Apache-2.0
 Parameters:
-  TeamsWebHookParameter:
+  SSMParameterNameForTeamsWebhook:
     Type: String
     Description: The name of the SSM Parameter that contains the Teams App Webhook URL for ElectricEye-ChatOps Teams edition
+  RequestsPackageKlayersArn:
+    Type: String
+    Descripton: Arn of Keith Layers for requests package. Visit https://github.com/keithrozario/Klayers for more info.
 Resources:
   ElectricEyeChatOpsRRLambdaFunction:
     Type: AWS::Lambda::Function
@@ -32,42 +35,106 @@ Resources:
       FunctionName: ElectricEye-ChatOps-Teams
       Description: Sends the results of high-severity ElectricEye findings to a Teams Channel - Managed by CloudFormation
       Handler: index.lambda_handler
+      Layers: !Ref RequestsPackageKlayersArn
       MemorySize: 256
       Role: !GetAtt ElectricEyeChatOpsExecRole.Arn
       Runtime: python3.7
       Timeout: 60
       Environment:
         Variables:
-          MS_TEAMS_WEBHOOK_PARAMETER: !Ref TeamsWebHookParameter
-      Layers:
-        - !Ref Python3RequestsLayer
+          SSM_Parameter_Name: !Ref SSMParameterNameForTeamsWebhook
       Code:
         ZipFile: |
           import os
           import boto3
           import json
-          import urllib3
+          import requests
+
           def lambda_handler(event, context):
               # create ssm client
               ssm = boto3.client('ssm')
-              # create env var for SSM Parameter containing the Microsoft Teams webhook
-              webhookParam = os.environ['MS_TEAMS_WEBHOOK_PARAMETER']
-              # retrieve Teams webhook from SSM
+              # create env var for SSM Parameter containing Slack Webhook URL
+              ssm_parameter_name = os.environ['SSM_Parameter_Name']
+              teams_webhook = ""
               try:
-                  response = ssm.get_parameter(Name=webhookParam)
-                  teamsWebhook = str(response['Parameter']['Value'])
+                  response = ssm.get_parameter(Name=ssm_parameter_name)
+                  response_object = str(response['Parameter']['Value'])
+                  response_object_dict = json.loads(response_object)
+                  teams_webhook = response_object_dict.get('teams_webhook')
+
               except Exception as e:
                   print(e)
-              teamsHeaders = { 'Content-Type': 'application/json' }
+
               for findings in event['detail']['findings']:
-                  severityLabel = str(findings['Severity']['Label'])
-                  electricEyeCheck = str(findings['Title'])
-                  awsAccountId = str(findings['AwsAccountId'])
-                  for resources in findings['Resources']:
-                      resourceId = str(resources['Id'])
-                      teamsMessage = 'A new ' + severityLabel + ' severity finding for ' + resourceId + ' in acccount ' + awsAccountId + ' has been created in Security Hub due to failing the check: ' + electricEyeCheck
-                      message = { 'text': teamsMessage }
-                      http.request('POST', teamsWebhook,  headers=teamsHeaders, body=json.dumps(message).encode('utf-8'))
+                  if findings.get("Compliance").get("Status") == "FAILED":
+                      severityLabel = findings['Severity']['Label']
+                      title = findings['Title']
+                      awsAccountId = findings['AwsAccountId']
+                      for resources in findings['Resources']:
+                          resourceId = resources['Id']
+                          resourceType = resources['Type']
+                          resourceRegion = resources['Region']
+                          teams_payload = {
+                              "@type": "MessageCard",
+                              "@context": "http: //schema.org/extensions",
+                              "themeColor": "0584 ED",
+                              "summary": "Findings",
+                              "sections": [
+
+                                  {
+                                      "facts": [
+                                          {
+                                              "name": "Resource:",
+                                              "value": resourceId
+                                          },
+                                          {
+                                              "name": "Resource Type:",
+                                              "value": resourceType
+                                          },
+                                          {
+                                              "name": "Region:",
+                                              "value": resourceRegion
+                                          },
+                                          {
+                                              "name": "Time:",
+                                              "value": event.get("time")
+                                          },
+                                          {
+                                              "name": "Account:",
+                                              "value": awsAccountId
+                                          },
+                                          {
+                                              "name": "Compliance Status:",
+                                              "value": findings.get("Compliance").get("Status")
+                                          },
+                                          {
+                                              "name": "Check:",
+                                              "value": title
+                                          },
+                                          {
+                                              "name": "FindingId:",
+                                              "value": findings.get("Id")
+                                          },
+                                          {
+                                              "name": "Recommendation:",
+                                              "value": findings.get('Remediation').get('Recommendation').get('Text')
+                                          },
+                                          {
+                                              "name": "Severity:",
+                                              "value": severityLabel
+                                          }
+                                      ],
+                                      "text": "**Findings:**"
+                                          }
+                                      ]
+                                  }
+
+                          status = requests.post(teams_webhook, json.dumps(teams_payload).encode('utf-8'))
+                          print(status)
+
+                  else:
+                      print("Compliance Status is either passed or None " + findings.get("Compliance").get(
+                          "Status") + " for " + findings.get("Id"))
   ElectricEyeChatOpsExecRole:
     Type: AWS::IAM::Role
     Properties:

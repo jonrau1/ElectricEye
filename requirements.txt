@@ -2,6 +2,7 @@ awscli
 boto3
 requests
 pluginbase
-psycopg2
+psycopg2-binary
 click
 detect-secrets
+pymongo

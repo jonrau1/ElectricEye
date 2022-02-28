@@ -27,7 +27,6 @@ registry = CheckRegister()
 # import boto3 clients
 eks = boto3.client("eks")
 
-
 @registry.register_check("eks")
 def eks_public_endpoint_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EKS.1] Elastic Kubernetes Service (EKS) cluster API servers should not be accessible from the internet"""
@@ -38,6 +37,7 @@ def eks_public_endpoint_access_check(cache: dict, awsAccountId: str, awsRegion: 
             response = eks.describe_cluster(name=cluster)
             clusterName = str(response["cluster"]["name"])
             clusterArn = str(response["cluster"]["arn"])
+            k8sVersion = str(response["cluster"]["version"])
             eksPublicAccessCheck = str(
                 response["cluster"]["resourcesVpcConfig"]["endpointPublicAccess"]
             )
@@ -78,7 +78,13 @@ def eks_public_endpoint_access_check(cache: dict, awsAccountId: str, awsRegion: 
                             "Id": clusterArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
-                            "Details": {"Other": {"Cluster Name": clusterName}},
+                            "Details": {
+                                "AwsEksCluster": {
+                                    "Name": clusterName,
+                                    "Arn": clusterArn,
+                                    "Version": k8sVersion
+                                }
+                            }
                         }
                     ],
                     "Compliance": {
@@ -135,7 +141,13 @@ def eks_public_endpoint_access_check(cache: dict, awsAccountId: str, awsRegion: 
                             "Id": clusterArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
-                            "Details": {"Other": {"Cluster Name": clusterName}},
+                            "Details": {
+                                "AwsEksCluster": {
+                                    "Name": clusterName,
+                                    "Arn": clusterArn,
+                                    "Version": k8sVersion
+                                }
+                            }
                         }
                     ],
                     "Compliance": {
@@ -156,7 +168,7 @@ def eks_public_endpoint_access_check(cache: dict, awsAccountId: str, awsRegion: 
                         ],
                     },
                     "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED",
+                    "RecordState": "ARCHIVED"
                 }
                 yield finding
         except Exception as e:
@@ -172,12 +184,12 @@ def eks_latest_k8s_version_check(cache: dict, awsAccountId: str, awsRegion: str,
             response = eks.describe_cluster(name=cluster)
             clusterName = str(response["cluster"]["name"])
             clusterArn = str(response["cluster"]["arn"])
-            k8sVersionCheck = str(response["cluster"]["version"])
+            k8sVersion = str(response["cluster"]["version"])
             # ISO Time
             iso8601Time = (
                 datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
-            if k8sVersionCheck != "1.19":
+            if k8sVersion != "1.21":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": clusterArn + "/eks-latest-k8s-version-check",
@@ -194,7 +206,7 @@ def eks_latest_k8s_version_check(cache: dict, awsAccountId: str, awsRegion: str,
                     "Description": "Elastic Kubernetes Service (EKS) cluster "
                     + clusterName
                     + " is using Kubernetes version "
-                    + k8sVersionCheck
+                    + k8sVersion
                     + ". Refer to the remediation instructions if this configuration is not intended",
                     "Remediation": {
                         "Recommendation": {
@@ -209,7 +221,13 @@ def eks_latest_k8s_version_check(cache: dict, awsAccountId: str, awsRegion: str,
                             "Id": clusterArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
-                            "Details": {"Other": {"Cluster Name": clusterName}},
+                            "Details": {
+                                "AwsEksCluster": {
+                                    "Name": clusterName,
+                                    "Arn": clusterArn,
+                                    "Version": k8sVersion
+                                }
+                            }
                         }
                     ],
                     "Compliance": {
@@ -246,7 +264,7 @@ def eks_latest_k8s_version_check(cache: dict, awsAccountId: str, awsRegion: str,
                     "Description": "Elastic Kubernetes Service (EKS) cluster "
                     + clusterName
                     + " is using Kubernetes version "
-                    + k8sVersionCheck,
+                    + k8sVersion,
                     "Remediation": {
                         "Recommendation": {
                             "Text": "Unless your application requires a specific version of Kubernetes, AWS recommends you choose the latest available Kubernetes version supported by Amazon EKS for your clusters. For upgrade information refer to the Updating an Amazon EKS Cluster Kubernetes Version section of the EKS user guide",
@@ -260,7 +278,13 @@ def eks_latest_k8s_version_check(cache: dict, awsAccountId: str, awsRegion: str,
                             "Id": clusterArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
-                            "Details": {"Other": {"Cluster Name": clusterName}},
+                            "Details": {
+                                "AwsEksCluster": {
+                                    "Name": clusterName,
+                                    "Arn": clusterArn,
+                                    "Version": k8sVersion
+                                }
+                            }
                         }
                     ],
                     "Compliance": {
@@ -293,6 +317,7 @@ def eks_logging_audit_auth_check(cache: dict, awsAccountId: str, awsRegion: str,
             response = eks.describe_cluster(name=cluster)
             clusterName = str(response["cluster"]["name"])
             clusterArn = str(response["cluster"]["arn"])
+            k8sVersion = str(response["cluster"]["version"])
             logInfo = response["cluster"]["logging"]["clusterLogging"]
             for logs in logInfo:
                 logTypes = logs["types"]
@@ -337,7 +362,13 @@ def eks_logging_audit_auth_check(cache: dict, awsAccountId: str, awsRegion: str,
                                         "Id": clusterArn,
                                         "Partition": awsPartition,
                                         "Region": awsRegion,
-                                        "Details": {"Other": {"Cluster Name": clusterName}},
+                                        "Details": {
+                                            "AwsEksCluster": {
+                                                "Name": clusterName,
+                                                "Arn": clusterArn,
+                                                "Version": k8sVersion
+                                            }
+                                        }
                                     }
                                 ],
                                 "Compliance": {
@@ -391,7 +422,13 @@ def eks_logging_audit_auth_check(cache: dict, awsAccountId: str, awsRegion: str,
                                         "Id": clusterArn,
                                         "Partition": awsPartition,
                                         "Region": awsRegion,
-                                        "Details": {"Other": {"Cluster Name": clusterName}},
+                                        "Details": {
+                                            "AwsEksCluster": {
+                                                "Name": clusterName,
+                                                "Arn": clusterArn,
+                                                "Version": k8sVersion
+                                            }
+                                        }
                                     }
                                 ],
                                 "Compliance": {
@@ -427,7 +464,8 @@ def eks_secrets_envelope_encryption_check(cache: dict, awsAccountId: str, awsReg
         try:
             response = eks.describe_cluster(name=cluster)["cluster"]
             clusterName = str(response["name"])
-            clusterArn = str(response["arn"])            
+            clusterArn = str(response["arn"])
+            k8sVersion = str(response["cluster"]["version"])    
             try:
                 # There could technically be more than one thing here, one day, but...whatever?
                 # This is a Passing Finding!
@@ -465,9 +503,10 @@ def eks_secrets_envelope_encryption_check(cache: dict, awsAccountId: str, awsReg
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {
-                                    "Cluster Name": clusterName,
-                                    "KMS Key ARN": k8sSecretKey,
+                                "AwsEksCluster": {
+                                    "Name": clusterName,
+                                    "Arn": clusterArn,
+                                    "Version": k8sVersion
                                 }
                             }
                         }
@@ -522,9 +561,10 @@ def eks_secrets_envelope_encryption_check(cache: dict, awsAccountId: str, awsReg
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {
-                                    "Cluster Name": clusterName,
-                                    "KMS Key ARN": k8sSecretKey,
+                                "AwsEksCluster": {
+                                    "Name": clusterName,
+                                    "Arn": clusterArn,
+                                    "Version": k8sVersion
                                 }
                             }
                         }

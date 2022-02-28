@@ -19,7 +19,6 @@
 #under the License.
 
 import csv
-import json
 from functools import reduce
 
 from processor.outputs.output_base import ElectricEyeOutput

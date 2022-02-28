@@ -62,7 +62,7 @@ def xray_kms_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, aw
             "ProductFields": {"Product Name": "ElectricEye"},
             "Resources": [
                 {
-                    "Type": "AwsXrayEncryptionConfiguration",
+                    "Type": "AwsXrayEncryptionConfig",
                     "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
                     "Partition": awsPartition,
                     "Region": awsRegion
@@ -112,7 +112,7 @@ def xray_kms_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, aw
             "ProductFields": {"Product Name": "ElectricEye"},
             "Resources": [
                 {
-                    "Type": "AwsXrayEncryptionConfiguration",
+                    "Type": "AwsXrayEncryptionConfig",
                     "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
                     "Partition": awsPartition,
                     "Region": awsRegion

@@ -26,6 +26,7 @@ registry = CheckRegister()
 
 # import boto3 clients
 rds = boto3.client("rds")
+ec2 = boto3.client("ec2")
 
 # loop through all RDS DB instances
 def describe_db_instances(cache):
@@ -134,8 +135,8 @@ def rds_instance_ha_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
                         "ISO 27001:2013 A.11.1.4",
                         "ISO 27001:2013 A.17.1.1",
                         "ISO 27001:2013 A.17.1.2",
-                        "ISO 27001:2013 A.17.2.1",
-                    ],
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
                 "RecordState": "ACTIVE",
@@ -1107,7 +1108,7 @@ def rds_instance_cloudwatch_logging_check(cache: dict, awsAccountId: str, awsReg
         instanceEngineVersion = str(dbinstances["EngineVersion"])
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
-            logCheck = str(database["EnabledCloudwatchLogsExports"])
+            logCheck = str(dbinstances["EnabledCloudwatchLogsExports"])
             # this is a passing check
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -1745,3 +1746,748 @@ def rds_aurora_cluster_encryption_check(cache: dict, awsAccountId: str, awsRegio
                 "RecordState": "ARCHIVED"
             }
             yield finding
+
+@registry.register_check("rds")
+def rds_instance_snapshot_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.13] RDS instances should be have snapshots"""
+    response = describe_db_instances(cache)
+    # ISO time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    myRdsInstances = response["DBInstances"]
+    response = describe_db_snapshots(cache)
+    for dbinstances in myRdsInstances:
+        instanceArn = str(dbinstances["DBInstanceArn"])
+        instanceId = str(dbinstances["DBInstanceIdentifier"])
+        instanceClass = str(dbinstances["DBInstanceClass"])
+        instancePort = int(dbinstances["Endpoint"]["Port"])
+        instanceEngine = str(dbinstances["Engine"])
+        instanceEngineVersion = str(dbinstances["EngineVersion"])
+        # evaluate snapshots
+        snapshots = rds.describe_db_snapshots(DBInstanceIdentifier=instanceId)
+        # this is a passing check, we're just interested in the existance of Snapshots, not their configuration (other checks do it)
+        if snapshots["DBSnapshots"]:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": instanceArn + "/instance-snapshot-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": instanceArn,
+                "AwsAccountId": awsAccountId,
+                "Types": [ "Software and Configuration Checks/AWS Security Best Practices" ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[RDS.13] RDS instances should be have snapshots",
+                "Description": "RDS DB instance "
+                + instanceId
+                + " has at least one snapshot.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on RDS instance resilience and snapshotting or recovery refer to the Resilience in Amazon RDS section of the Amazon Relational Database Service User Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/disaster-recovery-resiliency.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsRdsDbInstance",
+                        "Id": instanceArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsRdsDbInstance": {
+                                "DBInstanceIdentifier": instanceId,
+                                "DBInstanceClass": instanceClass,
+                                "DbInstancePort": instancePort,
+                                "Engine": instanceEngine,
+                                "EngineVersion": instanceEngineVersion
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.BE-5",
+                        "NIST CSF PR.PT-5",
+                        "NIST SP 800-53 CP-2",
+                        "NIST SP 800-53 CP-11",
+                        "NIST SP 800-53 SA-13",
+                        "NIST SP 800-53 SA14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1",
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": instanceArn + "/instance-snapshot-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": instanceArn,
+                "AwsAccountId": awsAccountId,
+                "Types": [ "Software and Configuration Checks/AWS Security Best Practices" ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[RDS.13] RDS instances should be have snapshots",
+                "Description": "RDS DB instance "
+                + instanceId
+                + " does not have a snapshot which can reduce cyber resilience due to a lack of a viable backup. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on RDS instance resilience and snapshotting or recovery refer to the Resilience in Amazon RDS section of the Amazon Relational Database Service User Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/disaster-recovery-resiliency.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsRdsDbInstance",
+                        "Id": instanceArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsRdsDbInstance": {
+                                "DBInstanceIdentifier": instanceId,
+                                "DBInstanceClass": instanceClass,
+                                "DbInstancePort": instancePort,
+                                "Engine": instanceEngine,
+                                "EngineVersion": instanceEngineVersion
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.BE-5",
+                        "NIST CSF PR.PT-5",
+                        "NIST SP 800-53 CP-2",
+                        "NIST SP 800-53 CP-11",
+                        "NIST SP 800-53 SA-13",
+                        "NIST SP 800-53 SA14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1",
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE",
+            }
+            yield finding
+
+@registry.register_check("rds")
+def rds_instance_secgroup_risk_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.14] RDS instance security groups should not allow public access to DB ports"""
+    response = describe_db_instances(cache)
+    # ISO time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    myRdsInstances = response["DBInstances"]
+    response = describe_db_snapshots(cache)
+    for dbinstances in myRdsInstances:
+        instanceArn = str(dbinstances["DBInstanceArn"])
+        instanceId = str(dbinstances["DBInstanceIdentifier"])
+        instanceClass = str(dbinstances["DBInstanceClass"])
+        instancePort = int(dbinstances["Endpoint"]["Port"])
+        instanceEngine = str(dbinstances["Engine"])
+        instanceEngineVersion = str(dbinstances["EngineVersion"])
+        # details for SG comparison
+        endpointPort = str(dbinstances["Endpoint"]["Port"])
+        # loop list of SGs
+        for dbsg in dbinstances["VpcSecurityGroups"]:
+            sgId = dbsg["VpcSecurityGroupId"]
+            # lookup in EC2
+            for sgr in ec2.describe_security_group_rules(Filters=[{'Name': 'group-id','Values': [sgId]}])["SecurityGroupRules"]:
+                # pull out specific SG rules
+                if str(sgr["IsEgress"]) == 'True':
+                    continue
+                else:
+                    # grab port numbers for comparisons
+                    toPort = str(sgr["ToPort"])
+                    fromPort = str(sgr["FromPort"])
+                    # handle the fact that there may not be inbound IPv4/6 rules
+                    try:
+                        ipV4Cidr = str(sgr["CidrIpv4"])
+                    except KeyError:
+                        ipV4Cidr = "NoCidrHereBoss"
+                    try:
+                        ipV6Cidr = str(sgr["CidrIpv6"])
+                    except KeyError:
+                        ipV6Cidr = "NoCidrHereBoss"
+                    # Rule evaluation time - check if ports match DB ports
+                    if (toPort or fromPort == endpointPort):
+                        # keep going we found a SG rule that matches DB port
+                        if (ipV4Cidr == "0.0.0.0/0" or ipV6Cidr == "::/0"):
+                            # open access found - this is a failing finding
+                            finding = {
+                                "SchemaVersion": "2018-10-08",
+                                "Id": instanceArn + "/db-sg-risk-check",
+                                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                                "GeneratorId": instanceArn,
+                                "AwsAccountId": awsAccountId,
+                                "Types": [ "Software and Configuration Checks/AWS Security Best Practices" ],
+                                "FirstObservedAt": iso8601Time,
+                                "CreatedAt": iso8601Time,
+                                "UpdatedAt": iso8601Time,
+                                "Severity": {"Label": "HIGH"},
+                                "Confidence": 99,
+                                "Title": "[RDS.14] RDS instance security groups should not allow public access to DB ports",
+                                "Description": "RDS DB instance "
+                                + instanceId
+                                + " allows open access to DB ports via the Security Group which can allow for lateral movement and data exfiltration. Refer to the remediation instructions if this configuration is not intended.",
+                                "Remediation": {
+                                    "Recommendation": {
+                                        "Text": "For more information on RDS network security refer to the Controlling access with security groups section of the Amazon Relational Database Service User Guide",
+                                        "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.RDSSecurityGroups.html",
+                                    }
+                                },
+                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "Resources": [
+                                    {
+                                        "Type": "AwsRdsDbInstance",
+                                        "Id": instanceArn,
+                                        "Partition": awsPartition,
+                                        "Region": awsRegion,
+                                        "Details": {
+                                            "AwsRdsDbInstance": {
+                                                "DBInstanceIdentifier": instanceId,
+                                                "DBInstanceClass": instanceClass,
+                                                "DbInstancePort": instancePort,
+                                                "Engine": instanceEngine,
+                                                "EngineVersion": instanceEngineVersion
+                                            }
+                                        }
+                                    }
+                                ],
+                                "Compliance": {
+                                    "Status": "FAILED",
+                                    "RelatedRequirements": [
+                                        "NIST CSF PR.AC-3",
+                                        "NIST SP 800-53 AC-1",
+                                        "NIST SP 800-53 AC-17",
+                                        "NIST SP 800-53 AC-19",
+                                        "NIST SP 800-53 AC-20",
+                                        "NIST SP 800-53 SC-15",
+                                        "AICPA TSC CC6.6",
+                                        "ISO 27001:2013 A.6.2.1",
+                                        "ISO 27001:2013 A.6.2.2",
+                                        "ISO 27001:2013 A.11.2.6",
+                                        "ISO 27001:2013 A.13.1.1",
+                                        "ISO 27001:2013 A.13.2.1"
+                                    ]
+                                },
+                                "Workflow": {"Status": "NEW"},
+                                "RecordState": "ACTIVE"
+                            }
+                            yield finding
+                        else:
+                            # this is a passing finding
+                            finding = {
+                                "SchemaVersion": "2018-10-08",
+                                "Id": instanceArn + "/db-sg-risk-check",
+                                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                                "GeneratorId": instanceArn,
+                                "AwsAccountId": awsAccountId,
+                                "Types": [ "Software and Configuration Checks/AWS Security Best Practices" ],
+                                "FirstObservedAt": iso8601Time,
+                                "CreatedAt": iso8601Time,
+                                "UpdatedAt": iso8601Time,
+                                "Severity": {"Label": "INFORMATIONAL"},
+                                "Confidence": 99,
+                                "Title": "[RDS.14] RDS instance security groups should not allow public access to DB ports",
+                                "Description": "RDS DB instance "
+                                + instanceId
+                                + " does not allow open access to DB ports via the Security Group.",
+                                "Remediation": {
+                                    "Recommendation": {
+                                        "Text": "For more information on RDS network security refer to the Controlling access with security groups section of the Amazon Relational Database Service User Guide",
+                                        "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.RDSSecurityGroups.html",
+                                    }
+                                },
+                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "Resources": [
+                                    {
+                                        "Type": "AwsRdsDbInstance",
+                                        "Id": instanceArn,
+                                        "Partition": awsPartition,
+                                        "Region": awsRegion,
+                                        "Details": {
+                                            "AwsRdsDbInstance": {
+                                                "DBInstanceIdentifier": instanceId,
+                                                "DBInstanceClass": instanceClass,
+                                                "DbInstancePort": instancePort,
+                                                "Engine": instanceEngine,
+                                                "EngineVersion": instanceEngineVersion
+                                            }
+                                        }
+                                    }
+                                ],
+                                "Compliance": {
+                                    "Status": "PASSED",
+                                    "RelatedRequirements": [
+                                        "NIST CSF PR.AC-3",
+                                        "NIST SP 800-53 AC-1",
+                                        "NIST SP 800-53 AC-17",
+                                        "NIST SP 800-53 AC-19",
+                                        "NIST SP 800-53 AC-20",
+                                        "NIST SP 800-53 SC-15",
+                                        "AICPA TSC CC6.6",
+                                        "ISO 27001:2013 A.6.2.1",
+                                        "ISO 27001:2013 A.6.2.2",
+                                        "ISO 27001:2013 A.11.2.6",
+                                        "ISO 27001:2013 A.13.1.1",
+                                        "ISO 27001:2013 A.13.2.1"
+                                    ]
+                                },
+                                "Workflow": {"Status": "RESOLVED"},
+                                "RecordState": "ARCHIVED"
+                            }
+                            yield finding
+                    else:
+                        continue
+
+@registry.register_check("rds")
+def rds_instance_instance_alerting_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.15] RDS instances should be monitored for important events using Event Subscriptions"""
+    # ISO time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    # Determine if there are any alerts at all via list comprehension - fail if empty
+    # To avoid writing out 8 variations of this logic - ignoring if an Event is disabled or not...
+    if rds.describe_event_subscriptions()["EventSubscriptionsList"]:
+        for events in rds.describe_event_subscriptions()["EventSubscriptionsList"]:
+            # Ignore non-Instance events
+            if str(events["SourceType"]) != "db-instance":
+                continue
+            # If the field `EventCategoriesList` does not exist it means all events are being logged and passes
+            try:
+                # attempt to find matches within the Event Category List
+                eventList = events["EventCategoriesList"]
+                # all 3 Event types within list of strings must be in `eventList` variable - returns true, so this is a passing check
+                if all(x in ["maintenance", "configuration change", "failure"] for x in eventList):
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": f"{awsAccountId}:{awsRegion}/rds-instance-event-sub-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": f"{awsAccountId}:{awsRegion}",
+                        "AwsAccountId": awsAccountId,
+                        "Types": [ "Software and Configuration Checks/AWS Security Best Practices" ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "INFORMATIONAL"},
+                        "Confidence": 99,
+                        "Title": "[RDS.15] RDS instances should be monitored for important events using Event Subscriptions",
+                        "Description": f"AWS Account {awsAccountId} in Region {awsRegion} has an Event Subscription to alert on critical security and performance events for RDS which include 'maintenance', 'configuration change', and 'failure'.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": 'To create a Filter use the following AWS CLI Script: aws rds create-event-subscription --subscription-name critical-instance-alerts --sns-topic-arn $SNS_TOPIC_ARN --source-type db-instance --event-categories "maintenance" "configuration change" "failure" --enabled. Or, refer to the AWS Security Hub Remediation Guide for RDS',
+                                "Url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html#fsbp-rds-20"
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsAccount",
+                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                                "Partition": awsPartition,
+                                "Region": awsRegion
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "PASSED",
+                            "RelatedRequirements": [
+                                "NIST CSF DE.AE-3",
+                                "NIST SP 800-53 AU-6",
+                                "NIST SP 800-53 CA-7",
+                                "NIST SP 800-53 IR-4",
+                                "NIST SP 800-53 IR-5",
+                                "NIST SP 800-53 IR-8",
+                                "NIST SP 800-53 SI-4",
+                                "AICPA TSC CC7.2",
+                                "ISO 27001:2013 A.12.4.1",
+                                "ISO 27001:2013 A.16.1.7"
+                            ]
+                        },
+                        "Workflow": {"Status": "RESOLVED"},
+                        "RecordState": "ARCHIVED"
+                    }
+                    yield finding
+                else:
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": f"{awsAccountId}:{awsRegion}/rds-instance-event-sub-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": f"{awsAccountId}:{awsRegion}",
+                        "AwsAccountId": awsAccountId,
+                        "Types": [ "Software and Configuration Checks/AWS Security Best Practices" ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "LOW"},
+                        "Confidence": 99,
+                        "Title": "[RDS.15] RDS instances should be monitored for important events using Event Subscriptions",
+                        "Description": f"AWS Account {awsAccountId} in Region {awsRegion} does not have an Event Subscription to alert on critical security and performance events for RDS which include 'maintenance', 'configuration change', and 'failure'. Refer to the remediation instructions to remediate this behavior.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": 'To create a Filter use the following AWS CLI Script: aws rds create-event-subscription --subscription-name critical-instance-alerts --sns-topic-arn $SNS_TOPIC_ARN --source-type db-instance --event-categories "maintenance" "configuration change" "failure" --enabled. Or, refer to the AWS Security Hub Remediation Guide for RDS',
+                                "Url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html#fsbp-rds-20"
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsAccount",
+                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                                "Partition": awsPartition,
+                                "Region": awsRegion
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "FAILED",
+                            "RelatedRequirements": [
+                                "NIST CSF DE.AE-3",
+                                "NIST SP 800-53 AU-6",
+                                "NIST SP 800-53 CA-7",
+                                "NIST SP 800-53 IR-4",
+                                "NIST SP 800-53 IR-5",
+                                "NIST SP 800-53 IR-8",
+                                "NIST SP 800-53 SI-4",
+                                "AICPA TSC CC7.2",
+                                "ISO 27001:2013 A.12.4.1",
+                                "ISO 27001:2013 A.16.1.7"
+                            ]
+                        },
+                        "Workflow": {"Status": "NEW"},
+                        "RecordState": "ACTIVE"
+                    }
+                    yield finding
+            # this is a passing check - if the value doesn't exist it means all possible checks are supported
+            except KeyError:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{awsAccountId}:{awsRegion}/rds-instance-event-sub-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": f"{awsAccountId}:{awsRegion}",
+                    "AwsAccountId": awsAccountId,
+                    "Types": [ "Software and Configuration Checks/AWS Security Best Practices" ],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Confidence": 99,
+                    "Title": "[RDS.15] RDS instances should be monitored for important events using Event Subscriptions",
+                    "Description": f"AWS Account {awsAccountId} in Region {awsRegion} has an Event Subscription to alert on critical security and performance events for RDS which include 'maintenance', 'configuration change', and 'failure'.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": 'To create a Filter use the following AWS CLI Script: aws rds create-event-subscription --subscription-name critical-instance-alerts --sns-topic-arn $SNS_TOPIC_ARN --source-type db-instance --event-categories "maintenance" "configuration change" "failure" --enabled. Or, refer to the AWS Security Hub Remediation Guide for RDS',
+                            "Url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html#fsbp-rds-20"
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsAccount",
+                            "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                            "Partition": awsPartition,
+                            "Region": awsRegion
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF DE.AE-3",
+                            "NIST SP 800-53 AU-6",
+                            "NIST SP 800-53 CA-7",
+                            "NIST SP 800-53 IR-4",
+                            "NIST SP 800-53 IR-5",
+                            "NIST SP 800-53 IR-8",
+                            "NIST SP 800-53 SI-4",
+                            "AICPA TSC CC7.2",
+                            "ISO 27001:2013 A.12.4.1",
+                            "ISO 27001:2013 A.16.1.7"
+                        ]
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED"
+                }
+                yield finding
+    # this is a failing check due to missing alerting events
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{awsAccountId}:{awsRegion}/rds-instance-event-sub-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"{awsAccountId}:{awsRegion}",
+            "AwsAccountId": awsAccountId,
+            "Types": [ "Software and Configuration Checks/AWS Security Best Practices" ],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "LOW"},
+            "Confidence": 99,
+            "Title": "[RDS.15] RDS instances should be monitored for important events using Event Subscriptions",
+            "Description": f"AWS Account {awsAccountId} in Region {awsRegion} does not have an Event Subscription to alert on critical security and performance events for RDS which include 'maintenance', 'configuration change', and 'failure'. Refer to the remediation instructions to remediate this behavior.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": 'To create a Filter use the following AWS CLI Script: aws rds create-event-subscription --subscription-name critical-instance-alerts --sns-topic-arn $SNS_TOPIC_ARN --source-type db-instance --event-categories "maintenance" "configuration change" "failure" --enabled. Or, refer to the AWS Security Hub Remediation Guide for RDS',
+                    "Url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html#fsbp-rds-20"
+                }
+            },
+            "ProductFields": {"Product Name": "ElectricEye"},
+            "Resources": [
+                {
+                    "Type": "AwsAccount",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF DE.AE-3",
+                    "NIST SP 800-53 AU-6",
+                    "NIST SP 800-53 CA-7",
+                    "NIST SP 800-53 IR-4",
+                    "NIST SP 800-53 IR-5",
+                    "NIST SP 800-53 IR-8",
+                    "NIST SP 800-53 SI-4",
+                    "AICPA TSC CC7.2",
+                    "ISO 27001:2013 A.12.4.1",
+                    "ISO 27001:2013 A.16.1.7"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+
+@registry.register_check("rds")
+def rds_instance_parameter_group_alerting_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.16] RDS parameter groups should be monitored for important events using Event Subscriptions"""
+    # ISO time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    # Determine if there are any alerts at all via list comprehension - fail if empty
+    # To avoid writing out 8 variations of this logic - ignoring if an Event is disabled or not...
+    if rds.describe_event_subscriptions()["EventSubscriptionsList"]:
+        for events in rds.describe_event_subscriptions()["EventSubscriptionsList"]:
+            # Ignore non-Instance events
+            if str(events["SourceType"]) != "db-parameter-group":
+                continue
+            # If the field `EventCategoriesList` does not exist it means all events are being logged and passes
+            try:
+                # attempt to find matches within the Event Category List
+                eventList = events["EventCategoriesList"]
+                # all 3 Event types within list of strings must be in `eventList` variable - returns true, so this is a passing check
+                if all(x in ["maintenance", "configuration change", "failure"] for x in eventList):
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": f"{awsAccountId}:{awsRegion}/rds-instance-event-sub-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": f"{awsAccountId}:{awsRegion}",
+                        "AwsAccountId": awsAccountId,
+                        "Types": [ "Software and Configuration Checks/AWS Security Best Practices" ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "INFORMATIONAL"},
+                        "Confidence": 99,
+                        "Title": "[RDS.16] RDS parameter groups should be monitored for important events using Event Subscriptions",
+                        "Description": f"AWS Account {awsAccountId} in Region {awsRegion} has an Event Subscription to alert on critical security and performance events for RDS parameter groups which includes 'configuration change'.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": 'To create a Filter use the following AWS CLI Script: aws rds create-event-subscription --subscription-name critical-pg-alerts --sns-topic-arn $SNS_TOPIC_ARN --source-type db-parameter-group --event-categories "configuration change" --enabled. Or, refer to the AWS Security Hub Remediation Guide for RDS',
+                                "Url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html#fsbp-rds-21"
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsAccount",
+                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                                "Partition": awsPartition,
+                                "Region": awsRegion
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "PASSED",
+                            "RelatedRequirements": [
+                                "NIST CSF DE.AE-3",
+                                "NIST SP 800-53 AU-6",
+                                "NIST SP 800-53 CA-7",
+                                "NIST SP 800-53 IR-4",
+                                "NIST SP 800-53 IR-5",
+                                "NIST SP 800-53 IR-8",
+                                "NIST SP 800-53 SI-4",
+                                "AICPA TSC CC7.2",
+                                "ISO 27001:2013 A.12.4.1",
+                                "ISO 27001:2013 A.16.1.7"
+                            ]
+                        },
+                        "Workflow": {"Status": "RESOLVED"},
+                        "RecordState": "ARCHIVED"
+                    }
+                    yield finding
+                else:
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": f"{awsAccountId}:{awsRegion}/rds-instance-event-sub-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": f"{awsAccountId}:{awsRegion}",
+                        "AwsAccountId": awsAccountId,
+                        "Types": [ "Software and Configuration Checks/AWS Security Best Practices" ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "LOW"},
+                        "Confidence": 99,
+                        "Title": "[RDS.16] RDS parameter groups should be monitored for important events using Event Subscriptions",
+                        "Description": f"AWS Account {awsAccountId} in Region {awsRegion} does not have an Event Subscription to alert on critical security and performance events for RDS parameter groups which includes 'configuration change'. Refer to the remediation instructions to remediate this behavior.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": 'To create a Filter use the following AWS CLI Script: aws rds create-event-subscription --subscription-name critical-pg-alerts --sns-topic-arn $SNS_TOPIC_ARN --source-type db-parameter-group --event-categories "configuration change" --enabled. Or, refer to the AWS Security Hub Remediation Guide for RDS',
+                                "Url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html#fsbp-rds-20"
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsAccount",
+                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                                "Partition": awsPartition,
+                                "Region": awsRegion
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "FAILED",
+                            "RelatedRequirements": [
+                                "NIST CSF DE.AE-3",
+                                "NIST SP 800-53 AU-6",
+                                "NIST SP 800-53 CA-7",
+                                "NIST SP 800-53 IR-4",
+                                "NIST SP 800-53 IR-5",
+                                "NIST SP 800-53 IR-8",
+                                "NIST SP 800-53 SI-4",
+                                "AICPA TSC CC7.2",
+                                "ISO 27001:2013 A.12.4.1",
+                                "ISO 27001:2013 A.16.1.7"
+                            ]
+                        },
+                        "Workflow": {"Status": "NEW"},
+                        "RecordState": "ACTIVE"
+                    }
+                    yield finding
+            # this is a passing check - if the value doesn't exist it means all possible checks are supported
+            except KeyError:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{awsAccountId}:{awsRegion}/rds-instance-event-sub-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": f"{awsAccountId}:{awsRegion}",
+                    "AwsAccountId": awsAccountId,
+                    "Types": [ "Software and Configuration Checks/AWS Security Best Practices" ],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Confidence": 99,
+                    "Title": "[RDS.16] RDS parameter groups should be monitored for important events using Event Subscriptions",
+                    "Description": f"AWS Account {awsAccountId} in Region {awsRegion} has an Event Subscription to alert on critical security and performance events for RDS parameter groups which includes 'configuration change'.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": 'To create a Filter use the following AWS CLI Script: aws rds create-event-subscription --subscription-name critical-pg-alerts --sns-topic-arn $SNS_TOPIC_ARN --source-type db-parameter-group --event-categories "configuration change" --enabled. Or, refer to the AWS Security Hub Remediation Guide for RDS',
+                            "Url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html#fsbp-rds-20"
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsAccount",
+                            "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                            "Partition": awsPartition,
+                            "Region": awsRegion
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF DE.AE-3",
+                            "NIST SP 800-53 AU-6",
+                            "NIST SP 800-53 CA-7",
+                            "NIST SP 800-53 IR-4",
+                            "NIST SP 800-53 IR-5",
+                            "NIST SP 800-53 IR-8",
+                            "NIST SP 800-53 SI-4",
+                            "AICPA TSC CC7.2",
+                            "ISO 27001:2013 A.12.4.1",
+                            "ISO 27001:2013 A.16.1.7"
+                        ]
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED"
+                }
+                yield finding
+    # this is a failing check due to missing alerting events
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{awsAccountId}:{awsRegion}/rds-instance-event-sub-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"{awsAccountId}:{awsRegion}",
+            "AwsAccountId": awsAccountId,
+            "Types": [ "Software and Configuration Checks/AWS Security Best Practices" ],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "LOW"},
+            "Confidence": 99,
+            "Title": "[RDS.16] RDS parameter groups should be monitored for important events using Event Subscriptions",
+            "Description": f"AWS Account {awsAccountId} in Region {awsRegion} does not have an Event Subscription to alert on critical security and performance events for RDS parameter groups which includes 'configuration change'. Refer to the remediation instructions to remediate this behavior.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": 'To create a Filter use the following AWS CLI Script: aws rds create-event-subscription --subscription-name critical-pg-alerts --sns-topic-arn $SNS_TOPIC_ARN --source-type db-parameter-group --event-categories "configuration change" --enabled. Or, refer to the AWS Security Hub Remediation Guide for RDS',
+                    "Url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html#fsbp-rds-20"
+                }
+            },
+            "ProductFields": {"Product Name": "ElectricEye"},
+            "Resources": [
+                {
+                    "Type": "AwsAccount",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF DE.AE-3",
+                    "NIST SP 800-53 AU-6",
+                    "NIST SP 800-53 CA-7",
+                    "NIST SP 800-53 IR-4",
+                    "NIST SP 800-53 IR-5",
+                    "NIST SP 800-53 IR-8",
+                    "NIST SP 800-53 SI-4",
+                    "AICPA TSC CC7.2",
+                    "ISO 27001:2013 A.12.4.1",
+                    "ISO 27001:2013 A.16.1.7"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding

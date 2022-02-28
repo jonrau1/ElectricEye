@@ -20,7 +20,6 @@
 
 import boto3
 import datetime
-import os
 from check_register import CheckRegister
 
 registry = CheckRegister()
@@ -73,10 +72,18 @@ def high_critical_findings(cache: dict, awsAccountId: str, awsRegion: str, awsPa
             "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
             "CreatedAt": iso8601Time,
             "UpdatedAt": iso8601Time,
+            "FirstObservedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
             "Title": "[SecurityHub.1] Security Hub should not have active high or critical severity findings from AWS services",
             "Description": "High or critical findings were not found in the Security Hub hub for AWS account "
             + awsAccountId,
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information on findings refer to the Findings in AWS Security Hub in the AWS Security Hub User Guide",
+                    "Url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings.html"
+                }
+            },
             "ProductFields": {"Product Name": "ElectricEye"},
             "Resources": [
                 {
@@ -114,10 +121,18 @@ def high_critical_findings(cache: dict, awsAccountId: str, awsRegion: str, awsPa
             "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
             "CreatedAt": iso8601Time,
             "UpdatedAt": iso8601Time,
+            "FirstObservedAt": iso8601Time,
             "Severity": {"Label": "CRITICAL"},
+            "Confidence": 99,
             "Title": "[SecurityHub.1] Security Hub should not have active high or critical severity findings from AWS services",
             "Description": "High or critical findings were found in the Security Hub hub for AWS account "
             + awsAccountId,
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information on findings refer to the Findings in AWS Security Hub in the AWS Security Hub User Guide",
+                    "Url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings.html"
+                }
+            },
             "ProductFields": {"Product Name": "ElectricEye"},
             "Resources": [
                 {

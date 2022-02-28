@@ -340,9 +340,13 @@ def ecs_task_definition_privileged_container_check(cache: dict, awsAccountId: st
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
-                                    "Other": {
-                                        "Family": tdefFamily,
-                                        "ContainerDefinitionName": cdefName
+                                    "AwsEcsTaskDefinition": {
+                                        "ContainerDefinitions": [
+                                            {
+                                                "Name": cdefName
+                                            }
+                                        ],
+                                        "Family": tdefFamily
                                     }
                                 }
                             }
@@ -416,9 +420,13 @@ def ecs_task_definition_privileged_container_check(cache: dict, awsAccountId: st
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
-                                    "Other": {
-                                        "Family": tdefFamily,
-                                        "ContainerDefinitionName": cdefName
+                                    "AwsEcsTaskDefinition": {
+                                        "ContainerDefinitions": [
+                                            {
+                                                "Name": cdefName
+                                            }
+                                        ],
+                                        "Family": tdefFamily
                                     }
                                 }
                             }
@@ -512,10 +520,13 @@ def ecs_task_definition_security_labels_check(cache: dict, awsAccountId: str, aw
                                     "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
-                                        "Other": {
-                                            "Family": tdefFamily,
-                                            "ContainerDefinitionName": cdefName,
-                                            'DockerSecurityOptions': secOpts
+                                        "AwsEcsTaskDefinition": {
+                                            "ContainerDefinitions": [
+                                                {
+                                                    "Name": cdefName
+                                                }
+                                            ],
+                                            "Family": tdefFamily
                                         }
                                     }
                                 }
@@ -585,10 +596,13 @@ def ecs_task_definition_security_labels_check(cache: dict, awsAccountId: str, aw
                                     "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
-                                        "Other": {
-                                            "Family": tdefFamily,
-                                            "ContainerDefinitionName": cdefName,
-                                            'DockerSecurityOptions': secOpts
+                                        "AwsEcsTaskDefinition": {
+                                            "ContainerDefinitions": [
+                                                {
+                                                    "Name": cdefName
+                                                }
+                                            ],
+                                            "Family": tdefFamily
                                         }
                                     }
                                 }

@@ -26,14 +26,12 @@ registry = CheckRegister()
 # import boto3 clients
 apigateway = boto3.client("apigateway")
 
-
 def get_rest_apis(cache):
     response = cache.get("get_rest_apis")
     if response:
         return response
     cache["get_rest_apis"] = apigateway.get_rest_apis(limit=500)
     return cache["get_rest_apis"]
-
 
 @registry.register_check("apigateway")
 def api_gateway_stage_metrics_enabled_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:

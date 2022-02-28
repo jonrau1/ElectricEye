@@ -44,7 +44,7 @@ def secret_scan_codebuild_envvar_check(cache: dict, awsAccountId: str, awsRegion
     # setup some reusable variables
     scanFile = "./codebuild-data-sample.json"
     resultsFile = "./codebuild-scan-result.json"
-    scanCommand = "detect-secrets scan " + scanFile + " > " + resultsFile
+    scanCommand = f"detect-secrets scan {scanFile} > {resultsFile}"
     # Collect all CodeBuild Projects and send to the Batch API
     cbList = []
     for p in codebuild.list_projects()["projects"]:
@@ -224,7 +224,7 @@ def secret_scan_cloudformation_parameters_check(cache: dict, awsAccountId: str, 
     # setup some reusable variables
     scanFile = "./cloudformation-data-sample.json"
     resultsFile = "./cloudformation-scan-result.json"
-    scanCommand = "detect-secrets scan " + scanFile + " > " + resultsFile
+    scanCommand = f"detect-secrets scan {scanFile} > {resultsFile}"
     # Paginate through all CFN Stacks
     stackList = []
     paginator = cloudformation.get_paginator("list_stacks")
@@ -410,7 +410,7 @@ def secret_scan_ecs_task_def_envvar_check(cache: dict, awsAccountId: str, awsReg
     # setup some reusable variables
     scanFile = "./ecs-data-sample.json"
     resultsFile = "./ecs-scan-result.json"
-    scanCommand = "detect-secrets scan " + scanFile + " > " + resultsFile
+    scanCommand = f"detect-secrets scan {scanFile} > {resultsFile}"
     # Paginate through all Active ECS Task Defs
     taskList = []
     paginator = ecs.get_paginator("list_task_definitions")
@@ -475,9 +475,13 @@ def secret_scan_ecs_task_def_envvar_check(cache: dict, awsAccountId: str, awsReg
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {
+                                "AwsEcsTaskDefinition": {
+                                    "ContainerDefinitions": [
+                                        {
+                                            "Name": cdefName
+                                        }
+                                    ],
                                     "Family": tdefFamily,
-                                    "ContainerDefinitionName": cdefName
                                 }
                             }
                         }
@@ -546,9 +550,13 @@ def secret_scan_ecs_task_def_envvar_check(cache: dict, awsAccountId: str, awsReg
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {
+                                "AwsEcsTaskDefinition": {
+                                    "ContainerDefinitions": [
+                                        {
+                                            "Name": cdefName
+                                        }
+                                    ],
                                     "Family": tdefFamily,
-                                    "ContainerDefinitionName": cdefName
                                 }
                             }
                         }
@@ -589,7 +597,7 @@ def secret_scan_ec2_userdata_check(cache: dict, awsAccountId: str, awsRegion: st
     # setup some reusable variables
     scanFile = "./ec2-data-sample.json"
     resultsFile = "./ec2-scan-result.json"
-    scanCommand = "detect-secrets scan " + scanFile + " > " + resultsFile
+    scanCommand = f"detect-secrets scan {scanFile} > {resultsFile}"
     # Paginate through Running and Stopped EC2 Instances
     paginator = ec2.get_paginator("describe_instances")
     for page in paginator.paginate(Filters=[{'Name': 'instance-state-name','Values': ['running','stopped']}]):
