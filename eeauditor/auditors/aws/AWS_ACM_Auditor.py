@@ -21,7 +21,6 @@
 import boto3
 import datetime
 from check_register import CheckRegister
-import multiprocessing
 
 registry = CheckRegister()
 
@@ -199,9 +198,9 @@ def certificate_in_use_check(cache: dict, awsAccountId: str, awsRegion: str, aws
         cSerial = str(cert['Serial'])
         cStatus = str(cert['Status'])
         cKeyAlgo = str(cert['KeyAlgorithm'])
-        useLen = str(len(cert["InUseBy"]))
+        useLen = len(cert["InUseBy"])
         # this is a failing check
-        if useLen == '0':
+        if useLen == 0:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": carn + "/acm-cert-in-use-check",
