@@ -187,18 +187,12 @@ def security_group_open_ftp_check(cache: dict, awsAccountId: str, awsRegion: str
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
-            except Exception as e:
-                if str(e) == "'FromPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 toPort = str(permissions["ToPort"])
-            except Exception as e:
-                if str(e) == "'ToPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 ipProtocol = str(permissions["IpProtocol"])
             except Exception as e:
@@ -346,18 +340,12 @@ def security_group_open_telnet_check(cache: dict, awsAccountId: str, awsRegion: 
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
-            except Exception as e:
-                if str(e) == "'FromPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 toPort = str(permissions["ToPort"])
-            except Exception as e:
-                if str(e) == "'ToPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 ipProtocol = str(permissions["IpProtocol"])
             except Exception as e:
@@ -505,18 +493,12 @@ def security_group_open_dcom_rpc_check(cache: dict, awsAccountId: str, awsRegion
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
-            except Exception as e:
-                if str(e) == "'FromPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 toPort = str(permissions["ToPort"])
-            except Exception as e:
-                if str(e) == "'ToPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 ipProtocol = str(permissions["IpProtocol"])
             except Exception as e:
@@ -680,18 +662,12 @@ def security_group_open_smb_check(cache: dict, awsAccountId: str, awsRegion: str
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
-            except Exception as e:
-                if str(e) == "'FromPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 toPort = str(permissions["ToPort"])
-            except Exception as e:
-                if str(e) == "'ToPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 ipProtocol = str(permissions["IpProtocol"])
             except Exception as e:
@@ -867,18 +843,12 @@ def security_group_open_mssql_check(cache: dict, awsAccountId: str, awsRegion: s
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
-            except Exception as e:
-                if str(e) == "'FromPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 toPort = str(permissions["ToPort"])
-            except Exception as e:
-                if str(e) == "'ToPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 ipProtocol = str(permissions["IpProtocol"])
             except Exception as e:
@@ -1066,18 +1036,12 @@ def security_group_open_oracle_check(cache: dict, awsAccountId: str, awsRegion: 
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
-            except Exception as e:
-                if str(e) == "'FromPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 toPort = str(permissions["ToPort"])
-            except Exception as e:
-                if str(e) == "'ToPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 ipProtocol = str(permissions["IpProtocol"])
             except Exception as e:
@@ -1225,18 +1189,12 @@ def security_group_open_mysql_mariadb_check(cache: dict, awsAccountId: str, awsR
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
-            except Exception as e:
-                if str(e) == "'FromPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 toPort = str(permissions["ToPort"])
-            except Exception as e:
-                if str(e) == "'ToPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 ipProtocol = str(permissions["IpProtocol"])
             except Exception as e:
@@ -1390,18 +1348,12 @@ def security_group_open_rdp_check(cache: dict, awsAccountId: str, awsRegion: str
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
-            except Exception as e:
-                if str(e) == "'FromPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 toPort = str(permissions["ToPort"])
-            except Exception as e:
-                if str(e) == "'ToPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 ipProtocol = str(permissions["IpProtocol"])
             except Exception as e:
@@ -1577,18 +1529,12 @@ def security_group_open_postgresql_check(cache: dict, awsAccountId: str, awsRegi
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
-            except Exception as e:
-                if str(e) == "'FromPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 toPort = str(permissions["ToPort"])
-            except Exception as e:
-                if str(e) == "'ToPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 ipProtocol = str(permissions["IpProtocol"])
             except Exception as e:
@@ -1736,18 +1682,12 @@ def security_group_open_kibana_check(cache: dict, awsAccountId: str, awsRegion: 
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
-            except Exception as e:
-                if str(e) == "'FromPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 toPort = str(permissions["ToPort"])
-            except Exception as e:
-                if str(e) == "'ToPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 ipProtocol = str(permissions["IpProtocol"])
             except Exception as e:
@@ -1923,18 +1863,12 @@ def security_group_open_redis_check(cache: dict, awsAccountId: str, awsRegion: s
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
-            except Exception as e:
-                if str(e) == "'FromPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 toPort = str(permissions["ToPort"])
-            except Exception as e:
-                if str(e) == "'ToPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 ipProtocol = str(permissions["IpProtocol"])
             except Exception as e:
@@ -2110,18 +2044,12 @@ def security_group_open_splunkd_check(cache: dict, awsAccountId: str, awsRegion:
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
-            except Exception as e:
-                if str(e) == "'FromPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 toPort = str(permissions["ToPort"])
-            except Exception as e:
-                if str(e) == "'ToPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 ipProtocol = str(permissions["IpProtocol"])
             except Exception as e:
@@ -2297,18 +2225,12 @@ def security_group_open_elasticsearch1_check(cache: dict, awsAccountId: str, aws
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
-            except Exception as e:
-                if str(e) == "'FromPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 toPort = str(permissions["ToPort"])
-            except Exception as e:
-                if str(e) == "'ToPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 ipProtocol = str(permissions["IpProtocol"])
             except Exception as e:
@@ -2462,18 +2384,12 @@ def security_group_open_elasticsearch2_check(cache: dict, awsAccountId: str, aws
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
-            except Exception as e:
-                if str(e) == "'FromPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 toPort = str(permissions["ToPort"])
-            except Exception as e:
-                if str(e) == "'ToPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 ipProtocol = str(permissions["IpProtocol"])
             except Exception as e:
@@ -2627,18 +2543,12 @@ def security_group_open_memcached_check(cache: dict, awsAccountId: str, awsRegio
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
-            except Exception as e:
-                if str(e) == "'FromPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 toPort = str(permissions["ToPort"])
-            except Exception as e:
-                if str(e) == "'ToPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 ipProtocol = str(permissions["IpProtocol"])
             except Exception as e:
@@ -2824,18 +2734,12 @@ def security_group_open_redshift_check(cache: dict, awsAccountId: str, awsRegion
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
-            except Exception as e:
-                if str(e) == "'FromPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 toPort = str(permissions["ToPort"])
-            except Exception as e:
-                if str(e) == "'ToPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 ipProtocol = str(permissions["IpProtocol"])
             except Exception as e:
@@ -2983,18 +2887,12 @@ def security_group_open_documentdb_check(cache: dict, awsAccountId: str, awsRegi
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
-            except Exception as e:
-                if str(e) == "'FromPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 toPort = str(permissions["ToPort"])
-            except Exception as e:
-                if str(e) == "'ToPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 ipProtocol = str(permissions["IpProtocol"])
             except Exception as e:
@@ -3142,18 +3040,12 @@ def security_group_open_cassandra_check(cache: dict, awsAccountId: str, awsRegio
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
-            except Exception as e:
-                if str(e) == "'FromPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 toPort = str(permissions["ToPort"])
-            except Exception as e:
-                if str(e) == "'ToPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 ipProtocol = str(permissions["IpProtocol"])
             except Exception as e:
@@ -3301,18 +3193,12 @@ def security_group_open_kafka_check(cache: dict, awsAccountId: str, awsRegion: s
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
-            except Exception as e:
-                if str(e) == "'FromPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 toPort = str(permissions["ToPort"])
-            except Exception as e:
-                if str(e) == "'ToPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 ipProtocol = str(permissions["IpProtocol"])
             except Exception as e:
@@ -3460,18 +3346,12 @@ def security_group_open_nfs_check(cache: dict, awsAccountId: str, awsRegion: str
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
-            except Exception as e:
-                if str(e) == "'FromPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 toPort = str(permissions["ToPort"])
-            except Exception as e:
-                if str(e) == "'ToPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 ipProtocol = str(permissions["IpProtocol"])
             except Exception as e:
@@ -3619,18 +3499,12 @@ def security_group_open_rsync_check(cache: dict, awsAccountId: str, awsRegion: s
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
-            except Exception as e:
-                if str(e) == "'FromPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 toPort = str(permissions["ToPort"])
-            except Exception as e:
-                if str(e) == "'ToPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 ipProtocol = str(permissions["IpProtocol"])
             except Exception as e:
@@ -3778,18 +3652,12 @@ def security_group_open_tftp_check(cache: dict, awsAccountId: str, awsRegion: st
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
-            except Exception as e:
-                if str(e) == "'FromPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 toPort = str(permissions["ToPort"])
-            except Exception as e:
-                if str(e) == "'ToPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 ipProtocol = str(permissions["IpProtocol"])
             except Exception as e:
@@ -3937,18 +3805,12 @@ def security_group_open_docker_check(cache: dict, awsAccountId: str, awsRegion: 
         for permissions in secgroup["IpPermissions"]:
             try:
                 fromPort = str(permissions["FromPort"])
-            except Exception as e:
-                if str(e) == "'FromPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 toPort = str(permissions["ToPort"])
-            except Exception as e:
-                if str(e) == "'ToPort'":
-                    continue
-                else:
-                    print(e)
+            except KeyError:
+                continue
             try:
                 ipProtocol = str(permissions["IpProtocol"])
             except Exception as e:
