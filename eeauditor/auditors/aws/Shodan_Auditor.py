@@ -39,13 +39,10 @@ cloudfront = boto3.client("cloudfront")
 
 try:
     apiKeyParam = os.environ["SHODAN_API_KEY_PARAM"]
-except Exception as e:
-    if str(e) == "'SHODAN_API_KEY_PARAM'":
-        apiKeyParam = "placeholder"
-    else:
-        print(e)
+except KeyError:
+    apiKeyParam = "placeholder"
 
-if apiKeyParam == "placeholder":
+if apiKeyParam == "placeholder" or None:
     print("Shodan API Key not supplied, skipping!")
     pass
 # Shodan information for Requests

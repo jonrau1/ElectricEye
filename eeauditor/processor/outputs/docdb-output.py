@@ -33,21 +33,21 @@ class JsonProvider(object):
         # Ensure that the required variables are present
         try:
             mongoUname = os.environ["MONGODB_USERNAME"]
-            if mongoUname == "placeholder":
+            if mongoUname == ("placeholder" or None):
                 print("Missing required MongoDB parameters")
         except KeyError:
             print("Missing required MongoDB parameters")
 
         try:
             mongoHostname = os.environ["MONGODB_HOSTNAME"]
-            if mongoHostname == "placeholder":
+            if mongoHostname == ("placeholder" or None):
                 print("Missing required MongoDB parameters")
         except KeyError:
             print("Missing required MongoDB parameters")
 
         try:
             mongoPwParam = os.environ["MONGODB_PASSWORD_PARAMETER"]
-            if mongoPwParam == "placeholder":
+            if mongoPwParam == ("placeholder" or None):
                 print("Missing required MongoDB parameters")
         except KeyError:
             print("Missing required MongoDB parameters")
