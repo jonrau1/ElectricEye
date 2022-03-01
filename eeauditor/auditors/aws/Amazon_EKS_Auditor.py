@@ -310,6 +310,10 @@ def eks_latest_k8s_version_check(cache: dict, awsAccountId: str, awsRegion: str,
 @registry.register_check("eks")
 def eks_logging_audit_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EKS.3] Elastic Kubernetes Service (EKS) clusters should have authenticator and/or audit logging enabled"""
+    
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+
     # loop through EKS clusters
     for clusters in eks.list_clusters(maxResults=100)["clusters"]:
         cluster = str(clusters)
@@ -320,138 +324,132 @@ def eks_logging_audit_auth_check(cache: dict, awsAccountId: str, awsRegion: str,
             k8sVersion = str(response["cluster"]["version"])
             logInfo = response["cluster"]["logging"]["clusterLogging"]
             for logs in logInfo:
-                logTypes = logs["types"]
-                enableCheck = str(logs["enabled"])
-                if enableCheck == "True":
-                    for logs in logTypes:
-                        # ISO Time
-                        iso8601Time = (
-                            datetime.datetime.utcnow()
-                            .replace(tzinfo=datetime.timezone.utc)
-                            .isoformat()
-                        )
-                        if str(logs) == "authenticator" and "audit":
-                            finding = {
-                                "SchemaVersion": "2018-10-08",
-                                "Id": clusterArn + "/eks-logging-audit-auth-check",
-                                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                                "GeneratorId": clusterName,
-                                "AwsAccountId": awsAccountId,
-                                "Types": [
-                                    "Software and Configuration Checks/AWS Security Best Practices",
-                                ],
-                                "FirstObservedAt": iso8601Time,
-                                "CreatedAt": iso8601Time,
-                                "UpdatedAt": iso8601Time,
-                                "Severity": {"Label": "INFORMATIONAL"},
-                                "Confidence": 99,
-                                "Title": "[EKS.3] Elastic Kubernetes Service (EKS) clusters should have authenticator and/or audit logging enabled",
-                                "Description": "Elastic Kubernetes Service (EKS) cluster "
-                                + clusterName
-                                + " has authenticator and audit logging enabled.",
-                                "Remediation": {
-                                    "Recommendation": {
-                                        "Text": "To enable logging for your cluster refer to the Amazon EKS Control Plane Logging section of the EKS user guide",
-                                        "Url": "https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html",
-                                    }
-                                },
-                                "ProductFields": {"Product Name": "ElectricEye"},
-                                "Resources": [
-                                    {
-                                        "Type": "AwsEksCluster",
-                                        "Id": clusterArn,
-                                        "Partition": awsPartition,
-                                        "Region": awsRegion,
-                                        "Details": {
-                                            "AwsEksCluster": {
-                                                "Name": clusterName,
-                                                "Arn": clusterArn,
-                                                "Version": k8sVersion
-                                            }
+                if str(logs["enabled"]) == "True":
+                    logTypes = logs["types"]
+                    # list comprehension
+                    if ("authenticator" or "audit") in logTypes:
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": clusterArn + "/eks-logging-audit-auth-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": clusterName,
+                            "AwsAccountId": awsAccountId,
+                            "Types": [
+                                "Software and Configuration Checks/AWS Security Best Practices",
+                            ],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "INFORMATIONAL"},
+                            "Confidence": 99,
+                            "Title": "[EKS.3] Elastic Kubernetes Service (EKS) clusters should have authenticator and/or audit logging enabled",
+                            "Description": "Elastic Kubernetes Service (EKS) cluster "
+                            + clusterName
+                            + " has authenticator and/or audit logging enabled.",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "To enable logging for your cluster refer to the Amazon EKS Control Plane Logging section of the EKS user guide",
+                                    "Url": "https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html",
+                                }
+                            },
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsEksCluster",
+                                    "Id": clusterArn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "AwsEksCluster": {
+                                            "Name": clusterName,
+                                            "Arn": clusterArn,
+                                            "Version": k8sVersion
                                         }
                                     }
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "PASSED",
+                                "RelatedRequirements": [
+                                    "NIST CSF DE.AE-3",
+                                    "NIST SP 800-53 AU-6",
+                                    "NIST SP 800-53 CA-7",
+                                    "NIST SP 800-53 IR-4",
+                                    "NIST SP 800-53 IR-5",
+                                    "NIST SP 800-53 IR-8",
+                                    "NIST SP 800-53 SI-4",
+                                    "AICPA TSC CC7.2",
+                                    "ISO 27001:2013 A.12.4.1",
+                                    "ISO 27001:2013 A.16.1.7",
                                 ],
-                                "Compliance": {
-                                    "Status": "PASSED",
-                                    "RelatedRequirements": [
-                                        "NIST CSF DE.AE-3",
-                                        "NIST SP 800-53 AU-6",
-                                        "NIST SP 800-53 CA-7",
-                                        "NIST SP 800-53 IR-4",
-                                        "NIST SP 800-53 IR-5",
-                                        "NIST SP 800-53 IR-8",
-                                        "NIST SP 800-53 SI-4",
-                                        "AICPA TSC CC7.2",
-                                        "ISO 27001:2013 A.12.4.1",
-                                        "ISO 27001:2013 A.16.1.7",
-                                    ],
-                                },
-                                "Workflow": {"Status": "RESOLVED"},
-                                "RecordState": "ACTIVE",
-                            }
-                            yield finding
-                        else:
-                            finding = {
-                                "SchemaVersion": "2018-10-08",
-                                "Id": clusterArn + "/eks-logging-audit-auth-check",
-                                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                                "GeneratorId": clusterName,
-                                "AwsAccountId": awsAccountId,
-                                "Types": [
-                                    "Software and Configuration Checks/AWS Security Best Practices",
-                                ],
-                                "FirstObservedAt": iso8601Time,
-                                "CreatedAt": iso8601Time,
-                                "UpdatedAt": iso8601Time,
-                                "Severity": {"Label": "MEDIUM"},
-                                "Confidence": 99,
-                                "Title": "[EKS.3] Elastic Kubernetes Service (EKS) clusters should have authenticator and/or audit logging enabled",
-                                "Description": "Elastic Kubernetes Service (EKS) cluster "
-                                + clusterName
-                                + " does not have authenticator or audit logging enabled. Refer to the remediation instructions if this configuration is not intended",
-                                "Remediation": {
-                                    "Recommendation": {
-                                        "Text": "To enable logging for your cluster refer to the Amazon EKS Control Plane Logging section of the EKS user guide",
-                                        "Url": "https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html",
-                                    }
-                                },
-                                "ProductFields": {"Product Name": "ElectricEye"},
-                                "Resources": [
-                                    {
-                                        "Type": "AwsEksCluster",
-                                        "Id": clusterArn,
-                                        "Partition": awsPartition,
-                                        "Region": awsRegion,
-                                        "Details": {
-                                            "AwsEksCluster": {
-                                                "Name": clusterName,
-                                                "Arn": clusterArn,
-                                                "Version": k8sVersion
-                                            }
+                            },
+                            "Workflow": {"Status": "RESOLVED"},
+                            "RecordState": "ACTIVE",
+                        }
+                        yield finding
+                    else:
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": clusterArn + "/eks-logging-audit-auth-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": clusterName,
+                            "AwsAccountId": awsAccountId,
+                            "Types": [
+                                "Software and Configuration Checks/AWS Security Best Practices",
+                            ],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "MEDIUM"},
+                            "Confidence": 99,
+                            "Title": "[EKS.3] Elastic Kubernetes Service (EKS) clusters should have authenticator and/or audit logging enabled",
+                            "Description": "Elastic Kubernetes Service (EKS) cluster "
+                            + clusterName
+                            + " does not have authenticator or audit logging enabled. Refer to the remediation instructions if this configuration is not intended",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "To enable logging for your cluster refer to the Amazon EKS Control Plane Logging section of the EKS user guide",
+                                    "Url": "https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html",
+                                }
+                            },
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsEksCluster",
+                                    "Id": clusterArn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "AwsEksCluster": {
+                                            "Name": clusterName,
+                                            "Arn": clusterArn,
+                                            "Version": k8sVersion
                                         }
                                     }
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "FAILED",
+                                "RelatedRequirements": [
+                                    "NIST CSF DE.AE-3",
+                                    "NIST SP 800-53 AU-6",
+                                    "NIST SP 800-53 CA-7",
+                                    "NIST SP 800-53 IR-4",
+                                    "NIST SP 800-53 IR-5",
+                                    "NIST SP 800-53 IR-8",
+                                    "NIST SP 800-53 SI-4",
+                                    "AICPA TSC CC7.2",
+                                    "ISO 27001:2013 A.12.4.1",
+                                    "ISO 27001:2013 A.16.1.7",
                                 ],
-                                "Compliance": {
-                                    "Status": "FAILED",
-                                    "RelatedRequirements": [
-                                        "NIST CSF DE.AE-3",
-                                        "NIST SP 800-53 AU-6",
-                                        "NIST SP 800-53 CA-7",
-                                        "NIST SP 800-53 IR-4",
-                                        "NIST SP 800-53 IR-5",
-                                        "NIST SP 800-53 IR-8",
-                                        "NIST SP 800-53 SI-4",
-                                        "AICPA TSC CC7.2",
-                                        "ISO 27001:2013 A.12.4.1",
-                                        "ISO 27001:2013 A.16.1.7",
-                                    ],
-                                },
-                                "Workflow": {"Status": "NEW"},
-                                "RecordState": "ACTIVE",
-                            }
-                            yield finding
+                            },
+                            "Workflow": {"Status": "NEW"},
+                            "RecordState": "ACTIVE",
+                        }
+                        yield finding
         except Exception as e:
-            print(e)
+            print(f"Issue found with EKS Logging Check {e}")
+            continue
 
 @registry.register_check("eks")
 def eks_secrets_envelope_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -526,8 +524,7 @@ def eks_secrets_envelope_encryption_check(cache: dict, awsAccountId: str, awsReg
                     "RecordState": "ARCHIVED",
                 }
                 yield finding
-            except:
-                k8sSecretKey = 'NO_SECRETS_ENCRYPTION'
+            except KeyError:
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": clusterArn + "/secrets-envelope-encryption-check",
@@ -585,4 +582,5 @@ def eks_secrets_envelope_encryption_check(cache: dict, awsAccountId: str, awsReg
                 }
                 yield finding
         except Exception as e:
-            print(e)
+            print(f"Issue with EKS Envelope Encryption check {e}")
+            continue
