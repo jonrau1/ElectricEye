@@ -191,7 +191,7 @@ def ec2_instance_ssm_managed_check(cache: dict, awsAccountId: str, awsRegion: st
 
 @registry.register_check("ec2")
 def ssm_instace_agent_update_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EC2-SSM.2] EC2 Instances managed by Systems Manager should have the latest SSM Agent installed"""
+    """[EC2-SSM.2] EC2 Linux Instances managed by Systems Manager should have the latest SSM Agent installed"""
     response = describe_instances(cache)
     myEc2InstanceReservations = response["Reservations"]
     for reservations in myEc2InstanceReservations:
@@ -205,130 +205,134 @@ def ssm_instace_agent_update_check(cache: dict, awsAccountId: str, awsRegion: st
             instanceVpc = str(instances["VpcId"])
             instanceSubnet = str(instances["SubnetId"])
             instanceLaunchedAt = str(instances["LaunchTime"])
-            response = ssm.describe_instance_information()
-            myManagedInstances = response["InstanceInformationList"]
+
+            r = ssm.describe_instance_information()
+            myManagedInstances = r["InstanceInformationList"]
             for instances in myManagedInstances:
-                latestVersionCheck = str(instances["IsLatestVersion"])
-                # ISO Time
-                iso8601Time = (
-                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-                )
-                if latestVersionCheck == "False":
-                    finding = {
-                        "SchemaVersion": "2018-10-08",
-                        "Id": instanceArn + "/ec2-ssm-agent-latest-check",
-                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": instanceArn,
-                        "AwsAccountId": awsAccountId,
-                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                        "FirstObservedAt": iso8601Time,
-                        "CreatedAt": iso8601Time,
-                        "UpdatedAt": iso8601Time,
-                        "Severity": {"Label": "MEDIUM"},
-                        "Confidence": 99,
-                        "Title": "[EC2-SSM.2] EC2 Instances managed by Systems Manager should have the latest SSM Agent installed",
-                        "Description": "EC2 Instance "
-                        + instanceId
-                        + " does not have the latest SSM Agent installed. Refer to the remediation instructions if this configuration is not intended",
-                        "Remediation": {
-                            "Recommendation": {
-                                "Text": "For information on automating updates to the SSM Agent refer to the Automate Updates to SSM Agent section of the AWS Systems Manager User Guide",
-                                "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent-automatic-updates.html",
-                            }
-                        },
-                        "ProductFields": {"Product Name": "ElectricEye"},
-                        "Resources": [
-                            {
-                                "Type": "AwsEc2Instance",
-                                "Id": instanceArn,
-                                "Partition": awsPartition,
-                                "Region": awsRegion,
-                                "Details": {
-                                    "AwsEc2Instance": {
-                                        "Type": instanceType,
-                                        "ImageId": instanceImage,
-                                        "VpcId": instanceVpc,
-                                        "SubnetId": instanceSubnet,
-                                        "LaunchedAt": parse(instanceLaunchedAt).isoformat()
-                                    }
-                                }
-                            }
-                        ],
-                        "Compliance": {
-                            "Status": "FAILED",
-                            "RelatedRequirements": [
-                                "NIST CSF ID.AM-2",
-                                "NIST SP 800-53 CM-8",
-                                "NIST SP 800-53 PM-5",
-                                "AICPA TSC CC3.2",
-                                "AICPA TSC CC6.1",
-                                "ISO 27001:2013 A.8.1.1",
-                                "ISO 27001:2013 A.8.1.2",
-                                "ISO 27001:2013 A.12.5.1"
-                            ]
-                        },
-                        "Workflow": {"Status": "NEW"},
-                        "RecordState": "ACTIVE"
-                    }
-                    yield finding
+                if str(instances['PlatformType']) != 'Linux':
+                    continue
                 else:
-                    finding = {
-                        "SchemaVersion": "2018-10-08",
-                        "Id": instanceArn + "/ec2-ssm-agent-latest-check",
-                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": instanceArn,
-                        "AwsAccountId": awsAccountId,
-                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                        "FirstObservedAt": iso8601Time,
-                        "CreatedAt": iso8601Time,
-                        "UpdatedAt": iso8601Time,
-                        "Severity": {"Label": "INFORMATIONAL"},
-                        "Confidence": 99,
-                        "Title": "[EC2-SSM.2] EC2 Instances managed by Systems Manager should have the latest SSM Agent installed",
-                        "Description": "EC2 Instance "
-                        + instanceId
-                        + " has the latest SSM Agent installed.",
-                        "Remediation": {
-                            "Recommendation": {
-                                "Text": "For information on automating updates to the SSM Agent refer to the Automate Updates to SSM Agent section of the AWS Systems Manager User Guide",
-                                "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent-automatic-updates.html",
-                            }
-                        },
-                        "ProductFields": {"Product Name": "ElectricEye"},
-                        "Resources": [
-                            {
-                                "Type": "AwsEc2Instance",
-                                "Id": instanceArn,
-                                "Partition": awsPartition,
-                                "Region": awsRegion,
-                                "Details": {
-                                    "AwsEc2Instance": {
-                                        "Type": instanceType,
-                                        "ImageId": instanceImage,
-                                        "VpcId": instanceVpc,
-                                        "SubnetId": instanceSubnet,
-                                        "LaunchedAt": parse(instanceLaunchedAt).isoformat()
+                    latestVersionCheck = str(instances["IsLatestVersion"])
+                    # ISO Time
+                    iso8601Time = (
+                        datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+                    )
+                    if latestVersionCheck == "False":
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": instanceArn + "/ec2-ssm-agent-latest-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": instanceArn,
+                            "AwsAccountId": awsAccountId,
+                            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "MEDIUM"},
+                            "Confidence": 99,
+                            "Title": "[EC2-SSM.2] EC2 Linux Instances managed by Systems Manager should have the latest SSM Agent installed",
+                            "Description": "EC2 Instance "
+                            + instanceId
+                            + " does not have the latest SSM Agent installed. Refer to the remediation instructions if this configuration is not intended",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "For information on automating updates to the SSM Agent refer to the Automate Updates to SSM Agent section of the AWS Systems Manager User Guide",
+                                    "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent-automatic-updates.html",
+                                }
+                            },
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsEc2Instance",
+                                    "Id": instanceArn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "AwsEc2Instance": {
+                                            "Type": instanceType,
+                                            "ImageId": instanceImage,
+                                            "VpcId": instanceVpc,
+                                            "SubnetId": instanceSubnet,
+                                            "LaunchedAt": parse(instanceLaunchedAt).isoformat()
+                                        }
                                     }
                                 }
-                            }
-                        ],
-                        "Compliance": {
-                            "Status": "PASSED",
-                            "RelatedRequirements": [
-                                "NIST CSF ID.AM-2",
-                                "NIST SP 800-53 CM-8",
-                                "NIST SP 800-53 PM-5",
-                                "AICPA TSC CC3.2",
-                                "AICPA TSC CC6.1",
-                                "ISO 27001:2013 A.8.1.1",
-                                "ISO 27001:2013 A.8.1.2",
-                                "ISO 27001:2013 A.12.5.1"
-                            ]
-                        },
-                        "Workflow": {"Status": "RESOLVED"},
-                        "RecordState": "ARCHIVED"
-                    }
-                    yield finding
+                            ],
+                            "Compliance": {
+                                "Status": "FAILED",
+                                "RelatedRequirements": [
+                                    "NIST CSF ID.AM-2",
+                                    "NIST SP 800-53 CM-8",
+                                    "NIST SP 800-53 PM-5",
+                                    "AICPA TSC CC3.2",
+                                    "AICPA TSC CC6.1",
+                                    "ISO 27001:2013 A.8.1.1",
+                                    "ISO 27001:2013 A.8.1.2",
+                                    "ISO 27001:2013 A.12.5.1"
+                                ]
+                            },
+                            "Workflow": {"Status": "NEW"},
+                            "RecordState": "ACTIVE"
+                        }
+                        yield finding
+                    else:
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": instanceArn + "/ec2-ssm-agent-latest-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": instanceArn,
+                            "AwsAccountId": awsAccountId,
+                            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "INFORMATIONAL"},
+                            "Confidence": 99,
+                            "Title": "[EC2-SSM.2] EC2 Instances managed by Systems Manager should have the latest SSM Agent installed",
+                            "Description": "EC2 Instance "
+                            + instanceId
+                            + " has the latest SSM Agent installed.",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "For information on automating updates to the SSM Agent refer to the Automate Updates to SSM Agent section of the AWS Systems Manager User Guide",
+                                    "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent-automatic-updates.html",
+                                }
+                            },
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsEc2Instance",
+                                    "Id": instanceArn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "AwsEc2Instance": {
+                                            "Type": instanceType,
+                                            "ImageId": instanceImage,
+                                            "VpcId": instanceVpc,
+                                            "SubnetId": instanceSubnet,
+                                            "LaunchedAt": parse(instanceLaunchedAt).isoformat()
+                                        }
+                                    }
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "PASSED",
+                                "RelatedRequirements": [
+                                    "NIST CSF ID.AM-2",
+                                    "NIST SP 800-53 CM-8",
+                                    "NIST SP 800-53 PM-5",
+                                    "AICPA TSC CC3.2",
+                                    "AICPA TSC CC6.1",
+                                    "ISO 27001:2013 A.8.1.1",
+                                    "ISO 27001:2013 A.8.1.2",
+                                    "ISO 27001:2013 A.12.5.1"
+                                ]
+                            },
+                            "Workflow": {"Status": "RESOLVED"},
+                            "RecordState": "ARCHIVED"
+                        }
+                        yield finding
 
 @registry.register_check("ec2")
 def ssm_instance_association_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -489,13 +493,12 @@ def ssm_instance_patch_state_state(cache: dict, awsAccountId: str, awsRegion: st
             instanceLaunchedAt = str(instances["LaunchTime"])
             response = ssm.describe_instance_information()
             try:
-                response = ssm.describe_instance_patch_states(InstanceIds=[instanceId])
-                patchStatesCheck = str(response["InstancePatchStates"])
+                r = ssm.describe_instance_patch_states(InstanceIds=[instanceId])
                 # ISO Time
                 iso8601Time = (
                     datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 )
-                if patchStatesCheck == "[]":
+                if not r["InstancePatchStates"]:
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": instanceArn + "/ec2-patch-manager-check",
