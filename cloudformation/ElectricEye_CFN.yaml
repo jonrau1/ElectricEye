@@ -239,6 +239,7 @@ Resources:
                   - appstream:DescribeImages
                   - appstream:DescribeUsers
                   - backup:DescribeProtectedResource
+                  - cassandra:Select
                   - cloudformation:DescribeStacks
                   - cloudfront:ListDistributions
                   - cloudfront:GetDistribution

@@ -491,7 +491,9 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 
 ## Supported Services and Checks
 
-These are the following services and checks perform by each Auditor. There are currently **332** checks supported across **87** AWS services / components using **67** Auditors. There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+These are the following services and checks perform by each Auditor. There are currently **335** checks supported across **88** AWS services / components using **68** Auditors. 
+
+There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced, Health, and Trusted Advisor checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in `us-east-1` to perform all checks. The **AWS Shield Advanced**, **AWS Health** and **AWS Trusted Advisor** APIs only live in `us-east-1`, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
@@ -779,6 +781,9 @@ These are the following services and checks perform by each Auditor. There are c
 | AWS_IAM_Auditor.py                     | IAM User                       | Do User IAM inline policies adhere to least privilege principles                    |
 | AWS_IAM_Auditor.py                     | IAM Group                      | Do Group IAM inline policies adhere to least privilege principles                   |
 | AWS_IAM_Auditor.py                     | IAM Role                       | Do Role IAM inline policies adhere to least privilege principles                    |
+| AWS_Keyspaces_Auditor.py               | Keyspaces table                | Are Keyspaces Tables encrypted with a KMS CMK                                       |
+| AWS_Keyspaces_Auditor.py               | Keyspaces table                | Do Keyspaces Tables have PTR enabled                                                |
+| AWS_Keyspaces_Auditor.py               | Keyspaces table                | Are Keyspaces Tables in an unusable state                                           |
 | AWS_KMS_Auditor.py                     | KMS key                        | Is key rotation enabled                                                             |
 | AWS_KMS_Auditor.py                     | KMS key                        | Does the key allow public access                                                    |
 | AWS_Lambda_Auditor.py                  | Lambda function                | Has function been used or updated in the last 30 days                               |

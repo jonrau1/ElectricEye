@@ -258,6 +258,7 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "ssm:DescribeInstancePatches",
                 "ecs:ListClusters",
                 "ecs:DescribeClusters",
+                "cassandra:Select",
                 "elasticloadbalancing:DescribeLoadBalancers",
                 "kinesis:ListStreams",
                 "cognito-idp:DescribeUserPool",
