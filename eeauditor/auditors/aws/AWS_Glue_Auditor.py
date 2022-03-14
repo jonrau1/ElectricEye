@@ -165,12 +165,12 @@ def crawler_s3_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, 
                     }
                     yield finding
             except Exception as e:
-                if str(e) == "'CrawlerSecurityConfiguration'":
+                if str(e) == '"CrawlerSecurityConfiguration"':
                     pass
                 else:
                     print(e)
         except Exception as e:
-            if str(e) == "'CrawlerSecurityConfiguration'":
+            if str(e) == '"CrawlerSecurityConfiguration"':
                 pass
             else:
                 print(e)
@@ -307,12 +307,12 @@ def crawler_cloudwatch_encryption_check(cache: dict, awsAccountId: str, awsRegio
                     }
                     yield finding
             except Exception as e:
-                if str(e) == "'CrawlerSecurityConfiguration'":
+                if str(e) == '"CrawlerSecurityConfiguration"':
                     pass
                 else:
                     print(e)
         except Exception as e:
-            if str(e) == "'CrawlerSecurityConfiguration'":
+            if str(e) == '"CrawlerSecurityConfiguration"':
                 pass
             else:
                 print(e)
@@ -449,12 +449,12 @@ def crawler_job_bookmark_encryption_check(cache: dict, awsAccountId: str, awsReg
                     }
                     yield finding
             except Exception as e:
-                if str(e) == "'CrawlerSecurityConfiguration'":
+                if str(e) == '"CrawlerSecurityConfiguration"':
                     pass
                 else:
                     print(e)
         except Exception as e:
-            if str(e) == "'CrawlerSecurityConfiguration'":
+            if str(e) == '"CrawlerSecurityConfiguration"':
                 pass
             else:
                 print(e)
@@ -572,7 +572,7 @@ def glue_data_catalog_encryption_check(cache: dict, awsAccountId: str, awsRegion
             }
             yield finding
     except Exception as e:
-        if str(e) == "'CrawlerSecurityConfiguration'":
+        if str(e) == '"CrawlerSecurityConfiguration"':
             pass
         else:
             print(e)
@@ -690,7 +690,7 @@ def glue_data_catalog_password_encryption_check(cache: dict, awsAccountId: str, 
             }
             yield finding
     except Exception as e:
-        if str(e) == "'CrawlerSecurityConfiguration'":
+        if str(e) == '"CrawlerSecurityConfiguration"':
             pass
         else:
             print(e)
