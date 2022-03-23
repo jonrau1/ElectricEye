@@ -35,9 +35,7 @@ for page in response_iterator:
     results["DistributionList"]["Items"].extend(iter(page_vals))
 
 @registry.register_check("cloudfront")
-def cloudfront_active_trusted_signers_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def cloudfront_active_trusted_signers_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFront.1] Trusted signers should have key pairs"""
     
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
@@ -154,9 +152,8 @@ def cloudfront_active_trusted_signers_check(
             print(e)
 
 @registry.register_check("cloudfront")
-def cloudfront_origin_shield_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def cloudfront_origin_shield_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudFront.2] Distributions should have Origin Shield enabled"""
     
     iso8601Time = (
         datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -183,7 +180,7 @@ def cloudfront_origin_shield_check(
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "LOW"},
                     "Confidence": 99,
-                    "Title": "[CloudFront.1] Distributions should have Origin Shield enabled",
+                    "Title": "[CloudFront.2] Distributions should have Origin Shield enabled",
                     "Description": "Distribution "
                     + distributionId
                     + " does not have Origin Shield enabled.",
@@ -238,7 +235,7 @@ def cloudfront_origin_shield_check(
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
-                    "Title": "[CloudFront.1] Distributions should have Origin Shield enabled",
+                    "Title": "[CloudFront.2] Distributions should have Origin Shield enabled",
                     "Description": "Distribution "
                     + distributionId
                     + " has Origin Shield enabled.",
@@ -282,9 +279,8 @@ def cloudfront_origin_shield_check(
             print(e)
 
 @registry.register_check("cloudfront")
-def cloudfront_default_viewer_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def cloudfront_default_viewer_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudFront.3] Distributions should have a Default Viewer certificate in place"""
     
     iso8601Time = (
         datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -311,7 +307,7 @@ def cloudfront_default_viewer_check(
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "LOW"},
                     "Confidence": 99,
-                    "Title": "[CloudFront.1] Distributions should have a Default Viewer certificate in place",
+                    "Title": "[CloudFront.3] Distributions should have a Default Viewer certificate in place",
                     "Description": "Distribution "
                     + distributionId
                     + " does not have Default Viewer certificate in place.",
@@ -365,7 +361,7 @@ def cloudfront_default_viewer_check(
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "LOW"},
                     "Confidence": 99,
-                    "Title": "[CloudFront.1] Distributions should have a Default Viewer certificate in place",
+                    "Title": "[CloudFront.3] Distributions should have a Default Viewer certificate in place",
                     "Description": "Distribution "
                     + distributionId
                     + " has Default Viewer certificate in place.",
@@ -408,9 +404,8 @@ def cloudfront_default_viewer_check(
             print(e)
 
 @registry.register_check("cloudfront")
-def cloudfront_georestriction_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def cloudfront_georestriction_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudFront.4] Distributions should have Geo Ristriction in place"""
     
     iso8601Time = (
         datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -437,7 +432,7 @@ def cloudfront_georestriction_check(
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "LOW"},
                     "Confidence": 99,
-                    "Title": "[CloudFront.1] Distributions should have Geo Ristriction in place",
+                    "Title": "[CloudFront.4] Distributions should have Geo Ristriction in place",
                     "Description": "Distribution "
                     + distributionId
                     + " does not have Geo Restriction in place.",
@@ -491,7 +486,7 @@ def cloudfront_georestriction_check(
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "LOW"},
                     "Confidence": 99,
-                    "Title": "[CloudFront.1] Distributions should have Geo Ristriction in place",
+                    "Title": "[CloudFront.4] Distributions should have Geo Ristriction in place",
                     "Description": "Distribution "
                     + distributionId
                     + " has Geo Restriction in place.",
@@ -534,9 +529,8 @@ def cloudfront_georestriction_check(
             print(e)
 
 @registry.register_check("cloudfront")
-def cloudfront_field_level_encryption_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def cloudfront_field_level_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudFront.5] Distributions should have Field-Level Encryption in place"""
     
     iso8601Time = (
         datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -563,7 +557,7 @@ def cloudfront_field_level_encryption_check(
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "LOW"},
                     "Confidence": 99,
-                    "Title": "[CloudFront.1] Distributions should have Field-Level Encryption in place",
+                    "Title": "[CloudFront.5] Distributions should have Field-Level Encryption in place",
                     "Description": "Distribution "
                     + distributionId
                     + " does not have Field Level Encryption in place.",
@@ -612,7 +606,7 @@ def cloudfront_field_level_encryption_check(
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "LOW"},
                     "Confidence": 99,
-                    "Title": "[CloudFront.1] Distributions should have Field-Level Encryption in place",
+                    "Title": "[CloudFront.5] Distributions should have Field-Level Encryption in place",
                     "Description": "Distribution "
                     + distributionId
                     + " does have Field-Level Encryption in place.",
@@ -650,9 +644,8 @@ def cloudfront_field_level_encryption_check(
             print(e)
 
 @registry.register_check("cloudfront")
-def cloudfront_waf_enabled_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def cloudfront_waf_enabled_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudFront.6] Distributions should have WAF enabled"""
     
     iso8601Time = (
         datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -679,7 +672,7 @@ def cloudfront_waf_enabled_check(
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "LOW"},
                     "Confidence": 99,
-                    "Title": "[CloudFront.1] Distributions should have WAF enabled",
+                    "Title": "[CloudFront.6] Distributions should have WAF enabled",
                     "Description": "Distribution "
                     + distributionId
                     + " does not have WAF enabled.",
@@ -731,7 +724,7 @@ def cloudfront_waf_enabled_check(
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "LOW"},
                     "Confidence": 99,
-                    "Title": "[CloudFront.1] Distributions should have WAF enabled",
+                    "Title": "[CloudFront.6] Distributions should have WAF enabled",
                     "Description": "Distribution "
                     + distributionId
                     + " does has WAF enabled.",
@@ -772,9 +765,8 @@ def cloudfront_waf_enabled_check(
             print(e)
 
 @registry.register_check("cloudfront")
-def cloudfront_default_tls_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def cloudfront_default_tls_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudFront.7] Distributions should have Default TLS enabled"""
     
     iso8601Time = (
         datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -801,7 +793,7 @@ def cloudfront_default_tls_check(
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "LOW"},
                     "Confidence": 99,
-                    "Title": "[CloudFront.1] Distributions should have Default TLS enabled",
+                    "Title": "[CloudFront.7] Distributions should have Default TLS enabled",
                     "Description": "Distribution "
                     + distributionId
                     + " does not have Default TLS enabled.",
@@ -855,7 +847,7 @@ def cloudfront_default_tls_check(
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "LOW"},
                     "Confidence": 99,
-                    "Title": "[CloudFront.1] Distributions should have Default TLS enabled",
+                    "Title": "[CloudFront.7] Distributions should have Default TLS enabled",
                     "Description": "Distribution "
                     + distributionId
                     + " does have Default TLS enabled.",
@@ -898,9 +890,8 @@ def cloudfront_default_tls_check(
             print(e)
 
 @registry.register_check("cloudfront")
-def cloudfront_custom_origin_tls_check(
-    cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str
-) -> dict:
+def cloudfront_custom_origin_tls_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudFront.8] Distributions using Custom Origins should be using TLSv1.2"""
     
     iso8601Time = (
         datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -927,7 +918,7 @@ def cloudfront_custom_origin_tls_check(
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "LOW"},
                     "Confidence": 99,
-                    "Title": "[CloudFront.1] Distributions using Custom Origins should be using TLSv1.2",
+                    "Title": "[CloudFront.8] Distributions using Custom Origins should be using TLSv1.2",
                     "Description": "Distribution "
                     + distributionId
                     + " has Custom Origins not using TLSv1.2.",
@@ -981,7 +972,7 @@ def cloudfront_custom_origin_tls_check(
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "LOW"},
                     "Confidence": 99,
-                    "Title": "[CloudFront.1] Distributions using Custom Origins should be using TLSv1.2",
+                    "Title": "[CloudFront.8] Distributions using Custom Origins should be using TLSv1.2",
                     "Description": "Distribution "
                     + distributionId
                     + " has Custom Origins using TLSv1.2.",
