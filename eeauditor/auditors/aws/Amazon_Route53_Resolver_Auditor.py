@@ -178,14 +178,11 @@ def vpc_route53_resolver_firewall_association_check(cache: dict, awsAccountId: s
         # If any empty list is returned there is not query logging configured
         r = route53resolver.list_firewall_rule_group_associations(VpcId=vpcId)
 
-        print(r)
-
-        '''
         # this is a failing check due to empty list comprehension
-        if not r["ResolverQueryLogConfigAssociations"]:
+        if not r["FirewallRuleGroupAssociations"]:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": vpcArn + "/route53resolver-dnsql-attached-check",
+                "Id": vpcArn + "/route53resolver-dnsfw-associated-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": vpcArn,
                 "AwsAccountId": awsAccountId,
@@ -195,12 +192,12 @@ def vpc_route53_resolver_firewall_association_check(cache: dict, awsAccountId: s
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": "[Route53Resolver.1] VPCs should have Route 53 Resolver DNS Query Logging configured",
-                "Description": f"VPC {vpcId} does not have Route 53 DNS Query Logging configured. DNS Query Logging provides rich details about outbound DNS resolutions originating from your VPC which can be crucial for application troubleshooting and security use cases. Refer to the remediation instructions if this configuration is not intended.",
+                "Title": "[Route53Resolver.2] VPCs should have Route 53 Resolver DNS Firewalls associated",
+                "Description": f"VPC {vpcId} does not have a Route 53 Resolve DNS Firewall associated with it. With Route 53 Resolver DNS Firewall, you can filter and regulate outbound DNS traffic for your virtual private cloud (VPC). To do this, you create reusable collections of filtering rules in DNS Firewall rule groups, associate the rule groups to your VPC, and then monitor activity in DNS Firewall logs and metrics. Based on the activity, you can adjust the behavior of DNS Firewall accordingly. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "For more information on setting up Query Logging refer to the Managing Resolver query logging configurations section of the Amazon Route 53 Developer Guide",
-                        "Url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-query-logging-configurations-managing.html",
+                        "Text": "For more information on setting up DNS Firewall refer to the Getting started with Route 53 Resolver DNS Firewall section of the Amazon Route 53 Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-dns-firewall-getting-started.html",
                     }
                 },
                 "ProductFields": {"Product Name": "ElectricEye"},
@@ -220,16 +217,15 @@ def vpc_route53_resolver_firewall_association_check(cache: dict, awsAccountId: s
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF DE.AE-3",
+                        "NIST CSF DE.AE-2",
                         "NIST SP 800-53 AU-6",
                         "NIST SP 800-53 CA-7",
                         "NIST SP 800-53 IR-4",
-                        "NIST SP 800-53 IR-5",
-                        "NIST SP 800-53 IR-8",
                         "NIST SP 800-53 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
-                        "ISO 27001:2013 A.16.1.7"
+                        "ISO 27001:2013 A.16.1.1",
+                        "ISO 27001:2013 A.16.1.4"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -239,7 +235,7 @@ def vpc_route53_resolver_firewall_association_check(cache: dict, awsAccountId: s
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": vpcArn + "/route53resolver-dnsql-attached-check",
+                "Id": vpcArn + "/route53resolver-dnsfw-associated-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": vpcArn,
                 "AwsAccountId": awsAccountId,
@@ -249,12 +245,12 @@ def vpc_route53_resolver_firewall_association_check(cache: dict, awsAccountId: s
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Route53Resolver.1] VPCs should have Route 53 Resolver DNS Query Logging configured",
-                "Description": f"VPC {vpcId} does not have Route 53 DNS Query Logging configured. DNS Query Logging provides rich details about outbound DNS resolutions originating from your VPC which can be crucial for application troubleshooting and security use cases. Refer to the remediation instructions if this configuration is not intended.",
+                "Title": "[Route53Resolver.2] VPCs should have Route 53 Resolver DNS Firewalls associated",
+                "Description": f"VPC {vpcId} does not have a Route 53 Resolve DNS Firewall associated with it. With Route 53 Resolver DNS Firewall, you can filter and regulate outbound DNS traffic for your virtual private cloud (VPC). To do this, you create reusable collections of filtering rules in DNS Firewall rule groups, associate the rule groups to your VPC, and then monitor activity in DNS Firewall logs and metrics. Based on the activity, you can adjust the behavior of DNS Firewall accordingly. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "For more information on setting up Query Logging refer to the Managing Resolver query logging configurations section of the Amazon Route 53 Developer Guide",
-                        "Url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-query-logging-configurations-managing.html",
+                        "Text": "For more information on setting up DNS Firewall refer to the Getting started with Route 53 Resolver DNS Firewall section of the Amazon Route 53 Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-dns-firewall-getting-started.html",
                     }
                 },
                 "ProductFields": {"Product Name": "ElectricEye"},
@@ -274,39 +270,18 @@ def vpc_route53_resolver_firewall_association_check(cache: dict, awsAccountId: s
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF DE.AE-3",
+                        "NIST CSF DE.AE-2",
                         "NIST SP 800-53 AU-6",
                         "NIST SP 800-53 CA-7",
                         "NIST SP 800-53 IR-4",
-                        "NIST SP 800-53 IR-5",
-                        "NIST SP 800-53 IR-8",
                         "NIST SP 800-53 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
-                        "ISO 27001:2013 A.16.1.7"
+                        "ISO 27001:2013 A.16.1.1",
+                        "ISO 27001:2013 A.16.1.4"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
-        '''
-
-@registry.register_check("route53resolver")
-def vpc_route53_resolver_firewall_orphaned_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Route53Resolver.4] Route 53 Resolver DNS Firewall Rule Groups should be in an associated state"""
-    # ISO Time
-    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    # Find all Firewall Rule Groups
-    fw = route53resolver.list_firewall_rule_groups()
-    if not fw["FirewallRuleGroups"]:
-        pass
-    else:
-        for groups in fw["FirewallRuleGroups"]:
-            fwGroupId = groups["Id"]
-            # Describe the Rule Group to find attachment state
-            response = route53resolver.get_firewall_rule_group(
-                FirewallRuleGroupId=fwGroupId
-            )
-            print(response)
-####
