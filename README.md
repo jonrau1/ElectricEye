@@ -491,14 +491,17 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 
 ## Supported Services and Checks
 
-These are the following services and checks perform by each Auditor. There are currently **335** checks supported across **88** AWS services / components using **68** Auditors. 
+These are the following services and checks perform by each Auditor. There are currently **339** checks supported across **88** AWS services / components using **68** Auditors. 
 
 There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
 **Regarding Shield Advanced, Health, and Trusted Advisor checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in `us-east-1` to perform all checks. The **AWS Shield Advanced**, **AWS Health** and **AWS Trusted Advisor** APIs only live in `us-east-1`, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
-| Auditor File Name                      | AWS Service                    | Auditor Scan Description                                                            |
-|----------------------------------------|--------------------------------|-------------------------------------------------------------------------------------|
+**Regarding Security Group checks:** The table shows the full amount of checks despite not being shown in the CLI due to the change to a Configuation-file based approach added on 25 MAR 2022.
+
+
+|            Auditor File Name           |           AWS Service          |                               Auditor Scan Description                              |
+|:--------------------------------------:|:------------------------------:|:-----------------------------------------------------------------------------------:|
 | Amazon_APIGW_Auditor.py                | API Gateway Stage              | Are stage metrics enabled                                                           |
 | Amazon_APIGW_Auditor.py                | API Gateway Stage              | Is stage API logging enabled                                                        |
 | Amazon_APIGW_Auditor.py                | API Gateway Stage              | Is stage caching enabled                                                            |
@@ -577,6 +580,10 @@ There are currently **62** supported response and remediation Playbooks with cov
 | Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is Rsync (tcp873) open to the internet                                              |
 | Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is TFTP (udp69) open to the internet                                                |
 | Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is Docker API (tcp2375) open to the internet                                        |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is K8s API (tcp10250) open to the internet                                          |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is SMTP (tcp25) open to the internet                                                |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is NetBioas (tcp137-139) open to the internet                                       |
+| Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is OpenVPN (udp1194) open to the internet                                           |
 | Amazon_EC2_SSM_Auditor.py              | EC2 Instance                   | Is the instance managed by SSM                                                      |
 | Amazon_EC2_SSM_Auditor.py              | EC2 Instance                   | Does the instance have a successful SSM association                                 |
 | Amazon_EC2_SSM_Auditor.py              | EC2 Instance                   | Is the SSM Agent up to date                                                         |
@@ -811,8 +818,8 @@ There are currently **62** supported response and remediation Playbooks with cov
 | AWS_Security_Services_Auditor.py       | AWS WAFv2 (Global)             | Are Global Web ACLs (for CloudFront) configured                                     |
 | AWS_TrustedAdvisor_Auditor.py          | Trusted Advisor Check          | Is the Trusted Advisor check for MFA on Root Account failing                        |
 | AWS_TrustedAdvisor_Auditor.py          | Trusted Advisor Check          | Is the Trusted Advisor check for ELB Listener Security failing                      |
-| AWS_TrustedAdvisor_Auditor.py          | Trusted Advisor Check          | Is the Trusted Advisor check for CloudFront SSL Certs in IAM  Cert Store failing    |
-| AWS_TrustedAdvisor_Auditor.py          | Trusted Advisor Check          | Is the Trusted Advisor check for CloudFront SSL Cert on Origin  Server failing      |
+| AWS_TrustedAdvisor_Auditor.py          | Trusted Advisor Check          | Is the Trusted Advisor check for CloudFront SSL Certs in IAM Cert Store failing     |
+| AWS_TrustedAdvisor_Auditor.py          | Trusted Advisor Check          | Is the Trusted Advisor check for CloudFront SSL Cert on Origin Server failing       |
 | AWS_TrustedAdvisor_Auditor.py          | Trusted Advisor Check          | Is the Trusted Advisor check for Exposed Access Keys failing                        |
 | AWS_WAFv2_Auditor.py                   | AWS WAFv2 (Regional)           | Do Regional WAFs use Cloudwatch Metrics                                             |
 | AWS_WAFv2_Auditor.py                   | AWS WAFv2 (Regional)           | Do Regional WAFs use Request Sampling                                               |
