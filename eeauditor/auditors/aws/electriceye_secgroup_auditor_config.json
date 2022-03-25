@@ -214,5 +214,5 @@
         "CheckTitle": "[SecurityGroup.28] Security groups should not allow unrestricted OpenVPN (UDP 1194) access",
         "CheckId": "security-group-openvpn-open-check",
         "CheckDescriptor": "OpenVPN (UDP 1194)"
-    },
+    }
 ]
