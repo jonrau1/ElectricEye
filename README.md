@@ -40,7 +40,7 @@ Continuously monitor your AWS services for configurations that can lead to degra
 
 ## Synopsis
 
-- **320+ security & AWS best practice detections** including services not covered by Security Hub/Config (MemoryDB, Cognito, EKS, ECR, DocDB, Amazon Managed Blockchain, etc.), all findings are **aligned to NIST CSF, NIST 800-53, AICPA TSC and ISO 27001:2013**
+- **340+ security & AWS best practice detections** including services not covered by Security Hub/Config (MemoryDB, Cognito, DocDB, Amazon Managed Blockchain, etc.), all findings are **aligned to NIST CSF, NIST 800-53, AICPA's TSCs and ISO 27001:2013**
 
 - Supports every **AWS Region and Partition**: Commercial (`aws`), AWS GovCloud (`aws-gov`), AWS China (`aws-cn`), AWS Secret (`aws-iso-b`) and AWS Top Secret (`aws-iso`). AWS Commercial partition supports selective muting of unsupported Regions for services supported by ElectricEye.
 

@@ -182,7 +182,7 @@ def security_group_master_auditor_check(cache: dict, awsAccountId: str, awsRegio
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
 
     # Open the Configuration file and parse the information within the dynamically populate this auditor
-    with open('electriceye_secgroup_auditor_config.json', 'r') as jsonfile:
+    with open('./electriceye_secgroup_auditor_config.json', 'r') as jsonfile:
         for x in json.load(jsonfile):
             toPortTarget = x["ToPort"]
             fromPortTarget = x["FromPort"]
@@ -190,6 +190,8 @@ def security_group_master_auditor_check(cache: dict, awsAccountId: str, awsRegio
             checkTitle = x["CheckTitle"]
             checkId = x["CheckId"]
             checkDescription = x["CheckDescriptor"]
+
+            print(f"Auditing all Security Groups for unrestricted {checkDescription} access")
 
             # Parse security groups from Cache
             response = describe_security_groups(cache)
