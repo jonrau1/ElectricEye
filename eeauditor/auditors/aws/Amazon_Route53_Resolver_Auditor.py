@@ -292,4 +292,21 @@ def vpc_route53_resolver_firewall_association_check(cache: dict, awsAccountId: s
             yield finding
         '''
 
+@registry.register_check("route53resolver")
+def vpc_route53_resolver_firewall_orphaned_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Route53Resolver.4] Route 53 Resolver DNS Firewall Rule Groups should be in an associated state"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    # Find all Firewall Rule Groups
+    fw = route53resolver.list_firewall_rule_groups()
+    if not fw["FirewallRuleGroups"]:
+        pass
+    else:
+        for groups in fw["FirewallRuleGroups"]:
+            fwGroupId = groups["Id"]
+            # Describe the Rule Group to find attachment state
+            response = route53resolver.get_firewall_rule_group(
+                FirewallRuleGroupId=fwGroupId
+            )
+            print(response)
 ####
