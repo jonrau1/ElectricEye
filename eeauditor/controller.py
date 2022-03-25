@@ -28,16 +28,25 @@ from processor.main import get_providers, process_findings
 
 def print_checks():
     app = EEAuditor(name="AWS Auditor")
+
     app.load_plugins()
+    
     app.print_checks_md()
 
 def run_auditor(auditor_name=None, check_name=None, delay=0, outputs=None, output_file=""):
     if not outputs:
+        # default to AWS SecHub even if somehow Click destination is stripped
         outputs = ["sechub"]
+
     app = EEAuditor(name="AWS Auditor")
+
     app.load_plugins(plugin_name=auditor_name)
+
     findings = list(app.run_checks(requested_check_name=check_name, delay=delay))
-    result = process_findings(findings=findings, outputs=outputs, output_file=output_file)
+
+    # This function writes the findings to Security Hub, or otherwise
+    process_findings(findings=findings, outputs=outputs, output_file=output_file)
+
     print("Done running Checks")
 
 @click.command()

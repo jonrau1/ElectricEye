@@ -115,6 +115,7 @@ class EEAuditor(object):
 
         return values
 
+    # called from eeauditor/controller.py run_auditor()
     def run_checks(self, requested_check_name=None, delay=0):
         # Gather STS information
         details = sts.get_caller_identity()
@@ -152,7 +153,7 @@ class EEAuditor(object):
             # optional sleep if specified - hardcode to 0 seconds
             sleep(delay)
 
-    # This is just for listing out checks from CLI
+    # called from eeauditor/controller.py print_checks()
     def print_checks_md(self):
         table = []
         table.append(
