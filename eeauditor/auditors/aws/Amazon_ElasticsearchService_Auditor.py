@@ -83,7 +83,7 @@ def dedicated_master_check(cache: dict, awsAccountId: str, awsRegion: str, awsPa
                         "Region": awsRegion,
                         "Details": {
                             "AwsOpenSearchServiceDomain": {
-                                "DomainId": domainId,
+                                "Id": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion,
                             }
@@ -143,7 +143,7 @@ def dedicated_master_check(cache: dict, awsAccountId: str, awsRegion: str, awsPa
                         "Region": awsRegion,
                         "Details": {
                             "AwsOpenSearchServiceDomain": {
-                                "DomainId": domainId,
+                                "Id": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion,
                             }
@@ -221,7 +221,7 @@ def cognito_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: 
                         "Region": awsRegion,
                         "Details": {
                             "AwsOpenSearchServiceDomain": {
-                                "DomainId": domainId,
+                                "Id": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion,
                             }
@@ -286,7 +286,7 @@ def cognito_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: 
                         "Region": awsRegion,
                         "Details": {
                             "AwsOpenSearchServiceDomain": {
-                                "DomainId": domainId,
+                                "Id": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion,
                             }
@@ -369,7 +369,7 @@ def encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                         "Region": awsRegion,
                         "Details": {
                             "AwsOpenSearchServiceDomain": {
-                                "DomainId": domainId,
+                                "Id": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion,
                                 "EncryptionAtRestOptions": {"Enabled": False},
@@ -427,7 +427,7 @@ def encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                         "Region": awsRegion,
                         "Details": {
                             "AwsOpenSearchServiceDomain": {
-                                "DomainId": domainId,
+                                "Id": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion,
                                 "EncryptionAtRestOptions": {"Enabled": True},
@@ -502,7 +502,7 @@ def node2node_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, a
                         "Region": awsRegion,
                         "Details": {
                             "AwsOpenSearchServiceDomain": {
-                                "DomainId": domainId,
+                                "Id": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion,
                                 "NodeToNodeEncryptionOptions": {"Enabled": False},
@@ -565,7 +565,7 @@ def node2node_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, a
                         "Region": awsRegion,
                         "Details": {
                             "AwsOpenSearchServiceDomain": {
-                                "DomainId": domainId,
+                                "Id": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion,
                                 "NodeToNodeEncryptionOptions": {"Enabled": True},
@@ -645,7 +645,7 @@ def https_enforcement_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                         "Region": awsRegion,
                         "Details": {
                             "AwsOpenSearchServiceDomain": {
-                                "DomainId": domainId,
+                                "Id": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion,
                                 "DomainEndpointOptions": {"EnforceHTTPS": False},
@@ -708,7 +708,7 @@ def https_enforcement_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                         "Region": awsRegion,
                         "Details": {
                             "AwsOpenSearchServiceDomain": {
-                                "DomainId": domainId,
+                                "Id": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion,
                                 "DomainEndpointOptions": {"EnforceHTTPS": True},
@@ -794,7 +794,7 @@ def tls_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                             "Region": awsRegion,
                             "Details": {
                                 "AwsOpenSearchServiceDomain": {
-                                    "DomainId": domainId,
+                                    "Id": domainId,
                                     "DomainName": esDomainName,
                                     "ElasticsearchVersion": esVersion,
                                     "DomainEndpointOptions": {
@@ -860,7 +860,7 @@ def tls_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                             "Region": awsRegion,
                             "Details": {
                                 "AwsOpenSearchServiceDomain": {
-                                    "DomainId": domainId,
+                                    "Id": domainId,
                                     "DomainName": esDomainName,
                                     "ElasticsearchVersion": esVersion,
                                     "DomainEndpointOptions": {
@@ -943,7 +943,7 @@ def elastic_update_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                         "Region": awsRegion,
                         "Details": {
                             "AwsOpenSearchServiceDomain": {
-                                "DomainId": domainId,
+                                "Id": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion,
                             }
@@ -1002,7 +1002,7 @@ def elastic_update_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                         "Region": awsRegion,
                         "Details": {
                             "AwsOpenSearchServiceDomain": {
-                                "DomainId": domainId,
+                                "Id": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion,
                             }
@@ -1082,7 +1082,7 @@ def elasticsearch_in_vpc_check(cache: dict, awsAccountId: str, awsRegion: str, a
                         "Region": awsRegion,
                         "Details": {
                             "AwsOpenSearchServiceDomain": {
-                                "DomainId": domainId,
+                                "Id": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion
                             }
@@ -1145,7 +1145,7 @@ def elasticsearch_in_vpc_check(cache: dict, awsAccountId: str, awsRegion: str, a
                         "Region": awsRegion,
                         "Details": {
                             "AwsOpenSearchServiceDomain": {
-                                "DomainId": domainId,
+                                "Id": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion
                             }
@@ -1260,7 +1260,7 @@ def elasticsearch_public_access_check(cache: dict, awsAccountId: str, awsRegion:
                         "Region": awsRegion,
                         "Details": {
                             "AwsOpenSearchServiceDomain": {
-                                "DomainId": domainId,
+                                "Id": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion
                             }
@@ -1323,7 +1323,7 @@ def elasticsearch_public_access_check(cache: dict, awsAccountId: str, awsRegion:
                         "Region": awsRegion,
                         "Details": {
                             "AwsOpenSearchServiceDomain": {
-                                "DomainId": domainId,
+                                "Id": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion
                             }
