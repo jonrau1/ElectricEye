@@ -20,10 +20,15 @@
 
 import boto3
 import json
+import os
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
+
+# Filename of the SG Auditor config JSON file
+dir_path = os.path.dirname(os.path.realpath(__file__))
+configFile = f"{dir_path}/electriceye_secgroup_auditor_config.json"
 
 ec2 = boto3.client("ec2")
 
@@ -182,7 +187,7 @@ def security_group_master_auditor_check(cache: dict, awsAccountId: str, awsRegio
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
 
     # Open the Configuration file and parse the information within the dynamically populate this auditor
-    with open('/eeauditor/auditors/aws/electriceye_secgroup_auditor_config.json', 'r') as jsonfile:
+    with open(configFile, 'r') as jsonfile:
         for x in json.load(jsonfile):
             toPortTarget = x["ToPort"]
             fromPortTarget = x["FromPort"]
