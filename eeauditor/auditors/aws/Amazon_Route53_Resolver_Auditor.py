@@ -38,7 +38,7 @@ def describe_vpcs(cache):
 
 @registry.register_check("route53resolver")
 def vpc_default_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Route53Resolver.1] VPCs should have Route 53 Resolver DNS Query Logging Configured"""
+    """[Route53Resolver.1] VPCs should have Route 53 Resolver DNS Query Logging configured"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # Loop the VPCs in Cache
@@ -55,15 +55,11 @@ def vpc_default_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
                 }
             ]
         )
-        print(r)
-
-        '''
-        defaultVpcCheck = str(vpcs["IsDefault"])
-        
-        if defaultVpcCheck == "True":
+        # this is a failing check due to empty list comprehension
+        if not r["ResolverQueryLogConfigAssociations"]:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": vpcArn + "/vpc-is-default-check",
+                "Id": vpcArn + "/route53resolver-dnsql-attached-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": vpcArn,
                 "AwsAccountId": awsAccountId,
@@ -73,14 +69,12 @@ def vpc_default_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": "[VPC.1] Consider deleting the Default VPC if unused",
-                "Description": "VPC "
-                + vpcId
-                + " has been identified as the Default VPC, consider deleting this VPC if it is not necessary for daily operations. The Default VPC in AWS Regions not typically used can serve as a persistence area for malicious actors, additionally, many services will automatically use this VPC which can lead to a degraded security posture. Refer to the remediation instructions if this configuration is not intended",
+                "Title": "[Route53Resolver.1] VPCs should have Route 53 Resolver DNS Query Logging configured",
+                "Description": f"VPC {vpcId} does not have Route 53 DNS Query Logging configured. DNS Query Logging provides rich details about outbound DNS resolutions originating from your VPC which can be crucial for application troubleshooting and security use cases. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "For more information on the default VPC refer to the Deleting Your Default Subnets and Default VPC section of the Amazon Virtual Private Cloud User Guide",
-                        "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/default-vpc.html#deleting-default-vpc",
+                        "Text": "For more information on setting up Query Logging refer to the Managing Resolver query logging configurations section of the Amazon Route 53 Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-query-logging-configurations-managing.html",
                     }
                 },
                 "ProductFields": {"Product Name": "ElectricEye"},
@@ -90,23 +84,27 @@ def vpc_default_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
                         "Id": vpcArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"VpcId": vpcId}},
+                        "Details": {
+                            "AwsEc2Vpc": {
+                                "State": "available"
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.AC-5",
-                        "NIST SP 800-53 AC-4",
-                        "NIST SP 800-53 AC-10",
-                        "NIST SP 800-53 SC-7",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.1.3",
-                        "ISO 27001:2013 A.13.2.1",
-                        "ISO 27001:2013 A.14.1.2",
-                        "ISO 27001:2013 A.14.1.3",
-                    ],
+                        "NIST CSF DE.AE-3",
+                        "NIST SP 800-53 AU-6",
+                        "NIST SP 800-53 CA-7",
+                        "NIST SP 800-53 IR-4",
+                        "NIST SP 800-53 IR-5",
+                        "NIST SP 800-53 IR-8",
+                        "NIST SP 800-53 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
                 "RecordState": "ACTIVE",
@@ -115,7 +113,7 @@ def vpc_default_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": vpcArn + "/vpc-is-default-check",
+                "Id": vpcArn + "/route53resolver-dnsql-attached-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": vpcArn,
                 "AwsAccountId": awsAccountId,
@@ -125,12 +123,12 @@ def vpc_default_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[VPC.1] Consider deleting the Default VPC if unused",
-                "Description": "VPC " + vpcId + " is not the Default VPC",
+                "Title": "[Route53Resolver.1] VPCs should have Route 53 Resolver DNS Query Logging configured",
+                "Description": f"VPC {vpcId} does not have Route 53 DNS Query Logging configured. DNS Query Logging provides rich details about outbound DNS resolutions originating from your VPC which can be crucial for application troubleshooting and security use cases. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "For more information on the default VPC refer to the Deleting Your Default Subnets and Default VPC section of the Amazon Virtual Private Cloud User Guide",
-                        "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/default-vpc.html#deleting-default-vpc",
+                        "Text": "For more information on setting up Query Logging refer to the Managing Resolver query logging configurations section of the Amazon Route 53 Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-query-logging-configurations-managing.html",
                     }
                 },
                 "ProductFields": {"Product Name": "ElectricEye"},
@@ -140,26 +138,29 @@ def vpc_default_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
                         "Id": vpcArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"VpcId": vpcId}},
+                        "Details": {
+                            "AwsEc2Vpc": {
+                                "State": "available"
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.AC-5",
-                        "NIST SP 800-53 AC-4",
-                        "NIST SP 800-53 AC-10",
-                        "NIST SP 800-53 SC-7",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.1.3",
-                        "ISO 27001:2013 A.13.2.1",
-                        "ISO 27001:2013 A.14.1.2",
-                        "ISO 27001:2013 A.14.1.3",
-                    ],
+                        "NIST CSF DE.AE-3",
+                        "NIST SP 800-53 AU-6",
+                        "NIST SP 800-53 CA-7",
+                        "NIST SP 800-53 IR-4",
+                        "NIST SP 800-53 IR-5",
+                        "NIST SP 800-53 IR-8",
+                        "NIST SP 800-53 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED",
             }
             yield finding
-        '''
