@@ -118,17 +118,15 @@ class EEAuditor(object):
     def run_checks(self, requested_check_name=None, delay=0):
         # Gather STS information
         details = sts.get_caller_identity()
-        userId = str(details["UserId"])
         awsAccount = str(details["Account"])
         awsArn = str(details["Arn"])
         # Print some very basic orientation data
-        print(f"Running ElectricEye in AWS Region {self.awsRegion}. \n Located in Partition {self.awsPartition}. \n Profile AWS Account is {awsAccount}. \n Profiles current Principal ARN is {awsArn}")
+        print(f"Running ElectricEye in AWS Region {self.awsRegion}.\n Located in Partition {self.awsPartition}.\n Profile AWS Account is {awsAccount}.\n Profile current IAM principal ARN is {awsArn}")
 
         for service_name, check_list in self.registry.checks.items():
             # only check regions if in AWS Commerical Partition
             if self.awsPartition == "aws":
                 if self.awsRegion not in self.get_regions(service_name):
-                    #print(f"AWS region {self.awsRegion} not supported for {service_name}")
                     next
 
             for check_name, check in check_list.items():
@@ -154,6 +152,7 @@ class EEAuditor(object):
             # optional sleep if specified - hardcode to 0 seconds
             sleep(delay)
 
+    # This is just for listing out checks from CLI
     def print_checks_md(self):
         table = []
         table.append(
