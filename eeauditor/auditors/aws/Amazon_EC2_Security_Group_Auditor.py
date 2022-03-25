@@ -182,7 +182,7 @@ def security_group_master_auditor_check(cache: dict, awsAccountId: str, awsRegio
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
 
     # Open the Configuration file and parse the information within the dynamically populate this auditor
-    with open('./electriceye_secgroup_auditor_config.json', 'r') as jsonfile:
+    with open('/eeauditor/auditors/aws/electriceye_secgroup_auditor_config.json', 'r') as jsonfile:
         for x in json.load(jsonfile):
             toPortTarget = x["ToPort"]
             fromPortTarget = x["FromPort"]
