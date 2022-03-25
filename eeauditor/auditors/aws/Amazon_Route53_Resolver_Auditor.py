@@ -50,7 +50,7 @@ def vpc_default_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
         r = route53resolver.list_resolver_query_log_config_associations(
             Filters=[
                 {
-                    'Name': 'HostVPCId',
+                    'Name': 'SubnetId',
                     'Values': [vpcId]
                 }
             ]
