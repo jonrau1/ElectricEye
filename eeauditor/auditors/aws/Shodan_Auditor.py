@@ -45,6 +45,7 @@ except KeyError:
 if apiKeyParam == "placeholder" or None:
     print("Shodan API Key not supplied, skipping!")
     pass
+
 # Shodan information for Requests
 shodanUrl = "https://api.shodan.io/shodan/host/"
 

@@ -214,5 +214,21 @@
         "CheckTitle": "[SecurityGroup.28] Security groups should not allow unrestricted OpenVPN (UDP 1194) access",
         "CheckId": "security-group-openvpn-open-check",
         "CheckDescriptor": "OpenVPN (UDP 1194)"
+    },
+    {
+        "ToPort": 5672,
+        "FromPort": 5672,
+        "Protocol": "tcp",
+        "CheckTitle": "[SecurityGroup.29] Security groups should not allow unrestricted access to AmazonMQ/RabbitMQ (TCP 5672)",
+        "CheckId": "security-group-rabbitmq-open-check",
+        "CheckDescriptor": "AmazonMQ / RabbitMQ / AMQP (TCP 5672)"
+    },
+    {
+        "ToPort": 4040,
+        "FromPort": 4040,
+        "Protocol": "tcp",
+        "CheckTitle": "[SecurityGroup.30] Security groups should not allow unrestricted access to Spark Web UI (TCP 4040)",
+        "CheckId": "security-group-sparkui-open-check",
+        "CheckDescriptor": "Spark Web UI (TCP 4040)"
     }
 ]
