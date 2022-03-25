@@ -45,10 +45,9 @@ class EEAuditor(object):
         # to be discovered during plugin loading.
         self.registry = CheckRegister()
         # vendor specific credentials dictionary
-        sts = boto3.client("sts")
         self.awsAccountId = sts.get_caller_identity()["Account"]
         # pull Region from STS Meta - we can use this to cheese which partition we are in
-        self.awsRegion = os.environ.get("AWS_REGION", sts.meta.region_name)
+        self.awsRegion = boto3.Session().region_name
         # default to Commercial AWS Partition
         self.awsPartition = "aws"
         
@@ -64,7 +63,6 @@ class EEAuditor(object):
         # AWS Top Secret Region override
         elif self.awsRegion in ["us-iso-east-1"]:
             self.awsPartition = "aws-iso"
-
 
         # If there is a desire to add support for multiple clouds, this would be
         # a great place to implement it.
@@ -124,7 +122,7 @@ class EEAuditor(object):
         awsAccount = str(details["Account"])
         awsArn = str(details["Arn"])
         # Print some very basic orientation data
-        print(f"Running ElectricEye in AWS Region: {self.awsRegion}. Located in Partition: {self.awsPartition}. Profile User ID is: {userId}, Profile AWS Account is {awsAccount}, with the following ARN: {awsArn}")
+        print(f"Running ElectricEye in AWS Region {self.awsRegion}. \n Located in Partition {self.awsPartition}. \n Profile AWS Account is {awsAccount}. \n Profiles current Principal ARN is {awsArn}")
 
         for service_name, check_list in self.registry.checks.items():
             # only check regions if in AWS Commerical Partition
@@ -173,6 +171,6 @@ class EEAuditor(object):
                 else:
                     description = ""
                 table.append(
-                    f"|{inspect.getfile(check).rpartition('/')[2]} |{service_name} |{description}"
+                    f"|{inspect.getfile(check).rpartition('/')[2]} | {service_name} | {description}"
                 )
         print("\n".join(table))
