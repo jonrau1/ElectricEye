@@ -77,12 +77,12 @@ def dedicated_master_check(cache: dict, awsAccountId: str, awsRegion: str, awsPa
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "AwsElasticSearchDomain",
+                        "Type": "AwsOpenSearchServiceDomain",
                         "Id": domainArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
-                            "AwsElasticSearchDomain": {
+                            "AwsOpenSearchServiceDomain": {
                                 "DomainId": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion,
@@ -137,12 +137,12 @@ def dedicated_master_check(cache: dict, awsAccountId: str, awsRegion: str, awsPa
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "AwsElasticSearchDomain",
+                        "Type": "AwsOpenSearchServiceDomain",
                         "Id": domainArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
-                            "AwsElasticSearchDomain": {
+                            "AwsOpenSearchServiceDomain": {
                                 "DomainId": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion,
@@ -215,12 +215,12 @@ def cognito_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: 
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "AwsElasticSearchDomain",
+                        "Type": "AwsOpenSearchServiceDomain",
                         "Id": domainArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
-                            "AwsElasticSearchDomain": {
+                            "AwsOpenSearchServiceDomain": {
                                 "DomainId": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion,
@@ -280,12 +280,12 @@ def cognito_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: 
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "AwsElasticSearchDomain",
+                        "Type": "AwsOpenSearchServiceDomain",
                         "Id": domainArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
-                            "AwsElasticSearchDomain": {
+                            "AwsOpenSearchServiceDomain": {
                                 "DomainId": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion,
@@ -363,12 +363,12 @@ def encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "AwsElasticSearchDomain",
+                        "Type": "AwsOpenSearchServiceDomain",
                         "Id": domainArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
-                            "AwsElasticSearchDomain": {
+                            "AwsOpenSearchServiceDomain": {
                                 "DomainId": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion,
@@ -421,12 +421,12 @@ def encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "AwsElasticSearchDomain",
+                        "Type": "AwsOpenSearchServiceDomain",
                         "Id": domainArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
-                            "AwsElasticSearchDomain": {
+                            "AwsOpenSearchServiceDomain": {
                                 "DomainId": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion,
@@ -496,12 +496,12 @@ def node2node_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, a
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "AwsElasticSearchDomain",
+                        "Type": "AwsOpenSearchServiceDomain",
                         "Id": domainArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
-                            "AwsElasticSearchDomain": {
+                            "AwsOpenSearchServiceDomain": {
                                 "DomainId": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion,
@@ -559,12 +559,12 @@ def node2node_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, a
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "AwsElasticSearchDomain",
+                        "Type": "AwsOpenSearchServiceDomain",
                         "Id": domainArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
-                            "AwsElasticSearchDomain": {
+                            "AwsOpenSearchServiceDomain": {
                                 "DomainId": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion,
@@ -639,12 +639,12 @@ def https_enforcement_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "AwsElasticSearchDomain",
+                        "Type": "AwsOpenSearchServiceDomain",
                         "Id": domainArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
-                            "AwsElasticSearchDomain": {
+                            "AwsOpenSearchServiceDomain": {
                                 "DomainId": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion,
@@ -702,12 +702,12 @@ def https_enforcement_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "AwsElasticSearchDomain",
+                        "Type": "AwsOpenSearchServiceDomain",
                         "Id": domainArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
-                            "AwsElasticSearchDomain": {
+                            "AwsOpenSearchServiceDomain": {
                                 "DomainId": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion,
@@ -788,12 +788,12 @@ def tls_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                     "ProductFields": {"Product Name": "ElectricEye"},
                     "Resources": [
                         {
-                            "Type": "AwsElasticSearchDomain",
+                            "Type": "AwsOpenSearchServiceDomain",
                             "Id": domainArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
-                                "AwsElasticSearchDomain": {
+                                "AwsOpenSearchServiceDomain": {
                                     "DomainId": domainId,
                                     "DomainName": esDomainName,
                                     "ElasticsearchVersion": esVersion,
@@ -854,12 +854,12 @@ def tls_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                     "ProductFields": {"Product Name": "ElectricEye"},
                     "Resources": [
                         {
-                            "Type": "AwsElasticSearchDomain",
+                            "Type": "AwsOpenSearchServiceDomain",
                             "Id": domainArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
-                                "AwsElasticSearchDomain": {
+                                "AwsOpenSearchServiceDomain": {
                                     "DomainId": domainId,
                                     "DomainName": esDomainName,
                                     "ElasticsearchVersion": esVersion,
@@ -937,12 +937,12 @@ def elastic_update_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "AwsElasticSearchDomain",
+                        "Type": "AwsOpenSearchServiceDomain",
                         "Id": domainArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
-                            "AwsElasticSearchDomain": {
+                            "AwsOpenSearchServiceDomain": {
                                 "DomainId": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion,
@@ -996,12 +996,12 @@ def elastic_update_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "AwsElasticSearchDomain",
+                        "Type": "AwsOpenSearchServiceDomain",
                         "Id": domainArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
-                            "AwsElasticSearchDomain": {
+                            "AwsOpenSearchServiceDomain": {
                                 "DomainId": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion,
@@ -1076,12 +1076,12 @@ def elasticsearch_in_vpc_check(cache: dict, awsAccountId: str, awsRegion: str, a
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "AwsElasticSearchDomain",
+                        "Type": "AwsOpenSearchServiceDomain",
                         "Id": domainArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
-                            "AwsElasticSearchDomain": {
+                            "AwsOpenSearchServiceDomain": {
                                 "DomainId": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion
@@ -1139,12 +1139,12 @@ def elasticsearch_in_vpc_check(cache: dict, awsAccountId: str, awsRegion: str, a
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "AwsElasticSearchDomain",
+                        "Type": "AwsOpenSearchServiceDomain",
                         "Id": domainArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
-                            "AwsElasticSearchDomain": {
+                            "AwsOpenSearchServiceDomain": {
                                 "DomainId": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion
@@ -1254,12 +1254,12 @@ def elasticsearch_public_access_check(cache: dict, awsAccountId: str, awsRegion:
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "AwsElasticSearchDomain",
+                        "Type": "AwsOpenSearchServiceDomain",
                         "Id": domainArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
-                            "AwsElasticSearchDomain": {
+                            "AwsOpenSearchServiceDomain": {
                                 "DomainId": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion
@@ -1317,12 +1317,12 @@ def elasticsearch_public_access_check(cache: dict, awsAccountId: str, awsRegion:
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "AwsElasticSearchDomain",
+                        "Type": "AwsOpenSearchServiceDomain",
                         "Id": domainArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
-                            "AwsElasticSearchDomain": {
+                            "AwsOpenSearchServiceDomain": {
                                 "DomainId": domainId,
                                 "DomainName": esDomainName,
                                 "ElasticsearchVersion": esVersion
