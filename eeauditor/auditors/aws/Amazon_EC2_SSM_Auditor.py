@@ -479,26 +479,22 @@ def ssm_instance_association_check(cache: dict, awsAccountId: str, awsRegion: st
 def ssm_instance_patch_state_state(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EC2-SSM.4] EC2 Instances managed by Systems Manager should have the latest patches installed by Patch Manager"""
     response = describe_instances(cache)
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     myEc2InstanceReservations = response["Reservations"]
     for reservations in myEc2InstanceReservations:
         for instances in reservations["Instances"]:
             instanceId = str(instances["InstanceId"])
-            instanceArn = (
-                f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}"
-            )
+            instanceArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}"
             instanceType = str(instances["InstanceType"])
             instanceImage = str(instances["ImageId"])
             instanceVpc = str(instances["VpcId"])
             instanceSubnet = str(instances["SubnetId"])
             instanceLaunchedAt = str(instances["LaunchTime"])
-            response = ssm.describe_instance_information()
             try:
-                r = ssm.describe_instance_patch_states(InstanceIds=[instanceId])
-                # ISO Time
-                iso8601Time = (
-                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-                )
-                if not r["InstancePatchStates"]:
+                r = ssm.describe_instance_patches(InstanceId=instanceId)              
+                if not r["Patches"]:
+                    # This is a failing check
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": instanceArn + "/ec2-patch-manager-check",
@@ -509,12 +505,10 @@ def ssm_instance_patch_state_state(cache: dict, awsAccountId: str, awsRegion: st
                         "FirstObservedAt": iso8601Time,
                         "CreatedAt": iso8601Time,
                         "UpdatedAt": iso8601Time,
-                        "Severity": {"Label": "LOW"},
+                        "Severity": {"Label": "MEDIUM"},
                         "Confidence": 99,
                         "Title": "[EC2-SSM.4] EC2 Instances managed by Systems Manager should have the latest patches installed by Patch Manager",
-                        "Description": "EC2 Instance "
-                        + instanceId
-                        + " does not have any patch information recorded and is likely not managed by Patch Manager. Refer to the remediation instructions if this configuration is not intended",
+                        "Description": f"EC2 Instance {instanceId} does not have any patch information recorded and is likely not managed by Patch Manager. Refer to the remediation instructions if this configuration is not intended.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "For information on Patch Manager refer to the AWS Systems Manager Patch Manager section of the AWS Systems Manager User Guide",
@@ -557,129 +551,62 @@ def ssm_instance_patch_state_state(cache: dict, awsAccountId: str, awsRegion: st
                     }
                     yield finding
                 else:
-                    patchStates = response["InstancePatchStates"]
-                    for patches in patchStates:
-                        failedPatchCheck = str(patches["FailedCount"])
-                        missingPatchCheck = str(patches["MissingCount"])
-                        if failedPatchCheck != "0" or missingPatchCheck != "0":
-                            finding = {
-                                "SchemaVersion": "2018-10-08",
-                                "Id": instanceArn + "/ec2-patch-manager-check",
-                                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                                "GeneratorId": instanceArn,
-                                "AwsAccountId": awsAccountId,
-                                "Types": [
-                                    "Software and Configuration Checks/AWS Security Best Practices"
-                                ],
-                                "FirstObservedAt": iso8601Time,
-                                "CreatedAt": iso8601Time,
-                                "UpdatedAt": iso8601Time,
-                                "Severity": {"Label": "MEDIUM"},
-                                "Confidence": 99,
-                                "Title": "[EC2-SSM.4] EC2 Instances managed by Systems Manager should have the latest patches installed by Patch Manager",
-                                "Description": "EC2 Instance "
-                                + instanceId
-                                + " is missing patches or has patches that failed to apply. Refer to the remediation instructions if this configuration is not intended",
-                                "Remediation": {
-                                    "Recommendation": {
-                                        "Text": "For information on Patch Manager refer to the AWS Systems Manager Patch Manager section of the AWS Systems Manager User Guide",
-                                        "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-patch.html",
-                                    }
-                                },
-                                "ProductFields": {"Product Name": "ElectricEye"},
-                                "Resources": [
-                                    {
-                                        "Type": "AwsEc2Instance",
-                                        "Id": instanceArn,
-                                        "Partition": awsPartition,
-                                        "Region": awsRegion,
-                                        "Details": {
-                                            "AwsEc2Instance": {
-                                                "Type": instanceType,
-                                                "ImageId": instanceImage,
-                                                "VpcId": instanceVpc,
-                                                "SubnetId": instanceSubnet,
-                                                "LaunchedAt": parse(instanceLaunchedAt).isoformat()
-                                            }
-                                        }
-                                    }
-                                ],
-                                "Compliance": {
-                                    "Status": "FAILED",
-                                    "RelatedRequirements": [
-                                        "NIST CSF ID.AM-2",
-                                        "NIST SP 800-53 CM-8",
-                                        "NIST SP 800-53 PM-5",
-                                        "AICPA TSC CC3.2",
-                                        "AICPA TSC CC6.1",
-                                        "ISO 27001:2013 A.8.1.1",
-                                        "ISO 27001:2013 A.8.1.2",
-                                        "ISO 27001:2013 A.12.5.1"
-                                    ]
-                                },
-                                "Workflow": {"Status": "NEW"},
-                                "RecordState": "ACTIVE"
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": instanceArn + "/ec2-patch-manager-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": instanceArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": [
+                            "Software and Configuration Checks/AWS Security Best Practices"
+                        ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "INFORMATIONAL"},
+                        "Confidence": 99,
+                        "Title": "[EC2-SSM.4] EC2 Instances managed by Systems Manager should have the latest patches installed by Patch Manager",
+                        "Description": f"EC2 Instance {instanceId} has patches applied by AWS Systems Manager Patch Manager. You should still review Patch Compliance information to ensure that all required patches were successfully applied.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For information on Patch Manager refer to the AWS Systems Manager Patch Manager section of the AWS Systems Manager User Guide",
+                                "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-patch.html",
                             }
-                            yield finding
-                        else:
-                            finding = {
-                                "SchemaVersion": "2018-10-08",
-                                "Id": instanceArn + "/ec2-patch-manager-check",
-                                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                                "GeneratorId": instanceArn,
-                                "AwsAccountId": awsAccountId,
-                                "Types": [
-                                    "Software and Configuration Checks/AWS Security Best Practices"
-                                ],
-                                "FirstObservedAt": iso8601Time,
-                                "CreatedAt": iso8601Time,
-                                "UpdatedAt": iso8601Time,
-                                "Severity": {"Label": "INFORMATIONAL"},
-                                "Confidence": 99,
-                                "Title": "[EC2-SSM.4] EC2 Instances managed by Systems Manager should have the latest patches installed by Patch Manager",
-                                "Description": "EC2 Instance "
-                                + instanceId
-                                + " has the latest patches installed by Patch Manager.",
-                                "Remediation": {
-                                    "Recommendation": {
-                                        "Text": "For information on Patch Manager refer to the AWS Systems Manager Patch Manager section of the AWS Systems Manager User Guide",
-                                        "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-patch.html",
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsEc2Instance",
+                                "Id": instanceArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsEc2Instance": {
+                                        "Type": instanceType,
+                                        "ImageId": instanceImage,
+                                        "VpcId": instanceVpc,
+                                        "SubnetId": instanceSubnet,
+                                        "LaunchedAt": parse(instanceLaunchedAt).isoformat()
                                     }
-                                },
-                                "ProductFields": {"Product Name": "ElectricEye"},
-                                "Resources": [
-                                    {
-                                        "Type": "AwsEc2Instance",
-                                        "Id": instanceArn,
-                                        "Partition": awsPartition,
-                                        "Region": awsRegion,
-                                        "Details": {
-                                            "AwsEc2Instance": {
-                                                "Type": instanceType,
-                                                "ImageId": instanceImage,
-                                                "VpcId": instanceVpc,
-                                                "SubnetId": instanceSubnet,
-                                                "LaunchedAt": parse(instanceLaunchedAt).isoformat()
-                                            }
-                                        }
-                                    }
-                                ],
-                                "Compliance": {
-                                    "Status": "PASSED",
-                                    "RelatedRequirements": [
-                                        "NIST CSF ID.AM-2",
-                                        "NIST SP 800-53 CM-8",
-                                        "NIST SP 800-53 PM-5",
-                                        "AICPA TSC CC3.2",
-                                        "AICPA TSC CC6.1",
-                                        "ISO 27001:2013 A.8.1.1",
-                                        "ISO 27001:2013 A.8.1.2",
-                                        "ISO 27001:2013 A.12.5.1"
-                                    ]
-                                },
-                                "Workflow": {"Status": "RESOLVED"},
-                                "RecordState": "ARCHIVED"
+                                }
                             }
-                            yield finding
+                        ],
+                        "Compliance": {
+                            "Status": "PASSED",
+                            "RelatedRequirements": [
+                                "NIST CSF ID.AM-2",
+                                "NIST SP 800-53 CM-8",
+                                "NIST SP 800-53 PM-5",
+                                "AICPA TSC CC3.2",
+                                "AICPA TSC CC6.1",
+                                "ISO 27001:2013 A.8.1.1",
+                                "ISO 27001:2013 A.8.1.2",
+                                "ISO 27001:2013 A.12.5.1"
+                            ]
+                        },
+                        "Workflow": {"Status": "RESOLVED"},
+                        "RecordState": "ARCHIVED"
+                    }
+                    yield finding
             except Exception as e:
                 print(e)
