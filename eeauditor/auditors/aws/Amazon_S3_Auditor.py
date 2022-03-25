@@ -172,7 +172,7 @@ def bucket_lifecycle_check(cache: dict, awsAccountId: str, awsRegion: str, awsPa
             datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         )
         try:
-            response = s3.get_bucket_lifecycle_configuration(Bucket=bucketName)
+            s3.get_bucket_lifecycle_configuration(Bucket=bucketName)
             # this is a passing check
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -564,7 +564,7 @@ def bucket_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
             datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         )
         try:
-            response = s3.get_bucket_policy(Bucket=bucketName)
+            s3.get_bucket_policy(Bucket=bucketName)
             # print("This bucket has a policy but we wont be printing that in the logs lol")
             # this is a passing check
             finding = {
@@ -695,8 +695,7 @@ def bucket_access_logging_check(cache: dict, awsAccountId: str, awsRegion: str, 
             datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         )
         try:
-            response = s3.get_bucket_logging(Bucket=bucketName)
-            accessLoggingCheck = str(response["LoggingEnabled"])
+            s3.get_bucket_logging(Bucket=bucketName)["LoggingEnabled"]
             # this is a passing check
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -764,7 +763,7 @@ def bucket_access_logging_check(cache: dict, awsAccountId: str, awsRegion: str, 
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "MEDIUM"},
+                    "Severity": {"Label": "LOW"},
                     "Confidence": 99,
                     "Title": "[S3.6] S3 Buckets should have server access logging enabled",
                     "Description": "S3 bucket "
@@ -810,16 +809,82 @@ def bucket_access_logging_check(cache: dict, awsAccountId: str, awsRegion: str, 
 @registry.register_check("s3")
 def s3_account_level_block(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[S3.7] Account-level S3 public access block should be configured"""
-    response = s3control.get_public_access_block(AccountId=awsAccountId)
-    accountBlock = response["PublicAccessBlockConfiguration"]
-    blockAcl = str(accountBlock["BlockPublicAcls"])
-    ignoreAcl = str(accountBlock["IgnorePublicAcls"])
-    blockPubPolicy = str(accountBlock["BlockPublicPolicy"])
-    restrictPubBuckets = str(accountBlock["RestrictPublicBuckets"])
-    iso8601Time = (
-        datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    )
-    if blockAcl and ignoreAcl and blockPubPolicy and restrictPubBuckets == "True":
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+
+    # If a Public Access Block is not configured at all we will fail with a higher severity
+    try:
+        response = s3control.get_public_access_block(AccountId=awsAccountId)
+        accountBlock = response["PublicAccessBlockConfiguration"]
+        blockAcl = str(accountBlock["BlockPublicAcls"])
+        ignoreAcl = str(accountBlock["IgnorePublicAcls"])
+        blockPubPolicy = str(accountBlock["BlockPublicPolicy"])
+        restrictPubBuckets = str(accountBlock["RestrictPublicBuckets"])
+    except Exception as e:
+        if str(e) == "An error occurred (NoSuchPublicAccessBlockConfiguration) when calling the GetPublicAccessBlock operation: The public access block configuration was not found":
+            # this is a failing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": awsAccountId + "/s3-account-level-public-access-block-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": awsAccountId,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure",
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "HIGH"},
+                "Confidence": 99,
+                "Title": "[S3.7] Account-level S3 public access block should be configured",
+                "Description": f"Account-level S3 public access block for account {awsAccountId} is not configured. Refer to the remediation instructions to remediate this behavior.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Account level S3 public access block and how to configure it refer to the Using Amazon S3 Block Public Access section of the Amazon Simple Storage Service Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsAccount",
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-3",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-17",
+                        "NIST SP 800-53 AC-19",
+                        "NIST SP 800-53 AC-20",
+                        "NIST SP 800-53 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                    ],
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE",
+            }
+            yield finding
+        else:
+            pass
+    
+    if (
+        blockAcl 
+        and ignoreAcl
+        and blockPubPolicy 
+        and restrictPubBuckets == "True"
+        ):
+        # This is a passing check
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": awsAccountId + "/s3-account-level-public-access-block-check",
