@@ -26,21 +26,6 @@ from check_register import CheckRegister
 registry = CheckRegister()
 appstream = boto3.client("appstream")
 
-
-def describe_users(cache):
-    response = cache.get("describe_users")
-    if response:
-        return response
-    try:
-        cache["describe_users"] = appstream.describe_users(AuthenticationType="USERPOOL")
-    except botocore.exceptions.ClientError as error:
-        if error.response['Error']['Code'] == 'AccessDeniedException':
-            pass
-        else:
-            print(f'We found another error! {error}')
-    return cache["describe_users"]
-
-
 @registry.register_check("appstream")
 def default_internet_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AppStream.1] AppStream 2.0 fleets should not provide default internet access"""
@@ -245,7 +230,7 @@ def compromise_appstream_user_check(cache: dict, awsAccountId: str, awsRegion: s
 
     try:
         # loop through AppStream 2.0 users
-        myAppStreamUsers = describe_users(cache)["Users"]
+        myAppStreamUsers = appstream.describe_users(AuthenticationType="USERPOOL")["Users"]
         for users in myAppStreamUsers:
             userArn = str(users["Arn"])
             userName = str(users["UserName"])
@@ -392,7 +377,7 @@ def userpool_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
 
     try:
         # loop through AppStream 2.0 users
-        myAppStreamUsers = describe_users(cache)["Users"]
+        myAppStreamUsers = appstream.describe_users(AuthenticationType="USERPOOL")["Users"]
         for users in myAppStreamUsers:
             userArn = str(users["Arn"])
             userName = str(users["UserName"])
