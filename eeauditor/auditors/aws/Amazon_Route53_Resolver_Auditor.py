@@ -47,10 +47,10 @@ def vpc_default_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
         vpcArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}vpc/{vpcId}"
         # Check for Query Log Configs filtered by VPC ID. 
         # If any empty list is returned there is not query logging configured
-        r = route53resolver.list_resolver_query_log_config_associations(
+        r = route53resolver.list_resolver_query_log_configs(
             Filters=[
                 {
-                    'Name': 'SubnetId',
+                    'Name': 'HostVPCId',
                     'Values': [vpcId]
                 }
             ]
