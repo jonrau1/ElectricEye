@@ -607,15 +607,15 @@ There are currently **62** supported response and remediation Playbooks with cov
 | Amazon_Elasticache_Redis_Auditor.py    | Elasticache Redis Cluster      | Is an AUTH Token used                                                               |
 | Amazon_Elasticache_Redis_Auditor.py    | Elasticache Redis Cluster      | Is the cluster encrypted at rest                                                    |
 | Amazon_Elasticache_Redis_Auditor.py    | Elasticache Redis Cluster      | Does the cluster encrypt in transit                                                 |
-| Amazon_ElasticsearchService_Auditor.py | ElasticSearch Domain           | Are dedicated masters used                                                          |
-| Amazon_ElasticsearchService_Auditor.py | ElasticSearch Domain           | Is Cognito auth used                                                                |
-| Amazon_ElasticsearchService_Auditor.py | ElasticSearch Domain           | Is encryption at rest used                                                          |
-| Amazon_ElasticsearchService_Auditor.py | ElasticSearch Domain           | Is Node2Node encryption used                                                        |
-| Amazon_ElasticsearchService_Auditor.py | ElasticSearch Domain           | Is HTTPS-only enforced                                                              |
-| Amazon_ElasticsearchService_Auditor.py | ElasticSearch Domain           | Is a TLS 1.2 policy used                                                            |
-| Amazon_ElasticsearchService_Auditor.py | ElasticSearch Domain           | Are there available version updates                                                 |
-| Amazon_ElasticsearchService_Auditor.py | ElasticSearch Domain           | Is ES in a VPC                                                                      |
-| Amazon_ElasticsearchService_Auditor.py | ElasticSearch Domain           | Is ES Publicly Accessible                                                           |
+| Amazon_ElasticsearchService_Auditor.py | OpenSearch domain              | Are dedicated masters used                                                          |
+| Amazon_ElasticsearchService_Auditor.py | OpenSearch domain              | Is Cognito auth used                                                                |
+| Amazon_ElasticsearchService_Auditor.py | OpenSearch domain              | Is encryption at rest used                                                          |
+| Amazon_ElasticsearchService_Auditor.py | OpenSearch domain              | Is Node2Node encryption used                                                        |
+| Amazon_ElasticsearchService_Auditor.py | OpenSearch domain              | Is HTTPS-only enforced                                                              |
+| Amazon_ElasticsearchService_Auditor.py | OpenSearch domain              | Is a TLS 1.2 policy used                                                            |
+| Amazon_ElasticsearchService_Auditor.py | OpenSearch domain              | Are there available version updates                                                 |
+| Amazon_ElasticsearchService_Auditor.py | OpenSearch domain              | Is ES in a VPC                                                                      |
+| Amazon_ElasticsearchService_Auditor.py | OpenSearch domain              | Is ES Publicly Accessible                                                           |
 | Amazon_ELB_Auditor.py                  | ELB (Classic Load Balancer)    | Do internet facing ELBs have a secure listener                                      |
 | Amazon_ELB_Auditor.py                  | ELB (Classic Load Balancer)    | Do secure listeners enforce TLS 1.2                                                 |
 | Amazon_ELB_Auditor.py                  | ELB (Classic Load Balancer)    | Is cross zone load balancing enabled                                                |
@@ -834,7 +834,7 @@ There are currently **62** supported response and remediation Playbooks with cov
 | Shodan_Auditor.py                      | EC2 Instance                   | Are EC2 instances w/ public IPs indexed                                             |
 | Shodan_Auditor.py                      | ELBv2 (ALB)                    | Are internet-facing ALBs indexed                                                    |
 | Shodan_Auditor.py                      | RDS Instance                   | Are public accessible RDS instances indexed                                         |
-| Shodan_Auditor.py                      | ElasticSearch Domain           | Are ES Domains outside a VPC indexed                                                |
+| Shodan_Auditor.py                      | OpenSearch domain              | Are ES Domains outside a VPC indexed                                                |
 | Shodan_Auditor.py                      | ELB (CLB)                      | Are internet-facing CLBs indexed                                                    |
 | Shodan_Auditor.py                      | DMS Replication Instance       | Are public accessible DMS instances indexed                                         |
 | Shodan_Auditor.py                      | Amazon MQ message broker       | Are public accessible message brokers indexed                                       |

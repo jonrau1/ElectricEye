@@ -37,7 +37,7 @@ def list_domain_names(cache):
 
 @registry.register_check("es")
 def dedicated_master_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Elasticsearch.1] Elasticsearch Service domains should use dedicated master nodes"""
+    """[OpenSearch.1] OpenSearch/AWS ElasticSearch Service domains should use dedicated master nodes"""
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
@@ -64,8 +64,8 @@ def dedicated_master_check(cache: dict, awsAccountId: str, awsRegion: str, awsPa
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[Elasticsearch.1] Elasticsearch Service domains should use dedicated master nodes",
-                "Description": "Elasticsearch Service domain "
+                "Title": "[OpenSearch.1] OpenSearch/AWS ElasticSearch Service domains should use dedicated master nodes",
+                "Description": "OpenSearch/AWS ElasticSearch Service domain "
                 + esDomainName
                 + " does not use dedicated master nodes. Refer to the remediation instructions if this configuration is not intended",
                 "Remediation": {
@@ -124,8 +124,8 @@ def dedicated_master_check(cache: dict, awsAccountId: str, awsRegion: str, awsPa
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Elasticsearch.1] Elasticsearch Service domains should use dedicated master nodes",
-                "Description": "Elasticsearch Service domain "
+                "Title": "[OpenSearch.1] OpenSearch/AWS ElasticSearch Service domains should use dedicated master nodes",
+                "Description": "OpenSearch/AWS ElasticSearch Service domain "
                 + esDomainName
                 + " uses dedicated master nodes.",
                 "Remediation": {
@@ -174,7 +174,7 @@ def dedicated_master_check(cache: dict, awsAccountId: str, awsRegion: str, awsPa
 
 @registry.register_check("es")
 def cognito_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Elasticsearch.2] Elasticsearch Service domains should use Cognito authentication for Kibana"""
+    """[OpenSearch.2] OpenSearch/AWS ElasticSearch Service domains should use Cognito authentication for Kibana"""
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
@@ -202,8 +202,8 @@ def cognito_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: 
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": "[Elasticsearch.2] Elasticsearch Service domains should use Cognito authentication for Kibana",
-                "Description": "Elasticsearch Service domain "
+                "Title": "[OpenSearch.2] OpenSearch/AWS ElasticSearch Service domains should use Cognito authentication for Kibana",
+                "Description": "OpenSearch/AWS ElasticSearch Service domain "
                 + esDomainName
                 + " does not use Cognito authentication for Kibana. Refer to the remediation instructions if this configuration is not intended",
                 "Remediation": {
@@ -267,8 +267,8 @@ def cognito_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: 
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Elasticsearch.2] Elasticsearch Service domains should use Cognito authentication for Kibana",
-                "Description": "Elasticsearch Service domain "
+                "Title": "[OpenSearch.2] OpenSearch/AWS ElasticSearch Service domains should use Cognito authentication for Kibana",
+                "Description": "OpenSearch/AWS ElasticSearch Service domain "
                 + esDomainName
                 + " uses Cognito authentication for Kibana.",
                 "Remediation": {
@@ -322,7 +322,7 @@ def cognito_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: 
 
 @registry.register_check("es")
 def encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Elasticsearch.3] Elasticsearch Service domains should be encrypted at rest"""
+    """[OpenSearch.3] OpenSearch/AWS ElasticSearch Service domains should be encrypted at rest"""
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
@@ -350,8 +350,8 @@ def encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
-                "Title": "[Elasticsearch.3] Elasticsearch Service domains should be encrypted at rest",
-                "Description": "Elasticsearch Service domain "
+                "Title": "[OpenSearch.3] OpenSearch/AWS ElasticSearch Service domains should be encrypted at rest",
+                "Description": "OpenSearch/AWS ElasticSearch Service domain "
                 + esDomainName
                 + " is not encrypted at rest. You cannot configure existing domains to use the feature. To enable the feature, you must create another domain and migrate your data. Encryption of data at rest requires Elasticsearch 5.1 or later",
                 "Remediation": {
@@ -408,8 +408,8 @@ def encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Elasticsearch.3] Elasticsearch Service domains should be encrypted at rest",
-                "Description": "Elasticsearch Service domain "
+                "Title": "[OpenSearch.3] OpenSearch/AWS ElasticSearch Service domains should be encrypted at rest",
+                "Description": "OpenSearch/AWS ElasticSearch Service domain "
                 + esDomainName
                 + " is encrypted at rest",
                 "Remediation": {
@@ -453,7 +453,7 @@ def encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str, aws
 
 @registry.register_check("es")
 def node2node_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Elasticsearch.4] Elasticsearch Service domains should use node-to-node encryption"""
+    """[OpenSearch.4] OpenSearch/AWS ElasticSearch Service domains should use node-to-node encryption"""
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
@@ -483,8 +483,8 @@ def node2node_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, a
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
-                "Title": "[Elasticsearch.4] Elasticsearch Service domains should use node-to-node encryption",
-                "Description": "Elasticsearch Service domain "
+                "Title": "[OpenSearch.4] OpenSearch/AWS ElasticSearch Service domains should use node-to-node encryption",
+                "Description": "OpenSearch/AWS ElasticSearch Service domain "
                 + esDomainName
                 + " does not use node-to-node encryption. You cannot configure existing domains to use the feature. To enable the feature, you must create another domain and migrate your data. Encryption of data at rest requires Elasticsearch 6.0 or later",
                 "Remediation": {
@@ -546,8 +546,8 @@ def node2node_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, a
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Elasticsearch.4] Elasticsearch Service domains should use node-to-node encryption",
-                "Description": "Elasticsearch Service domain "
+                "Title": "[OpenSearch.4] OpenSearch/AWS ElasticSearch Service domains should use node-to-node encryption",
+                "Description": "OpenSearch/AWS ElasticSearch Service domain "
                 + esDomainName
                 + " uses node-to-node encryption.",
                 "Remediation": {
@@ -596,7 +596,7 @@ def node2node_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, a
 
 @registry.register_check("es")
 def https_enforcement_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Elasticsearch.5] Elasticsearch Service domains should enforce HTTPS-only communications"""
+    """[OpenSearch.5] OpenSearch/AWS ElasticSearch Service domains should enforce HTTPS-only communications"""
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
@@ -626,8 +626,8 @@ def https_enforcement_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
-                "Title": "[Elasticsearch.5] Elasticsearch Service domains should enforce HTTPS-only communications",
-                "Description": "Elasticsearch Service domain "
+                "Title": "[OpenSearch.5] OpenSearch/AWS ElasticSearch Service domains should enforce HTTPS-only communications",
+                "Description": "OpenSearch/AWS ElasticSearch Service domain "
                 + esDomainName
                 + " does not enforce HTTPS-only communications. Refer to the remediation instructions if this configuration is not intended",
                 "Remediation": {
@@ -689,8 +689,8 @@ def https_enforcement_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Elasticsearch.5] Elasticsearch Service domains should enforce HTTPS-only communications",
-                "Description": "Elasticsearch Service domain "
+                "Title": "[OpenSearch.5] OpenSearch/AWS ElasticSearch Service domains should enforce HTTPS-only communications",
+                "Description": "OpenSearch/AWS ElasticSearch Service domain "
                 + esDomainName
                 + " enforces HTTPS-only communications. Refer to the remediation instructions if this configuration is not intended",
                 "Remediation": {
@@ -739,7 +739,7 @@ def https_enforcement_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
 
 @registry.register_check("es")
 def tls_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Elasticsearch.6] Elasticsearch Service domains that enforce HTTPS-only communications should use a TLS 1.2 security policy"""
+    """[OpenSearch.6] OpenSearch/AWS ElasticSearch Service domains that enforce HTTPS-only communications should use a TLS 1.2 security policy"""
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
@@ -775,8 +775,8 @@ def tls_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "HIGH"},
                     "Confidence": 99,
-                    "Title": "[Elasticsearch.6] Elasticsearch Service domains that enforce HTTPS-only communications should use a TLS 1.2 security policy",
-                    "Description": "Elasticsearch Service domain "
+                    "Title": "[OpenSearch.6] OpenSearch/AWS ElasticSearch Service domains that enforce HTTPS-only communications should use a TLS 1.2 security policy",
+                    "Description": "OpenSearch/AWS ElasticSearch Service domain "
                     + esDomainName
                     + " does not use a TLS 1.2 security policy. Refer to the remediation instructions if this configuration is not intended",
                     "Remediation": {
@@ -841,8 +841,8 @@ def tls_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
-                    "Title": "[Elasticsearch.6] Elasticsearch Service domains that enforce HTTPS-only communications should use a TLS 1.2 security policy",
-                    "Description": "Elasticsearch Service domain "
+                    "Title": "[OpenSearch.6] OpenSearch/AWS ElasticSearch Service domains that enforce HTTPS-only communications should use a TLS 1.2 security policy",
+                    "Description": "OpenSearch/AWS ElasticSearch Service domain "
                     + esDomainName
                     + " uses a TLS 1.2 security policy.",
                     "Remediation": {
@@ -896,7 +896,7 @@ def tls_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
 
 @registry.register_check("es")
 def elastic_update_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Elasticsearch.7] Elasticsearch Service domains should be updated to the latest service software version"""
+    """[OpenSearch.7] OpenSearch/AWS ElasticSearch Service domains should be updated to the latest service software version"""
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
@@ -922,8 +922,8 @@ def elastic_update_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[Elasticsearch.7] Elasticsearch Service domains should be updated to the latest service software version",
-                "Description": "Elasticsearch Service domain "
+                "Title": "[OpenSearch.7] OpenSearch/AWS ElasticSearch Service domains should be updated to the latest service software version",
+                "Description": "OpenSearch/AWS ElasticSearch Service domain "
                 + esDomainName
                 + " is not up to date. Service provided message follows: "
                 + updateInformation
@@ -982,8 +982,8 @@ def elastic_update_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Elasticsearch.7] Elasticsearch Service domains should be updated to the latest service software version",
-                "Description": "Elasticsearch Service domain "
+                "Title": "[OpenSearch.7] OpenSearch/AWS ElasticSearch Service domains should be updated to the latest service software version",
+                "Description": "OpenSearch/AWS ElasticSearch Service domain "
                 + esDomainName
                 + " is up to date. Service provided message follows: "
                 + updateInformation,
@@ -1031,7 +1031,7 @@ def elastic_update_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
 
 @registry.register_check("es")
 def elasticsearch_in_vpc_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Elasticsearch.8] Elasticsearch Service domains should be in a VPC"""
+    """[OpenSearch.8] OpenSearch/AWS ElasticSearch Service domains should be in a VPC"""
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
@@ -1063,13 +1063,13 @@ def elasticsearch_in_vpc_check(cache: dict, awsAccountId: str, awsRegion: str, a
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
-                "Title": "[Elasticsearch.8] Elasticsearch Service domains should be in a VPC",
-                "Description": "Elasticsearch Service domain "
+                "Title": "[OpenSearch.8] OpenSearch/AWS ElasticSearch Service domains should be in a VPC",
+                "Description": "OpenSearch/AWS ElasticSearch Service domain "
                 + esDomainName
                 + " is not in a VPC, Placing an Amazon ES domain within a VPC enables secure communication between Amazon ES and other services within the VPC without the need for an internet gateway, NAT device, or VPN connection. All traffic remains securely within the AWS Cloud. Because of their logical isolation, domains that reside within a VPC have an extra layer of security when compared to domains that use public endpoints. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "For information on placing Domains in a VPC refer to the Launching your Amazon Elasticsearch Service domains using a VPC section of the Amazon Elasticsearch Service Developer Guide",
+                        "Text": "For information on placing Domains in a VPC refer to the Launching your Amazon OpenSearch/AWS ElasticSearch Service domains using a VPC section of the Amazon Elasticsearch Service Developer Guide",
                         "Url": "https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-vpc.html"
                     }
                 },
@@ -1126,13 +1126,13 @@ def elasticsearch_in_vpc_check(cache: dict, awsAccountId: str, awsRegion: str, a
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Elasticsearch.8] Elasticsearch Service domains should be in a VPC",
-                "Description": "Elasticsearch Service domain "
+                "Title": "[OpenSearch.8] OpenSearch/AWS ElasticSearch Service domains should be in a VPC",
+                "Description": "OpenSearch/AWS ElasticSearch Service domain "
                 + esDomainName
                 + " is in a VPC.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "For information on placing Domains in a VPC refer to the Launching your Amazon Elasticsearch Service domains using a VPC section of the Amazon Elasticsearch Service Developer Guide",
+                        "Text": "For information on placing Domains in a VPC refer to the Launching your Amazon OpenSearch/AWS ElasticSearch Service domains using a VPC section of the Amazon Elasticsearch Service Developer Guide",
                         "Url": "https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-vpc.html"
                     }
                 },
@@ -1176,7 +1176,7 @@ def elasticsearch_in_vpc_check(cache: dict, awsAccountId: str, awsRegion: str, a
 
 @registry.register_check("es")
 def elasticsearch_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Elasticsearch.9] Elasticsearch Service domains should not be exposed to the public"""
+    """[OpenSearch.9] OpenSearch/AWS ElasticSearch Service domains should not be exposed to the public"""
     response = list_domain_names(cache)
     myDomainNames = response["DomainNames"]
     for domains in myDomainNames:
@@ -1241,8 +1241,8 @@ def elasticsearch_public_access_check(cache: dict, awsAccountId: str, awsRegion:
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "CRITICAL"},
                 "Confidence": 99,
-                "Title": "[Elasticsearch.9] Elasticsearch Service domains should not be exposed to the public",
-                "Description": "Elasticsearch Service domain "
+                "Title": "[OpenSearch.9] OpenSearch/AWS ElasticSearch Service domains should not be exposed to the public",
+                "Description": "OpenSearch/AWS ElasticSearch Service domain "
                 + esDomainName
                 + " is open to public due to not using a VPC, Cognito, or any additional conditions within the resource policy. Public access will allow malicious actors to attack the confidentiality, integrity or availability of documents indexed in your Domain. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
@@ -1304,8 +1304,8 @@ def elasticsearch_public_access_check(cache: dict, awsAccountId: str, awsRegion:
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "CRITICAL"},
                 "Confidence": 99,
-                "Title": "[Elasticsearch.9] Elasticsearch Service domains should not be exposed to the public",
-                "Description": "Elasticsearch Service domain "
+                "Title": "[OpenSearch.9] OpenSearch/AWS ElasticSearch Service domains should not be exposed to the public",
+                "Description": "OpenSearch/AWS ElasticSearch Service domain "
                 + esDomainName
                 + " is not to the public due to using a VPC, Cognito, or any additional conditions within the resource policy.",
                 "Remediation": {
