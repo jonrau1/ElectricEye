@@ -287,23 +287,125 @@ def vpc_route53_resolver_firewall_association_check(cache: dict, awsAccountId: s
             yield finding
 
 @registry.register_check("route53resolver")
-def vpc_route53_resolver_dnssec_resolution_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Route53Resolver.3] Consider enabling DNSSEC resolution in your VPC for Route 53 Public Zones"""
+def vpc_route53_resolver_dnssec_validation_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Route53Resolver.3] Consider enabling DNSSEC validation in your VPC for Route 53 Public Zones"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    # Create a list of VPCs that have DNSSEC Validation enabled, as we cannot filter
+    dnssecVpcs = []
+    for r in route53resolver.list_resolver_dnssec_configs()["ResolverDnssecConfigs"]:
+        if r["ValidationStatus"] == "ENABLED":
+            dnssecVpcs.append(r["ResourceId"])
+        else:
+            continue
     # Loop the VPCs in Cache
     for vpcs in describe_vpcs(cache=cache)["Vpcs"]:
         vpcId = str(vpcs["VpcId"])
         vpcArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}vpc/{vpcId}"
-        # Check for Query Log Configs filtered by VPC ID. 
-        # If any empty list is returned there is not query logging configured
-        r = route53resolver.list_resolver_dnssec_configs(
-            Filters=[
-                {
-                    'Name': 'VPCId',
-                    'Values': [vpcId]
-                }
-            ]
-        )
-
-        print(r)
+        # This is a failing check as the VPC is not in the list of "dnssecVpcs"
+        if vpcId not in dnssecVpcs:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": vpcArn + "/route53resolver-dnssec-validation-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": vpcArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[Route53Resolver.3] Consider enabling DNSSEC validation in your VPC for Route 53 Public Zones",
+                "Description": f"VPC {vpcId} does not have DNS Security (DNSSEC) validation enabled. When you enable DNSSEC validation for a virtual private cloud (VPC) in Amazon Route 53, DNSSEC signatures are cryptographically checked to ensure that the response was not tampered with. Refer to the remediation instructions if you want to consider enabling this.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on setting up DNSSEC validation refer to the Enabling DNSSEC validation in Amazon Route 53 section of the Amazon Route 53 Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-dnssec-validation.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsEc2Vpc",
+                        "Id": vpcArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsEc2Vpc": {
+                                "State": "available"
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF DE.AE-2",
+                        "NIST SP 800-53 AU-6",
+                        "NIST SP 800-53 CA-7",
+                        "NIST SP 800-53 IR-4",
+                        "NIST SP 800-53 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.1",
+                        "ISO 27001:2013 A.16.1.4"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE",
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": vpcArn + "/route53resolver-dnssec-validation-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": vpcArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Route53Resolver.3] Consider enabling DNSSEC validation in your VPC for Route 53 Public Zones",
+                "Description": f"VPC {vpcId} has DNS Security (DNSSEC) validation enabled.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on setting up DNSSEC validation refer to the Enabling DNSSEC validation in Amazon Route 53 section of the Amazon Route 53 Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-dnssec-validation.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsEc2Vpc",
+                        "Id": vpcArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsEc2Vpc": {
+                                "State": "available"
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF DE.AE-2",
+                        "NIST SP 800-53 AU-6",
+                        "NIST SP 800-53 CA-7",
+                        "NIST SP 800-53 IR-4",
+                        "NIST SP 800-53 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.1",
+                        "ISO 27001:2013 A.16.1.4"
+                    ]
+                },
+                "Workflow": {"Status": "PASSED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
