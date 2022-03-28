@@ -384,7 +384,7 @@ def eks_logging_audit_auth_check(cache: dict, awsAccountId: str, awsRegion: str,
                                 ],
                             },
                             "Workflow": {"Status": "RESOLVED"},
-                            "RecordState": "ACTIVE",
+                            "RecordState": "ARCHIVED",
                         }
                         yield finding
                     else:
