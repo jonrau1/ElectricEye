@@ -285,3 +285,25 @@ def vpc_route53_resolver_firewall_association_check(cache: dict, awsAccountId: s
                 "RecordState": "ARCHIVED"
             }
             yield finding
+
+@registry.register_check("route53resolver")
+def vpc_route53_resolver_dnssec_resolution_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Route53Resolver.3] Consider enabling DNSSEC resolution in your VPC for Route 53 Public Zones"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    # Loop the VPCs in Cache
+    for vpcs in describe_vpcs(cache=cache)["Vpcs"]:
+        vpcId = str(vpcs["VpcId"])
+        vpcArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}vpc/{vpcId}"
+        # Check for Query Log Configs filtered by VPC ID. 
+        # If any empty list is returned there is not query logging configured
+        r = route53resolver.list_resolver_dnssec_configs(
+            Filters=[
+                {
+                    'Name': 'ResourceId',
+                    'Values': [vpcId]
+                }
+            ]
+        )
+
+        print(r)
