@@ -300,7 +300,7 @@ def vpc_route53_resolver_dnssec_resolution_check(cache: dict, awsAccountId: str,
         r = route53resolver.list_resolver_dnssec_configs(
             Filters=[
                 {
-                    'Name': 'ResourceId',
+                    'Name': 'VPCId',
                     'Values': [vpcId]
                 }
             ]
