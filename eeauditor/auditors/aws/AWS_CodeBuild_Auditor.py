@@ -25,6 +25,7 @@ from check_register import CheckRegister
 registry = CheckRegister()
 # import boto3 clients
 codebuild = boto3.client("codebuild")
+
 # loop through all CodeBuild projects and list their attributes
 def get_code_build_projects(cache):
     response = cache.get("code_build_projects")
@@ -292,16 +293,14 @@ def plaintext_env_var_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
         buildProjectArn = str(projects["arn"])
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         # check if this project has any env vars
-        envVarCheck = str(projects["environment"]["environmentVariables"])
-        if envVarCheck == "[]":
+        envVars = projects["environment"]["environmentVariables"]
+        if not envVars:
             continue
         else:
             # loop through env vars
-            codeBuildEnvVars = projects["environment"]["environmentVariables"]
-            for envvar in codeBuildEnvVars:
-                plaintextCheck = str(envvar["type"])
+            for envvar in envVars:
                 # identify projects that don't use parameter store or AWS secrets manager
-                if plaintextCheck == "PLAINTEXT":
+                if str(envvar["type"]) == "PLAINTEXT":
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": buildProjectArn + "/plaintext-env-vars",
@@ -452,7 +451,10 @@ def s3_logging_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, 
         buildProjectArn = str(projects["arn"])
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         # check if this project disabled s3 log encryption
-        s3EncryptionCheck = str(projects["logsConfig"]["s3Logs"]["encryptionDisabled"])
+        try:
+            s3EncryptionCheck = str(projects["logsConfig"]["s3Logs"]["encryptionDisabled"])
+        except KeyError:
+            s3EncryptionCheck = "NotConfigured"
         if s3EncryptionCheck == "True":
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -566,7 +568,10 @@ def cloudwatch_logging_check(cache: dict, awsAccountId: str, awsRegion: str, aws
         buildProjectArn = str(projects["arn"])
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         # check if this project logs to cloudwatch
-        codeBuildLoggingCheck = str(projects["logsConfig"]["cloudWatchLogs"]["status"])
+        try:
+            codeBuildLoggingCheck = str(projects["logsConfig"]["cloudWatchLogs"]["status"])
+        except KeyError:
+            codeBuildLoggingCheck = "NotConfigured"
         if codeBuildLoggingCheck != "ENABLED":
             finding = {
                 "SchemaVersion": "2018-10-08",
