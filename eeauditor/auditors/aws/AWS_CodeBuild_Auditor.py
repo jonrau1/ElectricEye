@@ -169,8 +169,11 @@ def insecure_ssl_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartit
         buildProjectArn = str(projects["arn"])
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         # check if Insecure SSL is enabled for your Source
-        sourceInsecureSslCheck = str(projects["source"]["insecureSsl"])
-        if sourceInsecureSslCheck != "False":
+        try:
+            insecureSsl = str(projects["source"]["insecureSsl"])
+        except KeyError:
+            insecureSsl = "NotConfigured"
+        if insecureSsl != "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": buildProjectArn + "/insecure-ssl",
@@ -455,7 +458,7 @@ def s3_logging_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, 
             s3EncryptionCheck = str(projects["logsConfig"]["s3Logs"]["encryptionDisabled"])
         except KeyError:
             s3EncryptionCheck = "NotConfigured"
-        if s3EncryptionCheck == "True":
+        if s3EncryptionCheck != "True":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": buildProjectArn + "/s3-encryption",
@@ -474,7 +477,7 @@ def s3_logging_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, 
                 "Title": "[CodeBuild.4] CodeBuild projects should not have S3 log encryption disabled",
                 "Description": "CodeBuild project "
                 + buildProjectName
-                + " has S3 log encryption disabled. Refer to the remediation instructions if this configuration is not intended",
+                + " does not have S3 Log Encryption enabled or it is not configured. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your project should not have S3 log encryption disabled refer to #20 in the Change a Build Projects Settings (AWS CLI) section of the AWS CodeBuild User Guide",
