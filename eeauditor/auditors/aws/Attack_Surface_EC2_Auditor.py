@@ -99,7 +99,7 @@ def ec2_attack_surface_open_top10nmap_port_check(cache: dict, awsAccountId: str,
     # Paginate the iterator object from Cache
     for i in paginate(cache=cache):
         instanceId = str(i["InstanceId"])
-        print(instanceId)
+        print(i)
         instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
         instanceType = str(i["InstanceType"])
         instanceImage = str(i["ImageId"])
@@ -109,6 +109,7 @@ def ec2_attack_surface_open_top10nmap_port_check(cache: dict, awsAccountId: str,
         # If Public DNS or Public IP are empty it means the instance is not public, we can skip this
         try:
             hostIp = i["PublicIp"]
+            print(hostIp)
             if hostIp == ("" or None):
                 continue
         except KeyError:
