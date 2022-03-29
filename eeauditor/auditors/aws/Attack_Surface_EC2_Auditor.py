@@ -94,8 +94,8 @@ def ec2_attack_surface_open_top10nmap_port_check(cache: dict, awsAccountId: str,
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # Paginate the iterator object from Cache
+    print(paginate(cache=cache))
     for i in paginate(cache=cache):
-        print(i)
         instanceId = str(i["InstanceId"])
         instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
         instanceType = str(i["InstanceType"])
