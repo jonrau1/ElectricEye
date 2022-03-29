@@ -174,8 +174,8 @@ def vpc_route53_resolver_firewall_association_check(cache: dict, awsAccountId: s
     for vpcs in describe_vpcs(cache=cache)["Vpcs"]:
         vpcId = str(vpcs["VpcId"])
         vpcArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}vpc/{vpcId}"
-        # Check for Query Log Configs filtered by VPC ID. 
-        # If any empty list is returned there is not query logging configured
+        # Check for Firewall Associations filtered by VPC ID. 
+        # If any empty list is returned there is not any
         r = route53resolver.list_firewall_rule_group_associations(VpcId=vpcId)
 
         # this is a failing check due to empty list comprehension
@@ -341,15 +341,17 @@ def vpc_route53_resolver_dnssec_validation_check(cache: dict, awsAccountId: str,
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF DE.AE-2",
-                        "NIST SP 800-53 AU-6",
-                        "NIST SP 800-53 CA-7",
-                        "NIST SP 800-53 IR-4",
-                        "NIST SP 800-53 SI-4",
-                        "AICPA TSC CC7.2",
-                        "ISO 27001:2013 A.12.4.1",
-                        "ISO 27001:2013 A.16.1.1",
-                        "ISO 27001:2013 A.16.1.4"
+                        "NIST CSF PR.DS-2",
+                        "NIST SP 800-53 SC-8",
+                        "NIST SP 800-53 SC-11",
+                        "NIST SP 800-53 SC-12",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -394,18 +396,149 @@ def vpc_route53_resolver_dnssec_validation_check(cache: dict, awsAccountId: str,
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF DE.AE-2",
-                        "NIST SP 800-53 AU-6",
-                        "NIST SP 800-53 CA-7",
-                        "NIST SP 800-53 IR-4",
-                        "NIST SP 800-53 SI-4",
-                        "AICPA TSC CC7.2",
-                        "ISO 27001:2013 A.12.4.1",
-                        "ISO 27001:2013 A.16.1.1",
-                        "ISO 27001:2013 A.16.1.4"
+                        "NIST CSF PR.DS-2",
+                        "NIST SP 800-53 SC-8",
+                        "NIST SP 800-53 SC-11",
+                        "NIST SP 800-53 SC-12",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3"
                     ]
                 },
                 "Workflow": {"Status": "PASSED"},
                 "RecordState": "ARCHIVED"
             }
             yield finding
+
+@registry.register_check("route53resolver")
+def vpc_route53_resolver_firewall_fail_open_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Route53Resolver.4] VPCs with Route 53 Resolver DNS Firewalls associated should be configured to Fail Open"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    # Loop the VPCs in Cache
+    for vpcs in describe_vpcs(cache=cache)["Vpcs"]:
+        vpcId = str(vpcs["VpcId"])
+        vpcArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}vpc/{vpcId}"
+        # Check for Firewall Associations filtered by VPC ID. 
+        # If any empty list is returned there is not any
+        r = route53resolver.list_firewall_rule_group_associations(VpcId=vpcId)
+
+        # We will not generate failing findings on FAIL OPEN for VPCs without 
+        # a DNSFW as it is redundant to the "no firewall" finding
+        if not r["FirewallRuleGroupAssociations"]:
+            continue
+        else:
+            config = route53resolver.get_firewall_config(ResourceId=vpcId)["FirewallConfig"]
+            # This is a failing check, no Fail Open
+            if config["FirewallFailOpen"] == "DISABLED":
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": vpcArn + "/route53resolver-dnsfw-failopen-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": vpcArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "LOW"},
+                    "Confidence": 99,
+                    "Title": "[Route53Resolver.4] VPCs with Route 53 Resolver DNS Firewalls associated should be configured to Fail Open",
+                    "Description": f"VPC {vpcId} has a Route 53 Resolve DNS Firewall associated with it that is not configured to Fail Open. If you enable fail open, Resolver allows queries through if it doesn't receive a reply from DNS Firewall. This approach favors availability over security which may be valuable. Refer to the remediation instructions if this configuration is not intended.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on DNS Firewall Fail Open configuration refer to the DNS Firewall VPC configuration section of the Amazon Route 53 Developer Guide",
+                            "Url": "hhttps://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-dns-firewall-vpc-configuration.html",
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsEc2Vpc",
+                            "Id": vpcArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsEc2Vpc": {
+                                    "State": "available"
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF PR.AC-5",
+                            "NIST SP 800-53 AC-4",
+                            "NIST SP 800-53 AC-10",
+                            "NIST SP 800-53 SC-7",
+                            "AICPA TSC CC6.1",
+                            "ISO 27001:2013 A.13.1.1",
+                            "ISO 27001:2013 A.13.1.3",
+                            "ISO 27001:2013 A.13.2.1",
+                            "ISO 27001:2013 A.14.1.2",
+                            "ISO 27001:2013 A.14.1.3"
+                        ]
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE"
+                }
+                yield finding
+            else:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": vpcArn + "/route53resolver-dnsfw-failopen-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": vpcArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Confidence": 99,
+                    "Title": "[Route53Resolver.4] VPCs with Route 53 Resolver DNS Firewalls associated should be configured to Fail Open",
+                    "Description": f"VPC {vpcId} has a Route 53 Resolve DNS Firewall associated with it that is configured to Fail Open.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on DNS Firewall Fail Open configuration refer to the DNS Firewall VPC configuration section of the Amazon Route 53 Developer Guide",
+                            "Url": "hhttps://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-dns-firewall-vpc-configuration.html",
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsEc2Vpc",
+                            "Id": vpcArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsEc2Vpc": {
+                                    "State": "available"
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF PR.AC-5",
+                            "NIST SP 800-53 AC-4",
+                            "NIST SP 800-53 AC-10",
+                            "NIST SP 800-53 SC-7",
+                            "AICPA TSC CC6.1",
+                            "ISO 27001:2013 A.13.1.1",
+                            "ISO 27001:2013 A.13.1.3",
+                            "ISO 27001:2013 A.13.2.1",
+                            "ISO 27001:2013 A.14.1.2",
+                            "ISO 27001:2013 A.14.1.3"
+                        ]
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED"
+                }
+                yield finding

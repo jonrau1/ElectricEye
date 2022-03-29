@@ -173,7 +173,11 @@
                 "iam:ListGroups",
                 "iam:GetGroupPolicy",
                 "iam:ListPolicies",
-                "iam:GetPolicyVersion"
+                "iam:GetPolicyVersion",
+                "route53resolver:ListResolverQueryLogConfigAssociations",
+                "route53resolver:GetFirewallConfig",
+                "route53resolver:ListResolverDnssecConfigs",
+                "route53resolver:ListFirewallRuleGroupAssociations"
             ],
             "Resource": "*"
         }

@@ -509,7 +509,7 @@ def elbv2_internet_facing_secure_listeners_check(cache: dict, awsAccountId: str,
 
 @registry.register_check("elbv2")
 def elbv2_tls12_listener_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[ELBv2.4] Application and Network Load Balancers with HTTPS or TLS listeners should enforce TLS 1.2 policies"""
+    """[ELBv2.4] Application and Network Load Balancers with HTTPS or TLS listeners should enforce TLS 1.2 or TLS 1.3 policies"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # valid TLS 1.2 and 1.3 Policies
@@ -564,15 +564,11 @@ def elbv2_tls12_listener_policy_check(cache: dict, awsAccountId: str, awsRegion:
                             "Severity": {"Label": "HIGH"},
                             "Confidence": 99,
                             "Title": "[ELBv2.4] Application and Network Load Balancers with HTTPS or TLS listeners should enforce TLS 1.2 or TLS 1.3 policies",
-                            "Description": "ELB "
-                            + elbv2LbType
-                            + " load balancer "
-                            + elbv2Name
-                            + " does not enforce a TLS 1.2 or TLS 1.3 policy. Refer to the remediation instructions to remediate this behavior",
+                            "Description": f"The {elbv2LbType} ELBv2 load balancer named {elbv2Name} does not enforce a TLS 1.2 or TLS 1.3 policy and uses the {listenerTlsPolicyCheck} policy. Using security policies that support backwards compatability with TLS 1.0 or TLS 1.1 can lead to downgrade attacks and potential exploitability of legacy ciphersuites, consider upgrading to Forward Secret TLS 1.2 or TLS 1.3 ciphersuites to prevent this. Refer to the remediation instructions to remediate this behavior if not intended.",
                             "Remediation": {
                                 "Recommendation": {
-                                    "Text": "For more information on ELBv2 Access Logging and how to configure it refer to the Security Policies section of the Application Load Balancers User Guide. For Network Load Balancer logging please refer to the NLB User Guide",
-                                    "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html#describe-ssl-policies",
+                                    "Text": "For more information on ELBv2 security policies and updating them refer to the Update an HTTPS listener for your Application Load Balancer section of the Application Load Balancers User Guide. For Network Load Balancer logging please refer to the NLB User Guide",
+                                    "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-update-certificates.html",
                                 }
                             },
                             "ProductFields": {"Product Name": "ElectricEye"},
@@ -609,8 +605,8 @@ def elbv2_tls12_listener_policy_check(cache: dict, awsAccountId: str, awsRegion:
                                     "ISO 27001:2013 A.13.2.1",
                                     "ISO 27001:2013 A.13.2.3",
                                     "ISO 27001:2013 A.14.1.2",
-                                    "ISO 27001:2013 A.14.1.3",
-                                ],
+                                    "ISO 27001:2013 A.14.1.3"
+                                ]
                             },
                             "Workflow": {"Status": "NEW"},
                             "RecordState": "ACTIVE",
@@ -632,11 +628,7 @@ def elbv2_tls12_listener_policy_check(cache: dict, awsAccountId: str, awsRegion:
                             "Severity": {"Label": "INFORMATIONAL"},
                             "Confidence": 99,
                             "Title": "[ELBv2.4] Application and Network Load Balancers with HTTPS or TLS listeners should enforce TLS 1.2 or TLS 1.3 policies",
-                            "Description": "ELB "
-                            + elbv2LbType
-                            + " load balancer "
-                            + elbv2Name
-                            + " enforces a TLS 1.2 or TLS 1.3 policy.",
+                            "Description": f"The {elbv2LbType} ELBv2 load balancer named {elbv2Name} enforces a TLS 1.2 or TLS 1.3 policy and uses the {listenerTlsPolicyCheck} policy.",
                             "Remediation": {
                                 "Recommendation": {
                                     "Text": "For more information on ELBv2 Access Logging and how to configure it refer to the Security Policies section of the Application Load Balancers User Guide. For Network Load Balancer logging please refer to the NLB User Guide",
@@ -765,8 +757,8 @@ def elbv2_drop_invalid_header_check(cache: dict, awsAccountId: str, awsRegion: s
                                 "ISO 27001:2013 A.13.1.3",
                                 "ISO 27001:2013 A.13.2.1",
                                 "ISO 27001:2013 A.14.1.2",
-                                "ISO 27001:2013 A.14.1.3",
-                            ],
+                                "ISO 27001:2013 A.14.1.3"
+                            ]
                         },
                         "Workflow": {"Status": "NEW"},
                         "RecordState": "ACTIVE",
@@ -827,8 +819,8 @@ def elbv2_drop_invalid_header_check(cache: dict, awsAccountId: str, awsRegion: s
                                 "ISO 27001:2013 A.13.1.3",
                                 "ISO 27001:2013 A.13.2.1",
                                 "ISO 27001:2013 A.14.1.2",
-                                "ISO 27001:2013 A.14.1.3",
-                            ],
+                                "ISO 27001:2013 A.14.1.3"
+                            ]
                         },
                         "Workflow": {"Status": "RESOLVED"},
                         "RecordState": "ARCHIVED",
@@ -1092,8 +1084,8 @@ def elbv2_alb_http_desync_protection_check(cache: dict, awsAccountId: str, awsRe
                                         "ISO 27001:2013 A.12.6.2",
                                         "ISO 27001:2013 A.14.2.2",
                                         "ISO 27001:2013 A.14.2.3",
-                                        "ISO 27001:2013 A.14.2.4",
-                                    ],
+                                        "ISO 27001:2013 A.14.2.4"
+                                    ]
                                 },
                                 "Workflow": {"Status": "NEW"},
                                 "RecordState": "ACTIVE",
@@ -1166,8 +1158,8 @@ def elbv2_alb_http_desync_protection_check(cache: dict, awsAccountId: str, awsRe
                                         "ISO 27001:2013 A.12.6.2",
                                         "ISO 27001:2013 A.14.2.2",
                                         "ISO 27001:2013 A.14.2.3",
-                                        "ISO 27001:2013 A.14.2.4",
-                                    ],
+                                        "ISO 27001:2013 A.14.2.4"
+                                    ]
                                 },
                                 "Workflow": {"Status": "RESOLVED"},
                                 "RecordState": "ARCHIVED",
@@ -1229,7 +1221,7 @@ def elbv2_alb_sg_risk_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                         # this is a failing check - we will stop at the first fail
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": elbv2Arn + "/elbv2-alb-http-desync-protection-check",
+                            "Id": elbv2Arn + "/elbv2-non-listener-sg-port-check",
                             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": elbv2Arn,
                             "AwsAccountId": awsAccountId,
@@ -1242,7 +1234,7 @@ def elbv2_alb_sg_risk_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                             "Severity": {"Label": "HIGH"},
                             "Confidence": 99,
                             "Title": "[ELBv2.8] Application Load Balancer security groups should not allow non-Listener ports access",
-                            "Description": f"Application load balancer {elbv2Arn} has a Security Group {sgid} that allows access to Ports not associated with any Listener or Redirect Rules. This may allow adversaries to circumvent your load balancer and directly discover or access downstream resources. If this configuration is not intended refer to the remediation guidance.",
+                            "Description": f"Application load balancer {elbv2Name} has a Security Group {sgid} that allows access to Ports not associated with any Listener or Redirect Rules. This may allow adversaries to circumvent your load balancer and directly discover or access downstream resources. If this configuration is not intended refer to the remediation guidance.",
                             "Remediation": {
                                 "Recommendation": {
                                     "Text": "For more information on ALB security group reccomendations refer to the Security groups for your Application Load Balancer section of the Application Load Balancers User Guide.",
@@ -1294,7 +1286,7 @@ def elbv2_alb_sg_risk_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                         # this is a passign check
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": elbv2Arn + "/elbv2-alb-http-desync-protection-check",
+                            "Id": elbv2Arn + "/elbv2-non-listener-sg-port-check",
                             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": elbv2Arn,
                             "AwsAccountId": awsAccountId,
@@ -1307,7 +1299,7 @@ def elbv2_alb_sg_risk_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                             "Severity": {"Label": "INFORMATIONAL"},
                             "Confidence": 99,
                             "Title": "[ELBv2.8] Application Load Balancer security groups should not allow non-Listener ports access",
-                            "Description": f"Application load balancer {elbv2Arn} does not allow access to Ports not associated with any Listener or Redirect Rules.",
+                            "Description": f"Application load balancer {elbv2Name} does not allow access to Ports not associated with any Listener or Redirect Rules.",
                             "Remediation": {
                                 "Recommendation": {
                                     "Text": "For more information on ALB security group reccomendations refer to the Security groups for your Application Load Balancer section of the Application Load Balancers User Guide.",
