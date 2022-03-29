@@ -50,11 +50,10 @@ def scan_host(host_ip, instance_id):
     try:
         results = nmap.nmap_tcp_scan(
             host_ip,
-            args="-Pn -p 21,22,23,25,80,110,139,445,3389,1433,3306,1521,5432,8182,5439,8089,6379,9092,27017"
+            args="-Pn -p 21,22,23,25,80,110,139,445,3389,1433,3306,1521,5432,8182,8089,6379,9092,27017"
         )
 
         print(f"Scanning EC2 instance {instance_id} on {host_ip}")
-        print(json.dumps(results,indent=4,default=str))
         return results
     except KeyError:
         results = None
@@ -96,11 +95,8 @@ def ec2_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
                     serviceName = str(p["service"]["name"]).upper()
                     serviceStateReason = str(p["reason"])
                     serviceState = str(p["state"])
-
-                    print(checkIdNumber)
-                    
+                    # This is a failing check
                     if serviceState == "open":
-                        # This is a failing check
                         finding = {
                             "SchemaVersion": "2018-10-08",
                             "Id": f"{instanceArn}/attack-surface-ec2-open-{serviceName}-check",
