@@ -37,7 +37,7 @@ def paginate(cache):
     if paginator:
         for page in paginator.paginate(Filters=[{'Name': 'instance-state-name','Values': ['running']}]):
             for r in page["Reservations"]:
-                cache["instances"] = r["Instances"]
+                cache["instances"] = r
                 return cache["instances"]
 
 def scan_host(host_ip):
