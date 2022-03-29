@@ -30,6 +30,7 @@ ec2 = boto3.client("ec2")
 nmap = nmap3.Nmap()
 
 def paginate(cache):
+    instanceList = []
     response = cache.get("instances")
     if response:
         return response
@@ -37,8 +38,10 @@ def paginate(cache):
     if paginator:
         for page in paginator.paginate(Filters=[{'Name': 'instance-state-name','Values': ['running']}]):
             for r in page["Reservations"]:
-                cache["instances"] = r
-                return cache["instances"]
+                for i in r["Instances"]:
+                    instanceList.append(i)
+        cache["instances"] = instanceList
+        return cache["instances"]
 
 def scan_host(host_ip):
     # This function carries out the scanning of EC2 instances
@@ -94,9 +97,9 @@ def ec2_attack_surface_open_top10nmap_port_check(cache: dict, awsAccountId: str,
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # Paginate the iterator object from Cache
-    print(paginate(cache=cache))
     for i in paginate(cache=cache):
         instanceId = str(i["InstanceId"])
+        print(instanceId)
         instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
         instanceType = str(i["InstanceType"])
         instanceImage = str(i["ImageId"])
