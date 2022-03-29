@@ -28,7 +28,7 @@ from dateutil.parser import parse
 registry = CheckRegister()
 
 ec2 = boto3.client("ec2")
-nmap = nmap3.Nmap()
+nmap = nmap3.NmapScanTechniques()
 
 def paginate(cache):
     instanceList = []
@@ -45,12 +45,12 @@ def paginate(cache):
         return cache["instances"]
 
 def scan_host(host_ip, instance_id):
-    # This function carries out the scanning of EC2 instances
-    # Nmap scan top 10 ports without ping probe
+    # This function carries out the scanning of EC2 instances using TCP without service fingerprinting
+    # runs Top 10 (minus HTTPS) as well as various DB/Cache ports
     try:
-        results = nmap.scan_top_ports(
+        results = nmap.nmap_tcp_scan(
             host_ip,
-            args="-Pn"
+            args="-Pn -p 21,22,23,25,80,110,139,445,3389,1433,3306,1521,5432,8182,5439,8089,6379,9092,27017"
         )
 
         print(f"Scanning EC2 instance {instance_id} on {host_ip}")
@@ -60,8 +60,8 @@ def scan_host(host_ip, instance_id):
         results = None
 
 @registry.register_check("ec2")
-def ec2_attack_surface_open_top10nmap_port_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EC2.1] EC2 Instances should not be internet-facing"""
+def ec2_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[AttackSurface.EC2.{checkIdNumber}] EC2 Instances should not have a publicly reachable {serviceName} service"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # Paginate the iterator object from Cache
@@ -88,6 +88,7 @@ def ec2_attack_surface_open_top10nmap_port_check(cache: dict, awsAccountId: str,
             else:
                 # Loop the results of the scan - starting with Open Ports which require a combination of
                 # a Public Instance, an open SG rule, and a running service/server on the host itself
+                # use enumerate and a fixed offset to product the Check Title ID number
                 for index, p in enumerate(scanner[hostIp]["ports"]):
                     # Parse out the Protocol, Port, Service, and State/State Reason from NMAP Results
                     checkIdNumber = str(int(index + 1))
@@ -102,7 +103,7 @@ def ec2_attack_surface_open_top10nmap_port_check(cache: dict, awsAccountId: str,
                         # This is a failing check
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            #"Id": f"{instanceArn}/attack-surface-ec2-open-{serviceName}-check",
+                            "Id": f"{instanceArn}/attack-surface-ec2-open-{serviceName}-check",
                             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": instanceArn,
                             "AwsAccountId": awsAccountId,
@@ -113,12 +114,10 @@ def ec2_attack_surface_open_top10nmap_port_check(cache: dict, awsAccountId: str,
                             "FirstObservedAt": iso8601Time,
                             "CreatedAt": iso8601Time,
                             "UpdatedAt": iso8601Time,
-                            "Severity": {"Label": "INFORMATIONAL"},
+                            "Severity": {"Label": "HIGH"},
                             "Confidence": 99,
-                            "Title": "[AttackSurface.EC2.1] EC2 Instances should not be internet-facing",
-                            "Description": "EC2 Instance "
-                            + instanceId
-                            + " is internet-facing (due to having a Public DNS), instances should be behind Load Balancers or CloudFront distrobutions to avoid any vulnerabilities on the middleware or the operating system from being exploited directly and to increase high availability and resilience of applications hosted on EC2. Refer to the remediation instructions if this configuration is not intended",
+                            "Title": f"[AttackSurface.EC2.{checkIdNumber}] EC2 Instances should not be publicly reachable on {serviceName}",
+                            "Description": f"EC2 instance {instanceId} is publicly reachable on port {portNumber} which corresponds to the {serviceName} service. When Services are successfully fingerprinted by the ElectricEye Attack Surface Management Auditor it means the instance is Public, has an open Secuirty Group rule, and a running service on the host which adversaries can also see. Refer to the remediation insturctions for an example of a way to secure EC2 instances.",
                             "Remediation": {
                                 "Recommendation": {
                                     "Text": "EC2 Instances should be rebuilt in Private Subnets within your VPC and placed behind Load Balancers. To learn how to attach Instances to a public-facing load balancer refer to the How do I attach backend instances with private IP addresses to my internet-facing load balancer in ELB? post within the AWS Premium Support Knowledge Center",
@@ -161,5 +160,67 @@ def ec2_attack_surface_open_top10nmap_port_check(cache: dict, awsAccountId: str,
                             },
                             "Workflow": {"Status": "NEW"},
                             "RecordState": "ACTIVE"
+                        }
+                        yield finding
+                    else:
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": f"{instanceArn}/attack-surface-ec2-open-{serviceName}-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": instanceArn,
+                            "AwsAccountId": awsAccountId,
+                            "Types": [
+                                "Software and Configuration Checks/AWS Security Best Practices/Network Reachability",
+                                "TTPs/Discovery"
+                            ],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "INFORMATIONAL"},
+                            "Confidence": 99,
+                            "Title": f"[AttackSurface.EC2.{checkIdNumber}] EC2 Instances should not have a publicly reachable {serviceName} service",
+                            "Description": f"EC2 instance {instanceId} is not publicly reachable on port {portNumber} which corresponds to the {serviceName} service due to {serviceStateReason}. Instances and their respective Security Groups should still be reviewed for minimum necessary access.",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "EC2 Instances should be rebuilt in Private Subnets within your VPC and placed behind Load Balancers. To learn how to attach Instances to a public-facing load balancer refer to the How do I attach backend instances with private IP addresses to my internet-facing load balancer in ELB? post within the AWS Premium Support Knowledge Center",
+                                    "Url": "https://aws.amazon.com/premiumsupport/knowledge-center/public-load-balancer-private-ec2/"
+                                }
+                            },
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsEc2Instance",
+                                    "Id": instanceArn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "AwsEc2Instance": {
+                                            "Type": instanceType,
+                                            "ImageId": instanceImage,
+                                            "VpcId": vpcId,
+                                            "SubnetId": subnetId
+                                        }
+                                    },
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "PASSED",
+                                "RelatedRequirements": [
+                                    "NIST CSF PR.AC-3",
+                                    "NIST SP 800-53 AC-1",
+                                    "NIST SP 800-53 AC-17",
+                                    "NIST SP 800-53 AC-19",
+                                    "NIST SP 800-53 AC-20",
+                                    "NIST SP 800-53 SC-15",
+                                    "AICPA TSC CC6.6",
+                                    "ISO 27001:2013 A.6.2.1",
+                                    "ISO 27001:2013 A.6.2.2",
+                                    "ISO 27001:2013 A.11.2.6",
+                                    "ISO 27001:2013 A.13.1.1",
+                                    "ISO 27001:2013 A.13.2.1"
+                                ]
+                            },
+                            "Workflow": {"Status": "RESOLVED"},
+                            "RecordState": "ARCHIVED"
                         }
                         yield finding
