@@ -18,6 +18,7 @@
 #specific language governing permissions and limitations
 #under the License.
 
+import json
 import boto3
 import nmap3
 import datetime
@@ -87,7 +88,7 @@ def scan_host(host_ip):
         port445 = results[host_ip]['ports'][8]['state']
         port3389 = results[host_ip]['ports'][9]['state']
     except KeyError:
-        pass
+        results = None
 
     return results
 
@@ -99,7 +100,6 @@ def ec2_attack_surface_open_top10nmap_port_check(cache: dict, awsAccountId: str,
     # Paginate the iterator object from Cache
     for i in paginate(cache=cache):
         instanceId = str(i["InstanceId"])
-        print(i)
         instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
         instanceType = str(i["InstanceType"])
         instanceImage = str(i["ImageId"])
@@ -108,21 +108,23 @@ def ec2_attack_surface_open_top10nmap_port_check(cache: dict, awsAccountId: str,
         
         # If Public DNS or Public IP are empty it means the instance is not public, we can skip this
         try:
-            hostIp = i["PublicIp"]
-            print(hostIp)
+            hostIp = i["PublicIpAddress"]
             if hostIp == ("" or None):
                 continue
         except KeyError:
             continue
         else:
             scanner = scan_host(hostIp)
-            print(scanner)
+            print(json.dumps(scanner,indent=2,default=str))
+            # NoneType returned on KeyError due to Nmap errors
+            if scanner == None:
+                continue
 
             # create Sec Hub finding
 
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": instanceArn + "/ec2-public-facing-check",
+                "Id": instanceArn + "/attack-surface-ec2-open-port-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": instanceArn,
                 "AwsAccountId": awsAccountId,
