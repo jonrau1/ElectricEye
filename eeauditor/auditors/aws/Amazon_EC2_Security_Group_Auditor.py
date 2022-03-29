@@ -171,8 +171,8 @@ def security_group_all_open_check(cache: dict, awsAccountId: str, awsRegion: str
                                 "ISO 27001:2013 A.6.2.2",
                                 "ISO 27001:2013 A.11.2.6",
                                 "ISO 27001:2013 A.13.1.1",
-                                "ISO 27001:2013 A.13.2.1",
-                            ],
+                                "ISO 27001:2013 A.13.2.1"
+                            ]
                         },
                         "Workflow": {"Status": "RESOLVED"},
                         "RecordState": "ARCHIVED",
@@ -283,8 +283,8 @@ def security_group_master_auditor_check(cache: dict, awsAccountId: str, awsRegio
                                         "ISO 27001:2013 A.6.2.2",
                                         "ISO 27001:2013 A.11.2.6",
                                         "ISO 27001:2013 A.13.1.1",
-                                        "ISO 27001:2013 A.13.2.1",
-                                    ],
+                                        "ISO 27001:2013 A.13.2.1"
+                                    ]
                                 },
                                 "Workflow": {"Status": "NEW"},
                                 "RecordState": "ACTIVE"
@@ -348,8 +348,8 @@ def security_group_master_auditor_check(cache: dict, awsAccountId: str, awsRegio
                                         "ISO 27001:2013 A.6.2.2",
                                         "ISO 27001:2013 A.11.2.6",
                                         "ISO 27001:2013 A.13.1.1",
-                                        "ISO 27001:2013 A.13.2.1",
-                                    ],
+                                        "ISO 27001:2013 A.13.2.1"
+                                    ]
                                 },
                                 "Workflow": {"Status": "RESOLVED"},
                                 "RecordState": "ARCHIVED"
