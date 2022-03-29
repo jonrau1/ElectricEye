@@ -414,7 +414,11 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "iam:ListGroups",
                 "iam:GetGroupPolicy",
                 "iam:ListPolicies",
-                "iam:GetPolicyVersion"
+                "iam:GetPolicyVersion",
+                "route53resolver:ListResolverQueryLogConfigAssociations",
+                "route53resolver:GetFirewallConfig",
+                "route53resolver:ListResolverDnssecConfigs",
+                "route53resolver:ListFirewallRuleGroupAssociations"
             ],
             "Resource": "*"
         }

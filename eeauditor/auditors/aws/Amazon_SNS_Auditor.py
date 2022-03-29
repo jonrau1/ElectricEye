@@ -446,7 +446,10 @@ def sns_cross_account_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                 if not principal.isdigit():
                     # This assumes if it is not a digit that it must be an arn.
                     # not sure if this is a safe assumption.
-                    principal = principal.split(":")[4]
+                    try:
+                        principal = principal.split(":")[4]
+                    except IndexError:
+                        continue
                 if principal == awsAccountId:
                     continue
                 else:

@@ -384,7 +384,7 @@ def eks_logging_audit_auth_check(cache: dict, awsAccountId: str, awsRegion: str,
                                 ],
                             },
                             "Workflow": {"Status": "RESOLVED"},
-                            "RecordState": "ACTIVE",
+                            "RecordState": "ARCHIVED",
                         }
                         yield finding
                     else:
@@ -463,7 +463,7 @@ def eks_secrets_envelope_encryption_check(cache: dict, awsAccountId: str, awsReg
             response = eks.describe_cluster(name=cluster)["cluster"]
             clusterName = str(response["name"])
             clusterArn = str(response["arn"])
-            k8sVersion = str(response["cluster"]["version"])    
+            k8sVersion = str(response["version"])    
             try:
                 # There could technically be more than one thing here, one day, but...whatever?
                 # This is a Passing Finding!

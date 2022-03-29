@@ -345,6 +345,10 @@ Resources:
                   - redshift:DescribeClusters
                   - redshift:DescribeLoggingStatus
                   - route53:ListHostedZones
+                  - route53resolver:ListResolverQueryLogConfigAssociations
+                  - route53resolver:GetFirewallConfig
+                  - route53resolver:ListResolverDnssecConfigs
+                  - route53resolver:ListFirewallRuleGroupAssociations
                   - s3:GetBucketLogging
                   - s3:GetBucketPolicy
                   - s3:GetBucketPolicyStatus

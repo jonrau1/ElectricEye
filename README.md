@@ -40,23 +40,21 @@ Continuously monitor your AWS services for configurations that can lead to degra
 
 ## Synopsis
 
-- **320+ security & AWS best practice detections** including services not covered by Security Hub/Config (MemoryDB, Cognito, EKS, ECR, DocDB, Amazon Managed Blockchain, etc.), all findings are **aligned to NIST CSF, NIST 800-53, AICPA TSC and ISO 27001:2013**
+- **335+ security & AWS best practice detections** including services not covered by Security Hub/Config (MemoryDB, Cognito, DocDB, Amazon Managed Blockchain, etc.), all findings are **aligned to NIST CSF, NIST 800-53, AICPA's TSCs and ISO 27001:2013**
 
 - Supports every **AWS Region and Partition**: Commercial (`aws`), AWS GovCloud (`aws-gov`), AWS China (`aws-cn`), AWS Secret (`aws-iso-b`) and AWS Top Secret (`aws-iso`). AWS Commercial partition supports selective muting of unsupported Regions for services supported by ElectricEye.
 
-- Built with **full AWS Security Hub support** in mind, can optionally output to JSON or CSV. **Can run as a CLI tool, in Fargate, as a standalone Container, or anywhere else** you can run Python (K8s, Batch, CodeBuild, EC2, etc.)
+- Built with **full AWS Security Hub support** in mind, can optionally output to MongoDB, PostgreSQL, JSON or CSV. **Can run as a CLI tool, in Fargate, as a standalone Container, or anywhere else** you can run Python (K8s, Batch, CodeBuild, EC2, etc.)
 
 - **Multiple add-ons enable automated remediation, ChatOps, and other integrations** with third-party tools such as [DisruptOps (a FireMon company)](https://www.firemon.com/products/disruptops/), [PagerDuty](https://www.pagerduty.com/), [Slack](https://slack.com/), [ServiceNow Incident Management](https://docs.servicenow.com/bundle/rome-it-service-management/page/product/incident-management/concept/c_IncidentManagement.html), [Atlassian Jira](https://www.atlassian.com/software/jira), [Azure DevOps Boards](https://azure.microsoft.com/en-us/services/devops/boards/), [Shodan](https://www.shodan.io/) and [Microsoft Teams](https://www.microsoft.com/en-us/microsoft-teams/group-chat-software)
 
 ## Description
 
-ElectricEye is a set of Python scripts (affectionately called **Auditors**) that continuously monitor your AWS infrastructure looking for configurations related to confidentiality, integrity and availability that do not align with AWS best practices. All **Auditors** are controlled via a centralized controller in the CLI, and can be expanded to cover more services, new checks, or customization of the AWS Security Finding Format (ASFF). All findings from these scans will be sent to AWS Security Hub where you can perform basic correlation against other AWS and 3rd Party services that send findings to Security Hub (optionally you can send findings to DisruptOps, CSV, JSON or PostgreSQL). Security Hub also provides a centralized view from which account owners and other responsible parties can view and take action on findings. ElectricEye supports all AWS Partitions as well, even ones it is not in yet, like the Secret / Top Secret Regions.
+ElectricEye is a Python-native CLI framework that controls individual Python scripts (affectionately called **Auditors**) which align to a specific AWS service or resource (such as an EC2 Security Group, or Systems Manager Managed Instance) that contain one or more **Checks**. Checks (continuously) monitor your AWS infrastructure looking for configurations related to confidentiality, integrity and availability that do not align with AWS best practices. By default, the output of these checks are formatted using the [AWS Security Finding Format](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html) (ASFF) and sent to AWS Security Hub. 
 
-ElectricEye was originally designed to run on AWS Fargate, which is a serverless container orchestration service, however you can also run it via a CLI anywhere you have the required dependencies installed and IAM Permissions. On a schedule, Fargate will download all of the auditor scripts from a S3 bucket, run the checks and send results to Security Hub. All infrastructure will be deployed via CloudFormation or Terraform to help you apply this solution to many accounts and/or regions. All findings (passed or failed) will contain AWS documentation references in the `Remediation.Recommendation` section of the ASFF (and the **Remediation** section of the Security Hub UI) to further educate yourself and others on.
+ElectricEye is extensible, however, and can output to JSON, CSV, PostgreSQL, MongoDB/AWS DocumentDB, and other locations and formats. All Checks within ElectricEye are also mapped against popular security framework controls such as the AICPA's Trust Service Criteria (TSCs), NIST 800-53 Rev 5, the NIST Cyber Security Framework (CSF), and ISO/IEC 27001:2013. Additionally, ElectricEye comes with several add-on modules to extend the core model which provides dozens of detection-based controls. ElectricEye-Response provides a multi-account response and remediation platform (also known as SOAR), ElectricEye-ChatOps integrates with Slack/Pagerduty/Microsoft Teams, and ElectricEye-Reports integrates with QuickSight. All add-ons are supported by both CloudFormation and Terraform and can also be used independently of the core module itself.
 
-ElectricEye comes with several add-on modules to extend the core model which provides dozens of detection-based controls. ElectricEye-Response provides a multi-account response and remediation platform (also known as SOAR), ElectricEye-ChatOps integrates with Slack/Pagerduty/Microsoft Teams, and ElectricEye-Reports integrates with QuickSight. All add-ons are supported by both CloudFormation and Terraform and can also be used independently of the core module itself. ElectricEye also serves an unofficial integration of sorts for other AWS Services who have not yet integrated with AWS Security Hub, such as AWS Health, AWS Trusted Advisor, AWS Shield Advanced, and AWS IOT Device Defender.
-
-Numerous personas can make effective usage of ElectricEye such as: Security Operations (SecOps), DevOps, DevSecOps, IT Audit, Governance/Risk/Compliance (GRC) Analysts, Enterprise Architects, Security Architects, Cloud Center of Excellence (CCOE) Engineers, Software Development Engineers (SDEs) using Cloud-native services, Red Teamers, Purple Teamers, and Security Engineering.
+Numerous personas can make effective usage of ElectricEye such as: Security Operations (SecOps), DevOps, DevSecOps, IT Audit, Governance/Risk/Compliance (GRC) Analysts, Enterprise Architects, Security Architects, Cloud Center of Excellence (CCOE) Engineers, Software Development Engineers (SDEs) using Cloud-native services, Red Teamers, Purple Teamers, and Security Engineering. That said, ElectricEye can also serve as an important assurance tool or educational tool for nearly any persona who works with or is learning the AWS Cloud.
 
 **Note**: If you would like to use the "classic" version of ElectricEye it is available in [this branch](https://github.com/jonrau1/ElectricEye/tree/electriceye-classic), however, it will not include any new auditors for services such as QLDB, RAM, etc. Some screenshots may not work correctly due to the linking, sorry about that.
 
@@ -491,348 +489,363 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 
 ## Supported Services and Checks
 
-These are the following services and checks perform by each Auditor. There are currently **335** checks supported across **88** AWS services / components using **68** Auditors. 
+These are the following services and checks perform by each Auditor. There are currently **345** checks supported across **89** AWS services / components using **69** Auditors. 
 
 There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
+**Regarding AWS ElasticSearch Service/OpenSearch Service:** AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
+
 **Regarding Shield Advanced, Health, and Trusted Advisor checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in `us-east-1` to perform all checks. The **AWS Shield Advanced**, **AWS Health** and **AWS Trusted Advisor** APIs only live in `us-east-1`, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
 
-| Auditor File Name                      | AWS Service                    | Auditor Scan Description                                                            |
-|----------------------------------------|--------------------------------|-------------------------------------------------------------------------------------|
-| Amazon_APIGW_Auditor.py                | API Gateway Stage              | Are stage metrics enabled                                                           |
-| Amazon_APIGW_Auditor.py                | API Gateway Stage              | Is stage API logging enabled                                                        |
-| Amazon_APIGW_Auditor.py                | API Gateway Stage              | Is stage caching enabled                                                            |
-| Amazon_APIGW_Auditor.py                | API Gateway Stage              | Is cache encryption enabled                                                         |
-| Amazon_APIGW_Auditor.py                | API Gateway Stage              | Is stage xray tracing configured                                                    |
-| Amazon_APIGW_Auditor.py                | API Gateway Stage              | Is the stage protected by a WAF WACL                                                |
-| Amazon_APIGW_Auditor.py                | API Gateway Rest API           | Do Rest APIs use Policies                                                           |
-| Amazon_APIGW_Auditor.py                | API Gateway Rest API           | Do Rest APIs use Authorizers                                                        |
-| Amazon_AppStream_Auditor.py            | AppStream 2.0 (Fleets)         | Do Fleets allow Default Internet Access                                             |
-| Amazon_AppStream_Auditor.py            | AppStream 2.0 (Images)         | Are Images Public                                                                   |
-| Amazon_AppStream_Auditor.py            | AppStream 2.0 (Users)          | Are users reported as Compromised                                                   |
-| Amazon_AppStream_Auditor.py            | AppStream 2.0 (Users)          | Do users use SAML authentication                                                    |
-| Amazon_CloudFront_Auditor.py           | CloudFront Distribution        | Does distribution have trusted signers with key pairs                               |
-| Amazon_CloudFront_Auditor.py           | CloudFront Distribution        | Does distribution have Origin Shield enabled                                        |
-| Amazon_CloudFront_Auditor.py           | CloudFront Distribution        | Does distribution have Geo Restriction enabled                                      |
-| Amazon_CloudFront_Auditor.py           | CloudFront Distribution        | Does distribution have Default Viewer Certificate                                   |
-| Amazon_CloudFront_Auditor.py           | CloudFront Distribution        | Does distribution have Field-Level Encryption enabled                               |
-| Amazon_CloudFront_Auditor.py           | CloudFront Distribution        | Does distribution have WAF enabled                                                  |
-| Amazon_CloudFront_Auditor.py           | CloudFront Distribution        | Does distribution use Default TLS                                                   |
-| Amazon_CloudFront_Auditor.py           | CloudFront Distribution        | Does distribution use Custom Origin TLS                                             |
-| Amazon_CloudSearch_Auditor.py          | CloudSearch Domain             | Do Domains enforce HTTPS-only                                                       |
-| Amazon_CloudSearch_Auditor.py          | CloudSearch Domain             | Do Domains use TLS 1.2                                                              |
-| Amazon_CognitoIdP_Auditor.py           | Cognito Identity Pool          | Does the Password policy comply with AWS CIS Foundations Benchmark                  |
-| Amazon_CognitoIdP_Auditor.py           | Cognito Identity Pool          | Cognito Temporary Password Age                                                      |
-| Amazon_CognitoIdP_Auditor.py           | Cognito Identity Pool          | Does the Identity pool enforce MFA                                                  |
-| Amazon_DocumentDB_Auditor.py           | DocumentDB Instance            | Are Instances publicly accessible                                                   |
-| Amazon_DocumentDB_Auditor.py           | DocumentDB Instance            | Are Instance encrypted                                                              |
-| Amazon_DocumentDB_Auditor.py           | DocumentDB Instance            | Is audit logging enabled                                                            |
-| Amazon_DocumentDB_Auditor.py           | DocumentDB Cluster             | Is the Cluster configured for HA                                                    |
-| Amazon_DocumentDB_Auditor.py           | DocumentDB Cluster             | Is the Cluster deletion protected                                                   |
-| Amazon_DocumentDB_Auditor.py           | DocumentDB Cluster             | Is cluster audit logging on                                                         |
-| Amazon_DocumentDB_Auditor.py           | DocumentDB Cluster             | Is cluster TLS enforcement on                                                       |
-| Amazon_DocumentDB_Auditor.py           | DocDB Snapshot                 | Are docdb cluster snapshots encrypted                                               |
-| Amazon_DocumentDB_Auditor.py           | DocDB Snapshot                 | Are docdb cluster snapshots public                                                  |
-| Amazon_DynamoDB_Auditor.py             | DynamoDB Table                 | Do tables use KMS CMK for encryption                                                |
-| Amazon_DynamoDB_Auditor.py             | DynamoDB Table                 | Do tables have PITR enabled                                                         |
-| Amazon_DynamoDB_Auditor.py             | DynamoDB Table                 | Do tables have TTL enabled                                                          |
-| Amazon_EBS_Auditor.py                  | EBS Volume                     | Is the Volume attached                                                              |
-| Amazon_EBS_Auditor.py                  | EBS Volume                     | Is the Volume configured to be deleted on instance termination                      |
-| Amazon_EBS_Auditor.py                  | EBS Volume                     | Is the Volume encrypted                                                             |
-| Amazon_EBS_Auditor.py                  | EBS Snapshot                   | Is the Snapshot encrypted                                                           |
-| Amazon_EBS_Auditor.py                  | EBS Snapshot                   | Is the Snapshot public                                                              |
-| Amazon_EBS_Auditor.py                  | Account                        | Is account level encryption by default enabled                                      |
-| Amazon_EBS_Auditor.py                  | EBS Volume                     | Does the Volume have a snapshot                                                     |
-| Amazon_EC2_Auditor.py                  | EC2 Instance                   | Is IMDSv2 enabled                                                                   |
-| Amazon_EC2_Auditor.py                  | EC2 Instance                   | Is Secure Enclave used                                                              |
-| Amazon_EC2_Auditor.py                  | EC2 Instance                   | Is the instance internet-facing                                                     |
-| Amazon_EC2_Auditor.py                  | EC2 Instance                   | Is Source/Dest Check disabled                                                       |
-| Amazon_EC2_Auditor.py                  | AWS Account                    | Is Serial Port Access restricted                                                    |
-| Amazon_EC2_Auditor.py                  | EC2 Instance                   | Is instance using an AMI baked in last 3 months                                     |
-| Amazon_EC2_Auditor.py                  | EC2 Instance                   | Is instance using a correctly registered AMI                                        |
-| Amazon_EC2_Auditor.py                  | Account                        | Are instances spread across Multiple AZs                                            |
-| Amazon_EC2_Image_Builder_Auditor.py    | Image Builder                  | Are pipeline tests enabled                                                          |
-| Amazon_EC2_Image_Builder_Auditor.py    | Image Builder                  | Is EBS encrypted                                                                    |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Are all ports (-1) open to the internet                                             |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is FTP (tcp20-21) open to the internet                                              |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is TelNet (tcp23) open to the internet                                              |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is WSDCOM-RPC (tcp135) open to the internet                                         |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is SMB (tcp445) open to the internet                                                |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is MSSQL (tcp1433) open to the internet                                             |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is OracleDB (tcp1521) open to the internet                                          |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is MySQL/MariaDB (tcp3306) open to the internet                                     |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is RDP (tcp3389) open to the internet                                               |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is PostgreSQL (tcp5432) open to the internet                                        |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is Kibana (tcp5601) open to the internet                                            |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is Redis (tcp6379) open to the internet                                             |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is Splunkd (tcp8089) open to the internet                                           |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is Elasticsearch (tcp9200) open to the internet                                     |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is Elasticsearch (tcp9300) open to the internet                                     |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is Memcached (udp11211) open to the internet                                        |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is Redshift (tcp5439) open to the internet                                          |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is DocDB (tcp27017) open to the internet                                            |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is Cassandra (tcp9142) open to the internet                                         |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is Kafka (tcp9092) open to the internet                                             |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is NFS (tcp2049) open to the internet                                               |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is Rsync (tcp873) open to the internet                                              |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is TFTP (udp69) open to the internet                                                |
-| Amazon_EC2_Security_Group_Auditor.py   | Security Group                 | Is Docker API (tcp2375) open to the internet                                        |
-| Amazon_EC2_SSM_Auditor.py              | EC2 Instance                   | Is the instance managed by SSM                                                      |
-| Amazon_EC2_SSM_Auditor.py              | EC2 Instance                   | Does the instance have a successful SSM association                                 |
-| Amazon_EC2_SSM_Auditor.py              | EC2 Instance                   | Is the SSM Agent up to date                                                         |
-| Amazon_EC2_SSM_Auditor.py              | EC2 Instance                   | Is the Patch status up to date                                                      |
-| Amazon_ECR_Auditor.py                  | ECR Registry (Account)         | Is there a registry access policy                                                   |
-| Amazon_ECR_Auditor.py                  | ECR Registry (Account)         | Is image replication configured                                                     |
-| Amazon_ECR_Auditor.py                  | ECR Repository                 | Does the repository support scan-on-push                                            |
-| Amazon_ECR_Auditor.py                  | ECR Repository                 | Is there an image lifecycle policy                                                  |
-| Amazon_ECR_Auditor.py                  | ECR Repository                 | Is there a repo access policy                                                       |
-| Amazon_ECR_Auditor.py                  | Image (Container)              | Does the latest container have any vulns                                            |
-| Amazon_ECS_Auditor.py                  | ECS Cluster                    | Is container insights enabled                                                       |
-| Amazon_ECS_Auditor.py                  | ECS Cluster                    | Is a default cluster provider configured                                            |
-| Amazon_ECS_Auditor.py                  | ECS Task Definition            | Is the Task Definition using a Privileged container                                 |
-| Amazon_ECS_Auditor.py                  | ECS Task Definition            | Do EC2-ECS containers use SELinux or AppArmor                                       |
-| Amazon_EFS_Auditor.py                  | EFS File System                | Are file systems encrypted                                                          |
-| Amazon_EFS_Auditor.py                  | EFS File System                | Does the File system have a custom policy attached                                  |
-| Amazon_EKS_Auditor.py                  | EKS Cluster                    | Is the API Server publicly accessible                                               |
-| Amazon_EKS_Auditor.py                  | EKS Cluster                    | Is the latest K8s version used                                                      |
-| Amazon_EKS_Auditor.py                  | EKS Cluster                    | Are auth or audit logs enabled                                                      |
-| Amazon_EKS_Auditor.py                  | EKS Cluster                    | Is K8s Secrets envelope encryption used                                             |
-| Amazon_Elasticache_Redis_Auditor.py    | Elasticache Redis Cluster      | Is an AUTH Token used                                                               |
-| Amazon_Elasticache_Redis_Auditor.py    | Elasticache Redis Cluster      | Is the cluster encrypted at rest                                                    |
-| Amazon_Elasticache_Redis_Auditor.py    | Elasticache Redis Cluster      | Does the cluster encrypt in transit                                                 |
-| Amazon_ElasticsearchService_Auditor.py | ElasticSearch Domain           | Are dedicated masters used                                                          |
-| Amazon_ElasticsearchService_Auditor.py | ElasticSearch Domain           | Is Cognito auth used                                                                |
-| Amazon_ElasticsearchService_Auditor.py | ElasticSearch Domain           | Is encryption at rest used                                                          |
-| Amazon_ElasticsearchService_Auditor.py | ElasticSearch Domain           | Is Node2Node encryption used                                                        |
-| Amazon_ElasticsearchService_Auditor.py | ElasticSearch Domain           | Is HTTPS-only enforced                                                              |
-| Amazon_ElasticsearchService_Auditor.py | ElasticSearch Domain           | Is a TLS 1.2 policy used                                                            |
-| Amazon_ElasticsearchService_Auditor.py | ElasticSearch Domain           | Are there available version updates                                                 |
-| Amazon_ElasticsearchService_Auditor.py | ElasticSearch Domain           | Is ES in a VPC                                                                      |
-| Amazon_ElasticsearchService_Auditor.py | ElasticSearch Domain           | Is ES Publicly Accessible                                                           |
-| Amazon_ELB_Auditor.py                  | ELB (Classic Load Balancer)    | Do internet facing ELBs have a secure listener                                      |
-| Amazon_ELB_Auditor.py                  | ELB (Classic Load Balancer)    | Do secure listeners enforce TLS 1.2                                                 |
-| Amazon_ELB_Auditor.py                  | ELB (Classic Load Balancer)    | Is cross zone load balancing enabled                                                |
-| Amazon_ELB_Auditor.py                  | ELB (Classic Load Balancer)    | Is connection draining enabled                                                      |
-| Amazon_ELB_Auditor.py                  | ELB (Classic Load Balancer)    | Is access logging enabled                                                           |
-| Amazon_ELBv2_Auditor.py                | ELBv2 (ALB)                    | Is access logging enabled for ALBs                                                  |
-| Amazon_ELBv2_Auditor.py                | ELBv2 (ALB/NLB)                | Is deletion protection enabled                                                      |
-| Amazon_ELBv2_Auditor.py                | ELBv2 (ALB/NLB)                | Do internet facing ELBs have a secure listener                                      |
-| Amazon_ELBv2_Auditor.py                | ELBv2 (ALB/NLB)                | Do secure listeners enforce TLS 1.2                                                 |
-| Amazon_ELBv2_Auditor.py                | ELBv2 (ALB/NLB)                | Are invalid HTTP headers dropped                                                    |
-| Amazon_ELBv2_Auditor.py                | ELBv2 (NLB)                    | Do NLBs with TLS listeners have access logging enabled                              |
-| Amazon_ELBv2_Auditor.py                | ELBv2 (ALB)                    | Do ALBs have HTTP Desync protection enabled                                         |
-| Amazon_ELBv2_Auditor.py                | ELBv2 (ALB)                    | Do ALBs SGs allow access to non-Listener ports                                      |
-| Amazon_EMR_Auditor.py                  | EMR Cluster                    | Do clusters have a sec configuration attached                                       |
-| Amazon_EMR_Auditor.py                  | EMR Cluster                    | Do cluster sec configs enforce encryption in transit                                |
-| Amazon_EMR_Auditor.py                  | EMR Cluster                    | Do cluster sec configs enforce encryption at rest for EMRFS                         |
-| Amazon_EMR_Auditor.py                  | EMR Cluster                    | Do cluster sec configs enforce encryption at rest for EBS                           |
-| Amazon_EMR_Auditor.py                  | EMR Cluster                    | Do cluster sec configs enforce Kerberos authN                                       |
-| Amazon_EMR_Auditor.py                  | EMR Cluster                    | Is cluster termination protection enabled                                           |
-| Amazon_EMR_Auditor.py                  | EMR Cluster                    | Is cluster logging enabled                                                          |
-| Amazon_EMR_Auditor.py                  | AWS Account                    | Is EMR public SG block configured for the Account in the region                     |
-| Amazon_Kinesis_Analytics_Auditor.py    | Kinesis analytics application  | Does application log to CloudWatch                                                  |
-| Amazon_Kinesis_Data_Streams_Auditor.py | Kinesis data stream            | Is stream encryption enabled                                                        |
-| Amazon_Kinesis_Data_Streams_Auditor.py | Kinesis data stream            | Is enhanced monitoring enabled                                                      |
-| Amazon_Kinesis_Firehose_Auditor.py     | Firehose delivery stream       | Is delivery stream encryption enabled                                               |
-| Amazon_Managed_Blockchain_Auditor.py   | Fabric peer node               | Are chaincode logs enabled                                                          |
-| Amazon_Managed_Blockchain_Auditor.py   | Fabric peer node               | Are peer node logs enabled                                                          |
-| Amazon_Managed_Blockchain_Auditor.py   | Fabric member                  | Are member CA logs enabled                                                          |
-| Amazon_MQ_Auditor.py                   | Amazon MQ message broker       | Message brokers should be encrypted with customer-managed KMS CMKs                  |
-| Amazon_MQ_Auditor.py                   | Amazon MQ message broker       | Message brokers should have audit logging enabled                                   |
-| Amazon_MQ_Auditor.py                   | Amazon MQ message broker       | Message brokers should have general logging enabled                                 |
-| Amazon_MQ_Auditor.py                   | Amazon MQ message broker       | Message broker should not be publicly accessible                                    |
-| Amazon_MQ_Auditor.py                   | Amazon MQ message broker       | Message brokers should be configured to auto upgrade to the latest minor version    |
-| Amazon_MSK_Auditor.py                  | MSK Cluster                    | Is inter-cluster encryption used                                                    |
-| Amazon_MSK_Auditor.py                  | MSK Cluster                    | Is client-broker communications TLS-only                                            |
-| Amazon_MSK_Auditor.py                  | MSK Cluster                    | Is enhanced monitoring used                                                         |
-| Amazon_MSK_Auditor.py                  | MSK Cluster                    | Is Private CA TLS auth used                                                         |
-| Amazon_MWAA_Auditor.py                 | Airflow Environment            | Is a KMS CMK used for encryption                                                    |
-| Amazon_MWAA_Auditor.py                 | Airflow Environment            | Is the Airflow URL Public                                                           |
-| Amazon_MWAA_Auditor.py                 | Airflow Environment            | Are DAG Processing logs configured                                                  |
-| Amazon_MWAA_Auditor.py                 | Airflow Environment            | Are Scheduler logs configured                                                       |
-| Amazon_MWAA_Auditor.py                 | Airflow Environment            | Are Task logs configured                                                            |
-| Amazon_MWAA_Auditor.py                 | Airflow Environment            | Are Webserver logs configured                                                       |
-| Amazon_MWAA_Auditor.py                 | Airflow Environment            | Are Worker logs configured                                                          |
-| Amazon_Neptune_Auditor.py              | Neptune instance               | Is Neptune configured for HA                                                        |
-| Amazon_Neptune_Auditor.py              | Neptune instance               | Is Neptune storage encrypted                                                        |
-| Amazon_Neptune_Auditor.py              | Neptune instance               | Does Neptune use IAM DB Auth                                                        |
-| Amazon_Neptune_Auditor.py              | Neptune cluster                | Is SSL connection enforced                                                          |
-| Amazon_Neptune_Auditor.py              | Neptune cluster                | Is audit logging enabled                                                            |
-| Amazon_QLDB_Auditor.py                 | QLDB Ledger                    | Does ledger have deletion protection                                                |
-| Amazon_QLDB_Auditor.py                 | QLDB Export                    | Is export encryption enabled                                                        |
-| Amazon_RDS_Auditor.py                  | RDS DB Instance                | Is HA configured                                                                    |
-| Amazon_RDS_Auditor.py                  | RDS DB Instance                | Are DB instances publicly accessible                                                |
-| Amazon_RDS_Auditor.py                  | RDS DB Instance                | Is DB storage encrypted                                                             |
-| Amazon_RDS_Auditor.py                  | RDS DB Instance                | Do supported DBs use IAM Authentication                                             |
-| Amazon_RDS_Auditor.py                  | RDS DB Instance                | Are supported DBs joined to a domain                                                |
-| Amazon_RDS_Auditor.py                  | RDS DB Instance                | Is performance insights enabled                                                     |
-| Amazon_RDS_Auditor.py                  | RDS DB Instance                | Is deletion protection enabled                                                      |
-| Amazon_RDS_Auditor.py                  | RDS DB Instance                | Is database CloudWatch logging enabled                                              |
-| Amazon_RDS_Auditor.py                  | RDS Snapshot                   | Are snapshots encrypted                                                             |
-| Amazon_RDS_Auditor.py                  | RDS Snapshot                   | Are snapshots public                                                                |
-| Amazon_RDS_Auditor.py                  | RDS DB Cluster (Aurora)        | Is Database Activity Stream configured                                              |
-| Amazon_RDS_Auditor.py                  | RDS DB Cluster (Aurora)        | Is the cluster encrypted                                                            |
-| Amazon_RDS_Auditor.py                  | RDS DB Instance                | Does Instance have any snapshots                                                    |
-| Amazon_RDS_Auditor.py                  | RDS DB Instance                | Does the instance security group allow risky access                                 |
-| Amazon_RDS_Auditor.py                  | Event Subscription (Account)   | Does an Event Subscription to monitor DB instances exist                            |
-| Amazon_RDS_Auditor.py                  | Event Subscription (Account)   | Does an Event Subscription to monitor paramter groups exist                         |
-| Amazon_Redshift_Auditor.py             | Redshift cluster               | Is the cluster publicly accessible                                                  |
-| Amazon_Redshift_Auditor.py             | Redshift cluster               | Is the cluster encrypted                                                            |
-| Amazon_Redshift_Auditor.py             | Redshift cluster               | Is enhanced VPC routing enabled                                                     |
-| Amazon_Redshift_Auditor.py             | Redshift cluster               | Is cluster audit logging enabled                                                    |
-| Amazon_S3_Auditor.py                   | S3 Bucket                      | Is bucket encryption enabled                                                        |
-| Amazon_S3_Auditor.py                   | S3 Bucket                      | Is a bucket lifecycle enabled                                                       |
-| Amazon_S3_Auditor.py                   | S3 Bucket                      | Is bucket versioning enabled                                                        |
-| Amazon_S3_Auditor.py                   | S3 Bucket                      | Does the bucket policy allow public access                                          |
-| Amazon_S3_Auditor.py                   | S3 Bucket                      | Does the bucket have a policy                                                       |
-| Amazon_S3_Auditor.py                   | S3 Bucket                      | Is server access logging enabled                                                    |
-| Amazon_S3_Auditor.py                   | Account                        | Is account level public access block configured                                     |
-| Amazon_SageMaker_Auditor.py            | SageMaker Notebook             | Is notebook encryption enabled                                                      |
-| Amazon_SageMaker_Auditor.py            | SageMaker Notebook             | Is notebook direct internet access enabled                                          |
-| Amazon_SageMaker_Auditor.py            | SageMaker Notebook             | Is the notebook in a vpc                                                            |
-| Amazon_SageMaker_Auditor.py            | SageMaker Endpoint             | Is endpoint encryption enabled                                                      |
-| Amazon_SageMaker_Auditor.py            | SageMaker Model                | Is model network isolation enabled                                                  |
-| Amazon_Shield_Advanced_Auditor.py      | Route53 Hosted Zone            | Are Rt53 hosted zones protected by Shield Advanced                                  |
-| Amazon_Shield_Advanced_Auditor.py      | Classic Load Balancer          | Are CLBs protected by Shield Adv                                                    |
-| Amazon_Shield_Advanced_Auditor.py      | ELBv2 (ALB/NLB)                | Are ELBv2s protected by Shield Adv                                                  |
-| Amazon_Shield_Advanced_Auditor.py      | Elastic IP                     | Are EIPs protected by Shield Adv                                                    |
-| Amazon_Shield_Advanced_Auditor.py      | CloudFront Distribution        | Are CF Distros protected by Shield Adv                                              |
-| Amazon_Shield_Advanced_Auditor.py      | Account (DRT IAM Role)         | Does the DRT have account authZ via IAM role                                        |
-| Amazon_Shield_Advanced_Auditor.py      | Account (DRT S3 Access)        | Does the DRT have access to WAF logs S3 buckets                                     |
-| Amazon_Shield_Advanced_Auditor.py      | Account (Shield subscription)  | Is Shield Adv subscription on auto renew                                            |
-| Amazon_Shield_Advanced_Auditor.py      | Global Accelerator Accelerator | Are GA Accelerators protected by Shield Adv                                         |
-| Amazon_Shield_Advanced_Auditor.py      | Account                        | Has Shield Adv mitigated any attacks in the last 7 days                             |
-| Amazon_SNS_Auditor.py                  | SNS Topic                      | Is the topic encrypted                                                              |
-| Amazon_SNS_Auditor.py                  | SNS Topic                      | Does the topic have plaintext (HTTP) subscriptions                                  |
-| Amazon_SNS_Auditor.py                  | SNS Topic                      | Does the topic allow public access                                                  |
-| Amazon_SNS_Auditor.py                  | SNS Topic                      | Does the topic allow cross-account access                                           |
-| Amazon_SQS_Auditor.py                  | SQS Queue                      | Are there old messages                                                              |
-| Amazon_SQS_Auditor.py                  | SQS Queue                      | Is Server Side Encryption Enabled                                                   |
-| Amazon_SQS_Auditor.py                  | SQS Queue                      | Is the SQS Queue publically accessible                                              |
-| Amazon_VPC_Auditor.py                  | VPC                            | Is the default VPC out and about                                                    |
-| Amazon_VPC_Auditor.py                  | VPC                            | Is flow logging enabled                                                             |
-| Amazon_VPC_Auditor.py                  | Subnet                         | Do subnets map public IPs                                                           |
-| Amazon_VPC_Auditor.py                  | Subnet                         | Do subnets have available IP space                                                  |
-| Amazon_WorkSpaces_Auditor.py           | Workspace                      | Is user volume encrypted                                                            |
-| Amazon_WorkSpaces_Auditor.py           | Workspace                      | Is root volume encrypted                                                            |
-| Amazon_WorkSpaces_Auditor.py           | Workspace                      | Is running mode set to auto-off                                                     |
-| Amazon_WorkSpaces_Auditor.py           | DS Directory                   | Does directory allow default internet access                                        |
-| Amazon_Xray_Auditor.py                 | XRay Encryption Config         | Is KMS CMK encryption used                                                          |
-| AMI_Auditor.py                         | Amazon Machine Image (AMI)     | Are owned AMIs public                                                               |
-| AMI_Auditor.py                         | Amazon Machine Image (AMI)     | Are owned AMIs encrypted                                                            |
-| AWS_ACM_Auditor.py                     | ACM Certificate                | Are certificates revoked                                                            |
-| AWS_ACM_Auditor.py                     | ACM Certificate                | Are certificates in use                                                             |
-| AWS_ACM_Auditor.py                     | ACM Certificate                | Is certificate transparency logging enabled                                         |
-| AWS_ACM_Auditor.py                     | ACM Certificate                | Have certificates been correctly renewed                                            |
-| AWS_ACM_Auditor.py                     | ACM Certificate                | Are certificates correctly validated                                                |
-| AWS_Amplify_Auditor.py                 | AWS Amplify                    | Does the app have basic auth enabled on the branches                                |
-| AWS_Amplify_Auditor.py                 | AWS Amplify                    | Does the app have auto deletion for branches enabled                                |
-| AWS_AppMesh_Auditor.py                 | App Mesh mesh                  | Does the mesh egress filter DROP_ALL                                                |
-| AWS_AppMesh_Auditor.py                 | App Mesh virtual node          | Does the backend default client policy enforce TLS                                  |
-| AWS_AppMesh_Auditor.py                 | App Mesh virtual node          | Do virtual node backends have STRICT TLS mode configured for inbound connections    |
-| AWS_AppMesh_Auditor.py                 | App Mesh virtual node          | Do virtual nodes have an HTTP access log location defined                           |
-| AWS_Backup_Auditor.py                  | EC2 Instance                   | Are EC2 instances backed up                                                         |
-| AWS_Backup_Auditor.py                  | EBS Volume                     | Are EBS volumes backed up                                                           |
-| AWS_Backup_Auditor.py                  | DynamoDB tables                | Are DynamoDB tables backed up                                                       |
-| AWS_Backup_Auditor.py                  | RDS DB Instance                | Are RDS DB instances backed up                                                      |
-| AWS_Backup_Auditor.py                  | EFS File System                | Are EFS file systems backed up                                                      |
-| AWS_Cloud9_Auditor.py                  | Cloud9 Environment             | Are Cloud9 Envs using SSM for access                                                |
-| AWS_CloudFormation_Auditor.py          | CloudFormation Stack           | Is drift detection enabled                                                          |
-| AWS_CloudFormation_Auditor.py          | CloudFormation Stack           | Are stacks monitored                                                                |
-| AWS_CloudHSM_Auditor.py                | CloudHSM Cluster               | Is the CloudHSM Cluster in a degraded state                                         |
-| AWS_CloudHSM_Auditor.py                | CloudHSM HSM Module            | Is the CloudHSM hardware security module in a degraded state                        |
-| AWS_CloudHSM_Auditor.py                | CloudHSM Backups               | Is there at least one backup in a READY state                                       |
-| AWS_CloudTrail_Auditor.py              | CloudTrail                     | Is the trail multi-region                                                           |
-| AWS_CloudTrail_Auditor.py              | CloudTrail                     | Does the trail send logs to CWL                                                     |
-| AWS_CloudTrail_Auditor.py              | CloudTrail                     | Is the trail encrypted by KMS                                                       |
-| AWS_CloudTrail_Auditor.py              | CloudTrail                     | Are global/management events logged                                                 |
-| AWS_CloudTrail_Auditor.py              | CloudTrail                     | Is log file validation enabled                                                      |
-| AWS_CodeArtifact_Auditor.py            | CodeArtifact Repo              | Does the CodeArtifact Repo have a least privilege resource policy attached          |
-| AWS_CodeArtifact_Auditor.py            | CodeArtifact Domain            | Does the CodeArtifact Domain have a least privilege resource policy attached        |
-| AWS_CodeBuild_Auditor.py               | CodeBuild project              | Is artifact encryption enabled                                                      |
-| AWS_CodeBuild_Auditor.py               | CodeBuild project              | Is Insecure SSL enabled                                                             |
-| AWS_CodeBuild_Auditor.py               | CodeBuild project              | Are plaintext environmental variables used                                          |
-| AWS_CodeBuild_Auditor.py               | CodeBuild project              | Is S3 logging encryption enabled                                                    |
-| AWS_CodeBuild_Auditor.py               | CodeBuild project              | Is CloudWatch logging enabled                                                       |
-| AWS_Directory_Service_Auditor.py       | DS Directory                   | Is RADIUS enabled                                                                   |
-| AWS_Directory_Service_Auditor.py       | DS Directory                   | Is CloudWatch log forwarding enabled                                                |
-| AWS_DMS_Auditor.py                     | DMS Replication Instance       | Are DMS instances publicly accessible                                               |
-| AWS_DMS_Auditor.py                     | DMS Replication Instance       | Is DMS multi-az configured                                                          |
-| AWS_DMS_Auditor.py                     | DMS Replication Instance       | Are minor version updates configured                                                |
-| AWS_Global_Accelerator_Auditor.py      | Global Accelerator Endpoint    | Is the endpoint healthy                                                             |
-| AWS_Global_Accelerator_Auditor.py      | Global Accelerator Accelerator | Is flow logs enabled for accelerator                                                |
-| AWS_Health_Auditor.py                  | AWS Health Event               | Are there active Security Events                                                    |
-| AWS_Health_Auditor.py                  | AWS Health Event               | Are there active Abuse Events                                                       |
-| AWS_Health_Auditor.py                  | AWS Health Event               | Are there active Risk Events                                                        |
-| AWS_Glue_Auditor.py                    | Glue Crawler                   | Is S3 encryption configured for the crawler                                         |
-| AWS_Glue_Auditor.py                    | Glue Crawler                   | Is CWL encryption configured for the crawler                                        |
-| AWS_Glue_Auditor.py                    | Glue Crawler                   | Is job bookmark encryption configured for the crawler                               |
-| AWS_Glue_Auditor.py                    | Glue Data Catalog              | Is data catalog encryption configured                                               |
-| AWS_Glue_Auditor.py                    | Glue Data Catalog              | Is connection password encryption configured                                        |
-| AWS_Glue_Auditor.py                    | Glue Data Catalog              | Is a resource policy configured                                                     |
-| AWS_IAM_Auditor.py                     | IAM Access Key                 | Are access keys over 90 days old                                                    |
-| AWS_IAM_Auditor.py                     | IAM User                       | Do users have permissions boundaries                                                |
-| AWS_IAM_Auditor.py                     | IAM User                       | Do users have MFA                                                                   |
-| AWS_IAM_Auditor.py                     | IAM User                       | Do users have in-line policies attached                                             |
-| AWS_IAM_Auditor.py                     | IAM User                       | Do users have managed policies attached                                             |
-| AWS_IAM_Auditor.py                     | Password policy (Account)      | Does the IAM password policy meet or exceed AWS CIS Foundations Benchmark standards |
-| AWS_IAM_Auditor.py                     | Server certs (Account)         | Are they any Server certificates stored by IAM                                      |
-| AWS_IAM_Auditor.py                     | IAM Policy                     | Do managed IAM policies adhere to least privilege principles                        |
-| AWS_IAM_Auditor.py                     | IAM User                       | Do User IAM inline policies adhere to least privilege principles                    |
-| AWS_IAM_Auditor.py                     | IAM Group                      | Do Group IAM inline policies adhere to least privilege principles                   |
-| AWS_IAM_Auditor.py                     | IAM Role                       | Do Role IAM inline policies adhere to least privilege principles                    |
-| AWS_Keyspaces_Auditor.py               | Keyspaces table                | Are Keyspaces Tables encrypted with a KMS CMK                                       |
-| AWS_Keyspaces_Auditor.py               | Keyspaces table                | Do Keyspaces Tables have PTR enabled                                                |
-| AWS_Keyspaces_Auditor.py               | Keyspaces table                | Are Keyspaces Tables in an unusable state                                           |
-| AWS_KMS_Auditor.py                     | KMS key                        | Is key rotation enabled                                                             |
-| AWS_KMS_Auditor.py                     | KMS key                        | Does the key allow public access                                                    |
-| AWS_Lambda_Auditor.py                  | Lambda function                | Has function been used or updated in the last 30 days                               |
-| AWS_Lambda_Auditor.py                  | Lambda function                | Is tracing enabled                                                                  |
-| AWS_Lambda_Auditor.py                  | Lambda function                | Is code signing used                                                                |
-| AWS_Lambda_Auditor.py                  | Lambda layer                   | Is the layer public                                                                 |
-| AWS_License_Manager_Auditor            | License Manager configuration  | Do LM configurations enforce a hard limit on license consumption                    |
-| AWS_License_Manager_Auditor            | License Manager configuration  | Do LM configurations enforce auto-disassociation                                    |
-| AWS_MemoryDB_Auditor                   | MemoryDB Cluster               | Do clusters use TLS                                                                 |
-| AWS_MemoryDB_Auditor                   | MemoryDB Cluster               | Do clusters use KMS CMK for encryption at rest                                      |
-| AWS_MemoryDB_Auditor                   | MemoryDB Cluster               | Are clusters configured for auto minor version updates                              |
-| AWS_MemoryDB_Auditor                   | MemoryDB Cluster               | Are cluster events monitored with SNS                                               |
-| AWS_MemoryDB_Auditor                   | MemoryDB User                  | MemDB Admin users should be reviewed                                                |
-| AWS_MemoryDB_Auditor                   | MemoryDB User                  | MemDB users should use passwords                                                    |
-| AWS_RAM_Auditor.py                     | RAM Resource Share             | Is the resource share status not failed                                             |
-| AWS_RAM_Auditor.py                     | RAM Resource Share             | Does the resource allow external principals                                         |
-| AWS_Secrets_Manager_Auditor.py         | Secrets Manager secret         | Is the secret over 90 days old                                                      |
-| AWS_Secrets_Manager_Auditor.py         | Secrets Manager secret         | Is secret auto-rotation enabled                                                     |
-| AWS_Security_Hub_Auditor.py            | Security Hub (Account)         | Are there active high or critical findings in Security Hub                          |
-| AWS_Security_Services_Auditor.py       | IAM Access Analyzer (Account)  | Is IAM Access Analyzer enabled                                                      |
-| AWS_Security_Services_Auditor.py       | GuardDuty (Account)            | Is GuardDuty enabled                                                                |
-| AWS_Security_Services_Auditor.py       | Detective (Account)            | Is Detective enabled                                                                |
-| AWS_Security_Services_Auditor.py       | Macie2                         | Is Macie enabled                                                                    |
-| AWS_Security_Services_Auditor.py       | AWS WAFv2 (Regional)           | Are Regional Web ACLs configured                                                    |
-| AWS_Security_Services_Auditor.py       | AWS WAFv2 (Global)             | Are Global Web ACLs (for CloudFront) configured                                     |
-| AWS_TrustedAdvisor_Auditor.py          | Trusted Advisor Check          | Is the Trusted Advisor check for MFA on Root Account failing                        |
-| AWS_TrustedAdvisor_Auditor.py          | Trusted Advisor Check          | Is the Trusted Advisor check for ELB Listener Security failing                      |
-| AWS_TrustedAdvisor_Auditor.py          | Trusted Advisor Check          | Is the Trusted Advisor check for CloudFront SSL Certs in IAM  Cert Store failing    |
-| AWS_TrustedAdvisor_Auditor.py          | Trusted Advisor Check          | Is the Trusted Advisor check for CloudFront SSL Cert on Origin  Server failing      |
-| AWS_TrustedAdvisor_Auditor.py          | Trusted Advisor Check          | Is the Trusted Advisor check for Exposed Access Keys failing                        |
-| AWS_WAFv2_Auditor.py                   | AWS WAFv2 (Regional)           | Do Regional WAFs use Cloudwatch Metrics                                             |
-| AWS_WAFv2_Auditor.py                   | AWS WAFv2 (Regional)           | Do Regional WAFs use Request Sampling                                               |
-| AWS_WAFv2_Auditor.py                   | AWS WAFv2 (Regional)           | Do Regional WAFs have Logging enabled                                               |
-| AWS_WAFv2_Auditor.py                   | AWS WAFv2 (Global)             | Do Global WAFs use Cloudwatch Metrics                                               |
-| AWS_WAFv2_Auditor.py                   | AWS WAFv2 (Global)             | Do Global WAFs use Request Sampling                                                 |
-| AWS_WAFv2_Auditor.py                   | AWS WAFv2 (Global)             | Do Global WAFs have Logging enabled                                                 |
-| Secrets_Auditor.py                     | CodeBuild project              | Do CodeBuild projects have secrets in plaintext env vars                            |
-| Secrets_Auditor.py                     | CloudFormation Stack           | Do CloudFormation Stacks have secrets in parameters                                 |
-| Secrets_Auditor.py                     | ECS Task Definition            | Do ECS Task Definitions have secrets in env vars                                    |
-| Secrets_Auditor.py                     | EC2 Instance                   | Do EC2 instances have secrets in User Data                                          |
-| Shodan_Auditor.py                      | EC2 Instance                   | Are EC2 instances w/ public IPs indexed                                             |
-| Shodan_Auditor.py                      | ELBv2 (ALB)                    | Are internet-facing ALBs indexed                                                    |
-| Shodan_Auditor.py                      | RDS Instance                   | Are public accessible RDS instances indexed                                         |
-| Shodan_Auditor.py                      | ElasticSearch Domain           | Are ES Domains outside a VPC indexed                                                |
-| Shodan_Auditor.py                      | ELB (CLB)                      | Are internet-facing CLBs indexed                                                    |
-| Shodan_Auditor.py                      | DMS Replication Instance       | Are public accessible DMS instances indexed                                         |
-| Shodan_Auditor.py                      | Amazon MQ message broker       | Are public accessible message brokers indexed                                       |
-| Shodan_Auditor.py                      | CloudFront Distribution        | Are CloudFront distros indexed                                                      |
-| Shodan_Auditor.py                      | Global Accelerator Accelerator | Are Global Accelerator Accelerators indexed                                         |
+**Regarding Security Group checks:** The table shows the full amount of checks despite not being shown in the CLI due to the change to a Configuation-file based approach added on 25 MAR 2022.
+
+
+| Auditor File Name | AWS Service | Auditor Scan Description |
+|---|---|---|
+| Amazon_APIGW_Auditor.py | API Gateway Stage | Are stage metrics enabled |
+| Amazon_APIGW_Auditor.py | API Gateway Stage | Is stage API logging enabled |
+| Amazon_APIGW_Auditor.py | API Gateway Stage | Is stage caching enabled |
+| Amazon_APIGW_Auditor.py | API Gateway Stage | Is cache encryption enabled |
+| Amazon_APIGW_Auditor.py | API Gateway Stage | Is stage xray tracing configured |
+| Amazon_APIGW_Auditor.py | API Gateway Stage | Is the stage protected by a WAF WACL |
+| Amazon_APIGW_Auditor.py | API Gateway Rest API | Do Rest APIs use Policies |
+| Amazon_APIGW_Auditor.py | API Gateway Rest API | Do Rest APIs use Authorizers |
+| Amazon_AppStream_Auditor.py | AppStream 2.0 (Fleets) | Do Fleets allow Default Internet Access |
+| Amazon_AppStream_Auditor.py | AppStream 2.0 (Images) | Are Images Public |
+| Amazon_AppStream_Auditor.py | AppStream 2.0 (Users) | Are users reported as Compromised |
+| Amazon_AppStream_Auditor.py | AppStream 2.0 (Users) | Do users use SAML authentication |
+| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Does distribution have trusted signers with key pairs |
+| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Does distribution have Origin Shield enabled |
+| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Does distribution have Geo Restriction enabled |
+| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Does distribution have Default Viewer Certificate |
+| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Does distribution have Field-Level Encryption enabled |
+| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Does distribution have WAF enabled |
+| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Does distribution use Default TLS |
+| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Does distribution use Custom Origin TLS |
+| Amazon_CloudSearch_Auditor.py | CloudSearch Domain | Do Domains enforce HTTPS-only |
+| Amazon_CloudSearch_Auditor.py | CloudSearch Domain | Do Domains use TLS 1.2 |
+| Amazon_CognitoIdP_Auditor.py | Cognito Identity Pool | Does the Password policy comply with AWS CIS Foundations Benchmark |
+| Amazon_CognitoIdP_Auditor.py | Cognito Identity Pool | Cognito Temporary Password Age |
+| Amazon_CognitoIdP_Auditor.py | Cognito Identity Pool | Does the Identity pool enforce MFA |
+| Amazon_DocumentDB_Auditor.py | DocumentDB Instance | Are Instances publicly accessible |
+| Amazon_DocumentDB_Auditor.py | DocumentDB Instance | Are Instance encrypted |
+| Amazon_DocumentDB_Auditor.py | DocumentDB Instance | Is audit logging enabled |
+| Amazon_DocumentDB_Auditor.py | DocumentDB Cluster | Is the Cluster configured for HA |
+| Amazon_DocumentDB_Auditor.py | DocumentDB Cluster | Is the Cluster deletion protected |
+| Amazon_DocumentDB_Auditor.py | DocumentDB Cluster | Is cluster audit logging on |
+| Amazon_DocumentDB_Auditor.py | DocumentDB Cluster | Is cluster TLS enforcement on |
+| Amazon_DocumentDB_Auditor.py | DocDB Snapshot | Are docdb cluster snapshots encrypted |
+| Amazon_DocumentDB_Auditor.py | DocDB Snapshot | Are docdb cluster snapshots public |
+| Amazon_DynamoDB_Auditor.py | DynamoDB Table | Do tables use KMS CMK for encryption |
+| Amazon_DynamoDB_Auditor.py | DynamoDB Table | Do tables have PITR enabled |
+| Amazon_DynamoDB_Auditor.py | DynamoDB Table | Do tables have TTL enabled |
+| Amazon_EBS_Auditor.py | EBS Volume | Is the Volume attached |
+| Amazon_EBS_Auditor.py | EBS Volume | Is the Volume configured to be deleted on instance termination |
+| Amazon_EBS_Auditor.py | EBS Volume | Is the Volume encrypted |
+| Amazon_EBS_Auditor.py | EBS Snapshot | Is the Snapshot encrypted |
+| Amazon_EBS_Auditor.py | EBS Snapshot | Is the Snapshot public |
+| Amazon_EBS_Auditor.py | Account | Is account level encryption by default enabled |
+| Amazon_EBS_Auditor.py | EBS Volume | Does the Volume have a snapshot |
+| Amazon_EC2_Auditor.py | EC2 Instance | Is IMDSv2 enabled |
+| Amazon_EC2_Auditor.py | EC2 Instance | Is Secure Enclave used |
+| Amazon_EC2_Auditor.py | EC2 Instance | Is the instance internet-facing |
+| Amazon_EC2_Auditor.py | EC2 Instance | Is Source/Dest Check disabled |
+| Amazon_EC2_Auditor.py | AWS Account | Is Serial Port Access restricted |
+| Amazon_EC2_Auditor.py | EC2 Instance | Is instance using an AMI baked in last 3 months |
+| Amazon_EC2_Auditor.py | EC2 Instance | Is instance using a correctly registered AMI |
+| Amazon_EC2_Auditor.py | Account | Are instances spread across Multiple AZs |
+| Amazon_EC2_Image_Builder_Auditor.py | Image Builder | Are pipeline tests enabled |
+| Amazon_EC2_Image_Builder_Auditor.py | Image Builder | Is EBS encrypted |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Are all ports (-1) open to the internet |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is FTP (tcp20-21) open to the internet |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is TelNet (tcp23) open to the internet |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is WSDCOM-RPC (tcp135) open to the internet |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is SMB (tcp445) open to the internet |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is MSSQL (tcp1433) open to the internet |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is OracleDB (tcp1521) open to the internet |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is MySQL/MariaDB (tcp3306) open to the internet |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is RDP (tcp3389) open to the internet |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is PostgreSQL (tcp5432) open to the internet |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is Kibana (tcp5601) open to the internet |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is Redis (tcp6379) open to the internet |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is Splunkd (tcp8089) open to the internet |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is Elasticsearch (tcp9200) open to the internet |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is Elasticsearch (tcp9300) open to the internet |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is Memcached (udp11211) open to the internet |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is Redshift (tcp5439) open to the internet |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is DocDB (tcp27017) open to the internet |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is Cassandra (tcp9142) open to the internet |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is Kafka (tcp9092) open to the internet |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is NFS (tcp2049) open to the internet |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is Rsync (tcp873) open to the internet |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is TFTP (udp69) open to the internet |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is Docker API (tcp2375) open to the internet |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is K8s API (tcp10250) open to the internet |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is SMTP (tcp25) open to the internet |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is NetBioas (tcp137-139) open to the internet |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is OpenVPN (udp1194) open to the internet |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is RabbitMQ (tcp5672) open to the internet |
+| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is Spark WebUI (tcp4040) open to the internet |
+| Amazon_EC2_SSM_Auditor.py | EC2 Instance | Is the instance managed by SSM |
+| Amazon_EC2_SSM_Auditor.py | EC2 Instance | Does the instance have a successful SSM association |
+| Amazon_EC2_SSM_Auditor.py | EC2 Instance | Is the SSM Agent up to date |
+| Amazon_EC2_SSM_Auditor.py | EC2 Instance | Is the Patch status up to date |
+| Amazon_ECR_Auditor.py | ECR Registry (Account) | Is there a registry access policy |
+| Amazon_ECR_Auditor.py | ECR Registry (Account) | Is image replication configured |
+| Amazon_ECR_Auditor.py | ECR Repository | Does the repository support scan-on-push |
+| Amazon_ECR_Auditor.py | ECR Repository | Is there an image lifecycle policy |
+| Amazon_ECR_Auditor.py | ECR Repository | Is there a repo access policy |
+| Amazon_ECR_Auditor.py | Image (Container) | Does the latest container have any vulns |
+| Amazon_ECS_Auditor.py | ECS Cluster | Is container insights enabled |
+| Amazon_ECS_Auditor.py | ECS Cluster | Is a default cluster provider configured |
+| Amazon_ECS_Auditor.py | ECS Task Definition | Is the Task Definition using a Privileged container |
+| Amazon_ECS_Auditor.py | ECS Task Definition | Do EC2-ECS containers use SELinux or AppArmor |
+| Amazon_EFS_Auditor.py | EFS File System | Are file systems encrypted |
+| Amazon_EFS_Auditor.py | EFS File System | Does the File system have a custom policy attached |
+| Amazon_EKS_Auditor.py | EKS Cluster | Is the API Server publicly accessible |
+| Amazon_EKS_Auditor.py | EKS Cluster | Is the latest K8s version used |
+| Amazon_EKS_Auditor.py | EKS Cluster | Are auth or audit logs enabled |
+| Amazon_EKS_Auditor.py | EKS Cluster | Is K8s Secrets envelope encryption used |
+| Amazon_Elasticache_Redis_Auditor.py | Elasticache Redis Cluster | Is an AUTH Token used |
+| Amazon_Elasticache_Redis_Auditor.py | Elasticache Redis Cluster | Is the cluster encrypted at rest |
+| Amazon_Elasticache_Redis_Auditor.py | Elasticache Redis Cluster | Does the cluster encrypt in transit |
+| Amazon_ElasticsearchService_Auditor.py | OpenSearch domain | Are dedicated masters used |
+| Amazon_ElasticsearchService_Auditor.py | OpenSearch domain | Is Cognito auth used |
+| Amazon_ElasticsearchService_Auditor.py | OpenSearch domain | Is encryption at rest used |
+| Amazon_ElasticsearchService_Auditor.py | OpenSearch domain | Is Node2Node encryption used |
+| Amazon_ElasticsearchService_Auditor.py | OpenSearch domain | Is HTTPS-only enforced |
+| Amazon_ElasticsearchService_Auditor.py | OpenSearch domain | Is a TLS 1.2 policy used |
+| Amazon_ElasticsearchService_Auditor.py | OpenSearch domain | Are there available version updates |
+| Amazon_ElasticsearchService_Auditor.py | OpenSearch domain | Is ES in a VPC |
+| Amazon_ElasticsearchService_Auditor.py | OpenSearch domain | Is ES Publicly Accessible |
+| Amazon_ELB_Auditor.py | ELB (Classic Load Balancer) | Do internet facing ELBs have a secure listener |
+| Amazon_ELB_Auditor.py | ELB (Classic Load Balancer) | Do secure listeners enforce TLS 1.2 |
+| Amazon_ELB_Auditor.py | ELB (Classic Load Balancer) | Is cross zone load balancing enabled |
+| Amazon_ELB_Auditor.py | ELB (Classic Load Balancer) | Is connection draining enabled |
+| Amazon_ELB_Auditor.py | ELB (Classic Load Balancer) | Is access logging enabled |
+| Amazon_ELBv2_Auditor.py | ELBv2 (ALB) | Is access logging enabled for ALBs |
+| Amazon_ELBv2_Auditor.py | ELBv2 (ALB/NLB) | Is deletion protection enabled |
+| Amazon_ELBv2_Auditor.py | ELBv2 (ALB/NLB) | Do internet facing ELBs have a secure listener |
+| Amazon_ELBv2_Auditor.py | ELBv2 (ALB/NLB) | Do secure listeners enforce TLS 1.2 |
+| Amazon_ELBv2_Auditor.py | ELBv2 (ALB/NLB) | Are invalid HTTP headers dropped |
+| Amazon_ELBv2_Auditor.py | ELBv2 (NLB) | Do NLBs with TLS listeners have access logging enabled |
+| Amazon_ELBv2_Auditor.py | ELBv2 (ALB) | Do ALBs have HTTP Desync protection enabled |
+| Amazon_ELBv2_Auditor.py | ELBv2 (ALB) | Do ALBs SGs allow access to non-Listener ports |
+| Amazon_EMR_Auditor.py | EMR Cluster | Do clusters have a sec configuration attached |
+| Amazon_EMR_Auditor.py | EMR Cluster | Do cluster sec configs enforce encryption in transit |
+| Amazon_EMR_Auditor.py | EMR Cluster | Do cluster sec configs enforce encryption at rest for EMRFS |
+| Amazon_EMR_Auditor.py | EMR Cluster | Do cluster sec configs enforce encryption at rest for EBS |
+| Amazon_EMR_Auditor.py | EMR Cluster | Do cluster sec configs enforce Kerberos authN |
+| Amazon_EMR_Auditor.py | EMR Cluster | Is cluster termination protection enabled |
+| Amazon_EMR_Auditor.py | EMR Cluster | Is cluster logging enabled |
+| Amazon_EMR_Auditor.py | AWS Account | Is EMR public SG block configured for the Account in the region |
+| Amazon_Kinesis_Analytics_Auditor.py | Kinesis analytics application | Does application log to CloudWatch |
+| Amazon_Kinesis_Data_Streams_Auditor.py | Kinesis data stream | Is stream encryption enabled |
+| Amazon_Kinesis_Data_Streams_Auditor.py | Kinesis data stream | Is enhanced monitoring enabled |
+| Amazon_Kinesis_Firehose_Auditor.py | Firehose delivery stream | Is delivery stream encryption enabled |
+| Amazon_Managed_Blockchain_Auditor.py | Fabric peer node | Are chaincode logs enabled |
+| Amazon_Managed_Blockchain_Auditor.py | Fabric peer node | Are peer node logs enabled |
+| Amazon_Managed_Blockchain_Auditor.py | Fabric member | Are member CA logs enabled |
+| Amazon_MQ_Auditor.py | Amazon MQ message broker | Message brokers should be encrypted with customer-managed KMS CMKs |
+| Amazon_MQ_Auditor.py | Amazon MQ message broker | Message brokers should have audit logging enabled |
+| Amazon_MQ_Auditor.py | Amazon MQ message broker | Message brokers should have general logging enabled |
+| Amazon_MQ_Auditor.py | Amazon MQ message broker | Message broker should not be publicly accessible |
+| Amazon_MQ_Auditor.py | Amazon MQ message broker | Message brokers should be configured to auto upgrade to the latest minor version |
+| Amazon_MSK_Auditor.py | MSK Cluster | Is inter-cluster encryption used |
+| Amazon_MSK_Auditor.py | MSK Cluster | Is client-broker communications TLS-only |
+| Amazon_MSK_Auditor.py | MSK Cluster | Is enhanced monitoring used |
+| Amazon_MSK_Auditor.py | MSK Cluster | Is Private CA TLS auth used |
+| Amazon_MWAA_Auditor.py | Airflow Environment | Is a KMS CMK used for encryption |
+| Amazon_MWAA_Auditor.py | Airflow Environment | Is the Airflow URL Public |
+| Amazon_MWAA_Auditor.py | Airflow Environment | Are DAG Processing logs configured |
+| Amazon_MWAA_Auditor.py | Airflow Environment | Are Scheduler logs configured |
+| Amazon_MWAA_Auditor.py | Airflow Environment | Are Task logs configured |
+| Amazon_MWAA_Auditor.py | Airflow Environment | Are Webserver logs configured |
+| Amazon_MWAA_Auditor.py | Airflow Environment | Are Worker logs configured |
+| Amazon_Neptune_Auditor.py | Neptune instance | Is Neptune configured for HA |
+| Amazon_Neptune_Auditor.py | Neptune instance | Is Neptune storage encrypted |
+| Amazon_Neptune_Auditor.py | Neptune instance | Does Neptune use IAM DB Auth |
+| Amazon_Neptune_Auditor.py | Neptune cluster | Is SSL connection enforced |
+| Amazon_Neptune_Auditor.py | Neptune cluster | Is audit logging enabled |
+| Amazon_QLDB_Auditor.py | QLDB Ledger | Does ledger have deletion protection |
+| Amazon_QLDB_Auditor.py | QLDB Export | Is export encryption enabled |
+| Amazon_RDS_Auditor.py | RDS DB Instance | Is HA configured |
+| Amazon_RDS_Auditor.py | RDS DB Instance | Are DB instances publicly accessible |
+| Amazon_RDS_Auditor.py | RDS DB Instance | Is DB storage encrypted |
+| Amazon_RDS_Auditor.py | RDS DB Instance | Do supported DBs use IAM Authentication |
+| Amazon_RDS_Auditor.py | RDS DB Instance | Are supported DBs joined to a domain |
+| Amazon_RDS_Auditor.py | RDS DB Instance | Is performance insights enabled |
+| Amazon_RDS_Auditor.py | RDS DB Instance | Is deletion protection enabled |
+| Amazon_RDS_Auditor.py | RDS DB Instance | Is database CloudWatch logging enabled |
+| Amazon_RDS_Auditor.py | RDS Snapshot | Are snapshots encrypted |
+| Amazon_RDS_Auditor.py | RDS Snapshot | Are snapshots public |
+| Amazon_RDS_Auditor.py | RDS DB Cluster (Aurora) | Is Database Activity Stream configured |
+| Amazon_RDS_Auditor.py | RDS DB Cluster (Aurora) | Is the cluster encrypted |
+| Amazon_RDS_Auditor.py | RDS DB Instance | Does Instance have any snapshots |
+| Amazon_RDS_Auditor.py | RDS DB Instance | Does the instance security group allow risky access |
+| Amazon_RDS_Auditor.py | Event Subscription (Account) | Does an Event Subscription to monitor DB instances exist |
+| Amazon_RDS_Auditor.py | Event Subscription (Account) | Does an Event Subscription to monitor paramter groups exist |
+| Amazon_Redshift_Auditor.py | Redshift cluster | Is the cluster publicly accessible |
+| Amazon_Redshift_Auditor.py | Redshift cluster | Is the cluster encrypted |
+| Amazon_Redshift_Auditor.py | Redshift cluster | Is enhanced VPC routing enabled |
+| Amazon_Redshift_Auditor.py | Redshift cluster | Is cluster audit logging enabled |
+| Amazon_Route53_Resolver_Auditor.py | VPC | Do VPCs have Query Logging enabled |
+| Amazon_Route53_Resolver_Auditor.py | VPC | Do VPCs have DNS Firewalls associated |
+| Amazon_Route53_Resolver_Auditor.py | VPC | Do VPCs enabled DNSSEC resolution |
+| Amazon_Route53_Resolver_Auditor.py | VPC | Do VPCs with DNS Firewall fail open |
+| Amazon_S3_Auditor.py | S3 Bucket | Is bucket encryption enabled |
+| Amazon_S3_Auditor.py | S3 Bucket | Is a bucket lifecycle enabled |
+| Amazon_S3_Auditor.py | S3 Bucket | Is bucket versioning enabled |
+| Amazon_S3_Auditor.py | S3 Bucket | Does the bucket policy allow public access |
+| Amazon_S3_Auditor.py | S3 Bucket | Does the bucket have a policy |
+| Amazon_S3_Auditor.py | S3 Bucket | Is server access logging enabled |
+| Amazon_S3_Auditor.py | Account | Is account level public access block configured |
+| Amazon_SageMaker_Auditor.py | SageMaker Notebook | Is notebook encryption enabled |
+| Amazon_SageMaker_Auditor.py | SageMaker Notebook | Is notebook direct internet access enabled |
+| Amazon_SageMaker_Auditor.py | SageMaker Notebook | Is the notebook in a vpc |
+| Amazon_SageMaker_Auditor.py | SageMaker Endpoint | Is endpoint encryption enabled |
+| Amazon_SageMaker_Auditor.py | SageMaker Model | Is model network isolation enabled |
+| Amazon_Shield_Advanced_Auditor.py | Route53 Hosted Zone | Are Rt53 hosted zones protected by Shield Advanced |
+| Amazon_Shield_Advanced_Auditor.py | Classic Load Balancer | Are CLBs protected by Shield Adv |
+| Amazon_Shield_Advanced_Auditor.py | ELBv2 (ALB/NLB) | Are ELBv2s protected by Shield Adv |
+| Amazon_Shield_Advanced_Auditor.py | Elastic IP | Are EIPs protected by Shield Adv |
+| Amazon_Shield_Advanced_Auditor.py | CloudFront Distribution | Are CF Distros protected by Shield Adv |
+| Amazon_Shield_Advanced_Auditor.py | Account (DRT IAM Role) | Does the DRT have account authZ via IAM role |
+| Amazon_Shield_Advanced_Auditor.py | Account (DRT S3 Access) | Does the DRT have access to WAF logs S3 buckets |
+| Amazon_Shield_Advanced_Auditor.py | Account (Shield subscription) | Is Shield Adv subscription on auto renew |
+| Amazon_Shield_Advanced_Auditor.py | Global Accelerator Accelerator | Are GA Accelerators protected by Shield Adv |
+| Amazon_Shield_Advanced_Auditor.py | Account | Has Shield Adv mitigated any attacks in the last 7 days |
+| Amazon_SNS_Auditor.py | SNS Topic | Is the topic encrypted |
+| Amazon_SNS_Auditor.py | SNS Topic | Does the topic have plaintext (HTTP) subscriptions |
+| Amazon_SNS_Auditor.py | SNS Topic | Does the topic allow public access |
+| Amazon_SNS_Auditor.py | SNS Topic | Does the topic allow cross-account access |
+| Amazon_SQS_Auditor.py | SQS Queue | Are there old messages |
+| Amazon_SQS_Auditor.py | SQS Queue | Is Server Side Encryption Enabled |
+| Amazon_SQS_Auditor.py | SQS Queue | Is the SQS Queue publically accessible |
+| Amazon_VPC_Auditor.py | VPC | Is the default VPC out and about |
+| Amazon_VPC_Auditor.py | VPC | Is flow logging enabled |
+| Amazon_VPC_Auditor.py | Subnet | Do subnets map public IPs |
+| Amazon_VPC_Auditor.py | Subnet | Do subnets have available IP space |
+| Amazon_WorkSpaces_Auditor.py | Workspace | Is user volume encrypted |
+| Amazon_WorkSpaces_Auditor.py | Workspace | Is root volume encrypted |
+| Amazon_WorkSpaces_Auditor.py | Workspace | Is running mode set to auto-off |
+| Amazon_WorkSpaces_Auditor.py | DS Directory | Does directory allow default internet access |
+| Amazon_Xray_Auditor.py | XRay Encryption Config | Is KMS CMK encryption used |
+| AMI_Auditor.py | Amazon Machine Image (AMI) | Are owned AMIs public |
+| AMI_Auditor.py | Amazon Machine Image (AMI) | Are owned AMIs encrypted |
+| AWS_ACM_Auditor.py | ACM Certificate | Are certificates revoked |
+| AWS_ACM_Auditor.py | ACM Certificate | Are certificates in use |
+| AWS_ACM_Auditor.py | ACM Certificate | Is certificate transparency logging enabled |
+| AWS_ACM_Auditor.py | ACM Certificate | Have certificates been correctly renewed |
+| AWS_ACM_Auditor.py | ACM Certificate | Are certificates correctly validated |
+| AWS_Amplify_Auditor.py | AWS Amplify | Does the app have basic auth enabled on the branches |
+| AWS_Amplify_Auditor.py | AWS Amplify | Does the app have auto deletion for branches enabled |
+| AWS_AppMesh_Auditor.py | App Mesh mesh | Does the mesh egress filter DROP_ALL |
+| AWS_AppMesh_Auditor.py | App Mesh virtual node | Does the backend default client policy enforce TLS |
+| AWS_AppMesh_Auditor.py | App Mesh virtual node | Do virtual node backends have STRICT TLS mode configured for inbound connections |
+| AWS_AppMesh_Auditor.py | App Mesh virtual node | Do virtual nodes have an HTTP access log location defined |
+| AWS_Backup_Auditor.py | EC2 Instance | Are EC2 instances backed up |
+| AWS_Backup_Auditor.py | EBS Volume | Are EBS volumes backed up |
+| AWS_Backup_Auditor.py | DynamoDB tables | Are DynamoDB tables backed up |
+| AWS_Backup_Auditor.py | RDS DB Instance | Are RDS DB instances backed up |
+| AWS_Backup_Auditor.py | EFS File System | Are EFS file systems backed up |
+| AWS_Cloud9_Auditor.py | Cloud9 Environment | Are Cloud9 Envs using SSM for access |
+| AWS_CloudFormation_Auditor.py | CloudFormation Stack | Is drift detection enabled |
+| AWS_CloudFormation_Auditor.py | CloudFormation Stack | Are stacks monitored |
+| AWS_CloudHSM_Auditor.py | CloudHSM Cluster | Is the CloudHSM Cluster in a degraded state |
+| AWS_CloudHSM_Auditor.py | CloudHSM HSM Module | Is the CloudHSM hardware security module in a degraded state |
+| AWS_CloudHSM_Auditor.py | CloudHSM Backups | Is there at least one backup in a READY state |
+| AWS_CloudTrail_Auditor.py | CloudTrail | Is the trail multi-region |
+| AWS_CloudTrail_Auditor.py | CloudTrail | Does the trail send logs to CWL |
+| AWS_CloudTrail_Auditor.py | CloudTrail | Is the trail encrypted by KMS |
+| AWS_CloudTrail_Auditor.py | CloudTrail | Are global/management events logged |
+| AWS_CloudTrail_Auditor.py | CloudTrail | Is log file validation enabled |
+| AWS_CodeArtifact_Auditor.py | CodeArtifact Repo | Does the CodeArtifact Repo have a least privilege resource policy attached |
+| AWS_CodeArtifact_Auditor.py | CodeArtifact Domain | Does the CodeArtifact Domain have a least privilege resource policy attached |
+| AWS_CodeBuild_Auditor.py | CodeBuild project | Is artifact encryption enabled |
+| AWS_CodeBuild_Auditor.py | CodeBuild project | Is Insecure SSL enabled |
+| AWS_CodeBuild_Auditor.py | CodeBuild project | Are plaintext environmental variables used |
+| AWS_CodeBuild_Auditor.py | CodeBuild project | Is S3 logging encryption enabled |
+| AWS_CodeBuild_Auditor.py | CodeBuild project | Is CloudWatch logging enabled |
+| AWS_Directory_Service_Auditor.py | DS Directory | Is RADIUS enabled |
+| AWS_Directory_Service_Auditor.py | DS Directory | Is CloudWatch log forwarding enabled |
+| AWS_DMS_Auditor.py | DMS Replication Instance | Are DMS instances publicly accessible |
+| AWS_DMS_Auditor.py | DMS Replication Instance | Is DMS multi-az configured |
+| AWS_DMS_Auditor.py | DMS Replication Instance | Are minor version updates configured |
+| AWS_Global_Accelerator_Auditor.py | Global Accelerator Endpoint | Is the endpoint healthy |
+| AWS_Global_Accelerator_Auditor.py | Global Accelerator Accelerator | Is flow logs enabled for accelerator |
+| AWS_Health_Auditor.py | AWS Health Event | Are there active Security Events |
+| AWS_Health_Auditor.py | AWS Health Event | Are there active Abuse Events |
+| AWS_Health_Auditor.py | AWS Health Event | Are there active Risk Events |
+| AWS_Glue_Auditor.py | Glue Crawler | Is S3 encryption configured for the crawler |
+| AWS_Glue_Auditor.py | Glue Crawler | Is CWL encryption configured for the crawler |
+| AWS_Glue_Auditor.py | Glue Crawler | Is job bookmark encryption configured for the crawler |
+| AWS_Glue_Auditor.py | Glue Data Catalog | Is data catalog encryption configured |
+| AWS_Glue_Auditor.py | Glue Data Catalog | Is connection password encryption configured |
+| AWS_Glue_Auditor.py | Glue Data Catalog | Is a resource policy configured |
+| AWS_IAM_Auditor.py | IAM Access Key | Are access keys over 90 days old |
+| AWS_IAM_Auditor.py | IAM User | Do users have permissions boundaries |
+| AWS_IAM_Auditor.py | IAM User | Do users have MFA |
+| AWS_IAM_Auditor.py | IAM User | Do users have in-line policies attached |
+| AWS_IAM_Auditor.py | IAM User | Do users have managed policies attached |
+| AWS_IAM_Auditor.py | Password policy (Account) | Does the IAM password policy meet or exceed AWS CIS Foundations Benchmark standards |
+| AWS_IAM_Auditor.py | Server certs (Account) | Are they any Server certificates stored by IAM |
+| AWS_IAM_Auditor.py | IAM Policy | Do managed IAM policies adhere to least privilege principles |
+| AWS_IAM_Auditor.py | IAM User | Do User IAM inline policies adhere to least privilege principles |
+| AWS_IAM_Auditor.py | IAM Group | Do Group IAM inline policies adhere to least privilege principles |
+| AWS_IAM_Auditor.py | IAM Role | Do Role IAM inline policies adhere to least privilege principles |
+| AWS_Keyspaces_Auditor.py | Keyspaces table | Are Keyspaces Tables encrypted with a KMS CMK |
+| AWS_Keyspaces_Auditor.py | Keyspaces table | Do Keyspaces Tables have PTR enabled |
+| AWS_Keyspaces_Auditor.py | Keyspaces table | Are Keyspaces Tables in an unusable state |
+| AWS_KMS_Auditor.py | KMS key | Is key rotation enabled |
+| AWS_KMS_Auditor.py | KMS key | Does the key allow public access |
+| AWS_Lambda_Auditor.py | Lambda function | Has function been used or updated in the last 30 days |
+| AWS_Lambda_Auditor.py | Lambda function | Is tracing enabled |
+| AWS_Lambda_Auditor.py | Lambda function | Is code signing used |
+| AWS_Lambda_Auditor.py | Lambda layer | Is the layer public |
+| AWS_License_Manager_Auditor | License Manager configuration | Do LM configurations enforce a hard limit on license consumption |
+| AWS_License_Manager_Auditor | License Manager configuration | Do LM configurations enforce auto-disassociation |
+| AWS_MemoryDB_Auditor | MemoryDB Cluster | Do clusters use TLS |
+| AWS_MemoryDB_Auditor | MemoryDB Cluster | Do clusters use KMS CMK for encryption at rest |
+| AWS_MemoryDB_Auditor | MemoryDB Cluster | Are clusters configured for auto minor version updates |
+| AWS_MemoryDB_Auditor | MemoryDB Cluster | Are cluster events monitored with SNS |
+| AWS_MemoryDB_Auditor | MemoryDB User | MemDB Admin users should be reviewed |
+| AWS_MemoryDB_Auditor | MemoryDB User | MemDB users should use passwords |
+| AWS_RAM_Auditor.py | RAM Resource Share | Is the resource share status not failed |
+| AWS_RAM_Auditor.py | RAM Resource Share | Does the resource allow external principals |
+| AWS_Secrets_Manager_Auditor.py | Secrets Manager secret | Is the secret over 90 days old |
+| AWS_Secrets_Manager_Auditor.py | Secrets Manager secret | Is secret auto-rotation enabled |
+| AWS_Security_Hub_Auditor.py | Security Hub (Account) | Are there active high or critical findings in Security Hub |
+| AWS_Security_Services_Auditor.py | IAM Access Analyzer (Account) | Is IAM Access Analyzer enabled |
+| AWS_Security_Services_Auditor.py | GuardDuty (Account) | Is GuardDuty enabled |
+| AWS_Security_Services_Auditor.py | Detective (Account) | Is Detective enabled |
+| AWS_Security_Services_Auditor.py | Macie2 | Is Macie enabled |
+| AWS_Security_Services_Auditor.py | AWS WAFv2 (Regional) | Are Regional Web ACLs configured |
+| AWS_Security_Services_Auditor.py | AWS WAFv2 (Global) | Are Global Web ACLs (for CloudFront) configured |
+| AWS_TrustedAdvisor_Auditor.py | Trusted Advisor Check | Is the Trusted Advisor check for MFA on Root Account failing |
+| AWS_TrustedAdvisor_Auditor.py | Trusted Advisor Check | Is the Trusted Advisor check for ELB Listener Security failing |
+| AWS_TrustedAdvisor_Auditor.py | Trusted Advisor Check | Is the Trusted Advisor check for CloudFront SSL Certs in IAM Cert Store failing |
+| AWS_TrustedAdvisor_Auditor.py | Trusted Advisor Check | Is the Trusted Advisor check for CloudFront SSL Cert on Origin Server failing |
+| AWS_TrustedAdvisor_Auditor.py | Trusted Advisor Check | Is the Trusted Advisor check for Exposed Access Keys failing |
+| AWS_WAFv2_Auditor.py | AWS WAFv2 (Regional) | Do Regional WAFs use Cloudwatch Metrics |
+| AWS_WAFv2_Auditor.py | AWS WAFv2 (Regional) | Do Regional WAFs use Request Sampling |
+| AWS_WAFv2_Auditor.py | AWS WAFv2 (Regional) | Do Regional WAFs have Logging enabled |
+| AWS_WAFv2_Auditor.py | AWS WAFv2 (Global) | Do Global WAFs use Cloudwatch Metrics |
+| AWS_WAFv2_Auditor.py | AWS WAFv2 (Global) | Do Global WAFs use Request Sampling |
+| AWS_WAFv2_Auditor.py | AWS WAFv2 (Global) | Do Global WAFs have Logging enabled |
+| Secrets_Auditor.py | CodeBuild project | Do CodeBuild projects have secrets in plaintext env vars |
+| Secrets_Auditor.py | CloudFormation Stack | Do CloudFormation Stacks have secrets in parameters |
+| Secrets_Auditor.py | ECS Task Definition | Do ECS Task Definitions have secrets in env vars |
+| Secrets_Auditor.py | EC2 Instance | Do EC2 instances have secrets in User Data |
+| Shodan_Auditor.py | EC2 Instance | Are EC2 instances w/ public IPs indexed |
+| Shodan_Auditor.py | ELBv2 (ALB) | Are internet-facing ALBs indexed |
+| Shodan_Auditor.py | RDS Instance | Are public accessible RDS instances indexed |
+| Shodan_Auditor.py | OpenSearch domain | Are ES Domains outside a VPC indexed |
+| Shodan_Auditor.py | ELB (CLB) | Are internet-facing CLBs indexed |
+| Shodan_Auditor.py | DMS Replication Instance | Are public accessible DMS instances indexed |
+| Shodan_Auditor.py | Amazon MQ message broker | Are public accessible message brokers indexed |
+| Shodan_Auditor.py | CloudFront Distribution | Are CloudFront distros indexed |
+| Shodan_Auditor.py | Global Accelerator Accelerator | Are Global Accelerator Accelerators indexed |
 
 ## Add-on Modules
 
