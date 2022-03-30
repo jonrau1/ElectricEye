@@ -613,12 +613,8 @@ def secret_scan_ec2_userdata_check(cache: dict, awsAccountId: str, awsRegion: st
                 try:
                     response = ec2.describe_instance_attribute(Attribute="userData",InstanceId=instanceId)
                     idata = response["UserData"]["Value"]
-                except Exception as e:
-                    if str(e) == "'Value'":
-                        continue
-                    else:
-                        print(e)
-                        continue
+                except KeyError:
+                    continue
                 userdata = base64.b64decode(idata)
                 with open(scanFile, 'w') as writejson:
                     json.dump({"value": str(userdata)}, writejson, indent=2, default=str)

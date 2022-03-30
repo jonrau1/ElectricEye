@@ -68,13 +68,15 @@ LABEL \
     maintainer="https://github.com/jonrau1" \
     version="3.1" \
     license="Apache-2.0" \
-    description="ElectricEye continuously monitor your AWS services for configurations that can lead to degradation of confidentiality, integrity or availability. All results will be sent to Security Hub for further aggregation and analysis."
+    description="ElectricEye continuously monitor your AWS services for configurations that can lead to degradation \
+    of confidentiality, integrity or availability. All results will be sent to Security Hub for further aggregation and analysis."
 
 # Create a System Group and User for ElectricEye so we don't run as root
 RUN \
     addgroup -S eeuser && \ 
     adduser -S -G eeuser eeuser && \
     chown eeuser ./eeauditor && \
+    chown eeuser ./eeauditor/* && \
     chgrp eeuser ./eeauditor && \
     chown -R eeuser:eeuser ./eeauditor/* && \
     chown -R eeuser:eeuser ./eeauditor
@@ -86,5 +88,5 @@ USER eeuser
 
 # this would also be a good place to modify the `controller.py` command to output to where you wanted if you didn't want sechub
 CMD \
-    aws s3 cp s3://${SH_SCRIPTS_BUCKET}/ ./eeauditor/auditors --recursive && \
+    aws s3 cp s3://${SH_SCRIPTS_BUCKET}/ ./eeauditor/auditors/aws/ --recursive && \
     python3 eeauditor/controller.py
