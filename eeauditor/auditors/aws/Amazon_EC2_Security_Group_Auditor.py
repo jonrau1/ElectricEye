@@ -27,8 +27,8 @@ from check_register import CheckRegister
 registry = CheckRegister()
 
 # Filename of the SG Auditor config JSON file
-dir_path = os.path.dirname(os.path.realpath(__file__))
-configFile = f"{dir_path}/electriceye_secgroup_auditor_config.json"
+dirPath = os.path.dirname(os.path.realpath(__file__))
+configFile = f"{dirPath}/electriceye_secgroup_auditor_config.json"
 
 ec2 = boto3.client("ec2")
 
