@@ -83,12 +83,7 @@ def ebs_volume_attachment_check(cache: dict, awsAccountId: str, awsRegion: str, 
                             "Type": "AwsEc2Volume",
                             "Id": ebsVolumeArn,
                             "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {
-                                "AwsEc2Volume": {
-                                    "Attachments": ebsAttachments
-                                }
-                            }
+                            "Region": awsRegion
                         }
                     ],
                     "Compliance": {
@@ -135,12 +130,7 @@ def ebs_volume_attachment_check(cache: dict, awsAccountId: str, awsRegion: str, 
                             "Type": "AwsEc2Volume",
                             "Id": ebsVolumeArn,
                             "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {
-                                "AwsEc2Volume": {
-                                    "Attachments": ebsAttachments
-                                }
-                            }
+                            "Region": awsRegion
                         }
                     ],
                     "Compliance": {
@@ -201,12 +191,7 @@ def ebs_volume_delete_on_termination_check(cache: dict, awsAccountId: str, awsRe
                             "Type": "AwsEc2Volume",
                             "Id": ebsVolumeArn,
                             "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {
-                                "AwsEc2Volume": {
-                                    "Attachments": ebsAttachments
-                                }
-                            }
+                            "Region": awsRegion
                         }
                     ],
                     "Compliance": {
@@ -255,12 +240,7 @@ def ebs_volume_delete_on_termination_check(cache: dict, awsAccountId: str, awsRe
                             "Type": "AwsEc2Volume",
                             "Id": ebsVolumeArn,
                             "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {
-                                "AwsEc2Volume": {
-                                    "Attachments": ebsAttachments
-                                }
-                            }
+                            "Region": awsRegion
                         }
                     ],
                     "Compliance": {
