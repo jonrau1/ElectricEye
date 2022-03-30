@@ -49,7 +49,9 @@ def scan_host(host_ip, instance_id):
     try:
         results = nmap.nmap_tcp_scan(
             host_ip,
-            args="-Pn -p 21,22,23,25,80,110,139,445,3389,1433,3306,2049,2375,1521,5432,5601,8182,8080,8089,10250,6379,9092,27017"
+            # FTP, SSH, TelNet, SMTP, HTTP, POP3, NetBIOS, SMB, RDP, MSSQL, MySQL/MariaDB, NFS, Docker, Oracle, PostgreSQL, 
+            # Kibana, VMWare, Proxy, Splunk, K8s, Redis, Kafka, Mongo, Rabbit/AmazonMQ, SparkUI
+            args="-Pn -p 21,22,23,25,80,110,139,445,3389,1433,3306,2049,2375,1521,5432,5601,8182,8080,8089,10250,6379,9092,27017,5672,4040"
         )
 
         print(f"Scanning EC2 instance {instance_id} on {host_ip}")
@@ -98,6 +100,10 @@ def ec2_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
                         serviceName = 'SPLUNKD'
                     elif portNumber == 10250:
                         serviceName = 'KUBERNETES-API'
+                    elif portNumber == 5672:
+                        serviceName = 'RABBITMQ'
+                    elif portNumber == 4040:
+                        serviceName = 'SPARK-WEBUI'
                     else:
                         serviceName = str(p["service"]["name"]).upper()
                     serviceStateReason = str(p["reason"])

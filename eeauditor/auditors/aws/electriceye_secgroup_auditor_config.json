@@ -230,5 +230,21 @@
         "CheckTitle": "[SecurityGroup.30] Security groups should not allow unrestricted access to Spark Web UI (TCP 4040)",
         "CheckId": "security-group-sparkui-open-check",
         "CheckDescriptor": "Spark Web UI (TCP 4040)"
+    },
+    {
+        "ToPort": 110,
+        "FromPort": 110,
+        "Protocol": "tcp",
+        "CheckTitle": "[SecurityGroup.31] Security groups should not allow unrestricted POP3 access",
+        "CheckId": "security-group-pop3-open-check",
+        "CheckDescriptor": "Post Office Protocol 3 (POP3)"
+    },
+    {
+        "ToPort": 8182,
+        "FromPort": 8182,
+        "Protocol": "tcp",
+        "CheckTitle": "[SecurityGroup.32] Security groups should not allow unrestricted VMWare ESXi access",
+        "CheckId": "security-group-vmware-esxi-open-check",
+        "CheckDescriptor": "VMWare ESXi"
     }
 ]
