@@ -46,11 +46,11 @@ def paginate(cache):
 
 def scan_host(host_ip, instance_id):
     # This function carries out the scanning of EC2 instances using TCP without service fingerprinting
-    # runs Top 10 (minus HTTPS) as well as various DB/Cache ports
+    # runs Top 10 (minus HTTPS) as well as various DB/Cache/Docker/K8s/NFS/SIEM ports
     try:
         results = nmap.nmap_tcp_scan(
             host_ip,
-            args="-Pn -p 21,22,23,25,80,110,139,445,3389,1433,3306,1521,5432,8182,8089,6379,9092,27017"
+            args="-Pn -p 21,22,23,25,80,110,139,445,3389,1433,3306,2049,2375,1521,5432,5601,8182,8080,8089,10250,6379,9092,27017"
         )
 
         print(f"Scanning EC2 instance {instance_id} on {host_ip}")

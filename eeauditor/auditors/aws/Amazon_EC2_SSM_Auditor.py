@@ -90,9 +90,7 @@ def ec2_instance_ssm_managed_check(cache: dict, awsAccountId: str, awsRegion: st
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
                 "Title": "[EC2-SSM.1] EC2 Instances should be managed by Systems Manager",
-                "Description": "EC2 Instance "
-                + instanceId
-                + " is not managed by Systems Manager. Refer to the remediation instructions if this configuration is not intended",
+                "Description": f"EC2 Instance {instanceId} is not managed by AWS Systems Manager. Systems Manager enables automated activities such as patching, configuration management, software inventory management and more. Not having instances managed by Systems Manager can degrade the effectiveness of critical security processes. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "To learn how to configure Systems Manager and associated instances refer to the Setting Up AWS Systems Manager section of the AWS Systems Manager User Guide",
@@ -148,9 +146,7 @@ def ec2_instance_ssm_managed_check(cache: dict, awsAccountId: str, awsRegion: st
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[EC2-SSM.1] EC2 Instances should be managed by Systems Manager",
-                "Description": "EC2 Instance "
-                + instanceId
-                + " is managed by Systems Manager.",
+                "Description": f"EC2 Instance {instanceId} is managed by AWS Systems Manager.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "To learn how to configure Systems Manager and associated instances refer to the Setting Up AWS Systems Manager section of the AWS Systems Manager User Guide",
@@ -185,7 +181,7 @@ def ec2_instance_ssm_managed_check(cache: dict, awsAccountId: str, awsRegion: st
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.1.1",
                         "ISO 27001:2013 A.8.1.2",
-                        "ISO 27001:2013 A.12.5.1",
+                        "ISO 27001:2013 A.12.5.1"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -237,12 +233,10 @@ def ssm_instace_agent_update_check(cache: dict, awsAccountId: str, awsRegion: st
                             "FirstObservedAt": iso8601Time,
                             "CreatedAt": iso8601Time,
                             "UpdatedAt": iso8601Time,
-                            "Severity": {"Label": "MEDIUM"},
+                            "Severity": {"Label": "LOW"},
                             "Confidence": 99,
                             "Title": "[EC2-SSM.2] EC2 Linux Instances managed by Systems Manager should have the latest SSM Agent installed",
-                            "Description": "EC2 Instance "
-                            + instanceId
-                            + " does not have the latest SSM Agent installed. Refer to the remediation instructions if this configuration is not intended",
+                            "Description": f"EC2 Instance {instanceId} is a Linux-based platform which does not have the latest SSM Agent installed. Not having the latest SSM Agent can lead to issues with patching, configuration management, inventory management, and/or vulnerability management activities. Refer to the remediation instructions if this configuration is not intended.",
                             "Remediation": {
                                 "Recommendation": {
                                     "Text": "For information on automating updates to the SSM Agent refer to the Automate Updates to SSM Agent section of the AWS Systems Manager User Guide",
@@ -297,10 +291,8 @@ def ssm_instace_agent_update_check(cache: dict, awsAccountId: str, awsRegion: st
                             "UpdatedAt": iso8601Time,
                             "Severity": {"Label": "INFORMATIONAL"},
                             "Confidence": 99,
-                            "Title": "[EC2-SSM.2] EC2 Instances managed by Systems Manager should have the latest SSM Agent installed",
-                            "Description": "EC2 Instance "
-                            + instanceId
-                            + " has the latest SSM Agent installed.",
+                            "Title": "[EC2-SSM.2] EC2 Linux Instances managed by Systems Manager should have the latest SSM Agent installed",
+                            "Description": f"EC2 Instance {instanceId} is a Linux-based platform and has the latest SSM Agent installed.",
                             "Remediation": {
                                 "Recommendation": {
                                     "Text": "For information on automating updates to the SSM Agent refer to the Automate Updates to SSM Agent section of the AWS Systems Manager User Guide",
@@ -388,9 +380,7 @@ def ssm_instance_association_check(cache: dict, awsAccountId: str, awsRegion: st
                         "Severity": {"Label": "LOW"},
                         "Confidence": 99,
                         "Title": "[EC2-SSM.3] EC2 Instances managed by Systems Manager should have a successful Association status",
-                        "Description": "EC2 Instance "
-                        + instanceId
-                        + " does not have a successful Association status. Refer to the remediation instructions if this configuration is not intended",
+                        "Description": f"EC2 Instance {instanceId} has failed its last Systems Manager State Manager Association. Associations are State Manager automation constructs which encapsulate execution of SSM Documents such as Patching, software configuration, and SSM Agent updates onto an instance. A failed Association can represent the failure of a critical process and should be reviewed. Refer to the remediation instructions for more information on working with State Manager Associations.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "For information on Systems Manager Associations refer to the Working with Associations in Systems Manager section of the AWS Systems Manager User Guide",
@@ -446,9 +436,7 @@ def ssm_instance_association_check(cache: dict, awsAccountId: str, awsRegion: st
                         "Severity": {"Label": "INFORMATIONAL"},
                         "Confidence": 99,
                         "Title": "[EC2-SSM.3] EC2 Instances managed by Systems Manager should have a successful Association status",
-                        "Description": "EC2 Instance "
-                        + instanceId
-                        + " has a successful Association status.",
+                        "Description": f"EC2 Instance {instanceId} has passed its last Systems Manager State Manager Association.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "For information on Systems Manager Associations refer to the Working with Associations in Systems Manager section of the AWS Systems Manager User Guide",
