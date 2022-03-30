@@ -28,6 +28,7 @@ registry = CheckRegister()
 # Boto3 clients
 ec2 = boto3.client("ec2")
 elbv2 = boto3.client("elbv2")
+elb = boto3.client("elb")
 # Instantiate a NMAP scanner for TCP scans to define ports
 nmap = nmap3.NmapScanTechniques()
 
@@ -51,6 +52,14 @@ def describe_load_balancers(cache):
     if response:
         return response
     cache["describe_load_balancers"] = elbv2.describe_load_balancers()
+    return cache["describe_load_balancers"]
+
+def describe_clbs(cache):
+    # loop through ELB load balancers
+    response = cache.get("describe_load_balancers")
+    if response:
+        return response
+    cache["describe_load_balancers"] = elb.describe_load_balancers()
     return cache["describe_load_balancers"]
 
 def scan_host(host_ip, instance_id):
