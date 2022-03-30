@@ -92,7 +92,10 @@ def ec2_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
                     # Parse out the Protocol, Port, Service, and State/State Reason from NMAP Results
                     checkIdNumber = str(int(index + 1))
                     portNumber = int(p["portid"])
-                    serviceName = str(p["service"]["name"]).upper()
+                    if portNumber == 8089:
+                        serviceName = 'SPLUNKD'
+                    else:
+                        serviceName = str(p["service"]["name"]).upper()
                     serviceStateReason = str(p["reason"])
                     serviceState = str(p["state"])
                     # This is a failing check
