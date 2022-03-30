@@ -18,10 +18,10 @@
 #specific language governing permissions and limitations
 #under the License.
 
-# latest hash as of 23 MAR 2022 - Alpine 3.15.2
-# https://hub.docker.com/layers/alpine/library/alpine/3.15.2/images/sha256-73c155696fe65b68696e6ea24088693546ac468b3e14542f23f0efbde289cc97?context=explore
+# latest hash as of 29 MAR 2022 - Alpine 3.15.3
+# https://hub.docker.com/layers/alpine/library/alpine/3.15.3/images/sha256-1e014f84205d569a5cc3be4e108ca614055f7e21d11928946113ab3f36054801?context=explore
 # use as builder image to pull in required deps
-FROM alpine@sha256:73c155696fe65b68696e6ea24088693546ac468b3e14542f23f0efbde289cc97 AS builder
+FROM alpine@sha256:1e014f84205d569a5cc3be4e108ca614055f7e21d11928946113ab3f36054801 AS builder
 
 # This hack is widely applied to avoid python printing issues in docker containers.
 # See: https://github.com/Docker-Hub-frolvlad/docker-alpine-python3/pull/13
@@ -33,7 +33,7 @@ COPY ./eeauditor/ ./eeauditor/
 # Installing dependencies
 RUN \
     apk update && \
-    apk add --no-cache python3 postgresql-libs bash && \
+    apk add --no-cache python3 postgresql-libs bash nmap && \
     apk add --no-cache --virtual .build-deps gcc python3-dev musl-dev postgresql-dev && \
     python3 -m ensurepip && \
     pip3 install --no-cache --upgrade pip setuptools wheel && \
