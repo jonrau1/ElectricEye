@@ -420,7 +420,7 @@ def ec2_public_facing_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                                 "ImageId": instanceImage,
                                 "VpcId": vpcId,
                                 "SubnetId": subnetId,
-                                "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
+                                "LaunchedAt": parse(instanceLaunchedAt).isoformat()
                             }
                         },
                     }

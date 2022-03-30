@@ -18,7 +18,6 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import json
 import boto3
 import nmap3
 import datetime
@@ -54,7 +53,6 @@ def scan_host(host_ip, instance_id):
         )
 
         print(f"Scanning EC2 instance {instance_id} on {host_ip}")
-        print(json.dumps(results, indent=4, default=str))
         return results
     except KeyError:
         results = None
@@ -72,7 +70,10 @@ def ec2_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
         instanceImage = str(i["ImageId"])
         subnetId = str(i["SubnetId"])
         vpcId = str(i["VpcId"])
-        
+        try:
+            instanceLaunchedAt = str(i["BlockDeviceMappings"][0]["Ebs"]["AttachTime"])
+        except KeyError:
+            instanceLaunchedAt = str(i["LaunchTime"])
         # If Public DNS or Public IP are empty it means the instance is not public, we can skip this
         try:
             hostIp = i["PublicIpAddress"]
@@ -95,6 +96,8 @@ def ec2_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
                     portNumber = int(p["portid"])
                     if portNumber == 8089:
                         serviceName = 'SPLUNKD'
+                    elif portNumber == 10250:
+                        serviceName = 'KUBERNETES-API'
                     else:
                         serviceName = str(p["service"]["name"]).upper()
                     serviceStateReason = str(p["reason"])
@@ -136,7 +139,8 @@ def ec2_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
                                             "Type": instanceType,
                                             "ImageId": instanceImage,
                                             "VpcId": vpcId,
-                                            "SubnetId": subnetId
+                                            "SubnetId": subnetId,
+                                            "LaunchedAt": parse(instanceLaunchedAt).isoformat()
                                         }
                                     },
                                 }
@@ -198,7 +202,8 @@ def ec2_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
                                             "Type": instanceType,
                                             "ImageId": instanceImage,
                                             "VpcId": vpcId,
-                                            "SubnetId": subnetId
+                                            "SubnetId": subnetId,
+                                            "LaunchedAt": parse(instanceLaunchedAt).isoformat()
                                         }
                                     },
                                 }
