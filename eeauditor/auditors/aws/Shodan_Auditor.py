@@ -44,12 +44,13 @@ try:
     apiKeyParam = os.environ["SHODAN_API_KEY_PARAM"]
     if apiKeyParam == ("placeholder" or "" or None):
         raise ShodanError("No valid Shodan API Key")
+    else:
+        shodanApiKey = ssm.get_parameter(Name=apiKeyParam, WithDecryption=True)["Parameter"]["Value"]
 except KeyError:
     raise
 
 # Shodan information for Requests
 shodanUrl = "https://api.shodan.io/shodan/host/"
-shodanApiKey = ssm.get_parameter(Name=apiKeyParam, WithDecryption=True)["Parameter"]["Value"]
 
 @registry.register_check("shodan")
 def public_ec2_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
