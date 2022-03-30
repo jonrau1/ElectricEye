@@ -1212,7 +1212,7 @@ def elbv2_alb_sg_risk_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                                             "VpcId": elbv2VpcId,
                                             "SecurityGroups": lbSgs
                                         }
-                                    },
+                                    }
                                 }
                             ],
                             "Compliance": {
