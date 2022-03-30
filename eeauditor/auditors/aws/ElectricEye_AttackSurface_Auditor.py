@@ -62,9 +62,8 @@ def describe_clbs(cache):
     cache["describe_load_balancers"] = elb.describe_load_balancers()
     return cache["describe_load_balancers"]
 
-def scan_host(host_ip, instance_id):
-    # This function carries out the scanning of EC2 instances using TCP without service fingerprinting
-    # runs Top 10 (minus HTTPS) as well as various DB/Cache/Docker/K8s/NFS/SIEM ports
+# This function performs the actual NMAP Scan
+def scan_host(host_ip, host_name, asset_type):
     try:
         results = nmap.nmap_tcp_scan(
             host_ip,
@@ -73,7 +72,7 @@ def scan_host(host_ip, instance_id):
             args="-Pn -p 21,22,23,25,80,110,139,445,3389,1433,3306,2049,2375,1521,5432,5601,8182,8080,8089,10250,6379,9092,27017,5672,4040"
         )
 
-        print(f"Scanning EC2 instance {instance_id} on {host_ip}")
+        print(f"Scanning {asset_type} {host_name} on {host_ip}")
         return results
     except KeyError:
         results = None
@@ -103,7 +102,7 @@ def ec2_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
         except KeyError:
             continue
         else:
-            scanner = scan_host(hostIp, instanceId)
+            scanner = scan_host(hostIp, instanceId, "EC2 Instance")
             # NoneType returned on KeyError due to Nmap errors
             if scanner == None:
                 continue
@@ -270,7 +269,7 @@ def elbv2_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, aws
         elbv2VpcId = str(lb["VpcId"])
         elbv2IpAddressType = str(lb["IpAddressType"])
         if (elbv2Scheme == 'internet-facing' and elbv2LbType == 'application'):
-            scanner = scan_host(elbv2DnsName, elbv2Name)
+            scanner = scan_host(elbv2DnsName, elbv2Name, "Application load balancer")
             # NoneType returned on KeyError due to Nmap errors
             if scanner == None:
                 continue
@@ -426,3 +425,339 @@ def elbv2_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, aws
                         yield finding
         else:
             continue
+
+@registry.register_check("elb")
+def elb_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[AttackSurface.ELB.{checkIdNumber}] Classic Load Balancers should not be publicly reachable on {serviceName}"""
+    # ISO Time
+    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+    for lb in describe_clbs(cache)["LoadBalancerDescriptions"]:
+        clbName = str(lb["LoadBalancerName"])
+        clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
+        dnsName = str(lb["DNSName"])
+        lbSgs = lb["SecurityGroups"]
+        lbSubnets = lb["Subnets"]
+        lbAzs = lb["AvailabilityZones"]
+        lbVpc = lb["VPCId"]
+        clbScheme = str(lb["Scheme"])
+        if clbScheme == 'internet-facing':
+            scanner = scan_host(dnsName, clbName)
+            # NoneType returned on KeyError due to Nmap errors
+            if scanner == None:
+                continue
+            else:
+                # Pull out the IP resolution of the DNS Name
+                keys = scanner.keys()
+                hostIp = (list(keys)[0])
+                # Loop the results of the scan - starting with Open Ports which require a combination of
+                # a Public Instance, an open SG rule, and a running service/server on the host itself
+                # use enumerate and a fixed offset to product the Check Title ID number
+                for index, p in enumerate(scanner[hostIp]["ports"]):
+                    # Parse out the Protocol, Port, Service, and State/State Reason from NMAP Results
+                    checkIdNumber = str(int(index + 1))
+                    portNumber = int(p["portid"])
+                    if portNumber == 8089:
+                        serviceName = 'SPLUNKD'
+                    elif portNumber == 10250:
+                        serviceName = 'KUBERNETES-API'
+                    elif portNumber == 5672:
+                        serviceName = 'RABBITMQ'
+                    elif portNumber == 4040:
+                        serviceName = 'SPARK-WEBUI'
+                    else:
+                        serviceName = str(p["service"]["name"]).upper()
+                    serviceStateReason = str(p["reason"])
+                    serviceState = str(p["state"])
+                    # This is a failing check
+                    if serviceState == "open":
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": f"{clbArn}/attack-surface-elb-open-{serviceName}-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": clbArn,
+                            "AwsAccountId": awsAccountId,
+                            "Types": [
+                                "Software and Configuration Checks/AWS Security Best Practices/Network Reachability",
+                                "TTPs/Discovery"
+                            ],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "HIGH"},
+                            "Confidence": 99,
+                            "Title": f"[AttackSurface.ELB.{checkIdNumber}] Classic Load Balancers should not be publicly reachable on {serviceName}",
+                            "Description": f"Classic load balancer {clbName} is publicly reachable on port {portNumber} which corresponds to the {serviceName} service. When Services are successfully fingerprinted by the ElectricEye Attack Surface Management Auditor it means the instance is Public, has an open Secuirty Group rule, and a running service on the host which adversaries can also see. Refer to the remediation insturctions for an example of a way to secure EC2 instances.",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "For more information on ALB security group reccomendations refer to the Security groups for your Application Load Balancer section of the Application Load Balancers User Guide.",
+                                    "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-update-security-groups.html#security-group-recommended-rules"
+                                }
+                            },
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsElbLoadBalancer",
+                                    "Id": clbArn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "AwsElbLoadBalancer": {
+                                            "DnsName": dnsName,
+                                            "Scheme": clbScheme,
+                                            "SecurityGroups": lbSgs,
+                                            "Subnets": lbSubnets,
+                                            "VpcId": lbVpc,
+                                            "AvailabilityZones": lbAzs,
+                                            "LoadBalancerName": clbName
+                                        }
+                                    }
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "FAILED",
+                                "RelatedRequirements": [
+                                    "NIST CSF PR.AC-3",
+                                    "NIST SP 800-53 AC-1",
+                                    "NIST SP 800-53 AC-17",
+                                    "NIST SP 800-53 AC-19",
+                                    "NIST SP 800-53 AC-20",
+                                    "NIST SP 800-53 SC-15",
+                                    "AICPA TSC CC6.6",
+                                    "ISO 27001:2013 A.6.2.1",
+                                    "ISO 27001:2013 A.6.2.2",
+                                    "ISO 27001:2013 A.11.2.6",
+                                    "ISO 27001:2013 A.13.1.1",
+                                    "ISO 27001:2013 A.13.2.1"
+                                ]
+                            },
+                            "Workflow": {"Status": "NEW"},
+                            "RecordState": "ACTIVE"
+                        }
+                        yield finding
+                    else:
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": f"{clbArn}/attack-surface-elb-open-{serviceName}-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": clbArn,
+                            "AwsAccountId": awsAccountId,
+                            "Types": [
+                                "Software and Configuration Checks/AWS Security Best Practices/Network Reachability",
+                                "TTPs/Discovery"
+                            ],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "INFORMATIONAL"},
+                            "Confidence": 99,
+                            "Title": f"[AttackSurface.ELB.{checkIdNumber}] Classic Load Balancers should not be publicly reachable on {serviceName}",
+                            "Description": f"Classic load balancer {clbName} is not publicly reachable on port {portNumber} which corresponds to the {serviceName} service due to {serviceStateReason}. CLBs and their respective Security Groups should still be reviewed for minimum necessary access.",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "For more information on ALB security group reccomendations refer to the Security groups for your Application Load Balancer section of the Application Load Balancers User Guide.",
+                                    "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-update-security-groups.html#security-group-recommended-rules"
+                                }
+                            },
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsElbLoadBalancer",
+                                    "Id": clbArn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "AwsElbLoadBalancer": {
+                                            "DnsName": dnsName,
+                                            "Scheme": clbScheme,
+                                            "SecurityGroups": lbSgs,
+                                            "Subnets": lbSubnets,
+                                            "VpcId": lbVpc,
+                                            "AvailabilityZones": lbAzs,
+                                            "LoadBalancerName": clbName
+                                        }
+                                    }
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "PASSED",
+                                "RelatedRequirements": [
+                                    "NIST CSF PR.AC-3",
+                                    "NIST SP 800-53 AC-1",
+                                    "NIST SP 800-53 AC-17",
+                                    "NIST SP 800-53 AC-19",
+                                    "NIST SP 800-53 AC-20",
+                                    "NIST SP 800-53 SC-15",
+                                    "AICPA TSC CC6.6",
+                                    "ISO 27001:2013 A.6.2.1",
+                                    "ISO 27001:2013 A.6.2.2",
+                                    "ISO 27001:2013 A.11.2.6",
+                                    "ISO 27001:2013 A.13.1.1",
+                                    "ISO 27001:2013 A.13.2.1"
+                                ]
+                            },
+                            "Workflow": {"Status": "RESOLVED"},
+                            "RecordState": "ARCHIVED"
+                        }
+                        yield finding
+        else:
+            continue
+
+@registry.register_check("ec2")
+def eip_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[AttackSurface.EIP.{checkIdNumber}] Elastic IPs should not advertise publicly reachable {serviceName} services"""
+    # ISO Time
+    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+    # Gather all EIPs
+    for x in ec2.describe_addresses()["Addresses"]:
+        publicIp = x["PublicIp"]
+        allocationId = x["AllocationId"]
+        eipArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:eip-allocation/{allocationId}"
+        privateIpAddress = x["PrivateIpAddress"]
+        # Logic time
+        scanner = scan_host(publicIp, allocationId, "Elastic IP")
+        # NoneType returned on KeyError due to Nmap errors
+        if scanner == None:
+            continue
+        else:
+            # Loop the results of the scan - starting with Open Ports which require a combination of
+            # a Public Instance, an open SG rule, and a running service/server on the host itself
+            # use enumerate and a fixed offset to product the Check Title ID number
+            for index, p in enumerate(scanner[publicIp]["ports"]):
+                # Parse out the Protocol, Port, Service, and State/State Reason from NMAP Results
+                checkIdNumber = str(int(index + 1))
+                portNumber = int(p["portid"])
+                if portNumber == 8089:
+                    serviceName = 'SPLUNKD'
+                elif portNumber == 10250:
+                    serviceName = 'KUBERNETES-API'
+                elif portNumber == 5672:
+                    serviceName = 'RABBITMQ'
+                elif portNumber == 4040:
+                    serviceName = 'SPARK-WEBUI'
+                else:
+                    serviceName = str(p["service"]["name"]).upper()
+                serviceStateReason = str(p["reason"])
+                serviceState = str(p["state"])
+                # This is a failing check
+                if serviceState == "open":
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": f"{eipArn}/attack-surface-eip-open-{serviceName}-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": eipArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": [
+                            "Software and Configuration Checks/AWS Security Best Practices/Network Reachability",
+                            "TTPs/Discovery"
+                        ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "HIGH"},
+                        "Confidence": 99,
+                        "Title": f"[AttackSurface.EIP.{checkIdNumber}] Elastic IPs should not advertise publicly reachable {serviceName} services",
+                        "Description": f"Elastic IP address {publicIp} is publicly reachable on port {portNumber} which corresponds to the {serviceName} service. When Services are successfully fingerprinted by the ElectricEye Attack Surface Management Auditor it means the instance is Public, has an open Secuirty Group rule, and a running service on the host which adversaries can also see. Refer to the remediation insturctions for an example of a way to secure EC2 instances.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "EC2 Instances should only have the minimum necessary ports open to achieve their purposes, allow traffic from authorized sources, and use other defense-in-depth and hardening strategies. For a basic view on traffic authorization into your instances refer to the Authorize inbound traffic for your Linux instances section of the Amazon Elastic Compute Cloud User Guide",
+                                "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/authorizing-access-to-an-instance.html"
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsEc2Eip",
+                                "Id": eipArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsEc2Eip": {
+                                        "PublicIp": publicIp,
+                                        "AllocationId": allocationId,
+                                        "PrivateIpAddress": privateIpAddress
+                                    }
+                                }
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "FAILED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-3",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-17",
+                                "NIST SP 800-53 AC-19",
+                                "NIST SP 800-53 AC-20",
+                                "NIST SP 800-53 SC-15",
+                                "AICPA TSC CC6.6",
+                                "ISO 27001:2013 A.6.2.1",
+                                "ISO 27001:2013 A.6.2.2",
+                                "ISO 27001:2013 A.11.2.6",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1"
+                            ]
+                        },
+                        "Workflow": {"Status": "NEW"},
+                        "RecordState": "ACTIVE"
+                    }
+                    yield finding
+                else:
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": f"{eipArn}/attack-surface-eip-open-{serviceName}-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": eipArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": [
+                            "Software and Configuration Checks/AWS Security Best Practices/Network Reachability",
+                            "TTPs/Discovery"
+                        ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "INFORMATIONAL"},
+                        "Confidence": 99,
+                        "Title": f"[AttackSurface.EIP.{checkIdNumber}] Elastic IPs should not advertise publicly reachable {serviceName} services",
+                        "Description": f"Elastic IP address {publicIp} is publicly reachable on port {portNumber} which corresponds to the {serviceName} service due to {serviceStateReason}. EIPs and their respective Security Groups should still be reviewed for minimum necessary access.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "EC2 Instances should only have the minimum necessary ports open to achieve their purposes, allow traffic from authorized sources, and use other defense-in-depth and hardening strategies. For a basic view on traffic authorization into your instances refer to the Authorize inbound traffic for your Linux instances section of the Amazon Elastic Compute Cloud User Guide",
+                                "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/authorizing-access-to-an-instance.html"
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsEc2Eip",
+                                "Id": eipArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsEc2Eip": {
+                                        "PublicIp": publicIp,
+                                        "AllocationId": allocationId,
+                                        "PrivateIpAddress": privateIpAddress
+                                    }
+                                }
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "PASSED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-3",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-17",
+                                "NIST SP 800-53 AC-19",
+                                "NIST SP 800-53 AC-20",
+                                "NIST SP 800-53 SC-15",
+                                "AICPA TSC CC6.6",
+                                "ISO 27001:2013 A.6.2.1",
+                                "ISO 27001:2013 A.6.2.2",
+                                "ISO 27001:2013 A.11.2.6",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1"
+                            ]
+                        },
+                        "Workflow": {"Status": "RESOLVED"},
+                        "RecordState": "ARCHIVED"
+                    }
+                    yield finding
