@@ -42,8 +42,8 @@ def secret_scan_codebuild_envvar_check(cache: dict, awsAccountId: str, awsRegion
     """[Secrets.CodeBuild.1] CodeBuild Project environment variables should not have secrets stored in Plaintext"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # setup some reusable variables
-    scanFile = "./codebuild-data-sample.json"
-    resultsFile = "./codebuild-scan-result.json"
+    scanFile = "/eeauditor/auditors/aws/codebuild-data-sample.json"
+    resultsFile = "/eeauditor/auditors/aws/codebuild-scan-result.json"
     scanCommand = f"detect-secrets scan {scanFile} > {resultsFile}"
     # Collect all CodeBuild Projects and send to the Batch API
     cbList = []
@@ -222,8 +222,8 @@ def secret_scan_cloudformation_parameters_check(cache: dict, awsAccountId: str, 
     """[Secrets.CloudFormation.1] CloudFormation Stack parameters should not have secrets stored in Plaintext"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # setup some reusable variables
-    scanFile = "./cloudformation-data-sample.json"
-    resultsFile = "./cloudformation-scan-result.json"
+    scanFile = "/eeauditor/auditors/aws/cloudformation-data-sample.json"
+    resultsFile = "/eeauditor/auditors/aws/cloudformation-scan-result.json"
     scanCommand = f"detect-secrets scan {scanFile} > {resultsFile}"
     # Paginate through all CFN Stacks
     stackList = []
@@ -408,8 +408,8 @@ def secret_scan_ecs_task_def_envvar_check(cache: dict, awsAccountId: str, awsReg
     """[Secrets.ECS.1] ECS Task Definition environment variables should not have secrets stored in Plaintext"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # setup some reusable variables
-    scanFile = "./ecs-data-sample.json"
-    resultsFile = "./ecs-scan-result.json"
+    scanFile = "/eeauditor/auditors/aws/ecs-data-sample.json"
+    resultsFile = "/eeauditor/auditors/aws/ecs-scan-result.json"
     scanCommand = f"detect-secrets scan {scanFile} > {resultsFile}"
     # Paginate through all Active ECS Task Defs
     taskList = []
@@ -595,8 +595,8 @@ def secret_scan_ec2_userdata_check(cache: dict, awsAccountId: str, awsRegion: st
     """[Secrets.EC2.1] EC2 User Data should not have secrets stored in Plaintext"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # setup some reusable variables
-    scanFile = "./ec2-data-sample.json"
-    resultsFile = "./ec2-scan-result.json"
+    scanFile = "/eeauditor/auditors/aws/ec2-data-sample.json"
+    resultsFile = "/eeauditor/auditors/aws/ec2-scan-result.json"
     scanCommand = f"detect-secrets scan {scanFile} > {resultsFile}"
     # Paginate through Running and Stopped EC2 Instances
     paginator = ec2.get_paginator("describe_instances")

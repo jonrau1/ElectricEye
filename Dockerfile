@@ -29,7 +29,7 @@ ENV PYTHONUNBUFFERED=1
 
 COPY requirements.txt /tmp/requirements.txt
 # NOTE: This will copy all application files and auditors to the container
-COPY ./eeauditor/ ./eeauditor/
+COPY ./eeauditor/ /eeauditor/
 # Installing dependencies
 RUN \
     apk update && \
@@ -75,11 +75,11 @@ LABEL \
 RUN \
     addgroup -S eeuser && \ 
     adduser -S -G eeuser eeuser && \
-    chown eeuser ./eeauditor && \
-    chown eeuser ./eeauditor/* && \
-    chgrp eeuser ./eeauditor && \
-    chown -R eeuser:eeuser ./eeauditor/* && \
-    chown -R eeuser:eeuser ./eeauditor
+    chown eeuser /eeauditor && \
+    chown eeuser /eeauditor/* && \
+    chgrp eeuser /eeauditor && \
+    chown -R eeuser:eeuser /eeauditor/* && \
+    chown -R eeuser:eeuser /eeauditor
 
 USER eeuser
 # Upon startup we will run all checks and auditors - we grab the latest from S3
@@ -88,5 +88,5 @@ USER eeuser
 
 # this would also be a good place to modify the `controller.py` command to output to where you wanted if you didn't want sechub
 CMD \
-    aws s3 cp s3://${SH_SCRIPTS_BUCKET}/ ./eeauditor/auditors/aws/ --recursive && \
+    aws s3 cp s3://${SH_SCRIPTS_BUCKET}/ /eeauditor/auditors/aws/ --recursive && \
     python3 eeauditor/controller.py
