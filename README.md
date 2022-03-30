@@ -489,7 +489,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 
 ## Supported Services and Checks
 
-These are the following services and checks perform by each Auditor. There are currently **397** checks supported across **89** AWS services / components using **70** Auditors. 
+These are the following services and checks perform by each Auditor. There are currently **447** checks supported across **90** AWS services / components using **70** Auditors. 
 
 There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
@@ -885,6 +885,56 @@ There are currently **62** supported response and remediation Playbooks with cov
 | ElectricEye_AttackSurface_Auditor.py | Application load balancer | Is a MongoDB/DocDB service publicly accessible |
 | ElectricEye_AttackSurface_Auditor.py | Application load balancer | Is a Rabbit/AmazonMQ service publicly accessible |
 | ElectricEye_AttackSurface_Auditor.py | Application load balancer | Is a SparkUI service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a FTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a SSH service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a Telnet service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a SMTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a HTTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a POP3 service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a Win NetBIOS service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a SMB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a RDP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a MSSQL service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a MySQL/MariaDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a NFS service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a Docker API service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a OracleDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a PostgreSQL service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a Kibana service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a VMWARE ESXi service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a HTTP Proxy service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a SplunkD service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a Kubernetes API Server service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a Redis service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a Kafka service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a MongoDB/DocDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a Rabbit/AmazonMQ service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a SparkUI service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a FTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a SSH service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a Telnet service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a SMTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a HTTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a POP3 service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a Win NetBIOS service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a SMB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a RDP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a MSSQL service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a MySQL/MariaDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a NFS service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a Docker API service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a OracleDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a PostgreSQL service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a Kibana service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a VMWARE ESXi service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a HTTP Proxy service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a SplunkD service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a Kubernetes API Server service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a Redis service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a Kafka service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a MongoDB/DocDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a Rabbit/AmazonMQ service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a SparkUI service publicly accessible |
 | Secrets_Auditor.py | CodeBuild project | Do CodeBuild projects have secrets in plaintext env vars |
 | Secrets_Auditor.py | CloudFormation Stack | Do CloudFormation Stacks have secrets in parameters |
 | Secrets_Auditor.py | ECS Task Definition | Do ECS Task Definitions have secrets in env vars |
