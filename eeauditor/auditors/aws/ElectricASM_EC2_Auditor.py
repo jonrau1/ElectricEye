@@ -260,7 +260,8 @@ def elbv2_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, aws
         elbv2Scheme = str(lb["Scheme"])
         elbv2VpcId = str(lb["VpcId"])
         elbv2IpAddressType = str(lb["IpAddressType"])
-        if (elbv2Scheme == 'internet-facing' and elbv2LbType == 'application'):
+        #if (elbv2Scheme == 'internet-facing' and elbv2LbType == 'application'):
+        if elbv2LbType == 'application':
             scanner = scan_host(elbv2DnsName, elbv2Name)
             # NoneType returned on KeyError due to Nmap errors
             if scanner == None:
