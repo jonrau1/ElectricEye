@@ -43,9 +43,8 @@ except KeyError:
     apiKeyParam = "placeholder"
 
 if apiKeyParam == ("placeholder" or "" or None):
-    raise
+    raise "No valid Shodan API Key"
 else:
-
     # Shodan information for Requests
     shodanUrl = "https://api.shodan.io/shodan/host/"
     shodanApiKey = ssm.get_parameter(Name=apiKeyParam, WithDecryption=True)["Parameter"]["Value"]
