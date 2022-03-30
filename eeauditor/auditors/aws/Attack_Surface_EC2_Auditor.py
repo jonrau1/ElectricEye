@@ -54,6 +54,7 @@ def scan_host(host_ip, instance_id):
         )
 
         print(f"Scanning EC2 instance {instance_id} on {host_ip}")
+        print(json.dumps(results, indent=4, default=str))
         return results
     except KeyError:
         results = None
