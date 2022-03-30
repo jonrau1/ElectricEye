@@ -25,11 +25,13 @@ from check_register import CheckRegister
 from dateutil.parser import parse
 
 registry = CheckRegister()
-
+# Boto3 clients
 ec2 = boto3.client("ec2")
+elbv2 = boto3.client("elbv2")
+# Instantiate a NMAP scanner for TCP scans to define ports
 nmap = nmap3.NmapScanTechniques()
 
-def paginate(cache):
+def ec2_paginate(cache):
     instanceList = []
     response = cache.get("instances")
     if response:
@@ -42,6 +44,14 @@ def paginate(cache):
                     instanceList.append(i)
         cache["instances"] = instanceList
         return cache["instances"]
+
+def describe_load_balancers(cache):
+    # loop through ELBv2 load balancers
+    response = cache.get("describe_load_balancers")
+    if response:
+        return response
+    cache["describe_load_balancers"] = elbv2.describe_load_balancers()
+    return cache["describe_load_balancers"]
 
 def scan_host(host_ip, instance_id):
     # This function carries out the scanning of EC2 instances using TCP without service fingerprinting
@@ -61,11 +71,11 @@ def scan_host(host_ip, instance_id):
 
 @registry.register_check("ec2")
 def ec2_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[AttackSurface.EC2.{checkIdNumber}] EC2 Instances should not have a publicly reachable {serviceName} service"""
+    """[AttackSurface.EC2.{checkIdNumber}] EC2 Instances should not be publicly reachable on {serviceName}"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # Paginate the iterator object from Cache
-    for i in paginate(cache=cache):
+    for i in ec2_paginate(cache=cache):
         instanceId = str(i["InstanceId"])
         instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
         instanceType = str(i["InstanceType"])
@@ -235,3 +245,175 @@ def ec2_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
                             "RecordState": "ARCHIVED"
                         }
                         yield finding
+
+@registry.register_check("elbv2")
+def elbv2_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[AttackSurface.ELBv2.{checkIdNumber}] Application Load Balancers should not be publicly reachable on {serviceName}"""
+    # ISO Time
+    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+    # Loop ELBs and select the public ALBs
+    for lb in describe_load_balancers(cache)["LoadBalancers"]:
+        elbv2Arn = str(lb["LoadBalancerArn"])
+        elbv2Name = str(lb["LoadBalancerName"])
+        elbv2DnsName = str(lb["DNSName"])
+        elbv2LbType = str(lb["Type"])
+        elbv2Scheme = str(lb["Scheme"])
+        elbv2VpcId = str(lb["VpcId"])
+        elbv2IpAddressType = str(lb["IpAddressType"])
+        if (elbv2Scheme == 'internet-facing' and elbv2LbType == 'application'):
+            scanner = scan_host(elbv2DnsName, elbv2Name)
+            # NoneType returned on KeyError due to Nmap errors
+            if scanner == None:
+                continue
+            else:
+                # Pull out the IP resolution of the DNS Name
+                keys = scanner.keys()
+                hostIp = (list(keys)[0])
+                # Loop the results of the scan - starting with Open Ports which require a combination of
+                # a Public Instance, an open SG rule, and a running service/server on the host itself
+                # use enumerate and a fixed offset to product the Check Title ID number
+                for index, p in enumerate(scanner[hostIp]["ports"]):
+                    # Parse out the Protocol, Port, Service, and State/State Reason from NMAP Results
+                    checkIdNumber = str(int(index + 1))
+                    portNumber = int(p["portid"])
+                    if portNumber == 8089:
+                        serviceName = 'SPLUNKD'
+                    elif portNumber == 10250:
+                        serviceName = 'KUBERNETES-API'
+                    elif portNumber == 5672:
+                        serviceName = 'RABBITMQ'
+                    elif portNumber == 4040:
+                        serviceName = 'SPARK-WEBUI'
+                    else:
+                        serviceName = str(p["service"]["name"]).upper()
+                    serviceStateReason = str(p["reason"])
+                    serviceState = str(p["state"])
+                    # This is a failing check
+                    if serviceState == "open":
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": f"{elbv2Arn}/attack-surface-elbv2-open-{serviceName}-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": elbv2Arn,
+                            "AwsAccountId": awsAccountId,
+                            "Types": [
+                                "Software and Configuration Checks/AWS Security Best Practices/Network Reachability",
+                                "TTPs/Discovery"
+                            ],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "HIGH"},
+                            "Confidence": 99,
+                            "Title": f"[AttackSurface.ELBv2.{checkIdNumber}] Application Load Balancers should not be publicly reachable on {serviceName}",
+                            "Description": f"Application load balancer {elbv2Name} is publicly reachable on port {portNumber} which corresponds to the {serviceName} service. When Services are successfully fingerprinted by the ElectricEye Attack Surface Management Auditor it means the instance is Public, has an open Secuirty Group rule, and a running service on the host which adversaries can also see. Refer to the remediation insturctions for an example of a way to secure EC2 instances.",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "For more information on ALB security group reccomendations refer to the Security groups for your Application Load Balancer section of the Application Load Balancers User Guide.",
+                                    "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-update-security-groups.html#security-group-recommended-rules"
+                                }
+                            },
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsElbv2LoadBalancer",
+                                    "Id": elbv2Arn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "AwsElbv2LoadBalancer": {
+                                            "DNSName": elbv2DnsName,
+                                            "IpAddressType": elbv2IpAddressType,
+                                            "Scheme": elbv2Scheme,
+                                            "Type": elbv2LbType,
+                                            "VpcId": elbv2VpcId
+                                        }
+                                    }
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "FAILED",
+                                "RelatedRequirements": [
+                                    "NIST CSF PR.AC-3",
+                                    "NIST SP 800-53 AC-1",
+                                    "NIST SP 800-53 AC-17",
+                                    "NIST SP 800-53 AC-19",
+                                    "NIST SP 800-53 AC-20",
+                                    "NIST SP 800-53 SC-15",
+                                    "AICPA TSC CC6.6",
+                                    "ISO 27001:2013 A.6.2.1",
+                                    "ISO 27001:2013 A.6.2.2",
+                                    "ISO 27001:2013 A.11.2.6",
+                                    "ISO 27001:2013 A.13.1.1",
+                                    "ISO 27001:2013 A.13.2.1"
+                                ]
+                            },
+                            "Workflow": {"Status": "NEW"},
+                            "RecordState": "ACTIVE"
+                        }
+                        yield finding
+                    else:
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": f"{elbv2Arn}/attack-surface-elbv2-open-{serviceName}-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": elbv2Arn,
+                            "AwsAccountId": awsAccountId,
+                            "Types": [
+                                "Software and Configuration Checks/AWS Security Best Practices/Network Reachability",
+                                "TTPs/Discovery"
+                            ],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "INFORMATIONAL"},
+                            "Confidence": 99,
+                            "Title": f"[AttackSurface.ELBv2.{checkIdNumber}] Application Load Balancers should not be publicly reachable on {serviceName}",
+                            "Description": f"Application load balancer {elbv2Name} is not publicly reachable on port {portNumber} which corresponds to the {serviceName} service due to {serviceStateReason}. ALBs and their respective Security Groups should still be reviewed for minimum necessary access.",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "For more information on ALB security group reccomendations refer to the Security groups for your Application Load Balancer section of the Application Load Balancers User Guide.",
+                                    "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-update-security-groups.html#security-group-recommended-rules"
+                                }
+                            },
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsElbv2LoadBalancer",
+                                    "Id": elbv2Arn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "AwsElbv2LoadBalancer": {
+                                            "DNSName": elbv2DnsName,
+                                            "IpAddressType": elbv2IpAddressType,
+                                            "Scheme": elbv2Scheme,
+                                            "Type": elbv2LbType,
+                                            "VpcId": elbv2VpcId
+                                        }
+                                    }
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "PASSED",
+                                "RelatedRequirements": [
+                                    "NIST CSF PR.AC-3",
+                                    "NIST SP 800-53 AC-1",
+                                    "NIST SP 800-53 AC-17",
+                                    "NIST SP 800-53 AC-19",
+                                    "NIST SP 800-53 AC-20",
+                                    "NIST SP 800-53 SC-15",
+                                    "AICPA TSC CC6.6",
+                                    "ISO 27001:2013 A.6.2.1",
+                                    "ISO 27001:2013 A.6.2.2",
+                                    "ISO 27001:2013 A.11.2.6",
+                                    "ISO 27001:2013 A.13.1.1",
+                                    "ISO 27001:2013 A.13.2.1"
+                                ]
+                            },
+                            "Workflow": {"Status": "RESOLVED"},
+                            "RecordState": "ARCHIVED"
+                        }
+                        yield finding
+        else:
+            continue
