@@ -27,8 +27,8 @@ from check_register import CheckRegister
 registry = CheckRegister()
 
 # Filename of the SG Auditor config JSON file
-dir_path = os.path.dirname(os.path.realpath(__file__))
-configFile = f"{dir_path}/electriceye_secgroup_auditor_config.json"
+dirPath = os.path.dirname(os.path.realpath(__file__))
+configFile = f"{dirPath}/electriceye_secgroup_auditor_config.json"
 
 ec2 = boto3.client("ec2")
 
@@ -171,8 +171,8 @@ def security_group_all_open_check(cache: dict, awsAccountId: str, awsRegion: str
                                 "ISO 27001:2013 A.6.2.2",
                                 "ISO 27001:2013 A.11.2.6",
                                 "ISO 27001:2013 A.13.1.1",
-                                "ISO 27001:2013 A.13.2.1",
-                            ],
+                                "ISO 27001:2013 A.13.2.1"
+                            ]
                         },
                         "Workflow": {"Status": "RESOLVED"},
                         "RecordState": "ARCHIVED",
@@ -283,8 +283,8 @@ def security_group_master_auditor_check(cache: dict, awsAccountId: str, awsRegio
                                         "ISO 27001:2013 A.6.2.2",
                                         "ISO 27001:2013 A.11.2.6",
                                         "ISO 27001:2013 A.13.1.1",
-                                        "ISO 27001:2013 A.13.2.1",
-                                    ],
+                                        "ISO 27001:2013 A.13.2.1"
+                                    ]
                                 },
                                 "Workflow": {"Status": "NEW"},
                                 "RecordState": "ACTIVE"
@@ -348,8 +348,8 @@ def security_group_master_auditor_check(cache: dict, awsAccountId: str, awsRegio
                                         "ISO 27001:2013 A.6.2.2",
                                         "ISO 27001:2013 A.11.2.6",
                                         "ISO 27001:2013 A.13.1.1",
-                                        "ISO 27001:2013 A.13.2.1",
-                                    ],
+                                        "ISO 27001:2013 A.13.2.1"
+                                    ]
                                 },
                                 "Workflow": {"Status": "RESOLVED"},
                                 "RecordState": "ARCHIVED"

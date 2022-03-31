@@ -35,7 +35,6 @@ def describe_volumes(cache):
     cache["describe_volumes"] = ec2.describe_volumes(DryRun=False, MaxResults=500)
     return cache["describe_volumes"]
 
-
 # loop through EBS snapshots
 def describe_snapshots(cache, awsAccountId):
     response = cache.get("describe_snapshots")
@@ -47,18 +46,14 @@ def describe_snapshots(cache, awsAccountId):
 @registry.register_check("ec2")
 def ebs_volume_attachment_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EBS.1] EBS Volumes should be in an attached state"""
-    response = describe_volumes(cache)
-    myEbsVolumes = response["Volumes"]
-    for volumes in myEbsVolumes:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for volumes in describe_volumes(cache)["Volumes"]:
         ebsVolumeId = str(volumes["VolumeId"])
         ebsVolumeArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}/{ebsVolumeId}"
         ebsAttachments = volumes["Attachments"]
         for attachments in ebsAttachments:
-            ebsAttachmentState = str(attachments["State"])
-            # ISO Time
-            iso8601Time = (
-                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-            )
+            ebsAttachmentState = str(attachments["State"])    
             if ebsAttachmentState != "attached":
                 finding = {
                     "SchemaVersion": "2018-10-08",
@@ -88,8 +83,7 @@ def ebs_volume_attachment_check(cache: dict, awsAccountId: str, awsRegion: str, 
                             "Type": "AwsEc2Volume",
                             "Id": ebsVolumeArn,
                             "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {"Other": {"volumeId": ebsVolumeId}},
+                            "Region": awsRegion
                         }
                     ],
                     "Compliance": {
@@ -136,8 +130,7 @@ def ebs_volume_attachment_check(cache: dict, awsAccountId: str, awsRegion: str, 
                             "Type": "AwsEc2Volume",
                             "Id": ebsVolumeArn,
                             "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {"Other": {"volumeId": ebsVolumeId}},
+                            "Region": awsRegion
                         }
                     ],
                     "Compliance": {
@@ -150,29 +143,25 @@ def ebs_volume_attachment_check(cache: dict, awsAccountId: str, awsRegion: str, 
                             "AICPA TSC CC6.1",
                             "ISO 27001:2013 A.8.1.1",
                             "ISO 27001:2013 A.8.1.2",
-                            "ISO 27001:2013 A.12.5.1",
-                        ],
+                            "ISO 27001:2013 A.12.5.1"
+                        ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED",
+                    "RecordState": "ARCHIVED"
                 }
                 yield finding
 
 @registry.register_check("ec2")
 def ebs_volume_delete_on_termination_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EBS.2] EBS Volumes should be configured to be deleted on termination"""
-    response = describe_volumes(cache)
-    myEbsVolumes = response["Volumes"]
-    for volumes in myEbsVolumes:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for volumes in describe_volumes(cache)["Volumes"]:
         ebsVolumeId = str(volumes["VolumeId"])
         ebsVolumeArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}/{ebsVolumeId}"
         ebsAttachments = volumes["Attachments"]
         for attachments in ebsAttachments:
             ebsDeleteOnTerminationCheck = str(attachments["DeleteOnTermination"])
-            # ISO Time
-            iso8601Time = (
-                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-            )
             if ebsDeleteOnTerminationCheck == "False":
                 finding = {
                     "SchemaVersion": "2018-10-08",
@@ -202,8 +191,7 @@ def ebs_volume_delete_on_termination_check(cache: dict, awsAccountId: str, awsRe
                             "Type": "AwsEc2Volume",
                             "Id": ebsVolumeArn,
                             "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {"Other": {"volumeId": ebsVolumeId}},
+                            "Region": awsRegion
                         }
                     ],
                     "Compliance": {
@@ -252,8 +240,7 @@ def ebs_volume_delete_on_termination_check(cache: dict, awsAccountId: str, awsRe
                             "Type": "AwsEc2Volume",
                             "Id": ebsVolumeArn,
                             "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {"Other": {"volumeId": ebsVolumeId}},
+                            "Region": awsRegion
                         }
                     ],
                     "Compliance": {
@@ -277,14 +264,12 @@ def ebs_volume_delete_on_termination_check(cache: dict, awsAccountId: str, awsRe
 @registry.register_check("ec2")
 def ebs_volume_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EBS.3] EBS Volumes should be encrypted"""
-    response = describe_volumes(cache)
-    myEbsVolumes = response["Volumes"]
-    for volumes in myEbsVolumes:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for volumes in describe_volumes(cache)["Volumes"]:
         ebsVolumeId = str(volumes["VolumeId"])
         ebsVolumeArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}/{ebsVolumeId}"
         ebsEncryptionCheck = str(volumes["Encrypted"])
-        # ISO Time
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if ebsEncryptionCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -294,7 +279,7 @@ def ebs_volume_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, 
                 "AwsAccountId": awsAccountId,
                 "Types": [
                     "Software and Configuration Checks/AWS Security Best Practices",
-                    "Effects/Data Exposure",
+                    "Effects/Data Exposure"
                 ],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
@@ -318,7 +303,11 @@ def ebs_volume_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, 
                         "Id": ebsVolumeArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"volumeId": ebsVolumeId}},
+                        "Details": {
+                            "AwsEc2Volume": {
+                                "Encrypted": False
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -345,7 +334,7 @@ def ebs_volume_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, 
                 "AwsAccountId": awsAccountId,
                 "Types": [
                     "Software and Configuration Checks/AWS Security Best Practices",
-                    "Effects/Data Exposure",
+                    "Effects/Data Exposure"
                 ],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
@@ -353,7 +342,7 @@ def ebs_volume_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, 
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[EBS.3] EBS Volumes should be encrypted",
-                "Description": "EBS Volume " + ebsVolumeId + " is encrypted.",
+                "Description": f"EBS Volume {ebsVolumeId} is encrypted.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your EBS volume should be encrypted refer to the Amazon EBS Encryption section of the Amazon Elastic Compute Cloud User Guide",
@@ -367,7 +356,11 @@ def ebs_volume_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, 
                         "Id": ebsVolumeArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"volumeId": ebsVolumeId}},
+                        "Details": {
+                            "AwsEc2Volume": {
+                                "Encrypted": True
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -389,14 +382,12 @@ def ebs_volume_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, 
 @registry.register_check("ec2")
 def ebs_snapshot_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EBS.4] EBS Snapshots should be encrypted"""
-    response = describe_snapshots(cache, awsAccountId)
-    myEbsSnapshots = response["Snapshots"]
-    for snapshots in myEbsSnapshots:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for snapshots in describe_snapshots(cache, awsAccountId)["Snapshots"]:
         snapshotId = str(snapshots["SnapshotId"])
         snapshotArn = f"arn:{awsPartition}:ec2:{awsRegion}::snapshot/{snapshotId}"
         snapshotEncryptionCheck = str(snapshots["Encrypted"])
-        # ISO Time
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if snapshotEncryptionCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -430,7 +421,12 @@ def ebs_snapshot_encryption_check(cache: dict, awsAccountId: str, awsRegion: str
                         "Id": snapshotArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"snapshotId": snapshotId}},
+                        "Details": {
+                            "AwsEc2Volume": {
+                                "Encrypted": False,
+                                "SnapshotId": snapshotId
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -465,7 +461,7 @@ def ebs_snapshot_encryption_check(cache: dict, awsAccountId: str, awsRegion: str
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[EBS.4] EBS Snapshots should be encrypted",
-                "Description": "EBS Snapshot " + snapshotId + " is encrypted.",
+                "Description": f"EBS Snapshot {snapshotId} is encrypted.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your EBS snapshot should be encrypted refer to the Encryption Support for Snapshots section of the Amazon Elastic Compute Cloud User Guide",
@@ -479,7 +475,12 @@ def ebs_snapshot_encryption_check(cache: dict, awsAccountId: str, awsRegion: str
                         "Id": snapshotArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"snapshotId": snapshotId}},
+                        "Details": {
+                            "AwsEc2Volume": {
+                                "Encrypted": True,
+                                "SnapshotId": snapshotId
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -501,16 +502,14 @@ def ebs_snapshot_encryption_check(cache: dict, awsAccountId: str, awsRegion: str
 @registry.register_check("ec2")
 def ebs_snapshot_public_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EBS.5] EBS Snapshots should not be public"""
-    response = describe_snapshots(cache, awsAccountId)
-    myEbsSnapshots = response["Snapshots"]
-    for snapshots in myEbsSnapshots:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for snapshots in describe_snapshots(cache, awsAccountId)["Snapshots"]:
         snapshotId = str(snapshots["SnapshotId"])
         snapshotArn = f"arn:{awsPartition}:ec2:{awsRegion}::snapshot/{snapshotId}"
         response = ec2.describe_snapshot_attribute(
             Attribute="createVolumePermission", SnapshotId=snapshotId, DryRun=False
         )
-        # ISO Time
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if str(response["CreateVolumePermissions"]) == "[]":
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -542,7 +541,11 @@ def ebs_snapshot_public_check(cache: dict, awsAccountId: str, awsRegion: str, aw
                         "Id": snapshotArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"snapshotId": snapshotId}},
+                        "Details": {
+                            "AwsEc2Volume": {
+                                "SnapshotId": snapshotId
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -603,7 +606,11 @@ def ebs_snapshot_public_check(cache: dict, awsAccountId: str, awsRegion: str, aw
                                 "Id": snapshotArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
-                                "Details": {"Other": {"snapshotId": snapshotId}},
+                                "Details": {
+                                    "AwsEc2Volume": {
+                                        "SnapshotId": snapshotId
+                                    }
+                                }
                             }
                         ],
                         "Compliance": {
@@ -660,7 +667,11 @@ def ebs_snapshot_public_check(cache: dict, awsAccountId: str, awsRegion: str, aw
                                 "Id": snapshotArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
-                                "Details": {"Other": {"SnapshotId": snapshotId}},
+                                "Details": {
+                                    "AwsEc2Volume": {
+                                        "SnapshotId": snapshotId
+                                    }
+                                }
                             }
                         ],
                         "Compliance": {
@@ -795,19 +806,16 @@ def ebs_volume_snapshot_check(cache: dict, awsAccountId: str, awsRegion: str, aw
     """[EBS.7] EBS Volumes should have snapshots"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    # Hit Cache
-    response = describe_volumes(cache)
-    myEbsVolumes = response["Volumes"]
-    for volumes in myEbsVolumes:
+    for volumes in describe_volumes(cache)["Volumes"]:
         ebsVolumeId = str(volumes["VolumeId"])
         ebsVolumeArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}/{ebsVolumeId}"
         # Check if there is a volume
         try:
             snapshotId = str(volumes["SnapshotId"])
         except KeyError:
-            snapshotId = 'NoSnapshot'
+            snapshotId = None
         # This is a passing finding        
-        if snapshotId != "NoSnapshot":
+        if snapshotId != None:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": ebsVolumeArn + "/ebs-volume-snapshot-check",
@@ -840,9 +848,6 @@ def ebs_volume_snapshot_check(cache: dict, awsAccountId: str, awsRegion: str, aw
                         "Details": {
                             "AwsEc2Volume": {
                                 "SnapshotId": snapshotId
-                            },
-                            "Other": {
-                                "VolumeId": ebsVolumeId
                             }
                         }
                     }
@@ -861,7 +866,7 @@ def ebs_volume_snapshot_check(cache: dict, awsAccountId: str, awsRegion: str, aw
                         "ISO 27001:2013 A.11.1.4",
                         "ISO 27001:2013 A.17.1.1",
                         "ISO 27001:2013 A.17.1.2",
-                        "ISO 27001:2013 A.17.2.1",
+                        "ISO 27001:2013 A.17.2.1"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -901,9 +906,6 @@ def ebs_volume_snapshot_check(cache: dict, awsAccountId: str, awsRegion: str, aw
                         "Details": {
                             "AwsEc2Volume": {
                                 "SnapshotId": snapshotId
-                            },
-                            "Other": {
-                                "VolumeId": ebsVolumeId
                             }
                         }
                     }
@@ -922,7 +924,7 @@ def ebs_volume_snapshot_check(cache: dict, awsAccountId: str, awsRegion: str, aw
                         "ISO 27001:2013 A.11.1.4",
                         "ISO 27001:2013 A.17.1.1",
                         "ISO 27001:2013 A.17.1.2",
-                        "ISO 27001:2013 A.17.2.1",
+                        "ISO 27001:2013 A.17.2.1"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},

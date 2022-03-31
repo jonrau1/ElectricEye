@@ -6,3 +6,4 @@ psycopg2-binary
 click
 detect-secrets
 pymongo
+python3-nmap

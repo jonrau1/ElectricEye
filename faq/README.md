@@ -211,7 +211,7 @@ You should consider taking a look at all of these:
 
 ## 15. Why did you swap the Dockerfile to being Alpine Linux-based?
 
-The original (V1.0) Dockerfile used the `ubuntu:latest` image as its base image and was chunky (~450MB) where the Alpine image is a tiny bit under a 10th of that (41.95MB). It is also much faster to create and push the image since `apk` adds only what is needed and isn't bloated by the Ubuntu dependencies from `apt` or that come prepackaged. Lastly, the build logs are a lot less chatty with the (hacky) ENV value set for Python and Pip related logs. I have added a Trivy GitHub Action that will pipe to Security Findings any high / critical findings, Dependabot will also catch things
+The original (V1.0) Dockerfile used the `ubuntu:latest` image as its base image and was chunky (~450MB) where the Alpine image is a tiny bit under a 10th of that (41.95MB). It is also much faster to create and push the image since `apk` adds only what is needed and isn't bloated by the Ubuntu dependencies from `apt` or that come prepackaged. Lastly, the build logs are a lot less chatty with the (hacky) ENV value set for Python and Pip related logs. I have added a Trivy GitHub Action that will pipe to Security Findings any high / critical findings, DependaBot and Snyk will also catch things
 
 ## 16. I thought you said that ElectricEye will not help me pass an audit!?
 

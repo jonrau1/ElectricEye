@@ -31,6 +31,8 @@ from check_register import CheckRegister
 registry = CheckRegister()
 # import boto3 clients
 
+dirPath = os.path.dirname(os.path.realpath(__file__))
+
 codebuild = boto3.client("codebuild")
 lambdas = boto3.client("lambda")
 ec2 = boto3.client("ec2")
@@ -42,8 +44,8 @@ def secret_scan_codebuild_envvar_check(cache: dict, awsAccountId: str, awsRegion
     """[Secrets.CodeBuild.1] CodeBuild Project environment variables should not have secrets stored in Plaintext"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # setup some reusable variables
-    scanFile = "./codebuild-data-sample.json"
-    resultsFile = "./codebuild-scan-result.json"
+    scanFile = f"{dirPath}/codebuild-data-sample.json"
+    resultsFile = f"{dirPath}/codebuild-scan-result.json"
     scanCommand = f"detect-secrets scan {scanFile} > {resultsFile}"
     # Collect all CodeBuild Projects and send to the Batch API
     cbList = []
@@ -222,8 +224,8 @@ def secret_scan_cloudformation_parameters_check(cache: dict, awsAccountId: str, 
     """[Secrets.CloudFormation.1] CloudFormation Stack parameters should not have secrets stored in Plaintext"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # setup some reusable variables
-    scanFile = "./cloudformation-data-sample.json"
-    resultsFile = "./cloudformation-scan-result.json"
+    scanFile = f"{dirPath}/cloudformation-data-sample.json"
+    resultsFile = f"{dirPath}/cloudformation-scan-result.json"
     scanCommand = f"detect-secrets scan {scanFile} > {resultsFile}"
     # Paginate through all CFN Stacks
     stackList = []
@@ -408,8 +410,8 @@ def secret_scan_ecs_task_def_envvar_check(cache: dict, awsAccountId: str, awsReg
     """[Secrets.ECS.1] ECS Task Definition environment variables should not have secrets stored in Plaintext"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # setup some reusable variables
-    scanFile = "./ecs-data-sample.json"
-    resultsFile = "./ecs-scan-result.json"
+    scanFile = f"{dirPath}/ecs-data-sample.json"
+    resultsFile = f"{dirPath}/ecs-scan-result.json"
     scanCommand = f"detect-secrets scan {scanFile} > {resultsFile}"
     # Paginate through all Active ECS Task Defs
     taskList = []
@@ -595,8 +597,8 @@ def secret_scan_ec2_userdata_check(cache: dict, awsAccountId: str, awsRegion: st
     """[Secrets.EC2.1] EC2 User Data should not have secrets stored in Plaintext"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # setup some reusable variables
-    scanFile = "./ec2-data-sample.json"
-    resultsFile = "./ec2-scan-result.json"
+    scanFile = f"{dirPath}/ec2-data-sample.json"
+    resultsFile = f"{dirPath}/ec2-scan-result.json"
     scanCommand = f"detect-secrets scan {scanFile} > {resultsFile}"
     # Paginate through Running and Stopped EC2 Instances
     paginator = ec2.get_paginator("describe_instances")
@@ -613,12 +615,8 @@ def secret_scan_ec2_userdata_check(cache: dict, awsAccountId: str, awsRegion: st
                 try:
                     response = ec2.describe_instance_attribute(Attribute="userData",InstanceId=instanceId)
                     idata = response["UserData"]["Value"]
-                except Exception as e:
-                    if str(e) == "'Value'":
-                        continue
-                    else:
-                        print(e)
-                        continue
+                except KeyError:
+                    continue
                 userdata = base64.b64decode(idata)
                 with open(scanFile, 'w') as writejson:
                     json.dump({"value": str(userdata)}, writejson, indent=2, default=str)

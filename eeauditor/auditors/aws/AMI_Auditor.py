@@ -173,6 +173,8 @@ def public_ami_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
 @registry.register_check("ec2")
 def encrypted_ami_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AMI.2] Self-managed Amazon Machine Images (AMIs) should be encrypted"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     amis = describe_images(cache=cache, awsAccountId=awsAccountId)
     myAmis = amis["Images"]
     for ami in myAmis:
@@ -182,10 +184,10 @@ def encrypted_ami_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
         imageCreatedDate = str(ami["CreationDate"])
         BlockDevices = ami["BlockDeviceMappings"]
         for ebsmapping in BlockDevices:
-            encryptionCheck = str(ebsmapping["Ebs"]["Encrypted"])
-            iso8601Time = (
-                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-            )
+            try:
+                encryptionCheck = str(ebsmapping["Ebs"]["Encrypted"])
+            except KeyError:
+                continue
             if encryptionCheck == "False":
                 finding = {
                     "SchemaVersion": "2018-10-08",
