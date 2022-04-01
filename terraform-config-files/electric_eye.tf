@@ -248,6 +248,7 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
             "Action": [
                 "airflow:GetEnvironment",
                 "airflow:ListEnvironments",
+                "autoscaling:DescribeAutoScalingGroups",
                 "cloudtrail:DescribeTrails",
                 "cloudtrail:ListTrails",
                 "kms:DescribeKey",

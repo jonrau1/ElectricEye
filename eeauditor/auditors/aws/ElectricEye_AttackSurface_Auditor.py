@@ -183,7 +183,13 @@ def ec2_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
                                     "ISO 27001:2013 A.6.2.2",
                                     "ISO 27001:2013 A.11.2.6",
                                     "ISO 27001:2013 A.13.1.1",
-                                    "ISO 27001:2013 A.13.2.1"
+                                    "ISO 27001:2013 A.13.2.1",
+                                    "MITRE ATT&CK T1040",
+                                    "MITRE ATT&CK T1046",
+                                    "MITRE ATT&CK T1580",
+                                    "MITRE ATT&CK T1590",
+                                    "MITRE ATT&CK T1592",
+                                    "MITRE ATT&CK T1595"
                                 ]
                             },
                             "Workflow": {"Status": "NEW"},
@@ -246,7 +252,13 @@ def ec2_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
                                     "ISO 27001:2013 A.6.2.2",
                                     "ISO 27001:2013 A.11.2.6",
                                     "ISO 27001:2013 A.13.1.1",
-                                    "ISO 27001:2013 A.13.2.1"
+                                    "ISO 27001:2013 A.13.2.1",
+                                    "MITRE ATT&CK T1040",
+                                    "MITRE ATT&CK T1046",
+                                    "MITRE ATT&CK T1580",
+                                    "MITRE ATT&CK T1590",
+                                    "MITRE ATT&CK T1592",
+                                    "MITRE ATT&CK T1595"
                                 ]
                             },
                             "Workflow": {"Status": "RESOLVED"},
@@ -353,7 +365,13 @@ def elbv2_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, aws
                                     "ISO 27001:2013 A.6.2.2",
                                     "ISO 27001:2013 A.11.2.6",
                                     "ISO 27001:2013 A.13.1.1",
-                                    "ISO 27001:2013 A.13.2.1"
+                                    "ISO 27001:2013 A.13.2.1",
+                                    "MITRE ATT&CK T1040",
+                                    "MITRE ATT&CK T1046",
+                                    "MITRE ATT&CK T1580",
+                                    "MITRE ATT&CK T1590",
+                                    "MITRE ATT&CK T1592",
+                                    "MITRE ATT&CK T1595"
                                 ]
                             },
                             "Workflow": {"Status": "NEW"},
@@ -416,7 +434,13 @@ def elbv2_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, aws
                                     "ISO 27001:2013 A.6.2.2",
                                     "ISO 27001:2013 A.11.2.6",
                                     "ISO 27001:2013 A.13.1.1",
-                                    "ISO 27001:2013 A.13.2.1"
+                                    "ISO 27001:2013 A.13.2.1",
+                                    "MITRE ATT&CK T1040",
+                                    "MITRE ATT&CK T1046",
+                                    "MITRE ATT&CK T1580",
+                                    "MITRE ATT&CK T1590",
+                                    "MITRE ATT&CK T1592",
+                                    "MITRE ATT&CK T1595"
                                 ]
                             },
                             "Workflow": {"Status": "RESOLVED"},
@@ -527,7 +551,13 @@ def elb_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
                                     "ISO 27001:2013 A.6.2.2",
                                     "ISO 27001:2013 A.11.2.6",
                                     "ISO 27001:2013 A.13.1.1",
-                                    "ISO 27001:2013 A.13.2.1"
+                                    "ISO 27001:2013 A.13.2.1",
+                                    "MITRE ATT&CK T1040",
+                                    "MITRE ATT&CK T1046",
+                                    "MITRE ATT&CK T1580",
+                                    "MITRE ATT&CK T1590",
+                                    "MITRE ATT&CK T1592",
+                                    "MITRE ATT&CK T1595"
                                 ]
                             },
                             "Workflow": {"Status": "NEW"},
@@ -592,7 +622,13 @@ def elb_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
                                     "ISO 27001:2013 A.6.2.2",
                                     "ISO 27001:2013 A.11.2.6",
                                     "ISO 27001:2013 A.13.1.1",
-                                    "ISO 27001:2013 A.13.2.1"
+                                    "ISO 27001:2013 A.13.2.1",
+                                    "MITRE ATT&CK T1040",
+                                    "MITRE ATT&CK T1046",
+                                    "MITRE ATT&CK T1580",
+                                    "MITRE ATT&CK T1590",
+                                    "MITRE ATT&CK T1592",
+                                    "MITRE ATT&CK T1595"
                                 ]
                             },
                             "Workflow": {"Status": "RESOLVED"},
@@ -693,7 +729,13 @@ def eip_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
                                 "ISO 27001:2013 A.6.2.2",
                                 "ISO 27001:2013 A.11.2.6",
                                 "ISO 27001:2013 A.13.1.1",
-                                "ISO 27001:2013 A.13.2.1"
+                                "ISO 27001:2013 A.13.2.1",
+                                "MITRE ATT&CK T1040",
+                                "MITRE ATT&CK T1046",
+                                "MITRE ATT&CK T1580",
+                                "MITRE ATT&CK T1590",
+                                "MITRE ATT&CK T1592",
+                                "MITRE ATT&CK T1595"
                             ]
                         },
                         "Workflow": {"Status": "NEW"},
@@ -754,7 +796,13 @@ def eip_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
                                 "ISO 27001:2013 A.6.2.2",
                                 "ISO 27001:2013 A.11.2.6",
                                 "ISO 27001:2013 A.13.1.1",
-                                "ISO 27001:2013 A.13.2.1"
+                                "ISO 27001:2013 A.13.2.1",
+                                "MITRE ATT&CK T1040",
+                                "MITRE ATT&CK T1046",
+                                "MITRE ATT&CK T1580",
+                                "MITRE ATT&CK T1590",
+                                "MITRE ATT&CK T1592",
+                                "MITRE ATT&CK T1595"
                             ]
                         },
                         "Workflow": {"Status": "RESOLVED"},
