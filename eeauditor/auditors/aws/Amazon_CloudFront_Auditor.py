@@ -48,6 +48,8 @@ def cloudfront_active_trusted_signers_check(cache: dict, awsAccountId: str, awsR
     for dist in paginate(cache):
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
+        domainName = dist["DomainName"]
+        distStatus = dist["Status"]
         # Get check specific metadata
         distro = cloudfront.get_distribution(Id=distributionId)["Distribution"]
         if str(distro["ActiveTrustedSigners"]["Enabled"]) == 'True':
@@ -81,6 +83,12 @@ def cloudfront_active_trusted_signers_check(cache: dict, awsAccountId: str, awsR
                                 "Id": distributionArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
+                                "Details": {
+                                    "AwsCloudFrontDistribution": {
+                                        "DomainName": domainName,
+                                        "Status": distStatus
+                                    }
+                                }
                             }
                         ],
                         "Compliance": {
@@ -130,6 +138,12 @@ def cloudfront_active_trusted_signers_check(cache: dict, awsAccountId: str, awsR
                                 "Id": distributionArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
+                                "Details": {
+                                    "AwsCloudFrontDistribution": {
+                                        "DomainName": domainName,
+                                        "Status": distStatus
+                                    }
+                                }
                             }
                         ],
                         "Compliance": {
@@ -179,6 +193,12 @@ def cloudfront_active_trusted_signers_check(cache: dict, awsAccountId: str, awsR
                         "Id": distributionArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
+                        "Details": {
+                            "AwsCloudFrontDistribution": {
+                                "DomainName": domainName,
+                                "Status": distStatus
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -207,6 +227,8 @@ def cloudfront_origin_shield_check(cache: dict, awsAccountId: str, awsRegion: st
     for dist in paginate(cache):
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
+        domainName = dist["DomainName"]
+        distStatus = dist["Status"]
         # Get check specific metadata
         distro = cloudfront.get_distribution(Id=distributionId)["Distribution"]
         if not distro["DistributionConfig"]["Origins"]["Items"]:
@@ -243,6 +265,15 @@ def cloudfront_origin_shield_check(cache: dict, awsAccountId: str, awsRegion: st
                                 "Id": distributionArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
+                                "Details": {
+                                    "AwsCloudFrontDistribution": {
+                                        "DomainName": domainName,
+                                        "Status": distStatus,
+                                        "Origins": {
+                                            "Id": originId
+                                        }
+                                    }
+                                }
                             }
                         ],
                         "Compliance": {
@@ -295,6 +326,15 @@ def cloudfront_origin_shield_check(cache: dict, awsAccountId: str, awsRegion: st
                                 "Id": distributionArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
+                                "Details": {
+                                    "AwsCloudFrontDistribution": {
+                                        "DomainName": domainName,
+                                        "Status": distStatus,
+                                        "Origins": {
+                                            "Id": originId
+                                        }
+                                    }
+                                }
                             }
                         ],
                         "Compliance": {
