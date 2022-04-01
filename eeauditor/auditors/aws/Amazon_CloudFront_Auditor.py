@@ -564,7 +564,7 @@ def cloudfront_georestriction_check(cache: dict, awsAccountId: str, awsRegion: s
             }
             yield finding
         else:
-            restrictedCountries = str(distro["DistributionConfig"]["Restrictions"]["GeoRestriction"]["Items"])
+            restrictedCountries = str(distro["DistributionConfig"]["Restrictions"]["GeoRestriction"]["Items"]).replace("'","").replace("[","").replace("]","")
             # this is a passing check
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -579,7 +579,7 @@ def cloudfront_georestriction_check(cache: dict, awsAccountId: str, awsRegion: s
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[CloudFront.4] Cloudfront Distributions should have a Georestriction configured",
-                "Description": f"CloudFront Distribution {distributionId} uses a {geoBlockType} Geostrictiction against the following countries {restrictedCountries}.",
+                "Description": f"CloudFront Distribution {distributionId} uses a {geoBlockType} Geostrictiction against the following countries: {restrictedCountries}.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on Geo Restriction for CloudFront, refer to the Restricting the Geographic Distribution of Your Content section of the Amazon CloudFront Developer Guide",
@@ -621,5 +621,810 @@ def cloudfront_georestriction_check(cache: dict, awsAccountId: str, awsRegion: s
                 "RecordState": "ARCHIVED"
             }
             yield finding
+
+@registry.register_check("cloudfront")
+def cloudfront_field_level_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudFront.5] Cloudfront Distributions should implement Field-Level Encryption in default cache behavior"""
+    # ISO Time
+    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+    for dist in paginate(cache):
+        distributionId = dist["Id"]
+        distributionArn = dist["ARN"]
+        domainName = dist["DomainName"]
+        distStatus = dist["Status"]
+        # Get check specific metadata
+        distro = cloudfront.get_distribution(Id=distributionId)["Distribution"]
+        if str(distro["DistributionConfig"]["DefaultCacheBehavior"]["FieldLevelEncryptionId"]) == "":
+            # this is a failing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{distributionArn}/cloudfront-field-level-encryption-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": distributionArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[CloudFront.5] Cloudfront Distributions should implement Field-Level Encryption in default cache behavior",
+                "Description": f"CloudFront Distribution {distributionId} does not implement Field-Level Encryption. With Amazon CloudFront, you can enforce secure end-to-end connections to origin servers by using HTTPS. Field-level encryption adds an additional layer of security that lets you protect specific data throughout system processing so that only certain applications can see it. Field-level encryption allows you to enable your users to securely upload sensitive information to your web servers. The sensitive information provided by your users is encrypted at the edge, close to the user, and remains encrypted throughout your entire application stack. This encryption ensures that only applications that need the data—and have the credentials to decrypt it—are able to do so. For more information see the remediation section.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Field-Level Encryption for CloudFront, refer to the Using Field-Level Encryption to Help Protect Sensitive Data section of the Amazon CloudFront Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/field-level-encryption.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsCloudFrontDistribution",
+                        "Id": distributionArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsCloudFrontDistribution": {
+                                "DomainName": domainName,
+                                "Status": distStatus
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.DS-1",
+                        "NIST SP 800-53 MP-8",
+                        "NIST SP 800-53 SC-12",
+                        "NIST SP 800-53 SC-28",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            # this is a passing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{distributionArn}/cloudfront-field-level-encryption-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": distributionArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[CloudFront.5] Cloudfront Distributions should implement Field-Level Encryption in default cache behavior",
+                "Description": f"CloudFront Distribution {distributionId} uses Field-Level Encryption.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Field-Level Encryption for CloudFront, refer to the Using Field-Level Encryption to Help Protect Sensitive Data section of the Amazon CloudFront Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/field-level-encryption.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsCloudFrontDistribution",
+                        "Id": distributionArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsCloudFrontDistribution": {
+                                "DomainName": domainName,
+                                "Status": distStatus
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.DS-1",
+                        "NIST SP 800-53 MP-8",
+                        "NIST SP 800-53 SC-12",
+                        "NIST SP 800-53 SC-28",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("cloudfront")
+def cloudfront_waf_enabled_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudFront.6] Cloudfront Distributions should use a Web Application Firewall"""
+    # ISO Time
+    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+    for dist in paginate(cache):
+        distributionId = dist["Id"]
+        distributionArn = dist["ARN"]
+        domainName = dist["DomainName"]
+        distStatus = dist["Status"]
+        # Get check specific metadata
+        distro = cloudfront.get_distribution(Id=distributionId)["Distribution"]
+        if str(distro["DistributionConfig"]["WebACLId"]) == "":
+            # this is a failing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{distributionArn}/cloudfront-waf-enabled-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": distributionArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[CloudFront.6] Cloudfront Distributions should use a Web Application Firewall",
+                "Description": f"CloudFront Distribution {distributionId} does not use a Web Application Firewall. AWS WAF is a web application firewall that lets you monitor the HTTP and HTTPS requests that are forwarded to CloudFront, and lets you control access to your content. Based on conditions that you specify, such as the values of query strings or the IP addresses that requests originate from, CloudFront responds to requests either with the requested content or with an HTTP status code 403 (Forbidden). You can also configure CloudFront to return a custom error page when a request is blocked. For more information see the remediation section.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on WAF for CloudFront, refer to the Using AWS WAF to Control Access to Your Content section of the Amazon CloudFront Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-awswaf.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsCloudFrontDistribution",
+                        "Id": distributionArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsCloudFrontDistribution": {
+                                "DomainName": domainName,
+                                "Status": distStatus
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF DE.AE-2",
+                        "NIST SP 800-53 AU-6",
+                        "NIST SP 800-53 CA-7",
+                        "NIST SP 800-53 IR-4",
+                        "NIST SP 800-53 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.1",
+                        "ISO 27001:2013 A.16.1.4"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            # this is a passing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{distributionArn}/cloudfront-waf-enabled-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": distributionArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[CloudFront.6] Cloudfront Distributions should use a Web Application Firewall",
+                "Description": f"CloudFront Distribution {distributionId} uses a Web Application Firewall.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on WAF for CloudFront, refer to the Using AWS WAF to Control Access to Your Content section of the Amazon CloudFront Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-awswaf.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsCloudFrontDistribution",
+                        "Id": distributionArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsCloudFrontDistribution": {
+                                "DomainName": domainName,
+                                "Status": distStatus
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF DE.AE-2",
+                        "NIST SP 800-53 AU-6",
+                        "NIST SP 800-53 CA-7",
+                        "NIST SP 800-53 IR-4",
+                        "NIST SP 800-53 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.1",
+                        "ISO 27001:2013 A.16.1.4"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("cloudfront")
+def cloudfront_default_viewer_tls12_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudFront.7] Cloudfront Distributions should enforce TLS 1.2 for the default viewer protocol"""
+    # TLS 1.2 policies
+    compliantMinimumProtocolVersions = [
+        "TLSv1.2_2021",
+        "TLSv1.2_2019",
+        "TLSv1.2_2018"
+    ]
+    # ISO Time
+    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+    for dist in paginate(cache):
+        distributionId = dist["Id"]
+        distributionArn = dist["ARN"]
+        domainName = dist["DomainName"]
+        distStatus = dist["Status"]
+        # Get check specific metadata
+        distro = cloudfront.get_distribution(Id=distributionId)["Distribution"]
+        if str(distro["DistributionConfig"]["ViewerCertificate"]["MinimumProtocolVersion"]) not in compliantMinimumProtocolVersions:
+            # this is a failing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{distributionArn}/cloudfront-default-viewer-tls12-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": distributionArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "HIGH"},
+                "Confidence": 99,
+                "Title": "[CloudFront.7] Cloudfront Distributions should enforce TLS 1.2 for the default viewer protocol",
+                "Description": f"CloudFront Distribution {distributionId} does not enforce a compliant TLS 1.2 minimum protocol for default viewer behavior. When you require HTTPS between viewers and your CloudFront distribution, you must choose a security policy, which determines the following settings: The minimum SSL/TLS protocol and ciphers that CloudFront uses to communicate with viewers. TLS 1.2 is more secure than the previous cryptographic protocols such as SSL 2.0, SSL 3.0, TLS 1.0, and TLS 1.1. Essentially, TLS 1.2 keeps data being transferred across the network more secure. For more information see the remediation section.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Default TLS settings for CloudFront, refer to the Supported protocols and ciphers between viewers and CloudFront section of the Amazon CloudFront Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/secure-connections-supported-viewer-protocols-ciphers.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsCloudFrontDistribution",
+                        "Id": distributionArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsCloudFrontDistribution": {
+                                "DomainName": domainName,
+                                "Status": distStatus
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.DS-2",
+                        "NIST SP 800-53 SC-8",
+                        "NIST SP 800-53 SC-11",
+                        "NIST SP 800-53 SC-12",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3"                    
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            # this is a passing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{distributionArn}/cloudfront-default-viewer-tls12-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": distributionArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[CloudFront.7] Cloudfront Distributions should enforce TLS 1.2 for the default viewer protocol",
+                "Description": f"CloudFront Distribution {distributionId} enforces a compliant TLS 1.2 minimum protocol for default viewer behavior.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Default TLS settings for CloudFront, refer to the Supported protocols and ciphers between viewers and CloudFront section of the Amazon CloudFront Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/secure-connections-supported-viewer-protocols-ciphers.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsCloudFrontDistribution",
+                        "Id": distributionArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsCloudFrontDistribution": {
+                                "DomainName": domainName,
+                                "Status": distStatus
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.DS-2",
+                        "NIST SP 800-53 SC-8",
+                        "NIST SP 800-53 SC-11",
+                        "NIST SP 800-53 SC-12",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3"                    
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("cloudfront")
+def cloudfront_custom_origin_tls12_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudFront.8] Cloudfront Distributions with Custom Origins should allow only TLSv1.2 protocols"""
+    # Non compliant policies
+    nonCompliantViewerCiphers = [
+        "SSLv3",
+        "TLSv1",
+        "TLSv1.1",
+        "TLSv1.2"
+    ]
+    # ISO Time
+    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+    for dist in paginate(cache):
+        distributionId = dist["Id"]
+        distributionArn = dist["ARN"]
+        domainName = dist["DomainName"]
+        distStatus = dist["Status"]
+        # Get check specific metadata
+        distro = cloudfront.get_distribution(Id=distributionId)["Distribution"]
+        if not distro["DistributionConfig"]["Origins"]["Items"]:
+            continue
+        else:
+            for orig in distro["DistributionConfig"]["Origins"]["Items"]:
+                originId = orig["Id"]
+                try:
+                    customOriginCiphers = orig["CustomOriginConfig"]["OriginSslProtocols"]["Items"]
+                    if any(x in customOriginCiphers for x in nonCompliantViewerCiphers):
+                        # this is a failing check
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": f"{distributionArn}/{originId}/cloudfront-custom-origin-tls12-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": distributionArn,
+                            "AwsAccountId": awsAccountId,
+                            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "HIGH"},
+                            "Confidence": 99,
+                            "Title": "[CloudFront.8] Cloudfront Distributions with Custom Origins should allow only TLSv1.2 protocols",
+                            "Description": f"CloudFront Origin {originId} for Distribution {distributionId} allows a non-TLSv1.2 cipher protocol. The minimum origin SSL protocol specifies the minimum TLS/SSL protocol that CloudFront can use when it establishes an HTTPS connection to your origin. Lower TLS protocols are less secure, so we recommend that you choose the latest TLS protocol that your origin supports. For more information see the remediation section.",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "For more information on Custom Origin TLS settings for CloudFront, refer to the Values That You Specify When You Create or Update a Distribution section of the Amazon CloudFront Developer Guide",
+                                    "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesOriginSSLProtocols",
+                                }
+                            },
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsCloudFrontDistribution",
+                                    "Id": distributionArn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "AwsCloudFrontDistribution": {
+                                            "DomainName": domainName,
+                                            "Status": distStatus,
+                                            "Origins": {
+                                                "Items": [
+                                                    {
+                                                        "Id": originId
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "FAILED",
+                                "RelatedRequirements": [
+                                    "NIST CSF PR.DS-2",
+                                    "NIST SP 800-53 SC-8",
+                                    "NIST SP 800-53 SC-11",
+                                    "NIST SP 800-53 SC-12",
+                                    "AICPA TSC CC6.1",
+                                    "ISO 27001:2013 A.8.2.3",
+                                    "ISO 27001:2013 A.13.1.1",
+                                    "ISO 27001:2013 A.13.2.1",
+                                    "ISO 27001:2013 A.13.2.3",
+                                    "ISO 27001:2013 A.14.1.2",
+                                    "ISO 27001:2013 A.14.1.3"                    
+                                ]
+                            },
+                            "Workflow": {"Status": "NEW"},
+                            "RecordState": "ACTIVE"
+                        }
+                        yield finding
+                    else:
+                        # this is a passing check
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": f"{distributionArn}/{originId}/cloudfront-custom-origin-tls12-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": distributionArn,
+                            "AwsAccountId": awsAccountId,
+                            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "INFORMATIONAL"},
+                            "Confidence": 99,
+                            "Title": "[CloudFront.8] Cloudfront Distributions with Custom Origins should allow only TLSv1.2 protocols",
+                            "Description": f"CloudFront Origin {originId} for Distribution {distributionId} does not allow any non-TLSv1.2 cipher protocols.",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "For more information on Custom Origin TLS settings for CloudFront, refer to the Values That You Specify When You Create or Update a Distribution section of the Amazon CloudFront Developer Guide",
+                                    "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesOriginSSLProtocols",
+                                }
+                            },
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsCloudFrontDistribution",
+                                    "Id": distributionArn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "AwsCloudFrontDistribution": {
+                                            "DomainName": domainName,
+                                            "Status": distStatus,
+                                            "Origins": {
+                                                "Items": [
+                                                    {
+                                                        "Id": originId
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "PASSED",
+                                "RelatedRequirements": [
+                                    "NIST CSF PR.DS-2",
+                                    "NIST SP 800-53 SC-8",
+                                    "NIST SP 800-53 SC-11",
+                                    "NIST SP 800-53 SC-12",
+                                    "AICPA TSC CC6.1",
+                                    "ISO 27001:2013 A.8.2.3",
+                                    "ISO 27001:2013 A.13.1.1",
+                                    "ISO 27001:2013 A.13.2.1",
+                                    "ISO 27001:2013 A.13.2.3",
+                                    "ISO 27001:2013 A.14.1.2",
+                                    "ISO 27001:2013 A.14.1.3"                    
+                                ]
+                            },
+                            "Workflow": {"Status": "RESOLVED"},
+                            "RecordState": "ARCHIVED"
+                        }
+                        yield finding
+                except KeyError:
+                    # KeyError exception means there is not a custom origin within the current iterated Origin
+                    # this is a passing check
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": f"{distributionArn}/{originId}/cloudfront-custom-origin-tls12-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": distributionArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "INFORMATIONAL"},
+                        "Confidence": 99,
+                        "Title": "[CloudFront.8] Cloudfront Distributions with Custom Origins should allow only TLSv1.2 protocols",
+                        "Description": f"CloudFront Origin {originId} for Distribution {distributionId} is not a custom origin and is thus not in scope for this check.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For more information on Custom Origin TLS settings for CloudFront, refer to the Values That You Specify When You Create or Update a Distribution section of the Amazon CloudFront Developer Guide",
+                                "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesOriginSSLProtocols",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsCloudFrontDistribution",
+                                "Id": distributionArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsCloudFrontDistribution": {
+                                        "DomainName": domainName,
+                                        "Status": distStatus,
+                                        "Origins": {
+                                            "Items": [
+                                                {
+                                                    "Id": originId
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "PASSED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.DS-2",
+                                "NIST SP 800-53 SC-8",
+                                "NIST SP 800-53 SC-11",
+                                "NIST SP 800-53 SC-12",
+                                "AICPA TSC CC6.1",
+                                "ISO 27001:2013 A.8.2.3",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1",
+                                "ISO 27001:2013 A.13.2.3",
+                                "ISO 27001:2013 A.14.1.2",
+                                "ISO 27001:2013 A.14.1.3"                    
+                            ]
+                        },
+                        "Workflow": {"Status": "RESOLVED"},
+                        "RecordState": "ARCHIVED"
+                    }
+                    yield finding
+
+@registry.register_check("cloudfront")
+def cloudfront_custom_origin_https_only_protcol_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudFront.9] Cloudfront Distributions with Custom Origins should enforce HTTPS-only protocol policies"""
+    # ISO Time
+    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+    for dist in paginate(cache):
+        distributionId = dist["Id"]
+        distributionArn = dist["ARN"]
+        domainName = dist["DomainName"]
+        distStatus = dist["Status"]
+        # Get check specific metadata
+        distro = cloudfront.get_distribution(Id=distributionId)["Distribution"]
+        if not distro["DistributionConfig"]["Origins"]["Items"]:
+            continue
+        else:
+            for orig in distro["DistributionConfig"]["Origins"]["Items"]:
+                originId = orig["Id"]
+                try:
+                    if str(orig["CustomOriginConfig"]["OriginProtocolPolicy"]) != "https-only":
+                        # this is a failing check
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": f"{distributionArn}/{originId}/cloudfront-custom-origin-https-only-protocol-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": distributionArn,
+                            "AwsAccountId": awsAccountId,
+                            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "HIGH"},
+                            "Confidence": 99,
+                            "Title": "[CloudFront.9] Cloudfront Distributions with Custom Origins should enforce HTTPS-only protocol policies",
+                            "Description": f"CloudFront Origin {originId} for Distribution {distributionId} does not enforce a HTTPS-only protocol policy. You can require HTTPS for communication between CloudFront and your origin when you specify HTTPS Only CloudFront uses only HTTPS to communicate with your custom origin. For more information see the remediation section.",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "For more information on Custom Origin TLS settings for CloudFront, refer to the Requiring HTTPS for communication between CloudFront and your custom origin section of the Amazon CloudFront Developer Guide",
+                                    "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https-cloudfront-to-custom-origin.html",
+                                }
+                            },
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsCloudFrontDistribution",
+                                    "Id": distributionArn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "AwsCloudFrontDistribution": {
+                                            "DomainName": domainName,
+                                            "Status": distStatus,
+                                            "Origins": {
+                                                "Items": [
+                                                    {
+                                                        "Id": originId
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "FAILED",
+                                "RelatedRequirements": [
+                                    "NIST CSF PR.DS-2",
+                                    "NIST SP 800-53 SC-8",
+                                    "NIST SP 800-53 SC-11",
+                                    "NIST SP 800-53 SC-12",
+                                    "AICPA TSC CC6.1",
+                                    "ISO 27001:2013 A.8.2.3",
+                                    "ISO 27001:2013 A.13.1.1",
+                                    "ISO 27001:2013 A.13.2.1",
+                                    "ISO 27001:2013 A.13.2.3",
+                                    "ISO 27001:2013 A.14.1.2",
+                                    "ISO 27001:2013 A.14.1.3"                    
+                                ]
+                            },
+                            "Workflow": {"Status": "NEW"},
+                            "RecordState": "ACTIVE"
+                        }
+                        yield finding
+                    else:
+                        # this is a passing check
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": f"{distributionArn}/{originId}/cloudfront-custom-origin-https-only-protocol-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": distributionArn,
+                            "AwsAccountId": awsAccountId,
+                            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "INFORMATIONAL"},
+                            "Confidence": 99,
+                            "Title": "[CloudFront.9] Cloudfront Distributions with Custom Origins should enforce HTTPS-only protocol policies",
+                            "Description": f"CloudFront Origin {originId} for Distribution {distributionId} enforces a HTTPS-only protocol policy.",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "For more information on Custom Origin TLS settings for CloudFront, refer to the Requiring HTTPS for communication between CloudFront and your custom origin section of the Amazon CloudFront Developer Guide",
+                                    "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https-cloudfront-to-custom-origin.html",
+                                }
+                            },
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsCloudFrontDistribution",
+                                    "Id": distributionArn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "AwsCloudFrontDistribution": {
+                                            "DomainName": domainName,
+                                            "Status": distStatus,
+                                            "Origins": {
+                                                "Items": [
+                                                    {
+                                                        "Id": originId
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "PASSED",
+                                "RelatedRequirements": [
+                                    "NIST CSF PR.DS-2",
+                                    "NIST SP 800-53 SC-8",
+                                    "NIST SP 800-53 SC-11",
+                                    "NIST SP 800-53 SC-12",
+                                    "AICPA TSC CC6.1",
+                                    "ISO 27001:2013 A.8.2.3",
+                                    "ISO 27001:2013 A.13.1.1",
+                                    "ISO 27001:2013 A.13.2.1",
+                                    "ISO 27001:2013 A.13.2.3",
+                                    "ISO 27001:2013 A.14.1.2",
+                                    "ISO 27001:2013 A.14.1.3"                    
+                                ]
+                            },
+                            "Workflow": {"Status": "RESOLVED"},
+                            "RecordState": "ARCHIVED"
+                        }
+                        yield finding
+                except KeyError:
+                    # KeyError exception means there is not a custom origin within the current iterated Origin
+                    # this is a passing check
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": f"{distributionArn}/{originId}/cloudfront-custom-origin-https-only-protocol-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": distributionArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "INFORMATIONAL"},
+                        "Confidence": 99,
+                        "Title": "[CloudFront.9] Cloudfront Distributions with Custom Origins should enforce HTTPS-only protocol policies",
+                        "Description": f"CloudFront Origin {originId} for Distribution {distributionId} is not a custom origin and is thus not in scope for this check.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For more information on Custom Origin TLS settings for CloudFront, refer to the Requiring HTTPS for communication between CloudFront and your custom origin section of the Amazon CloudFront Developer Guide",
+                                "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https-cloudfront-to-custom-origin.html",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsCloudFrontDistribution",
+                                "Id": distributionArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsCloudFrontDistribution": {
+                                        "DomainName": domainName,
+                                        "Status": distStatus,
+                                        "Origins": {
+                                            "Items": [
+                                                {
+                                                    "Id": originId
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "PASSED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.DS-2",
+                                "NIST SP 800-53 SC-8",
+                                "NIST SP 800-53 SC-11",
+                                "NIST SP 800-53 SC-12",
+                                "AICPA TSC CC6.1",
+                                "ISO 27001:2013 A.8.2.3",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1",
+                                "ISO 27001:2013 A.13.2.3",
+                                "ISO 27001:2013 A.14.1.2",
+                                "ISO 27001:2013 A.14.1.3"                    
+                            ]
+                        },
+                        "Workflow": {"Status": "RESOLVED"},
+                        "RecordState": "ARCHIVED"
+                    }
+                    yield finding
 
 ## TODO: NEXT
