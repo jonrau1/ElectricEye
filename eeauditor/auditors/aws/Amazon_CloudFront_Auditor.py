@@ -270,7 +270,11 @@ def cloudfront_origin_shield_check(cache: dict, awsAccountId: str, awsRegion: st
                                         "DomainName": domainName,
                                         "Status": distStatus,
                                         "Origins": {
-                                            "Id": originId
+                                            "Items": [
+                                                {
+                                                    "Id": originId
+                                                }
+                                            ]
                                         }
                                     }
                                 }
@@ -331,7 +335,11 @@ def cloudfront_origin_shield_check(cache: dict, awsAccountId: str, awsRegion: st
                                         "DomainName": domainName,
                                         "Status": distStatus,
                                         "Origins": {
-                                            "Id": originId
+                                            "Items": [
+                                                {
+                                                    "Id": originId
+                                                }
+                                            ]
                                         }
                                     }
                                 }
