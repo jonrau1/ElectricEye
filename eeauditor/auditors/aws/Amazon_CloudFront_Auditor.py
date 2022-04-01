@@ -19,45 +19,39 @@
 #under the License.
 
 import datetime
+from dateutil import parser
 import uuid
 import boto3
-from check_register import CheckRegister
+from check_register import CheckRegister, accumulate_paged_results
 
 registry = CheckRegister()
-
 cloudfront = boto3.client("cloudfront")
 
-def paginate(cache):
-    itemList = []
-    response = cache.get("items")
-    if response:
-        return response
-    paginator = cloudfront.get_paginator("list_distributions")
-    if paginator:
-        for page in paginator.paginate():
-            for items in page["DistributionList"]["Items"]:
-                itemList.append(items)
-        cache["items"] = itemList
-        return cache["items"]
+paginator = cloudfront.get_paginator("list_distributions")
+response_iterator = paginator.paginate()
+results = {"DistributionList": {"Items": []}}
+for page in response_iterator:
+    page_vals = page["DistributionList"].get("Items", [])
+    results["DistributionList"]["Items"].extend(iter(page_vals))
 
 @registry.register_check("cloudfront")
 def cloudfront_active_trusted_signers_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFront.1] Trusted signers should have key pairs"""
-    # ISO Time
+    
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache):
-        distributionId = dist["Id"]
+    for distributionItem in results["DistributionList"]["Items"]:
+        distributionId = distributionItem["Id"]
         distribution = cloudfront.get_distribution(Id=distributionId)
         try:
             activeTrustedSigners = distribution["Distribution"]["ActiveTrustedSigners"]["Enabled"]
             distributionArn = distribution["Distribution"]["ARN"]
-            
+            generatorUuid = str(uuid.uuid4())
             if not activeTrustedSigners:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{distributionArn}/cloudfront-active-trusted-signers-check",
+                    "Id": awsAccountId + "/cloudfront-active-trusted-signers-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": distributionArn,
+                    "GeneratorId": generatorUuid,
                     "AwsAccountId": awsAccountId,
                     "Types": [
                         "Software and Configuration Checks/AWS Security Best Practices"
@@ -106,9 +100,9 @@ def cloudfront_active_trusted_signers_check(cache: dict, awsAccountId: str, awsR
             else:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{distributionArn}/cloudfront-active-trusted-signers-check",
+                    "Id": awsAccountId + "/cloudfront-active-trusted-signers-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": distributionArn,
+                    "GeneratorId": generatorUuid,
                     "AwsAccountId": awsAccountId,
                     "Types": [
                         "Software and Configuration Checks/AWS Security Best Practices"
@@ -160,21 +154,23 @@ def cloudfront_active_trusted_signers_check(cache: dict, awsAccountId: str, awsR
 @registry.register_check("cloudfront")
 def cloudfront_origin_shield_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFront.2] Distributions should have Origin Shield enabled"""
-    # ISO Time
-    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache):
-        distributionId = dist["Id"]
+    
+    iso8601Time = (
+        datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    )
+    for distributionItem in results["DistributionList"]["Items"]:
+        distributionId = distributionItem["Id"]
         distribution = cloudfront.get_distribution(Id=distributionId)
         try:
             originShield = distribution["Distribution"]["DistributionConfig"]["Origins"]["Items"]["OriginShield"]["Enabled"]
             distributionArn = distribution["Distribution"]["ARN"]
-            
+            generatorUuid = str(uuid.uuid4())
             if not originShield:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{distributionArn}/cloudfront-originshield-check",
+                    "Id": awsAccountId + "/cloudfront-originshield-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": distributionArn,
+                    "GeneratorId": generatorUuid,
                     "AwsAccountId": awsAccountId,
                     "Types": [
                         "Software and Configuration Checks/AWS Security Best Practices"
@@ -227,9 +223,9 @@ def cloudfront_origin_shield_check(cache: dict, awsAccountId: str, awsRegion: st
             else:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{distributionArn}/cloudfront-origin-shield-check",
+                    "Id": awsAccountId + "/cloudfront-origin-shield-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": distributionArn,
+                    "GeneratorId": generatorUuid,
                     "AwsAccountId": awsAccountId,
                     "Types": [
                         "Software and Configuration Checks/AWS Security Best Practices"
@@ -285,21 +281,23 @@ def cloudfront_origin_shield_check(cache: dict, awsAccountId: str, awsRegion: st
 @registry.register_check("cloudfront")
 def cloudfront_default_viewer_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFront.3] Distributions should have a Default Viewer certificate in place"""
-    # ISO Time
-    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache):
-        distributionId = dist["Id"]
+    
+    iso8601Time = (
+        datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    )
+    for distributionItem in results["DistributionList"]["Items"]:
+        distributionId = distributionItem["Id"]
         distribution = cloudfront.get_distribution(Id=distributionId)
         try:
             defaultViewer = distribution["Distribution"]["DistributionConfig"]["ViewerCertificate": {"CloudFrontDefaultCertificate": True}]
             distributionArn = distribution["Distribution"]["ARN"]
-            
+            generatorUuid = str(uuid.uuid4())
             if not defaultViewer:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{distributionArn}/cloudfront-defaultviewer-check",
+                    "Id": awsAccountId + "/cloudfront-defaultviewer-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": distributionArn,
+                    "GeneratorId": generatorUuid,
                     "AwsAccountId": awsAccountId,
                     "Types": [
                         "Software and Configuration Checks/AWS Security Best Practices"
@@ -351,9 +349,9 @@ def cloudfront_default_viewer_check(cache: dict, awsAccountId: str, awsRegion: s
             else:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{distributionArn}/cloudfront-defaultviewer-check",
+                    "Id": awsAccountId + "/cloudfront-defaultviewer-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": distributionArn,
+                    "GeneratorId": generatorUuid,
                     "AwsAccountId": awsAccountId,
                     "Types": [
                         "Software and Configuration Checks/AWS Security Best Practices"
@@ -408,21 +406,23 @@ def cloudfront_default_viewer_check(cache: dict, awsAccountId: str, awsRegion: s
 @registry.register_check("cloudfront")
 def cloudfront_georestriction_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFront.4] Distributions should have Geo Ristriction in place"""
-    # ISO Time
-    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache):
-        distributionId = dist["Id"]
+    
+    iso8601Time = (
+        datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    )
+    for distributionItem in results["DistributionList"]["Items"]:
+        distributionId = distributionItem["Id"]
         distribution = cloudfront.get_distribution(Id=distributionId)
         try:
             geoRestriction = distribution["Distribution"]["DistributionConfig"]["Restrictions"]["GeoRestriction"]["RestrictionType"]["CloudFrontDefaultCertificate": "blacklist"]
             distributionArn = distribution["Distribution"]["ARN"]
-            
+            generatorUuid = str(uuid.uuid4())
             if not geoRestriction:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{distributionArn}/cloudfront-geo-restriction-check",
+                    "Id": awsAccountId + "/cloudfront-geo-restriction-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": distributionArn,
+                    "GeneratorId": generatorUuid,
                     "AwsAccountId": awsAccountId,
                     "Types": [
                         "Software and Configuration Checks/AWS Security Best Practices"
@@ -474,9 +474,9 @@ def cloudfront_georestriction_check(cache: dict, awsAccountId: str, awsRegion: s
             else:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{distributionArn}/cloudfront-geo-restriction-check",
+                    "Id": awsAccountId + "/cloudfront-geo-restriction-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": distributionArn,
+                    "GeneratorId": generatorUuid,
                     "AwsAccountId": awsAccountId,
                     "Types": [
                         "Software and Configuration Checks/AWS Security Best Practices"
@@ -531,21 +531,23 @@ def cloudfront_georestriction_check(cache: dict, awsAccountId: str, awsRegion: s
 @registry.register_check("cloudfront")
 def cloudfront_field_level_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFront.5] Distributions should have Field-Level Encryption in place"""
-    # ISO Time
-    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache):
-        distributionId = dist["Id"]
+    
+    iso8601Time = (
+        datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    )
+    for distributionItem in results["DistributionList"]["Items"]:
+        distributionId = distributionItem["Id"]
         distribution = cloudfront.get_distribution(Id=distributionId)
         try:
             fieldLevelEncryption = distribution["Distribution"]["DistributionConfig"]["DefaultCacheBehavior"]["FieldLevelEncryptionId": "string"]
             distributionArn = distribution["Distribution"]["ARN"]
-            
+            generatorUuid = str(uuid.uuid4())
             if not fieldLevelEncryption:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{distributionArn}/cloudfront-field-level-encryption-check",
+                    "Id": awsAccountId + "/cloudfront-field-level-encryption-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": distributionArn,
+                    "GeneratorId": generatorUuid,
                     "AwsAccountId": awsAccountId,
                     "Types": [
                         "Software and Configuration Checks/AWS Security Best Practices"
@@ -592,9 +594,9 @@ def cloudfront_field_level_encryption_check(cache: dict, awsAccountId: str, awsR
             else:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{distributionArn}/cloudfront-field-level-encryption-check",
+                    "Id": awsAccountId + "/cloudfront-field-level-encryption-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": distributionArn,
+                    "GeneratorId": generatorUuid,
                     "AwsAccountId": awsAccountId,
                     "Types": [
                         "Software and Configuration Checks/AWS Security Best Practices"
@@ -644,21 +646,23 @@ def cloudfront_field_level_encryption_check(cache: dict, awsAccountId: str, awsR
 @registry.register_check("cloudfront")
 def cloudfront_waf_enabled_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFront.6] Distributions should have WAF enabled"""
-    # ISO Time
-    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache):
-        distributionId = dist["Id"]
+    
+    iso8601Time = (
+        datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    )
+    for distributionItem in results["DistributionList"]["Items"]:
+        distributionId = distributionItem["Id"]
         distribution = cloudfront.get_distribution(Id=distributionId)
         try:
             wafEnabled = distribution["Distribution"]["DistributionConfig"]["WebACLId": "string"]
             distributionArn = distribution["Distribution"]["ARN"]
-            
+            generatorUuid = str(uuid.uuid4())
             if not wafEnabled:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{distributionArn}/cloudfront-waf-enabled-check",
+                    "Id": awsAccountId + "/cloudfront-waf-enabled-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": distributionArn,
+                    "GeneratorId": generatorUuid,
                     "AwsAccountId": awsAccountId,
                     "Types": [
                         "Software and Configuration Checks/AWS Security Best Practices"
@@ -708,9 +712,9 @@ def cloudfront_waf_enabled_check(cache: dict, awsAccountId: str, awsRegion: str,
             else:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{distributionArn}/cloudfront-waf-enabled-check",
+                    "Id": awsAccountId + "/cloudfront-waf-enabled-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": distributionArn,
+                    "GeneratorId": generatorUuid,
                     "AwsAccountId": awsAccountId,
                     "Types": [
                         "Software and Configuration Checks/AWS Security Best Practices"
@@ -763,21 +767,23 @@ def cloudfront_waf_enabled_check(cache: dict, awsAccountId: str, awsRegion: str,
 @registry.register_check("cloudfront")
 def cloudfront_default_tls_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFront.7] Distributions should have Default TLS enabled"""
-    # ISO Time
-    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache):
-        distributionId = dist["Id"]
+    
+    iso8601Time = (
+        datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    )
+    for distributionItem in results["DistributionList"]["Items"]:
+        distributionId = distributionItem["Id"]
         distribution = cloudfront.get_distribution(Id=distributionId)
         try:
             defaultTls = distribution["Distribution"]["DistributionConfig"]["MinimumProtocolVersion": "TLSv1"]
             distributionArn = distribution["Distribution"]["ARN"]
-            
+            generatorUuid = str(uuid.uuid4())
             if not defaultTls:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{distributionArn}/cloudfront-default-tls-check",
+                    "Id": awsAccountId + "/cloudfront-default-tls-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": distributionArn,
+                    "GeneratorId": generatorUuid,
                     "AwsAccountId": awsAccountId,
                     "Types": [
                         "Software and Configuration Checks/AWS Security Best Practices"
@@ -829,9 +835,9 @@ def cloudfront_default_tls_check(cache: dict, awsAccountId: str, awsRegion: str,
             else:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{distributionArn}/cloudfront-default-tls-check",
+                    "Id": awsAccountId + "/cloudfront-default-tls-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": distributionArn,
+                    "GeneratorId": generatorUuid,
                     "AwsAccountId": awsAccountId,
                     "Types": [
                         "Software and Configuration Checks/AWS Security Best Practices"
@@ -886,21 +892,23 @@ def cloudfront_default_tls_check(cache: dict, awsAccountId: str, awsRegion: str,
 @registry.register_check("cloudfront")
 def cloudfront_custom_origin_tls_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFront.8] Distributions using Custom Origins should be using TLSv1.2"""
-    # ISO Time
-    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache):
-        distributionId = dist["Id"]
+    
+    iso8601Time = (
+        datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    )
+    for distributionItem in results["DistributionList"]["Items"]:
+        distributionId = distributionItem["Id"]
         distribution = cloudfront.get_distribution(Id=distributionId)
         try:
             customOriginTls = distribution["Distribution"]["DistributionConfig"]["Origins"]["Items"]["Origins"]["CustomOriginConfig"]["OriginSslProtocols"]["Items": "TLSv1.2"]
             distributionArn = distribution["Distribution"]["ARN"]
-            
+            generatorUuid = str(uuid.uuid4())
             if not customOriginTls:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{distributionArn}/cloudfront-custom-origin-tls-check",
+                    "Id": awsAccountId + "/cloudfront-custom-origin-tls-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": distributionArn,
+                    "GeneratorId": generatorUuid,
                     "AwsAccountId": awsAccountId,
                     "Types": [
                         "Software and Configuration Checks/AWS Security Best Practices"
@@ -952,9 +960,9 @@ def cloudfront_custom_origin_tls_check(cache: dict, awsAccountId: str, awsRegion
             else:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{distributionArn}/cloudfront-custom-origin-tls-check",
+                    "Id": awsAccountId + "/cloudfront-custom-origin-tls-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": distributionArn,
+                    "GeneratorId": generatorUuid,
                     "AwsAccountId": awsAccountId,
                     "Types": [
                         "Software and Configuration Checks/AWS Security Best Practices"
