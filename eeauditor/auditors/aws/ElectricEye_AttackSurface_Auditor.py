@@ -997,3 +997,5 @@ def cloudfront_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str
                         "RecordState": "ARCHIVED"
                     }
                     yield finding
+
+# TODO: Route 53 Public Hosted Zone, Global Accelerator

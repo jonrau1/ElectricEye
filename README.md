@@ -2,7 +2,7 @@
 
 ![Logo?!](./screenshots/EE-LogoLarge.png)
 
-Continuously monitor your AWS services for configurations that can lead to degradation of confidentiality, integrity or availability. All results can be exported to Security Hub, JSON, CSV, Databases, and more for further aggregation and analysis. 
+Continuously monitor your AWS attack surface and evaluate services for configurations that can lead to degradation of confidentiality, integrity or availability. All results can be exported to Security Hub, JSON, CSV, Databases, and more for further aggregation and analysis. 
 
 ***Up here in space***<br/>
 ***I'm looking down on you***<br/>
@@ -16,6 +16,7 @@ Continuously monitor your AWS services for configurations that can lead to degra
 - [Description](#description)
 - [Solution Architecture](#solution-architecture)
 - [Running locally](#running-locally)
+  - [Attack Surface Monitoring Only](#attack-surface-monitoring-only)
   - [ElectricEye and Custom Outputs](#electriceye-and-custom-outputs)
 - [Setting Up on Fargate](#setting-up-electriceye-on-fargate)
   - [Solution Architecture for Fargate](#aws-fargate-solution-architecture)
@@ -40,7 +41,7 @@ Continuously monitor your AWS services for configurations that can lead to degra
 
 ## Synopsis
 
-- **430+ security & AWS best practice detections** including services not covered by Security Hub/Config (MemoryDB, Cognito, DocDB, Amazon Managed Blockchain, etc.), all findings are **aligned to NIST CSF, NIST 800-53, AICPA's TSCs, ISO 27001:2013 and MITRE ATT&CK**.
+- **450+ security & AWS best practice detections** including services not covered by Security Hub/Config (MemoryDB, Cognito, DocDB, Amazon Managed Blockchain, etc.), all findings are **aligned to NIST CSF, NIST 800-53, AICPA's TSCs, ISO 27001:2013 and MITRE ATT&CK Techniques**.
 
 - Provides basic **Attack Surface Management (ASM)** capabilities, checking for **more than 20 highly dangerous** services running on publicly reachable assets that adversaries can potentially exploit.
 
@@ -52,11 +53,13 @@ Continuously monitor your AWS services for configurations that can lead to degra
 
 ## Description
 
-ElectricEye is a Python-native CLI framework that controls individual Python scripts (affectionately called **Auditors**) which align to a specific AWS service or resource (such as an EC2 Security Group, or Systems Manager Managed Instance) that contain one or more **Checks**. Checks (continuously) monitor your AWS infrastructure looking for configurations related to confidentiality, integrity and availability that do not align with AWS best practices. By default, the output of these checks are formatted using the [AWS Security Finding Format](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html) (ASFF) and sent to AWS Security Hub but can be sent to many other locations.
+ElectricEye is a Python-native CLI framework that controls individual Python scripts (affectionately called **Auditors**) which align to a specific AWS service or resource (such as an EC2 Security Group, or Systems Manager Managed Instance) that contain one or more **Checks**. Checks (continuously) monitor your AWS attack surface and evaluate services for configurations that can lead to degradation of confidentiality, integrity or availability. By default, the output of these checks are formatted using the [AWS Security Finding Format](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html) (ASFF) and sent to AWS Security Hub but can be sent to many other locations.
 
 As of **30 MARCH 2022** ElectricEye now supports Attack Surface Management (ASM) capabilities, showing you potentially dangerous and exploitable services running on publicly reachable assets such as EC2 Instances and Amazon Elastic Load Balancing (ELB) Application Load Balancers (ALB).
 
-ElectricEye is extensible, however, and can output to JSON, CSV, PostgreSQL, MongoDB/AWS DocumentDB, and other locations and formats. All Checks within ElectricEye are also mapped against popular security framework controls such as the AICPA's Trust Service Criteria (TSCs), NIST 800-53 Rev 5, the NIST Cyber Security Framework (CSF), and ISO/IEC 27001:2013. Additionally, ElectricEye comes with several add-on modules to extend the core model which provides dozens of detection-based controls. ElectricEye-Response provides a multi-account response and remediation platform (also known as SOAR), ElectricEye-ChatOps integrates with Slack/Pagerduty/Microsoft Teams, and ElectricEye-Reports integrates with QuickSight. All add-ons are supported by both CloudFormation and Terraform and can also be used independently of the core module itself.
+ElectricEye is extensible, however, and can output to JSON, CSV, PostgreSQL, MongoDB/AWS DocumentDB, and other locations and formats. All Checks within ElectricEye are also mapped against popular security framework controls such as the AICPA's Trust Service Criteria (TSCs), NIST 800-53 Rev 5, the NIST Cyber Security Framework (CSF), ISO/IEC 27001:2013 and the ASM Checks are mapped to MITRE ATT&CK Techniques.
+
+Additionally, ElectricEye comes with several add-on modules to extend the core model which provides dozens of detection-based controls. ElectricEye-Response provides a multi-account response and remediation platform (also known as SOAR), ElectricEye-ChatOps integrates with Slack/Pagerduty/Microsoft Teams, and ElectricEye-Reports integrates with QuickSight. All add-ons are supported by both CloudFormation and Terraform and can also be used independently of the core module itself.
 
 Numerous personas can make effective usage of ElectricEye such as: Security Operations (SecOps), DevOps, DevSecOps, IT Audit, Governance/Risk/Compliance (GRC) Analysts, Enterprise Architects, Security Architects, Cloud Center of Excellence (CCOE) members, Software Development Engineers (SDEs) using Cloud-native services, Red Teamers, Purple Teamers, and Security Engineering. That said, ElectricEye can also serve as an important assurance tool or educational tool for nearly any persona who works with or is learning the AWS Cloud.
 
@@ -131,6 +134,14 @@ You can get a full name of the auditors (as well as their checks within comments
 
 ```bash
 python3 eeauditor/controller.py --list-checks
+```
+
+### Attack Surface Monitoring Only
+
+If you only wanted to run Attack Surface Monitoring checks use the following command which show an example of outputting the ASM checks into a JSON file for consumption into SIEM or BI tools.
+
+```bash
+python3 eeauditor/controller.py -a ElectricEye_AttackSurface_Auditor -o json_normalized --output-file ElectricASM
 ```
 
 ### ElectricEye and Custom Outputs
@@ -491,7 +502,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 
 ## Supported Services and Checks
 
-These are the following services and checks perform by each Auditor. There are currently **456** checks supported across **91** AWS services / components using **71** Auditors. 
+These are the following services and checks perform by each Auditor. There are currently **481** checks supported across **91** AWS services / components using **71** Auditors. 
 
 There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
@@ -946,6 +957,31 @@ There are currently **62** supported response and remediation Playbooks with cov
 | ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a MongoDB/DocDB service publicly accessible |
 | ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a Rabbit/AmazonMQ service publicly accessible |
 | ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a SparkUI service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a FTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a SSH service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a Telnet service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a SMTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a HTTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a POP3 service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a Win NetBIOS service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a SMB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a RDP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a MSSQL service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a MySQL/MariaDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a NFS service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a Docker API service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a OracleDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a PostgreSQL service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a Kibana service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a VMWARE ESXi service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a HTTP Proxy service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a SplunkD service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a Kubernetes API Server service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a Redis service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a Kafka service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a MongoDB/DocDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a Rabbit/AmazonMQ service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a SparkUI service publicly accessible |
 | Secrets_Auditor.py | CodeBuild project | Do CodeBuild projects have secrets in plaintext env vars |
 | Secrets_Auditor.py | CloudFormation Stack | Do CloudFormation Stacks have secrets in parameters |
 | Secrets_Auditor.py | ECS Task Definition | Do ECS Task Definitions have secrets in env vars |
