@@ -286,7 +286,7 @@ def autoscaling_load_balancer_healthcheck_check(cache: dict, awsAccountId: str, 
                 yield finding
 
 @registry.register_check("autoscaling")
-def autoscaling_scale_in_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def autoscaling_high_availability_az_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Autoscaling.3] Autoscaling Groups should use at least half of a Region's Availability Zones"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
