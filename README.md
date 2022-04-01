@@ -491,7 +491,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 
 ## Supported Services and Checks
 
-These are the following services and checks perform by each Auditor. There are currently **450** checks supported across **91** AWS services / components using **71** Auditors. 
+These are the following services and checks perform by each Auditor. There are currently **456** checks supported across **91** AWS services / components using **71** Auditors. 
 
 There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
@@ -519,14 +519,20 @@ There are currently **62** supported response and remediation Playbooks with cov
 | Amazon_Autoscaling_Auditor.py | Autoscaling groups | Do ASGs protect instances from scale-in |
 | Amazon_Autoscaling_Auditor.py | Autoscaling groups | Do ASGs with ELB or Target Groups use ELB health checks |
 | Amazon_Autoscaling_Auditor.py | Autoscaling groups | Do ASGs use at least half or more of a Region's open AZs |
-| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Does distribution have trusted signers with key pairs |
-| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Does distribution have Origin Shield enabled |
-| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Does distribution have Geo Restriction enabled |
-| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Does distribution have Default Viewer Certificate |
-| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Does distribution have Field-Level Encryption enabled |
-| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Does distribution have WAF enabled |
-| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Does distribution use Default TLS |
-| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Does distribution use Custom Origin TLS |
+| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Do distros with trusted signers use key pairs |
+| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Do distro origins have Origin Shield enabled |
+| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Do distros use the default viewer certificate |
+| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Do distros have Georestriction enabled |
+| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Do distros have Field-Level Encryption enabled |
+| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Do distros have WAF enabled |
+| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Do distros enforce Default Viewer TLS 1.2 |
+| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Do distros enforce Custom Origin TLS 1.2 |
+| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Do distros enforce Custom Origin HTTPS-only connections |
+| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Do distros enforce Default Viewer HTTPS with SNI |
+| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Do distros have logging enabled |
+| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Do distros have default root objects |
+| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Do distros enforce Default Viewer HTTPS-only connections |
+| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Do distros enforce S3 Origin Object Access Identity |
 | Amazon_CloudSearch_Auditor.py | CloudSearch Domain | Do Domains enforce HTTPS-only |
 | Amazon_CloudSearch_Auditor.py | CloudSearch Domain | Do Domains use TLS 1.2 |
 | Amazon_CognitoIdP_Auditor.py | Cognito Identity Pool | Does the Password policy comply with AWS CIS Foundations Benchmark |

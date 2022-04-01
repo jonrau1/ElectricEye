@@ -29,6 +29,8 @@ registry = CheckRegister()
 ec2 = boto3.client("ec2")
 elbv2 = boto3.client("elbv2")
 elb = boto3.client("elb")
+cloudfront = boto3.client("cloudfront")
+
 # Instantiate a NMAP scanner for TCP scans to define ports
 nmap = nmap3.NmapScanTechniques()
 
@@ -61,6 +63,19 @@ def describe_clbs(cache):
         return response
     cache["describe_load_balancers"] = elb.describe_load_balancers()
     return cache["describe_load_balancers"]
+
+def cloudfront_paginate(cache):
+    itemList = []
+    response = cache.get("items")
+    if response:
+        return response
+    paginator = cloudfront.get_paginator("list_distributions")
+    if paginator:
+        for page in paginator.paginate():
+            for items in page["DistributionList"]["Items"]:
+                itemList.append(items)
+        cache["items"] = itemList
+        return cache["items"]
 
 # This function performs the actual NMAP Scan
 def scan_host(host_ip, host_name, asset_type):
@@ -778,6 +793,179 @@ def eip_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
                                         "PublicIp": publicIp,
                                         "AllocationId": allocationId,
                                         "PrivateIpAddress": privateIpAddress
+                                    }
+                                }
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "PASSED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-3",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-17",
+                                "NIST SP 800-53 AC-19",
+                                "NIST SP 800-53 AC-20",
+                                "NIST SP 800-53 SC-15",
+                                "AICPA TSC CC6.6",
+                                "ISO 27001:2013 A.6.2.1",
+                                "ISO 27001:2013 A.6.2.2",
+                                "ISO 27001:2013 A.11.2.6",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1",
+                                "MITRE ATT&CK T1040",
+                                "MITRE ATT&CK T1046",
+                                "MITRE ATT&CK T1580",
+                                "MITRE ATT&CK T1590",
+                                "MITRE ATT&CK T1592",
+                                "MITRE ATT&CK T1595"
+                            ]
+                        },
+                        "Workflow": {"Status": "RESOLVED"},
+                        "RecordState": "ARCHIVED"
+                    }
+                    yield finding
+
+@registry.register_check("elb")
+def cloudfront_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[AttackSurface.Cloudfront.{checkIdNumber}] Cloudfront Distributions should not be publicly reachable on {serviceName}"""
+    # ISO Time
+    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+    for dist in cloudfront_paginate(cache):
+        distributionId = dist["Id"]
+        distributionArn = dist["ARN"]
+        domainName = dist["DomainName"]
+        distStatus = dist["Status"]
+        # Logic time
+        scanner = scan_host(domainName, distributionId, "CloudFront Distribution")
+        # NoneType returned on KeyError due to Nmap errors
+        if scanner == None:
+            continue
+        else:
+            # Pull out the IP resolution of the DNS Name
+            keys = scanner.keys()
+            hostIp = (list(keys)[0])
+            # Loop the results of the scan - starting with Open Ports which require a combination of
+            # a Public Instance, an open SG rule, and a running service/server on the host itself
+            # use enumerate and a fixed offset to product the Check Title ID number
+            for index, p in enumerate(scanner[hostIp]["ports"]):
+                # Parse out the Protocol, Port, Service, and State/State Reason from NMAP Results
+                checkIdNumber = str(int(index + 1))
+                portNumber = int(p["portid"])
+                if portNumber == 8089:
+                    serviceName = 'SPLUNKD'
+                elif portNumber == 10250:
+                    serviceName = 'KUBERNETES-API'
+                elif portNumber == 5672:
+                    serviceName = 'RABBITMQ'
+                elif portNumber == 4040:
+                    serviceName = 'SPARK-WEBUI'
+                else:
+                    serviceName = str(p["service"]["name"]).upper()
+                serviceStateReason = str(p["reason"])
+                serviceState = str(p["state"])
+                # This is a failing check
+                if serviceState == "open":
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": f"{distributionArn}/attack-surface-cfront-open-{serviceName}-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": distributionArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": [
+                            "Software and Configuration Checks/AWS Security Best Practices/Network Reachability",
+                            "TTPs/Discovery"
+                        ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "HIGH"},
+                        "Confidence": 99,
+                        "Title": f"[AttackSurface.Cloudfront.{checkIdNumber}] Cloudfront Distributions should not be publicly reachable on {serviceName}",
+                        "Description": f"CloudFront Distribution {distributionId} is publicly reachable on port {portNumber} which corresponds to the {serviceName} service. When Services are successfully fingerprinted by the ElectricEye Attack Surface Management Auditor it means the instance is Public, has an open Secuirty Group rule, and a running service on the host which adversaries can also see. Refer to the remediation insturctions for an example of a way to secure EC2 instances.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For information about protecting Origins behind CloudFront distros refer to the Data protection in Amazon CloudFront section of the Amazon CloudFront Developer Guide",
+                                "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/data-protection-summary.html"
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsCloudFrontDistribution",
+                                "Id": distributionArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsCloudFrontDistribution": {
+                                        "DomainName": domainName,
+                                        "Status": distStatus
+                                    }
+                                }
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "FAILED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-3",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-17",
+                                "NIST SP 800-53 AC-19",
+                                "NIST SP 800-53 AC-20",
+                                "NIST SP 800-53 SC-15",
+                                "AICPA TSC CC6.6",
+                                "ISO 27001:2013 A.6.2.1",
+                                "ISO 27001:2013 A.6.2.2",
+                                "ISO 27001:2013 A.11.2.6",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1",
+                                "MITRE ATT&CK T1040",
+                                "MITRE ATT&CK T1046",
+                                "MITRE ATT&CK T1580",
+                                "MITRE ATT&CK T1590",
+                                "MITRE ATT&CK T1592",
+                                "MITRE ATT&CK T1595"
+                            ]
+                        },
+                        "Workflow": {"Status": "NEW"},
+                        "RecordState": "ACTIVE"
+                    }
+                    yield finding
+                # this is a passing check
+                else:
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": f"{distributionArn}/attack-surface-cfront-open-{serviceName}-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": distributionArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": [
+                            "Software and Configuration Checks/AWS Security Best Practices/Network Reachability",
+                            "TTPs/Discovery"
+                        ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "INFORMATIONAL"},
+                        "Confidence": 99,
+                        "Title": f"[AttackSurface.Cloudfront.{checkIdNumber}] Cloudfront Distributions should not be publicly reachable on {serviceName}",
+                        "Description": f"CloudFront Distribution {distributionId} is publicly reachable on port {portNumber} is not publicly reachable on port {portNumber} which corresponds to the {serviceName} service due to {serviceStateReason}. Distributions and their respective Security Groups and Origins should still be reviewed for minimum necessary access.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For information about protecting Origins behind CloudFront distros refer to the Data protection in Amazon CloudFront section of the Amazon CloudFront Developer Guide",
+                                "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/data-protection-summary.html"
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsCloudFrontDistribution",
+                                "Id": distributionArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsCloudFrontDistribution": {
+                                        "DomainName": domainName,
+                                        "Status": distStatus
                                     }
                                 }
                             }
