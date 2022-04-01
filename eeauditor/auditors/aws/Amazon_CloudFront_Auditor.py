@@ -19,7 +19,6 @@
 #under the License.
 
 import datetime
-import json
 import boto3
 from check_register import CheckRegister
 
@@ -366,5 +365,261 @@ def cloudfront_origin_shield_check(cache: dict, awsAccountId: str, awsRegion: st
                         "RecordState": "ARCHIVED"
                     }
                     yield finding
+
+@registry.register_check("cloudfront")
+def cloudfront_default_viewer_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudFront.3] Cloudfront Distributions should not use the default Viewer certificate"""
+    # ISO Time
+    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+    for dist in paginate(cache):
+        distributionId = dist["Id"]
+        distributionArn = dist["ARN"]
+        domainName = dist["DomainName"]
+        distStatus = dist["Status"]
+        # Get check specific metadata
+        distro = cloudfront.get_distribution(Id=distributionId)["Distribution"]
+        if str(distro["DistributionConfig"]["ViewerCertificate"]["CloudFrontDefaultCertificate"]) == "True":
+            # this is a failing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{distributionArn}/cloudfront-default-viewer-cert-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": distributionArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[CloudFront.3] Cloudfront Distributions should not use the default Viewer certificate",
+                "Description": f"CloudFront Distribution {distributionId} uses the Cloudfront default Viewer certificate. If you're using your own domain name, such as example.com, you need to use an SSL/TLS certificate provided by AWS Certificate Manager (ACM), or import a certificate from a third-party certificate authority into ACM. Using your own certificate will lessen the chance of abuse, attacks against supplier certificates, and increase logging capabilities and revocation if required. For more information see the remediation section.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on CloudFront HTTPS settings refer to the Requiring HTTPS for communication between viewers and CloudFront section of the Amazon CloudFront Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https-viewers-to-cloudfront.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsCloudFrontDistribution",
+                        "Id": distributionArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsCloudFrontDistribution": {
+                                "DomainName": domainName,
+                                "Status": distStatus
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.DS-2",
+                        "NIST SP 800-53 SC-8",
+                        "NIST SP 800-53 SC-11",
+                        "NIST SP 800-53 SC-12",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            # this is a passing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{distributionArn}/cloudfront-default-viewer-cert-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": distributionArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[CloudFront.3] Cloudfront Distributions should not use the default Viewer certificate",
+                "Description": f"CloudFront Distribution {distributionId} does not use the Cloudfront default Viewer certificate.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on CloudFront HTTPS settings refer to the Requiring HTTPS for communication between viewers and CloudFront section of the Amazon CloudFront Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https-viewers-to-cloudfront.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsCloudFrontDistribution",
+                        "Id": distributionArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsCloudFrontDistribution": {
+                                "DomainName": domainName,
+                                "Status": distStatus
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.DS-2",
+                        "NIST SP 800-53 SC-8",
+                        "NIST SP 800-53 SC-11",
+                        "NIST SP 800-53 SC-12",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("cloudfront")
+def cloudfront_georestriction_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudFront.4] Cloudfront Distributions should have a Georestriction configured"""
+    # ISO Time
+    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+    for dist in paginate(cache):
+        distributionId = dist["Id"]
+        distributionArn = dist["ARN"]
+        domainName = dist["DomainName"]
+        distStatus = dist["Status"]
+        # Get check specific metadata
+        distro = cloudfront.get_distribution(Id=distributionId)["Distribution"]
+        geoBlockType = str(distro["DistributionConfig"]["Restrictions"]["GeoRestriction"]["RestrictionType"])
+        if geoBlockType == "none":
+            # this is a failing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{distributionArn}/cloudfront-geo-restriction-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": distributionArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[CloudFront.4] Cloudfront Distributions should have a Georestriction configured",
+                "Description": f"CloudFront Distribution {distributionId} does not use any Geostrictictions. You can use geographic restrictions, sometimes known as geo blocking, to prevent users in specific geographic locations from accessing content that you're distributing through a CloudFront distribution. Geo blocking can help meet regulatory, compliance, and/or privacy controls such as ensuring content is only available to certain populations or implementing embargoes or sanctions required by the United States Department of the Treasury. For more information see the remediation section.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Geo Restriction for CloudFront, refer to the Restricting the Geographic Distribution of Your Content section of the Amazon CloudFront Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/georestrictions.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsCloudFrontDistribution",
+                        "Id": distributionArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsCloudFrontDistribution": {
+                                "DomainName": domainName,
+                                "Status": distStatus
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.DS-2",
+                        "NIST SP 800-53 SC-8",
+                        "NIST SP 800-53 SC-11",
+                        "NIST SP 800-53 SC-12",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            restrictedCountries = str(distro["DistributionConfig"]["Restrictions"]["GeoRestriction"]["Items"])
+            # this is a passing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{distributionArn}/cloudfront-geo-restriction-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": distributionArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[CloudFront.4] Cloudfront Distributions should have a Georestriction configured",
+                "Description": f"CloudFront Distribution {distributionId} uses a {geoBlockType} Geostrictiction against the following countries {restrictedCountries}.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Geo Restriction for CloudFront, refer to the Restricting the Geographic Distribution of Your Content section of the Amazon CloudFront Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/georestrictions.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsCloudFrontDistribution",
+                        "Id": distributionArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsCloudFrontDistribution": {
+                                "DomainName": domainName,
+                                "Status": distStatus
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.DS-2",
+                        "NIST SP 800-53 SC-8",
+                        "NIST SP 800-53 SC-11",
+                        "NIST SP 800-53 SC-12",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
 ## TODO: NEXT
