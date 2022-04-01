@@ -21,7 +21,6 @@
 import boto3
 import datetime
 from check_register import CheckRegister
-from dateutil.parser import parse
 
 registry = CheckRegister()
 
@@ -176,7 +175,58 @@ def autoscaling_load_balancer_healthcheck_check(cache: dict, awsAccountId: str, 
         asgTgs = asg["TargetGroupARNs"]
         # If either list is empty it means there are no ELBs or ELBv2s associated with this ASG
         if not (asgLbs or asgTgs):
-            continue
+            # this is a passing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{asgArn}/asg-elb-asgs-elb-healthcheck-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": asgArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Autoscaling.2] Autoscaling Groups with load balancer targets should use ELB health checks",
+                "Description": f"Autoscaling group {asgName} does not have any ELB or Target Groups associated and is not in scope for this check.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information about enabling ELB health checks refer to the Add Elastic Load Balancing health checks to an Auto Scaling group section of the Amazon EC2 Auto Scaling User Guide",
+                        "Url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-add-elb-healthcheck.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsAutoScalingAutoScalingGroup",
+                        "Id": asgArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsAutoScalingAutoScalingGroup": {
+                                "HealthCheckType": healthCheckType
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.AM-2",
+                        "NIST SP 800-53 CM-8",
+                        "NIST SP 800-53 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
         else:
             if healthCheckType != "ELB":
                 # this is a failing check
@@ -318,7 +368,7 @@ def autoscaling_high_availability_az_check(cache: dict, awsAccountId: str, awsRe
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
                 "Title": "[Autoscaling.3] Autoscaling Groups should use at least half of a Region's Availability Zones",
-                "Description": f"Autoscaling group {asgName} does not use at least half of {awsRegion}'s available Availability Zones. Allowing instances to scale across more Availability Zones increases the availability and resilience of your applications in the case of unavailable resources, Availability Zone degradation, or to rapidly recover from unplanned application failures. To take advantage of the safety and reliability of geographic redundancy, span your Auto Scaling group across multiple Availability Zones within a Region and attach a load balancer to distribute incoming traffic across those Availability Zones. Review the remediation section for more information on this configuration.",
+                "Description": f"Autoscaling group {asgName} does not use at least half of {awsRegion}'s {availableAzCount} available Availability Zones and only uses {len(asgAzs)}. Allowing instances to scale across more Availability Zones increases the availability and resilience of your applications in the case of unavailable resources, Availability Zone degradation, or to rapidly recover from unplanned application failures. To take advantage of the safety and reliability of geographic redundancy, span your Auto Scaling group across multiple Availability Zones within a Region and attach a load balancer to distribute incoming traffic across those Availability Zones. Review the remediation section for more information on this configuration.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "To learn more about adding AZs to your ASGs refer to the Add and remove Availability Zones section of the Amazon EC2 Auto Scaling User Guide",
@@ -375,7 +425,7 @@ def autoscaling_high_availability_az_check(cache: dict, awsAccountId: str, awsRe
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[Autoscaling.3] Autoscaling Groups should use at least half of a Region's Availability Zones",
-                "Description": f"Autoscaling group {asgName} uses at least half of {awsRegion}'s available Availability Zones.",
+                "Description": f"Autoscaling group {asgName} uses at least half of {awsRegion}'s {availableAzCount} available Availability Zones by using {len(asgAzs)}.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "To learn more about adding AZs to your ASGs refer to the Add and remove Availability Zones section of the Amazon EC2 Auto Scaling User Guide",
@@ -416,6 +466,4 @@ def autoscaling_high_availability_az_check(cache: dict, awsAccountId: str, awsRe
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED"
             }
-            yield finding
-
-# TODO: Next        
+            yield finding      
