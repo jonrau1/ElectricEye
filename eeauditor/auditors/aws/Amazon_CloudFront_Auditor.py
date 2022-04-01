@@ -1427,4 +1427,131 @@ def cloudfront_custom_origin_https_only_protcol_check(cache: dict, awsAccountId:
                     }
                     yield finding
 
+@registry.register_check("cloudfront")
+def cloudfront_default_viewer_tls12_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CloudFront.10] Cloudfront Distributions should enforce Server Name Indication (SNI) to serve HTTPS requests"""
+    # ISO Time
+    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+    for dist in paginate(cache):
+        distributionId = dist["Id"]
+        distributionArn = dist["ARN"]
+        domainName = dist["DomainName"]
+        distStatus = dist["Status"]
+        # Get check specific metadata
+        distro = cloudfront.get_distribution(Id=distributionId)["Distribution"]
+        if str(distro["DistributionConfig"]["ViewerCertificate"]["SSLSupportMethod"]) != "sni-only":
+            # this is a failing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{distributionArn}/cloudfront-default-viewer-https-sni-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": distributionArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[CloudFront.10] Cloudfront Distributions should enforce Server Name Indication (SNI) to serve HTTPS requests",
+                "Description": f"CloudFront Distribution {distributionId} does not enforce Server Name Indication (SNI) for default viewer HTTPS connectivity behavior. SNI is an extension to the TLS protocol that is supported by browsers and clients released after 2010. If you configure CloudFront to serve HTTPS requests using SNI, CloudFront associates your alternate domain name with an IP address for each edge location. When a viewer submits an HTTPS request for your content, DNS routes the request to the IP address for the correct edge location. The IP address to your domain name is determined during the SSL/TLS handshake negotiation; the IP address isn't dedicated to your distribution. For more information see the remediation section.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "To configure your CloudFront distributions to use SNI to serve HTTPS requests refer to the Using SNI to Serve HTTPS Requests (works for Most Clients) section of the Amazon CloudFront Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cnames-https-dedicated-ip-or-sni.html#cnames-https-sni",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsCloudFrontDistribution",
+                        "Id": distributionArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsCloudFrontDistribution": {
+                                "DomainName": domainName,
+                                "Status": distStatus
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.DS-2",
+                        "NIST SP 800-53 SC-8",
+                        "NIST SP 800-53 SC-11",
+                        "NIST SP 800-53 SC-12",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3"                    
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            # this is a passing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{distributionArn}/cloudfront-default-viewer-https-sni-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": distributionArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[CloudFront.10] Cloudfront Distributions should enforce Server Name Indication (SNI) to serve HTTPS requests",
+                "Description": f"CloudFront Distribution {distributionId} enforces Server Name Indication (SNI) for default viewer HTTPS connectivity behavior",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "To configure your CloudFront distributions to use SNI to serve HTTPS requests refer to the Using SNI to Serve HTTPS Requests (works for Most Clients) section of the Amazon CloudFront Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cnames-https-dedicated-ip-or-sni.html#cnames-https-sni",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsCloudFrontDistribution",
+                        "Id": distributionArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsCloudFrontDistribution": {
+                                "DomainName": domainName,
+                                "Status": distStatus
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.DS-2",
+                        "NIST SP 800-53 SC-8",
+                        "NIST SP 800-53 SC-11",
+                        "NIST SP 800-53 SC-12",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3"                    
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
 ## TODO: NEXT
