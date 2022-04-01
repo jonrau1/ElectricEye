@@ -104,8 +104,8 @@ def dedicated_master_check(cache: dict, awsAccountId: str, awsRegion: str, awsPa
                         "ISO 27001:2013 A.11.1.4",
                         "ISO 27001:2013 A.17.1.1",
                         "ISO 27001:2013 A.17.1.2",
-                        "ISO 27001:2013 A.17.2.1",
-                    ],
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
                 "RecordState": "ACTIVE",
@@ -164,8 +164,8 @@ def dedicated_master_check(cache: dict, awsAccountId: str, awsRegion: str, awsPa
                         "ISO 27001:2013 A.11.1.4",
                         "ISO 27001:2013 A.17.1.1",
                         "ISO 27001:2013 A.17.1.2",
-                        "ISO 27001:2013 A.17.2.1",
-                    ],
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED",

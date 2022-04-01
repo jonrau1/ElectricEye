@@ -69,8 +69,6 @@ def rds_instance_ha_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
     """[RDS.1] RDS instances should be configured for high availability"""
     response = describe_db_instances(cache)
     myRdsInstances = response["DBInstances"]
-    response = describe_db_snapshots(cache)
-    myRdsSnapshots = response["DBSnapshots"]
     for dbinstances in myRdsInstances:
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
@@ -1164,11 +1162,11 @@ def rds_instance_cloudwatch_logging_check(cache: dict, awsAccountId: str, awsReg
                         "NIST SP 800-53 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
-                        "ISO 27001:2013 A.16.1.7",
-                    ],
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
         except:
@@ -1224,11 +1222,11 @@ def rds_instance_cloudwatch_logging_check(cache: dict, awsAccountId: str, awsReg
                         "NIST SP 800-53 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
-                        "ISO 27001:2013 A.16.1.7",
-                    ],
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
 
@@ -1411,11 +1409,11 @@ def rds_snapshot_public_share_check(cache: dict, awsAccountId: str, awsRegion: s
                                 "ISO 27001:2013 A.6.2.2",
                                 "ISO 27001:2013 A.11.2.6",
                                 "ISO 27001:2013 A.13.1.1",
-                                "ISO 27001:2013 A.13.2.1",
-                            ],
+                                "ISO 27001:2013 A.13.2.1"
+                            ]
                         },
                         "Workflow": {"Status": "NEW"},
-                        "RecordState": "ACTIVE",
+                        "RecordState": "ACTIVE"
                     }
                     yield finding
                 else:
@@ -1467,11 +1465,11 @@ def rds_snapshot_public_share_check(cache: dict, awsAccountId: str, awsRegion: s
                                 "ISO 27001:2013 A.6.2.2",
                                 "ISO 27001:2013 A.11.2.6",
                                 "ISO 27001:2013 A.13.1.1",
-                                "ISO 27001:2013 A.13.2.1",
-                            ],
+                                "ISO 27001:2013 A.13.2.1"
+                            ]
                         },
                         "Workflow": {"Status": "RESOLVED"},
-                        "RecordState": "ARCHIVED",
+                        "RecordState": "ARCHIVED"
                     }
                     yield finding
             else:

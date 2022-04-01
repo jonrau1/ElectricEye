@@ -7,6 +7,7 @@
             "Action": [
                 "airflow:GetEnvironment",
                 "airflow:ListEnvironments",
+                "autoscaling:DescribeAutoScalingGroups",
                 "cloudtrail:DescribeTrails",
                 "cloudtrail:ListTrails",
                 "kms:DescribeKey",
