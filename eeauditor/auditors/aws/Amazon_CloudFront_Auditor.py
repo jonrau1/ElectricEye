@@ -46,6 +46,7 @@ def cloudfront_active_trusted_signers_check(cache: dict, awsAccountId: str, awsR
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for dist in paginate(cache):
+        print(dist)
         distributionId = dist["Id"]
         distribution = cloudfront.get_distribution(Id=distributionId)
         try:
