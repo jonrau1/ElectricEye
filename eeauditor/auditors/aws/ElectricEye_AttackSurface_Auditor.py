@@ -759,7 +759,7 @@ def eip_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
                         "Severity": {"Label": "INFORMATIONAL"},
                         "Confidence": 99,
                         "Title": f"[AttackSurface.EIP.{checkIdNumber}] Elastic IPs should not advertise publicly reachable {serviceName} services",
-                        "Description": f"Elastic IP address {publicIp} is publicly reachable on port {portNumber} which corresponds to the {serviceName} service due to {serviceStateReason}. EIPs and their respective Security Groups should still be reviewed for minimum necessary access.",
+                        "Description": f"Elastic IP address {publicIp} is not publicly reachable on port {portNumber} which corresponds to the {serviceName} service due to {serviceStateReason}. EIPs and their respective Security Groups should still be reviewed for minimum necessary access.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "EC2 Instances should only have the minimum necessary ports open to achieve their purposes, allow traffic from authorized sources, and use other defense-in-depth and hardening strategies. For a basic view on traffic authorization into your instances refer to the Authorize inbound traffic for your Linux instances section of the Amazon Elastic Compute Cloud User Guide",
