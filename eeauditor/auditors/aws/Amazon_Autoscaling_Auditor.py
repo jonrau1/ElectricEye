@@ -25,6 +25,8 @@ from dateutil.parser import parse
 
 registry = CheckRegister()
 
+# Boto3 clients
+ec2 = boto3.client("ec2")
 autoscaling = boto3.client("autoscaling")
 
 def describe_auto_scaling_groups(cache):
@@ -63,7 +65,7 @@ def autoscaling_scale_in_protection_check(cache: dict, awsAccountId: str, awsReg
                 "Description": f"Autoscaling group {asgName} is not configured to protect instances from scale-in. To control whether an Auto Scaling group can terminate a particular instance when scaling in, use instance scale-in protection, Instance scale-in protection starts when the instance state is InService. Scale-in protection can help prevent application instability due to mulitiple scale events, but may also be detrimental due to over-provisioning. Review the remediation section for more information on this configuration.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "To learn more abotu scale-in protection refer to the Using instance scale-in protection section of the Amazon EC2 Auto Scaling User Guide",
+                        "Text": "To learn more about scale-in protection refer to the Using instance scale-in protection section of the Amazon EC2 Auto Scaling User Guide",
                         "Url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-instance-protection.html",
                     }
                 },
@@ -120,7 +122,7 @@ def autoscaling_scale_in_protection_check(cache: dict, awsAccountId: str, awsReg
                 "Description": f"Autoscaling group {asgName} is configured to protect instances from scale-in.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "To learn more abotu scale-in protection refer to the Using instance scale-in protection section of the Amazon EC2 Auto Scaling User Guide",
+                        "Text": "To learn more about scale-in protection refer to the Using instance scale-in protection section of the Amazon EC2 Auto Scaling User Guide",
                         "Url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-instance-protection.html",
                     }
                 },
@@ -174,7 +176,6 @@ def autoscaling_load_balancer_healthcheck_check(cache: dict, awsAccountId: str, 
         asgTgs = asg["TargetGroupARNs"]
         # If either list is empty it means there are no ELBs or ELBv2s associated with this ASG
         if not (asgLbs or asgTgs):
-            print(f"{asgName} does not have any LBs or TGs")
             continue
         else:
             if healthCheckType != "ELB":
@@ -283,5 +284,138 @@ def autoscaling_load_balancer_healthcheck_check(cache: dict, awsAccountId: str, 
                     "RecordState": "ARCHIVED"
                 }
                 yield finding
+
+@registry.register_check("autoscaling")
+def autoscaling_scale_in_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Autoscaling.3] Autoscaling Groups should use at least half of a Region's Availability Zones"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    # Collect the open AZs in the Region
+    regionalAzs = []
+    for az in ec2.describe_availability_zones(AllAvailabilityZones=False)["AvailabilityZones"]:
+        if (az["State"] == "available" and az["OptInStatus"] != "not-opted-in"):
+            if az["ZoneName"] not in regionalAzs:
+                regionalAzs.append(az["ZoneName"])
+    availableAzCount = len(regionalAzs)
+    for asg in describe_auto_scaling_groups(cache)["AutoScalingGroups"]:
+        asgArn = asg["AutoScalingGroupARN"]
+        asgName = asg["AutoScalingGroupName"]
+        healthCheckType = asg["HealthCheckType"]
+        # Check specific metadata
+        asgAzs = asg["AvailabilityZones"]
+        if len(asgAzs) < (availableAzCount / 2):
+            # this is a failing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{asgArn}/asg-multiaz-ha-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": asgArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[Autoscaling.3] Autoscaling Groups should use at least half of a Region's Availability Zones",
+                "Description": f"Autoscaling group {asgName} does not use at least half of {awsRegion}'s available Availability Zones. Allowing instances to scale across more Availability Zones increases the availability and resilience of your applications in the case of unavailable resources, Availability Zone degradation, or to rapidly recover from unplanned application failures. To take advantage of the safety and reliability of geographic redundancy, span your Auto Scaling group across multiple Availability Zones within a Region and attach a load balancer to distribute incoming traffic across those Availability Zones. Review the remediation section for more information on this configuration.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "To learn more about adding AZs to your ASGs refer to the Add and remove Availability Zones section of the Amazon EC2 Auto Scaling User Guide",
+                        "Url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-add-availability-zone.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsAutoScalingAutoScalingGroup",
+                        "Id": asgArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsAutoScalingAutoScalingGroup": {
+                                "HealthCheckType": healthCheckType
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.BE-5",
+                        "NIST CSF PR.PT-5",
+                        "NIST SP 800-53 CP-2",
+                        "NIST SP 800-53 CP-11",
+                        "NIST SP 800-53 SA-13",
+                        "NIST SP 800-53 SA14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            # this is a passing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{asgArn}/asg-multiaz-ha-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": asgArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Autoscaling.3] Autoscaling Groups should use at least half of a Region's Availability Zones",
+                "Description": f"Autoscaling group {asgName} uses at least half of {awsRegion}'s available Availability Zones.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "To learn more about adding AZs to your ASGs refer to the Add and remove Availability Zones section of the Amazon EC2 Auto Scaling User Guide",
+                        "Url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-add-availability-zone.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsAutoScalingAutoScalingGroup",
+                        "Id": asgArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsAutoScalingAutoScalingGroup": {
+                                "HealthCheckType": healthCheckType
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.BE-5",
+                        "NIST CSF PR.PT-5",
+                        "NIST SP 800-53 CP-2",
+                        "NIST SP 800-53 CP-11",
+                        "NIST SP 800-53 SA-13",
+                        "NIST SP 800-53 SA14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
 # TODO: Next        

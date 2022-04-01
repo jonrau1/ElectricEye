@@ -69,8 +69,6 @@ def rds_instance_ha_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
     """[RDS.1] RDS instances should be configured for high availability"""
     response = describe_db_instances(cache)
     myRdsInstances = response["DBInstances"]
-    response = describe_db_snapshots(cache)
-    myRdsSnapshots = response["DBSnapshots"]
     for dbinstances in myRdsInstances:
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
