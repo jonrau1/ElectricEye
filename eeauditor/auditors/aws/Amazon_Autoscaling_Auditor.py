@@ -43,7 +43,6 @@ def autoscaling_scale_in_protection_check(cache: dict, awsAccountId: str, awsReg
         asgArn = asg["AutoScalingGroupARN"]
         asgName = asg["AutoScalingGroupName"]
         healthCheckType = asg["HealthCheckType"]
-        asgAzs = asg["AvailabilityZones"]
         # Check specific metadata
         scaleInProtection = str(asg["NewInstancesProtectedFromScaleIn"])
         if scaleInProtection == "False":
@@ -77,8 +76,7 @@ def autoscaling_scale_in_protection_check(cache: dict, awsAccountId: str, awsReg
                         "Region": awsRegion,
                         "Details": {
                             "AwsAutoScalingAutoScalingGroup": {
-                                "HealthCheckType": healthCheckType,
-                                "AvailabilityZones": asgAzs
+                                "HealthCheckType": healthCheckType
                             }
                         }
                     }
@@ -135,8 +133,7 @@ def autoscaling_scale_in_protection_check(cache: dict, awsAccountId: str, awsReg
                         "Region": awsRegion,
                         "Details": {
                             "AwsAutoScalingAutoScalingGroup": {
-                                "HealthCheckType": healthCheckType,
-                                "AvailabilityZones": asgAzs
+                                "HealthCheckType": healthCheckType
                             }
                         }
                     }
@@ -172,7 +169,6 @@ def autoscaling_load_balancer_healthcheck_check(cache: dict, awsAccountId: str, 
         asgArn = asg["AutoScalingGroupARN"]
         asgName = asg["AutoScalingGroupName"]
         healthCheckType = asg["HealthCheckType"]
-        asgAzs = asg["AvailabilityZones"]
         # Check specific metadata
         asgLbs = asg["LoadBalancerNames"]
         asgTgs = asg["TargetGroupARNs"]
@@ -212,8 +208,7 @@ def autoscaling_load_balancer_healthcheck_check(cache: dict, awsAccountId: str, 
                             "Region": awsRegion,
                             "Details": {
                                 "AwsAutoScalingAutoScalingGroup": {
-                                    "HealthCheckType": healthCheckType,
-                                    "AvailabilityZones": asgAzs
+                                    "HealthCheckType": healthCheckType
                                 }
                             }
                         }
@@ -266,8 +261,7 @@ def autoscaling_load_balancer_healthcheck_check(cache: dict, awsAccountId: str, 
                             "Region": awsRegion,
                             "Details": {
                                 "AwsAutoScalingAutoScalingGroup": {
-                                    "HealthCheckType": healthCheckType,
-                                    "AvailabilityZones": asgAzs
+                                    "HealthCheckType": healthCheckType
                                 }
                             }
                         }
