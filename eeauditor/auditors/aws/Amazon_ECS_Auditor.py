@@ -40,6 +40,7 @@ def list_active_task_definitions(cache):
         return response
     for taskdef in ecs.list_task_definitions(status='ACTIVE')['taskDefinitionArns']:
         r = ecs.describe_task_definition(taskDefinition=taskdef)["taskDefinition"]
+        print(r)
         taskDefinitions.append(r)
     cache["get_task_definitons"] = taskDefinitions
     return["get_task_definitons"]
