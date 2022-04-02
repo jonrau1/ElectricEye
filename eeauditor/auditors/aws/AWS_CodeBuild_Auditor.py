@@ -101,8 +101,8 @@ def codebuild_artifact_encryption_check(cache: dict, awsAccountId: str, awsRegio
             yield finding
         else:
             # check if encryption for artifacts is disabled
-            artifactEncryptionCheck = str(projects["artifacts"]["encryptionDisabled"])
-            if artifactEncryptionCheck == "True":
+            if str(projects["artifacts"]["encryptionDisabled"]) == "True":
+                # this is a failing check
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": f"{buildProjectArn}/unencrypted-artifacts",
@@ -152,6 +152,7 @@ def codebuild_artifact_encryption_check(cache: dict, awsAccountId: str, awsRegio
                 }
                 yield finding
             else:
+                # this is a passing check
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": f"{buildProjectArn}/unencrypted-artifacts",
@@ -209,15 +210,70 @@ def codebuild_insecure_ssl_check(cache: dict, awsAccountId: str, awsRegion: str,
     for projects in get_code_build_projects(cache=cache):
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
-        # check if Insecure SSL is enabled for your Source
+        # check if Insecure SSL is enabled for your Source - if KeyError is thrown it means your Source
+        # (or lack thereof) does not have this argument
         try:
             insecureSsl = str(projects["source"]["insecureSsl"])
         except KeyError:
-            insecureSsl = "NotConfigured"
-        if insecureSsl != "False":
+            # this is a passing check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": buildProjectArn + "/insecure-ssl",
+                "Id": f"{buildProjectArn}/insecure-ssl",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": buildProjectArn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure",
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[CodeBuild.2] CodeBuild projects should not have insecure SSL configured",
+                "Description": f"CodeBuild project {buildProjectName} does not have a source that supports the SSL setting and is thus exempt from this check.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your project should not have insecure SSL configured refer to the Troubleshooting CodeBuild section of the AWS CodeBuild User Guide",
+                        "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/troubleshooting.html#troubleshooting-self-signed-certificate",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsCodeBuildProject",
+                        "Id": buildProjectArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.DS-2",
+                        "NIST SP 800-53 SC-8",
+                        "NIST SP 800-53 SC-11",
+                        "NIST SP 800-53 SC-12",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+        if insecureSsl != "False":
+            # this is a failing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{buildProjectArn}/insecure-ssl",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": buildProjectArn,
                 "AwsAccountId": awsAccountId,
@@ -263,17 +319,18 @@ def codebuild_insecure_ssl_check(cache: dict, awsAccountId: str, awsRegion: str,
                         "ISO 27001:2013 A.13.2.1",
                         "ISO 27001:2013 A.13.2.3",
                         "ISO 27001:2013 A.14.1.2",
-                        "ISO 27001:2013 A.14.1.3",
-                    ],
+                        "ISO 27001:2013 A.14.1.3"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
         else:
+            # this is a passing check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": buildProjectArn + "/insecure-ssl",
+                "Id": f"{buildProjectArn}/insecure-ssl",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": buildProjectArn,
                 "AwsAccountId": awsAccountId,
@@ -319,11 +376,11 @@ def codebuild_insecure_ssl_check(cache: dict, awsAccountId: str, awsRegion: str,
                         "ISO 27001:2013 A.13.2.1",
                         "ISO 27001:2013 A.13.2.3",
                         "ISO 27001:2013 A.14.1.2",
-                        "ISO 27001:2013 A.14.1.3",
-                    ],
+                        "ISO 27001:2013 A.14.1.3"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
 
@@ -556,66 +613,12 @@ def codebuild_s3_logging_encryption_check(cache: dict, awsAccountId: str, awsReg
     for projects in get_code_build_projects(cache=cache):
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
-        # check if this project disabled s3 log encryption
-        try:
-            s3EncryptionCheck = str(projects["logsConfig"]["s3Logs"]["encryptionDisabled"])
-        except KeyError:
-            s3EncryptionCheck = "NotConfigured"
-        if s3EncryptionCheck != "True":
+        # check if this project logs to S3 to begin with
+        if str(projects["logsConfig"]["s3Logs"]["status"]) == "DISABLED":
+            # this is a passing check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": buildProjectArn + "/s3-encryption",
-                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": buildProjectArn,
-                "AwsAccountId": awsAccountId,
-                "Types": [
-                    "Software and Configuration Checks/AWS Security Best Practices",
-                    "Effects/Data Exposure",
-                ],
-                "FirstObservedAt": iso8601Time,
-                "CreatedAt": iso8601Time,
-                "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "MEDIUM"},
-                "Confidence": 99,
-                "Title": "[CodeBuild.4] CodeBuild projects should not have S3 log encryption disabled",
-                "Description": "CodeBuild project "
-                + buildProjectName
-                + " does not have S3 Log Encryption enabled or it is not configured. Refer to the remediation instructions if this configuration is not intended.",
-                "Remediation": {
-                    "Recommendation": {
-                        "Text": "If your project should not have S3 log encryption disabled refer to #20 in the Change a Build Projects Settings (AWS CLI) section of the AWS CodeBuild User Guide",
-                        "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/change-project.html#change-project-console",
-                    }
-                },
-                "ProductFields": {"Product Name": "ElectricEye"},
-                "Resources": [
-                    {
-                        "Type": "AwsCodeBuildProject",
-                        "Id": buildProjectArn,
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
-                        "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
-                    }
-                ],
-                "Compliance": {
-                    "Status": "FAILED",
-                    "RelatedRequirements": [
-                        "NIST CSF PR.DS-1",
-                        "NIST SP 800-53 MP-8",
-                        "NIST SP 800-53 SC-12",
-                        "NIST SP 800-53 SC-28",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3",
-                    ],
-                },
-                "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
-            }
-            yield finding
-        else:
-            finding = {
-                "SchemaVersion": "2018-10-08",
-                "Id": buildProjectArn + "/s3-encryption",
+                "Id": f"{buildProjectArn}/s3-encryption",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": buildProjectArn,
                 "AwsAccountId": awsAccountId,
@@ -629,9 +632,7 @@ def codebuild_s3_logging_encryption_check(cache: dict, awsAccountId: str, awsReg
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[CodeBuild.4] CodeBuild projects should not have S3 log encryption disabled",
-                "Description": "CodeBuild project "
-                + buildProjectName
-                + " has S3 log encryption enabled.",
+                "Description": f"CodeBuild project {buildProjectName} does not send logs to S3 and is thus exempt from this check.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your project should not have S3 log encryption disabled refer to #20 in the Change a Build Projects Settings (AWS CLI) section of the AWS CodeBuild User Guide",
@@ -656,13 +657,116 @@ def codebuild_s3_logging_encryption_check(cache: dict, awsAccountId: str, awsReg
                         "NIST SP 800-53 SC-12",
                         "NIST SP 800-53 SC-28",
                         "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3",
-                    ],
+                        "ISO 27001:2013 A.8.2.3"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
+        else:
+            try:
+                s3EncryptionCheck = str(projects["logsConfig"]["s3Logs"]["encryptionDisabled"])
+            except KeyError:
+                s3EncryptionCheck = "NotConfigured"
+            if s3EncryptionCheck != "True":
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{buildProjectArn}/s3-encryption",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": buildProjectArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": [
+                        "Software and Configuration Checks/AWS Security Best Practices",
+                        "Effects/Data Exposure",
+                    ],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "MEDIUM"},
+                    "Confidence": 99,
+                    "Title": "[CodeBuild.4] CodeBuild projects should not have S3 log encryption disabled",
+                    "Description": f"CodeBuild project {buildProjectName} does not have S3 log encryption enabled. Unauthorized users may be able to glean sensitive data from your continuous integration projects such as a code artifacts or other sensitive information if logging is disabled. Refer to the remediation instructions if this configuration is not intended.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "If your project should not have S3 log encryption disabled refer to #20 in the Change a Build Projects Settings (AWS CLI) section of the AWS CodeBuild User Guide",
+                            "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/change-project.html#change-project-console",
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsCodeBuildProject",
+                            "Id": buildProjectArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF PR.DS-1",
+                            "NIST SP 800-53 MP-8",
+                            "NIST SP 800-53 SC-12",
+                            "NIST SP 800-53 SC-28",
+                            "AICPA TSC CC6.1",
+                            "ISO 27001:2013 A.8.2.3"
+                        ]
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE"
+                }
+                yield finding
+            else:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{buildProjectArn}/s3-encryption",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": buildProjectArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": [
+                        "Software and Configuration Checks/AWS Security Best Practices",
+                        "Effects/Data Exposure",
+                    ],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Confidence": 99,
+                    "Title": "[CodeBuild.4] CodeBuild projects should not have S3 log encryption disabled",
+                    "Description": f"CodeBuild project {buildProjectName} has S3 log encryption enabled.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "If your project should not have S3 log encryption disabled refer to #20 in the Change a Build Projects Settings (AWS CLI) section of the AWS CodeBuild User Guide",
+                            "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/change-project.html#change-project-console",
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsCodeBuildProject",
+                            "Id": buildProjectArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF PR.DS-1",
+                            "NIST SP 800-53 MP-8",
+                            "NIST SP 800-53 SC-12",
+                            "NIST SP 800-53 SC-28",
+                            "AICPA TSC CC6.1",
+                            "ISO 27001:2013 A.8.2.3"
+                        ]
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED"
+                }
+                yield finding
 
 @registry.register_check("codebuild")
 def codebuild_cloudwatch_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
