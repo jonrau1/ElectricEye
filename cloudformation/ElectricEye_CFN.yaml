@@ -346,7 +346,10 @@ Resources:
                   - rds:DescribeEventCategories
                   - redshift:DescribeClusters
                   - redshift:DescribeLoggingStatus
+                  - route53:ListTrafficPolicyInstancesByHostedZone
                   - route53:ListHostedZones
+                  - route53:ListResourceRecordSets
+                  - route53:ListQueryLoggingConfigs
                   - route53resolver:ListResolverQueryLogConfigAssociations
                   - route53resolver:GetFirewallConfig
                   - route53resolver:ListResolverDnssecConfigs
