@@ -249,6 +249,7 @@ Resources:
                   - cloudwatch:GetMetricData
                   - codebuild:BatchGetProjects
                   - codebuild:ListProjects
+                  - codebuild:ListSourceCredentials
                   - cognito-idp:DescribeUserPool
                   - cognito-idp:ListUserPools
                   - detective:ListGraphs

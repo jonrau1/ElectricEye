@@ -309,6 +309,7 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "ecr:DescribeRegistry",
                 "securityhub:GetFindings",
                 "codebuild:ListProjects",
+                "codebuild:ListSourceCredentials",
                 "workspaces:DescribeWorkspaces",
                 "ecr:GetLifecyclePolicy",
                 "sns:ListSubscriptionsByTopic",

@@ -502,7 +502,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 
 ## Supported Services and Checks
 
-These are the following services and checks perform by each Auditor. There are currently **481** checks supported across **91** AWS services / components using **71** Auditors. 
+These are the following services and checks perform by each Auditor. There are currently **485** checks supported across **91** AWS services / components using **71** Auditors. 
 
 There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
@@ -624,6 +624,7 @@ There are currently **62** supported response and remediation Playbooks with cov
 | Amazon_ECS_Auditor.py | ECS Cluster | Is a default cluster provider configured |
 | Amazon_ECS_Auditor.py | ECS Task Definition | Is the Task Definition using a Privileged container |
 | Amazon_ECS_Auditor.py | ECS Task Definition | Do EC2-ECS containers use SELinux or AppArmor |
+| Amazon_ECS_Auditor.py | ECS Task Definition | Do containers use a Root user |
 | Amazon_EFS_Auditor.py | EFS File System | Are file systems encrypted |
 | Amazon_EFS_Auditor.py | EFS File System | Does the File system have a custom policy attached |
 | Amazon_EKS_Auditor.py | EKS Cluster | Is the API Server publicly accessible |
@@ -791,6 +792,9 @@ There are currently **62** supported response and remediation Playbooks with cov
 | AWS_CodeBuild_Auditor.py | CodeBuild project | Are plaintext environmental variables used |
 | AWS_CodeBuild_Auditor.py | CodeBuild project | Is S3 logging encryption enabled |
 | AWS_CodeBuild_Auditor.py | CodeBuild project | Is CloudWatch logging enabled |
+| AWS_CodeBuild_Auditor.py | CodeBuild project | Does CodeBuild store PATs or Basic Auth creds |
+| AWS_CodeBuild_Auditor.py | CodeBuild project | Is the CodeBuild project public |
+| AWS_CodeBuild_Auditor.py | CodeBuild project | Are CodeBuild projects using privileged containers |
 | AWS_Directory_Service_Auditor.py | DS Directory | Is RADIUS enabled |
 | AWS_Directory_Service_Auditor.py | DS Directory | Is CloudWatch log forwarding enabled |
 | AWS_DMS_Auditor.py | DMS Replication Instance | Are DMS instances publicly accessible |

@@ -68,6 +68,7 @@
                 "ecr:DescribeRegistry",
                 "securityhub:GetFindings",
                 "codebuild:ListProjects",
+                "codebuild:ListSourceCredentials",
                 "workspaces:DescribeWorkspaces",
                 "ecr:GetLifecyclePolicy",
                 "sns:ListSubscriptionsByTopic",
