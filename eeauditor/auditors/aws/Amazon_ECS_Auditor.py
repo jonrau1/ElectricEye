@@ -34,6 +34,8 @@ def list_clusters(cache):
     cache["list_clusters"] = ecs.list_clusters()
     return cache["list_clusters"]
 
+"""def list_active_task_definitions(cache):
+    response = cache.get("")"""
 
 @registry.register_check("ecs")
 def ecs_cluster_container_insights_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -377,11 +379,11 @@ def ecs_task_definition_privileged_container_check(cache: dict, awsAccountId: st
                                 "ISO 27001:2013 A.9.2.6",
                                 "ISO 27001:2013 A.9.3.1",
                                 "ISO 27001:2013 A.9.4.2",
-                                "ISO 27001:2013 A.9.4.3",
-                            ],
+                                "ISO 27001:2013 A.9.4.3"
+                            ]
                         },
                         "Workflow": {"Status": "NEW"},
-                        "RecordState": "ACTIVE",
+                        "RecordState": "ACTIVE"
                     }
                     yield finding
                 else:
@@ -457,11 +459,11 @@ def ecs_task_definition_privileged_container_check(cache: dict, awsAccountId: st
                                 "ISO 27001:2013 A.9.2.6",
                                 "ISO 27001:2013 A.9.3.1",
                                 "ISO 27001:2013 A.9.4.2",
-                                "ISO 27001:2013 A.9.4.3",
-                            ],
+                                "ISO 27001:2013 A.9.4.3"
+                            ]
                         },
                         "Workflow": {"Status": "RESOLVED"},
-                        "RecordState": "ARCHIVED",
+                        "RecordState": "ARCHIVED"
                     }
                     yield finding
         except Exception as e:
