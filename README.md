@@ -41,15 +41,15 @@ Continuously monitor your AWS attack surface and evaluate services for configura
 
 ## Synopsis
 
-- :fire: :fire: **<span style="color:red"> 500+ security & AWS best practice detections </span>** including services not covered by Security Hub/Config (MemoryDB, Cognito, DocDB, Amazon Managed Blockchain, etc.), all findings are **<span style="color:red"> aligned to NIST CSF, NIST 800-53, AICPA's TSCs, ISO 27001:2013 and MITRE ATT&CK Techniques </span>**.
+- :fire: :fire: **500+ security & AWS best practice detections** including services not covered by Security Hub/Config (MemoryDB, Cognito, DocDB, Amazon Managed Blockchain, etc.), all findings are **aligned to NIST CSF, NIST 800-53, AICPA's TSCs, ISO 27001:2013 and MITRE ATT&CK Techniques**.
 
-- :anger: :anger: Provides basic **<span style="color:red"> Attack Surface Management (ASM) </span>** capabilities, checking for **<span style="color:red"> more than 20 highly dangerous </span>** services running on publicly reachable assets that adversaries can potentially exploit.
+- :anger: :anger: Provides basic **Attack Surface Management (ASM)** capabilities, checking for **more than 20 highly dangerous** services running on publicly reachable assets that adversaries can potentially exploit.
 
-- :clap: :clap: Supports every **<span style="color:red"> AWS Region and Partition </span>**: Commercial (`aws`), AWS GovCloud (`aws-gov`), AWS China (`aws-cn`), :busts_in_silhouette: AWS Secret (`aws-iso-b`) and AWS Top Secret (`aws-iso`) :busts_in_silhouette:. AWS Commercial partition supports selective muting of unsupported Regions for services supported by ElectricEye.
+- :clap: :clap: Supports every **AWS Region and Partition**: Commercial (`aws`), AWS GovCloud (`aws-gov`), AWS China (`aws-cn`), :busts_in_silhouette: AWS Secret (`aws-iso-b`) :busts_in_silhouette: and :busts_in_silhouette: AWS Top Secret (`aws-iso`) :busts_in_silhouette:.
 
-- :satellite: :satellite: Built with **<span style="color:red"> full AWS Security Hub support </span>** in mind, can optionally output to MongoDB, PostgreSQL, JSON or CSV. **<span style="color:red"> Can run as a CLI tool, in Fargate, as a standalone Container, or anywhere else </span>** you can run Python (K8s, Batch, CodeBuild, EC2, etc.)
+- :satellite: :satellite: Built with **full AWS Security Hub support** in mind, can optionally output to MongoDB, PostgreSQL, JSON or CSV. **Can run as a CLI tool, in Fargate, as a standalone Container, or anywhere else** you can run Python (K8s, Batch, CodeBuild, EC2, etc.)
 
-- :metal: :metal: **<span style="color:red"> Multiple add-ons enable automated remediation, ChatOps, and other integrations </span>** with third-party tools such as [DisruptOps (a FireMon company)](https://www.firemon.com/products/disruptops/), [PagerDuty](https://www.pagerduty.com/), [Slack](https://slack.com/), [ServiceNow Incident Management](https://docs.servicenow.com/bundle/rome-it-service-management/page/product/incident-management/concept/c_IncidentManagement.html), [Atlassian Jira](https://www.atlassian.com/software/jira), [Azure DevOps Boards](https://azure.microsoft.com/en-us/services/devops/boards/), [Shodan](https://www.shodan.io/) and [Microsoft Teams](https://www.microsoft.com/en-us/microsoft-teams/group-chat-software)
+- :metal: :metal: **Multiple add-ons enable automated remediation, ChatOps, and other integrations** with third-party tools such as [DisruptOps (a FireMon company)](https://www.firemon.com/products/disruptops/), [PagerDuty](https://www.pagerduty.com/), [Slack](https://slack.com/), [ServiceNow Incident Management](https://docs.servicenow.com/bundle/rome-it-service-management/page/product/incident-management/concept/c_IncidentManagement.html), [Atlassian Jira](https://www.atlassian.com/software/jira), [Azure DevOps Boards](https://azure.microsoft.com/en-us/services/devops/boards/), [Shodan](https://www.shodan.io/) and [Microsoft Teams](https://www.microsoft.com/en-us/microsoft-teams/group-chat-software)
 
 ## Description
 
