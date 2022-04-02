@@ -79,7 +79,7 @@ def artifact_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, aw
                     {
                         "Type": "AwsCodeBuildProject",
                         "Id": buildProjectArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                     }
@@ -131,7 +131,7 @@ def artifact_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, aw
                         {
                             "Type": "AwsCodeBuildProject",
                             "Id": buildProjectArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                         }
@@ -180,7 +180,7 @@ def artifact_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, aw
                         {
                             "Type": "AwsCodeBuildProject",
                             "Id": buildProjectArn,
-                            "Partition": "aws",
+                            "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                         }
@@ -245,7 +245,7 @@ def insecure_ssl_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartit
                     {
                         "Type": "AwsCodeBuildProject",
                         "Id": buildProjectArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                     }
@@ -301,7 +301,7 @@ def insecure_ssl_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartit
                     {
                         "Type": "AwsCodeBuildProject",
                         "Id": buildProjectArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                     }
@@ -367,7 +367,7 @@ def plaintext_env_var_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                     {
                         "Type": "AwsCodeBuildProject",
                         "Id": buildProjectArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                     }
@@ -439,7 +439,7 @@ def plaintext_env_var_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                             {
                                 "Type": "AwsCodeBuildProject",
                                 "Id": buildProjectArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                             }
@@ -508,7 +508,7 @@ def plaintext_env_var_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                             {
                                 "Type": "AwsCodeBuildProject",
                                 "Id": buildProjectArn,
-                                "Partition": "aws",
+                                "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                             }
@@ -592,7 +592,7 @@ def s3_logging_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, 
                     {
                         "Type": "AwsCodeBuildProject",
                         "Id": buildProjectArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                     }
@@ -643,7 +643,7 @@ def s3_logging_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, 
                     {
                         "Type": "AwsCodeBuildProject",
                         "Id": buildProjectArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                     }
@@ -705,7 +705,7 @@ def cloudwatch_logging_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                     {
                         "Type": "AwsCodeBuildProject",
                         "Id": buildProjectArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                     }
@@ -757,7 +757,7 @@ def cloudwatch_logging_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                     {
                         "Type": "AwsCodeBuildProject",
                         "Id": buildProjectArn,
-                        "Partition": "aws",
+                        "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
                     }
@@ -784,10 +784,233 @@ def cloudwatch_logging_check(cache: dict, awsAccountId: str, awsRegion: str, aws
 
 @registry.register_check("codebuild")
 def codebuild_pat_credential_usage(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[CodeBuild.6] Your Account should not store any CodeBuild Personal Access Tokens in any Region"""
+    """[CodeBuild.6] CodeBuild should not store any source Personal Access Tokens"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     srcCreds = codebuild.list_source_credentials()["sourceCredentialsInfos"]
     if not srcCreds:
         # this is a passing check
-        print("")
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{awsAccountId}/{credArn}/pat-basicauth-cred-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"{awsAccountId}/{credArn}",
+            "AwsAccountId": awsAccountId,
+            "Types": [
+                "Software and Configuration Checks/AWS Security Best Practices",
+                "Effects/Data Exposure",
+                "Sensitive Data Identifications"
+            ],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[CodeBuild.6] CodeBuild should not store any source Personal Access Tokens",
+            "Description": f"The CodeBuild source credential for Account {awsAccountId} in region {awsRegion} does not store any source credentials and is thus exempt from this check.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information on how CodeBuild accesses source provider credentials refer to the Access your source provider in CodeBuild section of the AWS CodeBuild User Guide",
+                    "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/access-tokens.html",
+                }
+            },
+            "ProductFields": {"Product Name": "ElectricEye"},
+            "Resources": [
+                {
+                    "Type": "AWSCodeBuildSourceCredential",
+                    "Id": credArn,
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "AwsCodeBuildProject": {}
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.AC-1",
+                    "NIST SP 800-53 AC-1",
+                    "NIST SP 800-53 AC-2",
+                    "NIST SP 800-53 IA-1",
+                    "NIST SP 800-53 IA-2",
+                    "NIST SP 800-53 IA-3",
+                    "NIST SP 800-53 IA-4",
+                    "NIST SP 800-53 IA-5",
+                    "NIST SP 800-53 IA-6",
+                    "NIST SP 800-53 IA-7",
+                    "NIST SP 800-53 IA-8",
+                    "NIST SP 800-53 IA-9",
+                    "NIST SP 800-53 IA-10",
+                    "NIST SP 800-53 IA-11",
+                    "AICPA TSC CC6.1",
+                    "AICPA TSC CC6.2",
+                    "ISO 27001:2013 A.9.2.1",
+                    "ISO 27001:2013 A.9.2.2",
+                    "ISO 27001:2013 A.9.2.3",
+                    "ISO 27001:2013 A.9.2.4",
+                    "ISO 27001:2013 A.9.2.6",
+                    "ISO 27001:2013 A.9.3.1",
+                    "ISO 27001:2013 A.9.4.2",
+                    "ISO 27001:2013 A.9.4.3"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+    else:
+        for cred in srcCreds:
+            credArn = cred["arn"]
+            credType = cred["serverType"]
+            authType = cred["authType"]
+            # this is a failing check
+            if authType == ("BASIC_AUTH" or "PERSONAL_ACCESS_TOKEN"):
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{awsAccountId}/{credArn}/pat-basicauth-cred-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": f"{awsAccountId}/{credArn}",
+                    "AwsAccountId": awsAccountId,
+                    "Types": [
+                        "Software and Configuration Checks/AWS Security Best Practices",
+                        "Effects/Data Exposure",
+                        "Sensitive Data Identifications"
+                    ],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "MEDIUM"},
+                    "Confidence": 99,
+                    "Title": "[CodeBuild.6] CodeBuild should not store any source Personal Access Tokens",
+                    "Description": f"The CodeBuild source credential for Account {awsAccountId} in region {awsRegion} is storing a {credType} of the type {authType}. Storing static credentials directly within CodeBuild allows any subsequent Projects created in this Account and Region to use them. Generally, static credentials are considered unsafe and should be stored with AWS Secrets Manager or you should opt to use OAuth-based authentication into your sources. Refer to the remediation section for more information.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on how CodeBuild accesses source provider credentials refer to the Access your source provider in CodeBuild section of the AWS CodeBuild User Guide",
+                            "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/access-tokens.html",
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AWSCodeBuildSourceCredential",
+                            "Id": credArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsCodeBuildProject": {
+                                    "Source": {
+                                        "Type": credType
+                                    }
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF PR.AC-1",
+                            "NIST SP 800-53 AC-1",
+                            "NIST SP 800-53 AC-2",
+                            "NIST SP 800-53 IA-1",
+                            "NIST SP 800-53 IA-2",
+                            "NIST SP 800-53 IA-3",
+                            "NIST SP 800-53 IA-4",
+                            "NIST SP 800-53 IA-5",
+                            "NIST SP 800-53 IA-6",
+                            "NIST SP 800-53 IA-7",
+                            "NIST SP 800-53 IA-8",
+                            "NIST SP 800-53 IA-9",
+                            "NIST SP 800-53 IA-10",
+                            "NIST SP 800-53 IA-11",
+                            "AICPA TSC CC6.1",
+                            "AICPA TSC CC6.2",
+                            "ISO 27001:2013 A.9.2.1",
+                            "ISO 27001:2013 A.9.2.2",
+                            "ISO 27001:2013 A.9.2.3",
+                            "ISO 27001:2013 A.9.2.4",
+                            "ISO 27001:2013 A.9.2.6",
+                            "ISO 27001:2013 A.9.3.1",
+                            "ISO 27001:2013 A.9.4.2",
+                            "ISO 27001:2013 A.9.4.3"
+                        ]
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE"
+                }
+                yield finding
+            # this is a passing check
+            else:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{awsAccountId}/{credArn}/pat-basicauth-cred-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": f"{awsAccountId}/{credArn}",
+                    "AwsAccountId": awsAccountId,
+                    "Types": [
+                        "Software and Configuration Checks/AWS Security Best Practices",
+                        "Effects/Data Exposure",
+                        "Sensitive Data Identifications"
+                    ],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Confidence": 99,
+                    "Title": "[CodeBuild.6] CodeBuild should not store any source Personal Access Tokens",
+                    "Description": f"The CodeBuild source credential for Account {awsAccountId} in region {awsRegion} is storing an OAuth token for {credType} which is an acceptable practice.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on how CodeBuild accesses source provider credentials refer to the Access your source provider in CodeBuild section of the AWS CodeBuild User Guide",
+                            "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/access-tokens.html",
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AWSCodeBuildSourceCredential",
+                            "Id": credArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsCodeBuildProject": {
+                                    "Source": {
+                                        "Type": credType
+                                    }
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF PR.AC-1",
+                            "NIST SP 800-53 AC-1",
+                            "NIST SP 800-53 AC-2",
+                            "NIST SP 800-53 IA-1",
+                            "NIST SP 800-53 IA-2",
+                            "NIST SP 800-53 IA-3",
+                            "NIST SP 800-53 IA-4",
+                            "NIST SP 800-53 IA-5",
+                            "NIST SP 800-53 IA-6",
+                            "NIST SP 800-53 IA-7",
+                            "NIST SP 800-53 IA-8",
+                            "NIST SP 800-53 IA-9",
+                            "NIST SP 800-53 IA-10",
+                            "NIST SP 800-53 IA-11",
+                            "AICPA TSC CC6.1",
+                            "AICPA TSC CC6.2",
+                            "ISO 27001:2013 A.9.2.1",
+                            "ISO 27001:2013 A.9.2.2",
+                            "ISO 27001:2013 A.9.2.3",
+                            "ISO 27001:2013 A.9.2.4",
+                            "ISO 27001:2013 A.9.2.6",
+                            "ISO 27001:2013 A.9.3.1",
+                            "ISO 27001:2013 A.9.4.2",
+                            "ISO 27001:2013 A.9.4.3"
+                        ]
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED"
+                }
+                yield finding
