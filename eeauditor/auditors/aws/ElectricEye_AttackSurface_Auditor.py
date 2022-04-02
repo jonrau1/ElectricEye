@@ -73,8 +73,11 @@ def cloudfront_paginate(cache):
     paginator = cloudfront.get_paginator("list_distributions")
     if paginator:
         for page in paginator.paginate():
-            for items in page["DistributionList"]["Items"]:
-                itemList.append(items)
+            try:
+                for items in page["DistributionList"]["Items"]:
+                    itemList.append(items)
+            except KeyError:
+                return {}
         cache["items"] = itemList
         return cache["items"]
 
