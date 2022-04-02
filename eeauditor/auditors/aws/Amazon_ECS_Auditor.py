@@ -468,7 +468,8 @@ def ecs_task_definition_security_labels_check(cache: dict, awsAccountId: str, aw
         # If there is a network mode of "awsvpc" it is likely a Fargate task - even though EC2 compute can run with that...
         # time for some funky edge cases, keep that in mind before you yeet an issue at me, please ;)
         if str(taskdef["networkMode"]) == 'awsvpc':
-            # This is a passing check 
+            # This is a passing check
+            cdefName = str(taskdef["containerDefinitions"][0]["name"])
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{taskDefinitionArn}/{cdefName}/ecs-task-definition-security-labels-check",
