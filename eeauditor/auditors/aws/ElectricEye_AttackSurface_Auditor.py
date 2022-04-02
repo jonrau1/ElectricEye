@@ -30,6 +30,7 @@ ec2 = boto3.client("ec2")
 elbv2 = boto3.client("elbv2")
 elb = boto3.client("elb")
 cloudfront = boto3.client("cloudfront")
+route53 = boto3.client("route53")
 
 # Instantiate a NMAP scanner for TCP scans to define ports
 nmap = nmap3.NmapScanTechniques()
@@ -76,6 +77,22 @@ def cloudfront_paginate(cache):
                 itemList.append(items)
         cache["items"] = itemList
         return cache["items"]
+
+def get_public_hosted_zones(cache):
+    zones = []
+    response = cache.get("get_hosted_zones")
+    if response:
+        return response
+    paginator = route53.get_paginator('list_hosted_zones')
+    if paginator:
+        for page in paginator.paginate():
+            for hz in page["HostedZones"]:
+                if str(hz["Config"]["PrivateZone"]) == "False":
+                    zones.append(hz)
+                else:
+                    continue
+        cache["get_hosted_zones"] = zones
+        return cache["get_hosted_zones"]
 
 # This function performs the actual NMAP Scan
 def scan_host(host_ip, host_name, asset_type):
@@ -825,7 +842,7 @@ def eip_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
                     }
                     yield finding
 
-@registry.register_check("elb")
+@registry.register_check("cloudfront")
 def cloudfront_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AttackSurface.Cloudfront.{checkIdNumber}] Cloudfront Distributions should not be publicly reachable on {serviceName}"""
     # ISO Time
@@ -948,7 +965,7 @@ def cloudfront_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str
                         "Severity": {"Label": "INFORMATIONAL"},
                         "Confidence": 99,
                         "Title": f"[AttackSurface.Cloudfront.{checkIdNumber}] Cloudfront Distributions should not be publicly reachable on {serviceName}",
-                        "Description": f"CloudFront Distribution {distributionId} is publicly reachable on port {portNumber} is not publicly reachable on port {portNumber} which corresponds to the {serviceName} service due to {serviceStateReason}. Distributions and their respective Security Groups and Origins should still be reviewed for minimum necessary access.",
+                        "Description": f"CloudFront Distribution {distributionId} is not publicly reachable on port {portNumber} which corresponds to the {serviceName} service due to {serviceStateReason}. Distributions and their respective Security Groups and Origins should still be reviewed for minimum necessary access.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "For information about protecting Origins behind CloudFront distros refer to the Data protection in Amazon CloudFront section of the Amazon CloudFront Developer Guide",
@@ -998,4 +1015,189 @@ def cloudfront_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str
                     }
                     yield finding
 
-# TODO: Route 53 Public Hosted Zone, Global Accelerator
+@registry.register_check("cloudfront")
+def route53_public_hz_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[AttackSurface.Route53.{checkIdNumber}] Route53 Public Hosted Zones A Records should not be publicly reachable on {serviceName}"""
+    # ISO Time
+    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+    for zone in get_public_hosted_zones(cache=cache):
+        hzId = zone["Id"]
+        hzName = zone["Name"]
+        hzArn = f"arn:aws:route53:::hostedzone/{hzName}"
+        # Get the A Records
+        for record in route53.list_resource_record_sets(HostedZoneId=hzId)["ResourceRecordSets"]:
+            # skip non "A" Records - "A" will also pick up on Alias records to LBs, etc.
+            if str(record["Type"]) != "A":
+                continue
+            else:
+                resourceRecord = str(record["Name"])
+                # Logic time
+                scanner = scan_host(resourceRecord, hzName, "Route53 Public Hosted Zone A Record")
+                # NoneType returned on KeyError due to Nmap errors
+                if scanner == None:
+                    continue
+                else:
+                    # Pull out the IP resolution of the DNS Name
+                    keys = scanner.keys()
+                    hostIp = (list(keys)[0])
+                    # Loop the results of the scan - starting with Open Ports which require a combination of
+                    # a Public Instance, an open SG rule, and a running service/server on the host itself
+                    # use enumerate and a fixed offset to product the Check Title ID number
+                    for index, p in enumerate(scanner[hostIp]["ports"]):
+                        # Parse out the Protocol, Port, Service, and State/State Reason from NMAP Results
+                        checkIdNumber = str(int(index + 1))
+                        portNumber = int(p["portid"])
+                        if portNumber == 8089:
+                            serviceName = 'SPLUNKD'
+                        elif portNumber == 10250:
+                            serviceName = 'KUBERNETES-API'
+                        elif portNumber == 5672:
+                            serviceName = 'RABBITMQ'
+                        elif portNumber == 4040:
+                            serviceName = 'SPARK-WEBUI'
+                        else:
+                            serviceName = str(p["service"]["name"]).upper()
+                        serviceStateReason = str(p["reason"])
+                        serviceState = str(p["state"])
+                        # This is a failing check
+                        if serviceState == "open":
+                            finding = {
+                                "SchemaVersion": "2018-10-08",
+                                "Id": f"{hzArn}/{resourceRecord}/attack-surface-cfront-open-{serviceName}-check",
+                                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                                "GeneratorId": f"{hzArn}/{resourceRecord}",
+                                "AwsAccountId": awsAccountId,
+                                "Types": [
+                                    "Software and Configuration Checks/AWS Security Best Practices/Network Reachability",
+                                    "TTPs/Discovery"
+                                ],
+                                "FirstObservedAt": iso8601Time,
+                                "CreatedAt": iso8601Time,
+                                "UpdatedAt": iso8601Time,
+                                "Severity": {"Label": "HIGH"},
+                                "Confidence": 99,
+                                "Title": f"[AttackSurface.Route53.{checkIdNumber}] Route53 Public Hosted Zones A Records should not be publicly reachable on {serviceName}",
+                                "Description": f"Route53 Hosted Zone {hzId} named {hzName} on A Record {resourceRecord} is publicly reachable on port {portNumber} which corresponds to the {serviceName} service. When Services are successfully fingerprinted by the ElectricEye Attack Surface Management Auditor it means the instance is Public, has an open Secuirty Group rule, and a running service on the host which adversaries can also see. Refer to the remediation insturctions for an example of a way to secure EC2 instances.",
+                                "Remediation": {
+                                    "Recommendation": {
+                                        "Text": "For information about protecting Origins behind CloudFront distros refer to the Data protection in Amazon CloudFront section of the Amazon CloudFront Developer Guide",
+                                        "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/data-protection-summary.html"
+                                    }
+                                },
+                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "Resources": [
+                                    {
+                                        "Type": "AwsRoute53HostedZoneResourceRecord",
+                                        "Id": f"{hzArn}/{resourceRecord}",
+                                        "Partition": awsPartition,
+                                        "Region": awsRegion,
+                                        "Details": {
+                                            "Other": {
+                                                "Id": hzId,
+                                                "Name": hzName,
+                                                "ResourceRecordName": resourceRecord,
+                                                "ResourceRecordType": "A",
+                                                "PrivateZone": "False"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "Compliance": {
+                                    "Status": "FAILED",
+                                    "RelatedRequirements": [
+                                        "NIST CSF PR.AC-3",
+                                        "NIST SP 800-53 AC-1",
+                                        "NIST SP 800-53 AC-17",
+                                        "NIST SP 800-53 AC-19",
+                                        "NIST SP 800-53 AC-20",
+                                        "NIST SP 800-53 SC-15",
+                                        "AICPA TSC CC6.6",
+                                        "ISO 27001:2013 A.6.2.1",
+                                        "ISO 27001:2013 A.6.2.2",
+                                        "ISO 27001:2013 A.11.2.6",
+                                        "ISO 27001:2013 A.13.1.1",
+                                        "ISO 27001:2013 A.13.2.1",
+                                        "MITRE ATT&CK T1040",
+                                        "MITRE ATT&CK T1046",
+                                        "MITRE ATT&CK T1580",
+                                        "MITRE ATT&CK T1590",
+                                        "MITRE ATT&CK T1592",
+                                        "MITRE ATT&CK T1595"
+                                    ]
+                                },
+                                "Workflow": {"Status": "NEW"},
+                                "RecordState": "ACTIVE"
+                            }
+                            yield finding
+                        # this is a passing check
+                        else:
+                            finding = {
+                                "SchemaVersion": "2018-10-08",
+                                "Id": f"{hzArn}/{resourceRecord}/attack-surface-cfront-open-{serviceName}-check",
+                                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                                "GeneratorId": f"{hzArn}/{resourceRecord}",
+                                "AwsAccountId": awsAccountId,
+                                "Types": [
+                                    "Software and Configuration Checks/AWS Security Best Practices/Network Reachability",
+                                    "TTPs/Discovery"
+                                ],
+                                "FirstObservedAt": iso8601Time,
+                                "CreatedAt": iso8601Time,
+                                "UpdatedAt": iso8601Time,
+                                "Severity": {"Label": "INFORMATIONAL"},
+                                "Confidence": 99,
+                                "Title": f"[AttackSurface.Route53.{checkIdNumber}] Route53 Public Hosted Zones A Records should not be publicly reachable on {serviceName}",
+                                "Description": f"Route53 Hosted Zone {hzId} named {hzName} on A Record {resourceRecord} is not publicly reachable on port {portNumber} which corresponds to the {serviceName} service due to {serviceStateReason}. When Services are successfully fingerprinted by the ElectricEye Attack Surface Management Auditor it means the instance is Public, has an open Secuirty Group rule, and a running service on the host which adversaries can also see. Refer to the remediation insturctions for an example of a way to secure EC2 instances.",
+                                "Remediation": {
+                                    "Recommendation": {
+                                        "Text": "For information about protecting Origins behind CloudFront distros refer to the Data protection in Amazon CloudFront section of the Amazon CloudFront Developer Guide",
+                                        "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/data-protection-summary.html"
+                                    }
+                                },
+                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "Resources": [
+                                    {
+                                        "Type": "AwsRoute53HostedZoneResourceRecord",
+                                        "Id": f"{hzArn}/{resourceRecord}",
+                                        "Partition": awsPartition,
+                                        "Region": awsRegion,
+                                        "Details": {
+                                            "Other": {
+                                                "Id": hzId,
+                                                "Name": hzName,
+                                                "ResourceRecordName": resourceRecord,
+                                                "ResourceRecordType": "A",
+                                                "PrivateZone": "False"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "Compliance": {
+                                    "Status": "PASSED",
+                                    "RelatedRequirements": [
+                                        "NIST CSF PR.AC-3",
+                                        "NIST SP 800-53 AC-1",
+                                        "NIST SP 800-53 AC-17",
+                                        "NIST SP 800-53 AC-19",
+                                        "NIST SP 800-53 AC-20",
+                                        "NIST SP 800-53 SC-15",
+                                        "AICPA TSC CC6.6",
+                                        "ISO 27001:2013 A.6.2.1",
+                                        "ISO 27001:2013 A.6.2.2",
+                                        "ISO 27001:2013 A.11.2.6",
+                                        "ISO 27001:2013 A.13.1.1",
+                                        "ISO 27001:2013 A.13.2.1",
+                                        "MITRE ATT&CK T1040",
+                                        "MITRE ATT&CK T1046",
+                                        "MITRE ATT&CK T1580",
+                                        "MITRE ATT&CK T1590",
+                                        "MITRE ATT&CK T1592",
+                                        "MITRE ATT&CK T1595"
+                                    ]
+                                },
+                                "Workflow": {"Status": "RESOLVED"},
+                                "RecordState": "ARCHIVED"
+                            }
+                            yield finding
+
+# TODO: Global Accelerator
