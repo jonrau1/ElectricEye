@@ -48,7 +48,7 @@ def route53_hosted_zone_query_logging_check(cache: dict, awsAccountId: str, awsR
         hzId = zone["Id"]
         hzName = zone["Name"]
         hzArn = f"arn:aws:route53:::hostedzone/{hzName}"
-        hzType = zone["Config"]["PrivateZone"]
+        hzType = str(zone["Config"]["PrivateZone"])
         # check specific metadata
         r = route53.list_query_logging_configs(HostedZoneId=hzId)["QueryLoggingConfigs"]
         # empty lists return mean there is not a configuration
@@ -176,7 +176,7 @@ def route53_hosted_zone_traffic_policy_check(cache: dict, awsAccountId: str, aws
         hzId = zone["Id"]
         hzName = zone["Name"]
         hzArn = f"arn:aws:route53:::hostedzone/{hzName}"
-        hzType = zone["Config"]["PrivateZone"]
+        hzType = str(zone["Config"]["PrivateZone"])
         # check specific metadata
         r = route53.list_traffic_policy_instances_by_hosted_zone(HostedZoneId=hzId)["TrafficPolicyInstances"]
         # empty lists return mean there is not a configuration
