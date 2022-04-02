@@ -41,15 +41,15 @@ Continuously monitor your AWS attack surface and evaluate services for configura
 
 ## Synopsis
 
-- **450+ security & AWS best practice detections** including services not covered by Security Hub/Config (MemoryDB, Cognito, DocDB, Amazon Managed Blockchain, etc.), all findings are **aligned to NIST CSF, NIST 800-53, AICPA's TSCs, ISO 27001:2013 and MITRE ATT&CK Techniques**.
+- :fire: :fire: **500+ security & AWS best practice detections** including services not covered by Security Hub/Config (MemoryDB, Cognito, DocDB, Amazon Managed Blockchain, etc.), all findings are **aligned to NIST CSF, NIST 800-53, AICPA's TSCs, ISO 27001:2013 and MITRE ATT&CK Techniques**.
 
-- Provides basic **Attack Surface Management (ASM)** capabilities, checking for **more than 20 highly dangerous** services running on publicly reachable assets that adversaries can potentially exploit.
+- :anger: :anger: Provides basic **Attack Surface Management (ASM)** capabilities, checking for **more than 20 highly dangerous** services running on publicly reachable assets that adversaries can potentially exploit.
 
-- Supports every **AWS Region and Partition**: Commercial (`aws`), AWS GovCloud (`aws-gov`), AWS China (`aws-cn`), AWS Secret (`aws-iso-b`) and AWS Top Secret (`aws-iso`). AWS Commercial partition supports selective muting of unsupported Regions for services supported by ElectricEye.
+- :clap: :clap: Supports every **AWS Region and Partition**: Commercial (`aws`), AWS GovCloud (`aws-gov`), AWS China (`aws-cn`), :busts_in_silhouette: AWS Secret (`aws-iso-b`) :busts_in_silhouette: and :busts_in_silhouette: AWS Top Secret (`aws-iso`) :busts_in_silhouette:.
 
-- Built with **full AWS Security Hub support** in mind, can optionally output to MongoDB, PostgreSQL, JSON or CSV. **Can run as a CLI tool, in Fargate, as a standalone Container, or anywhere else** you can run Python (K8s, Batch, CodeBuild, EC2, etc.)
+- :satellite: :satellite: Built with **full AWS Security Hub support** in mind, can optionally output to MongoDB, PostgreSQL, JSON or CSV. **Can run as a CLI tool, in Fargate, as a standalone Container, or anywhere else** you can run Python (K8s, Batch, CodeBuild, EC2, etc.)
 
-- **Multiple add-ons enable automated remediation, ChatOps, and other integrations** with third-party tools such as [DisruptOps (a FireMon company)](https://www.firemon.com/products/disruptops/), [PagerDuty](https://www.pagerduty.com/), [Slack](https://slack.com/), [ServiceNow Incident Management](https://docs.servicenow.com/bundle/rome-it-service-management/page/product/incident-management/concept/c_IncidentManagement.html), [Atlassian Jira](https://www.atlassian.com/software/jira), [Azure DevOps Boards](https://azure.microsoft.com/en-us/services/devops/boards/), [Shodan](https://www.shodan.io/) and [Microsoft Teams](https://www.microsoft.com/en-us/microsoft-teams/group-chat-software)
+- :metal: :metal: **Multiple add-ons enable automated remediation, ChatOps, and other integrations** with third-party tools such as [DisruptOps (a FireMon company)](https://www.firemon.com/products/disruptops/), [PagerDuty](https://www.pagerduty.com/), [Slack](https://slack.com/), [ServiceNow Incident Management](https://docs.servicenow.com/bundle/rome-it-service-management/page/product/incident-management/concept/c_IncidentManagement.html), [Atlassian Jira](https://www.atlassian.com/software/jira), [Azure DevOps Boards](https://azure.microsoft.com/en-us/services/devops/boards/), [Shodan](https://www.shodan.io/) and [Microsoft Teams](https://www.microsoft.com/en-us/microsoft-teams/group-chat-software)
 
 ## Description
 
@@ -502,7 +502,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 
 ## Supported Services and Checks
 
-These are the following services and checks perform by each Auditor. There are currently **481** checks supported across **91** AWS services / components using **71** Auditors. 
+These are the following services and checks perform by each Auditor. There are currently :boom: **512 Checks** :boom: supported across :exclamation: **93 AWS services/components** :exclamation: with a total of :fire: **72 Auditors** :fire: .
 
 There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
@@ -624,6 +624,7 @@ There are currently **62** supported response and remediation Playbooks with cov
 | Amazon_ECS_Auditor.py | ECS Cluster | Is a default cluster provider configured |
 | Amazon_ECS_Auditor.py | ECS Task Definition | Is the Task Definition using a Privileged container |
 | Amazon_ECS_Auditor.py | ECS Task Definition | Do EC2-ECS containers use SELinux or AppArmor |
+| Amazon_ECS_Auditor.py | ECS Task Definition | Do containers use a Root user |
 | Amazon_EFS_Auditor.py | EFS File System | Are file systems encrypted |
 | Amazon_EFS_Auditor.py | EFS File System | Does the File system have a custom policy attached |
 | Amazon_EKS_Auditor.py | EKS Cluster | Is the API Server publicly accessible |
@@ -713,6 +714,8 @@ There are currently **62** supported response and remediation Playbooks with cov
 | Amazon_Redshift_Auditor.py | Redshift cluster | Is the cluster encrypted |
 | Amazon_Redshift_Auditor.py | Redshift cluster | Is enhanced VPC routing enabled |
 | Amazon_Redshift_Auditor.py | Redshift cluster | Is cluster audit logging enabled |
+| Amazon_Route53_Auditor.py | Route53 Hosted Zone | Do Hosted Zones have Query Logging enabled |
+| Amazon_Route53_Auditor.py | Route53 Hosted Zone | Do Hosted Zones have traffic policies associated |
 | Amazon_Route53_Resolver_Auditor.py | VPC | Do VPCs have Query Logging enabled |
 | Amazon_Route53_Resolver_Auditor.py | VPC | Do VPCs have DNS Firewalls associated |
 | Amazon_Route53_Resolver_Auditor.py | VPC | Do VPCs enabled DNSSEC resolution |
@@ -791,6 +794,9 @@ There are currently **62** supported response and remediation Playbooks with cov
 | AWS_CodeBuild_Auditor.py | CodeBuild project | Are plaintext environmental variables used |
 | AWS_CodeBuild_Auditor.py | CodeBuild project | Is S3 logging encryption enabled |
 | AWS_CodeBuild_Auditor.py | CodeBuild project | Is CloudWatch logging enabled |
+| AWS_CodeBuild_Auditor.py | CodeBuild project | Does CodeBuild store PATs or Basic Auth creds |
+| AWS_CodeBuild_Auditor.py | CodeBuild project | Is the CodeBuild project public |
+| AWS_CodeBuild_Auditor.py | CodeBuild project | Are CodeBuild projects using privileged containers |
 | AWS_Directory_Service_Auditor.py | DS Directory | Is RADIUS enabled |
 | AWS_Directory_Service_Auditor.py | DS Directory | Is CloudWatch log forwarding enabled |
 | AWS_DMS_Auditor.py | DMS Replication Instance | Are DMS instances publicly accessible |
@@ -982,6 +988,31 @@ There are currently **62** supported response and remediation Playbooks with cov
 | ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a MongoDB/DocDB service publicly accessible |
 | ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a Rabbit/AmazonMQ service publicly accessible |
 | ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a SparkUI service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a FTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a SSH service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a Telnet service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a SMTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a HTTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a POP3 service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a Win NetBIOS service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a SMB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a RDP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a MSSQL service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a MySQL/MariaDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a NFS service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a Docker API service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a OracleDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a PostgreSQL service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a Kibana service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a VMWARE ESXi service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a HTTP Proxy service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a SplunkD service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a Kubernetes API Server service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a Redis service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a Kafka service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a MongoDB/DocDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a Rabbit/AmazonMQ service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a SparkUI service publicly accessible |
 | Secrets_Auditor.py | CodeBuild project | Do CodeBuild projects have secrets in plaintext env vars |
 | Secrets_Auditor.py | CloudFormation Stack | Do CloudFormation Stacks have secrets in parameters |
 | Secrets_Auditor.py | ECS Task Definition | Do ECS Task Definitions have secrets in env vars |

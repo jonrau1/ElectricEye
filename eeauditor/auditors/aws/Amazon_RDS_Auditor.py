@@ -278,11 +278,11 @@ def rds_instance_public_access_check(cache: dict, awsAccountId: str, awsRegion: 
                         "ISO 27001:2013 A.6.2.2",
                         "ISO 27001:2013 A.11.2.6",
                         "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1",
-                    ],
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
         else:
@@ -344,11 +344,11 @@ def rds_instance_public_access_check(cache: dict, awsAccountId: str, awsRegion: 
                         "ISO 27001:2013 A.6.2.2",
                         "ISO 27001:2013 A.11.2.6",
                         "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1",
-                    ],
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
 
