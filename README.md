@@ -502,7 +502,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 
 ## Supported Services and Checks
 
-These are the following services and checks perform by each Auditor. There are currently :boom: **512 Checks** :boom: supported across :exclamation: **92 AWS services/components** :exclamation: with a total of :fire: **72 Auditors** :fire: .
+These are the following services and checks perform by each Auditor. There are currently :boom: **512 Checks** :boom: supported across :exclamation: **93 AWS services/components** :exclamation: with a total of :fire: **72 Auditors** :fire: .
 
 There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
