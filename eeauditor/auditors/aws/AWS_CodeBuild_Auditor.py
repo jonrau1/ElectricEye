@@ -23,59 +23,103 @@ import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
+
 # import boto3 clients
 codebuild = boto3.client("codebuild")
 
-# loop through all CodeBuild projects and list their attributes
 def get_code_build_projects(cache):
-    response = cache.get("code_build_projects")
+    response = cache.get("codebuild_projects")
     if response:
         return response
-    project_list = codebuild.list_projects()
-    if project_list["projects"]:
-        my_projects = codebuild.batch_get_projects(names=project_list["projects"])
-        cache["code_build_projects"] = my_projects
-        return cache["code_build_projects"]
+    projectNames = codebuild.list_projects()["projects"]
+    if projectNames:
+        codebuildProjects = codebuild.batch_get_projects(names=projectNames)["projects"]
+        cache["codebuild_projects"] = codebuildProjects
+        return cache["codebuild_projects"]
     else:
         return {}
 
 @registry.register_check("codebuild")
 def artifact_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CodeBuild.1] CodeBuild projects should not have artifact encryption disabled"""
-    project = get_code_build_projects(cache=cache)
-    myCodeBuildProjects = project.get("projects", [])
-    for projects in myCodeBuildProjects:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for projects in get_code_build_projects(cache=cache):
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         # check if this project supports artifacts
         artifactCheck = str(projects["artifacts"]["type"])
         # skip projects without artifacts
         if artifactCheck == "NO_ARTIFACTS":
-            continue
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{buildProjectArn}/unencrypted-artifacts",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": buildProjectArn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure"
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[CodeBuild.1] CodeBuild projects should not have artifact encryption disabled",
+                "Description": f"CodeBuild project {buildProjectName} does not use artifacts and is thus not in scope for this check.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your project should have artifact encryption enabled scroll down to item 8 in the Create a Build Project (Console) section of the AWS CodeBuild User Guide",
+                        "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/create-project.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsCodeBuildProject",
+                        "Id": buildProjectArn,
+                        "Partition": "aws",
+                        "Region": awsRegion,
+                        "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.DS-1",
+                        "NIST SP 800-53 MP-8",
+                        "NIST SP 800-53 SC-12",
+                        "NIST SP 800-53 SC-28",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
         else:
             # check if encryption for artifacts is disabled
             artifactEncryptionCheck = str(projects["artifacts"]["encryptionDisabled"])
             if artifactEncryptionCheck == "True":
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": buildProjectArn + "/unencrypted-artifacts",
+                    "Id": f"{buildProjectArn}/unencrypted-artifacts",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": buildProjectArn,
                     "AwsAccountId": awsAccountId,
                     "Types": [
                         "Software and Configuration Checks/AWS Security Best Practices",
-                        "Effects/Data Exposure",
+                        "Effects/Data Exposure"
                     ],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "MEDIUM"},
+                    "Severity": {"Label": "HIGH"},
                     "Confidence": 99,
                     "Title": "[CodeBuild.1] CodeBuild projects should not have artifact encryption disabled",
-                    "Description": "CodeBuild project "
-                    + buildProjectName
-                    + " has artifact encryption disabled. Refer to the remediation instructions if this configuration is not intended",
+                    "Description": f"CodeBuild project {buildProjectName} disables artifact encryption. If your project does not encrypt artifacts other unauthorized sources, malicious or not, can access them and potentially exfiltrate or modify them. Refer to the remediation instructions if this configuration is not intended.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "If your project should have artifact encryption enabled scroll down to item 8 in the Create a Build Project (Console) section of the AWS CodeBuild User Guide",
@@ -100,23 +144,23 @@ def artifact_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, aw
                             "NIST SP 800-53 SC-12",
                             "NIST SP 800-53 SC-28",
                             "AICPA TSC CC6.1",
-                            "ISO 27001:2013 A.8.2.3",
-                        ],
+                            "ISO 27001:2013 A.8.2.3"
+                        ]
                     },
                     "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
+                    "RecordState": "ACTIVE"
                 }
                 yield finding
             else:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": buildProjectArn + "/unencrypted-artifacts",
+                    "Id": f"{buildProjectArn}/unencrypted-artifacts",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": buildProjectArn,
                     "AwsAccountId": awsAccountId,
                     "Types": [
                         "Software and Configuration Checks/AWS Security Best Practices",
-                        "Effects/Data Exposure",
+                        "Effects/Data Exposure"
                     ],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
@@ -124,9 +168,7 @@ def artifact_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, aw
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
                     "Title": "[CodeBuild.1] CodeBuild projects should not have artifact encryption disabled",
-                    "Description": "CodeBuild project "
-                    + buildProjectName
-                    + " has artifact encryption enabled.",
+                    "Description": f"CodeBuild project {buildProjectName} does not disable artifact encryption.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "If your project should have artifact encryption enabled scroll down to item 8 in the Create a Build Project (Console) section of the AWS CodeBuild User Guide",
@@ -151,23 +193,22 @@ def artifact_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, aw
                             "NIST SP 800-53 SC-12",
                             "NIST SP 800-53 SC-28",
                             "AICPA TSC CC6.1",
-                            "ISO 27001:2013 A.8.2.3",
-                        ],
+                            "ISO 27001:2013 A.8.2.3"
+                        ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED",
+                    "RecordState": "ARCHIVED"
                 }
                 yield finding
 
 @registry.register_check("codebuild")
 def insecure_ssl_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CodeBuild.2] CodeBuild projects should not have insecure SSL configured"""
-    project = get_code_build_projects(cache=cache)
-    myCodeBuildProjects = project.get("projects", [])
-    for projects in myCodeBuildProjects:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for projects in get_code_build_projects(cache=cache):
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         # check if Insecure SSL is enabled for your Source
         try:
             insecureSsl = str(projects["source"]["insecureSsl"])
@@ -289,16 +330,81 @@ def insecure_ssl_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartit
 @registry.register_check("codebuild")
 def plaintext_env_var_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CodeBuild.3] CodeBuild projects should not have plaintext environment variables"""
-    project = get_code_build_projects(cache=cache)
-    myCodeBuildProjects = project.get("projects", [])
-    for projects in myCodeBuildProjects:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for projects in get_code_build_projects(cache=cache):
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         # check if this project has any env vars
         envVars = projects["environment"]["environmentVariables"]
         if not envVars:
-            continue
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{buildProjectArn}/plaintext-env-vars",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": buildProjectArn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure",
+                    "Sensitive Data Identifications"
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[CodeBuild.3] CodeBuild projects should not have plaintext environment variables",
+                "Description": f"CodeBuild project {buildProjectName} does not contain any environment variables and this thus not in scope for this check.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your project should not contain plaintext environment variables refer to the Buildspec File Name and Storage Location section of the AWS CodeBuild User Guide",
+                        "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec-ref-syntax",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsCodeBuildProject",
+                        "Id": buildProjectArn,
+                        "Partition": "aws",
+                        "Region": awsRegion,
+                        "Details": {"AwsCodeBuildProject": {"Name": buildProjectName}},
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-1",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-2",
+                        "NIST SP 800-53 IA-1",
+                        "NIST SP 800-53 IA-2",
+                        "NIST SP 800-53 IA-3",
+                        "NIST SP 800-53 IA-4",
+                        "NIST SP 800-53 IA-5",
+                        "NIST SP 800-53 IA-6",
+                        "NIST SP 800-53 IA-7",
+                        "NIST SP 800-53 IA-8",
+                        "NIST SP 800-53 IA-9",
+                        "NIST SP 800-53 IA-10",
+                        "NIST SP 800-53 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
         else:
             # loop through env vars
             for envvar in envVars:
@@ -306,7 +412,7 @@ def plaintext_env_var_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                 if str(envvar["type"]) == "PLAINTEXT":
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": buildProjectArn + "/plaintext-env-vars",
+                        "Id": f"{buildProjectArn}/plaintext-env-vars",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": buildProjectArn,
                         "AwsAccountId": awsAccountId,
@@ -321,9 +427,7 @@ def plaintext_env_var_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                         "Severity": {"Label": "MEDIUM"},
                         "Confidence": 99,
                         "Title": "[CodeBuild.3] CodeBuild projects should not have plaintext environment variables",
-                        "Description": "CodeBuild project "
-                        + buildProjectName
-                        + " contains plaintext environment variables. Refer to the remediation instructions if this configuration is not intended",
+                        "Description": f"CodeBuild project {buildProjectName} contains plaintext environment variables. While not all environment variables are sensitive, you should review your project to ensure this is not the case. Look to use Systems Manager Parameter Store even for non-sensitive values to version control them centrally and not have service degradation of your project. Refer to the remediation instructions if this configuration is not intended",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "If your project should not contain plaintext environment variables refer to the Buildspec File Name and Storage Location section of the AWS CodeBuild User Guide",
@@ -366,24 +470,25 @@ def plaintext_env_var_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                                 "ISO 27001:2013 A.9.2.6",
                                 "ISO 27001:2013 A.9.3.1",
                                 "ISO 27001:2013 A.9.4.2",
-                                "ISO 27001:2013 A.9.4.3",
-                            ],
+                                "ISO 27001:2013 A.9.4.3"
+                            ]
                         },
                         "Workflow": {"Status": "NEW"},
-                        "RecordState": "ACTIVE",
+                        "RecordState": "ACTIVE"
                     }
                     yield finding
+                    break
                 else:
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": buildProjectArn + "/plaintext-env-vars",
+                        "Id": f"{buildProjectArn}/plaintext-env-vars",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": buildProjectArn,
                         "AwsAccountId": awsAccountId,
                         "Types": [
                             "Software and Configuration Checks/AWS Security Best Practices",
                             "Effects/Data Exposure",
-                            "Sensitive Data Identifications",
+                            "Sensitive Data Identifications"
                         ],
                         "FirstObservedAt": iso8601Time,
                         "CreatedAt": iso8601Time,
@@ -391,9 +496,7 @@ def plaintext_env_var_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                         "Severity": {"Label": "INFORMATIONAL"},
                         "Confidence": 99,
                         "Title": "[CodeBuild.3] CodeBuild projects should not have plaintext environment variables",
-                        "Description": "CodeBuild project "
-                        + buildProjectName
-                        + " does not contain plaintext environment variables.",
+                        "Description": f"CodeBuild project {buildProjectName} does not have any plaintext environment variables.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "If your project should not contain plaintext environment variables refer to the Buildspec File Name and Storage Location section of the AWS CodeBuild User Guide",
@@ -436,23 +539,23 @@ def plaintext_env_var_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                                 "ISO 27001:2013 A.9.2.6",
                                 "ISO 27001:2013 A.9.3.1",
                                 "ISO 27001:2013 A.9.4.2",
-                                "ISO 27001:2013 A.9.4.3",
-                            ],
+                                "ISO 27001:2013 A.9.4.3"
+                            ]
                         },
                         "Workflow": {"Status": "RESOLVED"},
-                        "RecordState": "ARCHIVED",
+                        "RecordState": "ARCHIVED"
                     }
                     yield finding
+                    break
 
 @registry.register_check("codebuild")
 def s3_logging_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CodeBuild.4] CodeBuild projects should not have S3 log encryption disabled"""
-    project = get_code_build_projects(cache=cache)
-    myCodeBuildProjects = project.get("projects", [])
-    for projects in myCodeBuildProjects:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for projects in get_code_build_projects(cache=cache):
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         # check if this project disabled s3 log encryption
         try:
             s3EncryptionCheck = str(projects["logsConfig"]["s3Logs"]["encryptionDisabled"])
@@ -564,12 +667,11 @@ def s3_logging_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, 
 @registry.register_check("codebuild")
 def cloudwatch_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CodeBuild.5] CodeBuild projects should have CloudWatch logging enabled"""
-    project = get_code_build_projects(cache=cache)
-    myCodeBuildProjects = project.get("projects", [])
-    for projects in myCodeBuildProjects:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for projects in get_code_build_projects(cache=cache):
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         # check if this project logs to cloudwatch
         try:
             codeBuildLoggingCheck = str(projects["logsConfig"]["cloudWatchLogs"]["status"])
@@ -679,3 +781,13 @@ def cloudwatch_logging_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                 "RecordState": "ARCHIVED",
             }
             yield finding
+
+@registry.register_check("codebuild")
+def codebuild_pat_credential_usage(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[CodeBuild.6] Your Account should not store any CodeBuild Personal Access Tokens in any Region"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    srcCreds = codebuild.list_source_credentials()["sourceCredentialsInfos"]
+    if not srcCreds:
+        # this is a passing check
+        print("")
