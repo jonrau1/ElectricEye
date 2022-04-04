@@ -211,10 +211,15 @@ def ssm_self_owned_document_public_share_check(cache: dict, awsAccountId: str, a
     if len(describe_instances(cache)) == 0:
         print('No EC2s')
     else:
+        # create a list to hold all of the SSM Documents that are referenced by SSM Associations
+        # if we do not find a match we will fail this check
+        assocDocNames = [x["Name"] for x in list_associations(cache)]
+        print(assocDocName)
         # carry out the logic
-        for assoc in list_associations(cache):
+        """for assoc in list_associations(cache):
             assocName = assoc["AssociationName"]
             assocDocName = assoc["Name"]
+            assocName = assoc["AssociationId"]
             assocTargets = assoc["Targets"]
             # determine the targets
             for t in assocTargets:
@@ -223,7 +228,63 @@ def ssm_self_owned_document_public_share_check(cache: dict, awsAccountId: str, a
                 else:
                     if "*" not in t["Values"]:
                         # this is a failing check
-                        print('not all instances targetted')
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": awsAccountId + awsRegion + "/ec2-serial-port-access-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": awsAccountId + awsRegion,
+                            "AwsAccountId": awsAccountId,
+                            "Types": [
+                                "Software and Configuration Checks/AWS Security Best Practices",
+                                "Effects/Data Exposure"
+                            ],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "HIGH"},
+                            "Confidence": 99,
+                            "Title": "[EC2.5] Serial port access to EC2 should be prohibited unless absolutely required",
+                            "Description": "AWS Account "
+                            + awsAccountId
+                            + " in Region "
+                            + awsRegion
+                            + " does not restrict access to the EC2 Serial Console, EC2 Serial Console provides text-based access to an instances’ serial port as though a monitor and keyboard were attached to it, this can be useful for troubleshooting but can also be abused if not properly restricted. Refer to the remediation instructions if this configuration is not intended",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "To learn more about the EC2 Serial Console refer to the EC2 Serial Console for Linux instances section of the Amazon Elastic Compute Cloud User Guide",
+                                    "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-serial-console.html"
+                                }
+                            },
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsAccount",
+                                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "FAILED",
+                                "RelatedRequirements": [
+                                    "NIST CSF PR.AC-3",
+                                    "NIST SP 800-53 AC-1",
+                                    "NIST SP 800-53 AC-17",
+                                    "NIST SP 800-53 AC-19",
+                                    "NIST SP 800-53 AC-20",
+                                    "NIST SP 800-53 SC-15",
+                                    "AICPA TSC CC6.6",
+                                    "ISO 27001:2013 A.6.2.1",
+                                    "ISO 27001:2013 A.6.2.2",
+                                    "ISO 27001:2013 A.11.2.6",
+                                    "ISO 27001:2013 A.13.1.1",
+                                    "ISO 27001:2013 A.13.2.1"
+                                ]
+                            },
+                            "Workflow": {"Status": "NEW"},
+                            "RecordState": "ACTIVE"
+                        }
+                        yield finding
                     else:
                         # this is a passing check
-                        print('all instances targetted')
+                        print('all instances targetted')"""
