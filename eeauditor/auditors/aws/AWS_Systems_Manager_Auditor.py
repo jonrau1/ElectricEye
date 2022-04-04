@@ -204,7 +204,7 @@ def ssm_self_owned_document_public_share_check(cache: dict, awsAccountId: str, a
             yield finding
 
 @registry.register_check("ssm")
-def ssm_self_owned_document_public_share_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ssm_update_ssm_agent_association_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SSM.2] AWS State Manager should be used to update SSM Agents for all EC2 instances in your Region"""
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
