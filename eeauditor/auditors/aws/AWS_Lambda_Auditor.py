@@ -454,7 +454,10 @@ def public_lambda_layer_check(cache: dict, awsAccountId: str, awsRegion: str, aw
     for layer in get_lambda_layers(cache):
         layerName = str(layer["LayerName"])
         layerArn = str(layer["LatestMatchingVersion"]["LayerVersionArn"])
-        compatibleRuntimes = layer["LatestMatchingVersion"]["CompatibleRuntimes"]
+        try:
+            compatibleRuntimes = layer["LatestMatchingVersion"]["CompatibleRuntimes"]
+        except KeyError:
+            compatibleRuntimes = []
         createDate = parser.parse(layer["LatestMatchingVersion"]["CreatedDate"])
         layerVersion = layer["LatestMatchingVersion"]["Version"]
         # Get the layer Policy
@@ -462,149 +465,137 @@ def public_lambda_layer_check(cache: dict, awsAccountId: str, awsRegion: str, aw
             LayerName=layerName,
             VersionNumber=layerVersion
         )["Policy"])
-
-        print(layerPolicy)
-
-'''
-GOT TO EVENTUAL FIX THIS??
-
-@registry.register_check("lambda")
-def public_lambda_layer_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    iterator = paginator.paginate()
-    for page in iterator:
-        iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-        # create env vars
-        for function in page["Functions"]:
-            functionName = str(function["FunctionName"])
-            lambdaArn = str(function["FunctionArn"])
-            if function["Layers"]:
-                for layer in function["Layers"]:
-                    layerArn = str(layer["Arn"])
-                    # Layer Policy check takes an ARN or a Name - easy game!
-                    getpolicy = lambdas.get_layer_version_policy(LayerName=layerArn)["Policy"]
-                    # TO DO TO DO....
-                    
-                    try:
-                        signingJobArn = str(function["SigningJobArn"])
-                        finding = {
-                            "SchemaVersion": "2018-10-08",
-                            "Id": lambdaArn + "/lambda-code-signing-check",
-                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                            "GeneratorId": lambdaArn,
-                            "AwsAccountId": awsAccountId,
-                            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                            "FirstObservedAt": iso8601Time,
-                            "CreatedAt": iso8601Time,
-                            "UpdatedAt": iso8601Time,
-                            "Severity": {"Label": "HIGH"},
-                            "Confidence": 99,
-                            "Title": "[Lambda.4] Lambda function Layers should not be publicly shared",
-                            "Description": "Lambda function "
-                            + functionName
-                            + " has an AWS code signing job configured.",
-                            "Remediation": {
-                                "Recommendation": {
-                                    "Text": "To configure code signing for your Functions refer to the UConfiguring code signing for AWS Lambda section of the Amazon Lambda Developer Guide",
-                                    "Url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-codesigning.html"
-                                }
-                            },
-                            "ProductFields": {"Product Name": "ElectricEye"},
-                            "Resources": [
-                                {
-                                    "Type": "AwsLambdaFunction",
-                                    "Id": lambdaArn,
-                                    "Partition": awsPartition,
-                                    "Region": awsRegion,
-                                    "Details": {
-                                        "AwsLambdaFunction": {
-                                            "FunctionName": functionName
-                                        },
-                                        "Other": {
-                                            "SigningJobArn": signingJobArn
-                                        }
-                                    }
-                                }
-                            ],
-                            "Compliance": {
-                                "Status": "PASSED",
-                                "RelatedRequirements": [
-                                    "NIST CSF ID.SC-2",
-                                    "NIST SP 800-53 RA-2",
-                                    "NIST SP 800-53 RA-3",
-                                    "NIST SP 800-53 PM-9",
-                                    "NIST SP 800-53 SA-12",
-                                    "NIST SP 800-53 SA-14",
-                                    "NIST SP 800-53 SA-15",
-                                    "AICPA TSC CC7.2",
-                                    "ISO 27001:2013 A.15.2.1",
-                                    "ISO 27001:2013 A.15.2.2",
-                                ],
-                            },
-                            "Workflow": {"Status": "RESOLVED"},
-                            "RecordState": "ARCHIVED",
+        # Evaluate layer Policy
+        for s in layerPolicy["Statement"]:
+            principal = s["Principal"]
+            effect = s["Effect"]
+            try:
+                conditionalPolicy = s["Condition"]["StringEquals"]["aws:PrincipalOrgID"]
+                hasCondition = True
+                del conditionalPolicy
+            except KeyError:
+                hasCondition = False
+            # this evaluation logic is a failing check
+            if (principal == "*" and effect == "Allow" and hasCondition == False):
+                # this is a failing check
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{layerArn}/public-lambda-layer-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": layerArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": [
+                        "Software and Configuration Checks/AWS Security Best Practices",
+                        "Effects/Data Exposure",
+                    ],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "HIGH"},
+                    "Confidence": 99,
+                    "Title": "[Lambda.4] Lambda layers should not be publicly shared",
+                    "Description": f"Lambda layer {layerName} is publicly shared without specifying a conditional access policy. Inadvertently sharing Lambda layers can potentially expose business logic or sensitive details within the Layer depending on how it is configured and thus all Layer sharing should be carefully reviewed. Refer to the remediation instructions if this configuration is not intended.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on sharing Lambda Layers and modifiying their permissions refer to the Configuring layer permissions section of the Amazon Lambda Developer Guide",
+                            "Url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html#configuration-layers-permissions"
                         }
-                        yield finding
-                    else:
-                        signingJobArn = 'NO_CODE_SIGNING_CONFIGURED'
-                        finding = {
-                            "SchemaVersion": "2018-10-08",
-                            "Id": lambdaArn + "/lambda-code-signing-check",
-                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                            "GeneratorId": lambdaArn,
-                            "AwsAccountId": awsAccountId,
-                            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                            "FirstObservedAt": iso8601Time,
-                            "CreatedAt": iso8601Time,
-                            "UpdatedAt": iso8601Time,
-                            "Severity": {"Label": "MEDIUM"},
-                            "Confidence": 99,
-                            "Title": "[Lambda.3] Lambda functions should use code signing from AWS Signer to ensure trusted code runs in a Function",
-                            "Description": "Lambda function "
-                            + functionName
-                            + " does not have an AWS code signing job configured. Code signing for AWS Lambda helps to ensure that only trusted code runs in your Lambda functions. When you enable code signing for a function, Lambda checks every code deployment and verifies that the code package is signed by a trusted source. Refer to the remediation instructions if this configuration is not intended.",
-                            "Remediation": {
-                                "Recommendation": {
-                                    "Text": "To configure code signing for your Functions refer to the UConfiguring code signing for AWS Lambda section of the Amazon Lambda Developer Guide",
-                                    "Url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-codesigning.html"
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsLambdaLayerVersion",
+                            "Id": layerArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsLambdaLayerVersion": {
+                                    "Version": layerVersion,
+                                    "CompatibleRuntimes": compatibleRuntimes,
+                                    "CreatedDate": createDate
                                 }
-                            },
-                            "ProductFields": {"Product Name": "ElectricEye"},
-                            "Resources": [
-                                {
-                                    "Type": "AwsLambdaFunction",
-                                    "Id": lambdaArn,
-                                    "Partition": awsPartition,
-                                    "Region": awsRegion,
-                                    "Details": {
-                                        "AwsLambdaFunction": {
-                                            "FunctionName": functionName
-                                        },
-                                        "Other": {
-                                            "SigningJobArn": signingJobArn
-                                        }
-                                    }
-                                }
-                            ],
-                            "Compliance": {
-                                "Status": "FAILED",
-                                "RelatedRequirements": [
-                                    "NIST CSF ID.SC-2",
-                                    "NIST SP 800-53 RA-2",
-                                    "NIST SP 800-53 RA-3",
-                                    "NIST SP 800-53 PM-9",
-                                    "NIST SP 800-53 SA-12",
-                                    "NIST SP 800-53 SA-14",
-                                    "NIST SP 800-53 SA-15",
-                                    "AICPA TSC CC7.2",
-                                    "ISO 27001:2013 A.15.2.1",
-                                    "ISO 27001:2013 A.15.2.2",
-                                ],
-                            },
-                            "Workflow": {"Status": "NEW"},
-                            "RecordState": "ACTIVE",
+                            }
                         }
-                        yield finding
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF PR.AC-3",
+                            "NIST SP 800-53 AC-1",
+                            "NIST SP 800-53 AC-17",
+                            "NIST SP 800-53 AC-19",
+                            "NIST SP 800-53 AC-20",
+                            "NIST SP 800-53 SC-15",
+                            "AICPA TSC CC6.6",
+                            "ISO 27001:2013 A.6.2.1",
+                            "ISO 27001:2013 A.6.2.2",
+                            "ISO 27001:2013 A.11.2.6",
+                            "ISO 27001:2013 A.13.1.1",
+                            "ISO 27001:2013 A.13.2.1"
+                        ]
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE"
+                }
+                yield finding
             else:
-                continue
-                        '''
-                
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{layerArn}/public-lambda-layer-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": layerArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": [
+                        "Software and Configuration Checks/AWS Security Best Practices",
+                        "Effects/Data Exposure",
+                    ],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Confidence": 99,
+                    "Title": "[Lambda.4] Lambda layers should not be publicly shared",
+                    "Description": f"Lambda layer {layerName} is not publicly shared.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on sharing Lambda Layers and modifiying their permissions refer to the Configuring layer permissions section of the Amazon Lambda Developer Guide",
+                            "Url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html#configuration-layers-permissions"
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsLambdaLayerVersion",
+                            "Id": layerArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsLambdaLayerVersion": {
+                                    "Version": layerVersion,
+                                    "CompatibleRuntimes": compatibleRuntimes,
+                                    "CreatedDate": createDate
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF PR.AC-3",
+                            "NIST SP 800-53 AC-1",
+                            "NIST SP 800-53 AC-17",
+                            "NIST SP 800-53 AC-19",
+                            "NIST SP 800-53 AC-20",
+                            "NIST SP 800-53 SC-15",
+                            "AICPA TSC CC6.6",
+                            "ISO 27001:2013 A.6.2.1",
+                            "ISO 27001:2013 A.6.2.2",
+                            "ISO 27001:2013 A.11.2.6",
+                            "ISO 27001:2013 A.13.1.1",
+                            "ISO 27001:2013 A.13.2.1"
+                        ]
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED"
+                }
+                yield finding
