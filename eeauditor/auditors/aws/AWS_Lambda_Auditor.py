@@ -458,7 +458,7 @@ def public_lambda_layer_check(cache: dict, awsAccountId: str, awsRegion: str, aw
             compatibleRuntimes = layer["LatestMatchingVersion"]["CompatibleRuntimes"]
         except KeyError:
             compatibleRuntimes = []
-        createDate = parser.parse(layer["LatestMatchingVersion"]["CreatedDate"])
+        createDate = parser.parse(layer["LatestMatchingVersion"]["CreatedDate"]).isoformat()
         layerVersion = layer["LatestMatchingVersion"]["Version"]
         # Get the layer Policy
         layerPolicy = json.loads(lambdas.get_layer_version_policy(
