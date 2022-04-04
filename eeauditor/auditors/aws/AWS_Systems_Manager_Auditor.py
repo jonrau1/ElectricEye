@@ -214,7 +214,7 @@ def ssm_self_owned_document_public_share_check(cache: dict, awsAccountId: str, a
         # create a list to hold all of the SSM Documents that are referenced by SSM Associations
         # if we do not find a match we will fail this check
         assocDocNames = [x["Name"] for x in list_associations(cache)]
-        print(assocDocName)
+        print(assocDocNames)
         # carry out the logic
         """for assoc in list_associations(cache):
             assocName = assoc["AssociationName"]
