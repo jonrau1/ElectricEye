@@ -33,9 +33,9 @@ def get_owned_ssm_docs(cache):
     response = cache.get("get_owned_ssm_docs")
     if response:
         return response
-    paginator = ssm.get_paginator('list_documents')
+    paginator = ssm.get_paginator("list_documents")
     if paginator:
-        for page in paginator.paginate(Filters=[{'Key': 'Owner','Values': ['Self']}]):
+        for page in paginator.paginate(Filters=[{"Key": "Owner","Values": ["Self"]}]):
             for doc in page["DocumentIdentifiers"]:
                 ssmDocs.append(doc)
         cache["get_owned_ssm_docs"] = ssmDocs
@@ -46,7 +46,7 @@ def list_associations(cache):
     response = cache.get("list_associations")
     if response:
         return response
-    paginator = ssm.get_paginator('list_associations')
+    paginator = ssm.get_paginator("list_associations")
     if paginator:
         for page in paginator.paginate():
             for assoc in page["Associations"]:

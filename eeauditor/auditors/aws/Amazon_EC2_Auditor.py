@@ -124,11 +124,11 @@ def ec2_imdsv2_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                             "ISO 27001:2013 A.9.2.3",
                             "ISO 27001:2013 A.9.4.1",
                             "ISO 27001:2013 A.9.4.4",
-                            "ISO 27001:2013 A.9.4.5",
+                            "ISO 27001:2013 A.9.4.5"
                         ]
                     },
                     "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
+                    "RecordState": "ACTIVE"
                 }
                 yield finding
             else:
@@ -194,11 +194,11 @@ def ec2_imdsv2_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                             "ISO 27001:2013 A.9.2.3",
                             "ISO 27001:2013 A.9.4.1",
                             "ISO 27001:2013 A.9.4.4",
-                            "ISO 27001:2013 A.9.4.5",
+                            "ISO 27001:2013 A.9.4.5"
                         ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED",
+                    "RecordState": "ARCHIVED"
                 }
                 yield finding
         else:
@@ -284,11 +284,11 @@ def ec2_secure_enclave_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                         "ISO 27001:2013 A.9.2.3",
                         "ISO 27001:2013 A.9.4.1",
                         "ISO 27001:2013 A.9.4.4",
-                        "ISO 27001:2013 A.9.4.5",
+                        "ISO 27001:2013 A.9.4.5"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
         else:
@@ -354,7 +354,7 @@ def ec2_secure_enclave_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                         "ISO 27001:2013 A.9.2.3",
                         "ISO 27001:2013 A.9.4.1",
                         "ISO 27001:2013 A.9.4.4",
-                        "ISO 27001:2013 A.9.4.5",
+                        "ISO 27001:2013 A.9.4.5"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -439,7 +439,7 @@ def ec2_public_facing_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                         "ISO 27001:2013 A.6.2.2",
                         "ISO 27001:2013 A.11.2.6",
                         "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.1"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -505,7 +505,7 @@ def ec2_public_facing_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                         "ISO 27001:2013 A.6.2.2",
                         "ISO 27001:2013 A.11.2.6",
                         "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.1"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -588,7 +588,7 @@ def ec2_source_dest_verification_check(cache: dict, awsAccountId: str, awsRegion
                         "ISO 27001:2013 A.6.2.2",
                         "ISO 27001:2013 A.11.2.6",
                         "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.1"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -653,7 +653,7 @@ def ec2_source_dest_verification_check(cache: dict, awsAccountId: str, awsRegion
                         "ISO 27001:2013 A.6.2.2",
                         "ISO 27001:2013 A.11.2.6",
                         "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.1"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -847,9 +847,6 @@ def ec2_ami_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
                                     "VpcId": vpcId,
                                     "SubnetId": subnetId,
                                     "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
-                                },
-                                "Other": {
-                                    "AmiAge": f"{AmiAge.days} days old"
                                 }
                             }
                         }
@@ -866,7 +863,7 @@ def ec2_ami_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
                             "AICPA TSC CC8.1",
                             "ISO 27001:2013 A.8.1.1",
                             "ISO 27001:2013 A.12.6.1",
-                            "ISO 27001:2013 A.14.1.1",
+                            "ISO 27001:2013 A.14.1.1"
                         ]
                     },
                     "Workflow": {"Status": "NEW"},
@@ -910,9 +907,6 @@ def ec2_ami_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
                                     "VpcId": vpcId,
                                     "SubnetId": subnetId,
                                     "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
-                                },
-                                "Other": {
-                                    "AmiAge": f"{AmiAge.days} days old"
                                 }
                             }
                         }
@@ -929,7 +923,7 @@ def ec2_ami_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
                             "AICPA TSC CC8.1",
                             "ISO 27001:2013 A.8.1.1",
                             "ISO 27001:2013 A.12.6.1",
-                            "ISO 27001:2013 A.14.1.1",
+                            "ISO 27001:2013 A.14.1.1"
                         ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
@@ -998,9 +992,6 @@ def ec2_ami_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                                     "VpcId": vpcId,
                                     "SubnetId": subnetId,
                                     "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
-                                },
-                                "Other": {
-                                    "AmiStatus": f"{amiState}",
                                 }
                             }
                         }
@@ -1061,9 +1052,6 @@ def ec2_ami_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                                     "VpcId": vpcId,
                                     "SubnetId": subnetId,
                                     "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
-                                },
-                                "Other": {
-                                    "AmiStatus": f"{amiState}",
                                 }
                             }
                         }
@@ -1125,9 +1113,6 @@ def ec2_ami_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                                     "VpcId": vpcId,
                                     "SubnetId": subnetId,
                                     "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
-                                },
-                                "Other": {
-                                    "AmiStatus": f"{amiState}",
                                 }
                             }
                         }
@@ -1189,9 +1174,6 @@ def ec2_ami_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                                 "VpcId": vpcId,
                                 "SubnetId": subnetId,
                                 "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
-                            },
-                            "Other": {
-                                "AmiStatus": "Deregistered",
                             }
                         }
                     }
