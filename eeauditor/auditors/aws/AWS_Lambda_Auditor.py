@@ -30,6 +30,7 @@ registry = CheckRegister()
 # boto3 clients
 lambdas = boto3.client("lambda")
 cloudwatch = boto3.client("cloudwatch")
+ec2 = boto3.client("ec2")
 
 def get_lambda_functions(cache):
     lambdaFunctions = []
@@ -949,12 +950,201 @@ def lambda_supported_runtimes_check(cache: dict, awsAccountId: str, awsRegion: s
             yield finding
 
 @registry.register_check("lambda")
-def lambda_vpc_ha_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def lambda_vpc_ha_subnets_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Lambda.7] Lambda functions in VPCs should use more than one Availability Zone"""
+    # Create empty list to hold unique Subnet IDs - for future lookup against AZs
+    uSubnets = []
+    # Create another empty list to hold unique AZs based on Subnets
+    uAzs = []
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for function in get_lambda_functions(cache):
         functionName = str(function["FunctionName"])
         lambdaArn = str(function["FunctionArn"])
         # check specific metadata
-        subnetUsedCount = len(function["VpcConfig"]["SubnetIds"])
+        try:
+            # append unique Subnets to the "uSubnets" list
+            for snet in function["VpcConfig"]["SubnetIds"]:
+                if snet not in uSubnets:
+                    uSubnets.append(snet)
+                else:
+                    continue
+            # look up each Subnet for the Lambda function and determine the AZ-ID
+            # write unique AZ-IDs into the "uAzs" list for final determination
+            for subnet in ec2.describe_subnets(SubnetIds=uSubnets)["Subnets"]:
+                azId = str(subnet["AvailabilityZone"])
+                if azId not in uAzs:
+                    uAzs.append(azId)
+                else:
+                    continue
+            if len(uAzs) <= 1:
+                # this is a failing check
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{lambdaArn}/lambda-vpc-subnet-ha-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": lambdaArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "MEDIUM"},
+                    "Confidence": 99,
+                    "Title": "[Lambda.7] Lambda functions in VPCs should use more than one Availability Zone",
+                    "Description": f"Lambda function {functionName} is only deployed to a Single Availability Zone. Deploying resources across multiple Availability Zones is an AWS best practice to ensure high availability within your architecture. Availability is a core pillar in the confidentiality, integrity, and availability triad security model. All Lambda functions should have a multi-Availability Zone deployment to ensure that a single zone of failure does not cause a total disruption of operations. Refer to the remediation instructions if this configuration is not intended.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information Lambda function networking and HA requirements refer to the VPC networking for Lambda section of the Amazon Lambda Developer Guide",
+                            "Url": "https://docs.aws.amazon.com/lambda/latest/dg/foundation-networking.html"
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsLambdaFunction",
+                            "Id": lambdaArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsLambdaFunction": {
+                                    "FunctionName": functionName
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF ID.BE-5",
+                            "NIST CSF PR.PT-5",
+                            "NIST SP 800-53 CP-2",
+                            "NIST SP 800-53 CP-11",
+                            "NIST SP 800-53 SA-13",
+                            "NIST SP 800-53 SA14",
+                            "AICPA TSC CC3.1",
+                            "AICPA TSC A1.2",
+                            "ISO 27001:2013 A.11.1.4",
+                            "ISO 27001:2013 A.17.1.1",
+                            "ISO 27001:2013 A.17.1.2",
+                            "ISO 27001:2013 A.17.2.1"
+                        ]
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE"
+                }
+                yield finding
+            else:
+                # this is a passing check
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{lambdaArn}/lambda-vpc-subnet-ha-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": lambdaArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Confidence": 99,
+                    "Title": "[Lambda.7] Lambda functions in VPCs should use more than one Availability Zone",
+                    "Description": f"Lambda function {functionName} is deployed to at least two Availability Zones.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information Lambda function networking and HA requirements refer to the VPC networking for Lambda section of the Amazon Lambda Developer Guide",
+                            "Url": "https://docs.aws.amazon.com/lambda/latest/dg/foundation-networking.html"
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsLambdaFunction",
+                            "Id": lambdaArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsLambdaFunction": {
+                                    "FunctionName": functionName
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF ID.BE-5",
+                            "NIST CSF PR.PT-5",
+                            "NIST SP 800-53 CP-2",
+                            "NIST SP 800-53 CP-11",
+                            "NIST SP 800-53 SA-13",
+                            "NIST SP 800-53 SA14",
+                            "AICPA TSC CC3.1",
+                            "AICPA TSC A1.2",
+                            "ISO 27001:2013 A.11.1.4",
+                            "ISO 27001:2013 A.17.1.1",
+                            "ISO 27001:2013 A.17.1.2",
+                            "ISO 27001:2013 A.17.2.1"
+                        ]
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED"
+                }
+                yield finding
+        except KeyError:
+            # this is a passing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{lambdaArn}/lambda-vpc-subnet-ha-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": lambdaArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Lambda.7] Lambda functions in VPCs should use more than one Availability Zone",
+                "Description": f"Lambda function {functionName} is not deployed to a VPC and is thus exempt from this check.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information Lambda function networking and HA requirements refer to the VPC networking for Lambda section of the Amazon Lambda Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/lambda/latest/dg/foundation-networking.html"
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsLambdaFunction",
+                        "Id": lambdaArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsLambdaFunction": {
+                                "FunctionName": functionName
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.BE-5",
+                        "NIST CSF PR.PT-5",
+                        "NIST SP 800-53 CP-2",
+                        "NIST SP 800-53 CP-11",
+                        "NIST SP 800-53 SA-13",
+                        "NIST SP 800-53 SA14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
