@@ -48,7 +48,6 @@ def ssm_self_owned_document_public_share_check(cache: dict, awsAccountId: str, a
     for doc in get_owned_ssm_docs(cache):
         docName = doc["Name"]
         docArn = f"arn:{awsPartition}:ssm:{awsRegion}:{awsAccountId}:document/{docName}"
-        docDisplayName = doc["DisplayName"]
         docType = doc["DocumentType"]
         # Check if "all" is specified for shared Accounts, this means the Document is public
         docShare = ssm.describe_document_permission(Name=docName,PermissionType="Share")["AccountIds"]
@@ -87,7 +86,6 @@ def ssm_self_owned_document_public_share_check(cache: dict, awsAccountId: str, a
                         "Details": {
                             "Other": {
                                 "Name": docName,
-                                "DisplayName": docDisplayName,
                                 "DocumentType": docType
                             }
                         }
@@ -149,7 +147,6 @@ def ssm_self_owned_document_public_share_check(cache: dict, awsAccountId: str, a
                         "Details": {
                             "Other": {
                                 "Name": docName,
-                                "DisplayName": docDisplayName,
                                 "DocumentType": docType
                             }
                         }
