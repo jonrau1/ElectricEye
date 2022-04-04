@@ -21,6 +21,7 @@
 import datetime
 from dateutil import parser
 import boto3
+import json
 from check_register import CheckRegister
 
 registry = CheckRegister()
@@ -41,6 +42,19 @@ def get_lambda_functions(cache):
                 lambdaFunctions.append(function)
         cache["get_lambda_functions"] = lambdaFunctions
         return cache["get_lambda_functions"]
+
+def get_lambda_layers(cache):
+    lambdaLayers = []
+    response = cache.get("get_lambda_layers")
+    if response:
+        return response
+    paginator = lambdas.get_paginator('list_layers')
+    if paginator:
+        for page in paginator.paginate():
+            for layer in page["Layers"]:
+                lambdaLayers.append(layer)
+        cache["get_lambda_layers"] = lambdaLayers
+        return cache["get_lambda_layers"]
 
 @registry.register_check("lambda")
 def unused_function_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -431,6 +445,25 @@ def function_code_signer_check(cache: dict, awsAccountId: str, awsRegion: str, a
                 "RecordState": "ACTIVE",
             }
             yield finding
+
+@registry.register_check("lambda")
+def public_lambda_layer_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Lambda.4] Lambda layers should not be publicly shared"""
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for layer in get_lambda_layers(cache):
+        layerName = str(layer["LayerName"])
+        layerArn = str(layer["LatestMatchingVersion"]["LayerVersionArn"])
+        compatibleRuntimes = layer["LatestMatchingVersion"]["CompatibleRuntimes"]
+        createDate = parser.parse(layer["LatestMatchingVersion"]["CreatedDate"])
+        layerVersion = layer["LatestMatchingVersion"]["Version"]
+        # Get the layer Policy
+        layerPolicy = json.loads(lambdas.get_layer_version_policy(
+            LayerName=layerName,
+            VersionNumber=layerVersion
+        )["Policy"])
+
+        print(layerPolicy)
 
 '''
 GOT TO EVENTUAL FIX THIS??
