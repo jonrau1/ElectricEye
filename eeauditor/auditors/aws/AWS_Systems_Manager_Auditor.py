@@ -216,6 +216,14 @@ def ssm_self_owned_document_public_share_check(cache: dict, awsAccountId: str, a
             assocName = assoc["AssociationName"]
             assocDocName = assoc["Name"]
             assocTargets = assoc["Targets"]
-
-            print(assocName, assocDocName)
-            print(assocTargets)
+            # determine the targets
+            for t in assocTargets:
+                if t["Key"] != "InstanceIds":
+                    continue
+                else:
+                    if "*" not in t["Values"]:
+                        # this is a failing check
+                        print('not all instances targetted')
+                    else:
+                        # this is a passing check
+                        print('all instances targetted')
