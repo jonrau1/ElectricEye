@@ -27,7 +27,7 @@ registry = CheckRegister()
 
 # import boto3 clients
 wafv2 = boto3.client("wafv2")
-globalWafv2 = boto3.client("wafv2", aws_region="us-east-1")
+globalWafv2 = boto3.client("wafv2", region_name="us-east-1")
 
 # loop through WAFs
 def list_wafs(cache):
