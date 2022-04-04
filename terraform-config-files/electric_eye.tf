@@ -345,6 +345,8 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "elasticloadbalancing:DescribeListeners",
                 "es:DescribeElasticsearchDomain",
                 "ssm:DescribeInstance*",
+                "ssm:ListDocuments",
+                "ssm:ListAssociations",
                 "redshift:DescribeLoggingStatus",
                 "appstream:DescribeFleets",
                 "ecr:DescribeRepositories",

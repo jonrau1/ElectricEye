@@ -92,6 +92,8 @@ Numerous personas can make effective usage of ElectricEye such as: Security Oper
 2. Have `Python 3` and `Pip(3)` installed and setup virtualenv
 
 ```bash
+sudo apt install -y python3-pip
+pip3 install --upgrade pip
 pip3 install virtualenv --user
 virtualenv .venv
 ```
@@ -502,7 +504,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 
 ## Supported Services and Checks
 
-These are the following services and checks perform by each Auditor. There are currently :boom: **515 Checks** :boom: supported across :exclamation: **93 AWS services/components** :exclamation: with a total of :fire: **72 Auditors** :fire: .
+These are the following services and checks perform by each Auditor. There are currently :boom: **519 Checks** :boom: supported across :exclamation: **95 AWS services/components** :exclamation: with a total of :fire: **73 Auditors** :fire:
 
 There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
@@ -855,6 +857,10 @@ There are currently **62** supported response and remediation Playbooks with cov
 | AWS_Security_Services_Auditor.py | Macie2 | Is Macie enabled |
 | AWS_Security_Services_Auditor.py | AWS WAFv2 (Regional) | Are Regional Web ACLs configured |
 | AWS_Security_Services_Auditor.py | AWS WAFv2 (Global) | Are Global Web ACLs (for CloudFront) configured |
+| AWS_Systems_Manager_Auditor.py | SSM Document | Are self owned SSM Documents publicly shared |
+| AWS_Systems_Manager_Auditor.py | SSM Association | Does an SSM Association that targets all Instances conduct SSM Agent updates |
+| AWS_Systems_Manager_Auditor.py | SSM Association | Does an SSM Association that targets all Instances conduct patching |
+| AWS_Systems_Manager_Auditor.py | SSM Association | Does an SSM Association that targets all Instances conduct inventory gathering |
 | AWS_TrustedAdvisor_Auditor.py | Trusted Advisor Check | Is the Trusted Advisor check for MFA on Root Account failing |
 | AWS_TrustedAdvisor_Auditor.py | Trusted Advisor Check | Is the Trusted Advisor check for ELB Listener Security failing |
 | AWS_TrustedAdvisor_Auditor.py | Trusted Advisor Check | Is the Trusted Advisor check for CloudFront SSL Certs in IAM Cert Store failing |

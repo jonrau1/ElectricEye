@@ -20,7 +20,6 @@
 
 import datetime
 import boto3
-import botocore
 from check_register import CheckRegister
 
 registry = CheckRegister()

@@ -373,15 +373,15 @@ Resources:
                   - secretsmanager:ListSecrets
                   - securityhub:BatchImportFindings
                   - securityhub:GetFindings
-                  - shield:DescribeDRTAccess
-                  - shield:DescribeProtection
-                  - shield:DescribeSubscription
+                  - shield:Describe*
                   - sns:GetTopicAttributes
                   - sns:ListSubscriptions
                   - sns:ListSubscriptionsByTopic
                   - sns:ListTopics
                   - ssm:GetP*
                   - ssm:DescribeInstance*
+                  - ssm:ListDocuments
+                  - ssm:ListAssociations
                   - sts:GetCallerIdentity
                   - sqs:ListQueues
                   - sqs:GetQueueAttributes
