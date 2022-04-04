@@ -209,82 +209,229 @@ def ssm_self_owned_document_public_share_check(cache: dict, awsAccountId: str, a
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     if len(describe_instances(cache)) == 0:
-        print('No EC2s')
+        # this is a passing check - there are not any EC2 instances here
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"{awsAccountId}/{awsRegion}/ssm-state-mgr-ssm-agent-update-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"{awsAccountId}/{awsRegion}",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[SSM.2] AWS State Manager should be used to update SSM Agents for all EC2 instances in your Region",
+            "Description": f"AWS Account {awsAccountId} for AWS Region {awsRegion} does not have any running or stopped EC2 Instances and is thus exempt from this check.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information on SSM State Manager best practices refer to the Use cases and best practices section of the AWS Systems Manager User Guide",
+                    "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-best-practices.html"
+                }
+            },
+            "ProductFields": {"Product Name": "ElectricEye"},
+            "Resources": [
+                {
+                    "Type": "AwsAccount",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.AC-3",
+                    "NIST SP 800-53 AC-1",
+                    "NIST SP 800-53 AC-17",
+                    "NIST SP 800-53 AC-19",
+                    "NIST SP 800-53 AC-20",
+                    "NIST SP 800-53 SC-15",
+                    "AICPA TSC CC6.6",
+                    "ISO 27001:2013 A.6.2.1",
+                    "ISO 27001:2013 A.6.2.2",
+                    "ISO 27001:2013 A.11.2.6",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.13.2.1"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
     else:
         # create a list to hold all of the SSM Documents that are referenced by SSM Associations
         # if we do not find a match we will fail this check
         assocDocNames = [x["Name"] for x in list_associations(cache)]
-        print(assocDocNames)
-        # carry out the logic
-        """for assoc in list_associations(cache):
-            assocName = assoc["AssociationName"]
-            assocDocName = assoc["Name"]
-            assocName = assoc["AssociationId"]
-            assocTargets = assoc["Targets"]
-            # determine the targets
-            for t in assocTargets:
-                if t["Key"] != "InstanceIds":
+        if "AWS-UpdateSSMAgent" not in assocDocNames:
+            # this is a failing check - a State Mgr Association for the "AWS-UpdateSSMAgent" Doc doesn't exist
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{awsAccountId}/{awsRegion}/ssm-state-mgr-ssm-agent-update-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{awsAccountId}/{awsRegion}",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[SSM.2] AWS State Manager should be used to update SSM Agents for all EC2 instances in your Region",
+                "Description": f"AWS Account {awsAccountId} for AWS Region {awsRegion} does not have a State Manager Association to update SSM Agents for EC2. Ensuring that you keep the SSM up-to-date with automation ensures that all latest SSM features such as vulnerability and patch management will be available to your instances. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on SSM State Manager best practices refer to the Use cases and best practices section of the AWS Systems Manager User Guide",
+                        "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-best-practices.html"
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsAccount",
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-3",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-17",
+                        "NIST SP 800-53 AC-19",
+                        "NIST SP 800-53 AC-20",
+                        "NIST SP 800-53 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            # carry out the logic
+            for assoc in list_associations(cache):
+                # we have established we have a matching association with this Document so we can skip all others
+                if assoc["Name"] != "AWS-UpdateSSMAgent":
                     continue
                 else:
-                    if "*" not in t["Values"]:
-                        # this is a failing check
-                        finding = {
-                            "SchemaVersion": "2018-10-08",
-                            "Id": awsAccountId + awsRegion + "/ec2-serial-port-access-check",
-                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                            "GeneratorId": awsAccountId + awsRegion,
-                            "AwsAccountId": awsAccountId,
-                            "Types": [
-                                "Software and Configuration Checks/AWS Security Best Practices",
-                                "Effects/Data Exposure"
-                            ],
-                            "FirstObservedAt": iso8601Time,
-                            "CreatedAt": iso8601Time,
-                            "UpdatedAt": iso8601Time,
-                            "Severity": {"Label": "HIGH"},
-                            "Confidence": 99,
-                            "Title": "[EC2.5] Serial port access to EC2 should be prohibited unless absolutely required",
-                            "Description": "AWS Account "
-                            + awsAccountId
-                            + " in Region "
-                            + awsRegion
-                            + " does not restrict access to the EC2 Serial Console, EC2 Serial Console provides text-based access to an instances’ serial port as though a monitor and keyboard were attached to it, this can be useful for troubleshooting but can also be abused if not properly restricted. Refer to the remediation instructions if this configuration is not intended",
-                            "Remediation": {
-                                "Recommendation": {
-                                    "Text": "To learn more about the EC2 Serial Console refer to the EC2 Serial Console for Linux instances section of the Amazon Elastic Compute Cloud User Guide",
-                                    "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-serial-console.html"
+                    assocName = assoc["AssociationName"]
+                    assocName = assoc["AssociationId"]
+                    assocTargets = assoc["Targets"]
+                    # determine the targets
+                    for t in assocTargets:
+                        if t["Key"] != "InstanceIds":
+                            continue
+                        else:
+                            if "*" not in t["Values"]:
+                                # this is a failing check
+                                finding = {
+                                    "SchemaVersion": "2018-10-08",
+                                    "Id": f"{awsAccountId}/{awsRegion}/ssm-state-mgr-ssm-agent-update-check",
+                                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                                    "GeneratorId": f"{awsAccountId}/{awsRegion}",
+                                    "AwsAccountId": awsAccountId,
+                                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                                    "FirstObservedAt": iso8601Time,
+                                    "CreatedAt": iso8601Time,
+                                    "UpdatedAt": iso8601Time,
+                                    "Severity": {"Label": "LOW"},
+                                    "Confidence": 99,
+                                    "Title": "[SSM.2] AWS State Manager should be used to update SSM Agents for all EC2 instances in your Region",
+                                    "Description": f"AWS Account {awsAccountId} for AWS Region {awsRegion} has a State Manager Association to update SSM Agents for EC2 called {assocName}, but is not set to target all current and future Instances. Ensuring that you keep the SSM up-to-date with automation ensures that all latest SSM features such as vulnerability and patch management will be available to your instances. Refer to the remediation instructions if this configuration is not intended.",
+                                    "Remediation": {
+                                        "Recommendation": {
+                                            "Text": "For more information on SSM State Manager best practices refer to the Use cases and best practices section of the AWS Systems Manager User Guide",
+                                            "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-best-practices.html"
+                                        }
+                                    },
+                                    "ProductFields": {"Product Name": "ElectricEye"},
+                                    "Resources": [
+                                        {
+                                            "Type": "AwsAccount",
+                                            "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                                            "Partition": awsPartition,
+                                            "Region": awsRegion
+                                        }
+                                    ],
+                                    "Compliance": {
+                                        "Status": "FAILED",
+                                        "RelatedRequirements": [
+                                            "NIST CSF PR.AC-3",
+                                            "NIST SP 800-53 AC-1",
+                                            "NIST SP 800-53 AC-17",
+                                            "NIST SP 800-53 AC-19",
+                                            "NIST SP 800-53 AC-20",
+                                            "NIST SP 800-53 SC-15",
+                                            "AICPA TSC CC6.6",
+                                            "ISO 27001:2013 A.6.2.1",
+                                            "ISO 27001:2013 A.6.2.2",
+                                            "ISO 27001:2013 A.11.2.6",
+                                            "ISO 27001:2013 A.13.1.1",
+                                            "ISO 27001:2013 A.13.2.1"
+                                        ]
+                                    },
+                                    "Workflow": {"Status": "NEW"},
+                                    "RecordState": "ACTIVE"
                                 }
-                            },
-                            "ProductFields": {"Product Name": "ElectricEye"},
-                            "Resources": [
-                                {
-                                    "Type": "AwsAccount",
-                                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
-                                    "Partition": awsPartition,
-                                    "Region": awsRegion
+                                yield finding
+                            else:
+                                # this is a passing check
+                                finding = {
+                                    "SchemaVersion": "2018-10-08",
+                                    "Id": f"{awsAccountId}/{awsRegion}/ssm-state-mgr-ssm-agent-update-check",
+                                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                                    "GeneratorId": f"{awsAccountId}/{awsRegion}",
+                                    "AwsAccountId": awsAccountId,
+                                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                                    "FirstObservedAt": iso8601Time,
+                                    "CreatedAt": iso8601Time,
+                                    "UpdatedAt": iso8601Time,
+                                    "Severity": {"Label": "INFORMATIONAL"},
+                                    "Confidence": 99,
+                                    "Title": "[SSM.2] AWS State Manager should be used to update SSM Agents for all EC2 instances in your Region",
+                                    "Description": f"AWS Account {awsAccountId} for AWS Region {awsRegion} has a State Manager Association to update SSM Agents for EC2 that targets all instances.",
+                                    "Remediation": {
+                                        "Recommendation": {
+                                            "Text": "For more information on SSM State Manager best practices refer to the Use cases and best practices section of the AWS Systems Manager User Guide",
+                                            "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-best-practices.html"
+                                        }
+                                    },
+                                    "ProductFields": {"Product Name": "ElectricEye"},
+                                    "Resources": [
+                                        {
+                                            "Type": "AwsAccount",
+                                            "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                                            "Partition": awsPartition,
+                                            "Region": awsRegion
+                                        }
+                                    ],
+                                    "Compliance": {
+                                        "Status": "PASSED",
+                                        "RelatedRequirements": [
+                                            "NIST CSF PR.AC-3",
+                                            "NIST SP 800-53 AC-1",
+                                            "NIST SP 800-53 AC-17",
+                                            "NIST SP 800-53 AC-19",
+                                            "NIST SP 800-53 AC-20",
+                                            "NIST SP 800-53 SC-15",
+                                            "AICPA TSC CC6.6",
+                                            "ISO 27001:2013 A.6.2.1",
+                                            "ISO 27001:2013 A.6.2.2",
+                                            "ISO 27001:2013 A.11.2.6",
+                                            "ISO 27001:2013 A.13.1.1",
+                                            "ISO 27001:2013 A.13.2.1"
+                                        ]
+                                    },
+                                    "Workflow": {"Status": "RESOLVED"},
+                                    "RecordState": "ARCHIVED"
                                 }
-                            ],
-                            "Compliance": {
-                                "Status": "FAILED",
-                                "RelatedRequirements": [
-                                    "NIST CSF PR.AC-3",
-                                    "NIST SP 800-53 AC-1",
-                                    "NIST SP 800-53 AC-17",
-                                    "NIST SP 800-53 AC-19",
-                                    "NIST SP 800-53 AC-20",
-                                    "NIST SP 800-53 SC-15",
-                                    "AICPA TSC CC6.6",
-                                    "ISO 27001:2013 A.6.2.1",
-                                    "ISO 27001:2013 A.6.2.2",
-                                    "ISO 27001:2013 A.11.2.6",
-                                    "ISO 27001:2013 A.13.1.1",
-                                    "ISO 27001:2013 A.13.2.1"
-                                ]
-                            },
-                            "Workflow": {"Status": "NEW"},
-                            "RecordState": "ACTIVE"
-                        }
-                        yield finding
-                    else:
-                        # this is a passing check
-                        print('all instances targetted')"""
+                                yield finding
