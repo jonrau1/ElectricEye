@@ -612,6 +612,7 @@ def public_lambda_function_check(cache: dict, awsAccountId: str, awsRegion: str,
         # Get function policy
         try:
             funcPolicy = json.loads(lambdas.get_policy(FunctionName=functionName)["Policy"])
+            print(functionName, funcPolicy)
         except botocore.exceptions.ClientError as error:
             if error.response['Error']['Code'] == 'ResourceNotFoundException':
                 # this is a passing check
