@@ -352,7 +352,7 @@ def function_code_signer_check(cache: dict, awsAccountId: str, awsRegion: str, a
                 + " has an AWS code signing job configured at " + signingJobArn + ".",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "To configure code signing for your Functions refer to the UConfiguring code signing for AWS Lambda section of the Amazon Lambda Developer Guide",
+                        "Text": "To configure code signing for your Functions refer to the Configuring code signing for AWS Lambda section of the Amazon Lambda Developer Guide",
                         "Url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-codesigning.html"
                     }
                 },
@@ -408,7 +408,7 @@ def function_code_signer_check(cache: dict, awsAccountId: str, awsRegion: str, a
                 + " does not have an AWS code signing job configured. Code signing for AWS Lambda helps to ensure that only trusted code runs in your Lambda functions. When you enable code signing for a function, Lambda checks every code deployment and verifies that the code package is signed by a trusted source. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "To configure code signing for your Functions refer to the UConfiguring code signing for AWS Lambda section of the Amazon Lambda Developer Guide",
+                        "Text": "To configure code signing for your Functions refer to the Configuring code signing for AWS Lambda section of the Amazon Lambda Developer Guide",
                         "Url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-codesigning.html"
                     }
                 },
@@ -574,6 +574,149 @@ def public_lambda_layer_check(cache: dict, awsAccountId: str, awsRegion: str, aw
                                     "Version": layerVersion,
                                     "CompatibleRuntimes": compatibleRuntimes,
                                     "CreatedDate": createDate
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF PR.AC-3",
+                            "NIST SP 800-53 AC-1",
+                            "NIST SP 800-53 AC-17",
+                            "NIST SP 800-53 AC-19",
+                            "NIST SP 800-53 AC-20",
+                            "NIST SP 800-53 SC-15",
+                            "AICPA TSC CC6.6",
+                            "ISO 27001:2013 A.6.2.1",
+                            "ISO 27001:2013 A.6.2.2",
+                            "ISO 27001:2013 A.11.2.6",
+                            "ISO 27001:2013 A.13.1.1",
+                            "ISO 27001:2013 A.13.2.1"
+                        ]
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED"
+                }
+                yield finding
+
+@registry.register_check("lambda")
+def public_lambda_function_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Lambda.5] Lambda functions should not be publicly shared"""
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for function in get_lambda_functions(cache):
+        functionName = str(function["FunctionName"])
+        lambdaArn = str(function["FunctionArn"])
+        # Get function policy
+        funcPolicy = json.loads(lambdas.get_policy(FunctionName=functionName)["Policy"])
+        # Evaluate layer Policy
+        for s in funcPolicy["Statement"]:
+            principal = s["Principal"]
+            effect = s["Effect"]
+            try:
+                # check for any condition which can be "aws:PrincipalOrgId" or "aws:SourceAccount" or "aws:SourceArn"
+                conditionalPolicy = s["Condition"]
+                hasCondition = True
+                del conditionalPolicy
+            except KeyError:
+                hasCondition = False
+            # this evaluation logic is a failing check
+            if (principal == "*" and effect == "Allow" and hasCondition == False):
+                # this is a failing check
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{lambdaArn}/public-lambda-function-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": lambdaArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": [
+                        "Software and Configuration Checks/AWS Security Best Practices",
+                        "Effects/Data Exposure",
+                    ],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "MEDIUM"},
+                    "Confidence": 99,
+                    "Title": "[Lambda.4] Lambda layers should not be publicly shared",
+                    "Description": f"Lambda function {functionName} is allowed to be publicly invoked. While public invocation still requires understanding the Lambda function's metadata and having valid AWS credentials, functions should never be allowed to be freely invoked and should instead have a calling service or an API Gateway. Refer to the remediation instructions if this configuration is not intended.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on Lambda function resource-based policies and modifiying their permissions refer to the Using resource-based policies for AWS Lambda section of the Amazon Lambda Developer Guide",
+                            "Url": "https://docs.aws.amazon.com/lambda/latest/dg/access-control-resource-based.html"
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsLambdaFunction",
+                            "Id": lambdaArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsLambdaFunction": {
+                                    "FunctionName": functionName
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF PR.AC-3",
+                            "NIST SP 800-53 AC-1",
+                            "NIST SP 800-53 AC-17",
+                            "NIST SP 800-53 AC-19",
+                            "NIST SP 800-53 AC-20",
+                            "NIST SP 800-53 SC-15",
+                            "AICPA TSC CC6.6",
+                            "ISO 27001:2013 A.6.2.1",
+                            "ISO 27001:2013 A.6.2.2",
+                            "ISO 27001:2013 A.11.2.6",
+                            "ISO 27001:2013 A.13.1.1",
+                            "ISO 27001:2013 A.13.2.1"
+                        ]
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE"
+                }
+                yield finding
+            else:
+                # this is a passing check
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{lambdaArn}/public-lambda-function-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": lambdaArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": [
+                        "Software and Configuration Checks/AWS Security Best Practices",
+                        "Effects/Data Exposure",
+                    ],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Confidence": 99,
+                    "Title": "[Lambda.4] Lambda layers should not be publicly shared",
+                    "Description": f"Lambda function {functionName} is not allowed to be publicly invoked.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on Lambda function resource-based policies and modifiying their permissions refer to the Using resource-based policies for AWS Lambda section of the Amazon Lambda Developer Guide",
+                            "Url": "https://docs.aws.amazon.com/lambda/latest/dg/access-control-resource-based.html"
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsLambdaFunction",
+                            "Id": lambdaArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsLambdaFunction": {
+                                    "FunctionName": functionName
                                 }
                             }
                         }
