@@ -89,9 +89,10 @@ def unused_function_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
             modify_date = parser.parse(function["LastModified"])
             date_delta = datetime.datetime.now(datetime.timezone.utc) - modify_date
             if len(metric["Values"]) > 0 or date_delta.days < 30:
+                # this is a passing check
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": lambdaArn + "/lambda-function-unused-check",
+                    "Id": f"{lambdaArn}/lambda-function-unused-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": lambdaArn,
                     "AwsAccountId": awsAccountId,
@@ -102,9 +103,7 @@ def unused_function_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
                     "Title": "[Lambda.1] Lambda functions should be deleted after 30 days of no use",
-                    "Description": "Lambda function "
-                    + functionName
-                    + " has been used or updated in the last 30 days.",
+                    "Description": f"Lambda function {functionName} has seen activity within the last 30 days.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For more information on best practices for lambda functions refer to the Best Practices for Working with AWS Lambda Functions section of the Amazon Lambda Developer Guide",
@@ -135,17 +134,17 @@ def unused_function_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
                             "AICPA TSC CC6.1",
                             "ISO 27001:2013 A.8.1.1",
                             "ISO 27001:2013 A.8.1.2",
-                            "ISO 27001:2013 A.12.5.1",
-                        ],
+                            "ISO 27001:2013 A.12.5.1"
+                        ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED",
+                    "RecordState": "ARCHIVED"
                 }
                 yield finding
             else:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": lambdaArn + "/lambda-function-unused-check",
+                    "Id": f"{lambdaArn}/lambda-function-unused-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": lambdaArn,
                     "AwsAccountId": awsAccountId,
@@ -156,9 +155,7 @@ def unused_function_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
                     "Severity": {"Label": "LOW"},
                     "Confidence": 99,
                     "Title": "[Lambda.1] Lambda functions should be deleted after 30 days of no use",
-                    "Description": "Lambda function "
-                    + functionName
-                    + " has not been used or updated in the last 30 days.",
+                    "Description": f"Lambda function {functionName} has not been used within the last 30 days. Functions should be deleted if they are not used to avoid any potential malicious modifications and to lessen the consumption of default Lambda quotas such as stored code and number of functions.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For more information on best practices for lambda functions refer to the Best Practices for Working with AWS Lambda Functions section of the Amazon Lambda Developer Guide",
@@ -189,11 +186,11 @@ def unused_function_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
                             "AICPA TSC CC6.1",
                             "ISO 27001:2013 A.8.1.1",
                             "ISO 27001:2013 A.8.1.2",
-                            "ISO 27001:2013 A.12.5.1",
-                        ],
+                            "ISO 27001:2013 A.12.5.1"
+                        ]
                     },
                     "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
+                    "RecordState": "ACTIVE"
                 }
                 yield finding
 
@@ -338,7 +335,7 @@ def function_code_signer_check(cache: dict, awsAccountId: str, awsRegion: str, a
             signingJobArn = str(function["SigningJobArn"])
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": lambdaArn + "/lambda-code-signing-check",
+                "Id": f"{lambdaArn}/lambda-code-signing-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": lambdaArn,
                 "AwsAccountId": awsAccountId,
@@ -349,9 +346,7 @@ def function_code_signer_check(cache: dict, awsAccountId: str, awsRegion: str, a
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[Lambda.3] Lambda functions should use code signing from AWS Signer to ensure trusted code runs in a Function",
-                "Description": "Lambda function "
-                + functionName
-                + " has an AWS code signing job configured at " + signingJobArn + ".",
+                "Description": f"Lambda function {functionName} has an AWS code signing job configured at {signingJobArn}.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "To configure code signing for your Functions refer to the Configuring code signing for AWS Lambda section of the Amazon Lambda Developer Guide",
@@ -394,7 +389,7 @@ def function_code_signer_check(cache: dict, awsAccountId: str, awsRegion: str, a
         except KeyError:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": lambdaArn + "/lambda-code-signing-check",
+                "Id": f"{lambdaArn}/lambda-code-signing-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": lambdaArn,
                 "AwsAccountId": awsAccountId,
@@ -405,9 +400,7 @@ def function_code_signer_check(cache: dict, awsAccountId: str, awsRegion: str, a
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
                 "Title": "[Lambda.3] Lambda functions should use code signing from AWS Signer to ensure trusted code runs in a Function",
-                "Description": "Lambda function "
-                + functionName
-                + " does not have an AWS code signing job configured. Code signing for AWS Lambda helps to ensure that only trusted code runs in your Lambda functions. When you enable code signing for a function, Lambda checks every code deployment and verifies that the code package is signed by a trusted source. Refer to the remediation instructions if this configuration is not intended.",
+                "Description": f"Lambda function {functionName} does not have an AWS code signing job configured. Code signing for AWS Lambda helps to ensure that only trusted code runs in your Lambda functions. When you enable code signing for a function, Lambda checks every code deployment and verifies that the code package is signed by a trusted source. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "To configure code signing for your Functions refer to the Configuring code signing for AWS Lambda section of the Amazon Lambda Developer Guide",
@@ -440,11 +433,11 @@ def function_code_signer_check(cache: dict, awsAccountId: str, awsRegion: str, a
                         "NIST SP 800-53 SA-15",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.15.2.1",
-                        "ISO 27001:2013 A.15.2.2",
-                    ],
+                        "ISO 27001:2013 A.15.2.2"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
 
