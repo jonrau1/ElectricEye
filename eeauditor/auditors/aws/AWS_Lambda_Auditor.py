@@ -928,7 +928,7 @@ def lambda_supported_runtimes_check(cache: dict, awsAccountId: str, awsRegion: s
                     }
                 ],
                 "Compliance": {
-                    "Status": "FAILED",
+                    "Status": "PASSED",
                     "RelatedRequirements": [
                         "NIST CSF PR.AC-3",
                         "NIST SP 800-53 AC-1",
@@ -944,8 +944,8 @@ def lambda_supported_runtimes_check(cache: dict, awsAccountId: str, awsRegion: s
                         "ISO 27001:2013 A.13.2.1"
                     ]
                 },
-                "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE"
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
             }
             yield finding
 

@@ -502,7 +502,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 
 ## Supported Services and Checks
 
-These are the following services and checks perform by each Auditor. There are currently :boom: **512 Checks** :boom: supported across :exclamation: **93 AWS services/components** :exclamation: with a total of :fire: **72 Auditors** :fire: .
+These are the following services and checks perform by each Auditor. There are currently :boom: **515 Checks** :boom: supported across :exclamation: **93 AWS services/components** :exclamation: with a total of :fire: **72 Auditors** :fire: .
 
 There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
@@ -833,6 +833,9 @@ There are currently **62** supported response and remediation Playbooks with cov
 | AWS_Lambda_Auditor.py | Lambda function | Is tracing enabled |
 | AWS_Lambda_Auditor.py | Lambda function | Is code signing used |
 | AWS_Lambda_Auditor.py | Lambda layer | Is the layer public |
+| AWS_Lambda_Auditor.py | Lambda function | Is the function public |
+| AWS_Lambda_Auditor.py | Lambda function | Is the function using a supported runtime |
+| AWS_Lambda_Auditor.py | Lambda function | Are functions in VPCs highly available in at least 2 AZs |
 | AWS_License_Manager_Auditor | License Manager configuration | Do LM configurations enforce a hard limit on license consumption |
 | AWS_License_Manager_Auditor | License Manager configuration | Do LM configurations enforce auto-disassociation |
 | AWS_MemoryDB_Auditor | MemoryDB Cluster | Do clusters use TLS |
