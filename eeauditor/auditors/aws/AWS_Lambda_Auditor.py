@@ -22,6 +22,7 @@ import datetime
 from dateutil import parser
 import boto3
 import json
+import botocore
 from check_register import CheckRegister
 
 registry = CheckRegister()
@@ -609,7 +610,11 @@ def public_lambda_function_check(cache: dict, awsAccountId: str, awsRegion: str,
         functionName = str(function["FunctionName"])
         lambdaArn = str(function["FunctionArn"])
         # Get function policy
-        funcPolicy = json.loads(lambdas.get_policy(FunctionName=functionName)["Policy"])
+        try:
+            funcPolicy = json.loads(lambdas.get_policy(FunctionName=functionName)["Policy"])
+        except botocore.exceptions.ClientError as error:
+            if error.response['Error']['Code'] == 'ResourceNotFoundException':
+                continue
         # Evaluate layer Policy
         for s in funcPolicy["Statement"]:
             principal = s["Principal"]
