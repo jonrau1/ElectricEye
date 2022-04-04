@@ -18,6 +18,7 @@
 #specific language governing permissions and limitations
 #under the License.
 
+import json
 import boto3
 import datetime
 from check_register import CheckRegister
@@ -962,8 +963,8 @@ def elastic_update_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                         "ISO 27001:2013 A.11.1.2",
                         "ISO 27001:2013 A.11.2.4",
                         "ISO 27001:2013 A.11.2.5",
-                        "ISO 27001:2013 A.11.2.6",
-                    ],
+                        "ISO 27001:2013 A.11.2.6"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
                 "RecordState": "ACTIVE",
@@ -1021,8 +1022,8 @@ def elastic_update_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                         "ISO 27001:2013 A.11.1.2",
                         "ISO 27001:2013 A.11.2.4",
                         "ISO 27001:2013 A.11.2.5",
-                        "ISO 27001:2013 A.11.2.6",
-                    ],
+                        "ISO 27001:2013 A.11.2.6"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED",
@@ -1041,7 +1042,7 @@ def elasticsearch_in_vpc_check(cache: dict, awsAccountId: str, awsRegion: str, a
         domainId = str(response["DomainStatus"]["DomainId"])
         domainArn = str(response["DomainStatus"]["ARN"])
         try:
-            vpcId = str(info["VPCOptions"]["VPCId"])
+            vpcId = str(response["VPCOptions"]["VPCId"])
         except:
             vpcId = "NO_VPC"
         # ISO Time
@@ -1192,13 +1193,13 @@ def elasticsearch_public_access_check(cache: dict, awsAccountId: str, awsRegion:
             cognitoEnabledCheck = "False"
         # Determine if ES is in a VPC
         try:
-            vpcId = str(info["VPCOptions"]["VPCId"])
+            vpcId = str(response["VPCOptions"]["VPCId"])
         except:
             vpcId = "NO_VPC"
         # Determine if there is a policy and then parse through it. If the "AWS": "*" principal is allowed (anonymous access) without
         # any conditions we can assume there is not anything else to stop them
         try:
-            policyDoc = info["AccessPolicies"]
+            policyDoc = response["AccessPolicies"]
             policyJson = json.loads(policyDoc.encode().decode("unicode_escape"))
             hasPolicy = "True"
             for sid in policyJson["Statement"]:
