@@ -948,3 +948,13 @@ def lambda_supported_runtimes_check(cache: dict, awsAccountId: str, awsRegion: s
             }
             yield finding
 
+@registry.register_check("lambda")
+def lambda_vpc_ha_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Lambda.7] Lambda functions in VPCs should use more than one Availability Zone"""
+    # ISO Time
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for function in get_lambda_functions(cache):
+        functionName = str(function["FunctionName"])
+        lambdaArn = str(function["FunctionArn"])
+        # check specific metadata
+        subnetUsedCount = len(function["VpcConfig"]["SubnetIds"])
