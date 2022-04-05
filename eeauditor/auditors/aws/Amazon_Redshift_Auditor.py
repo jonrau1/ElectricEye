@@ -1204,8 +1204,6 @@ def cluster_auto_snapshot_check(cache: dict, awsAccountId: str, awsRegion: str, 
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for cluster in describe_redshift_clusters(cache):
-        import json
-        print(json.dumps(cluster,indent=2,default=str))
         clusterId = cluster["ClusterIdentifier"]
         clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"  
         clusterAz = cluster["AvailabilityZone"]
@@ -1217,3 +1215,305 @@ def cluster_auto_snapshot_check(cache: dict, awsAccountId: str, awsRegion: str, 
         endpointPort = cluster["Endpoint"]["Port"]
         nodeType = cluster["NodeType"]
         vpcId = cluster["VpcId"]
+        if cluster["AutomatedSnapshotRetentionPeriod"] == 0:
+            # this is a failing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{clusterArn}/redshift-cluster-automatic-snapshots-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": clusterArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[Redshift.8] Amazon Redshift clusters should have automatic snapshots enabled",
+                "Description": f"Redshift cluster {clusterId} does not automatic snapshots enabled. When automated snapshots are enabled for a cluster, Amazon Redshift periodically takes snapshots of that cluster. By default Amazon Redshift takes a snapshot about every eight hours or following every 5 GB per node of data changes, or whichever comes first. Alternatively, you can create a snapshot schedule to control when automated snapshots are taken. Automated snapshots are enabled by default when you create a cluster. Refer to the remediation instructions to remediate this behavior.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Redshift automated snapshots and how to configure it refer to the Automated snapshots section of the Amazon Redshift Cluster Management Guide",
+                        "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-snapshots.html#about-automated-snapshots",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsRedshiftCluster",
+                        "Id": clusterArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsRedshiftCluster": {
+                                "AvailabilityZone": clusterAz,
+                                "ClusterIdentifier": clusterId,
+                                "ClusterParameterGroups": [
+                                    {
+                                        "ParameterGroupName": clusterPgName
+                                    }
+                                ],
+                                "ClusterSubnetGroupName": clusterSubnetGroupName,
+                                "ClusterVersion": clusterVersion,
+                                "DBName": dbName,
+                                "Endpoint": {
+                                    "Address": endpointAddr,
+                                    "Port": endpointPort
+                                },
+                                "NodeType": nodeType,
+                                "VpcId": vpcId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.BE-5",
+                        "NIST CSF PR.PT-5",
+                        "NIST SP 800-53 CP-2",
+                        "NIST SP 800-53 CP-11",
+                        "NIST SP 800-53 SA-13",
+                        "NIST SP 800-53 SA14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            # this is a passing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{clusterArn}/redshift-cluster-automatic-snapshots-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": clusterArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Redshift.8] Amazon Redshift clusters should have automatic snapshots enabled",
+                "Description": f"Redshift cluster {clusterId} has automatic snapshots enabled.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Redshift automated snapshots and how to configure it refer to the Automated snapshots section of the Amazon Redshift Cluster Management Guide",
+                        "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-snapshots.html#about-automated-snapshots",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsRedshiftCluster",
+                        "Id": clusterArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsRedshiftCluster": {
+                                "AvailabilityZone": clusterAz,
+                                "ClusterIdentifier": clusterId,
+                                "ClusterParameterGroups": [
+                                    {
+                                        "ParameterGroupName": clusterPgName
+                                    }
+                                ],
+                                "ClusterSubnetGroupName": clusterSubnetGroupName,
+                                "ClusterVersion": clusterVersion,
+                                "DBName": dbName,
+                                "Endpoint": {
+                                    "Address": endpointAddr,
+                                    "Port": endpointPort
+                                },
+                                "NodeType": nodeType,
+                                "VpcId": vpcId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.BE-5",
+                        "NIST CSF PR.PT-5",
+                        "NIST SP 800-53 CP-2",
+                        "NIST SP 800-53 CP-11",
+                        "NIST SP 800-53 SA-13",
+                        "NIST SP 800-53 SA14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("redshift")
+def cluster_auto_version_upgrade_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Redshift.9] Amazon Redshift should have automatic upgrades to major versions enabled"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for cluster in describe_redshift_clusters(cache):
+        clusterId = cluster["ClusterIdentifier"]
+        clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"  
+        clusterAz = cluster["AvailabilityZone"]
+        clusterPgName = cluster["ClusterParameterGroups"][0]["ParameterGroupName"]
+        clusterSubnetGroupName = cluster["ClusterSubnetGroupName"]
+        clusterVersion = cluster["ClusterVersion"]
+        dbName = cluster["DBName"]
+        endpointAddr = cluster["Endpoint"]["Address"]
+        endpointPort = cluster["Endpoint"]["Port"]
+        nodeType = cluster["NodeType"]
+        vpcId = cluster["VpcId"]
+        if cluster["AutomatedSnapshotRetentionPeriod"] == 0:
+            # this is a failing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{clusterArn}/redshift-cluster-automatic-version-upgrade-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": clusterArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[Redshift.9] Amazon Redshift should have automatic upgrades to major versions enabled",
+                "Description": f"Redshift cluster {clusterId} does not have automatic major version upgrades enabled. Enabling automatic major version upgrades ensures that the latest major version updates to Amazon Redshift clusters are installed during the maintenance window. These updates might include security patches and bug fixes. Keeping up to date with patch installation is an important step in securing systems. Refer to the remediation instructions to remediate this behavior.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Redshift automated version upgrades and maintenance windows refer to the Maintenance windows section of the Amazon Redshift Cluster Management Guide",
+                        "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-clusters.html#rs-maintenance-windows",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsRedshiftCluster",
+                        "Id": clusterArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsRedshiftCluster": {
+                                "AvailabilityZone": clusterAz,
+                                "ClusterIdentifier": clusterId,
+                                "ClusterParameterGroups": [
+                                    {
+                                        "ParameterGroupName": clusterPgName
+                                    }
+                                ],
+                                "ClusterSubnetGroupName": clusterSubnetGroupName,
+                                "ClusterVersion": clusterVersion,
+                                "DBName": dbName,
+                                "Endpoint": {
+                                    "Address": endpointAddr,
+                                    "Port": endpointPort
+                                },
+                                "NodeType": nodeType,
+                                "VpcId": vpcId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.MA-1",
+                        "NIST SP 800-53 MA-2",
+                        "NIST SP 800-53 MA-3",
+                        "NIST SP 800-53 MA-5",
+                        "NIST SP 800-53 MA-6",
+                        "AICPA TSC CC8.1",
+                        "ISO 27001:2013 A.11.1.2",
+                        "ISO 27001:2013 A.11.2.4",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.6"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            # this is a passing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{clusterArn}/redshift-cluster-automatic-version-upgrade-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": clusterArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Redshift.9] Amazon Redshift should have automatic upgrades to major versions enabled",
+                "Description": f"Redshift cluster {clusterId} has automatic major version upgrades enabled.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Redshift automated version upgrades and maintenance windows refer to the Maintenance windows section of the Amazon Redshift Cluster Management Guide",
+                        "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-clusters.html#rs-maintenance-windows",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsRedshiftCluster",
+                        "Id": clusterArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsRedshiftCluster": {
+                                "AvailabilityZone": clusterAz,
+                                "ClusterIdentifier": clusterId,
+                                "ClusterParameterGroups": [
+                                    {
+                                        "ParameterGroupName": clusterPgName
+                                    }
+                                ],
+                                "ClusterSubnetGroupName": clusterSubnetGroupName,
+                                "ClusterVersion": clusterVersion,
+                                "DBName": dbName,
+                                "Endpoint": {
+                                    "Address": endpointAddr,
+                                    "Port": endpointPort
+                                },
+                                "NodeType": nodeType,
+                                "VpcId": vpcId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.MA-1",
+                        "NIST SP 800-53 MA-2",
+                        "NIST SP 800-53 MA-3",
+                        "NIST SP 800-53 MA-5",
+                        "NIST SP 800-53 MA-6",
+                        "AICPA TSC CC8.1",
+                        "ISO 27001:2013 A.11.1.2",
+                        "ISO 27001:2013 A.11.2.4",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.6"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
