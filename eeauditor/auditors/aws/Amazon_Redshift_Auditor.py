@@ -885,5 +885,149 @@ def cluster_user_activity_logging_check(cache: dict, awsAccountId: str, awsRegio
         endpointPort = cluster["Endpoint"]["Port"]
         nodeType = cluster["NodeType"]
         vpcId = cluster["VpcId"]
-        """# Parse Cluster Parameter Group for check data
-        for param in redshift.describe_cluster_parameters(ParameterGroupName='string')"""
+        # Parse Cluster Parameter Group for check data
+        for param in redshift.describe_cluster_parameters(ParameterGroupName=clusterPgName)["Parameters"]:
+            # ignore the parameters we don't want
+            if param["ParameterName"] != "enable_user_activity_logging":
+                continue
+            else:
+                if str(param["ParameterValue"]) == "false":
+                    # this is a failing check
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": f"{clusterArn}/redshift-cluster-user-activity-logging-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": clusterArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "LOW"},
+                        "Confidence": 99,
+                        "Title": "[Redshift.6] Amazon Redshift clusters should have user activity logging enabled",
+                        "Description": f"Redshift cluster {clusterId} does not have user activity logging enabled. User activity logging Logs each query before it's run on the database, and is useful primarily for troubleshooting purposes. It tracks information about the types of queries that both the users and the system perform in the database. This requires Audit Logging to be enabled first. Refer to the remediation instructions to remediate this behavior.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For more information on Redshift audit logging and how to configure it refer to the Database Audit Logging section of the Amazon Redshift Cluster Management Guide",
+                                "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/db-auditing.html",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsRedshiftCluster",
+                                "Id": clusterArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsRedshiftCluster": {
+                                        "AvailabilityZone": clusterAz,
+                                        "ClusterIdentifier": clusterId,
+                                        "ClusterParameterGroups": [
+                                            {
+                                                "ParameterGroupName": clusterPgName
+                                            }
+                                        ],
+                                        "ClusterSubnetGroupName": clusterSubnetGroupName,
+                                        "ClusterVersion": clusterVersion,
+                                        "DBName": dbName,
+                                        "Endpoint": {
+                                            "Address": endpointAddr,
+                                            "Port": endpointPort
+                                        },
+                                        "NodeType": nodeType,
+                                        "VpcId": vpcId
+                                    }
+                                }
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "FAILED",
+                            "RelatedRequirements": [
+                                "NIST CSF DE.AE-3",
+                                "NIST SP 800-53 AU-6",
+                                "NIST SP 800-53 CA-7",
+                                "NIST SP 800-53 IR-4",
+                                "NIST SP 800-53 IR-5",
+                                "NIST SP 800-53 IR-8",
+                                "NIST SP 800-53 SI-4",
+                                "AICPA TSC CC7.2",
+                                "ISO 27001:2013 A.12.4.1",
+                                "ISO 27001:2013 A.16.1.7"
+                            ]
+                        },
+                        "Workflow": {"Status": "NEW"},
+                        "RecordState": "ACTIVE"
+                    }
+                    yield finding
+                else:
+                    # this is a passing check
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": f"{clusterArn}/redshift-cluster-user-activity-logging-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": clusterArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "INFORMATIONAL"},
+                        "Confidence": 99,
+                        "Title": "[Redshift.6] Amazon Redshift clusters should have user activity logging enabled",
+                        "Description": f"Redshift cluster {clusterId} does not have user activity logging enabled. User activity logging Logs each query before it's run on the database, and is useful primarily for troubleshooting purposes. It tracks information about the types of queries that both the users and the system perform in the database. This requires Audit Logging to be enabled first. Refer to the remediation instructions to remediate this behavior.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For more information on Redshift audit logging and how to configure it refer to the Database Audit Logging section of the Amazon Redshift Cluster Management Guide",
+                                "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/db-auditing.html",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsRedshiftCluster",
+                                "Id": clusterArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsRedshiftCluster": {
+                                        "AvailabilityZone": clusterAz,
+                                        "ClusterIdentifier": clusterId,
+                                        "ClusterParameterGroups": [
+                                            {
+                                                "ParameterGroupName": clusterPgName
+                                            }
+                                        ],
+                                        "ClusterSubnetGroupName": clusterSubnetGroupName,
+                                        "ClusterVersion": clusterVersion,
+                                        "DBName": dbName,
+                                        "Endpoint": {
+                                            "Address": endpointAddr,
+                                            "Port": endpointPort
+                                        },
+                                        "NodeType": nodeType,
+                                        "VpcId": vpcId
+                                    }
+                                }
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "PASSED",
+                            "RelatedRequirements": [
+                                "NIST CSF DE.AE-3",
+                                "NIST SP 800-53 AU-6",
+                                "NIST SP 800-53 CA-7",
+                                "NIST SP 800-53 IR-4",
+                                "NIST SP 800-53 IR-5",
+                                "NIST SP 800-53 IR-8",
+                                "NIST SP 800-53 SI-4",
+                                "AICPA TSC CC7.2",
+                                "ISO 27001:2013 A.12.4.1",
+                                "ISO 27001:2013 A.16.1.7"
+                            ]
+                        },
+                        "Workflow": {"Status": "RESOLVED"},
+                        "RecordState": "ARCHIVED"
+                    }
+                    yield finding
