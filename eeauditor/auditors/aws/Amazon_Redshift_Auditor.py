@@ -1197,3 +1197,23 @@ def cluster_ssl_connections_only_check(cache: dict, awsAccountId: str, awsRegion
                         "RecordState": "ARCHIVED"
                     }
                     yield finding
+
+@registry.register_check("redshift")
+def cluster_auto_snapshot_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Redshift.8] Amazon Redshift clusters should have automatic snapshots enabled"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for cluster in describe_redshift_clusters(cache):
+        import json
+        print(json.dumps(cluster,indent=2,default=str))
+        clusterId = cluster["ClusterIdentifier"]
+        clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"  
+        clusterAz = cluster["AvailabilityZone"]
+        clusterPgName = cluster["ClusterParameterGroups"][0]["ParameterGroupName"]
+        clusterSubnetGroupName = cluster["ClusterSubnetGroupName"]
+        clusterVersion = cluster["ClusterVersion"]
+        dbName = cluster["DBName"]
+        endpointAddr = cluster["Endpoint"]["Address"]
+        endpointPort = cluster["Endpoint"]["Port"]
+        nodeType = cluster["NodeType"]
+        vpcId = cluster["VpcId"]
