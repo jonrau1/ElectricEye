@@ -55,11 +55,11 @@ def cluster_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, 
         endpointPort = cluster["Endpoint"]["Port"]
         nodeType = cluster["NodeType"]
         vpcId = cluster["VpcId"]
-        
         if str(cluster["PubliclyAccessible"]) == "True":
+            # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": clusterArn + "/redshift-public-access-check",
+                "Id": f"{clusterArn}/redshift-public-access-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": clusterArn,
                 "AwsAccountId": awsAccountId,
@@ -70,12 +70,10 @@ def cluster_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, 
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "CRITICAL"},
+                "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
                 "Title": "[Redshift.1] Redshift clusters should not be publicly accessible",
-                "Description": "Redshift cluster "
-                + clusterId
-                + " is publicly accessible. Refer to the remediation instructions to remediate this behavior",
+                "Description": f"Redshift cluster {clusterId} is configured to be publicly reachable. When public access is configured, your Redshift Cluster can accept connections from outside of your VPC on a discoverable IP which can lead to attacks against the availability or confidentiality of data within your Cluster. You should always use private connectivity into your Redshift clusters with the usage of Bastions, VPNs, and otherwise before making your Cluster public. Refer to the remediation instructions to remediate this behavior.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on modifying Redshift public access refer to the Modifying a Cluster section of the Amazon Redshift Cluster Management Guide",
@@ -120,17 +118,18 @@ def cluster_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, 
                         "ISO 27001:2013 A.6.2.2",
                         "ISO 27001:2013 A.11.2.6",
                         "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1",
-                    ],
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
         else:
+            # this is a passing check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": clusterArn + "/redshift-public-access-check",
+                "Id": f"{clusterArn}/redshift-public-access-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": clusterArn,
                 "AwsAccountId": awsAccountId,
@@ -144,7 +143,7 @@ def cluster_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, 
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[Redshift.1] Redshift clusters should not be publicly accessible",
-                "Description": "Redshift cluster " + clusterId + " is not publicly accessible.",
+                "Description": f"Redshift cluster {clusterId} is not publicly accessible.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on modifying Redshift public access refer to the Modifying a Cluster section of the Amazon Redshift Cluster Management Guide",
@@ -189,17 +188,17 @@ def cluster_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, 
                         "ISO 27001:2013 A.6.2.2",
                         "ISO 27001:2013 A.11.2.6",
                         "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1",
-                    ],
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
 
 @registry.register_check("redshift")
 def cluster_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Redshift.2] Redshift clusters should be encrypted"""
+    """[Redshift.2] Redshift clusters should be encrypted at rest"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for cluster in describe_redshift_clusters(cache):
@@ -214,25 +213,24 @@ def cluster_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, aws
         nodeType = cluster["NodeType"]
         vpcId = cluster["VpcId"]
         if str(cluster["Encrypted"]) == "False":
+            # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": clusterArn + "/redshift-cluster-encryption-check",
+                "Id": f"{clusterArn}/redshift-cluster-encryption-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": clusterArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
                     "Software and Configuration Checks/AWS Security Best Practices",
-                    "Effects/Data Exposure",
+                    "Effects/Data Exposure"
                 ],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
-                "Title": "[Redshift.2] Redshift clusters should be encrypted",
-                "Description": "Redshift cluster "
-                + clusterId
-                + " is not encrypted. Refer to the remediation instructions to remediate this behavior",
+                "Title": "[Redshift.2] Redshift clusters should be encrypted at rest",
+                "Description": f"Redshift cluster {clusterId} is not encrypted at rest. In Amazon Redshift, you can enable database encryption for your clusters to help protect data at rest. When you enable encryption for a cluster, the data blocks and system metadata are encrypted for the cluster and its snapshots. Refer to the remediation instructions to remediate this behavior.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on Redshift cluster encryption and how to configure it refer to the Amazon Redshift Database Encryption section of the Amazon Redshift Cluster Management Guide",
@@ -271,17 +269,18 @@ def cluster_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                         "NIST SP 800-53 SC-12",
                         "NIST SP 800-53 SC-28",
                         "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3",
-                    ],
+                        "ISO 27001:2013 A.8.2.3"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
         else:
+            # this is a passing check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": clusterArn + "/redshift-cluster-encryption-check",
+                "Id": f"{clusterArn}/redshift-cluster-encryption-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": clusterArn,
                 "AwsAccountId": awsAccountId,
@@ -294,8 +293,8 @@ def cluster_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Redshift.2] Redshift clusters should be encrypted",
-                "Description": "Redshift cluster " + clusterId + " is encrypted.",
+                "Title": "[Redshift.2] Redshift clusters should be encrypted at rest",
+                "Description": f"Redshift cluster {clusterId} is encrypted at rest.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on Redshift cluster encryption and how to configure it refer to the Amazon Redshift Database Encryption section of the Amazon Redshift Cluster Management Guide",
@@ -334,11 +333,11 @@ def cluster_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                         "NIST SP 800-53 SC-12",
                         "NIST SP 800-53 SC-28",
                         "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3",
-                    ],
+                        "ISO 27001:2013 A.8.2.3"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
 
@@ -359,9 +358,10 @@ def cluster_enhanced_vpc_routing_check(cache: dict, awsAccountId: str, awsRegion
         nodeType = cluster["NodeType"]
         vpcId = cluster["VpcId"]
         if str(cluster["EnhancedVpcRouting"]) == "False":
+            # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": clusterArn + "/redshift-cluster-enhanced-vpc-routing-check",
+                "Id": f"{clusterArn}/redshift-cluster-enhanced-vpc-routing-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": clusterArn,
                 "AwsAccountId": awsAccountId,
@@ -372,9 +372,7 @@ def cluster_enhanced_vpc_routing_check(cache: dict, awsAccountId: str, awsRegion
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
                 "Title": "[Redshift.3] Redshift clusters should utilize enhanced VPC routing",
-                "Description": "Redshift cluster "
-                + clusterId
-                + " is not utilizing enhanced VPC routing. Refer to the remediation instructions to remediate this behavior",
+                "Description": f"Redshift cluster {clusterId} is not utilizing enhanced VPC routing. When you use Amazon Redshift enhanced VPC routing, Amazon Redshift forces all COPY and UNLOAD traffic between your cluster and your data repositories through your virtual private cloud (VPC) based on the Amazon VPC service. By using enhanced VPC routing, you can use standard VPC features, such as VPC security groups, network access control lists (ACLs), VPC endpoints, VPC endpoint policies, internet gateways, and Domain Name System (DNS) servers, as described in the Amazon VPC User Guide. Refer to the remediation instructions to remediate this behavior.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on Redshift Enhanced VPC routing and how to configure it refer to the Amazon Redshift Enhanced VPC Routing section of the Amazon Redshift Cluster Management Guide",
@@ -425,9 +423,10 @@ def cluster_enhanced_vpc_routing_check(cache: dict, awsAccountId: str, awsRegion
             }
             yield finding
         else:
+            # this is a passing check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": clusterArn + "/redshift-enhanced-vpc-routing-check",
+                "Id": f"{clusterArn}/redshift-cluster-enhanced-vpc-routing-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": clusterArn,
                 "AwsAccountId": awsAccountId,
@@ -438,9 +437,7 @@ def cluster_enhanced_vpc_routing_check(cache: dict, awsAccountId: str, awsRegion
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[Redshift.3] Redshift clusters should utilize enhanced VPC routing",
-                "Description": "Redshift cluster "
-                + clusterId
-                + " is utilizing enhanced VPC routing.",
+                "Description": f"Redshift cluster {clusterId} is utilizing enhanced VPC routing.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on Redshift Enhanced VPC routing and how to configure it refer to the Amazon Redshift Enhanced VPC Routing section of the Amazon Redshift Cluster Management Guide",
@@ -509,9 +506,10 @@ def cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
         vpcId = cluster["VpcId"]
         response = redshift.describe_logging_status(ClusterIdentifier=clusterId)
         if str(response["LoggingEnabled"]) == "False":
+            # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": clusterArn + "/redshift-cluster-logging-check",
+                "Id": f"{clusterArn}/redshift-cluster-logging-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": clusterArn,
                 "AwsAccountId": awsAccountId,
@@ -522,12 +520,10 @@ def cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
                 "Title": "[Redshift.4] Redshift clusters should have audit logging enabled",
-                "Description": f"Redshift cluster {clusterId}"
-                + clusterId
-                + " does not have logging enabled. Refer to the remediation instructions to remediate this behavior",
+                "Description": f"Redshift cluster {clusterId}  does not have audit logging enabled. Amazon Redshift logs information about connections and user activities in your database. These logs help you to monitor the database for security and troubleshooting purposes, a process called database auditing. The logs are stored in Amazon S3 buckets. These provide convenient access with data-security features for users who are responsible for monitoring activities in the database. Refer to the remediation instructions to remediate this behavior.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "For more information on Redshift logging and how to configure it refer to the Database Audit Logging section of the Amazon Redshift Cluster Management Guide",
+                        "Text": "For more information on Redshift audit logging and how to configure it refer to the Database Audit Logging section of the Amazon Redshift Cluster Management Guide",
                         "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/db-auditing.html",
                     }
                 },
@@ -567,17 +563,18 @@ def cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
                         "NIST SP 800-53 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
-                        "ISO 27001:2013 A.16.1.7",
-                    ],
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
         else:
+            # this is a passing check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": clusterArn + "/redshift-cluster-logging-check",
+                "Id": f"{clusterArn}/redshift-cluster-logging-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": clusterArn,
                 "AwsAccountId": awsAccountId,
@@ -588,7 +585,7 @@ def cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[Redshift.4] Redshift clusters should have audit logging enabled",
-                "Description": "Redshift cluster " + clusterId + " has logging enabled.",
+                "Description": f"Redshift cluster {clusterId} has audit logging enabled.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on Redshift logging and how to configure it refer to the Database Audit Logging section of the Amazon Redshift Cluster Management Guide",
@@ -631,10 +628,10 @@ def cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
                         "NIST SP 800-53 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
-                        "ISO 27001:2013 A.16.1.7",
-                    ],
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
