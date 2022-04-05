@@ -23,25 +23,30 @@ import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
-# import boto3 clients
+
 redshift = boto3.client("redshift")
-# loop through redshift clusters
-def describe_clusters(cache):
-    response = cache.get("describe_clusters")
+
+def describe_redshift_clusters(cache):
+    redshiftClusters = []
+    response = cache.get("describe_redshift_clusters")
     if response:
         return response
-    cache["describe_clusters"] = redshift.describe_clusters()
-    return cache["describe_clusters"]
+    paginator = redshift.get_paginator('describe_clusters')
+    if paginator:
+        for page in paginator.paginate():
+            for cluster in page["Clusters"]:
+                redshiftClusters.append(cluster)
+        cache["describe_redshift_clusters"] = redshiftClusters
+        return cache["describe_redshift_clusters"]
 
 @registry.register_check("redshift")
 def cluster_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Redshift.1] Redshift clusters should not be publicly accessible"""
-    clusters = describe_clusters(cache=cache)
-    myRedshiftClusters = clusters["Clusters"]
-    for cluster in myRedshiftClusters:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for cluster in describe_redshift_clusters(cache):
         clusterId = str(cluster["ClusterIdentifier"])
-        clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"  
         if str(cluster["PubliclyAccessible"]) == "True":
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -158,12 +163,11 @@ def cluster_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, 
 @registry.register_check("redshift")
 def cluster_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Redshift.2] Redshift clusters should be encrypted"""
-    clusters = describe_clusters(cache=cache)
-    myRedshiftClusters = clusters["Clusters"]
-    for cluster in myRedshiftClusters:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for cluster in describe_redshift_clusters(cache):
         clusterId = str(cluster["ClusterIdentifier"])
         clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if str(cluster["Encrypted"]) == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -268,12 +272,11 @@ def cluster_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, aws
 @registry.register_check("redshift")
 def cluster_enhanced_vpc_routing_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Redshift.3] Redshift clusters should utilize enhanced VPC routing"""
-    clusters = describe_clusters(cache=cache)
-    myRedshiftClusters = clusters["Clusters"]
-    for cluster in myRedshiftClusters:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for cluster in describe_redshift_clusters(cache):
         clusterId = str(cluster["ClusterIdentifier"])
         clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if str(cluster["EnhancedVpcRouting"]) == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -382,13 +385,12 @@ def cluster_enhanced_vpc_routing_check(cache: dict, awsAccountId: str, awsRegion
 @registry.register_check("redshift")
 def cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Redshift.4] Redshift clusters should have logging enabled"""
-    clusters = describe_clusters(cache=cache)
-    myRedshiftClusters = clusters["Clusters"]
-    for cluster in myRedshiftClusters:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for cluster in describe_redshift_clusters(cache):
         clusterId = str(cluster["ClusterIdentifier"])
         clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"
         response = redshift.describe_logging_status(ClusterIdentifier=clusterId)
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if str(response["LoggingEnabled"]) == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
