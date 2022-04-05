@@ -46,14 +46,18 @@ def describe_db_instances(cache):
                         "mariadb",
                         "mysql",
                         "oracle-ee",
-                        "oracle-se",
-                        "oracle-se1",
+                        "oracle-ee-cdb",
                         "oracle-se2",
+                        "oracle-se2-cdb",
                         "postgres",
                         "sqlserver-ee",
                         "sqlserver-se",
                         "sqlserver-ex",
-                        "sqlserver-web"
+                        "sqlserver-web",
+                        "custom-oracle-ee",
+                        "custom-sqlserver-ee",
+                        "custom-sqlserver-se",
+                        "custom-sqlserver-web"
                     ]
                 }
             ]
@@ -739,14 +743,18 @@ def rds_instance_domain_join_check(cache: dict, awsAccountId: str, awsRegion: st
     kerberosAuthNSupportedEngines = [
         "mysql",
         "oracle-ee",
-        "oracle-se1",
+        "oracle-ee-cdb",
         "oracle-se2",
-        "oracle-se",
+        "oracle-se2-cdb",
         "postgres",
         "sqlserver-ee",
         "sqlserver-se",
         "sqlserver-ex",
-        "sqlserver-web"
+        "sqlserver-web",
+        "custom-oracle-ee",
+        "custom-sqlserver-ee",
+        "custom-sqlserver-se",
+        "custom-sqlserver-web"
     ]
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
