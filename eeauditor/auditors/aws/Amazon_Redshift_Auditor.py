@@ -48,6 +48,7 @@ def cluster_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, 
         clusterId = cluster["ClusterIdentifier"]
         clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"  
         clusterAz = cluster["AvailabilityZone"]
+        clusterPgName = cluster["ClusterParameterGroups"][0]["ParameterGroupName"]
         clusterSubnetGroupName = cluster["ClusterSubnetGroupName"]
         clusterVersion = cluster["ClusterVersion"]
         dbName = cluster["DBName"]
@@ -91,6 +92,11 @@ def cluster_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, 
                             "AwsRedshiftCluster": {
                                 "AvailabilityZone": clusterAz,
                                 "ClusterIdentifier": clusterId,
+                                "ClusterParameterGroups": [
+                                    {
+                                        "ParameterGroupName": clusterPgName
+                                    }
+                                ],
                                 "ClusterSubnetGroupName": clusterSubnetGroupName,
                                 "ClusterVersion": clusterVersion,
                                 "DBName": dbName,
@@ -161,6 +167,11 @@ def cluster_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, 
                             "AwsRedshiftCluster": {
                                 "AvailabilityZone": clusterAz,
                                 "ClusterIdentifier": clusterId,
+                                "ClusterParameterGroups": [
+                                    {
+                                        "ParameterGroupName": clusterPgName
+                                    }
+                                ],
                                 "ClusterSubnetGroupName": clusterSubnetGroupName,
                                 "ClusterVersion": clusterVersion,
                                 "DBName": dbName,
@@ -205,6 +216,7 @@ def cluster_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, aws
         clusterId = cluster["ClusterIdentifier"]
         clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"  
         clusterAz = cluster["AvailabilityZone"]
+        clusterPgName = cluster["ClusterParameterGroups"][0]["ParameterGroupName"]
         clusterSubnetGroupName = cluster["ClusterSubnetGroupName"]
         clusterVersion = cluster["ClusterVersion"]
         dbName = cluster["DBName"]
@@ -248,6 +260,11 @@ def cluster_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                             "AwsRedshiftCluster": {
                                 "AvailabilityZone": clusterAz,
                                 "ClusterIdentifier": clusterId,
+                                "ClusterParameterGroups": [
+                                    {
+                                        "ParameterGroupName": clusterPgName
+                                    }
+                                ],
                                 "ClusterSubnetGroupName": clusterSubnetGroupName,
                                 "ClusterVersion": clusterVersion,
                                 "DBName": dbName,
@@ -312,6 +329,11 @@ def cluster_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                             "AwsRedshiftCluster": {
                                 "AvailabilityZone": clusterAz,
                                 "ClusterIdentifier": clusterId,
+                                "ClusterParameterGroups": [
+                                    {
+                                        "ParameterGroupName": clusterPgName
+                                    }
+                                ],
                                 "ClusterSubnetGroupName": clusterSubnetGroupName,
                                 "ClusterVersion": clusterVersion,
                                 "DBName": dbName,
@@ -350,6 +372,7 @@ def cluster_enhanced_vpc_routing_check(cache: dict, awsAccountId: str, awsRegion
         clusterId = cluster["ClusterIdentifier"]
         clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"  
         clusterAz = cluster["AvailabilityZone"]
+        clusterPgName = cluster["ClusterParameterGroups"][0]["ParameterGroupName"]
         clusterSubnetGroupName = cluster["ClusterSubnetGroupName"]
         clusterVersion = cluster["ClusterVersion"]
         dbName = cluster["DBName"]
@@ -390,6 +413,11 @@ def cluster_enhanced_vpc_routing_check(cache: dict, awsAccountId: str, awsRegion
                             "AwsRedshiftCluster": {
                                 "AvailabilityZone": clusterAz,
                                 "ClusterIdentifier": clusterId,
+                                "ClusterParameterGroups": [
+                                    {
+                                        "ParameterGroupName": clusterPgName
+                                    }
+                                ],
                                 "ClusterSubnetGroupName": clusterSubnetGroupName,
                                 "ClusterVersion": clusterVersion,
                                 "DBName": dbName,
@@ -455,6 +483,11 @@ def cluster_enhanced_vpc_routing_check(cache: dict, awsAccountId: str, awsRegion
                             "AwsRedshiftCluster": {
                                 "AvailabilityZone": clusterAz,
                                 "ClusterIdentifier": clusterId,
+                                "ClusterParameterGroups": [
+                                    {
+                                        "ParameterGroupName": clusterPgName
+                                    }
+                                ],
                                 "ClusterSubnetGroupName": clusterSubnetGroupName,
                                 "ClusterVersion": clusterVersion,
                                 "DBName": dbName,
@@ -497,6 +530,7 @@ def cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
         clusterId = cluster["ClusterIdentifier"]
         clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"  
         clusterAz = cluster["AvailabilityZone"]
+        clusterPgName = cluster["ClusterParameterGroups"][0]["ParameterGroupName"]
         clusterSubnetGroupName = cluster["ClusterSubnetGroupName"]
         clusterVersion = cluster["ClusterVersion"]
         dbName = cluster["DBName"]
@@ -538,6 +572,11 @@ def cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
                             "AwsRedshiftCluster": {
                                 "AvailabilityZone": clusterAz,
                                 "ClusterIdentifier": clusterId,
+                                "ClusterParameterGroups": [
+                                    {
+                                        "ParameterGroupName": clusterPgName
+                                    }
+                                ],
                                 "ClusterSubnetGroupName": clusterSubnetGroupName,
                                 "ClusterVersion": clusterVersion,
                                 "DBName": dbName,
@@ -603,6 +642,11 @@ def cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
                             "AwsRedshiftCluster": {
                                 "AvailabilityZone": clusterAz,
                                 "ClusterIdentifier": clusterId,
+                                "ClusterParameterGroups": [
+                                    {
+                                        "ParameterGroupName": clusterPgName
+                                    }
+                                ],
                                 "ClusterSubnetGroupName": clusterSubnetGroupName,
                                 "ClusterVersion": clusterVersion,
                                 "DBName": dbName,
@@ -645,6 +689,7 @@ def cluster_default_username_check(cache: dict, awsAccountId: str, awsRegion: st
         clusterId = cluster["ClusterIdentifier"]
         clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"  
         clusterAz = cluster["AvailabilityZone"]
+        clusterPgName = cluster["ClusterParameterGroups"][0]["ParameterGroupName"]
         clusterSubnetGroupName = cluster["ClusterSubnetGroupName"]
         clusterVersion = cluster["ClusterVersion"]
         dbName = cluster["DBName"]
@@ -685,6 +730,11 @@ def cluster_default_username_check(cache: dict, awsAccountId: str, awsRegion: st
                             "AwsRedshiftCluster": {
                                 "AvailabilityZone": clusterAz,
                                 "ClusterIdentifier": clusterId,
+                                "ClusterParameterGroups": [
+                                    {
+                                        "ParameterGroupName": clusterPgName
+                                    }
+                                ],
                                 "ClusterSubnetGroupName": clusterSubnetGroupName,
                                 "ClusterVersion": clusterVersion,
                                 "DBName": dbName,
@@ -765,6 +815,11 @@ def cluster_default_username_check(cache: dict, awsAccountId: str, awsRegion: st
                             "AwsRedshiftCluster": {
                                 "AvailabilityZone": clusterAz,
                                 "ClusterIdentifier": clusterId,
+                                "ClusterParameterGroups": [
+                                    {
+                                        "ParameterGroupName": clusterPgName
+                                    }
+                                ],
                                 "ClusterSubnetGroupName": clusterSubnetGroupName,
                                 "ClusterVersion": clusterVersion,
                                 "DBName": dbName,
@@ -812,3 +867,23 @@ def cluster_default_username_check(cache: dict, awsAccountId: str, awsRegion: st
                 "RecordState": "ARCHIVED"
             }
             yield finding
+
+@registry.register_check("redshift")
+def cluster_user_activity_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Redshift.6] Amazon Redshift clusters should have user activity logging enabled"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for cluster in describe_redshift_clusters(cache):
+        clusterId = cluster["ClusterIdentifier"]
+        clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"  
+        clusterAz = cluster["AvailabilityZone"]
+        clusterPgName = cluster["ClusterParameterGroups"][0]["ParameterGroupName"]
+        clusterSubnetGroupName = cluster["ClusterSubnetGroupName"]
+        clusterVersion = cluster["ClusterVersion"]
+        dbName = cluster["DBName"]
+        endpointAddr = cluster["Endpoint"]["Address"]
+        endpointPort = cluster["Endpoint"]["Port"]
+        nodeType = cluster["NodeType"]
+        vpcId = cluster["VpcId"]
+        """# Parse Cluster Parameter Group for check data
+        for param in redshift.describe_cluster_parameters(ParameterGroupName='string')"""
