@@ -45,8 +45,17 @@ def cluster_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, 
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for cluster in describe_redshift_clusters(cache):
-        clusterId = str(cluster["ClusterIdentifier"])
+        clusterId = cluster["ClusterIdentifier"]
         clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"  
+        clusterAz = cluster["AvailabilityZone"]
+        clusterSubnetGroupName = cluster["ClusterSubnetGroupName"]
+        clusterVersion = cluster["ClusterVersion"]
+        dbName = cluster["DBName"]
+        endpointAddr = cluster["Endpoint"]["Address"]
+        endpointPort = cluster["Endpoint"]["Port"]
+        nodeType = cluster["NodeType"]
+        vpcId = cluster["VpcId"]
+        
         if str(cluster["PubliclyAccessible"]) == "True":
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -80,7 +89,21 @@ def cluster_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, 
                         "Id": clusterArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"ClusterId": clusterId}},
+                        "Details": {
+                            "AwsRedshiftCluster": {
+                                "AvailabilityZone": clusterAz,
+                                "ClusterIdentifier": clusterId,
+                                "ClusterSubnetGroupName": clusterSubnetGroupName,
+                                "ClusterVersion": clusterVersion,
+                                "DBName": dbName,
+                                "Endpoint": {
+                                    "Address": endpointAddr,
+                                    "Port": endpointPort
+                                },
+                                "NodeType": nodeType,
+                                "VpcId": vpcId
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -135,7 +158,21 @@ def cluster_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, 
                         "Id": clusterArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"ClusterId": clusterId}},
+                        "Details": {
+                            "AwsRedshiftCluster": {
+                                "AvailabilityZone": clusterAz,
+                                "ClusterIdentifier": clusterId,
+                                "ClusterSubnetGroupName": clusterSubnetGroupName,
+                                "ClusterVersion": clusterVersion,
+                                "DBName": dbName,
+                                "Endpoint": {
+                                    "Address": endpointAddr,
+                                    "Port": endpointPort
+                                },
+                                "NodeType": nodeType,
+                                "VpcId": vpcId
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -166,8 +203,16 @@ def cluster_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, aws
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for cluster in describe_redshift_clusters(cache):
-        clusterId = str(cluster["ClusterIdentifier"])
-        clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"
+        clusterId = cluster["ClusterIdentifier"]
+        clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"  
+        clusterAz = cluster["AvailabilityZone"]
+        clusterSubnetGroupName = cluster["ClusterSubnetGroupName"]
+        clusterVersion = cluster["ClusterVersion"]
+        dbName = cluster["DBName"]
+        endpointAddr = cluster["Endpoint"]["Address"]
+        endpointPort = cluster["Endpoint"]["Port"]
+        nodeType = cluster["NodeType"]
+        vpcId = cluster["VpcId"]
         if str(cluster["Encrypted"]) == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -201,7 +246,21 @@ def cluster_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                         "Id": clusterArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"ClusterId": clusterId}},
+                        "Details": {
+                            "AwsRedshiftCluster": {
+                                "AvailabilityZone": clusterAz,
+                                "ClusterIdentifier": clusterId,
+                                "ClusterSubnetGroupName": clusterSubnetGroupName,
+                                "ClusterVersion": clusterVersion,
+                                "DBName": dbName,
+                                "Endpoint": {
+                                    "Address": endpointAddr,
+                                    "Port": endpointPort
+                                },
+                                "NodeType": nodeType,
+                                "VpcId": vpcId
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -250,7 +309,21 @@ def cluster_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                         "Id": clusterArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"ClusterId": clusterId}},
+                        "Details": {
+                            "AwsRedshiftCluster": {
+                                "AvailabilityZone": clusterAz,
+                                "ClusterIdentifier": clusterId,
+                                "ClusterSubnetGroupName": clusterSubnetGroupName,
+                                "ClusterVersion": clusterVersion,
+                                "DBName": dbName,
+                                "Endpoint": {
+                                    "Address": endpointAddr,
+                                    "Port": endpointPort
+                                },
+                                "NodeType": nodeType,
+                                "VpcId": vpcId
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -275,8 +348,16 @@ def cluster_enhanced_vpc_routing_check(cache: dict, awsAccountId: str, awsRegion
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for cluster in describe_redshift_clusters(cache):
-        clusterId = str(cluster["ClusterIdentifier"])
-        clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"
+        clusterId = cluster["ClusterIdentifier"]
+        clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"  
+        clusterAz = cluster["AvailabilityZone"]
+        clusterSubnetGroupName = cluster["ClusterSubnetGroupName"]
+        clusterVersion = cluster["ClusterVersion"]
+        dbName = cluster["DBName"]
+        endpointAddr = cluster["Endpoint"]["Address"]
+        endpointPort = cluster["Endpoint"]["Port"]
+        nodeType = cluster["NodeType"]
+        vpcId = cluster["VpcId"]
         if str(cluster["EnhancedVpcRouting"]) == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -307,7 +388,21 @@ def cluster_enhanced_vpc_routing_check(cache: dict, awsAccountId: str, awsRegion
                         "Id": clusterArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"ClusterId": clusterId}},
+                        "Details": {
+                            "AwsRedshiftCluster": {
+                                "AvailabilityZone": clusterAz,
+                                "ClusterIdentifier": clusterId,
+                                "ClusterSubnetGroupName": clusterSubnetGroupName,
+                                "ClusterVersion": clusterVersion,
+                                "DBName": dbName,
+                                "Endpoint": {
+                                    "Address": endpointAddr,
+                                    "Port": endpointPort
+                                },
+                                "NodeType": nodeType,
+                                "VpcId": vpcId
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -359,7 +454,21 @@ def cluster_enhanced_vpc_routing_check(cache: dict, awsAccountId: str, awsRegion
                         "Id": clusterArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"ClusterId": clusterId}},
+                        "Details": {
+                            "AwsRedshiftCluster": {
+                                "AvailabilityZone": clusterAz,
+                                "ClusterIdentifier": clusterId,
+                                "ClusterSubnetGroupName": clusterSubnetGroupName,
+                                "ClusterVersion": clusterVersion,
+                                "DBName": dbName,
+                                "Endpoint": {
+                                    "Address": endpointAddr,
+                                    "Port": endpointPort
+                                },
+                                "NodeType": nodeType,
+                                "VpcId": vpcId
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -384,12 +493,20 @@ def cluster_enhanced_vpc_routing_check(cache: dict, awsAccountId: str, awsRegion
 
 @registry.register_check("redshift")
 def cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Redshift.4] Redshift clusters should have logging enabled"""
+    """[Redshift.4] Redshift clusters should have audit logging enabled"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for cluster in describe_redshift_clusters(cache):
-        clusterId = str(cluster["ClusterIdentifier"])
-        clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"
+        clusterId = cluster["ClusterIdentifier"]
+        clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"  
+        clusterAz = cluster["AvailabilityZone"]
+        clusterSubnetGroupName = cluster["ClusterSubnetGroupName"]
+        clusterVersion = cluster["ClusterVersion"]
+        dbName = cluster["DBName"]
+        endpointAddr = cluster["Endpoint"]["Address"]
+        endpointPort = cluster["Endpoint"]["Port"]
+        nodeType = cluster["NodeType"]
+        vpcId = cluster["VpcId"]
         response = redshift.describe_logging_status(ClusterIdentifier=clusterId)
         if str(response["LoggingEnabled"]) == "False":
             finding = {
@@ -404,8 +521,8 @@ def cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": "[Redshift.4] Redshift clusters should have logging enabled",
-                "Description": "Redshift cluster "
+                "Title": "[Redshift.4] Redshift clusters should have audit logging enabled",
+                "Description": f"Redshift cluster {clusterId}"
                 + clusterId
                 + " does not have logging enabled. Refer to the remediation instructions to remediate this behavior",
                 "Remediation": {
@@ -421,7 +538,21 @@ def cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
                         "Id": clusterArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"ClusterId": clusterId}},
+                        "Details": {
+                            "AwsRedshiftCluster": {
+                                "AvailabilityZone": clusterAz,
+                                "ClusterIdentifier": clusterId,
+                                "ClusterSubnetGroupName": clusterSubnetGroupName,
+                                "ClusterVersion": clusterVersion,
+                                "DBName": dbName,
+                                "Endpoint": {
+                                    "Address": endpointAddr,
+                                    "Port": endpointPort
+                                },
+                                "NodeType": nodeType,
+                                "VpcId": vpcId
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -456,7 +587,7 @@ def cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Redshift.4] Redshift clusters should have logging enabled",
+                "Title": "[Redshift.4] Redshift clusters should have audit logging enabled",
                 "Description": "Redshift cluster " + clusterId + " has logging enabled.",
                 "Remediation": {
                     "Recommendation": {
@@ -471,7 +602,21 @@ def cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
                         "Id": clusterArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"ClusterId": clusterId}},
+                        "Details": {
+                            "AwsRedshiftCluster": {
+                                "AvailabilityZone": clusterAz,
+                                "ClusterIdentifier": clusterId,
+                                "ClusterSubnetGroupName": clusterSubnetGroupName,
+                                "ClusterVersion": clusterVersion,
+                                "DBName": dbName,
+                                "Endpoint": {
+                                    "Address": endpointAddr,
+                                    "Port": endpointPort
+                                },
+                                "NodeType": nodeType,
+                                "VpcId": vpcId
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
