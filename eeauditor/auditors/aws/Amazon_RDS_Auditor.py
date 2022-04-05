@@ -46,6 +46,9 @@ def describe_db_instances(cache):
                         "mariadb",
                         "mysql",
                         "oracle-ee",
+                        "oracle-se",
+                        "oracle-se1",
+                        "oracle-se2",
                         "postgres",
                         "sqlserver-ee",
                         "sqlserver-se",
@@ -508,6 +511,11 @@ def rds_instance_storage_encryption_check(cache: dict, awsAccountId: str, awsReg
 @registry.register_check("rds")
 def rds_instance_iam_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.4] RDS instances that support IAM Authentication should use IAM Authentication"""
+    iamAuthNSupportedEngines = [
+        "mariadb",
+        "mysql",
+        "postgres"
+    ]
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for dbinstances in describe_db_instances(cache):
@@ -518,7 +526,8 @@ def rds_instance_iam_auth_check(cache: dict, awsAccountId: str, awsRegion: str, 
         instanceEngine = str(dbinstances["Engine"])
         instanceEngineVersion = str(dbinstances["EngineVersion"])
         iamDbAuthCheck = str(dbinstances["IAMDatabaseAuthenticationEnabled"])
-        if instanceEngine == "mysql" or "postgres":
+        # determine in the engine supports IAM-based AuthN
+        if instanceEngine in iamAuthNSupportedEngines:
             if iamDbAuthCheck == "False":
                 finding = {
                     "SchemaVersion": "2018-10-08",
@@ -656,6 +665,7 @@ def rds_instance_iam_auth_check(cache: dict, awsAccountId: str, awsRegion: str, 
                 }
                 yield finding
         else:
+            # this is a passing check due to exemption
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{instanceArn}/instance-iam-auth-check",
@@ -725,6 +735,19 @@ def rds_instance_iam_auth_check(cache: dict, awsAccountId: str, awsRegion: str, 
 @registry.register_check("rds")
 def rds_instance_domain_join_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.5] RDS instances that support Kerberos Authentication should be joined to a domain"""
+    # Engines that support Kerberos AuthN
+    kerberosAuthNSupportedEngines = [
+        "mysql",
+        "oracle-ee",
+        "oracle-se1",
+        "oracle-se2",
+        "oracle-se",
+        "postgres",
+        "sqlserver-ee",
+        "sqlserver-se",
+        "sqlserver-ex",
+        "sqlserver-web"
+    ]
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for dbinstances in describe_db_instances(cache):
@@ -734,20 +757,10 @@ def rds_instance_domain_join_check(cache: dict, awsAccountId: str, awsRegion: st
         instancePort = int(dbinstances["Endpoint"]["Port"])
         instanceEngine = str(dbinstances["Engine"])
         instanceEngineVersion = str(dbinstances["EngineVersion"])
-        activeDirectoryDomainCheck = dbinstances["DomainMemberships"]
-        if (
-            instanceEngine == "mysql"
-            or "oracle-ee"
-            or "oracle-se1"
-            or "oracle-se2"
-            or "oracle-se"
-            or "postgres"
-            or "sqlserver-ee"
-            or "sqlserver-se"
-            or "sqlserver-ex"
-            or "sqlserver-web"
-        ):
-            if not activeDirectoryDomainCheck:
+        # Check to make sure engine supports Kerberos
+        if instanceEngine in kerberosAuthNSupportedEngines:
+            # if the DomainMemberships array is empty there is likely not any Kerb AuthN
+            if not dbinstances["DomainMemberships"]:
                 # this is a failing check
                 finding = {
                     "SchemaVersion": "2018-10-08",
