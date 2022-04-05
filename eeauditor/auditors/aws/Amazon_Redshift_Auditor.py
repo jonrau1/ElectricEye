@@ -40,7 +40,7 @@ def describe_redshift_clusters(cache):
         return cache["describe_redshift_clusters"]
 
 @registry.register_check("redshift")
-def cluster_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def redshift_cluster_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Redshift.1] Amazon Redshift clusters should not be publicly accessible"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -208,7 +208,7 @@ def cluster_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, 
             yield finding
 
 @registry.register_check("redshift")
-def cluster_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def redshift_cluster_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Redshift.2] Amazon Redshift clusters should be encrypted at rest"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -364,7 +364,7 @@ def cluster_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, aws
             yield finding
 
 @registry.register_check("redshift")
-def cluster_enhanced_vpc_routing_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def redshift_cluster_enhanced_vpc_routing_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Redshift.3] Amazon Redshift clusters should utilize enhanced VPC routing"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -522,7 +522,7 @@ def cluster_enhanced_vpc_routing_check(cache: dict, awsAccountId: str, awsRegion
             yield finding
 
 @registry.register_check("redshift")
-def cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def redshift_cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Redshift.4] Amazon Redshift clusters should have audit logging enabled"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -681,7 +681,7 @@ def cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
             yield finding
 
 @registry.register_check("redshift")
-def cluster_default_username_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def redshift_cluster_default_username_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Redshift.5] Amazon Redshift clusters should not use the default Admin username"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -869,7 +869,7 @@ def cluster_default_username_check(cache: dict, awsAccountId: str, awsRegion: st
             yield finding
 
 @registry.register_check("redshift")
-def cluster_user_activity_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def redshift_cluster_user_activity_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Redshift.6] Amazon Redshift clusters should have user activity logging enabled"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -1033,7 +1033,7 @@ def cluster_user_activity_logging_check(cache: dict, awsAccountId: str, awsRegio
                     yield finding
 
 @registry.register_check("redshift")
-def cluster_ssl_connections_only_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def redshift_cluster_ssl_connections_only_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Redshift.7] Amazon Redshift clusters should enforce encryption in transit"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -1199,7 +1199,7 @@ def cluster_ssl_connections_only_check(cache: dict, awsAccountId: str, awsRegion
                     yield finding
 
 @registry.register_check("redshift")
-def cluster_auto_snapshot_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def redshift_cluster_auto_snapshot_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Redshift.8] Amazon Redshift clusters should have automatic snapshots enabled"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -1361,7 +1361,7 @@ def cluster_auto_snapshot_check(cache: dict, awsAccountId: str, awsRegion: str, 
             yield finding
 
 @registry.register_check("redshift")
-def cluster_auto_version_upgrade_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def redshift_cluster_auto_version_upgrade_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Redshift.9] Amazon Redshift should have automatic upgrades to major versions enabled"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()

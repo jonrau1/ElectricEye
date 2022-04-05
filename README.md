@@ -504,7 +504,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 
 ## Supported Services and Checks
 
-These are the following services and checks perform by each Auditor. There are currently :boom: **519 Checks** :boom: supported across :exclamation: **95 AWS services/components** :exclamation: with a total of :fire: **73 Auditors** :fire:
+These are the following services and checks perform by each Auditor. There are currently :boom: **524 Checks** :boom: supported across :exclamation: **95 AWS services/components** :exclamation: with a total of :fire: **73 Auditors** :fire:
 
 There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
@@ -713,9 +713,14 @@ There are currently **62** supported response and remediation Playbooks with cov
 | Amazon_RDS_Auditor.py | Event Subscription (Account) | Does an Event Subscription to monitor DB instances exist |
 | Amazon_RDS_Auditor.py | Event Subscription (Account) | Does an Event Subscription to monitor paramter groups exist |
 | Amazon_Redshift_Auditor.py | Redshift cluster | Is the cluster publicly accessible |
-| Amazon_Redshift_Auditor.py | Redshift cluster | Is the cluster encrypted |
+| Amazon_Redshift_Auditor.py | Redshift cluster | Is the cluster encrypted at rest |
 | Amazon_Redshift_Auditor.py | Redshift cluster | Is enhanced VPC routing enabled |
 | Amazon_Redshift_Auditor.py | Redshift cluster | Is cluster audit logging enabled |
+| Amazon_Redshift_Auditor.py | Redshift cluster | Does the cluster use the default Admin username |
+| Amazon_Redshift_Auditor.py | Redshift cluster | Is cluster user activity logging enabled |
+| Amazon_Redshift_Auditor.py | Redshift cluster | Does the cluster enforce encrypted in transit |
+| Amazon_Redshift_Auditor.py | Redshift cluster | Does the cluster take automated snapshots |
+| Amazon_Redshift_Auditor.py | Redshift cluster | Is the cluster configured for automated major version upgrades |
 | Amazon_Route53_Auditor.py | Route53 Hosted Zone | Do Hosted Zones have Query Logging enabled |
 | Amazon_Route53_Auditor.py | Route53 Hosted Zone | Do Hosted Zones have traffic policies associated |
 | Amazon_Route53_Resolver_Auditor.py | VPC | Do VPCs have Query Logging enabled |
