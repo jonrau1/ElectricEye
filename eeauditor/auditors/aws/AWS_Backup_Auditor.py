@@ -103,11 +103,11 @@ def volume_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
                         "ISO 27001:2013 A.11.1.4",
                         "ISO 27001:2013 A.17.1.1",
                         "ISO 27001:2013 A.17.1.2",
-                        "ISO 27001:2013 A.17.2.1",
-                    ],
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
         except:
@@ -157,11 +157,11 @@ def volume_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
                         "ISO 27001:2013 A.11.1.4",
                         "ISO 27001:2013 A.17.1.1",
                         "ISO 27001:2013 A.17.1.2",
-                        "ISO 27001:2013 A.17.2.1",
-                    ],
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
 

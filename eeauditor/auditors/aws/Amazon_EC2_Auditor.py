@@ -34,7 +34,7 @@ def paginate(cache):
         return response
     paginator = ec2.get_paginator("describe_instances")
     if paginator:
-        for page in paginator.paginate(Filters=[{'Name': 'instance-state-name','Values': ['running']}]):
+        for page in paginator.paginate(Filters=[{"Name": "instance-state-name","Values": ["running","stopped"]}]):
             for r in page["Reservations"]:
                 for i in r["Instances"]:
                     instanceList.append(i)
@@ -124,11 +124,11 @@ def ec2_imdsv2_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                             "ISO 27001:2013 A.9.2.3",
                             "ISO 27001:2013 A.9.4.1",
                             "ISO 27001:2013 A.9.4.4",
-                            "ISO 27001:2013 A.9.4.5",
+                            "ISO 27001:2013 A.9.4.5"
                         ]
                     },
                     "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
+                    "RecordState": "ACTIVE"
                 }
                 yield finding
             else:
@@ -194,11 +194,11 @@ def ec2_imdsv2_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                             "ISO 27001:2013 A.9.2.3",
                             "ISO 27001:2013 A.9.4.1",
                             "ISO 27001:2013 A.9.4.4",
-                            "ISO 27001:2013 A.9.4.5",
+                            "ISO 27001:2013 A.9.4.5"
                         ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED",
+                    "RecordState": "ARCHIVED"
                 }
                 yield finding
         else:
@@ -284,11 +284,11 @@ def ec2_secure_enclave_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                         "ISO 27001:2013 A.9.2.3",
                         "ISO 27001:2013 A.9.4.1",
                         "ISO 27001:2013 A.9.4.4",
-                        "ISO 27001:2013 A.9.4.5",
+                        "ISO 27001:2013 A.9.4.5"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
         else:
@@ -354,7 +354,7 @@ def ec2_secure_enclave_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                         "ISO 27001:2013 A.9.2.3",
                         "ISO 27001:2013 A.9.4.1",
                         "ISO 27001:2013 A.9.4.4",
-                        "ISO 27001:2013 A.9.4.5",
+                        "ISO 27001:2013 A.9.4.5"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -439,7 +439,7 @@ def ec2_public_facing_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                         "ISO 27001:2013 A.6.2.2",
                         "ISO 27001:2013 A.11.2.6",
                         "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.1"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -505,7 +505,7 @@ def ec2_public_facing_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                         "ISO 27001:2013 A.6.2.2",
                         "ISO 27001:2013 A.11.2.6",
                         "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.1"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -588,7 +588,7 @@ def ec2_source_dest_verification_check(cache: dict, awsAccountId: str, awsRegion
                         "ISO 27001:2013 A.6.2.2",
                         "ISO 27001:2013 A.11.2.6",
                         "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.1"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -653,7 +653,7 @@ def ec2_source_dest_verification_check(cache: dict, awsAccountId: str, awsRegion
                         "ISO 27001:2013 A.6.2.2",
                         "ISO 27001:2013 A.11.2.6",
                         "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.1"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -806,7 +806,7 @@ def ec2_ami_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
         # Check specific metadata
         # Extract the creation date.  As there is only 1 ImageId, there will only be 1 entry. 
         try:
-            dsc_image_date = ec2.describe_images(ImageIds=[instanceImage])['Images'][0]['CreationDate']
+            dsc_image_date = ec2.describe_images(ImageIds=[instanceImage])["Images"][0]["CreationDate"]
             dt_creation_date = parse(dsc_image_date).replace(tzinfo=None)
             AmiAge = datetime.datetime.utcnow() - dt_creation_date
 
@@ -847,9 +847,6 @@ def ec2_ami_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
                                     "VpcId": vpcId,
                                     "SubnetId": subnetId,
                                     "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
-                                },
-                                "Other": {
-                                    "AmiAge": f"{AmiAge.days} days old"
                                 }
                             }
                         }
@@ -866,7 +863,7 @@ def ec2_ami_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
                             "AICPA TSC CC8.1",
                             "ISO 27001:2013 A.8.1.1",
                             "ISO 27001:2013 A.12.6.1",
-                            "ISO 27001:2013 A.14.1.1",
+                            "ISO 27001:2013 A.14.1.1"
                         ]
                     },
                     "Workflow": {"Status": "NEW"},
@@ -910,9 +907,6 @@ def ec2_ami_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
                                     "VpcId": vpcId,
                                     "SubnetId": subnetId,
                                     "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
-                                },
-                                "Other": {
-                                    "AmiAge": f"{AmiAge.days} days old"
                                 }
                             }
                         }
@@ -929,7 +923,7 @@ def ec2_ami_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
                             "AICPA TSC CC8.1",
                             "ISO 27001:2013 A.8.1.1",
                             "ISO 27001:2013 A.12.6.1",
-                            "ISO 27001:2013 A.14.1.1",
+                            "ISO 27001:2013 A.14.1.1"
                         ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
@@ -957,11 +951,11 @@ def ec2_ami_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
         except KeyError:
             instanceLaunchedAt = str(i["LaunchTime"])
         try:
-            amiState = ec2.describe_images(ImageIds=[instanceImage])['Images'][0]['State']
-            if (amiState == 'invalid' or
-                amiState == 'deregistered' or
-                amiState == 'failed' or
-                amiState == 'error'):
+            amiState = ec2.describe_images(ImageIds=[instanceImage])["Images"][0]["State"]
+            if (amiState == "invalid" or
+                amiState == "deregistered" or
+                amiState == "failed" or
+                amiState == "error"):
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": instanceArn + "/ec2-registered-ami-check",
@@ -998,9 +992,6 @@ def ec2_ami_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                                     "VpcId": vpcId,
                                     "SubnetId": subnetId,
                                     "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
-                                },
-                                "Other": {
-                                    "AmiStatus": f"{amiState}",
                                 }
                             }
                         }
@@ -1024,7 +1015,7 @@ def ec2_ami_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                     "RecordState": "ACTIVE"
                 }
                 yield finding
-            elif amiState == 'available':
+            elif amiState == "available":
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": instanceArn + "/ec2-registered-ami-check",
@@ -1061,9 +1052,6 @@ def ec2_ami_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                                     "VpcId": vpcId,
                                     "SubnetId": subnetId,
                                     "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
-                                },
-                                "Other": {
-                                    "AmiStatus": f"{amiState}",
                                 }
                             }
                         }
@@ -1125,9 +1113,6 @@ def ec2_ami_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                                     "VpcId": vpcId,
                                     "SubnetId": subnetId,
                                     "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
-                                },
-                                "Other": {
-                                    "AmiStatus": f"{amiState}",
                                 }
                             }
                         }
@@ -1189,9 +1174,6 @@ def ec2_ami_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                                 "VpcId": vpcId,
                                 "SubnetId": subnetId,
                                 "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
-                            },
-                            "Other": {
-                                "AmiStatus": "Deregistered",
                             }
                         }
                     }
@@ -1228,7 +1210,7 @@ def ec2_concentration_risk(cache: dict, awsAccountId: str, awsRegion: str, awsPa
     # Evaluation time - grab all unique subnets per EC2 instance in Region
     for i in paginate(cache=cache):
         subnetId = str(i["SubnetId"])
-        # write subnets to list if it's not there
+        # write subnets to list if it"s not there
         if subnetId not in uSubnets:
             uSubnets.append(subnetId)
         else:
@@ -1242,7 +1224,7 @@ def ec2_concentration_risk(cache: dict, awsAccountId: str, awsRegion: str, awsPa
             continue
     # Final judgement - need to handle North Cali (us-west-1) separately
     # this is a failing check
-    if (awsRegion == 'us-west-1' and len(uAzs) < 1):
+    if (awsRegion == "us-west-1" and len(uAzs) < 1):
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": f"{awsAccountId}:{awsRegion}/ec2-az-resilience-check",
@@ -1294,7 +1276,7 @@ def ec2_concentration_risk(cache: dict, awsAccountId: str, awsRegion: str, awsPa
         }
         yield finding
     # this is a failing check
-    elif (awsRegion != 'us-west-1' and len(uAzs) < 2):
+    elif (awsRegion != "us-west-1" and len(uAzs) < 2):
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": f"{awsAccountId}:{awsRegion}/ec2-az-resilience-check",

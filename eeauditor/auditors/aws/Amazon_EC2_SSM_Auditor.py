@@ -547,7 +547,7 @@ def ssm_instance_patch_state_state(cache: dict, awsAccountId: str, awsRegion: st
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.1.1",
                         "ISO 27001:2013 A.8.1.2",
-                        "ISO 27001:2013 A.12.5.1",
+                        "ISO 27001:2013 A.12.5.1"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},

@@ -215,7 +215,7 @@ def iam_access_key_age_check(cache: dict, awsAccountId: str, awsRegion: str, aws
 
 @registry.register_check("iam")
 def user_permission_boundary_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """aaa"""
+    """[IAM.2] IAM users should have permissions boundaries attached"""
     user = list_users(cache=cache)
     for users in user["Users"]:
         userName = str(users["UserName"])
@@ -877,11 +877,11 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, awsAccountId: str,
                         "ISO 27001:2013 A.9.2.6",
                         "ISO 27001:2013 A.9.3.1",
                         "ISO 27001:2013 A.9.4.2",
-                        "ISO 27001:2013 A.9.4.3",
-                    ],
+                        "ISO 27001:2013 A.9.4.3"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
         else:
@@ -942,11 +942,11 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, awsAccountId: str,
                         "ISO 27001:2013 A.9.2.6",
                         "ISO 27001:2013 A.9.3.1",
                         "ISO 27001:2013 A.9.4.2",
-                        "ISO 27001:2013 A.9.4.3",
-                    ],
+                        "ISO 27001:2013 A.9.4.3"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
     except Exception:

@@ -346,6 +346,7 @@ Resources:
                   - rds:DescribeEventCategories
                   - redshift:DescribeClusters
                   - redshift:DescribeLoggingStatus
+                  - redshift:DescribeClusterParameters
                   - route53:ListTrafficPolicyInstancesByHostedZone
                   - route53:ListHostedZones
                   - route53:ListResourceRecordSets
@@ -373,15 +374,15 @@ Resources:
                   - secretsmanager:ListSecrets
                   - securityhub:BatchImportFindings
                   - securityhub:GetFindings
-                  - shield:DescribeDRTAccess
-                  - shield:DescribeProtection
-                  - shield:DescribeSubscription
+                  - shield:Describe*
                   - sns:GetTopicAttributes
                   - sns:ListSubscriptions
                   - sns:ListSubscriptionsByTopic
                   - sns:ListTopics
                   - ssm:GetP*
                   - ssm:DescribeInstance*
+                  - ssm:ListDocuments
+                  - ssm:ListAssociations
                   - sts:GetCallerIdentity
                   - sqs:ListQueues
                   - sqs:GetQueueAttributes

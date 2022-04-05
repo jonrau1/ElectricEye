@@ -605,11 +605,11 @@ def broker_minor_version_auto_upgrade_check(cache: dict, awsAccountId: str, awsR
                             "ISO 27001:2013 A.11.1.2",
                             "ISO 27001:2013 A.11.2.4",
                             "ISO 27001:2013 A.11.2.5",
-                            "ISO 27001:2013 A.11.2.6",
-                        ],
+                            "ISO 27001:2013 A.11.2.6"
+                        ]
                     },
                     "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
+                    "RecordState": "ACTIVE"
                 }
                 yield finding
             else:
@@ -659,11 +659,11 @@ def broker_minor_version_auto_upgrade_check(cache: dict, awsAccountId: str, awsR
                             "ISO 27001:2013 A.11.1.2",
                             "ISO 27001:2013 A.11.2.4",
                             "ISO 27001:2013 A.11.2.5",
-                            "ISO 27001:2013 A.11.2.6",
-                        ],
+                            "ISO 27001:2013 A.11.2.6"
+                        ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED",
+                    "RecordState": "ARCHIVED"
                 }
                 yield finding
         except Exception as e:

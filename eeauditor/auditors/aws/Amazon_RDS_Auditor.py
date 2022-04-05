@@ -28,48 +28,77 @@ registry = CheckRegister()
 rds = boto3.client("rds")
 ec2 = boto3.client("ec2")
 
-# loop through all RDS DB instances
 def describe_db_instances(cache):
+    dbInstances = []
     response = cache.get("describe_db_instances")
     if response:
         return response
-    cache["describe_db_instances"] = rds.describe_db_instances(
-        Filters=[
-            {
-                "Name": "engine",
-                "Values": [
-                    "aurora",
-                    "aurora-mysql",
-                    "aurora-postgresql",
-                    "mariadb",
-                    "mysql",
-                    "oracle-ee",
-                    "postgres",
-                    "sqlserver-ee",
-                    "sqlserver-se",
-                    "sqlserver-ex",
-                    "sqlserver-web",
-                ],
-            }
-        ],
-        MaxRecords=100,
-    )
+    paginator = rds.get_paginator('describe_db_instances')
+    if paginator:
+        for page in paginator.paginate(
+            Filters=[
+                {
+                    "Name": "engine",
+                    "Values": [
+                        "aurora",
+                        "aurora-mysql",
+                        "aurora-postgresql",
+                        "mariadb",
+                        "mysql",
+                        "oracle-ee",
+                        "oracle-ee-cdb",
+                        "oracle-se2",
+                        "oracle-se2-cdb",
+                        "postgres",
+                        "sqlserver-ee",
+                        "sqlserver-se",
+                        "sqlserver-ex",
+                        "sqlserver-web",
+                        "custom-oracle-ee",
+                        "custom-sqlserver-ee",
+                        "custom-sqlserver-se",
+                        "custom-sqlserver-web"
+                    ]
+                }
+            ]
+        ):
+            for dbinstance in page["DBInstances"]:
+                dbInstances.append(dbinstance)
+    cache["describe_db_instances"] = dbInstances
     return cache["describe_db_instances"]
 
-# loop through all RDS DB snapshots
 def describe_db_snapshots(cache):
+    dbSnaps = []
     response = cache.get("describe_db_snapshots")
     if response:
         return response
-    cache["describe_db_snapshots"] = rds.describe_db_snapshots()
-    return cache["describe_db_snapshots"]
+    paginator = rds.get_paginator('describe_db_snapshots')
+    if paginator:
+        for page in paginator.paginate():
+            for snap in page["DBSnapshots"]:
+                dbSnaps.append(snap)
+        cache["describe_db_snapshots"] = dbSnaps
+        return cache["describe_db_snapshots"]
+
+def describe_db_clusters(cache):
+    dbClusters = []
+    response = cache.get("describe_db_clusters")
+    if response:
+        return response
+    paginator = rds.get_paginator('describe_db_clusters')
+    if paginator:
+        for page in paginator.paginate():
+            for dbc in page["DBClusters"]:
+                dbClusters.append(dbc)
+        cache["describe_db_clusters"] = dbClusters
+        return cache["describe_db_clusters"]
 
 @registry.register_check("rds")
 def rds_instance_ha_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.1] RDS instances should be configured for high availability"""
-    response = describe_db_instances(cache)
-    myRdsInstances = response["DBInstances"]
-    for dbinstances in myRdsInstances:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for dbinstances in describe_db_instances(cache):
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -77,11 +106,11 @@ def rds_instance_ha_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
         instanceEngine = str(dbinstances["Engine"])
         instanceEngineVersion = str(dbinstances["EngineVersion"])
         highAvailabilityCheck = str(dbinstances["MultiAZ"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if highAvailabilityCheck == "False":
+            # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": instanceArn + "/instance-ha-check",
+                "Id": f"{instanceArn}/instance-ha-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": instanceArn,
                 "AwsAccountId": awsAccountId,
@@ -116,7 +145,7 @@ def rds_instance_ha_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
                                 "Engine": instanceEngine,
                                 "EngineVersion": instanceEngineVersion,
                             }
-                        },
+                        }
                     }
                 ],
                 "Compliance": {
@@ -137,13 +166,14 @@ def rds_instance_ha_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
         else:
+            # this is a passing check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": instanceArn + "/instance-ha-check",
+                "Id": f"{instanceArn}/instance-ha-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": instanceArn,
                 "AwsAccountId": awsAccountId,
@@ -178,7 +208,7 @@ def rds_instance_ha_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
                                 "Engine": instanceEngine,
                                 "EngineVersion": instanceEngineVersion,
                             }
-                        },
+                        }
                     }
                 ],
                 "Compliance": {
@@ -195,22 +225,20 @@ def rds_instance_ha_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
                         "ISO 27001:2013 A.11.1.4",
                         "ISO 27001:2013 A.17.1.1",
                         "ISO 27001:2013 A.17.1.2",
-                        "ISO 27001:2013 A.17.2.1",
-                    ],
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
 
 @registry.register_check("rds")
 def rds_instance_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.2] RDS instances should not be publicly accessible"""
-    response = describe_db_instances(cache)
-    myRdsInstances = response["DBInstances"]
-    response = describe_db_snapshots(cache)
-    myRdsSnapshots = response["DBSnapshots"]
-    for dbinstances in myRdsInstances:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for dbinstances in describe_db_instances(cache):
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -218,17 +246,17 @@ def rds_instance_public_access_check(cache: dict, awsAccountId: str, awsRegion: 
         instanceEngine = str(dbinstances["Engine"])
         instanceEngineVersion = str(dbinstances["EngineVersion"])
         publicAccessibleCheck = str(dbinstances["PubliclyAccessible"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if publicAccessibleCheck == "True":
+            # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": instanceArn + "/instance-public-access-check",
+                "Id": f"{instanceArn}/instance-public-access-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": instanceArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
                     "Software and Configuration Checks/AWS Security Best Practices",
-                    "Effects/Data Exposure",
+                    "Effects/Data Exposure"
                 ],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
@@ -259,9 +287,9 @@ def rds_instance_public_access_check(cache: dict, awsAccountId: str, awsRegion: 
                                 "DbInstancePort": instancePort,
                                 "Engine": instanceEngine,
                                 "EngineVersion": instanceEngineVersion,
-                                "PubliclyAccessible": True,
+                                "PubliclyAccessible": True
                             }
-                        },
+                        }
                     }
                 ],
                 "Compliance": {
@@ -288,13 +316,13 @@ def rds_instance_public_access_check(cache: dict, awsAccountId: str, awsRegion: 
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": instanceArn + "/instance-public-access-check",
+                "Id": f"{instanceArn}/instance-public-access-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": instanceArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
                     "Software and Configuration Checks/AWS Security Best Practices",
-                    "Effects/Data Exposure",
+                    "Effects/Data Exposure"
                 ],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
@@ -325,9 +353,9 @@ def rds_instance_public_access_check(cache: dict, awsAccountId: str, awsRegion: 
                                 "DbInstancePort": instancePort,
                                 "Engine": instanceEngine,
                                 "EngineVersion": instanceEngineVersion,
-                                "PubliclyAccessible": False,
+                                "PubliclyAccessible": False
                             }
-                        },
+                        }
                     }
                 ],
                 "Compliance": {
@@ -355,11 +383,9 @@ def rds_instance_public_access_check(cache: dict, awsAccountId: str, awsRegion: 
 @registry.register_check("rds")
 def rds_instance_storage_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.3] RDS instances should have encrypted storage"""
-    response = describe_db_instances(cache)
-    myRdsInstances = response["DBInstances"]
-    response = describe_db_snapshots(cache)
-    myRdsSnapshots = response["DBSnapshots"]
-    for dbinstances in myRdsInstances:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for dbinstances in describe_db_instances(cache):
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -367,17 +393,16 @@ def rds_instance_storage_encryption_check(cache: dict, awsAccountId: str, awsReg
         instanceEngine = str(dbinstances["Engine"])
         instanceEngineVersion = str(dbinstances["EngineVersion"])
         rdsStorageEncryptionCheck = str(dbinstances["StorageEncrypted"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if rdsStorageEncryptionCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": instanceArn + "/instance-storage-encryption-check",
+                "Id": f"{instanceArn}/instance-storage-encryption-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": instanceArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
                     "Software and Configuration Checks/AWS Security Best Practices",
-                    "Effects/Data Exposure",
+                    "Effects/Data Exposure"
                 ],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
@@ -391,7 +416,7 @@ def rds_instance_storage_encryption_check(cache: dict, awsAccountId: str, awsReg
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on RDS storage encryption refer to the Enabling Amazon RDS Encryption for a DB Instance section of the Amazon Relational Database Service User Guide",
-                        "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html#Overview.Encryption.Enabling",
+                        "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html#Overview.Encryption.Enabling"
                     }
                 },
                 "ProductFields": {"Product Name": "ElectricEye"},
@@ -408,9 +433,9 @@ def rds_instance_storage_encryption_check(cache: dict, awsAccountId: str, awsReg
                                 "DbInstancePort": instancePort,
                                 "Engine": instanceEngine,
                                 "EngineVersion": instanceEngineVersion,
-                                "StorageEncrypted": False,
+                                "StorageEncrypted": False
                             }
-                        },
+                        }
                     }
                 ],
                 "Compliance": {
@@ -421,23 +446,23 @@ def rds_instance_storage_encryption_check(cache: dict, awsAccountId: str, awsReg
                         "NIST SP 800-53 SC-12",
                         "NIST SP 800-53 SC-28",
                         "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3",
-                    ],
+                        "ISO 27001:2013 A.8.2.3"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": instanceArn + "/instance-storage-encryption-check",
+                "Id": f"{instanceArn}/instance-storage-encryption-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": instanceArn,
                 "AwsAccountId": awsAccountId,
                 "Types": [
                     "Software and Configuration Checks/AWS Security Best Practices",
-                    "Effects/Data Exposure",
+                    "Effects/Data Exposure"
                 ],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
@@ -449,7 +474,7 @@ def rds_instance_storage_encryption_check(cache: dict, awsAccountId: str, awsReg
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on RDS storage encryption refer to the Enabling Amazon RDS Encryption for a DB Instance section of the Amazon Relational Database Service User Guide",
-                        "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html#Overview.Encryption.Enabling",
+                        "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html#Overview.Encryption.Enabling"
                     }
                 },
                 "ProductFields": {"Product Name": "ElectricEye"},
@@ -479,22 +504,25 @@ def rds_instance_storage_encryption_check(cache: dict, awsAccountId: str, awsReg
                         "NIST SP 800-53 SC-12",
                         "NIST SP 800-53 SC-28",
                         "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.8.2.3"
                     ],
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
 
 @registry.register_check("rds")
 def rds_instance_iam_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.4] RDS instances that support IAM Authentication should use IAM Authentication"""
-    response = describe_db_instances(cache)
-    myRdsInstances = response["DBInstances"]
-    response = describe_db_snapshots(cache)
-    myRdsSnapshots = response["DBSnapshots"]
-    for dbinstances in myRdsInstances:
+    iamAuthNSupportedEngines = [
+        "mariadb",
+        "mysql",
+        "postgres"
+    ]
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for dbinstances in describe_db_instances(cache):
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -502,12 +530,12 @@ def rds_instance_iam_auth_check(cache: dict, awsAccountId: str, awsRegion: str, 
         instanceEngine = str(dbinstances["Engine"])
         instanceEngineVersion = str(dbinstances["EngineVersion"])
         iamDbAuthCheck = str(dbinstances["IAMDatabaseAuthenticationEnabled"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        if instanceEngine == "mysql" or "postgres":
+        # determine in the engine supports IAM-based AuthN
+        if instanceEngine in iamAuthNSupportedEngines:
             if iamDbAuthCheck == "False":
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": instanceArn + "/instance-iam-auth-check",
+                    "Id": f"{instanceArn}/instance-iam-auth-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": instanceArn,
                     "AwsAccountId": awsAccountId,
@@ -541,9 +569,9 @@ def rds_instance_iam_auth_check(cache: dict, awsAccountId: str, awsRegion: str, 
                                     "DbInstancePort": instancePort,
                                     "Engine": instanceEngine,
                                     "EngineVersion": instanceEngineVersion,
-                                    "IAMDatabaseAuthenticationEnabled": False,
+                                    "IAMDatabaseAuthenticationEnabled": False
                                 }
-                            },
+                            }
                         }
                     ],
                     "Compliance": {
@@ -565,17 +593,17 @@ def rds_instance_iam_auth_check(cache: dict, awsAccountId: str, awsRegion: str, 
                             "NIST SP 800-53 PS-3",
                             "AICPA TSC CC6.1",
                             "ISO 27001:2013 A.7.1.1",
-                            "ISO 27001:2013 A.9.2.1",
-                        ],
+                            "ISO 27001:2013 A.9.2.1"
+                        ]
                     },
                     "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
+                    "RecordState": "ACTIVE"
                 }
                 yield finding
             else:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": instanceArn + "/instance-iam-auth-check",
+                    "Id": f"{instanceArn}/instance-iam-auth-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": instanceArn,
                     "AwsAccountId": awsAccountId,
@@ -609,9 +637,9 @@ def rds_instance_iam_auth_check(cache: dict, awsAccountId: str, awsRegion: str, 
                                     "DbInstancePort": instancePort,
                                     "Engine": instanceEngine,
                                     "EngineVersion": instanceEngineVersion,
-                                    "IAMDatabaseAuthenticationEnabled": True,
+                                    "IAMDatabaseAuthenticationEnabled": True
                                 }
-                            },
+                            }
                         }
                     ],
                     "Compliance": {
@@ -633,50 +661,118 @@ def rds_instance_iam_auth_check(cache: dict, awsAccountId: str, awsRegion: str, 
                             "NIST SP 800-53 PS-3",
                             "AICPA TSC CC6.1",
                             "ISO 27001:2013 A.7.1.1",
-                            "ISO 27001:2013 A.9.2.1",
+                            "ISO 27001:2013 A.9.2.1"
                         ],
                     },
                     "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED",
+                    "RecordState": "ARCHIVED"
                 }
                 yield finding
         else:
-            pass
+            # this is a passing check due to exemption
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{instanceArn}/instance-iam-auth-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": instanceArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[RDS.4] RDS instances that support IAM Authentication should use IAM Authentication",
+                "Description": f"RDS DB instance {instanceId} does not have an engine that supports IAM Authentication and is thus exempt from this check.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on RDS IAM Database Authentication and how to configure it refer to the IAM Database Authentication for MySQL and PostgreSQL section of the Amazon Relational Database Service User Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html"
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsRdsDbInstance",
+                        "Id": instanceArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsRdsDbInstance": {
+                                "DBInstanceIdentifier": instanceId,
+                                "DBInstanceClass": instanceClass,
+                                "DbInstancePort": instancePort,
+                                "Engine": instanceEngine,
+                                "EngineVersion": instanceEngineVersion,
+                                "IAMDatabaseAuthenticationEnabled": False
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-6",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-2",
+                        "NIST SP 800-53 AC-3",
+                        "NIST SP 800-53 AC-16",
+                        "NIST SP 800-53 AC-19",
+                        "NIST SP 800-53 AC-24",
+                        "NIST SP 800-53 IA-1",
+                        "NIST SP 800-53 IA-2",
+                        "NIST SP 800-53 IA-4",
+                        "NIST SP 800-53 IA-5",
+                        "NIST SP 800-53 IA-8",
+                        "NIST SP 800-53 PE-2",
+                        "NIST SP 800-53 PS-3",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.7.1.1",
+                        "ISO 27001:2013 A.9.2.1"
+                    ],
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
 @registry.register_check("rds")
 def rds_instance_domain_join_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.5] RDS instances that support Kerberos Authentication should be joined to a domain"""
-    response = describe_db_instances(cache)
-    myRdsInstances = response["DBInstances"]
-    response = describe_db_snapshots(cache)
-    myRdsSnapshots = response["DBSnapshots"]
-    for dbinstances in myRdsInstances:
+    # Engines that support Kerberos AuthN
+    kerberosAuthNSupportedEngines = [
+        "mysql",
+        "oracle-ee",
+        "oracle-ee-cdb",
+        "oracle-se2",
+        "oracle-se2-cdb",
+        "postgres",
+        "sqlserver-ee",
+        "sqlserver-se",
+        "sqlserver-ex",
+        "sqlserver-web",
+        "custom-oracle-ee",
+        "custom-sqlserver-ee",
+        "custom-sqlserver-se",
+        "custom-sqlserver-web"
+    ]
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for dbinstances in describe_db_instances(cache):
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
         instancePort = int(dbinstances["Endpoint"]["Port"])
         instanceEngine = str(dbinstances["Engine"])
         instanceEngineVersion = str(dbinstances["EngineVersion"])
-        activeDirectoryDomainCheck = str(dbinstances["DomainMemberships"])
-        if (
-            instanceEngine == "mysql"
-            or "oracle-ee"
-            or "oracle-se1"
-            or "oracle-se2"
-            or "oracle-se"
-            or "postgres"
-            or "sqlserver-ee"
-            or "sqlserver-se"
-            or "sqlserver-ex"
-            or "sqlserver-web"
-        ):
-            iso8601Time = (
-                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-            )
-            if activeDirectoryDomainCheck == "[]":
+        # Check to make sure engine supports Kerberos
+        if instanceEngine in kerberosAuthNSupportedEngines:
+            # if the DomainMemberships array is empty there is likely not any Kerb AuthN
+            if not dbinstances["DomainMemberships"]:
+                # this is a failing check
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": instanceArn + "/instance-domain-join-check",
+                    "Id": f"{instanceArn}/instance-domain-join-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": instanceArn,
                     "AwsAccountId": awsAccountId,
@@ -741,9 +837,10 @@ def rds_instance_domain_join_check(cache: dict, awsAccountId: str, awsRegion: st
                 }
                 yield finding
             else:
+                # this is a passing check
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": instanceArn + "/instance-domain-join-check",
+                    "Id": f"{instanceArn}/instance-domain-join-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": instanceArn,
                     "AwsAccountId": awsAccountId,
@@ -808,16 +905,78 @@ def rds_instance_domain_join_check(cache: dict, awsAccountId: str, awsRegion: st
                 }
                 yield finding
         else:
-            pass
+            # this is a passing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{instanceArn}/instance-domain-join-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": instanceArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[RDS.5] RDS instances that support Kerberos Authentication should be joined to a domain",
+                "Description": f"RDS DB instance {instanceId} does not have an engine that supports Kerberos Authentication and is thus exempt from this check.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on RDS instances that support Kerberos Authentication and how to configure it refer to the Kerberos Authentication section of the Amazon Relational Database Service User Guide",
+                        "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/kerberos-authentication.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsRdsDbInstance",
+                        "Id": instanceArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsRdsDbInstance": {
+                                "DBInstanceIdentifier": instanceId,
+                                "DBInstanceClass": instanceClass,
+                                "DbInstancePort": instancePort,
+                                "Engine": instanceEngine,
+                                "EngineVersion": instanceEngineVersion,
+                            }
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-6",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-2",
+                        "NIST SP 800-53 AC-3",
+                        "NIST SP 800-53 AC-16",
+                        "NIST SP 800-53 AC-19",
+                        "NIST SP 800-53 AC-24",
+                        "NIST SP 800-53 IA-1",
+                        "NIST SP 800-53 IA-2",
+                        "NIST SP 800-53 IA-4",
+                        "NIST SP 800-53 IA-5",
+                        "NIST SP 800-53 IA-8",
+                        "NIST SP 800-53 PE-2",
+                        "NIST SP 800-53 PS-3",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.7.1.1",
+                        "ISO 27001:2013 A.9.2.1",
+                    ],
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED",
+            }
+            yield finding
 
 @registry.register_check("rds")
 def rds_instance_performance_insights_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.6] RDS instances should have performance insights enabled"""
-    response = describe_db_instances(cache)
-    myRdsInstances = response["DBInstances"]
-    response = describe_db_snapshots(cache)
-    myRdsSnapshots = response["DBSnapshots"]
-    for dbinstances in myRdsInstances:
+     # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for dbinstances in describe_db_instances(cache):
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -825,7 +984,6 @@ def rds_instance_performance_insights_check(cache: dict, awsAccountId: str, awsR
         instanceEngine = str(dbinstances["Engine"])
         instanceEngineVersion = str(dbinstances["EngineVersion"])
         perfInsightsCheck = str(dbinstances["PerformanceInsightsEnabled"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if perfInsightsCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -950,11 +1108,9 @@ def rds_instance_performance_insights_check(cache: dict, awsAccountId: str, awsR
 @registry.register_check("rds")
 def rds_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.7] RDS instances should have deletion protection enabled"""
-    response = describe_db_instances(cache)
-    myRdsInstances = response["DBInstances"]
-    response = describe_db_snapshots(cache)
-    myRdsSnapshots = response["DBSnapshots"]
-    for dbinstances in myRdsInstances:
+     # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for dbinstances in describe_db_instances(cache):
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -962,7 +1118,6 @@ def rds_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRe
         instanceEngine = str(dbinstances["Engine"])
         instanceEngineVersion = str(dbinstances["EngineVersion"])
         deletionProtectionCheck = str(dbinstances["DeletionProtection"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if deletionProtectionCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -1093,18 +1248,15 @@ def rds_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRe
 @registry.register_check("rds")
 def rds_instance_cloudwatch_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.8] RDS instances should publish database logs to CloudWatch Logs"""
-    response = describe_db_instances(cache)
-    myRdsInstances = response["DBInstances"]
-    response = describe_db_snapshots(cache)
-    myRdsSnapshots = response["DBSnapshots"]
-    for dbinstances in myRdsInstances:
+     # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for dbinstances in describe_db_instances(cache):
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
         instancePort = int(dbinstances["Endpoint"]["Port"])
         instanceEngine = str(dbinstances["Engine"])
         instanceEngineVersion = str(dbinstances["EngineVersion"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
             logCheck = str(dbinstances["EnabledCloudwatchLogsExports"])
             # this is a passing check
@@ -1233,13 +1385,12 @@ def rds_instance_cloudwatch_logging_check(cache: dict, awsAccountId: str, awsReg
 @registry.register_check("rds")
 def rds_snapshot_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.9] RDS snapshots should be encrypted"""
-    response = describe_db_snapshots(cache)
-    myRdsSnapshots = response["DBSnapshots"]
-    for snapshot in myRdsSnapshots:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for snapshot in describe_db_snapshots(cache):
         snapshotId = str(snapshot["DBSnapshotIdentifier"])
         snapshotArn = str(snapshot["DBSnapshotArn"])
         snapshotEncryptionCheck = str(snapshot["Encrypted"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if snapshotEncryptionCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -1344,9 +1495,9 @@ def rds_snapshot_encryption_check(cache: dict, awsAccountId: str, awsRegion: str
 @registry.register_check("rds")
 def rds_snapshot_public_share_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.10] RDS snapshots should not be publicly shared"""
-    response = describe_db_snapshots(cache)
-    myRdsSnapshots = response["DBSnapshots"]
-    for snapshot in myRdsSnapshots:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for snapshot in describe_db_snapshots(cache):
         snapshotId = str(snapshot["DBSnapshotIdentifier"])
         snapshotArn = str(snapshot["DBSnapshotArn"])
         response = rds.describe_db_snapshot_attributes(DBSnapshotIdentifier=snapshotId)
@@ -1355,9 +1506,6 @@ def rds_snapshot_public_share_check(cache: dict, awsAccountId: str, awsRegion: s
             attrName = str(attribute["AttributeName"])
             if attrName == "restore":
                 attrValue = str(attribute["AttributeValues"])
-                iso8601Time = (
-                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-                )
                 if attrValue == "['all']":
                     finding = {
                         "SchemaVersion": "2018-10-08",
@@ -1480,8 +1628,7 @@ def rds_snapshot_public_share_check(cache: dict, awsAccountId: str, awsRegion: s
 def rds_aurora_cluster_activity_streams_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.11] RDS Aurora Clusters should use Database Activity Streams"""
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    # Loop through clusters npow
-    for dbc in rds.describe_db_clusters(MaxRecords=100)["DBClusters"]:
+    for dbc in describe_db_clusters(cache):
         ddcArn = str(dbc["DBClusterArn"])
         dbcId = str(dbc["DBClusterIdentifier"])
         allocStorage = int(dbc["AllocatedStorage"])
@@ -1491,7 +1638,7 @@ def rds_aurora_cluster_activity_streams_check(cache: dict, awsAccountId: str, aw
         engineVer = str(dbc["EngineVersion"])
         astreamStat = str(dbc["ActivityStreamStatus"])
 
-        # This is a failing finding
+        # this is a failing check
         if astreamStat != "started" or "starting":
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -1617,8 +1764,7 @@ def rds_aurora_cluster_activity_streams_check(cache: dict, awsAccountId: str, aw
 def rds_aurora_cluster_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.12] RDS Aurora Clusters should be encrypted"""
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    # Loop through clusters npow
-    for dbc in rds.describe_db_clusters(MaxRecords=100)["DBClusters"]:
+    for dbc in describe_db_clusters(cache):
         ddcArn = str(dbc["DBClusterArn"])
         dbcId = str(dbc["DBClusterIdentifier"])
         allocStorage = int(dbc["AllocatedStorage"])
@@ -1627,7 +1773,7 @@ def rds_aurora_cluster_encryption_check(cache: dict, awsAccountId: str, awsRegio
         engine = str(dbc["Engine"])
         engineVer = str(dbc["EngineVersion"])
 
-        # This is a failing finding
+        # this is a failing check
         if str(dbc["StorageEncrypted"]) == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -1748,12 +1894,9 @@ def rds_aurora_cluster_encryption_check(cache: dict, awsAccountId: str, awsRegio
 @registry.register_check("rds")
 def rds_instance_snapshot_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.13] RDS instances should be have snapshots"""
-    response = describe_db_instances(cache)
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    myRdsInstances = response["DBInstances"]
-    response = describe_db_snapshots(cache)
-    for dbinstances in myRdsInstances:
+    for dbinstances in describe_db_instances(cache):
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -1891,12 +2034,9 @@ def rds_instance_snapshot_check(cache: dict, awsAccountId: str, awsRegion: str, 
 @registry.register_check("rds")
 def rds_instance_secgroup_risk_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.14] RDS instance security groups should not allow public access to DB ports"""
-    response = describe_db_instances(cache)
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    myRdsInstances = response["DBInstances"]
-    response = describe_db_snapshots(cache)
-    for dbinstances in myRdsInstances:
+    for dbinstances in describe_db_snapshots(cache):
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -1930,7 +2070,7 @@ def rds_instance_secgroup_risk_check(cache: dict, awsAccountId: str, awsRegion: 
                     if (toPort or fromPort == endpointPort):
                         # keep going we found a SG rule that matches DB port
                         if (ipV4Cidr == "0.0.0.0/0" or ipV6Cidr == "::/0"):
-                            # open access found - this is a failing finding
+                            # open access found - this is a failing check
                             finding = {
                                 "SchemaVersion": "2018-10-08",
                                 "Id": instanceArn + "/db-sg-risk-check",
