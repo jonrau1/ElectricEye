@@ -1031,3 +1031,169 @@ def cluster_user_activity_logging_check(cache: dict, awsAccountId: str, awsRegio
                         "RecordState": "ARCHIVED"
                     }
                     yield finding
+
+@registry.register_check("redshift")
+def cluster_ssl_connections_only_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Redshift.7] Amazon Redshift clusters should enforce encryption in transit"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for cluster in describe_redshift_clusters(cache):
+        clusterId = cluster["ClusterIdentifier"]
+        clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"  
+        clusterAz = cluster["AvailabilityZone"]
+        clusterPgName = cluster["ClusterParameterGroups"][0]["ParameterGroupName"]
+        clusterSubnetGroupName = cluster["ClusterSubnetGroupName"]
+        clusterVersion = cluster["ClusterVersion"]
+        dbName = cluster["DBName"]
+        endpointAddr = cluster["Endpoint"]["Address"]
+        endpointPort = cluster["Endpoint"]["Port"]
+        nodeType = cluster["NodeType"]
+        vpcId = cluster["VpcId"]
+        # Parse Cluster Parameter Group for check data
+        for param in redshift.describe_cluster_parameters(ParameterGroupName=clusterPgName)["Parameters"]:
+            # ignore the parameters we don't want
+            if param["ParameterName"] != "require_ssl":
+                continue
+            else:
+                if str(param["ParameterValue"]) == "false":
+                    # this is a failing check
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": f"{clusterArn}/redshift-ssl-connections-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": clusterArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "HIGH"},
+                        "Confidence": 99,
+                        "Title": "[Redshift.7] Amazon Redshift clusters should enforce encryption in transit",
+                        "Description": f"Redshift cluster {clusterId} does not enforce encryption in transit (SSL connectivity). TLS can be used to help prevent potential attackers from using person-in-the-middle or similar attacks to eavesdrop on or manipulate network traffic. Only encrypted connections over TLS should be allowed. Encrypting data in transit can affect performance. You should test your application with this feature to understand the performance profile and the impact of TLS. This check fails if the Amazon Redshift cluster parameter require_SSL is not set to 1. Refer to the remediation instructions to remediate this behavior.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For more information on Redshift SSL encryption in transit and how to configure it refer to the Encryption in transit section of the Amazon Redshift Cluster Management Guide",
+                                "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/security-encryption-in-transit.html",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsRedshiftCluster",
+                                "Id": clusterArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsRedshiftCluster": {
+                                        "AvailabilityZone": clusterAz,
+                                        "ClusterIdentifier": clusterId,
+                                        "ClusterParameterGroups": [
+                                            {
+                                                "ParameterGroupName": clusterPgName
+                                            }
+                                        ],
+                                        "ClusterSubnetGroupName": clusterSubnetGroupName,
+                                        "ClusterVersion": clusterVersion,
+                                        "DBName": dbName,
+                                        "Endpoint": {
+                                            "Address": endpointAddr,
+                                            "Port": endpointPort
+                                        },
+                                        "NodeType": nodeType,
+                                        "VpcId": vpcId
+                                    }
+                                }
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "FAILED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.DS-2",
+                                "NIST SP 800-53 SC-8",
+                                "NIST SP 800-53 SC-11",
+                                "NIST SP 800-53 SC-12",
+                                "AICPA TSC CC6.1",
+                                "ISO 27001:2013 A.8.2.3",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1",
+                                "ISO 27001:2013 A.13.2.3",
+                                "ISO 27001:2013 A.14.1.2",
+                                "ISO 27001:2013 A.14.1.3"
+                            ]
+                        },
+                        "Workflow": {"Status": "NEW"},
+                        "RecordState": "ACTIVE"
+                    }
+                    yield finding
+                else:
+                    # this is a passing check
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": f"{clusterArn}/redshift-ssl-connections-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": clusterArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "INFORMATIONAL"},
+                        "Confidence": 99,
+                        "Title": "[Redshift.7] Amazon Redshift clusters should enforce encryption in transit",
+                        "Description": f"Redshift cluster {clusterId} enforces encryption in transit (SSL connectivity).",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For more information on Redshift SSL encryption in transit and how to configure it refer to the Encryption in transit section of the Amazon Redshift Cluster Management Guide",
+                                "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/security-encryption-in-transit.html",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsRedshiftCluster",
+                                "Id": clusterArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsRedshiftCluster": {
+                                        "AvailabilityZone": clusterAz,
+                                        "ClusterIdentifier": clusterId,
+                                        "ClusterParameterGroups": [
+                                            {
+                                                "ParameterGroupName": clusterPgName
+                                            }
+                                        ],
+                                        "ClusterSubnetGroupName": clusterSubnetGroupName,
+                                        "ClusterVersion": clusterVersion,
+                                        "DBName": dbName,
+                                        "Endpoint": {
+                                            "Address": endpointAddr,
+                                            "Port": endpointPort
+                                        },
+                                        "NodeType": nodeType,
+                                        "VpcId": vpcId
+                                    }
+                                }
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "PASSED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.DS-2",
+                                "NIST SP 800-53 SC-8",
+                                "NIST SP 800-53 SC-11",
+                                "NIST SP 800-53 SC-12",
+                                "AICPA TSC CC6.1",
+                                "ISO 27001:2013 A.8.2.3",
+                                "ISO 27001:2013 A.13.1.1",
+                                "ISO 27001:2013 A.13.2.1",
+                                "ISO 27001:2013 A.13.2.3",
+                                "ISO 27001:2013 A.14.1.2",
+                                "ISO 27001:2013 A.14.1.3"
+                            ]
+                        },
+                        "Workflow": {"Status": "RESOLVED"},
+                        "RecordState": "ARCHIVED"
+                    }
+                    yield finding
