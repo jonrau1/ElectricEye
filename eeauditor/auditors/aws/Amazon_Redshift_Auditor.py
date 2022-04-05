@@ -41,7 +41,7 @@ def describe_redshift_clusters(cache):
 
 @registry.register_check("redshift")
 def cluster_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Redshift.1] Redshift clusters should not be publicly accessible"""
+    """[Redshift.1] Amazon Redshift clusters should not be publicly accessible"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for cluster in describe_redshift_clusters(cache):
@@ -72,7 +72,7 @@ def cluster_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, 
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
-                "Title": "[Redshift.1] Redshift clusters should not be publicly accessible",
+                "Title": "[Redshift.1] Amazon Redshift clusters should not be publicly accessible",
                 "Description": f"Redshift cluster {clusterId} is configured to be publicly reachable. When public access is configured, your Redshift Cluster can accept connections from outside of your VPC on a discoverable IP which can lead to attacks against the availability or confidentiality of data within your Cluster. You should always use private connectivity into your Redshift clusters with the usage of Bastions, VPNs, and otherwise before making your Cluster public. Refer to the remediation instructions to remediate this behavior.",
                 "Remediation": {
                     "Recommendation": {
@@ -142,7 +142,7 @@ def cluster_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, 
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Redshift.1] Redshift clusters should not be publicly accessible",
+                "Title": "[Redshift.1] Amazon Redshift clusters should not be publicly accessible",
                 "Description": f"Redshift cluster {clusterId} is not publicly accessible.",
                 "Remediation": {
                     "Recommendation": {
@@ -198,7 +198,7 @@ def cluster_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, 
 
 @registry.register_check("redshift")
 def cluster_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Redshift.2] Redshift clusters should be encrypted at rest"""
+    """[Redshift.2] Amazon Redshift clusters should be encrypted at rest"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for cluster in describe_redshift_clusters(cache):
@@ -229,7 +229,7 @@ def cluster_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
-                "Title": "[Redshift.2] Redshift clusters should be encrypted at rest",
+                "Title": "[Redshift.2] Amazon Redshift clusters should be encrypted at rest",
                 "Description": f"Redshift cluster {clusterId} is not encrypted at rest. In Amazon Redshift, you can enable database encryption for your clusters to help protect data at rest. When you enable encryption for a cluster, the data blocks and system metadata are encrypted for the cluster and its snapshots. Refer to the remediation instructions to remediate this behavior.",
                 "Remediation": {
                     "Recommendation": {
@@ -293,7 +293,7 @@ def cluster_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Redshift.2] Redshift clusters should be encrypted at rest",
+                "Title": "[Redshift.2] Amazon Redshift clusters should be encrypted at rest",
                 "Description": f"Redshift cluster {clusterId} is encrypted at rest.",
                 "Remediation": {
                     "Recommendation": {
@@ -343,7 +343,7 @@ def cluster_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, aws
 
 @registry.register_check("redshift")
 def cluster_enhanced_vpc_routing_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Redshift.3] Redshift clusters should utilize enhanced VPC routing"""
+    """[Redshift.3] Amazon Redshift clusters should utilize enhanced VPC routing"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for cluster in describe_redshift_clusters(cache):
@@ -371,7 +371,7 @@ def cluster_enhanced_vpc_routing_check(cache: dict, awsAccountId: str, awsRegion
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": "[Redshift.3] Redshift clusters should utilize enhanced VPC routing",
+                "Title": "[Redshift.3] Amazon Redshift clusters should utilize enhanced VPC routing",
                 "Description": f"Redshift cluster {clusterId} is not utilizing enhanced VPC routing. When you use Amazon Redshift enhanced VPC routing, Amazon Redshift forces all COPY and UNLOAD traffic between your cluster and your data repositories through your virtual private cloud (VPC) based on the Amazon VPC service. By using enhanced VPC routing, you can use standard VPC features, such as VPC security groups, network access control lists (ACLs), VPC endpoints, VPC endpoint policies, internet gateways, and Domain Name System (DNS) servers, as described in the Amazon VPC User Guide. Refer to the remediation instructions to remediate this behavior.",
                 "Remediation": {
                     "Recommendation": {
@@ -436,7 +436,7 @@ def cluster_enhanced_vpc_routing_check(cache: dict, awsAccountId: str, awsRegion
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Redshift.3] Redshift clusters should utilize enhanced VPC routing",
+                "Title": "[Redshift.3] Amazon Redshift clusters should utilize enhanced VPC routing",
                 "Description": f"Redshift cluster {clusterId} is utilizing enhanced VPC routing.",
                 "Remediation": {
                     "Recommendation": {
@@ -490,7 +490,7 @@ def cluster_enhanced_vpc_routing_check(cache: dict, awsAccountId: str, awsRegion
 
 @registry.register_check("redshift")
 def cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Redshift.4] Redshift clusters should have audit logging enabled"""
+    """[Redshift.4] Amazon Redshift clusters should have audit logging enabled"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for cluster in describe_redshift_clusters(cache):
@@ -519,8 +519,8 @@ def cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": "[Redshift.4] Redshift clusters should have audit logging enabled",
-                "Description": f"Redshift cluster {clusterId}  does not have audit logging enabled. Amazon Redshift logs information about connections and user activities in your database. These logs help you to monitor the database for security and troubleshooting purposes, a process called database auditing. The logs are stored in Amazon S3 buckets. These provide convenient access with data-security features for users who are responsible for monitoring activities in the database. Refer to the remediation instructions to remediate this behavior.",
+                "Title": "[Redshift.4] Amazon Redshift clusters should have audit logging enabled",
+                "Description": f"Redshift cluster {clusterId} does not have audit logging enabled. Amazon Redshift logs information about connections and user activities in your database. These logs help you to monitor the database for security and troubleshooting purposes, a process called database auditing. The logs are stored in Amazon S3 buckets. These provide convenient access with data-security features for users who are responsible for monitoring activities in the database. Refer to the remediation instructions to remediate this behavior.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on Redshift audit logging and how to configure it refer to the Database Audit Logging section of the Amazon Redshift Cluster Management Guide",
@@ -584,7 +584,7 @@ def cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Redshift.4] Redshift clusters should have audit logging enabled",
+                "Title": "[Redshift.4] Amazon Redshift clusters should have audit logging enabled",
                 "Description": f"Redshift cluster {clusterId} has audit logging enabled.",
                 "Remediation": {
                     "Recommendation": {
@@ -629,6 +629,183 @@ def cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
                         "ISO 27001:2013 A.16.1.7"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("redshift")
+def cluster_default_username_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Redshift.5] Amazon Redshift clusters should not use the default Admin username"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for cluster in describe_redshift_clusters(cache):
+        clusterId = cluster["ClusterIdentifier"]
+        clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"  
+        clusterAz = cluster["AvailabilityZone"]
+        clusterSubnetGroupName = cluster["ClusterSubnetGroupName"]
+        clusterVersion = cluster["ClusterVersion"]
+        dbName = cluster["DBName"]
+        endpointAddr = cluster["Endpoint"]["Address"]
+        endpointPort = cluster["Endpoint"]["Port"]
+        nodeType = cluster["NodeType"]
+        vpcId = cluster["VpcId"]
+        if cluster["MasterUsername"] == "awsuser":
+            # this is a failing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{clusterArn}/redshift-default-admin-username-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": clusterArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[Redshift.5] Amazon Redshift clusters should not use the default Admin username",
+                "Description": f"Redshift cluster {clusterId} is using the default Redshift Admin/Master username of 'awsuser'. When creating a Redshift cluster, you should change the default admin username to a unique value. Default usernames are public knowledge and should be changed upon configuration. Changing the default usernames reduces the risk of unintended access. Refer to the remediation instructions to remediate this behavior.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "You cannot change the admin username for your Amazon Redshift cluster after it is created. To create a new cluster refer to the Getting started with Amazon Redshift section of the Amazon Redshift Cluster Management Guide",
+                        "Url": "https://docs.aws.amazon.com/redshift/latest/gsg/getting-started.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsRedshiftCluster",
+                        "Id": clusterArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsRedshiftCluster": {
+                                "AvailabilityZone": clusterAz,
+                                "ClusterIdentifier": clusterId,
+                                "ClusterSubnetGroupName": clusterSubnetGroupName,
+                                "ClusterVersion": clusterVersion,
+                                "DBName": dbName,
+                                "Endpoint": {
+                                    "Address": endpointAddr,
+                                    "Port": endpointPort
+                                },
+                                "NodeType": nodeType,
+                                "VpcId": vpcId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-1",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-2",
+                        "NIST SP 800-53 IA-1",
+                        "NIST SP 800-53 IA-2",
+                        "NIST SP 800-53 IA-3",
+                        "NIST SP 800-53 IA-4",
+                        "NIST SP 800-53 IA-5",
+                        "NIST SP 800-53 IA-6",
+                        "NIST SP 800-53 IA-7",
+                        "NIST SP 800-53 IA-8",
+                        "NIST SP 800-53 IA-9",
+                        "NIST SP 800-53 IA-10",
+                        "NIST SP 800-53 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3",
+                        "MITRE ATT&CK T1078"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            # this is a passing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{clusterArn}/redshift-default-admin-username-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": clusterArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Redshift.5] Amazon Redshift clusters should not use the default Admin username",
+                "Description": f"Redshift cluster {clusterId} is not using the default Redshift Admin/Master username of 'awsuser'.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "You cannot change the admin username for your Amazon Redshift cluster after it is created. To create a new cluster refer to the Getting started with Amazon Redshift section of the Amazon Redshift Cluster Management Guide",
+                        "Url": "https://docs.aws.amazon.com/redshift/latest/gsg/getting-started.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsRedshiftCluster",
+                        "Id": clusterArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsRedshiftCluster": {
+                                "AvailabilityZone": clusterAz,
+                                "ClusterIdentifier": clusterId,
+                                "ClusterSubnetGroupName": clusterSubnetGroupName,
+                                "ClusterVersion": clusterVersion,
+                                "DBName": dbName,
+                                "Endpoint": {
+                                    "Address": endpointAddr,
+                                    "Port": endpointPort
+                                },
+                                "NodeType": nodeType,
+                                "VpcId": vpcId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-1",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-2",
+                        "NIST SP 800-53 IA-1",
+                        "NIST SP 800-53 IA-2",
+                        "NIST SP 800-53 IA-3",
+                        "NIST SP 800-53 IA-4",
+                        "NIST SP 800-53 IA-5",
+                        "NIST SP 800-53 IA-6",
+                        "NIST SP 800-53 IA-7",
+                        "NIST SP 800-53 IA-8",
+                        "NIST SP 800-53 IA-9",
+                        "NIST SP 800-53 IA-10",
+                        "NIST SP 800-53 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3",
+                        "MITRE ATT&CK T1078"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
