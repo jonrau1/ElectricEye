@@ -10,6 +10,14 @@ Continuously monitor your AWS attack surface and evaluate services for configura
 ***Everything you do***<br/>
 <sub>*Judas Priest, 1982*</sub>
 
+## Super Quick Start :running: :running:
+
+```bash
+git clone https://github.com/jonrau1/ElectricEye.git
+cd ElectricEye
+python3 eeauditor/controller.py -o stdout
+```
+
 ## Table of Contents
 
 - [Synopsis](#synopsis)
