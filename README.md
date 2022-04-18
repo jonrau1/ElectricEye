@@ -10,6 +10,14 @@ Continuously monitor your AWS attack surface and evaluate services for configura
 ***Everything you do***<br/>
 <sub>*Judas Priest, 1982*</sub>
 
+## Super Quick Start :running: :running:
+
+```bash
+git clone https://github.com/jonrau1/ElectricEye.git
+cd ElectricEye
+python3 eeauditor/controller.py -o stdout
+```
+
 ## Table of Contents
 
 - [Synopsis](#synopsis)
@@ -504,7 +512,10 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 
 ## Supported Services and Checks
 
-These are the following services and checks perform by each Auditor. There are currently :boom: **524 Checks** :boom: supported across :exclamation: **95 AWS services/components** :exclamation: with a total of :fire: **73 Auditors** :fire:
+These are the following services and checks perform by each Auditor, there are currently...
+- :boom: **526 Checks** :boom:
+- :exclamation: **95 AWS supported services/components** :exclamation:
+- :fire: **73 Auditors** :fire:
 
 There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
@@ -712,6 +723,8 @@ There are currently **62** supported response and remediation Playbooks with cov
 | Amazon_RDS_Auditor.py | RDS DB Instance | Does the instance security group allow risky access |
 | Amazon_RDS_Auditor.py | Event Subscription (Account) | Does an Event Subscription to monitor DB instances exist |
 | Amazon_RDS_Auditor.py | Event Subscription (Account) | Does an Event Subscription to monitor paramter groups exist |
+| Amazon_RDS_Auditor.py | RDS DB Instance | Do PostgreSQL instances use a version susceptible to Lightspin "log_fwd" attack |
+| Amazon_RDS_Auditor.py | RDS DB Instance | Do Aurora PostgreSQL instances use a version susceptible to Lightspin "log_fwd" attack |
 | Amazon_Redshift_Auditor.py | Redshift cluster | Is the cluster publicly accessible |
 | Amazon_Redshift_Auditor.py | Redshift cluster | Is the cluster encrypted at rest |
 | Amazon_Redshift_Auditor.py | Redshift cluster | Is enhanced VPC routing enabled |

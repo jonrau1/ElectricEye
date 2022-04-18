@@ -2434,7 +2434,7 @@ def rds_instance_parameter_group_alerting_check(cache: dict, awsAccountId: str, 
                 if all(x in ["maintenance", "configuration change", "failure"] for x in eventList):
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": f"{awsAccountId}:{awsRegion}/rds-instance-event-sub-check",
+                        "Id": f"{awsAccountId}:{awsRegion}/rds-pg-event-sub-check",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": f"{awsAccountId}:{awsRegion}",
                         "AwsAccountId": awsAccountId,
@@ -2483,7 +2483,7 @@ def rds_instance_parameter_group_alerting_check(cache: dict, awsAccountId: str, 
                 else:
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": f"{awsAccountId}:{awsRegion}/rds-instance-event-sub-check",
+                        "Id": f"{awsAccountId}:{awsRegion}/rds-pg-event-sub-check",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": f"{awsAccountId}:{awsRegion}",
                         "AwsAccountId": awsAccountId,
@@ -2533,7 +2533,7 @@ def rds_instance_parameter_group_alerting_check(cache: dict, awsAccountId: str, 
             except KeyError:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{awsAccountId}:{awsRegion}/rds-instance-event-sub-check",
+                    "Id": f"{awsAccountId}:{awsRegion}/rds-pg-event-sub-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": f"{awsAccountId}:{awsRegion}",
                     "AwsAccountId": awsAccountId,
@@ -2583,7 +2583,7 @@ def rds_instance_parameter_group_alerting_check(cache: dict, awsAccountId: str, 
     else:
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": f"{awsAccountId}:{awsRegion}/rds-instance-event-sub-check",
+            "Id": f"{awsAccountId}:{awsRegion}/rds-pg-event-sub-check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
             "GeneratorId": f"{awsAccountId}:{awsRegion}",
             "AwsAccountId": awsAccountId,
@@ -2629,3 +2629,601 @@ def rds_instance_parameter_group_alerting_check(cache: dict, awsAccountId: str, 
             "RecordState": "ACTIVE"
         }
         yield finding
+
+@registry.register_check("rds")
+def rds_postgresql_log_fwd_vuln_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.17] RDS instances with PostgreSQL engines should not use a version that is vulnerable to the Lightspin log_fwd internal cluster access attack"""
+    # from https://aws.amazon.com/security/security-bulletins/AWS-2022-004/
+    vulnerableMinorVersions = [
+        "13.2",
+        "13.1",
+        "12.6",
+        "12.5",
+        "12.4",
+        "12.3",
+        "12.2",
+        "11.11",
+        "11.10",
+        "11.9",
+        "11.8",
+        "11.7",
+        "11.6",
+        "11.5",
+        "11.5",
+        "11.4",
+        "11.3",
+        "11.2",
+        "11.1",
+        "10.16",
+        "10.15",
+        "10.14",
+        "10.13",
+        "10.12",
+        "10.11",
+        "10.10",
+        "10.9",
+        "10.7",
+        "10.6",
+        "10.5",
+        "10.4",
+        "10.3",
+        "10.1",
+        "9.6.21",
+        "9.6.20",
+        "9.6.19",
+        "9.6.18",
+        "9.6.17",
+        "9.6.16",
+        "9.6.15",
+        "9.6.14",
+        "9.6.12",
+        "9.6.11",
+        "9.6.10",
+        "9.6.9",
+        "9.6.8",
+        "9.6.6",
+        "9.6.5",
+        "9.6.3",
+        "9.6.2",
+        "9.6.1",
+        "9.5",
+        "9.4",
+        "9.3"
+    ]
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for dbinstances in describe_db_instances(cache):
+        instanceArn = str(dbinstances["DBInstanceArn"])
+        instanceId = str(dbinstances["DBInstanceIdentifier"])
+        instanceClass = str(dbinstances["DBInstanceClass"])
+        instancePort = int(dbinstances["Endpoint"]["Port"])
+        instanceEngine = str(dbinstances["Engine"])
+        instanceEngineVersion = str(dbinstances["EngineVersion"])
+        # skip over "aurora-postgresql" as we have a seperate check for it
+        if instanceEngine == "aurora-postgresql":
+            continue
+        elif instanceEngine == "postgres":
+            # this is a failing check
+            if instanceEngineVersion in vulnerableMinorVersions:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{instanceArn}/instance-rds-postgresql-logfwd-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": instanceArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "MEDIUM"},
+                    "Confidence": 99,
+                    "Title": "[RDS.17] RDS instances with PostgreSQL engines should not use a version that is vulnerable to the Lightspin log_fwd internal cluster access attack",
+                    "Description": f"RDS DB Instances {instanceId} is susceptible to the Lightspin 'log_fwd' attack against PostgreSQL engines due to running engine version {instanceEngineVersion}. This attack utilizes a local file read vulnerability within the 'log_fwd' extension to access underlying Cluster metadata, escalate privileges, and access the 'GROVER' service underneath. To remediate this vulnerability you must upgrade to the latest version of PostgreSQL.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on the attack refer to the Reported Amazon RDS PostgreSQL issue security bulletin",
+                            "Url": "https://aws.amazon.com/security/security-bulletins/AWS-2022-004/",
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsRdsDbInstance",
+                            "Id": instanceArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsRdsDbInstance": {
+                                    "DBInstanceIdentifier": instanceId,
+                                    "DBInstanceClass": instanceClass,
+                                    "DbInstancePort": instancePort,
+                                    "Engine": instanceEngine,
+                                    "EngineVersion": instanceEngineVersion
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF ID.RA-1",
+                            "NIST CSF ID.RA-3",
+                            "NIST CSF ID.RA-5",
+                            "NIST CSF ID.SC-1",
+                            "NIST SP 800-53 CA-2",
+                            "NIST SP 800-53 CA-7",
+                            "NIST SP 800-53 CA-8",
+                            "NIST SP 800-53 PM-9",
+                            "NIST SP 800-53 PM-11",
+                            "NIST SP 800-53 PM-16",
+                            "NIST SP 800-53 RA-3",
+                            "NIST SP 800-53 RA-5",
+                            "NIST SP 800-53 SA-5",
+                            "NIST SP 800-53 SA-9",
+                            "NIST SP 800-53 SA-11",
+                            "NIST SP 800-53 SA-12",
+                            "NIST SP 800-53 SA-14",
+                            "NIST SP 800-53 SI-2",
+                            "NIST SP 800-53 SI-4",
+                            "NIST SP 800-53 SI-5",
+                            "ISO 27001:2013 A.12.6.1",
+                            "ISO 27001:2013 A.15.1.1",
+                            "ISO 27001:2013 A.15.1.2",
+                            "ISO 27001:2013 A.15.1.3",
+                            "ISO 27001:2013 A.15.2.1",
+                            "ISO 27001:2013 A.15.2.2",
+                            "ISO 27001:2013 A.18.2.3",
+                            "ISO 27001:2013 Clause 6.1.2",
+                            "AICPA TSC CC3.2",
+                            "AICPA TSC CC9.2",
+                            "MITRE ATT&CK T1003",
+                            "MITRE ATT&CK T1212",
+                            "MITRE ATT&CK T1550",
+                            "MITRE ATT&CK T1195"
+                        ]
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE"
+                }
+                yield finding
+            # this is a passing check
+            else:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{instanceArn}/instance-rds-postgresql-logfwd-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": instanceArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Confidence": 99,
+                    "Title": "[RDS.17] RDS instances with PostgreSQL engines should not use a version that is vulnerable to the Lightspin log_fwd internal cluster access attack",
+                    "Description": f"RDS DB Instances {instanceId} is not susceptible to the Lightspin 'log_fwd' attack against PostgreSQL engines due to running engine version {instanceEngineVersion}.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on the attack refer to the Reported Amazon RDS PostgreSQL issue security bulletin",
+                            "Url": "https://aws.amazon.com/security/security-bulletins/AWS-2022-004/",
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsRdsDbInstance",
+                            "Id": instanceArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsRdsDbInstance": {
+                                    "DBInstanceIdentifier": instanceId,
+                                    "DBInstanceClass": instanceClass,
+                                    "DbInstancePort": instancePort,
+                                    "Engine": instanceEngine,
+                                    "EngineVersion": instanceEngineVersion
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF ID.RA-1",
+                            "NIST CSF ID.RA-3",
+                            "NIST CSF ID.RA-5",
+                            "NIST CSF ID.SC-1",
+                            "NIST SP 800-53 CA-2",
+                            "NIST SP 800-53 CA-7",
+                            "NIST SP 800-53 CA-8",
+                            "NIST SP 800-53 PM-9",
+                            "NIST SP 800-53 PM-11",
+                            "NIST SP 800-53 PM-16",
+                            "NIST SP 800-53 RA-3",
+                            "NIST SP 800-53 RA-5",
+                            "NIST SP 800-53 SA-5",
+                            "NIST SP 800-53 SA-9",
+                            "NIST SP 800-53 SA-11",
+                            "NIST SP 800-53 SA-12",
+                            "NIST SP 800-53 SA-14",
+                            "NIST SP 800-53 SI-2",
+                            "NIST SP 800-53 SI-4",
+                            "NIST SP 800-53 SI-5",
+                            "ISO 27001:2013 A.12.6.1",
+                            "ISO 27001:2013 A.15.1.1",
+                            "ISO 27001:2013 A.15.1.2",
+                            "ISO 27001:2013 A.15.1.3",
+                            "ISO 27001:2013 A.15.2.1",
+                            "ISO 27001:2013 A.15.2.2",
+                            "ISO 27001:2013 A.18.2.3",
+                            "ISO 27001:2013 Clause 6.1.2",
+                            "AICPA TSC CC3.2",
+                            "AICPA TSC CC9.2",
+                            "MITRE ATT&CK T1003",
+                            "MITRE ATT&CK T1212",
+                            "MITRE ATT&CK T1550",
+                            "MITRE ATT&CK T1195"
+                        ]
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED"
+                }
+                yield finding
+        else:
+            # this is a passing check due to exemption
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{instanceArn}/instance-rds-postgresql-logfwd-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": instanceArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[RDS.17] RDS instances with PostgreSQL engines should not use a version that is vulnerable to the Lightspin log_fwd internal cluster access attack",
+                "Description": f"RDS DB Instances {instanceId} is not susceptible to the Lightspin 'log_fwd' because it is not running a PostgreSQL Engine version and is thus exempt from this check.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on the attack refer to the Reported Amazon RDS PostgreSQL issue security bulletin",
+                        "Url": "https://aws.amazon.com/security/security-bulletins/AWS-2022-004/",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsRdsDbInstance",
+                        "Id": instanceArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsRdsDbInstance": {
+                                "DBInstanceIdentifier": instanceId,
+                                "DBInstanceClass": instanceClass,
+                                "DbInstancePort": instancePort,
+                                "Engine": instanceEngine,
+                                "EngineVersion": instanceEngineVersion
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.RA-1",
+                        "NIST CSF ID.RA-3",
+                        "NIST CSF ID.RA-5",
+                        "NIST CSF ID.SC-1",
+                        "NIST SP 800-53 CA-2",
+                        "NIST SP 800-53 CA-7",
+                        "NIST SP 800-53 CA-8",
+                        "NIST SP 800-53 PM-9",
+                        "NIST SP 800-53 PM-11",
+                        "NIST SP 800-53 PM-16",
+                        "NIST SP 800-53 RA-3",
+                        "NIST SP 800-53 RA-5",
+                        "NIST SP 800-53 SA-5",
+                        "NIST SP 800-53 SA-9",
+                        "NIST SP 800-53 SA-11",
+                        "NIST SP 800-53 SA-12",
+                        "NIST SP 800-53 SA-14",
+                        "NIST SP 800-53 SI-2",
+                        "NIST SP 800-53 SI-4",
+                        "NIST SP 800-53 SI-5",
+                        "ISO 27001:2013 A.12.6.1",
+                        "ISO 27001:2013 A.15.1.1",
+                        "ISO 27001:2013 A.15.1.2",
+                        "ISO 27001:2013 A.15.1.3",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.15.2.2",
+                        "ISO 27001:2013 A.18.2.3",
+                        "ISO 27001:2013 Clause 6.1.2",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC9.2",
+                        "MITRE ATT&CK T1003",
+                        "MITRE ATT&CK T1212",
+                        "MITRE ATT&CK T1550",
+                        "MITRE ATT&CK T1195"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("rds")
+def rds_aurora_postgresql_log_fwd_vuln_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[RDS.18] Aurora instances with PostgreSQL engines should not use a version that is vulnerable to the Lightspin log_fwd internal cluster access attack"""
+    # from https://aws.amazon.com/security/security-bulletins/AWS-2022-004/
+    vulnerableMinorVersions = [
+        "11.6",
+        "11.7",
+        "11.8",
+        "10.13",
+        "10.12",
+        "10.11"
+    ]
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for dbinstances in describe_db_instances(cache):
+        instanceArn = str(dbinstances["DBInstanceArn"])
+        instanceId = str(dbinstances["DBInstanceIdentifier"])
+        instanceClass = str(dbinstances["DBInstanceClass"])
+        instancePort = int(dbinstances["Endpoint"]["Port"])
+        instanceEngine = str(dbinstances["Engine"])
+        instanceEngineVersion = str(dbinstances["EngineVersion"])
+        # skip over "postgres" as we have a seperate check for it
+        if instanceEngine == "postgres":
+            continue
+        elif instanceEngine == "aurora-postgresql":
+            # this is a failing check
+            if instanceEngineVersion in vulnerableMinorVersions:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{instanceArn}/instance-aurora-postgresql-logfwd-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": instanceArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "MEDIUM"},
+                    "Confidence": 99,
+                    "Title": "[RDS.18] Aurora instances with PostgreSQL engines should not use a version that is vulnerable to the Lightspin log_fwd internal cluster access attack",
+                    "Description": f"Aurora DB Instances {instanceId} is susceptible to the Lightspin 'log_fwd' attack against PostgreSQL engines due to running engine version {instanceEngineVersion}. This attack utilizes a local file read vulnerability within the 'log_fwd' extension to access underlying Cluster metadata, escalate privileges, and access the 'GROVER' service underneath. To remediate this vulnerability you must upgrade to the latest version of PostgreSQL.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on the attack refer to the Reported Amazon RDS PostgreSQL issue security bulletin",
+                            "Url": "https://aws.amazon.com/security/security-bulletins/AWS-2022-004/",
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsRdsDbInstance",
+                            "Id": instanceArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsRdsDbInstance": {
+                                    "DBInstanceIdentifier": instanceId,
+                                    "DBInstanceClass": instanceClass,
+                                    "DbInstancePort": instancePort,
+                                    "Engine": instanceEngine,
+                                    "EngineVersion": instanceEngineVersion
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF ID.RA-1",
+                            "NIST CSF ID.RA-3",
+                            "NIST CSF ID.RA-5",
+                            "NIST CSF ID.SC-1",
+                            "NIST SP 800-53 CA-2",
+                            "NIST SP 800-53 CA-7",
+                            "NIST SP 800-53 CA-8",
+                            "NIST SP 800-53 PM-9",
+                            "NIST SP 800-53 PM-11",
+                            "NIST SP 800-53 PM-16",
+                            "NIST SP 800-53 RA-3",
+                            "NIST SP 800-53 RA-5",
+                            "NIST SP 800-53 SA-5",
+                            "NIST SP 800-53 SA-9",
+                            "NIST SP 800-53 SA-11",
+                            "NIST SP 800-53 SA-12",
+                            "NIST SP 800-53 SA-14",
+                            "NIST SP 800-53 SI-2",
+                            "NIST SP 800-53 SI-4",
+                            "NIST SP 800-53 SI-5",
+                            "ISO 27001:2013 A.12.6.1",
+                            "ISO 27001:2013 A.15.1.1",
+                            "ISO 27001:2013 A.15.1.2",
+                            "ISO 27001:2013 A.15.1.3",
+                            "ISO 27001:2013 A.15.2.1",
+                            "ISO 27001:2013 A.15.2.2",
+                            "ISO 27001:2013 A.18.2.3",
+                            "ISO 27001:2013 Clause 6.1.2",
+                            "AICPA TSC CC3.2",
+                            "AICPA TSC CC9.2",
+                            "MITRE ATT&CK T1003",
+                            "MITRE ATT&CK T1212",
+                            "MITRE ATT&CK T1550",
+                            "MITRE ATT&CK T1195"
+                        ]
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE"
+                }
+                yield finding
+            # this is a passing check
+            else:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{instanceArn}/instance-aurora-postgresql-logfwd-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": instanceArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Confidence": 99,
+                    "Title": "[RDS.18] Aurora instances with PostgreSQL engines should not use a version that is vulnerable to the Lightspin log_fwd internal cluster access attack",
+                    "Description": f"Aurora DB Instances {instanceId} is not susceptible to the Lightspin 'log_fwd' attack against PostgreSQL engines due to running engine version {instanceEngineVersion}.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on the attack refer to the Reported Amazon RDS PostgreSQL issue security bulletin",
+                            "Url": "https://aws.amazon.com/security/security-bulletins/AWS-2022-004/",
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsRdsDbInstance",
+                            "Id": instanceArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsRdsDbInstance": {
+                                    "DBInstanceIdentifier": instanceId,
+                                    "DBInstanceClass": instanceClass,
+                                    "DbInstancePort": instancePort,
+                                    "Engine": instanceEngine,
+                                    "EngineVersion": instanceEngineVersion
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF ID.RA-1",
+                            "NIST CSF ID.RA-3",
+                            "NIST CSF ID.RA-5",
+                            "NIST CSF ID.SC-1",
+                            "NIST SP 800-53 CA-2",
+                            "NIST SP 800-53 CA-7",
+                            "NIST SP 800-53 CA-8",
+                            "NIST SP 800-53 PM-9",
+                            "NIST SP 800-53 PM-11",
+                            "NIST SP 800-53 PM-16",
+                            "NIST SP 800-53 RA-3",
+                            "NIST SP 800-53 RA-5",
+                            "NIST SP 800-53 SA-5",
+                            "NIST SP 800-53 SA-9",
+                            "NIST SP 800-53 SA-11",
+                            "NIST SP 800-53 SA-12",
+                            "NIST SP 800-53 SA-14",
+                            "NIST SP 800-53 SI-2",
+                            "NIST SP 800-53 SI-4",
+                            "NIST SP 800-53 SI-5",
+                            "ISO 27001:2013 A.12.6.1",
+                            "ISO 27001:2013 A.15.1.1",
+                            "ISO 27001:2013 A.15.1.2",
+                            "ISO 27001:2013 A.15.1.3",
+                            "ISO 27001:2013 A.15.2.1",
+                            "ISO 27001:2013 A.15.2.2",
+                            "ISO 27001:2013 A.18.2.3",
+                            "ISO 27001:2013 Clause 6.1.2",
+                            "AICPA TSC CC3.2",
+                            "AICPA TSC CC9.2",
+                            "MITRE ATT&CK T1003",
+                            "MITRE ATT&CK T1212",
+                            "MITRE ATT&CK T1550",
+                            "MITRE ATT&CK T1195"
+                        ]
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED"
+                }
+                yield finding
+        else:
+            # this is a passing check due to exemption
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{instanceArn}/instance-aurora-postgresql-logfwd-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": instanceArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[RDS.18] Aurora instances with PostgreSQL engines should not use a version that is vulnerable to the Lightspin log_fwd internal cluster access attack",
+                "Description": f"Aurora DB Instances {instanceId} is not susceptible to the Lightspin 'log_fwd' because it is not running a PostgreSQL Engine version and is thus exempt from this check.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on the attack refer to the Reported Amazon RDS PostgreSQL issue security bulletin",
+                        "Url": "https://aws.amazon.com/security/security-bulletins/AWS-2022-004/",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsRdsDbInstance",
+                        "Id": instanceArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsRdsDbInstance": {
+                                "DBInstanceIdentifier": instanceId,
+                                "DBInstanceClass": instanceClass,
+                                "DbInstancePort": instancePort,
+                                "Engine": instanceEngine,
+                                "EngineVersion": instanceEngineVersion
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.RA-1",
+                        "NIST CSF ID.RA-3",
+                        "NIST CSF ID.RA-5",
+                        "NIST CSF ID.SC-1",
+                        "NIST SP 800-53 CA-2",
+                        "NIST SP 800-53 CA-7",
+                        "NIST SP 800-53 CA-8",
+                        "NIST SP 800-53 PM-9",
+                        "NIST SP 800-53 PM-11",
+                        "NIST SP 800-53 PM-16",
+                        "NIST SP 800-53 RA-3",
+                        "NIST SP 800-53 RA-5",
+                        "NIST SP 800-53 SA-5",
+                        "NIST SP 800-53 SA-9",
+                        "NIST SP 800-53 SA-11",
+                        "NIST SP 800-53 SA-12",
+                        "NIST SP 800-53 SA-14",
+                        "NIST SP 800-53 SI-2",
+                        "NIST SP 800-53 SI-4",
+                        "NIST SP 800-53 SI-5",
+                        "ISO 27001:2013 A.12.6.1",
+                        "ISO 27001:2013 A.15.1.1",
+                        "ISO 27001:2013 A.15.1.2",
+                        "ISO 27001:2013 A.15.1.3",
+                        "ISO 27001:2013 A.15.2.1",
+                        "ISO 27001:2013 A.15.2.2",
+                        "ISO 27001:2013 A.18.2.3",
+                        "ISO 27001:2013 Clause 6.1.2",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC9.2",
+                        "MITRE ATT&CK T1003",
+                        "MITRE ATT&CK T1212",
+                        "MITRE ATT&CK T1550",
+                        "MITRE ATT&CK T1195"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
