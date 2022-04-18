@@ -25,7 +25,13 @@ class StdoutProvider(object):
     __provider__ = "stdout"
 
     def write_findings(self, findings: list, output_file: str, **kwargs):
+        checkedIds = []
+
         for finding in findings:
-            print(json.dumps(finding,default=str))
+            if finding["Id"] not in checkedIds:
+                checkedIds.append(finding["Id"])
+                print(json.dumps(finding,default=str))
+            else:
+                continue
             
         return True

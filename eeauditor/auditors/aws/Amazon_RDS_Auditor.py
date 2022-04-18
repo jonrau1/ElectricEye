@@ -2434,7 +2434,7 @@ def rds_instance_parameter_group_alerting_check(cache: dict, awsAccountId: str, 
                 if all(x in ["maintenance", "configuration change", "failure"] for x in eventList):
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": f"{awsAccountId}:{awsRegion}/rds-instance-event-sub-check",
+                        "Id": f"{awsAccountId}:{awsRegion}/rds-pg-event-sub-check",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": f"{awsAccountId}:{awsRegion}",
                         "AwsAccountId": awsAccountId,
@@ -2483,7 +2483,7 @@ def rds_instance_parameter_group_alerting_check(cache: dict, awsAccountId: str, 
                 else:
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": f"{awsAccountId}:{awsRegion}/rds-instance-event-sub-check",
+                        "Id": f"{awsAccountId}:{awsRegion}/rds-pg-event-sub-check",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": f"{awsAccountId}:{awsRegion}",
                         "AwsAccountId": awsAccountId,
@@ -2533,7 +2533,7 @@ def rds_instance_parameter_group_alerting_check(cache: dict, awsAccountId: str, 
             except KeyError:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{awsAccountId}:{awsRegion}/rds-instance-event-sub-check",
+                    "Id": f"{awsAccountId}:{awsRegion}/rds-pg-event-sub-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": f"{awsAccountId}:{awsRegion}",
                     "AwsAccountId": awsAccountId,
@@ -2583,7 +2583,7 @@ def rds_instance_parameter_group_alerting_check(cache: dict, awsAccountId: str, 
     else:
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": f"{awsAccountId}:{awsRegion}/rds-instance-event-sub-check",
+            "Id": f"{awsAccountId}:{awsRegion}/rds-pg-event-sub-check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
             "GeneratorId": f"{awsAccountId}:{awsRegion}",
             "AwsAccountId": awsAccountId,
