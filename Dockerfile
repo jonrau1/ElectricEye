@@ -18,10 +18,10 @@
 #specific language governing permissions and limitations
 #under the License.
 
-# latest hash as of 29 MAR 2022 - Alpine 3.15.3
-# https://hub.docker.com/layers/alpine/library/alpine/3.15.3/images/sha256-1e014f84205d569a5cc3be4e108ca614055f7e21d11928946113ab3f36054801?context=explore
+# latest hash as of 8 MAR 2022 - Alpine 3.15.4
+# https://hub.docker.com/layers/alpine/library/alpine/3.15.4/images/sha256-a777c9c66ba177ccfea23f2a216ff6721e78a662cd17019488c417135299cd89?context=explore
 # use as builder image to pull in required deps
-FROM alpine@sha256:1e014f84205d569a5cc3be4e108ca614055f7e21d11928946113ab3f36054801 AS builder
+FROM alpine@sha256:a777c9c66ba177ccfea23f2a216ff6721e78a662cd17019488c417135299cd89 AS builder
 
 # This hack is widely applied to avoid python printing issues in docker containers.
 # See: https://github.com/Docker-Hub-frolvlad/docker-alpine-python3/pull/13
