@@ -17,6 +17,7 @@
 #KIND, either express or implied.  See the License for the
 #specific language governing permissions and limitations
 #under the License.
+import json
 from processor.outputs.output_base import ElectricEyeOutput
 
 @ElectricEyeOutput
@@ -25,6 +26,6 @@ class StdoutProvider(object):
 
     def write_findings(self, findings: list, output_file: str, **kwargs):
         for finding in findings:
-            print(finding)
+            print(json.dumps(finding,default=str))
             
         return True
