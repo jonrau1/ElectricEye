@@ -25,7 +25,7 @@ from check_register import CheckRegister
 registry = CheckRegister()
 # import boto3 clients
 cloudformation = boto3.client("cloudformation")
-# describe all cfn stacks
+
 def describe_stacks(cache):
     response = cache.get("describe_stacks")
     if response:
@@ -36,15 +36,13 @@ def describe_stacks(cache):
 @registry.register_check("cloudformation")
 def cfn_drift_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFormation.1] CloudFormation stacks should be monitored for configuration drift"""
-    stack = describe_stacks(cache=cache)
-    myCfnStacks = stack["Stacks"]
-    for stacks in myCfnStacks:
+    for stacks in describe_stacks(cache=cache)["Stacks"]:
         stackName = str(stacks["StackName"])
-        stackId = str(stacks["StackId"])
-        stackArn = f"arn:{awsPartition}:cloudformation:{awsRegion}:{awsAccountId}:stack/{stackName}/{stackId}"
+        stackArn = str(stacks["StackId"])
         driftCheck = str(stacks["DriftInformation"]["StackDriftStatus"])
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if driftCheck != "IN_SYNC":
+            # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": stackArn + "/cloudformation-drift-check",
@@ -58,9 +56,7 @@ def cfn_drift_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
                 "Title": "[CloudFormation.1] CloudFormation stacks should be monitored for configuration drift",
-                "Description": "CloudFormation stack "
-                + stackName
-                + " has not been monitored for drift detection. Refer to the remediation instructions if this configuration is not intended",
+                "Description": f"CloudFormation stack {stackName} is either not in-sync with drift or is not monitored for drift. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "To learn more about drift detection refer to the Detecting Unmanaged Configuration Changes to Stacks and Resources section of the AWS CloudFormation User Guide",
@@ -89,14 +85,15 @@ def cfn_drift_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition
                         "ISO 27001:2013 A.11.1.2",
                         "ISO 27001:2013 A.11.2.4",
                         "ISO 27001:2013 A.11.2.5",
-                        "ISO 27001:2013 A.11.2.6",
-                    ],
+                        "ISO 27001:2013 A.11.2.6"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
         else:
+            # this is a passing check
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": stackArn + "/cloudformation-drift-check",
@@ -110,9 +107,7 @@ def cfn_drift_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[CloudFormation.1] CloudFormation stacks should be monitored for configuration drift",
-                "Description": "CloudFormation stack "
-                + stackName
-                + " has been monitored for drift detection.",
+                "Description": f"CloudFormation stack {stackName} is being monitored for drift and is in sync.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "To learn more about drift detection refer to the Detecting Unmanaged Configuration Changes to Stacks and Resources section of the AWS CloudFormation User Guide",
@@ -141,26 +136,23 @@ def cfn_drift_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition
                         "ISO 27001:2013 A.11.1.2",
                         "ISO 27001:2013 A.11.2.4",
                         "ISO 27001:2013 A.11.2.5",
-                        "ISO 27001:2013 A.11.2.6",
-                    ],
+                        "ISO 27001:2013 A.11.2.6"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
 
 @registry.register_check("cloudformation")
 def cfn_monitoring_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFormation.2] CloudFormation stacks should be monitored for changes"""
-    stack = describe_stacks(cache=cache)
-    myCfnStacks = stack["Stacks"]
-    for stacks in myCfnStacks:
+    for stacks in describe_stacks(cache=cache)["Stacks"]:
         stackName = str(stacks["StackName"])
-        stackId = str(stacks["StackId"])
-        stackArn = f"arn:{awsPartition}:cloudformation:{awsRegion}:{awsAccountId}:stack/{stackName}/{stackId}"
-        alertsCheck = str(stacks["NotificationARNs"])
+        stackArn = str(stacks["StackId"])
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        if alertsCheck == "[]":
+        if not stacks["NotificationARNs"]:
+            # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": stackArn + "/cloudformation-monitoring-check",
@@ -174,9 +166,7 @@ def cfn_monitoring_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
                 "Title": "[CloudFormation.2] CloudFormation stacks should be monitored for changes",
-                "Description": "CloudFormation stack "
-                + stackName
-                + " does not have monitoring enabled. Refer to the remediation instructions if this configuration is not intended",
+                "Description": f"CloudFormation stack {stackName} does not have monitoring enabled. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your stack should having monitoring enabled refer to the Monitor and Roll Back Stack Operations section of the AWS CloudFormation User Guide",
@@ -205,14 +195,15 @@ def cfn_monitoring_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                         "NIST SP 800-53 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
-                        "ISO 27001:2013 A.16.1.7",
-                    ],
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
         else:
+            # this is a passing check
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": stackArn + "/cloudformation-monitoring-check",
@@ -226,7 +217,7 @@ def cfn_monitoring_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[CloudFormation.2] CloudFormation stacks should be monitored for changes",
-                "Description": "CloudFormation stack " + stackName + " has monitoring enabled.",
+                "Description": f"CloudFormation stack {stackName} has monitoring enabled.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your stack should having monitoring enabled refer to the Monitor and Roll Back Stack Operations section of the AWS CloudFormation User Guide",
@@ -255,10 +246,10 @@ def cfn_monitoring_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                         "NIST SP 800-53 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
-                        "ISO 27001:2013 A.16.1.7",
-                    ],
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
