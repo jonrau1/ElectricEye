@@ -1669,14 +1669,16 @@ def rds_aurora_cluster_activity_streams_check(cache: dict, awsAccountId: str, aw
                         "Id": ddcArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "AwsRdsDbCluster": {
-                            "ActivityStreamStatus": astreamStat,
-                            "AllocatedStorage": allocStorage,
-                            "DbClusterIdentifier": dbcId,
-                            "DbSubnetGroup": dbSubnet,
-                            "Endpoint": endpt,
-                            "Engine": engine,
-                            "EngineVersion": engineVer
+                        "Details": {
+                            "AwsRdsDbCluster": {
+                                "ActivityStreamStatus": astreamStat,
+                                "AllocatedStorage": allocStorage,
+                                "DbClusterIdentifier": dbcId,
+                                "DbSubnetGroup": dbSubnet,
+                                "Endpoint": endpt,
+                                "Engine": engine,
+                                "EngineVersion": engineVer
+                            }
                         }
                     }
                 ],
@@ -1729,14 +1731,16 @@ def rds_aurora_cluster_activity_streams_check(cache: dict, awsAccountId: str, aw
                         "Id": ddcArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "AwsRdsDbCluster": {
-                            "ActivityStreamStatus": astreamStat,
-                            "AllocatedStorage": allocStorage,
-                            "DbClusterIdentifier": dbcId,
-                            "DbSubnetGroup": dbSubnet,
-                            "Endpoint": endpt,
-                            "Engine": engine,
-                            "EngineVersion": engineVer
+                        "Details": {
+                            "AwsRdsDbCluster": {
+                                "ActivityStreamStatus": astreamStat,
+                                "AllocatedStorage": allocStorage,
+                                "DbClusterIdentifier": dbcId,
+                                "DbSubnetGroup": dbSubnet,
+                                "Endpoint": endpt,
+                                "Engine": engine,
+                                "EngineVersion": engineVer
+                            }
                         }
                     }
                 ],
@@ -1807,13 +1811,15 @@ def rds_aurora_cluster_encryption_check(cache: dict, awsAccountId: str, awsRegio
                         "Id": ddcArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "AwsRdsDbCluster": {
-                            "AllocatedStorage": allocStorage,
-                            "DbClusterIdentifier": dbcId,
-                            "DbSubnetGroup": dbSubnet,
-                            "Endpoint": endpt,
-                            "Engine": engine,
-                            "EngineVersion": engineVer
+                        "Details": {
+                            "AwsRdsDbCluster": {
+                                "AllocatedStorage": allocStorage,
+                                "DbClusterIdentifier": dbcId,
+                                "DbSubnetGroup": dbSubnet,
+                                "Endpoint": endpt,
+                                "Engine": engine,
+                                "EngineVersion": engineVer
+                            }
                         }
                     }
                 ],
@@ -1865,13 +1871,15 @@ def rds_aurora_cluster_encryption_check(cache: dict, awsAccountId: str, awsRegio
                         "Id": ddcArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "AwsRdsDbCluster": {
-                            "AllocatedStorage": allocStorage,
-                            "DbClusterIdentifier": dbcId,
-                            "DbSubnetGroup": dbSubnet,
-                            "Endpoint": endpt,
-                            "Engine": engine,
-                            "EngineVersion": engineVer
+                        "Details": {
+                            "AwsRdsDbCluster": {
+                                "AllocatedStorage": allocStorage,
+                                "DbClusterIdentifier": dbcId,
+                                "DbSubnetGroup": dbSubnet,
+                                "Endpoint": endpt,
+                                "Engine": engine,
+                                "EngineVersion": engineVer
+                            }
                         }
                     }
                 ],
