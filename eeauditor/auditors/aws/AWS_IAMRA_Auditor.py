@@ -356,7 +356,7 @@ def iamra_role_trust_policy_condition_check(cache: dict, awsAccountId: str, awsR
             roleName = role.split('/')[1]
             # Get Role info
             r = iam.get_role(RoleName=roleName)
-            trustPolicy = json.loads(r["AssumeRolePolicyDocument"])
+            trustPolicy = json.loads(r["Role"]["AssumeRolePolicyDocument"])
             print(trustPolicy)
 
     finding = {}
