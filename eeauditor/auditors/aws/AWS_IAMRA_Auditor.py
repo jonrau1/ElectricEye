@@ -21,10 +21,13 @@
 import boto3
 import datetime
 from check_register import CheckRegister
+import json
 
 registry = CheckRegister()
+
 # import boto3 clients
 iamra = boto3.client("rolesanywhere")
+iam = boto3.client("iam")
 
 # Cache Trust Anchors
 def list_trust_anchors(cache):
@@ -33,6 +36,14 @@ def list_trust_anchors(cache):
         return response
     cache["list_trust_anchors"] = iamra.list_trust_anchors()
     return cache["list_trust_anchors"]
+
+# Cache Profiles
+def list_profiles(cache):
+    response = cache.get("list_profiles")
+    if response:
+        return response
+    cache["list_profiles"] = iamra.list_profiles()
+    return cache["list_profiles"]
 
 @registry.register_check("rolesanywhere")
 def iamra_self_signed_trust_anchor_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -291,6 +302,21 @@ def iamra_trust_anchor_crl_check(cache: dict, awsAccountId: str, awsRegion: str,
     except Exception as e:
         print(e)
 
+@registry.register_check("rolesanywhere")
+def iamra_profiles_session_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[IAMRA.3] IAM Roles Anywhere Profiles should contain a Session Policy"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for profile in list_profiles(cache=cache):
+        print(json.dumps(
+            profile,
+            indent=4,
+            default=str
+        ))
 
-
+@registry.register_check("rolesanywhere")
+def iamra_role_trust_policy_condition_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[IAMRA.4] IAM Roles used with IAM Roles Anywhere should contain a condition statements in the Trust Policy"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
 ###
