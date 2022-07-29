@@ -35,5 +35,6 @@ class StdoutProvider(object):
             else:
                 del parsedFinding
                 continue
-            
+    
+        del checkedIds
         return True

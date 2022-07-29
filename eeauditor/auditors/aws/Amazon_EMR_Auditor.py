@@ -38,9 +38,7 @@ def list_clusters(cache):
 @registry.register_check("emr")
 def emr_cluster_security_configuration_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EMR.1] EMR Clusters should have a security configuration specified"""
-    response = list_clusters(cache)
-    myEmrClusters = response["Clusters"]
-    for cluster in myEmrClusters:
+    for cluster in list_clusters(cache)["Clusters"]:
         clusterId = str(cluster["Id"])
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
@@ -81,9 +79,9 @@ def emr_cluster_security_configuration_check(cache: dict, awsAccountId: str, aws
                         "Region": awsRegion,
                         "Details": {
                             "Other": {
-                                "clusterId": clusterId,
-                                "clusterName": clusterName,
-                                "securityConfigurationName": secConfigName,
+                                "ClusterId": clusterId,
+                                "ClusterName": clusterName,
+                                "SecurityConfigurationName": secConfigName,
                             }
                         },
                     }
@@ -151,7 +149,7 @@ def emr_cluster_security_configuration_check(cache: dict, awsAccountId: str, aws
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {"clusterId": clusterId, "clusterName": clusterName,}
+                                "Other": {"ClusterId": clusterId, "ClusterName": clusterName,}
                             },
                         }
                     ],
@@ -192,9 +190,7 @@ def emr_cluster_security_configuration_check(cache: dict, awsAccountId: str, aws
 @registry.register_check("emr")
 def emr_security_config_encryption_in_transit_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EMR.2] EMR Cluster security configurations should enforce encryption in transit"""
-    response = list_clusters(cache)
-    myEmrClusters = response["Clusters"]
-    for cluster in myEmrClusters:
+    for cluster in list_clusters(cache)["Clusters"]:
         clusterId = str(cluster["Id"])
         try:
             response = emr.describe_cluster(ClusterId=clusterId)
@@ -249,9 +245,9 @@ def emr_security_config_encryption_in_transit_check(cache: dict, awsAccountId: s
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {
-                                            "clusterId": clusterId,
-                                            "clusterName": clusterName,
-                                            "securityConfigurationName": secConfigName,
+                                            "ClusterId": clusterId,
+                                            "ClusterName": clusterName,
+                                            "SecurityConfigurationName": secConfigName,
                                         }
                                     },
                                 }
@@ -310,9 +306,9 @@ def emr_security_config_encryption_in_transit_check(cache: dict, awsAccountId: s
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {
-                                            "clusterId": clusterId,
-                                            "clusterName": clusterName,
-                                            "securityConfigurationName": secConfigName,
+                                            "ClusterId": clusterId,
+                                            "ClusterName": clusterName,
+                                            "SecurityConfigurationName": secConfigName,
                                         }
                                     },
                                 }
@@ -350,9 +346,7 @@ def emr_security_config_encryption_in_transit_check(cache: dict, awsAccountId: s
 @registry.register_check("emr")
 def emr_security_config_encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EMR.3] EMR Cluster security configurations should enforce encryption at rest for EMRFS"""
-    response = list_clusters(cache)
-    myEmrClusters = response["Clusters"]
-    for cluster in myEmrClusters:
+    for cluster in list_clusters(cache)["Clusters"]:
         clusterId = str(cluster["Id"])
         try:
             response = emr.describe_cluster(ClusterId=clusterId)
@@ -405,9 +399,9 @@ def emr_security_config_encryption_at_rest_check(cache: dict, awsAccountId: str,
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {
-                                            "clusterId": clusterId,
-                                            "clusterName": clusterName,
-                                            "securityConfigurationName": secConfigName,
+                                            "ClusterId": clusterId,
+                                            "ClusterName": clusterName,
+                                            "SecurityConfigurationName": secConfigName,
                                         }
                                     },
                                 }
@@ -461,9 +455,9 @@ def emr_security_config_encryption_at_rest_check(cache: dict, awsAccountId: str,
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {
-                                            "clusterId": clusterId,
-                                            "clusterName": clusterName,
-                                            "securityConfigurationName": secConfigName,
+                                            "ClusterId": clusterId,
+                                            "ClusterName": clusterName,
+                                            "SecurityConfigurationName": secConfigName,
                                         }
                                     },
                                 }
@@ -496,9 +490,7 @@ def emr_security_config_encryption_at_rest_check(cache: dict, awsAccountId: str,
 @registry.register_check("emr")
 def emr_security_config_config_ebs_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EMR.4] EMR Cluster security configurations should enforce encryption at rest for EBS"""
-    response = list_clusters(cache)
-    myEmrClusters = response["Clusters"]
-    for cluster in myEmrClusters:
+    for cluster in list_clusters(cache)["Clusters"]:
         clusterId = str(cluster["Id"])
         try:
             response = emr.describe_cluster(ClusterId=clusterId)
@@ -553,9 +545,9 @@ def emr_security_config_config_ebs_encryption_check(cache: dict, awsAccountId: s
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {
-                                            "clusterId": clusterId,
-                                            "clusterName": clusterName,
-                                            "securityConfigurationName": secConfigName,
+                                            "ClusterId": clusterId,
+                                            "ClusterName": clusterName,
+                                            "SecurityConfigurationName": secConfigName,
                                         }
                                     },
                                 }
@@ -609,9 +601,9 @@ def emr_security_config_config_ebs_encryption_check(cache: dict, awsAccountId: s
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {
-                                            "clusterId": clusterId,
-                                            "clusterName": clusterName,
-                                            "securityConfigurationName": secConfigName,
+                                            "ClusterId": clusterId,
+                                            "ClusterName": clusterName,
+                                            "SecurityConfigurationName": secConfigName,
                                         }
                                     },
                                 }
@@ -667,9 +659,9 @@ def emr_security_config_config_ebs_encryption_check(cache: dict, awsAccountId: s
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {
-                                            "clusterId": clusterId,
-                                            "clusterName": clusterName,
-                                            "securityConfigurationName": secConfigName,
+                                            "ClusterId": clusterId,
+                                            "ClusterName": clusterName,
+                                            "SecurityConfigurationName": secConfigName,
                                         }
                                     },
                                 }
@@ -702,9 +694,7 @@ def emr_security_config_config_ebs_encryption_check(cache: dict, awsAccountId: s
 @registry.register_check("emr")
 def emr_security_config_kerberos_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EMR.5] EMR Cluster security configurations should enable Kerberos authentication"""
-    response = list_clusters(cache)
-    myEmrClusters = response["Clusters"]
-    for cluster in myEmrClusters:
+    for cluster in list_clusters(cache)["Clusters"]:
         clusterId = str(cluster["Id"])
         try:
             response = emr.describe_cluster(ClusterId=clusterId)
@@ -752,10 +742,9 @@ def emr_security_config_kerberos_check(cache: dict, awsAccountId: str, awsRegion
                                 "Region": awsRegion,
                                 "Details": {
                                     "Other": {
-                                        "clusterId": clusterId,
-                                        "clusterName": clusterName,
-                                        "securityConfigurationName": secConfigName,
-                                        "authenticationConfiguration": kerbCheck,
+                                        "ClusterId": clusterId,
+                                        "ClusterName": clusterName,
+                                        "SecurityConfigurationName": secConfigName
                                     }
                                 },
                             }
@@ -821,9 +810,9 @@ def emr_security_config_kerberos_check(cache: dict, awsAccountId: str, awsRegion
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {
-                                            "clusterId": clusterId,
-                                            "clusterName": clusterName,
-                                            "securityConfigurationName": secConfigName,
+                                            "ClusterId": clusterId,
+                                            "ClusterName": clusterName,
+                                            "SecurityConfigurationName": secConfigName,
                                         }
                                     },
                                 }
@@ -867,9 +856,7 @@ def emr_security_config_kerberos_check(cache: dict, awsAccountId: str, awsRegion
 @registry.register_check("emr")
 def emr_cluster_termination_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EMR.6] EMR Clusters should have termination protection enabled"""
-    response = list_clusters(cache)
-    myEmrClusters = response["Clusters"]
-    for cluster in myEmrClusters:
+    for cluster in list_clusters(cache)["Clusters"]:
         clusterId = str(cluster["Id"])
         try:
             response = emr.describe_cluster(ClusterId=clusterId)
@@ -911,7 +898,7 @@ def emr_cluster_termination_protection_check(cache: dict, awsAccountId: str, aws
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {"clusterId": clusterId, "clusterName": clusterName,}
+                                "Other": {"ClusterId": clusterId, "ClusterName": clusterName,}
                             },
                         }
                     ],
@@ -967,7 +954,7 @@ def emr_cluster_termination_protection_check(cache: dict, awsAccountId: str, aws
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {"clusterId": clusterId, "clusterName": clusterName,}
+                                "Other": {"ClusterId": clusterId, "ClusterName": clusterName,}
                             },
                         }
                     ],
@@ -998,9 +985,7 @@ def emr_cluster_termination_protection_check(cache: dict, awsAccountId: str, aws
 @registry.register_check("emr")
 def emr_cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EMR.7] EMR Clusters should have logging enabled"""
-    response = list_clusters(cache)
-    myEmrClusters = response["Clusters"]
-    for cluster in myEmrClusters:
+    for cluster in list_clusters(cache)["Clusters"]:
         clusterId = str(cluster["Id"])
         try:
             response = emr.describe_cluster(ClusterId=clusterId)
@@ -1041,9 +1026,9 @@ def emr_cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str, aw
                         "Region": awsRegion,
                         "Details": {
                             "Other": {
-                                "clusterId": clusterId,
-                                "clusterName": clusterName,
-                                "logPathUri": logUriCheck,
+                                "ClusterId": clusterId,
+                                "ClusterName": clusterName,
+                                "LogPathUri": logUriCheck,
                             }
                         },
                     }
@@ -1099,7 +1084,7 @@ def emr_cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str, aw
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
-                                "Other": {"clusterId": clusterId, "clusterName": clusterName,}
+                                "Other": {"ClusterId": clusterId, "ClusterName": clusterName,}
                             },
                         }
                     ],
@@ -1128,8 +1113,6 @@ def emr_cluster_logging_check(cache: dict, awsAccountId: str, awsRegion: str, aw
 @registry.register_check("emr")
 def emr_cluster_block_secgroup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EMR.8] EMR account-level public security group access block should be enabled"""
-    response = list_clusters(cache)
-    myEmrClusters = response["Clusters"]
     try:
         response = emr.get_block_public_access_configuration()
         blockPubSgCheck = str(
