@@ -28,7 +28,7 @@ class StdoutProvider(object):
         checkedIds = []
 
         for finding in findings:
-            print(finding)
+            print(type(finding))
             '''if finding["Id"] not in checkedIds:
                 checkedIds.append(finding["Id"])
                 print(json.dumps(finding,default=str))
