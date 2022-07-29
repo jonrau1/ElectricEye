@@ -308,20 +308,56 @@ def iamra_profiles_session_policy_check(cache: dict, awsAccountId: str, awsRegio
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for profile in list_profiles(cache)["profiles"]:
-        print(json.dumps(
-            profile,
-            indent=4,
-            default=str
-        ))
+        profileArn = profile["profileArn"]
+        profileId = profile["profileId"]
+        # determine if a session policy exists, this field is not always available
+        try:
+            sessionPolicy = profile["sessionPolicy"]
+            policySesh = True
+            del sessionPolicy
+        except KeyError:
+            policySesh = False
+        # this is a failing check
+        if policySesh == False:
+            finding = {}
+            yield finding
+        else:
+            finding = {}
+            yield finding
 
-    finding = {}
-    yield finding
+@registry.register_check("rolesanywhere")
+def iamra_profiles_managed_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[IAMRA.4] IAM Roles Anywhere Profiles should contain Managed Policies to serve as Permissions Boundaries"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for profile in list_profiles(cache)["profiles"]:
+        profileArn = profile["profileArn"]
+        profileId = profile["profileId"]
+        # list comprehension used to detect if List is empty which means no managed scope down policy
+        # this is a failing check
+        if not profile["managedPolicyArns"]:
+            finding = {}
+            yield finding
+        else:
+            finding = {}
+            yield finding
 
 @registry.register_check("rolesanywhere")
 def iamra_role_trust_policy_condition_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[IAMRA.4] IAM Roles used with IAM Roles Anywhere should contain a condition statements in the Trust Policy"""
+    """[IAMRA.5] IAM Roles used with IAM Roles Anywhere should contain a condition statements in the Trust Policy"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for profile in list_profiles(cache)["profiles"]:
+        profileArn = profile["profileArn"]
+        profileId = profile["profileId"]
+        # loop through IAM Roles
+        for role in profile["roleArns"]:
+            roleName = role.split('/')[1]
+            # Get Role info
+            r = iam.get_role(RoleName=roleName)
+            trustPolicy = json.loads(r["AssumeRolePolicyDocument"])
+            print(trustPolicy)
 
     finding = {}
     yield finding
