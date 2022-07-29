@@ -52,9 +52,9 @@ def iamra_self_signed_trust_anchor_check(cache: dict, awsAccountId: str, awsRegi
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for ta in list_trust_anchors(cache)["trustAnchors"]:
         try:
-            taArn = ta['trustAnchorArn']
-            taId = ta['trustAnchorId']
-            taCertSourceType = ta['source']['sourceType']
+            taArn = ta["trustAnchorArn"]
+            taId = ta["trustAnchorId"]
+            taCertSourceType = ta["source"]["sourceType"]
             # This is a failing check
             if taCertSourceType == "SELF_SIGNED_REPOSITORY":
                 finding = {
@@ -179,16 +179,16 @@ def iamra_trust_anchor_crl_check(cache: dict, awsAccountId: str, awsRegion: str,
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # Write a list of IAMRA TA ARNs that are associated with CRLs to another list to compare to the main list of ARNs
     iamraCrlTaArnList = []
-    for crl in iamra.list_crls()['crls']:
-        crlTaArn = crl['trustAnchorArn']
+    for crl in iamra.list_crls()["crls"]:
+        crlTaArn = crl["trustAnchorArn"]
         # this is a failing check
         if crlTaArn not in iamraCrlTaArnList:
             iamraCrlTaArnList.append(crlTaArn)
     # Assess if the TA ARNs are associated with CRLs
     try:
         for ta in list_trust_anchors(cache)["trustAnchors"]:
-            taArn = ta['trustAnchorArn']
-            taId = ta['trustAnchorId']
+            taArn = ta["trustAnchorArn"]
+            taId = ta["trustAnchorId"]
             # this is a failing check
             if taArn not in iamraCrlTaArnList:
                 finding = {
@@ -353,11 +353,13 @@ def iamra_role_trust_policy_condition_check(cache: dict, awsAccountId: str, awsR
         profileId = profile["profileId"]
         # loop through IAM Roles
         for role in profile["roleArns"]:
-            roleName = role.split('/')[1]
+            roleName = role.split("/")[1]
             # Get Role info
             r = iam.get_role(RoleName=roleName)
             trustPolicy = json.dumps(r["Role"]["AssumeRolePolicyDocument"])
-            print(trustPolicy)
+            for statement in trustPolicy["Statement"]:
+                if statement.get("Condition") == None:
+                    print('WE HAVE NO CONDITON')
 
     finding = {}
     yield finding
