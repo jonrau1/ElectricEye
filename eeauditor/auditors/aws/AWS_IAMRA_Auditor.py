@@ -69,7 +69,7 @@ def iamra_self_signed_trust_anchor_check(cache: dict, awsAccountId: str, awsRegi
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "MEDIUM"},
                     "Confidence": 99,
-                    "Title": "[IAM.1] IAM Access Keys should be rotated every 90 days",
+                    "Title": "[IAMRA.1] IAM Roles Anywhere Trust Anchors should not use self-signed certificates",
                     "Description": f"IAM Roles Anywhere Trust Anchor {taId} uses a self-signed certificate. Self-signed certificates are a viable option for IAM Roles Anywhere Trust Anchors but are natively untrusted and can be easily manipulated by adveseraries. Consider using a trusted Certificate Authority or AWS Certificate Manager (ACM) Private Certificate Authority (PCA) to sign your X509 certificates in used by IAM Roles Anywhere. Refer to the remediation section if this behavior is not intended.",
                     "Remediation": {
                         "Recommendation": {
@@ -126,7 +126,7 @@ def iamra_self_signed_trust_anchor_check(cache: dict, awsAccountId: str, awsRegi
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
-                    "Title": "[IAM.1] IAM Access Keys should be rotated every 90 days",
+                    "Title": "[IAMRA.1] IAM Roles Anywhere Trust Anchors should not use self-signed certificates",
                     "Description": f"IAM Roles Anywhere Trust Anchor {taId} does not use a self-signed certificate.",
                     "Remediation": {
                         "Recommendation": {
@@ -583,18 +583,141 @@ def iamra_role_trust_policy_condition_check(cache: dict, awsAccountId: str, awsR
     """[IAMRA.5] IAM Roles used with IAM Roles Anywhere Policies should contain a condition statement in the Trust Policy"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    # Create an empty list to add the Role Arns already evaluated as to avoid duplicative runs
+    seenRoles = []
     for profile in list_profiles(cache)["profiles"]:
+        profileName = profile["name"]
         # loop through IAM Roles
         for role in profile["roleArns"]:
-            roleName = role.split("/")[1]
-            # Get Role info
-            r = iam.get_role(RoleName=roleName)
-            trustPolicy = json.loads(json.dumps(r["Role"]["AssumeRolePolicyDocument"]))
-            for statement in trustPolicy["Statement"]:
-                # this is a failing check
-                if statement.get("Condition") == None:
-                    finding = {}
-                    yield finding
-                else:
-                    finding = {}
-                    yield finding
+            if role not in seenRoles:
+                seenRoles.append(role)
+                roleArn = role
+                # Parse the name of the role by splitting it out of the ARN
+                roleName = role.split("/")[1]
+                # Get Role info
+                r = iam.get_role(RoleName=roleName)
+                trustPolicy = json.loads(json.dumps(r["Role"]["AssumeRolePolicyDocument"]))
+                for statement in trustPolicy["Statement"]:
+                    # this is a failing check
+                    if statement.get("Condition") == None:
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": f"{roleArn}/iamra-role-trust-policy-condition-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": roleArn,
+                            "AwsAccountId": awsAccountId,
+                            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "HIGH"},
+                            "Confidence": 99,
+                            "Title": "[IAMRA.5] IAM Roles used with IAM Roles Anywhere Policies should contain a condition statement in the Trust Policy",
+                            "Description": f"IAM Role {roleName} associated with IAM Roles Anywhere Profile {profileName} does not contain a Condition statement within its Trust Policy. AWS strongly recommendeds that trust policies include Condition statements to further refine access to the role such as via the aws:PrincipalTag/x509Subject condition. Refer to the remediation section if this behavior is not intended.",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "For information on using Condition statements with IAM Roles Anywhere Trust Policies refer to the Mapping identities to your workloads with AWS Identity and Access Management Roles Anywhere section of the AWS IAM Roles Anywhere User Guide",
+                                    "Url": "https://docs.aws.amazon.com/rolesanywhere/latest/userguide/workload-identities.html",
+                                }
+                            },
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsIamRole",
+                                    "Id": roleArn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "AwsIamRole": {
+                                            "RoleName": roleName
+                                        },
+                                        "Other": {
+                                            "ProfileName": profileName
+                                        }
+                                    }
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "FAILED",
+                                "RelatedRequirements": [
+                                    "NIST CSF PR.AC-3",
+                                    "NIST SP 800-53 AC-1",
+                                    "NIST SP 800-53 AC-17",
+                                    "NIST SP 800-53 AC-19",
+                                    "NIST SP 800-53 AC-20",
+                                    "NIST SP 800-53 SC-15",
+                                    "AICPA TSC CC6.6",
+                                    "ISO 27001:2013 A.6.2.1",
+                                    "ISO 27001:2013 A.6.2.2",
+                                    "ISO 27001:2013 A.11.2.6",
+                                    "ISO 27001:2013 A.13.1.1",
+                                    "ISO 27001:2013 A.13.2.1"
+                                ]
+                            },
+                            "Workflow": {"Status": "NEW"},
+                            "RecordState": "ACTIVE"
+                        }
+                        yield finding
+                    # this is a passing check
+                    else:
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": f"{roleArn}/iamra-role-trust-policy-condition-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": roleArn,
+                            "AwsAccountId": awsAccountId,
+                            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "INFORMATIONAL"},
+                            "Confidence": 99,
+                            "Title": "[IAMRA.5] IAM Roles used with IAM Roles Anywhere Policies should contain a condition statement in the Trust Policy",
+                            "Description": f"IAM Role {roleName} associated with IAM Roles Anywhere Profile {profileName} does not contain a Condition statement within its Trust Policy. AWS strongly recommendeds that trust policies include Condition statements to further refine access to the role such as via the aws:PrincipalTag/x509Subject condition. Refer to the remediation section if this behavior is not intended.",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "For information on using Condition statements with IAM Roles Anywhere Trust Policies refer to the Mapping identities to your workloads with AWS Identity and Access Management Roles Anywhere section of the AWS IAM Roles Anywhere User Guide",
+                                    "Url": "https://docs.aws.amazon.com/rolesanywhere/latest/userguide/workload-identities.html",
+                                }
+                            },
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsIamRole",
+                                    "Id": roleArn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "AwsIamRole": {
+                                            "RoleName": roleName
+                                        },
+                                        "Other": {
+                                            "ProfileName": profileName
+                                        }
+                                    }
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "PASSED",
+                                "RelatedRequirements": [
+                                    "NIST CSF PR.AC-3",
+                                    "NIST SP 800-53 AC-1",
+                                    "NIST SP 800-53 AC-17",
+                                    "NIST SP 800-53 AC-19",
+                                    "NIST SP 800-53 AC-20",
+                                    "NIST SP 800-53 SC-15",
+                                    "AICPA TSC CC6.6",
+                                    "ISO 27001:2013 A.6.2.1",
+                                    "ISO 27001:2013 A.6.2.2",
+                                    "ISO 27001:2013 A.11.2.6",
+                                    "ISO 27001:2013 A.13.1.1",
+                                    "ISO 27001:2013 A.13.2.1"
+                                ]
+                            },
+                            "Workflow": {"Status": "RESOLVED"},
+                            "RecordState": "ARCHIVED"
+                        }
+                        yield finding
+            else:
+                # ignore Roles we have already evaluated - regardless how many profiles they're associated with
+                continue           
