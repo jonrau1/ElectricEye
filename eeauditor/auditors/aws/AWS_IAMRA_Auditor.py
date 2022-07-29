@@ -50,7 +50,7 @@ def iamra_self_signed_trust_anchor_check(cache: dict, awsAccountId: str, awsRegi
     """[IAMRA.1] IAM Roles Anywhere Trust Anchors should not use self-signed certificates"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for ta in list_trust_anchors(cache=cache):
+    for ta in list_trust_anchors(cache)["trustAnchors"]:
         try:
             taArn = ta['trustAnchorArn']
             taId = ta['trustAnchorId']
@@ -186,7 +186,7 @@ def iamra_trust_anchor_crl_check(cache: dict, awsAccountId: str, awsRegion: str,
             iamraCrlTaArnList.append(crlTaArn)
     # Assess if the TA ARNs are associated with CRLs
     try:
-        for ta in list_trust_anchors(cache=cache):
+        for ta in list_trust_anchors(cache)["trustAnchors"]:
             taArn = ta['trustAnchorArn']
             taId = ta['trustAnchorId']
             # this is a failing check
@@ -307,16 +307,22 @@ def iamra_profiles_session_policy_check(cache: dict, awsAccountId: str, awsRegio
     """[IAMRA.3] IAM Roles Anywhere Profiles should contain a Session Policy"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for profile in list_profiles(cache=cache):
+    for profile in list_profiles(cache)["profiles"]:
         print(json.dumps(
             profile,
             indent=4,
             default=str
         ))
 
+    finding = {}
+    yield finding
+
 @registry.register_check("rolesanywhere")
 def iamra_role_trust_policy_condition_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[IAMRA.4] IAM Roles used with IAM Roles Anywhere should contain a condition statements in the Trust Policy"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+
+    finding = {}
+    yield finding
 ###
