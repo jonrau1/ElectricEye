@@ -70,7 +70,7 @@ def iamra_self_signed_trust_anchor_check(cache: dict, awsAccountId: str, awsRegi
                     "Severity": {"Label": "MEDIUM"},
                     "Confidence": 99,
                     "Title": "[IAM.1] IAM Access Keys should be rotated every 90 days",
-                    "Description": f"IAM Roles Anywhere Trust Anchor {taId} uses a self-signed certificate. Self-signed certificates are a viable option for IAM Roles Anywhere Trust Anchors but are natively untrusted and can be easily manipulated by adveseraries. Consider using a trusted Certificate Authority or AWS Certificate Manager (ACM) Private Certificate Authority (PCA) to sign your X509 certificates in used by IAM Roles Anywhere. Refer to the remediation section for more information.",
+                    "Description": f"IAM Roles Anywhere Trust Anchor {taId} uses a self-signed certificate. Self-signed certificates are a viable option for IAM Roles Anywhere Trust Anchors but are natively untrusted and can be easily manipulated by adveseraries. Consider using a trusted Certificate Authority or AWS Certificate Manager (ACM) Private Certificate Authority (PCA) to sign your X509 certificates in used by IAM Roles Anywhere. Refer to the remediation section if this behavior is not intended.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For information on IAMRA Trust Anchors refer to the Establish trust section of the AWS IAM Roles Anywhere User Guide",
@@ -80,7 +80,7 @@ def iamra_self_signed_trust_anchor_check(cache: dict, awsAccountId: str, awsRegi
                     "ProductFields": {"Product Name": "ElectricEye"},
                     "Resources": [
                         {
-                            "Type": "AwsIamAccessKey",
+                            "Type": "AwsIamRolesAnywhereTrustAnchor",
                             "Id": taArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
@@ -137,7 +137,7 @@ def iamra_self_signed_trust_anchor_check(cache: dict, awsAccountId: str, awsRegi
                     "ProductFields": {"Product Name": "ElectricEye"},
                     "Resources": [
                         {
-                            "Type": "AwsIamAccessKey",
+                            "Type": "AwsIamRolesAnywhereTrustAnchor",
                             "Id": taArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
@@ -204,7 +204,7 @@ def iamra_trust_anchor_crl_check(cache: dict, awsAccountId: str, awsRegion: str,
                     "Severity": {"Label": "MEDIUM"},
                     "Confidence": 99,
                     "Title": "[IAMRA.2] IAM Roles Anywhere Trust Anchors should have a CRL associated",
-                    "Description": f"IAM Roles Anywhere Trust Anchor {taId} does not have a Certificate Revocation List (CRL) associated with it. Certificate revocation is supported through the use of imported certificate revocation lists (CRLs). For more information refer to the remediation guidance.",
+                    "Description": f"IAM Roles Anywhere Trust Anchor {taId} does not have a Certificate Revocation List (CRL) associated with it. Certificate revocation is supported through the use of imported certificate revocation lists (CRLs). Refer to the remediation section if this behavior is not intended.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For information on CRLs refer to the Revocation section of the AWS IAM Roles Anywhere User Guide",
@@ -214,7 +214,7 @@ def iamra_trust_anchor_crl_check(cache: dict, awsAccountId: str, awsRegion: str,
                     "ProductFields": {"Product Name": "ElectricEye"},
                     "Resources": [
                         {
-                            "Type": "AwsIamAccessKey",
+                            "Type": "AwsIamRolesAnywhereTrustAnchor",
                             "Id": taArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
@@ -269,7 +269,7 @@ def iamra_trust_anchor_crl_check(cache: dict, awsAccountId: str, awsRegion: str,
                     "ProductFields": {"Product Name": "ElectricEye"},
                     "Resources": [
                         {
-                            "Type": "AwsIamAccessKey",
+                            "Type": "AwsIamRolesAnywhereTrustAnchor",
                             "Id": taArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
@@ -309,6 +309,7 @@ def iamra_profiles_session_policy_check(cache: dict, awsAccountId: str, awsRegio
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for profile in list_profiles(cache)["profiles"]:
         profileArn = profile["profileArn"]
+        profileName = profile["name"]
         profileId = profile["profileId"]
         # determine if a session policy exists, this field is not always available
         try:
@@ -319,38 +320,270 @@ def iamra_profiles_session_policy_check(cache: dict, awsAccountId: str, awsRegio
             policySesh = False
         # this is a failing check
         if policySesh == False:
-            finding = {}
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{profileArn}/iamra-profile-session-policy-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": profileArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[IAMRA.3] IAM Roles Anywhere Profiles should contain a Session Policy",
+                "Description": f"IAM Roles Anywhere Profile {profileName} does not have a Session Policy associated with it. A session policy applies to the trust boundary of the vended session credentials for further restriction and scopes-down the effective permissions granted to the session. Refer to the remediation section if this behavior is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on Session Policies refer to the Session policies section of the AWS Identity and Access Management User Guide",
+                        "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#policies_session"
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsIamRolesAnywhereProfile",
+                        "Id": profileArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "Name": profileName,
+                                "ProfileId": profileId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-4",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-2",
+                        "NIST SP 800-53 AC-3",
+                        "NIST SP 800-53 AC-5",
+                        "NIST SP 800-53 AC-6",
+                        "NIST SP 800-53 AC-14",
+                        "NIST SP 800-53 AC-16",
+                        "NIST SP 800-53 AC-24",
+                        "AICPA TSC CC6.3",
+                        "ISO 27001:2013 A.6.1.2",
+                        "ISO 27001:2013 A.9.1.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.4.1",
+                        "ISO 27001:2013 A.9.4.4",
+                        "ISO 27001:2013 A.9.4.5"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
             yield finding
+        # this is a passing check
         else:
-            finding = {}
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{profileArn}/iamra-profile-session-policy-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": profileArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[IAMRA.3] IAM Roles Anywhere Profiles should contain a Session Policy",
+                "Description": f"IAM Roles Anywhere Profile {profileName} has a Session Policy associated with it.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on Session Policies refer to the Session policies section of the AWS Identity and Access Management User Guide",
+                        "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#policies_session"
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsIamRolesAnywhereProfile",
+                        "Id": profileArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "Name": profileName,
+                                "ProfileId": profileId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-4",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-2",
+                        "NIST SP 800-53 AC-3",
+                        "NIST SP 800-53 AC-5",
+                        "NIST SP 800-53 AC-6",
+                        "NIST SP 800-53 AC-14",
+                        "NIST SP 800-53 AC-16",
+                        "NIST SP 800-53 AC-24",
+                        "AICPA TSC CC6.3",
+                        "ISO 27001:2013 A.6.1.2",
+                        "ISO 27001:2013 A.9.1.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.4.1",
+                        "ISO 27001:2013 A.9.4.4",
+                        "ISO 27001:2013 A.9.4.5"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
             yield finding
 
 @registry.register_check("rolesanywhere")
 def iamra_profiles_managed_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[IAMRA.4] IAM Roles Anywhere Profiles should contain Managed Policies to serve as Permissions Boundaries"""
+    """[IAMRA.4] IAM Roles Anywhere Profiles should contain Managed Policies"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for profile in list_profiles(cache)["profiles"]:
         profileArn = profile["profileArn"]
+        profileName = profile["name"]
         profileId = profile["profileId"]
         # list comprehension used to detect if List is empty which means no managed scope down policy
         # this is a failing check
         if not profile["managedPolicyArns"]:
-            finding = {}
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{profileArn}/iamra-profile-managed-policy-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": profileArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[IAMRA.4] IAM Roles Anywhere Profiles should contain Managed Policies",
+                "Description": f"IAM Roles Anywhere Profile {profileName} does not have any Managed Policies associated with it. A managed policy applies to the trust boundary of the vended session credentials for further restriction and scopes-down the effective permissions granted to the session. Rather than using an in-line Session Policy, Managed Policies are simply associations with AWS IAM Policies. Refer to the remediation section if this behavior is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on Session Policies refer to the Session policies section of the AWS Identity and Access Management User Guide",
+                        "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#policies_session"
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsIamRolesAnywhereProfile",
+                        "Id": profileArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "Name": profileName,
+                                "ProfileId": profileId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-4",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-2",
+                        "NIST SP 800-53 AC-3",
+                        "NIST SP 800-53 AC-5",
+                        "NIST SP 800-53 AC-6",
+                        "NIST SP 800-53 AC-14",
+                        "NIST SP 800-53 AC-16",
+                        "NIST SP 800-53 AC-24",
+                        "AICPA TSC CC6.3",
+                        "ISO 27001:2013 A.6.1.2",
+                        "ISO 27001:2013 A.9.1.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.4.1",
+                        "ISO 27001:2013 A.9.4.4",
+                        "ISO 27001:2013 A.9.4.5"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
             yield finding
+        # this is a passing check
         else:
-            finding = {}
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{profileArn}/iamra-profile-managed-policy-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": profileArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[IAMRA.4] IAM Roles Anywhere Profiles should contain Managed Policies",
+                "Description": f"IAM Roles Anywhere Profile {profileName} does not have any Managed Policies associated with it. A managed policy applies to the trust boundary of the vended session credentials for further restriction and scopes-down the effective permissions granted to the session. Rather than using an in-line Session Policy, Managed Policies are simply associations with AWS IAM Policies. Refer to the remediation section if this behavior is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on Session Policies refer to the Session policies section of the AWS Identity and Access Management User Guide",
+                        "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#policies_session"
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsIamRolesAnywhereProfile",
+                        "Id": profileArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "Name": profileName,
+                                "ProfileId": profileId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-4",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-2",
+                        "NIST SP 800-53 AC-3",
+                        "NIST SP 800-53 AC-5",
+                        "NIST SP 800-53 AC-6",
+                        "NIST SP 800-53 AC-14",
+                        "NIST SP 800-53 AC-16",
+                        "NIST SP 800-53 AC-24",
+                        "AICPA TSC CC6.3",
+                        "ISO 27001:2013 A.6.1.2",
+                        "ISO 27001:2013 A.9.1.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.4.1",
+                        "ISO 27001:2013 A.9.4.4",
+                        "ISO 27001:2013 A.9.4.5"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
             yield finding
 
 @registry.register_check("rolesanywhere")
 def iamra_role_trust_policy_condition_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[IAMRA.5] IAM Roles used with IAM Roles Anywhere should contain a condition statements in the Trust Policy"""
+    """[IAMRA.5] IAM Roles used with IAM Roles Anywhere Policies should contain a condition statement in the Trust Policy"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for profile in list_profiles(cache)["profiles"]:
-        profileArn = profile["profileArn"]
-        profileId = profile["profileId"]
         # loop through IAM Roles
         for role in profile["roleArns"]:
             roleName = role.split("/")[1]
@@ -358,9 +591,10 @@ def iamra_role_trust_policy_condition_check(cache: dict, awsAccountId: str, awsR
             r = iam.get_role(RoleName=roleName)
             trustPolicy = json.loads(json.dumps(r["Role"]["AssumeRolePolicyDocument"]))
             for statement in trustPolicy["Statement"]:
+                # this is a failing check
                 if statement.get("Condition") == None:
-                    print('WE HAVE NO CONDITON')
-
-    finding = {}
-    yield finding
-###
+                    finding = {}
+                    yield finding
+                else:
+                    finding = {}
+                    yield finding
