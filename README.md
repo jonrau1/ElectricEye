@@ -513,9 +513,9 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 ## Supported Services and Checks
 
 These are the following services and checks perform by each Auditor, there are currently...
-- :boom: **526 Checks** :boom:
-- :exclamation: **95 AWS supported services/components** :exclamation:
-- :fire: **73 Auditors** :fire:
+- :boom: **531 Checks** :boom:
+- :exclamation: **97 AWS supported services/components** :exclamation:
+- :fire: **74 Auditors** :fire:
 
 There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
@@ -844,6 +844,11 @@ There are currently **62** supported response and remediation Playbooks with cov
 | AWS_IAM_Auditor.py | IAM User | Do User IAM inline policies adhere to least privilege principles |
 | AWS_IAM_Auditor.py | IAM Group | Do Group IAM inline policies adhere to least privilege principles |
 | AWS_IAM_Auditor.py | IAM Role | Do Role IAM inline policies adhere to least privilege principles |
+| AWS_IAMRA_Auditor.py | IAMRA Trust Anchor | Do Trust Anchors contain self-signed certificates |
+| AWS_IAMRA_Auditor.py | IAMRA Trust Anchor | Do Trust Anchors use a Certificate Revocation List (CRL) |
+| AWS_IAMRA_Auditor.py | IAMRA Profile | Do IAMRA Profiles specify a Session Policy |
+| AWS_IAMRA_Auditor.py | IAMRA Profile | Do IAMRA Profiles specify a Permission Boundary |
+| AWS_IAMRA_Auditor.py | IAM Role | Do IAM Roles associated with IAMRA use Condition statements in the Trust Policy |
 | AWS_Keyspaces_Auditor.py | Keyspaces table | Are Keyspaces Tables encrypted with a KMS CMK |
 | AWS_Keyspaces_Auditor.py | Keyspaces table | Do Keyspaces Tables have PTR enabled |
 | AWS_Keyspaces_Auditor.py | Keyspaces table | Are Keyspaces Tables in an unusable state |
