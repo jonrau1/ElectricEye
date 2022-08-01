@@ -26,13 +26,31 @@ registry = CheckRegister()
 
 documentdb = boto3.client("docdb")
 
-
+# Get all DB Instances
 def describe_db_instances(cache):
     response = cache.get("describe_db_instances")
     if response:
         return response
     cache["describe_db_instances"] = documentdb.describe_db_instances()
     return cache["describe_db_instances"]
+
+# Get all DB Clusters
+def describe_db_clusters(cache):
+    response = cache.get("describe_db_clusters")
+    if response:
+        return response
+    cache["describe_db_clusters"] = documentdb.describe_db_clusters(
+        Filters=[{"Name": "engine", "Values": ["docdb"]}]
+    )
+    return cache["describe_db_clusters"]
+
+# Get all DB Cluster Parameter Groups
+def describe_db_cluster_parameter_groups(cache):
+    response = cache.get("describe_db_cluster_parameter_groups")
+    if response:
+        return response
+    cache["describe_db_cluster_parameter_groups"] = documentdb.describe_db_cluster_parameter_groups()
+    return cache["describe_db_cluster_parameter_groups"]
 
 
 @registry.register_check("docdb")
@@ -159,7 +177,6 @@ def docdb_public_instance_check(cache: dict, awsAccountId: str, awsRegion: str, 
             }
             yield finding
 
-
 @registry.register_check("docdb")
 def docdb_instance_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DocumentDB.2] DocumentDB instances should be encrypted"""
@@ -271,7 +288,6 @@ def docdb_instance_encryption_check(cache: dict, awsAccountId: str, awsRegion: s
                 "RecordState": "ARCHIVED",
             }
             yield finding
-
 
 @registry.register_check("docdb")
 def docdb_instance_audit_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -388,19 +404,15 @@ def docdb_instance_audit_logging_check(cache: dict, awsAccountId: str, awsRegion
             }
             yield finding
 
-
 @registry.register_check("docdb")
 def docdb_cluster_multiaz_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DocumentDB.4] DocumentDB clusters should be configured for Multi-AZ"""
-    # find document db clusters
-    response = documentdb.describe_db_clusters(MaxRecords=100)
-    myDocDbClusters = response["DBClusters"]
-    for docdbcluster in myDocDbClusters:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for docdbcluster in describe_db_clusters(cache)["DBClusters"]:
         docdbclusterId = str(docdbcluster["DBClusterIdentifier"])
         docdbClusterArn = str(docdbcluster["DBClusterArn"])
         multiAzCheck = str(docdbcluster["MultiAZ"])
-        # ISO Time
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if multiAzCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -510,19 +522,15 @@ def docdb_cluster_multiaz_check(cache: dict, awsAccountId: str, awsRegion: str, 
             }
             yield finding
 
-
 @registry.register_check("docdb")
 def docdb_cluster_deletion_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DocumentDB.5] DocumentDB clusters should have deletion protection enabled"""
-    # find document db instances
-    response = documentdb.describe_db_clusters(MaxRecords=100)
-    myDocDbClusters = response["DBClusters"]
-    for docdbcluster in myDocDbClusters:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for docdbcluster in describe_db_clusters(cache)["DBClusters"]:
         docdbclusterId = str(docdbcluster["DBClusterIdentifier"])
         docdbClusterArn = str(docdbcluster["DBClusterArn"])
         multiAzCheck = str(docdbcluster["MultiAZ"])
-        # ISO Time
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if multiAzCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -632,28 +640,20 @@ def docdb_cluster_deletion_protection_check(cache: dict, awsAccountId: str, awsR
             }
             yield finding
 
-
 @registry.register_check("docdb")
 def documentdb_parameter_group_audit_log_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DocumentDB.6] DocumentDB cluster parameter groups should enforce audit logging for DocumentDB databases"""
-    response = documentdb.describe_db_cluster_parameter_groups()
-    dbClusterParameters = response["DBClusterParameterGroups"]
-    for parametergroup in dbClusterParameters:
-        if str(parametergroup["DBParameterGroupFamily"]) == "docdb3.6":
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for parametergroup in describe_db_cluster_parameter_groups(cache)["DBClusterParameterGroups"]:
+        if str(parametergroup["DBParameterGroupFamily"]) == ("docdb3.6" or "docdb4.0"):
             parameterGroupName = str(parametergroup["DBClusterParameterGroupName"])
             parameterGroupArn = str(parametergroup["DBClusterParameterGroupArn"])
-            response = documentdb.describe_db_cluster_parameters(
-                DBClusterParameterGroupName=parameterGroupName
-            )
+            # Parse the parameters in the PG
+            response = documentdb.describe_db_cluster_parameters(DBClusterParameterGroupName=parameterGroupName)
             for parameters in response["Parameters"]:
                 if str(parameters["ParameterName"]) == "audit_logs":
                     auditLogCheck = str(parameters["ParameterValue"])
-                    # ISO Time
-                    iso8601Time = (
-                        datetime.datetime.utcnow()
-                        .replace(tzinfo=datetime.timezone.utc)
-                        .isoformat()
-                    )
                     if auditLogCheck == "disabled":
                         finding = {
                             "SchemaVersion": "2018-10-08",
@@ -768,33 +768,27 @@ def documentdb_parameter_group_audit_log_check(cache: dict, awsAccountId: str, a
                             "RecordState": "ARCHIVED",
                         }
                         yield finding
+                    # complete the loop
+                    break
                 else:
-                    pass
+                    continue
         else:
-            pass
-
+            continue
 
 @registry.register_check("docdb")
 def documentdb_parameter_group_tls_enforcement_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DocumentDB.7] DocumentDB cluster parameter groups should enforce TLS connections to DocumentDB databases"""
-    response = documentdb.describe_db_cluster_parameter_groups()
-    dbClusterParameters = response["DBClusterParameterGroups"]
-    for parametergroup in dbClusterParameters:
-        if str(parametergroup["DBParameterGroupFamily"]) == "docdb3.6":
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for parametergroup in describe_db_cluster_parameter_groups(cache)["DBClusterParameterGroups"]:
+        if str(parametergroup["DBParameterGroupFamily"]) == ("docdb3.6" or "docdb4.0"):
             parameterGroupName = str(parametergroup["DBClusterParameterGroupName"])
             parameterGroupArn = str(parametergroup["DBClusterParameterGroupArn"])
-            response = documentdb.describe_db_cluster_parameters(
-                DBClusterParameterGroupName=parameterGroupName
-            )
+            # Parse the parameters in the PG
+            response = documentdb.describe_db_cluster_parameters(DBClusterParameterGroupName=parameterGroupName)
             for parameters in response["Parameters"]:
                 if str(parameters["ParameterName"]) == "tls":
                     tlsEnforcementCheck = str(parameters["ParameterValue"])
-                    # ISO Time
-                    iso8601Time = (
-                        datetime.datetime.utcnow()
-                        .replace(tzinfo=datetime.timezone.utc)
-                        .isoformat()
-                    )
                     if tlsEnforcementCheck == "disabled":
                         finding = {
                             "SchemaVersion": "2018-10-08",
@@ -911,27 +905,26 @@ def documentdb_parameter_group_tls_enforcement_check(cache: dict, awsAccountId: 
                             "RecordState": "ARCHIVED",
                         }
                         yield finding
+                    # complete the loop
+                    break
                 else:
-                    pass
+                    continue
         else:
-            pass
-
+            continue
 
 @registry.register_check("docdb")
 def documentdb_cluster_snapshot_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DocumentDB.8] DocumentDB cluster snapshots should be encrypted"""
-    response = documentdb.describe_db_clusters(Filters=[{"Name": "engine", "Values": ["docdb"]}])
-    for clusters in response["DBClusters"]:
-        clusterId = str(clusters["DBClusterIdentifier"])
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for docdbcluster in describe_db_clusters(cache)["DBClusters"]:
+        clusterId = str(docdbcluster["DBClusterIdentifier"])
         response = documentdb.describe_db_cluster_snapshots(DBClusterIdentifier=clusterId)
         for snapshots in response["DBClusterSnapshots"]:
             clusterSnapshotId = str(snapshots["DBClusterSnapshotIdentifier"])
             clusterSnapshotArn = str(snapshots["DBClusterSnapshotArn"])
             encryptionCheck = str(snapshots["StorageEncrypted"])
-            # ISO Time
-            iso8601Time = (
-                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-            )
+            # this is a failing check
             if encryptionCheck == "False":
                 finding = {
                     "SchemaVersion": "2018-10-08",
@@ -983,6 +976,7 @@ def documentdb_cluster_snapshot_encryption_check(cache: dict, awsAccountId: str,
                     "RecordState": "ACTIVE",
                 }
                 yield finding
+            # this is a passing check
             else:
                 finding = {
                     "SchemaVersion": "2018-10-08",
@@ -1035,36 +1029,28 @@ def documentdb_cluster_snapshot_encryption_check(cache: dict, awsAccountId: str,
                 }
                 yield finding
 
-
 @registry.register_check("docdb")
 def documentdb_cluster_snapshot_public_share_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DocumentDB.9] DocumentDB cluster snapshots should not be publicly shared"""
-    response = documentdb.describe_db_clusters(Filters=[{"Name": "engine", "Values": ["docdb"]}])
-    for clusters in response["DBClusters"]:
-        clusterId = str(clusters["DBClusterIdentifier"])
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for docdbcluster in describe_db_clusters(cache)["DBClusters"]:
+        clusterId = str(docdbcluster["DBClusterIdentifier"])
         response = documentdb.describe_db_cluster_snapshots(DBClusterIdentifier=clusterId)
         for snapshots in response["DBClusterSnapshots"]:
             clusterSnapshotId = str(snapshots["DBClusterSnapshotIdentifier"])
             clusterSnapshotArn = str(snapshots["DBClusterSnapshotArn"])
-            response = documentdb.describe_db_cluster_snapshot_attributes(
-                DBClusterSnapshotIdentifier=clusterSnapshotId
-            )
-            for snapshotattributes in response["DBClusterSnapshotAttributesResult"][
-                "DBClusterSnapshotAttributes"
-            ]:
+            response = documentdb.describe_db_cluster_snapshot_attributes(DBClusterSnapshotIdentifier=clusterSnapshotId)
+            for snapshotattributes in response["DBClusterSnapshotAttributesResult"]["DBClusterSnapshotAttributes"]:
                 if str(snapshotattributes["AttributeName"]) == "restore":
-                    valueCheck = str(snapshotattributes["AttributeValues"])
-                    # ISO Time
-                    iso8601Time = (
-                        datetime.datetime.utcnow()
-                        .replace(tzinfo=datetime.timezone.utc)
-                        .isoformat()
-                    )
-                    if valueCheck == "['all']":
+                    # list comprehension to see if "all" is within the attributes - which means "all of everyone on AWS" lol...
+                    # this is a failing check
+                    if "all" in snapshotattributes["AttributeValues"]:
                         finding = {
                             "SchemaVersion": "2018-10-08",
                             "Id": clusterSnapshotArn
                             + "/docdb-cluster-snapshot-public-share-check",
+                            "Id": f"{clusterSnapshotArn}/docdb-cluster-snapshot-public-share-check",
                             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": clusterSnapshotArn,
                             "AwsAccountId": awsAccountId,
@@ -1118,6 +1104,7 @@ def documentdb_cluster_snapshot_public_share_check(cache: dict, awsAccountId: st
                             "RecordState": "ACTIVE",
                         }
                         yield finding
+                    # this is a passing check
                     else:
                         finding = {
                             "SchemaVersion": "2018-10-08",
@@ -1176,5 +1163,7 @@ def documentdb_cluster_snapshot_public_share_check(cache: dict, awsAccountId: st
                             "RecordState": "ARCHIVED",
                         }
                         yield finding
+                    # complete the loop
+                    break
                 else:
-                    pass
+                    continue

@@ -82,7 +82,21 @@ def neptune_instance_multi_az_check(cache: dict, awsAccountId: str, awsRegion: s
                         "Id": neptuneInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"DBInstanceIdentifier": neptuneDbId}}
+                        "Details": {
+                            "Other": {
+                                "DBInstanceIdentifier": neptuneDbId,
+                                "DBInstanceClass": instances["DBInstanceClass"],
+                                "Engine": instances["Engine"],
+                                "MasterUsername": instances["MasterUsername"],
+                                "Address": instances["Endpoint"]["Address"],
+                                "Port": str(instances["Endpoint"]["Port"]),
+                                "InstanceCreateTime": str(instances["InstanceCreateTime"]),
+                                "AvailabilityZone": instances["AvailabilityZone"],
+                                "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
+                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
+                                "DBSubnetGroupArn": instances["DBSubnetGroup"]["DBSubnetGroupArn"]
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -135,7 +149,21 @@ def neptune_instance_multi_az_check(cache: dict, awsAccountId: str, awsRegion: s
                         "Id": neptuneInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"DBInstanceIdentifier": neptuneDbId}}
+                        "Details": {
+                            "Other": {
+                                "DBInstanceIdentifier": neptuneDbId,
+                                "DBInstanceClass": instances["DBInstanceClass"],
+                                "Engine": instances["Engine"],
+                                "MasterUsername": instances["MasterUsername"],
+                                "Address": instances["Endpoint"]["Address"],
+                                "Port": str(instances["Endpoint"]["Port"]),
+                                "InstanceCreateTime": str(instances["InstanceCreateTime"]),
+                                "AvailabilityZone": instances["AvailabilityZone"],
+                                "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
+                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
+                                "DBSubnetGroupArn": instances["DBSubnetGroup"]["DBSubnetGroupArn"]
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
@@ -201,7 +229,21 @@ def neptune_instance_storage_encryption_check(cache: dict, awsAccountId: str, aw
                         "Id": neptuneInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"DBInstanceIdentifier": neptuneDbId}},
+                        "Details": {
+                            "Other": {
+                                "DBInstanceIdentifier": neptuneDbId,
+                                "DBInstanceClass": instances["DBInstanceClass"],
+                                "Engine": instances["Engine"],
+                                "MasterUsername": instances["MasterUsername"],
+                                "Address": instances["Endpoint"]["Address"],
+                                "Port": str(instances["Endpoint"]["Port"]),
+                                "InstanceCreateTime": str(instances["InstanceCreateTime"]),
+                                "AvailabilityZone": instances["AvailabilityZone"],
+                                "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
+                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
+                                "DBSubnetGroupArn": instances["DBSubnetGroup"]["DBSubnetGroupArn"]
+                            }
+                        },
                     }
                 ],
                 "Compliance": {
@@ -251,7 +293,21 @@ def neptune_instance_storage_encryption_check(cache: dict, awsAccountId: str, aw
                         "Id": neptuneInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"DBInstanceIdentifier": neptuneDbId}},
+                        "Details": {
+                            "Other": {
+                                "DBInstanceIdentifier": neptuneDbId,
+                                "DBInstanceClass": instances["DBInstanceClass"],
+                                "Engine": instances["Engine"],
+                                "MasterUsername": instances["MasterUsername"],
+                                "Address": instances["Endpoint"]["Address"],
+                                "Port": str(instances["Endpoint"]["Port"]),
+                                "InstanceCreateTime": str(instances["InstanceCreateTime"]),
+                                "AvailabilityZone": instances["AvailabilityZone"],
+                                "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
+                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
+                                "DBSubnetGroupArn": instances["DBSubnetGroup"]["DBSubnetGroupArn"]
+                            }
+                        },
                     }
                 ],
                 "Compliance": {
@@ -311,7 +367,21 @@ def neptune_instance_iam_authentication_check(cache: dict, awsAccountId: str, aw
                         "Id": neptuneInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"DBInstanceIdentifier": neptuneDbId}},
+                        "Details": {
+                            "Other": {
+                                "DBInstanceIdentifier": neptuneDbId,
+                                "DBInstanceClass": instances["DBInstanceClass"],
+                                "Engine": instances["Engine"],
+                                "MasterUsername": instances["MasterUsername"],
+                                "Address": instances["Endpoint"]["Address"],
+                                "Port": str(instances["Endpoint"]["Port"]),
+                                "InstanceCreateTime": str(instances["InstanceCreateTime"]),
+                                "AvailabilityZone": instances["AvailabilityZone"],
+                                "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
+                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
+                                "DBSubnetGroupArn": instances["DBSubnetGroup"]["DBSubnetGroupArn"]
+                            }
+                        },
                     }
                 ],
                 "Compliance": {
@@ -372,7 +442,21 @@ def neptune_instance_iam_authentication_check(cache: dict, awsAccountId: str, aw
                         "Id": neptuneInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"DBInstanceIdentifier": neptuneDbId}},
+                        "Details": {
+                            "Other": {
+                                "DBInstanceIdentifier": neptuneDbId,
+                                "DBInstanceClass": instances["DBInstanceClass"],
+                                "Engine": instances["Engine"],
+                                "MasterUsername": instances["MasterUsername"],
+                                "Address": instances["Endpoint"]["Address"],
+                                "Port": str(instances["Endpoint"]["Port"]),
+                                "InstanceCreateTime": str(instances["InstanceCreateTime"]),
+                                "AvailabilityZone": instances["AvailabilityZone"],
+                                "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
+                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
+                                "DBSubnetGroupArn": instances["DBSubnetGroup"]["DBSubnetGroupArn"]
+                            }
+                        },
                     }
                 ],
                 "Compliance": {
@@ -644,4 +728,6 @@ def neptune_cluster_parameter_audit_log_check(cache: dict, awsAccountId: str, aw
             else:
                 continue
 
-"""[Neptune.6] Neptune cluster parameter groups should enforce audit logging for Neptune databases"""
+"""[Neptune.6] Neptune database instances should be protected from deletion"""
+
+"""[Neptune.7] Neptune database instances should be protected from deletion"""

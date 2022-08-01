@@ -513,7 +513,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 ## Supported Services and Checks
 
 These are the following services and checks perform by each Auditor, there are currently...
-- :boom: **531 Checks** :boom:
+- :boom: **533 Checks** :boom:
 - :exclamation: **97 AWS supported services/components** :exclamation:
 - :fire: **74 Auditors** :fire:
 
@@ -700,11 +700,14 @@ There are currently **62** supported response and remediation Playbooks with cov
 | Amazon_MWAA_Auditor.py | Airflow Environment | Are Task logs configured |
 | Amazon_MWAA_Auditor.py | Airflow Environment | Are Webserver logs configured |
 | Amazon_MWAA_Auditor.py | Airflow Environment | Are Worker logs configured |
-| Amazon_Neptune_Auditor.py | Neptune instance | Is Neptune configured for HA |
-| Amazon_Neptune_Auditor.py | Neptune instance | Is Neptune storage encrypted |
-| Amazon_Neptune_Auditor.py | Neptune instance | Does Neptune use IAM DB Auth |
+| Amazon_Neptune_Auditor.py | Neptune instance | Is Neptune instance configured for HA |
+| Amazon_Neptune_Auditor.py | Neptune instance | Is Neptune instance storage encrypted |
+| Amazon_Neptune_Auditor.py | Neptune instance | Does Neptune instance use IAM DB Auth |
 | Amazon_Neptune_Auditor.py | Neptune cluster | Is SSL connection enforced |
-| Amazon_Neptune_Auditor.py | Neptune cluster | Is audit logging enabled |
+| ~~Amazon_Neptune_Auditor.py~~ | ~~Neptune cluster~~ | ~~Is audit logging enabled~~ **THIS FINDING HAS BEEN RETIRED** |
+| Amazon_Neptune_Auditor.py | Neptune instance | Does Neptune instance export audit logs |
+| Amazon_Neptune_Auditor.py | Neptune instance | Is Neptune instance deletion protected |
+| Amazon_Neptune_Auditor.py | Neptune instance | Does Neptune instance automatically update minor versions |
 | Amazon_QLDB_Auditor.py | QLDB Ledger | Does ledger have deletion protection |
 | Amazon_QLDB_Auditor.py | QLDB Export | Is export encryption enabled |
 | Amazon_RDS_Auditor.py | RDS DB Instance | Is HA configured |
