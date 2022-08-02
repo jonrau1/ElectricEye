@@ -114,6 +114,14 @@ def describe_db_instances(cache):
     cache["describe_db_instances"] = dbInstances
     return cache["describe_db_instances"]
 
+# loop through EFS file systems
+def describe_file_systems(cache):
+    response = cache.get("describe_file_systems")
+    if response:
+        return response
+    cache["describe_file_systems"] = efs.describe_file_systems()
+    return cache["describe_file_systems"]
+
 @registry.register_check("backup")
 def volume_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Backup.1] EBS volumes should be protected by AWS Backup"""
@@ -641,21 +649,17 @@ def rds_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
 @registry.register_check("backup")
 def efs_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Backup.5] EFS file systems should be protected by AWS Backup"""
-    # loop through EFS file systems
-    response = efs.describe_file_systems()
-    myFileSys = response["FileSystems"]
-    for filesys in myFileSys:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for filesys in describe_file_systems(cache)["FileSystems"]:
         fileSysId = str(filesys["FileSystemId"])
         fileSysArn = f"arn:{awsPartition}:elasticfilesystem:{awsRegion}:{awsAccountId}:file-system/{fileSysId}"
-        iso8601Time = datetime.datetime.utcnow().replace(
-            tzinfo=datetime.timezone.utc).isoformat()
+        # this is a passing check
         try:
-            # check if db instances are backed up
-            response = backup.describe_protected_resource(
-                ResourceArn=fileSysArn)
+            backup.describe_protected_resource(ResourceArn=fileSysArn)
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": fileSysArn + "/efs-backups",
+                "Id": f"{fileSysArn}/efs-backups",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": fileSysArn,
                 "AwsAccountId": awsAccountId,
@@ -666,10 +670,10 @@ def efs_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[Backup.5] EFS file systems should be protected by AWS Backup",
-                "Description": "EFS file system " + fileSysId + " is protected by AWS Backup.",
+                "Description": f"EFS file system {fileSysId} is protected by AWS Backup.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "For information on creating scheduled backups refer to the Assign Resources to a Backup Plan section of the AWS Backup Developer Guide",
+                        "Text": "For information on creating scheduled backups refer to the Assign Resources to a Backup Plan section of the AWS Backup Developer Guide.",
                         "Url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/create-a-scheduled-backup.html#assign-resources-to-plan",
                     }
                 },
@@ -679,8 +683,7 @@ def efs_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                         "Type": "AwsElasticFileSystem",
                         "Id": fileSysArn,
                         "Partition": awsPartition,
-                        "Region": awsRegion,
-                        "Details": {"Other": {"fileSystemId": fileSysId}},
+                        "Region": awsRegion
                     }
                 ],
                 "Compliance": {
@@ -697,64 +700,64 @@ def efs_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                         "ISO 27001:2013 A.11.1.4",
                         "ISO 27001:2013 A.17.1.1",
                         "ISO 27001:2013 A.17.1.2",
-                        "ISO 27001:2013 A.17.2.1",
-                    ],
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
-        except:
-            finding = {
-                "SchemaVersion": "2018-10-08",
-                "Id": fileSysArn + "/efs-backups",
-                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": fileSysArn,
-                "AwsAccountId": awsAccountId,
-                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                "FirstObservedAt": iso8601Time,
-                "CreatedAt": iso8601Time,
-                "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "MEDIUM"},
-                "Confidence": 99,
-                "Title": "[Backup.5] EFS file systems should be protected by AWS Backup",
-                "Description": "EFS file system "
-                + fileSysId
-                + " is not protected by AWS Backup. Refer to the remediation instructions for information on ensuring disaster recovery and business continuity requirements are fulfilled for EFS file systems.",
-                "Remediation": {
-                    "Recommendation": {
-                        "Text": "For information on creating scheduled backups refer to the Assign Resources to a Backup Plan section of the AWS Backup Developer Guide",
-                        "Url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/create-a-scheduled-backup.html#assign-resources-to-plan",
-                    }
-                },
-                "ProductFields": {"Product Name": "ElectricEye"},
-                "Resources": [
-                    {
-                        "Type": "AwsElasticFileSystem",
-                        "Id": fileSysArn,
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
-                        "Details": {"Other": {"fileSystemId": fileSysId}},
-                    }
-                ],
-                "Compliance": {
-                    "Status": "FAILED",
-                    "RelatedRequirements": [
-                        "NIST CSF ID.BE-5",
-                        "NIST CSF PR.PT-5",
-                        "NIST SP 800-53 CP-2",
-                        "NIST SP 800-53 CP-11",
-                        "NIST SP 800-53 SA-13",
-                        "NIST SP 800-53 SA14",
-                        "AICPA TSC CC3.1",
-                        "AICPA TSC A1.2",
-                        "ISO 27001:2013 A.11.1.4",
-                        "ISO 27001:2013 A.17.1.1",
-                        "ISO 27001:2013 A.17.1.2",
-                        "ISO 27001:2013 A.17.2.1",
+        # this is a failing check
+        except botocore.exceptions.ClientError as error:
+            # Handle "ResourceNotFoundException" exception which means the resource is not protected
+            if error.response['Error']['Code'] == 'ResourceNotFoundException':
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{fileSysArn}/efs-backups",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": fileSysArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "MEDIUM"},
+                    "Confidence": 99,
+                    "Title": "[Backup.5] EFS file systems should be protected by AWS Backup",
+                    "Description": f"EFS file system {fileSysId} is not protected by AWS Backup. Refer to the remediation instructions for information on ensuring disaster recovery and business continuity requirements are fulfilled for EFS file systems.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For information on creating scheduled backups refer to the Assign Resources to a Backup Plan section of the AWS Backup Developer Guide.",
+                            "Url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/create-a-scheduled-backup.html#assign-resources-to-plan",
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsElasticFileSystem",
+                            "Id": fileSysArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion
+                        }
                     ],
-                },
-                "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
-            }
-            yield finding
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF ID.BE-5",
+                            "NIST CSF PR.PT-5",
+                            "NIST SP 800-53 CP-2",
+                            "NIST SP 800-53 CP-11",
+                            "NIST SP 800-53 SA-13",
+                            "NIST SP 800-53 SA14",
+                            "AICPA TSC CC3.1",
+                            "AICPA TSC A1.2",
+                            "ISO 27001:2013 A.11.1.4",
+                            "ISO 27001:2013 A.17.1.1",
+                            "ISO 27001:2013 A.17.1.2",
+                            "ISO 27001:2013 A.17.2.1"
+                        ]
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE"
+                }
+                yield finding
