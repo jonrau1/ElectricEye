@@ -111,7 +111,6 @@ def docdb_public_instance_check(cache: dict, awsAccountId: str, awsRegion: str, 
                                 "Port": str(docdb["DBInstanceClass"]["Port"]),
                                 "DBSubnetGroupName": docdb["DBSubnetGroup"]["DBSubnetGroupName"],
                                 "DBSubnetGroupVpcId": docdb["DBSubnetGroup"]["VpcId"],
-                                "DBSubnetGroupArn": docdb["DBSubnetGroup"]["DBSubnetGroupArn"],
                                 "EngineVersion": docdb["EngineVersion"],
                                 "DBClusterIdentifier": docdb["DBClusterIdentifier"]
                             }
@@ -180,7 +179,6 @@ def docdb_public_instance_check(cache: dict, awsAccountId: str, awsRegion: str, 
                                 "Port": str(docdb["DBInstanceClass"]["Port"]),
                                 "DBSubnetGroupName": docdb["DBSubnetGroup"]["DBSubnetGroupName"],
                                 "DBSubnetGroupVpcId": docdb["DBSubnetGroup"]["VpcId"],
-                                "DBSubnetGroupArn": docdb["DBSubnetGroup"]["DBSubnetGroupArn"],
                                 "EngineVersion": docdb["EngineVersion"],
                                 "DBClusterIdentifier": docdb["DBClusterIdentifier"]
                             }
@@ -259,7 +257,6 @@ def docdb_instance_encryption_check(cache: dict, awsAccountId: str, awsRegion: s
                                 "Port": str(docdb["DBInstanceClass"]["Port"]),
                                 "DBSubnetGroupName": docdb["DBSubnetGroup"]["DBSubnetGroupName"],
                                 "DBSubnetGroupVpcId": docdb["DBSubnetGroup"]["VpcId"],
-                                "DBSubnetGroupArn": docdb["DBSubnetGroup"]["DBSubnetGroupArn"],
                                 "EngineVersion": docdb["EngineVersion"],
                                 "DBClusterIdentifier": docdb["DBClusterIdentifier"]
                             }
@@ -322,7 +319,6 @@ def docdb_instance_encryption_check(cache: dict, awsAccountId: str, awsRegion: s
                                 "Port": str(docdb["DBInstanceClass"]["Port"]),
                                 "DBSubnetGroupName": docdb["DBSubnetGroup"]["DBSubnetGroupName"],
                                 "DBSubnetGroupVpcId": docdb["DBSubnetGroup"]["VpcId"],
-                                "DBSubnetGroupArn": docdb["DBSubnetGroup"]["DBSubnetGroupArn"],
                                 "EngineVersion": docdb["EngineVersion"],
                                 "DBClusterIdentifier": docdb["DBClusterIdentifier"]
                             }
@@ -393,7 +389,6 @@ def docdb_instance_audit_logging_check(cache: dict, awsAccountId: str, awsRegion
                                 "Port": str(docdb["DBInstanceClass"]["Port"]),
                                 "DBSubnetGroupName": docdb["DBSubnetGroup"]["DBSubnetGroupName"],
                                 "DBSubnetGroupVpcId": docdb["DBSubnetGroup"]["VpcId"],
-                                "DBSubnetGroupArn": docdb["DBSubnetGroup"]["DBSubnetGroupArn"],
                                 "EngineVersion": docdb["EngineVersion"],
                                 "DBClusterIdentifier": docdb["DBClusterIdentifier"]
                             }
@@ -457,7 +452,6 @@ def docdb_instance_audit_logging_check(cache: dict, awsAccountId: str, awsRegion
                                 "Port": str(docdb["DBInstanceClass"]["Port"]),
                                 "DBSubnetGroupName": docdb["DBSubnetGroup"]["DBSubnetGroupName"],
                                 "DBSubnetGroupVpcId": docdb["DBSubnetGroup"]["VpcId"],
-                                "DBSubnetGroupArn": docdb["DBSubnetGroup"]["DBSubnetGroupArn"],
                                 "EngineVersion": docdb["EngineVersion"],
                                 "DBClusterIdentifier": docdb["DBClusterIdentifier"]
                             }
