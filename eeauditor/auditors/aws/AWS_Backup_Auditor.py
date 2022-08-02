@@ -125,7 +125,7 @@ def describe_file_systems(cache):
     return cache["describe_file_systems"]
 
 # loop through Neptune clusters
-def describe_db_clusters(cache):
+def describe_neptune_db_clusters(cache):
     response = cache.get("describe_db_clusters")
     if response:
         return response
@@ -135,7 +135,7 @@ def describe_db_clusters(cache):
     return cache["describe_db_clusters"]
 
 # loop through DocDb clusters
-def describe_db_clusters(cache):
+def describe_doc_db_clusters(cache):
     response = cache.get("describe_db_clusters")
     if response:
         return response
@@ -789,7 +789,7 @@ def neptune_cluster_backup_check(cache: dict, awsAccountId: str, awsRegion: str,
     """[Backup.6] Neptune clusters should be protected by AWS Backup"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for cluster in describe_db_clusters(cache)["DBClusters"]:
+    for cluster in describe_neptune_db_clusters(cache)["DBClusters"]:
         clusterArn = cluster["DBClusterArn"]
         clusterId = cluster["DBClusterIdentifier"]
         clusterParameterGroupName = cluster["DBClusterParameterGroup"]
@@ -907,6 +907,148 @@ def neptune_cluster_backup_check(cache: dict, awsAccountId: str, awsRegion: str,
                                     "MasterUsername": cluster["MasterUsername"],
                                     "DbClusterResourceId": cluster["DbClusterResourceId"],
                                     "ClusterCreateTime": str(cluster["ClusterCreateTime"])
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF ID.BE-5",
+                            "NIST CSF PR.PT-5",
+                            "NIST SP 800-53 CP-2",
+                            "NIST SP 800-53 CP-11",
+                            "NIST SP 800-53 SA-13",
+                            "NIST SP 800-53 SA14",
+                            "AICPA TSC CC3.1",
+                            "AICPA TSC A1.2",
+                            "ISO 27001:2013 A.11.1.4",
+                            "ISO 27001:2013 A.17.1.1",
+                            "ISO 27001:2013 A.17.1.2",
+                            "ISO 27001:2013 A.17.2.1"
+                        ]
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE"
+                }
+                yield finding
+
+@registry.register_check("backup")
+def docdb_cluster_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Backup.7] DocumentDB clusters should be protected by AWS Backup"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for docdbcluster in describe_doc_db_clusters(cache)["DBClusters"]:
+        docdbclusterId = str(docdbcluster["DBClusterIdentifier"])
+        docdbClusterArn = str(docdbcluster["DBClusterArn"])
+        try:
+            backup.describe_protected_resource(ResourceArn=docdbClusterArn)
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{docdbClusterArn}/docdb-cluster-backups",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": docdbClusterArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Backup.7] DocumentDB clusters should be protected by AWS Backup",
+                "Description": f"DocumentDB cluster {docdbclusterId} is protected by AWS Backup.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on creating scheduled backups refer to the Assign Resources to a Backup Plan section of the AWS Backup Developer Guide.",
+                        "Url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/create-a-scheduled-backup.html#assign-resources-to-plan",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsDocumentDbCluster",
+                        "Id": docdbClusterArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "DBClusterIdentifier": docdbclusterId,
+                                "DBClusterParameterGroup": docdbcluster["DBClusterParameterGroup"],
+                                "DBSubnetGroup": docdbcluster["DBSubnetGroup"],
+                                "Status": docdbcluster["Status"],
+                                "Endpoint": docdbcluster["Endpoint"],
+                                "Engine": docdbcluster["Engine"],
+                                "EngineVersion": docdbcluster["EngineVersion"],
+                                "Port": str(docdbcluster["Port"]),
+                                "MasterUsername": docdbcluster["MasterUsername"],
+                                "DbClusterResourceId": docdbcluster["DbClusterResourceId"]
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.BE-5",
+                        "NIST CSF PR.PT-5",
+                        "NIST SP 800-53 CP-2",
+                        "NIST SP 800-53 CP-11",
+                        "NIST SP 800-53 SA-13",
+                        "NIST SP 800-53 SA14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+        except botocore.exceptions.ClientError as error:
+            # Handle "ResourceNotFoundException" exception which means the resource is not protected
+            if error.response['Error']['Code'] == 'ResourceNotFoundException':
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{docdbClusterArn}/docdb-cluster-backups",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": docdbClusterArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "MEDIUM"},
+                    "Confidence": 99,
+                    "Title": "[Backup.7] DocumentDB clusters should be protected by AWS Backup",
+                    "Description": f"DocumentDB cluster {docdbclusterId} is not protected by AWS Backup. Refer to the remediation instructions for information on ensuring disaster recovery and business continuity requirements are fulfilled for DocumentDB clusters.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For information on creating scheduled backups refer to the Assign Resources to a Backup Plan section of the AWS Backup Developer Guide.",
+                            "Url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/create-a-scheduled-backup.html#assign-resources-to-plan",
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsDocumentDbCluster",
+                            "Id": docdbClusterArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "Other": {
+                                    "DBClusterIdentifier": docdbclusterId,
+                                    "DBClusterParameterGroup": docdbcluster["DBClusterParameterGroup"],
+                                    "DBSubnetGroup": docdbcluster["DBSubnetGroup"],
+                                    "Status": docdbcluster["Status"],
+                                    "Endpoint": docdbcluster["Endpoint"],
+                                    "Engine": docdbcluster["Engine"],
+                                    "EngineVersion": docdbcluster["EngineVersion"],
+                                    "Port": str(docdbcluster["Port"]),
+                                    "MasterUsername": docdbcluster["MasterUsername"],
+                                    "DbClusterResourceId": docdbcluster["DbClusterResourceId"]
                                 }
                             }
                         }
