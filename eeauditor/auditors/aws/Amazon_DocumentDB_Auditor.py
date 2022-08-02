@@ -31,7 +31,9 @@ def describe_db_instances(cache):
     response = cache.get("describe_db_instances")
     if response:
         return response
-    cache["describe_db_instances"] = documentdb.describe_db_instances()
+    cache["describe_db_instances"] = documentdb.describe_db_instances(
+        Filters=[{"Name": "engine", "Values": ["docdb"]}]
+    )
     return cache["describe_db_instances"]
 
 # Get all DB Clusters
