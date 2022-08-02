@@ -78,7 +78,7 @@ def neptune_instance_multi_az_check(cache: dict, awsAccountId: str, awsRegion: s
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "AwsNeptuneInstance",
+                        "Type": "AwsNeptuneDbInstance",
                         "Id": neptuneInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
@@ -145,7 +145,7 @@ def neptune_instance_multi_az_check(cache: dict, awsAccountId: str, awsRegion: s
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "AwsNeptuneInstance",
+                        "Type": "AwsNeptuneDbInstance",
                         "Id": neptuneInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
@@ -225,7 +225,7 @@ def neptune_instance_storage_encryption_check(cache: dict, awsAccountId: str, aw
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "AwsNeptuneInstance",
+                        "Type": "AwsNeptuneDbInstance",
                         "Id": neptuneInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
@@ -289,7 +289,7 @@ def neptune_instance_storage_encryption_check(cache: dict, awsAccountId: str, aw
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "AwsNeptuneInstance",
+                        "Type": "AwsNeptuneDbInstance",
                         "Id": neptuneInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
@@ -363,7 +363,7 @@ def neptune_instance_iam_authentication_check(cache: dict, awsAccountId: str, aw
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "AwsNeptuneInstance",
+                        "Type": "AwsNeptuneDbInstance",
                         "Id": neptuneInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
@@ -438,7 +438,7 @@ def neptune_instance_iam_authentication_check(cache: dict, awsAccountId: str, aw
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "AwsNeptuneInstance",
+                        "Type": "AwsNeptuneDbInstance",
                         "Id": neptuneInstanceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
@@ -728,6 +728,290 @@ def neptune_cluster_parameter_audit_log_check(cache: dict, awsAccountId: str, aw
             else:
                 continue
 
-"""[Neptune.6] Neptune database instances should be protected from deletion"""
+@registry.register_check("neptune")
+def neptune_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Neptune.6] Neptune database instances should be protected from deletion"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for instances in describe_db_instances(cache)["DBInstances"]:
+        neptuneInstanceArn = str(instances["DBInstanceArn"])
+        neptuneDbId = str(instances["DBInstanceIdentifier"])
+        delProtCheck = str(instances["DeletionProtection"])
+        # this is a failing check
+        if delProtCheck == "False":
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{neptuneInstanceArn}/neptune-instance-deletion-protection-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": neptuneInstanceArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[Neptune.6] Neptune database instances should be protected from deletion",
+                "Description": f"Neptune database instance {neptuneDbId} does not have deletion protection enabled. You can only delete DB instances that have deletion protection disabled. Neptune enforces deletion protection regardless of whether you use the console, the AWS CLI, or the APIs to delete a DB instance. Deletion protection is enabled by default when you create a production DB instance using the AWS Management Console. Deletion protection is disabled by default if you use the AWS CLI or API commands to create a DB instance. Refer to the remediation instructions to remediate this behavior.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Neptune deletion protection refer to the Deleting a DB Instance in Amazon Neptune section of the Amazon Neptune User Guide",
+                        "Url": "https://docs.aws.amazon.com/neptune/latest/userguide/manage-console-instances-delete.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsNeptuneDbInstance",
+                        "Id": neptuneInstanceArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "DBInstanceIdentifier": neptuneDbId,
+                                "DBInstanceClass": instances["DBInstanceClass"],
+                                "Engine": instances["Engine"],
+                                "MasterUsername": instances["MasterUsername"],
+                                "Address": instances["Endpoint"]["Address"],
+                                "Port": str(instances["Endpoint"]["Port"]),
+                                "InstanceCreateTime": str(instances["InstanceCreateTime"]),
+                                "AvailabilityZone": instances["AvailabilityZone"],
+                                "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
+                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
+                                "DBSubnetGroupArn": instances["DBSubnetGroup"]["DBSubnetGroupArn"]
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.BE-5",
+                        "NIST CSF PR.PT-5",
+                        "NIST SP 800-53 CP-2",
+                        "NIST SP 800-53 CP-11",
+                        "NIST SP 800-53 SA-13",
+                        "NIST SP 800-53 SA-14",
+                        "AICPA TSC A1.2",
+                        "AICPA TSC CC3.1",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        # this is a passing check
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{neptuneInstanceArn}/neptune-instance-deletion-protection-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": neptuneInstanceArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Neptune.6] Neptune database instances should be protected from deletion",
+                "Description": f"Neptune database instance {neptuneDbId} has deletion protection enabled.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Neptune deletion protection refer to the Deleting a DB Instance in Amazon Neptune section of the Amazon Neptune User Guide",
+                        "Url": "https://docs.aws.amazon.com/neptune/latest/userguide/manage-console-instances-delete.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsNeptuneDbInstance",
+                        "Id": neptuneInstanceArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "DBInstanceIdentifier": neptuneDbId,
+                                "DBInstanceClass": instances["DBInstanceClass"],
+                                "Engine": instances["Engine"],
+                                "MasterUsername": instances["MasterUsername"],
+                                "Address": instances["Endpoint"]["Address"],
+                                "Port": str(instances["Endpoint"]["Port"]),
+                                "InstanceCreateTime": str(instances["InstanceCreateTime"]),
+                                "AvailabilityZone": instances["AvailabilityZone"],
+                                "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
+                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
+                                "DBSubnetGroupArn": instances["DBSubnetGroup"]["DBSubnetGroupArn"]
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.BE-5",
+                        "NIST CSF PR.PT-5",
+                        "NIST SP 800-53 CP-2",
+                        "NIST SP 800-53 CP-11",
+                        "NIST SP 800-53 SA-13",
+                        "NIST SP 800-53 SA-14",
+                        "AICPA TSC A1.2",
+                        "AICPA TSC CC3.1",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
-"""[Neptune.7] Neptune database instances should be protected from deletion"""
+@registry.register_check("neptune")
+def neptune_instance_minor_version_upgrade_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Neptune.7] Neptune database instances should be protected from deletion"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for instances in describe_db_instances(cache)["DBInstances"]:
+        neptuneInstanceArn = str(instances["DBInstanceArn"])
+        neptuneDbId = str(instances["DBInstanceIdentifier"])
+        minorVersionUpgradeCheck = str(instances["AutoMinorVersionUpgrade"])
+        # this is a failing check
+        if minorVersionUpgradeCheck == "False":
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{neptuneInstanceArn}/neptune-instance-minor-version-auto-update-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": neptuneInstanceArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[Neptune.7] Neptune database instances should be protected from deletion",
+                "Description": f"Neptune database instance {neptuneDbId} does not have minor version auto-updates enabled. Periodically, Neptune performs maintenance on Neptune resources. Maintenance most often involves updates to the DB cluster's underlying operating system or database engine version. Updates to the operating system most often occur for security issues and should be done as soon as possible. DB instances are not automatically backed up when an OS update is applied. So you should back up your DB instances before you apply an update. Refer to the remediation instructions to remediate this behavior.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Neptune minor version auto-updates and maintainance refer to the Maintaining an Amazon Neptune DB Cluster section of the Amazon Neptune User Guide",
+                        "Url": "https://docs.aws.amazon.com/neptune/latest/userguide/manage-console-maintaining.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsNeptuneDbInstance",
+                        "Id": neptuneInstanceArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "DBInstanceIdentifier": neptuneDbId,
+                                "DBInstanceClass": instances["DBInstanceClass"],
+                                "Engine": instances["Engine"],
+                                "MasterUsername": instances["MasterUsername"],
+                                "Address": instances["Endpoint"]["Address"],
+                                "Port": str(instances["Endpoint"]["Port"]),
+                                "InstanceCreateTime": str(instances["InstanceCreateTime"]),
+                                "AvailabilityZone": instances["AvailabilityZone"],
+                                "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
+                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
+                                "DBSubnetGroupArn": instances["DBSubnetGroup"]["DBSubnetGroupArn"]
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.MA-1",
+                        "NIST SP 800-53 MA-2",
+                        "NIST SP 800-53 MA-3",
+                        "NIST SP 800-53 MA-5",
+                        "NIST SP 800-53 MA-6",
+                        "AICPA TSC CC8.1",
+                        "ISO 27001:2013 A.11.1.2",
+                        "ISO 27001:2013 A.11.2.4",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.6"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        # this is a passing check
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{neptuneInstanceArn}/neptune-instance-minor-version-auto-update-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": neptuneInstanceArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Neptune.7] Neptune database instances should be protected from deletion",
+                "Description": f"Neptune database instance {neptuneDbId} has minor version auto-updates enabled.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Neptune minor version auto-updates and maintainance refer to the Maintaining an Amazon Neptune DB Cluster section of the Amazon Neptune User Guide",
+                        "Url": "https://docs.aws.amazon.com/neptune/latest/userguide/manage-console-maintaining.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsNeptuneDbInstance",
+                        "Id": neptuneInstanceArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "DBInstanceIdentifier": neptuneDbId,
+                                "DBInstanceClass": instances["DBInstanceClass"],
+                                "Engine": instances["Engine"],
+                                "MasterUsername": instances["MasterUsername"],
+                                "Address": instances["Endpoint"]["Address"],
+                                "Port": str(instances["Endpoint"]["Port"]),
+                                "InstanceCreateTime": str(instances["InstanceCreateTime"]),
+                                "AvailabilityZone": instances["AvailabilityZone"],
+                                "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
+                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
+                                "DBSubnetGroupArn": instances["DBSubnetGroup"]["DBSubnetGroupArn"]
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.MA-1",
+                        "NIST SP 800-53 MA-2",
+                        "NIST SP 800-53 MA-3",
+                        "NIST SP 800-53 MA-5",
+                        "NIST SP 800-53 MA-6",
+                        "AICPA TSC CC8.1",
+                        "ISO 27001:2013 A.11.1.2",
+                        "ISO 27001:2013 A.11.2.4",
+                        "ISO 27001:2013 A.11.2.5",
+                        "ISO 27001:2013 A.11.2.6"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+"""[Neptune.8] Neptune clusters should be configured for auto-scaling"""
+
+"""[Neptune.9] Neptune clusters should be configured for result caching"""

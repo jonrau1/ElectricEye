@@ -513,7 +513,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 ## Supported Services and Checks
 
 These are the following services and checks perform by each Auditor, there are currently...
-- :boom: **533 Checks** :boom:
+- :boom: **534 Checks** :boom:
 - :exclamation: **97 AWS supported services/components** :exclamation:
 - :fire: **74 Auditors** :fire:
 
@@ -708,6 +708,8 @@ There are currently **62** supported response and remediation Playbooks with cov
 | Amazon_Neptune_Auditor.py | Neptune instance | Does Neptune instance export audit logs |
 | Amazon_Neptune_Auditor.py | Neptune instance | Is Neptune instance deletion protected |
 | Amazon_Neptune_Auditor.py | Neptune instance | Does Neptune instance automatically update minor versions |
+| Amazon_Neptune_Auditor.py | Neptune cluster | Are Neptune clusters configured to auto-scale |
+| Amazon_Neptune_Auditor.py | Neptune cluster | Are Neptune clusters configured to cache query results |
 | Amazon_QLDB_Auditor.py | QLDB Ledger | Does ledger have deletion protection |
 | Amazon_QLDB_Auditor.py | QLDB Export | Is export encryption enabled |
 | Amazon_RDS_Auditor.py | RDS DB Instance | Is HA configured |

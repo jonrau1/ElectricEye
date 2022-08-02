@@ -52,7 +52,6 @@ def describe_db_cluster_parameter_groups(cache):
     cache["describe_db_cluster_parameter_groups"] = documentdb.describe_db_cluster_parameter_groups()
     return cache["describe_db_cluster_parameter_groups"]
 
-
 @registry.register_check("docdb")
 def docdb_public_instance_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DocumentDB.1] DocumentDB instances should not be exposed to the public"""
@@ -62,7 +61,6 @@ def docdb_public_instance_check(cache: dict, awsAccountId: str, awsRegion: str, 
         docdbId = str(docdb["DBInstanceIdentifier"])
         docdbArn = str(docdb["DBInstanceArn"])
         publicAccessCheck = str(docdb["PubliclyAccessible"])
-        
         # this is a failing check
         if publicAccessCheck == "True":
             finding = {
