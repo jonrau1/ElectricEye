@@ -66,7 +66,7 @@ def neptune_instance_multi_az_check(cache: dict, awsAccountId: str, awsRegion: s
         if mutliAzCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{neptuneInstanceArn}/neptune-instance-deletion-protection-check",
+                "Id": f"{neptuneInstanceArn}/neptune-instance-ha-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": neptuneInstanceArn,
                 "AwsAccountId": awsAccountId,
@@ -76,12 +76,12 @@ def neptune_instance_multi_az_check(cache: dict, awsAccountId: str, awsRegion: s
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[Neptune.6] Neptune database instances should be protected from deletion",
-                "Description": f"Neptune database instance {neptuneDbId} does not have deletion protection enabled. You can only delete DB instances that have deletion protection disabled. Neptune enforces deletion protection regardless of whether you use the console, the AWS CLI, or the APIs to delete a DB instance. Deletion protection is enabled by default when you create a production DB instance using the AWS Management Console. Deletion protection is disabled by default if you use the AWS CLI or API commands to create a DB instance. Refer to the remediation instructions to remediate this behavior.",
+                "Title": "[Neptune.1] Neptune database instances should be configured to be highly available",
+                "Description": f"Neptune database instance {neptuneDbId} does not have Multi-AZ enabled and thus is not highly available. In Neptune DB clusters, there is one primary DB instance and up to 15 Neptune replicas. The primary DB instance supports read and write operations, and performs all of the data modifications to the cluster volume. Neptune replicas connect to the same storage volume as the primary DB instance and support only read operations. Neptune replicas can offload read workloads from the primary DB instance. AWS recommends distributing the primary instance and Neptune replicas in your DB cluster over multiple Availability Zones to improve the availability of your DB cluster. Refer to the remediation instructions to remediate this behavior.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "For more information on Neptune deletion protection refer to the Deleting a DB Instance in Amazon Neptune section of the Amazon Neptune User Guide",
-                        "Url": "https://docs.aws.amazon.com/neptune/latest/userguide/manage-console-instances-delete.html",
+                        "Text": "For more information on Neptune High Availability and how to configure it refer to the High Availability for Neptune section of the Amazon Neptune User Guide",
+                        "Url": "https://docs.aws.amazon.com/neptune/latest/userguide/feature-overview-availability.html",
                     }
                 },
                 "ProductFields": {"Product Name": "ElectricEye"},
@@ -102,8 +102,7 @@ def neptune_instance_multi_az_check(cache: dict, awsAccountId: str, awsRegion: s
                                 "InstanceCreateTime": str(instances["InstanceCreateTime"]),
                                 "AvailabilityZone": instances["AvailabilityZone"],
                                 "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
-                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
-                                
+                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"]
                             }
                         }
                     }
@@ -116,9 +115,9 @@ def neptune_instance_multi_az_check(cache: dict, awsAccountId: str, awsRegion: s
                         "NIST SP 800-53 CP-2",
                         "NIST SP 800-53 CP-11",
                         "NIST SP 800-53 SA-13",
-                        "NIST SP 800-53 SA-14",
-                        "AICPA TSC A1.2",
+                        "NIST SP 800-53 SA14",
                         "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
                         "ISO 27001:2013 A.11.1.4",
                         "ISO 27001:2013 A.17.1.1",
                         "ISO 27001:2013 A.17.1.2",
@@ -169,8 +168,7 @@ def neptune_instance_multi_az_check(cache: dict, awsAccountId: str, awsRegion: s
                                 "InstanceCreateTime": str(instances["InstanceCreateTime"]),
                                 "AvailabilityZone": instances["AvailabilityZone"],
                                 "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
-                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
-                                
+                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"]
                             }
                         }
                     }
@@ -249,7 +247,7 @@ def neptune_instance_storage_encryption_check(cache: dict, awsAccountId: str, aw
                                 "InstanceCreateTime": str(instances["InstanceCreateTime"]),
                                 "AvailabilityZone": instances["AvailabilityZone"],
                                 "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
-                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
+                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"]
                                 
                             }
                         },
@@ -313,7 +311,7 @@ def neptune_instance_storage_encryption_check(cache: dict, awsAccountId: str, aw
                                 "InstanceCreateTime": str(instances["InstanceCreateTime"]),
                                 "AvailabilityZone": instances["AvailabilityZone"],
                                 "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
-                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
+                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"]
                                 
                             }
                         },
@@ -387,7 +385,7 @@ def neptune_instance_iam_authentication_check(cache: dict, awsAccountId: str, aw
                                 "InstanceCreateTime": str(instances["InstanceCreateTime"]),
                                 "AvailabilityZone": instances["AvailabilityZone"],
                                 "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
-                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
+                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"]
                                 
                             }
                         },
@@ -462,7 +460,7 @@ def neptune_instance_iam_authentication_check(cache: dict, awsAccountId: str, aw
                                 "InstanceCreateTime": str(instances["InstanceCreateTime"]),
                                 "AvailabilityZone": instances["AvailabilityZone"],
                                 "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
-                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
+                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"]
                                 
                             }
                         },
@@ -790,7 +788,7 @@ def neptune_instance_audit_logging_check(cache: dict, awsAccountId: str, awsRegi
                                 "InstanceCreateTime": str(instances["InstanceCreateTime"]),
                                 "AvailabilityZone": instances["AvailabilityZone"],
                                 "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
-                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
+                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"]
                                 
                             }
                         },
@@ -855,7 +853,7 @@ def neptune_instance_audit_logging_check(cache: dict, awsAccountId: str, awsRegi
                                 "InstanceCreateTime": str(instances["InstanceCreateTime"]),
                                 "AvailabilityZone": instances["AvailabilityZone"],
                                 "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
-                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
+                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"]
                                 
                             }
                         },
@@ -930,7 +928,7 @@ def neptune_instance_deletion_protection_check(cache: dict, awsAccountId: str, a
                                 "InstanceCreateTime": str(instances["InstanceCreateTime"]),
                                 "AvailabilityZone": instances["AvailabilityZone"],
                                 "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
-                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
+                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"]
                                 
                             }
                         }
@@ -997,7 +995,7 @@ def neptune_instance_deletion_protection_check(cache: dict, awsAccountId: str, a
                                 "InstanceCreateTime": str(instances["InstanceCreateTime"]),
                                 "AvailabilityZone": instances["AvailabilityZone"],
                                 "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
-                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
+                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"]
                                 
                             }
                         }
@@ -1074,7 +1072,7 @@ def neptune_instance_minor_version_upgrade_check(cache: dict, awsAccountId: str,
                                 "InstanceCreateTime": str(instances["InstanceCreateTime"]),
                                 "AvailabilityZone": instances["AvailabilityZone"],
                                 "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
-                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
+                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"]
                                 
                             }
                         }
@@ -1139,7 +1137,7 @@ def neptune_instance_minor_version_upgrade_check(cache: dict, awsAccountId: str,
                                 "InstanceCreateTime": str(instances["InstanceCreateTime"]),
                                 "AvailabilityZone": instances["AvailabilityZone"],
                                 "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
-                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
+                                "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"]
                                 
                             }
                         }
