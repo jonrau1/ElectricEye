@@ -103,7 +103,7 @@ def neptune_instance_multi_az_check(cache: dict, awsAccountId: str, awsRegion: s
                                 "AvailabilityZone": instances["AvailabilityZone"],
                                 "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
                                 "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
-                                "DBSubnetGroupArn": instances["DBSubnetGroup"]["DBSubnetGroupArn"]
+                                
                             }
                         }
                     }
@@ -170,7 +170,7 @@ def neptune_instance_multi_az_check(cache: dict, awsAccountId: str, awsRegion: s
                                 "AvailabilityZone": instances["AvailabilityZone"],
                                 "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
                                 "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
-                                "DBSubnetGroupArn": instances["DBSubnetGroup"]["DBSubnetGroupArn"]
+                                
                             }
                         }
                     }
@@ -250,7 +250,7 @@ def neptune_instance_storage_encryption_check(cache: dict, awsAccountId: str, aw
                                 "AvailabilityZone": instances["AvailabilityZone"],
                                 "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
                                 "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
-                                "DBSubnetGroupArn": instances["DBSubnetGroup"]["DBSubnetGroupArn"]
+                                
                             }
                         },
                     }
@@ -314,7 +314,7 @@ def neptune_instance_storage_encryption_check(cache: dict, awsAccountId: str, aw
                                 "AvailabilityZone": instances["AvailabilityZone"],
                                 "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
                                 "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
-                                "DBSubnetGroupArn": instances["DBSubnetGroup"]["DBSubnetGroupArn"]
+                                
                             }
                         },
                     }
@@ -388,7 +388,7 @@ def neptune_instance_iam_authentication_check(cache: dict, awsAccountId: str, aw
                                 "AvailabilityZone": instances["AvailabilityZone"],
                                 "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
                                 "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
-                                "DBSubnetGroupArn": instances["DBSubnetGroup"]["DBSubnetGroupArn"]
+                                
                             }
                         },
                     }
@@ -463,7 +463,7 @@ def neptune_instance_iam_authentication_check(cache: dict, awsAccountId: str, aw
                                 "AvailabilityZone": instances["AvailabilityZone"],
                                 "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
                                 "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
-                                "DBSubnetGroupArn": instances["DBSubnetGroup"]["DBSubnetGroupArn"]
+                                
                             }
                         },
                     }
@@ -791,7 +791,7 @@ def neptune_instance_audit_logging_check(cache: dict, awsAccountId: str, awsRegi
                                 "AvailabilityZone": instances["AvailabilityZone"],
                                 "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
                                 "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
-                                "DBSubnetGroupArn": instances["DBSubnetGroup"]["DBSubnetGroupArn"]
+                                
                             }
                         },
                     }
@@ -856,7 +856,7 @@ def neptune_instance_audit_logging_check(cache: dict, awsAccountId: str, awsRegi
                                 "AvailabilityZone": instances["AvailabilityZone"],
                                 "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
                                 "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
-                                "DBSubnetGroupArn": instances["DBSubnetGroup"]["DBSubnetGroupArn"]
+                                
                             }
                         },
                     }
@@ -931,7 +931,7 @@ def neptune_instance_deletion_protection_check(cache: dict, awsAccountId: str, a
                                 "AvailabilityZone": instances["AvailabilityZone"],
                                 "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
                                 "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
-                                "DBSubnetGroupArn": instances["DBSubnetGroup"]["DBSubnetGroupArn"]
+                                
                             }
                         }
                     }
@@ -998,7 +998,7 @@ def neptune_instance_deletion_protection_check(cache: dict, awsAccountId: str, a
                                 "AvailabilityZone": instances["AvailabilityZone"],
                                 "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
                                 "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
-                                "DBSubnetGroupArn": instances["DBSubnetGroup"]["DBSubnetGroupArn"]
+                                
                             }
                         }
                     }
@@ -1075,7 +1075,7 @@ def neptune_instance_minor_version_upgrade_check(cache: dict, awsAccountId: str,
                                 "AvailabilityZone": instances["AvailabilityZone"],
                                 "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
                                 "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
-                                "DBSubnetGroupArn": instances["DBSubnetGroup"]["DBSubnetGroupArn"]
+                                
                             }
                         }
                     }
@@ -1140,7 +1140,7 @@ def neptune_instance_minor_version_upgrade_check(cache: dict, awsAccountId: str,
                                 "AvailabilityZone": instances["AvailabilityZone"],
                                 "DBSubnetGroupName": instances["DBSubnetGroup"]["DBSubnetGroupName"],
                                 "DBSubnetGroupVpcId": instances["DBSubnetGroup"]["VpcId"],
-                                "DBSubnetGroupArn": instances["DBSubnetGroup"]["DBSubnetGroupArn"]
+                                
                             }
                         }
                     }
