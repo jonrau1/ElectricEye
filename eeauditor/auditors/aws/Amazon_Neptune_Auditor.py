@@ -1221,8 +1221,7 @@ def neptune_cluster_autoscaling_check(cache: dict, awsAccountId: str, awsRegion:
                                         "Port": str(cluster["Port"]),
                                         "MasterUsername": cluster["MasterUsername"],
                                         "DbClusterResourceId": cluster["DbClusterResourceId"],
-                                        "ClusterCreateTime": str(cluster["ClusterCreateTime"]),
-                                        "CrossAccountClone": str(cluster["CrossAccountClone"])
+                                        "ClusterCreateTime": str(cluster["ClusterCreateTime"])
                                     }
                                 }
                             }
@@ -1291,8 +1290,7 @@ def neptune_cluster_autoscaling_check(cache: dict, awsAccountId: str, awsRegion:
                                         "Port": str(cluster["Port"]),
                                         "MasterUsername": cluster["MasterUsername"],
                                         "DbClusterResourceId": cluster["DbClusterResourceId"],
-                                        "ClusterCreateTime": str(cluster["ClusterCreateTime"]),
-                                        "CrossAccountClone": str(cluster["CrossAccountClone"])
+                                        "ClusterCreateTime": str(cluster["ClusterCreateTime"])
                                     }
                                 }
                             }
@@ -1378,8 +1376,7 @@ def neptune_cluster_gremlin_query_result_cache_check(cache: dict, awsAccountId: 
                                         "Port": str(cluster["Port"]),
                                         "MasterUsername": cluster["MasterUsername"],
                                         "DbClusterResourceId": cluster["DbClusterResourceId"],
-                                        "ClusterCreateTime": str(cluster["ClusterCreateTime"]),
-                                        "CrossAccountClone": str(cluster["CrossAccountClone"])
+                                        "ClusterCreateTime": str(cluster["ClusterCreateTime"])
                                     }
                                 }
                             }
@@ -1448,8 +1445,7 @@ def neptune_cluster_gremlin_query_result_cache_check(cache: dict, awsAccountId: 
                                         "Port": str(cluster["Port"]),
                                         "MasterUsername": cluster["MasterUsername"],
                                         "DbClusterResourceId": cluster["DbClusterResourceId"],
-                                        "ClusterCreateTime": str(cluster["ClusterCreateTime"]),
-                                        "CrossAccountClone": str(cluster["CrossAccountClone"])
+                                        "ClusterCreateTime": str(cluster["ClusterCreateTime"])
                                     }
                                 }
                             }

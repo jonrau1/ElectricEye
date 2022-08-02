@@ -836,8 +836,7 @@ def neptune_cluster_backup_check(cache: dict, awsAccountId: str, awsRegion: str,
                                 "Port": str(cluster["Port"]),
                                 "MasterUsername": cluster["MasterUsername"],
                                 "DbClusterResourceId": cluster["DbClusterResourceId"],
-                                "ClusterCreateTime": str(cluster["ClusterCreateTime"]),
-                                "CrossAccountClone": str(cluster["CrossAccountClone"])
+                                "ClusterCreateTime": str(cluster["ClusterCreateTime"])
                             }
                         }
                     }
@@ -907,8 +906,7 @@ def neptune_cluster_backup_check(cache: dict, awsAccountId: str, awsRegion: str,
                                     "Port": str(cluster["Port"]),
                                     "MasterUsername": cluster["MasterUsername"],
                                     "DbClusterResourceId": cluster["DbClusterResourceId"],
-                                    "ClusterCreateTime": str(cluster["ClusterCreateTime"]),
-                                    "CrossAccountClone": str(cluster["CrossAccountClone"])
+                                    "ClusterCreateTime": str(cluster["ClusterCreateTime"])
                                 }
                             }
                         }
