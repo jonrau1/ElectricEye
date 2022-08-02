@@ -42,10 +42,16 @@ def ebs_volume_attachment_check(cache: dict, awsAccountId: str, awsRegion: str, 
     """[EBS.1] EBS Volumes should be in an attached state"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for volumes in describe_environments(cache)["Environments"]:
+    for envs in describe_environments(cache)["Environments"]:
+        envName = envs["EnvironmentName"]
+        appName = envs["ApplicationName"]
+        r = elasticbeanstalk.describe_configuration_settings(
+            ApplicationName=appName,
+            EnvironmentName=envName
+        )
         print(
             json.dumps(
-                volumes,
+                r,
                 indent=4,
                 default=str
             )
