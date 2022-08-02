@@ -49,9 +49,25 @@ def ebs_volume_attachment_check(cache: dict, awsAccountId: str, awsRegion: str, 
             ApplicationName=appName,
             EnvironmentName=envName
         )
+        
+
+        response = elasticbeanstalk.describe_configuration_options(
+            #ApplicationName='string',
+            #TemplateName='string',
+            EnvironmentName=envName,
+            #SolutionStackName='string',
+            #PlatformArn='string',
+            Options=[
+                {
+                    'Namespace': 'aws:autoscaling:launchconfiguration',
+                    'OptionName': 'DisableIMDSv1'
+                },
+            ]
+        )
+
         print(
             json.dumps(
-                r,
+                response,
                 indent=4,
                 default=str
             )
