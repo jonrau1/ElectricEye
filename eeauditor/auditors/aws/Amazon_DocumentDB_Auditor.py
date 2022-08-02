@@ -28,12 +28,19 @@ documentdb = boto3.client("docdb")
 
 # Get all DB Instances
 def describe_db_instances(cache):
+    docdbInstances = []
     response = cache.get("describe_db_instances")
     if response:
         return response
-    cache["describe_db_instances"] = documentdb.describe_db_instances(
-        Filters=[{"Name": "engine", "Values": ["docdb"]}]
-    )
+    paginator = documentdb.get_paginator('describe_db_instances')
+    if paginator:
+        # paginate all DB instances (since every single RDS-namespace is returned)
+        # and only add pages that are within the docdb engine
+        for page in paginator.paginate():
+            for docdbi in page["DBInstances"]:
+                if docdbi["Engine"] == "docdb":
+                    docdbInstances.append(docdbi)
+    cache["describe_db_instances"] = docdbInstances
     return cache["describe_db_instances"]
 
 # Get all DB Clusters
@@ -59,7 +66,7 @@ def docdb_public_instance_check(cache: dict, awsAccountId: str, awsRegion: str, 
     """[DocumentDB.1] DocumentDB instances should not be exposed to the public"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for docdb in describe_db_instances(cache)["DBInstances"]:
+    for docdb in describe_db_instances(cache):
         docdbId = str(docdb["DBInstanceIdentifier"])
         docdbArn = str(docdb["DBInstanceArn"])
         publicAccessCheck = str(docdb["PubliclyAccessible"])
@@ -207,7 +214,7 @@ def docdb_instance_encryption_check(cache: dict, awsAccountId: str, awsRegion: s
     """[DocumentDB.2] DocumentDB instances should be encrypted"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for docdb in describe_db_instances(cache)["DBInstances"]:
+    for docdb in describe_db_instances(cache):
         docdbId = str(docdb["DBInstanceIdentifier"])
         docdbArn = str(docdb["DBInstanceArn"])
         encryptionCheck = str(docdb["StorageEncrypted"])
@@ -343,7 +350,7 @@ def docdb_instance_audit_logging_check(cache: dict, awsAccountId: str, awsRegion
     """[DocumentDB.3] DocumentDB instances should have audit logging configured"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for docdb in describe_db_instances(cache)["DBInstances"]:
+    for docdb in describe_db_instances(cache):
         docdbId = str(docdb["DBInstanceIdentifier"])
         docdbArn = str(docdb["DBInstanceArn"])
         # this is a passing check
