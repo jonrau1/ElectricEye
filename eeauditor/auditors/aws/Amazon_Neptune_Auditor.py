@@ -42,7 +42,9 @@ def describe_db_clusters(cache):
     response = cache.get("describe_db_clusters")
     if response:
         return response
-    cache["describe_db_clusters"] = neptune.describe_db_clusters()
+    cache["describe_db_clusters"] = neptune.describe_db_clusters(
+        Filters=[{"Name": "engine", "Values": ["neptune"]}]
+    )
     return cache["describe_db_clusters"]
 
 # loop through cluster parameter groups

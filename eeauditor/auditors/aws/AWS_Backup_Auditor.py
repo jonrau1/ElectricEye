@@ -32,6 +32,8 @@ ec2 = boto3.client("ec2")
 dynamodb = boto3.client("dynamodb")
 rds = boto3.client("rds")
 efs = boto3.client("efs")
+neptune = boto3.client("neptune")
+documentdb = boto3.client("docdb")
 
 # loop through *in-use* EBS volumes
 def describe_volumes(cache):
@@ -121,6 +123,26 @@ def describe_file_systems(cache):
         return response
     cache["describe_file_systems"] = efs.describe_file_systems()
     return cache["describe_file_systems"]
+
+# loop through Neptune clusters
+def describe_db_clusters(cache):
+    response = cache.get("describe_db_clusters")
+    if response:
+        return response
+    cache["describe_db_clusters"] = neptune.describe_db_clusters(
+        Filters=[{"Name": "engine", "Values": ["neptune"]}]
+    )
+    return cache["describe_db_clusters"]
+
+# loop through DocDb clusters
+def describe_db_clusters(cache):
+    response = cache.get("describe_db_clusters")
+    if response:
+        return response
+    cache["describe_db_clusters"] = documentdb.describe_db_clusters(
+        Filters=[{"Name": "engine", "Values": ["docdb"]}]
+    )
+    return cache["describe_db_clusters"]
 
 @registry.register_check("backup")
 def volume_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -738,6 +760,157 @@ def efs_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                             "Id": fileSysArn,
                             "Partition": awsPartition,
                             "Region": awsRegion
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF ID.BE-5",
+                            "NIST CSF PR.PT-5",
+                            "NIST SP 800-53 CP-2",
+                            "NIST SP 800-53 CP-11",
+                            "NIST SP 800-53 SA-13",
+                            "NIST SP 800-53 SA14",
+                            "AICPA TSC CC3.1",
+                            "AICPA TSC A1.2",
+                            "ISO 27001:2013 A.11.1.4",
+                            "ISO 27001:2013 A.17.1.1",
+                            "ISO 27001:2013 A.17.1.2",
+                            "ISO 27001:2013 A.17.2.1"
+                        ]
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE"
+                }
+                yield finding
+
+@registry.register_check("backup")
+def neptune_cluster_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Backup.6] Neptune clusters should be protected by AWS Backup"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for cluster in describe_db_clusters(cache)["DBClusters"]:
+        clusterArn = cluster["DBClusterArn"]
+        clusterId = cluster["DBClusterIdentifier"]
+        clusterParameterGroupName = cluster["DBClusterParameterGroup"]
+        try:
+            backup.describe_protected_resource(ResourceArn=clusterArn)
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{clusterArn}/neptune-cluster-backups",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": clusterArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Backup.6] Neptune clusters should be protected by AWS Backup",
+                "Description": f"Neptune cluster {clusterId} is protected by AWS Backup.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on creating scheduled backups refer to the Assign Resources to a Backup Plan section of the AWS Backup Developer Guide.",
+                        "Url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/create-a-scheduled-backup.html#assign-resources-to-plan",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsNeptuneDbCluster",
+                        "Id": clusterArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "DBClusterIdentifier": clusterId,
+                                "AvailabilityZones": str(cluster["AvailabilityZones"]),
+                                "DBClusterParameterGroup": clusterParameterGroupName,
+                                "DBSubnetGroup": cluster["DBSubnetGroup"],
+                                "Status": cluster["Status"],
+                                "Endpoint": cluster["Endpoint"],
+                                "ReaderEndpoint": cluster["ReaderEndpoint"],
+                                "Engine": cluster["Engine"],
+                                "EngineVersion": cluster["EngineVersion"],
+                                "Port": str(cluster["Port"]),
+                                "MasterUsername": cluster["MasterUsername"],
+                                "DbClusterResourceId": cluster["DbClusterResourceId"],
+                                "ClusterCreateTime": str(cluster["ClusterCreateTime"]),
+                                "CrossAccountClone": str(cluster["CrossAccountClone"])
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.BE-5",
+                        "NIST CSF PR.PT-5",
+                        "NIST SP 800-53 CP-2",
+                        "NIST SP 800-53 CP-11",
+                        "NIST SP 800-53 SA-13",
+                        "NIST SP 800-53 SA14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+        except botocore.exceptions.ClientError as error:
+            # Handle "ResourceNotFoundException" exception which means the resource is not protected
+            if error.response['Error']['Code'] == 'ResourceNotFoundException':
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{clusterArn}/neptune-cluster-backups",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": clusterArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "MEDIUM"},
+                    "Confidence": 99,
+                    "Title": "[Backup.6] Neptune clusters should be protected by AWS Backup",
+                    "Description": f"Neptune cluster {clusterId} is not protected by AWS Backup. Refer to the remediation instructions for information on ensuring disaster recovery and business continuity requirements are fulfilled for Neptune clusters.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For information on creating scheduled backups refer to the Assign Resources to a Backup Plan section of the AWS Backup Developer Guide.",
+                            "Url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/create-a-scheduled-backup.html#assign-resources-to-plan",
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsNeptuneDbCluster",
+                            "Id": clusterArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "Other": {
+                                    "DBClusterIdentifier": clusterId,
+                                    "AvailabilityZones": str(cluster["AvailabilityZones"]),
+                                    "DBClusterParameterGroup": clusterParameterGroupName,
+                                    "DBSubnetGroup": cluster["DBSubnetGroup"],
+                                    "Status": cluster["Status"],
+                                    "Endpoint": cluster["Endpoint"],
+                                    "ReaderEndpoint": cluster["ReaderEndpoint"],
+                                    "Engine": cluster["Engine"],
+                                    "EngineVersion": cluster["EngineVersion"],
+                                    "Port": str(cluster["Port"]),
+                                    "MasterUsername": cluster["MasterUsername"],
+                                    "DbClusterResourceId": cluster["DbClusterResourceId"],
+                                    "ClusterCreateTime": str(cluster["ClusterCreateTime"]),
+                                    "CrossAccountClone": str(cluster["CrossAccountClone"])
+                                }
+                            }
                         }
                     ],
                     "Compliance": {
