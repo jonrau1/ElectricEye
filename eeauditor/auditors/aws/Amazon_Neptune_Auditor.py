@@ -1322,7 +1322,7 @@ def neptune_cluster_autoscaling_check(cache: dict, awsAccountId: str, awsRegion:
                 continue
 
 @registry.register_check("neptune")
-def neptune_cluster_autoscaling_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def neptune_cluster_gremlin_query_result_cache_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Neptune.9] Neptune clusters should be configured for result caching"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
