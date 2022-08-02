@@ -30,28 +30,26 @@ ec2 = boto3.client("ec2")
 elasticbeanstalk = boto3.client("elasticbeanstalk")
 
 # loop through EBS volumes
-def describe_applications(cache):
-    response = cache.get("describe_applications")
+def describe_environments(cache):
+    response = cache.get("describe_environments")
     if response:
         return response
-    cache["describe_applications"] = elasticbeanstalk.describe_applications()
-    return cache["describe_applications"]
+    cache["describe_environments"] = elasticbeanstalk.describe_environments()
+    return cache["describe_environments"]
 
 @registry.register_check("elasticbeanstalk")
 def ebs_volume_attachment_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EBS.1] EBS Volumes should be in an attached state"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for apps in describe_applications(cache)["Applications"]:
-        appArn = apps["ApplicationArn"]
-        appName = apps["ApplicationName"]
-        # get configs??
-        r = elasticbeanstalk.describe_configuration_settings(ApplicationName=appName)
-        print(json.dumps(
-            r,
-            indent=4,
-            default=str
-        ))
+    for volumes in describe_environments(cache)["Environments"]:
+        print(
+            json.dumps(
+                volumes,
+                indent=4,
+                default=str
+            )
+        )
 
 '''
 @registry.register_check("ec2")
