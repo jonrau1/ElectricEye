@@ -20,14 +20,14 @@
 
 import boto3
 import datetime
-from check_register import CheckRegister
 from dateutil.parser import parse
+from check_register import CheckRegister
 
 registry = CheckRegister()
 
 ec2 = boto3.client("ec2")
 
-def paginate(cache):
+def describe_instances(cache):
     instanceList = []
     response = cache.get("instances")
     if response:
@@ -46,7 +46,7 @@ def ec2_imdsv2_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
     """[EC2.1] EC2 Instances should be configured to use instance metadata service V2 (IMDSv2)"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for i in paginate(cache=cache):
+    for i in describe_instances(cache):
         instanceId = str(i["InstanceId"])
         instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
         instanceType = str(i["InstanceType"])
@@ -103,7 +103,7 @@ def ec2_imdsv2_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                                     "SubnetId": subnetId,
                                     "LaunchedAt": parse(instanceLaunchedAt).isoformat(),
                                 }
-                            },
+                            }
                         }
                     ],
                     "Compliance": {
@@ -209,7 +209,7 @@ def ec2_secure_enclave_check(cache: dict, awsAccountId: str, awsRegion: str, aws
     """[EC2.2] EC2 Instances should be configured to use Secure Enclaves"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for i in paginate(cache=cache):
+    for i in describe_instances(cache):
         instanceId = str(i["InstanceId"])
         instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
         instanceType = str(i["InstanceType"])
@@ -367,7 +367,7 @@ def ec2_public_facing_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
     """[EC2.3] EC2 Instances should not be internet-facing"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for i in paginate(cache=cache):
+    for i in describe_instances(cache):
         instanceId = str(i["InstanceId"])
         instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
         instanceType = str(i["InstanceType"])
@@ -518,7 +518,7 @@ def ec2_source_dest_verification_check(cache: dict, awsAccountId: str, awsRegion
     """[EC2.4] EC2 Instances should use Source-Destination checks unless absolutely not required"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for i in paginate(cache=cache):
+    for i in describe_instances(cache):
         instanceId = str(i["InstanceId"])
         instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
         instanceType = str(i["InstanceType"])
@@ -792,7 +792,7 @@ def ec2_ami_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
     """[EC2.5] EC2 Instances should use AMIs that are less than 3 months old"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for i in paginate(cache=cache):
+    for i in describe_instances(cache):
         instanceId = str(i["InstanceId"])
         instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
         instanceType = str(i["InstanceType"])
@@ -939,7 +939,7 @@ def ec2_ami_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
     """[EC2.6] EC2 Instances should use AMIs that are currently registered"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for i in paginate(cache=cache):
+    for i in describe_instances(cache):
         instanceId = str(i["InstanceId"])
         instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
         instanceType = str(i["InstanceType"])
@@ -1208,7 +1208,7 @@ def ec2_concentration_risk(cache: dict, awsAccountId: str, awsRegion: str, awsPa
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # Evaluation time - grab all unique subnets per EC2 instance in Region
-    for i in paginate(cache=cache):
+    for i in describe_instances(cache):
         subnetId = str(i["SubnetId"])
         # write subnets to list if it"s not there
         if subnetId not in uSubnets:

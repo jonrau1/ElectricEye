@@ -26,6 +26,7 @@ registry = CheckRegister()
 
 # import boto3 clients
 efs = boto3.client("efs")
+
 # loop through EFS file systems
 def describe_file_systems(cache):
     response = cache.get("describe_file_systems")
@@ -34,18 +35,16 @@ def describe_file_systems(cache):
     cache["describe_file_systems"] = efs.describe_file_systems()
     return cache["describe_file_systems"]
 
-
 @registry.register_check("efs")
 def efs_filesys_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EFS.1] EFS File Systems should have encryption enabled"""
-    response = describe_file_systems(cache)
-    myFileSys = response["FileSystems"]
-    for filesys in myFileSys:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for filesys in describe_file_systems(cache)["FileSystems"]:
         encryptionCheck = str(filesys["Encrypted"])
         fileSysId = str(filesys["FileSystemId"])
         fileSysArn = f"arn:{awsPartition}:elasticfilesystem:{awsRegion}:{awsAccountId}:file-system/{fileSysId}"
-        # ISO Time
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        # this is a failing chec
         if encryptionCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -97,6 +96,7 @@ def efs_filesys_encryption_check(cache: dict, awsAccountId: str, awsRegion: str,
                 "RecordState": "ACTIVE",
             }
             yield finding
+        # this is a passing check
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -150,18 +150,14 @@ def efs_filesys_encryption_check(cache: dict, awsAccountId: str, awsRegion: str,
 @registry.register_check("efs")
 def efs_filesys_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EFS.2] EFS File Systems should not use the default file system policy"""
-    response = describe_file_systems(cache)
-    myFileSys = response["FileSystems"]
-    for filesys in myFileSys:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for filesys in describe_file_systems(cache)["FileSystems"]:
         fileSysId = str(filesys["FileSystemId"])
         fileSysArn = f"arn:{awsPartition}:elasticfilesystem:{awsRegion}:{awsAccountId}:file-system/{fileSysId}"
-        # ISO Time
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        
+        # this is a passing check
         try:
-            response = efs.describe_file_system_policy(
-                FileSystemId=fileSysId
-            )
+            efs.describe_file_system_policy(FileSystemId=fileSysId)
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": fileSysArn + "/efs-policy-check",
@@ -214,7 +210,7 @@ def efs_filesys_policy_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                 "RecordState": "ARCHIVED",
             }
             yield finding
-        
+        # this is a failing check
         except efs.exceptions.FileSystemNotFound:
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -268,6 +264,3 @@ def efs_filesys_policy_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                 "RecordState": "ACTIVE",
             }
             yield finding
-        
-        except: 
-            pass
