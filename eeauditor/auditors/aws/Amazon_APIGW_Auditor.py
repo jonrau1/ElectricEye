@@ -335,133 +335,127 @@ def api_gateway_stage_cacheing_enabled_check(cache: dict, awsAccountId: str, aws
             except KeyError:
                 cachingCheck = "False"
             if cachingCheck == "False":
-                try:
-                    finding = {
-                        "SchemaVersion": "2018-10-08",
-                        "Id": apiStageArn + "/apigateway-stage-caching-enabled-check",
-                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": apiStageArn,
-                        "AwsAccountId": awsAccountId,
-                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                        "FirstObservedAt": iso8601Time,
-                        "CreatedAt": iso8601Time,
-                        "UpdatedAt": iso8601Time,
-                        "Severity": {"Label": "LOW"},
-                        "Confidence": 99,
-                        "Title": "[APIGateway.3] API Gateway Rest API Stages should have Caching enabled",
-                        "Description": "API Gateway stage "
-                        + apiStageName
-                        + " for Rest API "
-                        + apiGwApiName
-                        + " does not have Caching enabled. You can enable API caching in Amazon API Gateway to cache your endpoints responses. With caching, you can reduce the number of calls made to your endpoint and also improve the latency of requests to your API. Refer to the remediation instructions if this configuration is not intended",
-                        "Remediation": {
-                            "Recommendation": {
-                                "Text": "If your API Gateway stage should have caching enabled refer to the Enable API Caching to Enhance Responsiveness section of the Amazon API Gateway Developer Guide",
-                                "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html",
-                            }
-                        },
-                        "ProductFields": {"Product Name": "ElectricEye"},
-                        "Resources": [
-                            {
-                                "Type": "AwsApiGatewayStage",
-                                "Id": apiStageArn,
-                                "Partition": awsPartition,
-                                "Region": awsRegion,
-                                "Details": {
-                                    "AwsApiGatewayStage": {
-                                        "DeploymentId": apiStageDeploymentId,
-                                        "StageName": apiStageName,
-                                    }
-                                },
-                            }
-                        ],
-                        "Compliance": {
-                            "Status": "FAILED",
-                            "RelatedRequirements": [
-                                "NIST CSF ID.BE-5",
-                                "NIST CSF PR.PT-5",
-                                "NIST SP 800-53 CP-2",
-                                "NIST SP 800-53 CP-11",
-                                "NIST SP 800-53 SA-13",
-                                "NIST SP 800-53 SA14",
-                                "AICPA TSC CC3.1",
-                                "AICPA TSC A1.2",
-                                "ISO 27001:2013 A.11.1.4",
-                                "ISO 27001:2013 A.17.1.1",
-                                "ISO 27001:2013 A.17.1.2",
-                                "ISO 27001:2013 A.17.2.1",
-                            ],
-                        },
-                        "Workflow": {"Status": "NEW"},
-                        "RecordState": "ACTIVE",
-                    }
-                    yield finding
-                except Exception as e:
-                    print(e)
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": apiStageArn + "/apigateway-stage-caching-enabled-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": apiStageArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "LOW"},
+                    "Confidence": 99,
+                    "Title": "[APIGateway.3] API Gateway Rest API Stages should have Caching enabled",
+                    "Description": "API Gateway stage "
+                    + apiStageName
+                    + " for Rest API "
+                    + apiGwApiName
+                    + " does not have Caching enabled. You can enable API caching in Amazon API Gateway to cache your endpoints responses. With caching, you can reduce the number of calls made to your endpoint and also improve the latency of requests to your API. Refer to the remediation instructions if this configuration is not intended",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "If your API Gateway stage should have caching enabled refer to the Enable API Caching to Enhance Responsiveness section of the Amazon API Gateway Developer Guide",
+                            "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html",
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsApiGatewayStage",
+                            "Id": apiStageArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsApiGatewayStage": {
+                                    "DeploymentId": apiStageDeploymentId,
+                                    "StageName": apiStageName,
+                                }
+                            },
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF ID.BE-5",
+                            "NIST CSF PR.PT-5",
+                            "NIST SP 800-53 CP-2",
+                            "NIST SP 800-53 CP-11",
+                            "NIST SP 800-53 SA-13",
+                            "NIST SP 800-53 SA14",
+                            "AICPA TSC CC3.1",
+                            "AICPA TSC A1.2",
+                            "ISO 27001:2013 A.11.1.4",
+                            "ISO 27001:2013 A.17.1.1",
+                            "ISO 27001:2013 A.17.1.2",
+                            "ISO 27001:2013 A.17.2.1"
+                        ]
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE"
+                }
+                yield finding
             else:
-                try:
-                    finding = {
-                        "SchemaVersion": "2018-10-08",
-                        "Id": apiStageArn + "/apigateway-stage-caching-enabled-check",
-                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": apiStageArn,
-                        "AwsAccountId": awsAccountId,
-                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                        "FirstObservedAt": iso8601Time,
-                        "CreatedAt": iso8601Time,
-                        "UpdatedAt": iso8601Time,
-                        "Severity": {"Label": "INFORMATIONAL"},
-                        "Confidence": 99,
-                        "Title": "[APIGateway.3] API Gateway Rest API Stages should have Caching enabled",
-                        "Description": "API Gateway stage "
-                        + apiStageName
-                        + " for Rest API "
-                        + apiGwApiName
-                        + " has Caching enabled.",
-                        "Remediation": {
-                            "Recommendation": {
-                                "Text": "If your API Gateway stage should have caching enabled refer to the Enable API Caching to Enhance Responsiveness section of the Amazon API Gateway Developer Guide",
-                                "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html",
-                            }
-                        },
-                        "ProductFields": {"Product Name": "ElectricEye"},
-                        "Resources": [
-                            {
-                                "Type": "AwsApiGatewayStage",
-                                "Id": apiStageArn,
-                                "Partition": awsPartition,
-                                "Region": awsRegion,
-                                "Details": {
-                                    "AwsApiGatewayStage": {
-                                        "DeploymentId": apiStageDeploymentId,
-                                        "StageName": apiStageName,
-                                    }
-                                },
-                            }
-                        ],
-                        "Compliance": {
-                            "Status": "PASSED",
-                            "RelatedRequirements": [
-                                "NIST CSF ID.BE-5",
-                                "NIST CSF PR.PT-5",
-                                "NIST SP 800-53 CP-2",
-                                "NIST SP 800-53 CP-11",
-                                "NIST SP 800-53 SA-13",
-                                "NIST SP 800-53 SA14",
-                                "AICPA TSC CC3.1",
-                                "AICPA TSC A1.2",
-                                "ISO 27001:2013 A.11.1.4",
-                                "ISO 27001:2013 A.17.1.1",
-                                "ISO 27001:2013 A.17.1.2",
-                                "ISO 27001:2013 A.17.2.1",
-                            ],
-                        },
-                        "Workflow": {"Status": "RESOLVED"},
-                        "RecordState": "ARCHIVED",
-                    }
-                    yield finding
-                except Exception as e:
-                    print(e)
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": apiStageArn + "/apigateway-stage-caching-enabled-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": apiStageArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Confidence": 99,
+                    "Title": "[APIGateway.3] API Gateway Rest API Stages should have Caching enabled",
+                    "Description": "API Gateway stage "
+                    + apiStageName
+                    + " for Rest API "
+                    + apiGwApiName
+                    + " has Caching enabled.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "If your API Gateway stage should have caching enabled refer to the Enable API Caching to Enhance Responsiveness section of the Amazon API Gateway Developer Guide",
+                            "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html",
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsApiGatewayStage",
+                            "Id": apiStageArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsApiGatewayStage": {
+                                    "DeploymentId": apiStageDeploymentId,
+                                    "StageName": apiStageName,
+                                }
+                            },
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF ID.BE-5",
+                            "NIST CSF PR.PT-5",
+                            "NIST SP 800-53 CP-2",
+                            "NIST SP 800-53 CP-11",
+                            "NIST SP 800-53 SA-13",
+                            "NIST SP 800-53 SA14",
+                            "AICPA TSC CC3.1",
+                            "AICPA TSC A1.2",
+                            "ISO 27001:2013 A.11.1.4",
+                            "ISO 27001:2013 A.17.1.1",
+                            "ISO 27001:2013 A.17.1.2",
+                            "ISO 27001:2013 A.17.2.1"
+                        ]
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED"
+                }
+                yield finding
 
 @registry.register_check("apigateway")
 def api_gateway_stage_cache_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
