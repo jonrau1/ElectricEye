@@ -20,13 +20,11 @@
 
 import boto3
 import datetime
-import json
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
 # import boto3 clients
-ec2 = boto3.client("ec2")
 elasticbeanstalk = boto3.client("elasticbeanstalk")
 
 # loop through EBS volumes
@@ -350,4 +348,462 @@ def elasticbeanstalk_platform_auto_update_check(cache: dict, awsAccountId: str, 
                     break
                 else:
                     continue
-#
+
+@registry.register_check("elasticbeanstalk")
+def elasticbeanstalk_enhanced_health_reporting_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ElasticBeanstalk.3] Elastic Beanstalk environments should have enhanced health reporting enabled"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for envs in describe_environments(cache)["Environments"]:
+        envArn = envs["EnvironmentArn"]
+        envName = envs["EnvironmentName"]
+        appName = envs["ApplicationName"]
+        # loop through all of the configs and option sets to find what we want
+        for configs in elasticbeanstalk.describe_configuration_settings(
+            ApplicationName=appName,
+            EnvironmentName=envName
+        )["ConfigurationSettings"]:
+            for opts in configs["OptionSettings"]:
+                if opts["OptionName"] == "EnhancedHealthAuthEnabled":
+                    # this is a failing check
+                    if opts["Value"] == "false":
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": f"{envArn}/beanstalk-env-enhanced-health-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": envArn,
+                            "AwsAccountId": awsAccountId,
+                            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "LOW"},
+                            "Confidence": 99,
+                            "Title": "[ElasticBeanstalk.3] Elastic Beanstalk environments should have enhanced health reporting enabled",
+                            "Description": f"Elastic Beanstalk environment {envName} does not have enhanced health reporting enabled. Elastic Beanstalk enhanced health reporting enables a more rapid response to changes in the health of the underlying infrastructure. These changes could result in a lack of availability of the application. Elastic Beanstalk enhanced health reporting provides a status descriptor to gauge the severity of the identified issues and identify possible causes to investigate. The Elastic Beanstalk health agent, included in supported Amazon Machine Images (AMIs), evaluates logs and metrics of environment EC2 instances. Refer to the remediation instructions if this configuration is not intended.",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "If you Elastic Beanstalk environment should be configured to use enhanced health reporting refer to the Enhanced health reporting and monitoring section of the AWS Elastic Beanstalk Developer Guide.",
+                                    "Url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/health-enhanced.html",
+                                }
+                            },
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsElasticBeanstalkEnvironment",
+                                    "Id": envArn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "AwsElasticBeanstalkEnvironment": {
+                                            "ApplicationName": appName,
+                                            "EnvironmentArn": envArn,
+                                            "EnvironmentId": envs["EnvironmentId"],
+                                            "EnvironmentName": envName,
+                                            "PlatformArn": envs["PlatformArn"],
+                                            "Status": envs["Status"],
+                                            "VersionLabel": envs["VersionLabel"],
+                                            "Tier": {
+                                                "Name": envs["Tier"]["Name"],
+                                                "Type": envs["Tier"]["Type"],
+                                                "Version": envs["Tier"]["Version"]
+                                            }
+                                        }
+                                    }
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "FAILED",
+                                "RelatedRequirements": [
+                                    "NIST CSF DE.AE-3",
+                                    "NIST SP 800-53 AU-6",
+                                    "NIST SP 800-53 CA-7",
+                                    "NIST SP 800-53 IR-4",
+                                    "NIST SP 800-53 IR-5",
+                                    "NIST SP 800-53 IR-8",
+                                    "NIST SP 800-53 SI-4",
+                                    "AICPA TSC CC7.2",
+                                    "ISO 27001:2013 A.12.4.1",
+                                    "ISO 27001:2013 A.16.1.7"
+                                ]
+                            },
+                            "Workflow": {"Status": "NEW"},
+                            "RecordState": "ACTIVE"
+                        }
+                        yield finding
+                    # this is a passing check
+                    else:
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": f"{envArn}/beanstalk-env-enhanced-health-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": envArn,
+                            "AwsAccountId": awsAccountId,
+                            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "INFORMATIONAL"},
+                            "Confidence": 99,
+                            "Title": "[ElasticBeanstalk.3] Elastic Beanstalk environments should have enhanced health reporting enabled",
+                            "Description": f"Elastic Beanstalk environment {envName} has enhanced health reporting enabled.",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "If you Elastic Beanstalk environment should be configured to use enhanced health reporting refer to the Enhanced health reporting and monitoring section of the AWS Elastic Beanstalk Developer Guide.",
+                                    "Url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/health-enhanced.html",
+                                }
+                            },
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsElasticBeanstalkEnvironment",
+                                    "Id": envArn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "AwsElasticBeanstalkEnvironment": {
+                                            "ApplicationName": appName,
+                                            "EnvironmentArn": envArn,
+                                            "EnvironmentId": envs["EnvironmentId"],
+                                            "EnvironmentName": envName,
+                                            "PlatformArn": envs["PlatformArn"],
+                                            "Status": envs["Status"],
+                                            "VersionLabel": envs["VersionLabel"],
+                                            "Tier": {
+                                                "Name": envs["Tier"]["Name"],
+                                                "Type": envs["Tier"]["Type"],
+                                                "Version": envs["Tier"]["Version"]
+                                            }
+                                        }
+                                    }
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "PASSED",
+                                "RelatedRequirements": [
+                                    "NIST CSF DE.AE-3",
+                                    "NIST SP 800-53 AU-6",
+                                    "NIST SP 800-53 CA-7",
+                                    "NIST SP 800-53 IR-4",
+                                    "NIST SP 800-53 IR-5",
+                                    "NIST SP 800-53 IR-8",
+                                    "NIST SP 800-53 SI-4",
+                                    "AICPA TSC CC7.2",
+                                    "ISO 27001:2013 A.12.4.1",
+                                    "ISO 27001:2013 A.16.1.7"
+                                ]
+                            },
+                            "Workflow": {"Status": "RESOLVED"},
+                            "RecordState": "ARCHIVED"
+                        }
+                        yield finding
+                    # stop the loop after the right option is found
+                    break
+                else:
+                    continue
+
+@registry.register_check("elasticbeanstalk")
+def elasticbeanstalk_log_streaming_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ElasticBeanstalk.4] Elastic Beanstalk environments should have log streaming enabled"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for envs in describe_environments(cache)["Environments"]:
+        envArn = envs["EnvironmentArn"]
+        envName = envs["EnvironmentName"]
+        appName = envs["ApplicationName"]
+        # loop through all of the configs and option sets to find what we want
+        for configs in elasticbeanstalk.describe_configuration_settings(
+            ApplicationName=appName,
+            EnvironmentName=envName
+        )["ConfigurationSettings"]:
+            for opts in configs["OptionSettings"]:
+                if opts["OptionName"] == "StreamLogs":
+                    # this is a failing check
+                    if opts["Value"] == "false":
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": f"{envArn}/beanstalk-env-log-streaming-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": envArn,
+                            "AwsAccountId": awsAccountId,
+                            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "LOW"},
+                            "Confidence": 99,
+                            "Title": "[ElasticBeanstalk.4] Elastic Beanstalk environments should have log streaming enabled",
+                            "Description": f"Elastic Beanstalk environment {envName} does not have log streaming enabled. Elastic Beanstalk installs a CloudWatch log agent with the default configuration settings on each instance it creates. Learn more in the CloudWatch Logs Agent Reference. When you enable instance log streaming to CloudWatch Logs, Elastic Beanstalk sends log files from your environment's instances to CloudWatch Logs. Different platforms stream different logs. Refer to the remediation instructions if this configuration is not intended.",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "If you Elastic Beanstalk environment should be configured to use log streaming refer to the Using Elastic Beanstalk with Amazon CloudWatch Logs section of the AWS Elastic Beanstalk Developer Guide.",
+                                    "Url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/AWSHowTo.cloudwatchlogs.html",
+                                }
+                            },
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsElasticBeanstalkEnvironment",
+                                    "Id": envArn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "AwsElasticBeanstalkEnvironment": {
+                                            "ApplicationName": appName,
+                                            "EnvironmentArn": envArn,
+                                            "EnvironmentId": envs["EnvironmentId"],
+                                            "EnvironmentName": envName,
+                                            "PlatformArn": envs["PlatformArn"],
+                                            "Status": envs["Status"],
+                                            "VersionLabel": envs["VersionLabel"],
+                                            "Tier": {
+                                                "Name": envs["Tier"]["Name"],
+                                                "Type": envs["Tier"]["Type"],
+                                                "Version": envs["Tier"]["Version"]
+                                            }
+                                        }
+                                    }
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "FAILED",
+                                "RelatedRequirements": [
+                                    "NIST CSF DE.AE-3",
+                                    "NIST SP 800-53 AU-6",
+                                    "NIST SP 800-53 CA-7",
+                                    "NIST SP 800-53 IR-4",
+                                    "NIST SP 800-53 IR-5",
+                                    "NIST SP 800-53 IR-8",
+                                    "NIST SP 800-53 SI-4",
+                                    "AICPA TSC CC7.2",
+                                    "ISO 27001:2013 A.12.4.1",
+                                    "ISO 27001:2013 A.16.1.7"
+                                ]
+                            },
+                            "Workflow": {"Status": "NEW"},
+                            "RecordState": "ACTIVE"
+                        }
+                        yield finding
+                    # this is a passing check
+                    else:
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": f"{envArn}/beanstalk-env-log-streaming-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": envArn,
+                            "AwsAccountId": awsAccountId,
+                            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "INFORMATIONAL"},
+                            "Confidence": 99,
+                            "Title": "[ElasticBeanstalk.4] Elastic Beanstalk environments should have log streaming enabled",
+                            "Description": f"Elastic Beanstalk environment {envName} has log streaming enabled.",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "If you Elastic Beanstalk environment should be configured to use log streaming refer to the Using Elastic Beanstalk with Amazon CloudWatch Logs section of the AWS Elastic Beanstalk Developer Guide.",
+                                    "Url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/AWSHowTo.cloudwatchlogs.html",
+                                }
+                            },
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsElasticBeanstalkEnvironment",
+                                    "Id": envArn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "AwsElasticBeanstalkEnvironment": {
+                                            "ApplicationName": appName,
+                                            "EnvironmentArn": envArn,
+                                            "EnvironmentId": envs["EnvironmentId"],
+                                            "EnvironmentName": envName,
+                                            "PlatformArn": envs["PlatformArn"],
+                                            "Status": envs["Status"],
+                                            "VersionLabel": envs["VersionLabel"],
+                                            "Tier": {
+                                                "Name": envs["Tier"]["Name"],
+                                                "Type": envs["Tier"]["Type"],
+                                                "Version": envs["Tier"]["Version"]
+                                            }
+                                        }
+                                    }
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "PASSED",
+                                "RelatedRequirements": [
+                                    "NIST CSF DE.AE-3",
+                                    "NIST SP 800-53 AU-6",
+                                    "NIST SP 800-53 CA-7",
+                                    "NIST SP 800-53 IR-4",
+                                    "NIST SP 800-53 IR-5",
+                                    "NIST SP 800-53 IR-8",
+                                    "NIST SP 800-53 SI-4",
+                                    "AICPA TSC CC7.2",
+                                    "ISO 27001:2013 A.12.4.1",
+                                    "ISO 27001:2013 A.16.1.7"
+                                ]
+                            },
+                            "Workflow": {"Status": "RESOLVED"},
+                            "RecordState": "ARCHIVED"
+                        }
+                        yield finding
+                    # stop the loop after the right option is found
+                    break
+                else:
+                    continue
+
+@registry.register_check("elasticbeanstalk")
+def elasticbeanstalk_xray_tracing_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ElasticBeanstalk.5] Elastic Beanstalk environments should have tracing enabled"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for envs in describe_environments(cache)["Environments"]:
+        envArn = envs["EnvironmentArn"]
+        envName = envs["EnvironmentName"]
+        appName = envs["ApplicationName"]
+        # loop through all of the configs and option sets to find what we want
+        for configs in elasticbeanstalk.describe_configuration_settings(
+            ApplicationName=appName,
+            EnvironmentName=envName
+        )["ConfigurationSettings"]:
+            for opts in configs["OptionSettings"]:
+                if opts["OptionName"] == "XRayEnabled":
+                    # this is a failing check
+                    if opts["Value"] == "false":
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": f"{envArn}/beanstalk-env-xray-tracing-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": envArn,
+                            "AwsAccountId": awsAccountId,
+                            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "LOW"},
+                            "Confidence": 99,
+                            "Title": "[ElasticBeanstalk.5] Elastic Beanstalk environments should have tracing enabled",
+                            "Description": f"Elastic Beanstalk environment {envName} does not have tracing enabled. To relay trace data from your application to AWS X-Ray, you can run the X-Ray daemon on your Elastic Beanstalk environment's Amazon EC2 instances. Elastic Beanstalk platforms provide a configuration option that you can set to run the daemon automatically. You can enable the daemon in a configuration file in your source code or by choosing an option in the Elastic Beanstalk console. When you enable the configuration option, the daemon is installed on the instance and runs as a service. Refer to the remediation instructions if this configuration is not intended.",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "If you Elastic Beanstalk environment should be configured to use AWS X-Ray tracing refer to the Running the X-Ray daemon on AWS Elastic Beanstalk section of the AWS X-Ray Developer Guide.",
+                                    "Url": "https://docs.aws.amazon.com/xray/latest/devguide/xray-daemon-beanstalk.html",
+                                }
+                            },
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsElasticBeanstalkEnvironment",
+                                    "Id": envArn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "AwsElasticBeanstalkEnvironment": {
+                                            "ApplicationName": appName,
+                                            "EnvironmentArn": envArn,
+                                            "EnvironmentId": envs["EnvironmentId"],
+                                            "EnvironmentName": envName,
+                                            "PlatformArn": envs["PlatformArn"],
+                                            "Status": envs["Status"],
+                                            "VersionLabel": envs["VersionLabel"],
+                                            "Tier": {
+                                                "Name": envs["Tier"]["Name"],
+                                                "Type": envs["Tier"]["Type"],
+                                                "Version": envs["Tier"]["Version"]
+                                            }
+                                        }
+                                    }
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "FAILED",
+                                "RelatedRequirements": [
+                                    "NIST CSF DE.AE-3",
+                                    "NIST SP 800-53 AU-6",
+                                    "NIST SP 800-53 CA-7",
+                                    "NIST SP 800-53 IR-4",
+                                    "NIST SP 800-53 IR-5",
+                                    "NIST SP 800-53 IR-8",
+                                    "NIST SP 800-53 SI-4",
+                                    "AICPA TSC CC7.2",
+                                    "ISO 27001:2013 A.12.4.1",
+                                    "ISO 27001:2013 A.16.1.7"
+                                ]
+                            },
+                            "Workflow": {"Status": "NEW"},
+                            "RecordState": "ACTIVE"
+                        }
+                        yield finding
+                    # this is a passing check
+                    else:
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": f"{envArn}/beanstalk-env-xray-tracing-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": envArn,
+                            "AwsAccountId": awsAccountId,
+                            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "INFORMATIONAL"},
+                            "Confidence": 99,
+                            "Title": "[ElasticBeanstalk.5] Elastic Beanstalk environments should have tracing enabled",
+                            "Description": f"Elastic Beanstalk environment {envName} has tracing enabled.",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "If you Elastic Beanstalk environment should be configured to use AWS X-Ray tracing refer to the Running the X-Ray daemon on AWS Elastic Beanstalk section of the AWS X-Ray Developer Guide.",
+                                    "Url": "https://docs.aws.amazon.com/xray/latest/devguide/xray-daemon-beanstalk.html",
+                                }
+                            },
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsElasticBeanstalkEnvironment",
+                                    "Id": envArn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "AwsElasticBeanstalkEnvironment": {
+                                            "ApplicationName": appName,
+                                            "EnvironmentArn": envArn,
+                                            "EnvironmentId": envs["EnvironmentId"],
+                                            "EnvironmentName": envName,
+                                            "PlatformArn": envs["PlatformArn"],
+                                            "Status": envs["Status"],
+                                            "VersionLabel": envs["VersionLabel"],
+                                            "Tier": {
+                                                "Name": envs["Tier"]["Name"],
+                                                "Type": envs["Tier"]["Type"],
+                                                "Version": envs["Tier"]["Version"]
+                                            }
+                                        }
+                                    }
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "PASSED",
+                                "RelatedRequirements": [
+                                    "NIST CSF DE.AE-3",
+                                    "NIST SP 800-53 AU-6",
+                                    "NIST SP 800-53 CA-7",
+                                    "NIST SP 800-53 IR-4",
+                                    "NIST SP 800-53 IR-5",
+                                    "NIST SP 800-53 IR-8",
+                                    "NIST SP 800-53 SI-4",
+                                    "AICPA TSC CC7.2",
+                                    "ISO 27001:2013 A.12.4.1",
+                                    "ISO 27001:2013 A.16.1.7"
+                                ]
+                            },
+                            "Workflow": {"Status": "RESOLVED"},
+                            "RecordState": "ARCHIVED"
+                        }
+                        yield finding
+                    # stop the loop after the right option is found
+                    break
+                else:
+                    continue

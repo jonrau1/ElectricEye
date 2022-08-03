@@ -86,7 +86,7 @@ def api_gateway_stage_metrics_enabled_check(cache: dict, awsAccountId: str, awsR
                             "Details": {
                                 "AwsApiGatewayStage": {
                                     "DeploymentId": apiStageDeploymentId,
-                                    "StageName": apiStageName,
+                                    "StageName": apiStageName
                                 }
                             },
                         }
@@ -103,11 +103,11 @@ def api_gateway_stage_metrics_enabled_check(cache: dict, awsAccountId: str, awsR
                             "NIST SP 800-53 SI-4",
                             "AICPA TSC CC7.2",
                             "ISO 27001:2013 A.12.4.1",
-                            "ISO 27001:2013 A.16.1.7",
-                        ],
+                            "ISO 27001:2013 A.16.1.7"
+                        ]
                     },
                     "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
+                    "RecordState": "ACTIVE"
                 }
                 yield finding
             # this is a passing check
@@ -146,7 +146,7 @@ def api_gateway_stage_metrics_enabled_check(cache: dict, awsAccountId: str, awsR
                             "Details": {
                                 "AwsApiGatewayStage": {
                                     "DeploymentId": apiStageDeploymentId,
-                                    "StageName": apiStageName,
+                                    "StageName": apiStageName
                                 }
                             },
                         }
@@ -163,11 +163,11 @@ def api_gateway_stage_metrics_enabled_check(cache: dict, awsAccountId: str, awsR
                             "NIST SP 800-53 SI-4",
                             "AICPA TSC CC7.2",
                             "ISO 27001:2013 A.12.4.1",
-                            "ISO 27001:2013 A.16.1.7",
-                        ],
+                            "ISO 27001:2013 A.16.1.7"
+                        ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED",
+                    "RecordState": "ARCHIVED"
                 }
                 yield finding
 
@@ -240,11 +240,11 @@ def api_gateway_stage_logging_check(cache: dict, awsAccountId: str, awsRegion: s
                             "NIST SP 800-53 SI-4",
                             "AICPA TSC CC7.2",
                             "ISO 27001:2013 A.12.4.1",
-                            "ISO 27001:2013 A.16.1.7",
-                        ],
+                            "ISO 27001:2013 A.16.1.7"
+                        ]
                     },
                     "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
+                    "RecordState": "ACTIVE"
                 }
                 yield finding
             else:
@@ -299,11 +299,11 @@ def api_gateway_stage_logging_check(cache: dict, awsAccountId: str, awsRegion: s
                             "NIST SP 800-53 SI-4",
                             "AICPA TSC CC7.2",
                             "ISO 27001:2013 A.12.4.1",
-                            "ISO 27001:2013 A.16.1.7",
-                        ],
+                            "ISO 27001:2013 A.16.1.7"
+                        ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED",
+                    "RecordState": "ARCHIVED"
                 }
                 yield finding
 
@@ -587,7 +587,7 @@ def api_gateway_stage_cache_encryption_check(cache: dict, awsAccountId: str, aws
                 yield finding
 
 @registry.register_check("apigateway")
-def api_gateway_stage_xray_tracking_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def api_gateway_stage_xray_tracing_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[APIGateway.5] API Gateway Rest API Stages should have tracing enabled"""
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for restapi in get_rest_apis(cache)["items"]:
@@ -603,7 +603,7 @@ def api_gateway_stage_xray_tracking_check(cache: dict, awsAccountId: str, awsReg
             if xrayTracingCheck == "False":
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": apiStageArn + "/apigateway-stage-xray-tracing-check",
+                    "Id": f"{apiStageArn}/apigateway-stage-xray-tracing-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": apiStageArn,
                     "AwsAccountId": awsAccountId,
@@ -614,15 +614,11 @@ def api_gateway_stage_xray_tracking_check(cache: dict, awsAccountId: str, awsReg
                     "Severity": {"Label": "LOW"},
                     "Confidence": 99,
                     "Title": "[APIGateway.5] API Gateway Rest API Stages should have tracing enabled",
-                    "Description": "API Gateway stage "
-                    + apiStageName
-                    + " for Rest API "
-                    + apiGwApiName
-                    + " does not have tracing enabled. Because X-Ray gives you an end-to-end view of an entire request, you can analyze latencies in your APIs and their backend services. You can use an X-Ray service map to view the latency of an entire request and that of the downstream services that are integrated with X-Ray. Refer to the remediation instructions if this configuration is not intended",
+                    "Description": f"API Gateway stage {apiStageName} for Rest API {apiGwApiName} does not have tracing enabled. Because X-Ray gives you an end-to-end view of an entire request, you can analyze latencies in your APIs and their backend services. You can use an X-Ray service map to view the latency of an entire request and that of the downstream services that are integrated with X-Ray. Refer to the remediation instructions if this configuration is not intended",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "If your API Gateway stage should have tracing enabled refer to the Set Up X-Ray Tracing in API Gateway section of the Amazon API Gateway Developer Guide",
-                            "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-set-up-tracing.html",
+                            "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-set-up-tracing.html"
                         }
                     },
                     "ProductFields": {"Product Name": "ElectricEye"},
@@ -652,18 +648,18 @@ def api_gateway_stage_xray_tracking_check(cache: dict, awsAccountId: str, awsReg
                             "NIST SP 800-53 SI-4",
                             "AICPA TSC CC7.2",
                             "ISO 27001:2013 A.12.4.1",
-                            "ISO 27001:2013 A.16.1.7",
-                        ],
+                            "ISO 27001:2013 A.16.1.7"
+                        ]
                     },
                     "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
+                    "RecordState": "ACTIVE"
                 }
                 yield finding
             # this is a passing check
             else:
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": apiStageArn + "/apigateway-stage-xray-tracing-check",
+                    "Id": f"{apiStageArn}/apigateway-stage-xray-tracing-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": apiStageArn,
                     "AwsAccountId": awsAccountId,
@@ -674,15 +670,11 @@ def api_gateway_stage_xray_tracking_check(cache: dict, awsAccountId: str, awsReg
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
                     "Title": "[APIGateway.5] API Gateway Rest API Stages should have tracing enabled",
-                    "Description": "API Gateway stage "
-                    + apiStageName
-                    + " for Rest API "
-                    + apiGwApiName
-                    + " has tracing enabled.",
+                    "Description": f"API Gateway stage {apiStageName} for Rest API {apiGwApiName} has tracing enabled.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "If your API Gateway stage should have tracing enabled refer to the Set Up X-Ray Tracing in API Gateway section of the Amazon API Gateway Developer Guide",
-                            "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-set-up-tracing.html",
+                            "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-set-up-tracing.html"
                         }
                     },
                     "ProductFields": {"Product Name": "ElectricEye"},
@@ -712,11 +704,11 @@ def api_gateway_stage_xray_tracking_check(cache: dict, awsAccountId: str, awsReg
                             "NIST SP 800-53 SI-4",
                             "AICPA TSC CC7.2",
                             "ISO 27001:2013 A.12.4.1",
-                            "ISO 27001:2013 A.16.1.7",
-                        ],
+                            "ISO 27001:2013 A.16.1.7"
+                        ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED",
+                    "RecordState": "ARCHIVED"
                 }
                 yield finding
 

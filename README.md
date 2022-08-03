@@ -513,9 +513,9 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 ## Supported Services and Checks
 
 These are the following services and checks perform by each Auditor, there are currently...
-- :boom: **536 Checks** :boom:
-- :exclamation: **97 AWS supported services/components** :exclamation:
-- :fire: **74 Auditors** :fire:
+- :boom: **541 Checks** :boom:
+- :exclamation: **98 AWS supported services/components** :exclamation:
+- :fire: **75 Auditors** :fire:
 
 There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
@@ -647,6 +647,11 @@ There are currently **62** supported response and remediation Playbooks with cov
 | Amazon_Elasticache_Redis_Auditor.py | Elasticache Redis Cluster | Is an AUTH Token used |
 | Amazon_Elasticache_Redis_Auditor.py | Elasticache Redis Cluster | Is the cluster encrypted at rest |
 | Amazon_Elasticache_Redis_Auditor.py | Elasticache Redis Cluster | Does the cluster encrypt in transit |
+| Amazon_ElasticBeanstalk_Auditor.py | Elastic Beanstalk environment | Is IMDSv1 disabled |
+| Amazon_ElasticBeanstalk_Auditor.py | Elastic Beanstalk environment | Is platform auto-update and instance refresh enabled |
+| Amazon_ElasticBeanstalk_Auditor.py | Elastic Beanstalk environment | Is enhanced health reporting enabled |
+| Amazon_ElasticBeanstalk_Auditor.py | Elastic Beanstalk environment | Is CloudWatch log streaming enabled |
+| Amazon_ElasticBeanstalk_Auditor.py | Elastic Beanstalk environment | Is AWS X-Ray tracing enabled |
 | Amazon_ElasticsearchService_Auditor.py | OpenSearch domain | Are dedicated masters used |
 | Amazon_ElasticsearchService_Auditor.py | OpenSearch domain | Is Cognito auth used |
 | Amazon_ElasticsearchService_Auditor.py | OpenSearch domain | Is encryption at rest used |
