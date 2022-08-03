@@ -53,7 +53,7 @@ def elasticbeanstalk_imdsv1_disabled_check(cache: dict, awsAccountId: str, awsRe
         )["ConfigurationSettings"]:
             # TODO : DELETE THIS
             optionSets = configs["OptionSettings"]
-            with open('~/ebconfigs.json', 'w') as jsonfile:
+            with open('./ebconfigs.json', 'w') as jsonfile:
                 json.dump(optionSets, jsonfile, indent=4, default=str)
             # TODO : DELETE THE ABOVE
             for opts in configs["OptionSettings"]:
