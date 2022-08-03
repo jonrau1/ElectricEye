@@ -38,8 +38,8 @@ def describe_environments(cache):
     return cache["describe_environments"]
 
 @registry.register_check("elasticbeanstalk")
-def ebs_volume_attachment_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EBS.1] EBS Volumes should be in an attached state"""
+def beanstalk_imdsv1_disabled_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[BeanStalk.1] Elastic BeanStalk applications should disable IMDSv1"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for envs in describe_environments(cache)["Environments"]:
@@ -49,25 +49,10 @@ def ebs_volume_attachment_check(cache: dict, awsAccountId: str, awsRegion: str, 
             ApplicationName=appName,
             EnvironmentName=envName
         )
-        
-
-        response = elasticbeanstalk.describe_configuration_options(
-            #ApplicationName='string',
-            #TemplateName='string',
-            EnvironmentName=envName,
-            #SolutionStackName='string',
-            #PlatformArn='string',
-            Options=[
-                {
-                    'Namespace': 'aws:autoscaling:launchconfiguration',
-                    'OptionName': 'DisableIMDSv1'
-                },
-            ]
-        )
 
         print(
             json.dumps(
-                response,
+                r,
                 indent=4,
                 default=str
             )
