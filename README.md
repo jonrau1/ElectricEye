@@ -513,9 +513,9 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 ## Supported Services and Checks
 
 These are the following services and checks perform by each Auditor, there are currently...
-- :boom: **541 Checks** :boom:
-- :exclamation: **98 AWS supported services/components** :exclamation:
-- :fire: **75 Auditors** :fire:
+- :boom: **545 Checks** :boom:
+- :exclamation: **99 AWS supported services/components** :exclamation:
+- :fire: **76 Auditors** :fire:
 
 There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
@@ -540,6 +540,10 @@ There are currently **62** supported response and remediation Playbooks with cov
 | Amazon_AppStream_Auditor.py | AppStream 2.0 (Images) | Are Images Public |
 | Amazon_AppStream_Auditor.py | AppStream 2.0 (Users) | Are users reported as Compromised |
 | Amazon_AppStream_Auditor.py | AppStream 2.0 (Users) | Do users use SAML authentication |
+| Amazon_Athena_Auditor.py | Athena workgroup | Do workgroups enforce query result encryption |
+| Amazon_Athena_Auditor.py | Athena workgroup | Do workgroups with query result encryption override client settings |
+| Amazon_Athena_Auditor.py | Athena workgroup | Do workgroups publish metrics |
+| Amazon_Athena_Auditor.py | Athena workgroup | Do workgroups auto-update the Athena engine version |
 | Amazon_Autoscaling_Auditor.py | Autoscaling groups | Do ASGs protect instances from scale-in |
 | Amazon_Autoscaling_Auditor.py | Autoscaling groups | Do ASGs with ELB or Target Groups use ELB health checks |
 | Amazon_Autoscaling_Auditor.py | Autoscaling groups | Do ASGs use at least half or more of a Region's open AZs |
@@ -835,7 +839,7 @@ There are currently **62** supported response and remediation Playbooks with cov
 | AWS_DMS_Auditor.py | DMS Replication Instance | Is DMS multi-az configured |
 | AWS_DMS_Auditor.py | DMS Replication Instance | Are minor version updates configured |
 | AWS_Global_Accelerator_Auditor.py | Global Accelerator Endpoint | Is the endpoint healthy |
-| AWS_Global_Accelerator_Auditor.py | Global Accelerator Accelerator | Is flow logs enabled for accelerator |
+| AWS_Global_Accelerator_Auditor.py | Global Accelerator Accelerator | Are flow logs enabled for accelerator |
 | AWS_Health_Auditor.py | AWS Health Event | Are there active Security Events |
 | AWS_Health_Auditor.py | AWS Health Event | Are there active Abuse Events |
 | AWS_Health_Auditor.py | AWS Health Event | Are there active Risk Events |

@@ -189,7 +189,7 @@ def eks_latest_k8s_version_check(cache: dict, awsAccountId: str, awsRegion: str,
             iso8601Time = (
                 datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
-            if k8sVersion != "1.21":
+            if k8sVersion != ("1.21" or "1.22"):
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": clusterArn + "/eks-latest-k8s-version-check",
