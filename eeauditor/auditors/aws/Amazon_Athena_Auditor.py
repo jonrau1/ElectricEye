@@ -88,7 +88,6 @@ def athena_workgroup_encryption_check(cache: dict, awsAccountId: str, awsRegion:
                             "Other": {
                                 "Name": workgroupName,
                                 "State": wginfo["State"],
-                                "Description": wginfo["Description"],
                                 "CreationTime": str(wginfo["CreationTime"])
                             }
                         }
@@ -145,7 +144,6 @@ def athena_workgroup_encryption_check(cache: dict, awsAccountId: str, awsRegion:
                             "Other": {
                                 "Name": workgroupName,
                                 "State": wginfo["State"],
-                                "Description": wginfo["Description"],
                                 "CreationTime": str(wginfo["CreationTime"])
                             }
                         }
@@ -202,7 +200,6 @@ def athena_workgroup_encryption_check(cache: dict, awsAccountId: str, awsRegion:
                             "Other": {
                                 "Name": workgroupName,
                                 "State": wginfo["State"],
-                                "Description": wginfo["Description"],
                                 "CreationTime": str(wginfo["CreationTime"])
                             }
                         }
@@ -286,7 +283,6 @@ def athena_encrypted_workgroup_client_override_check(cache: dict, awsAccountId: 
                             "Other": {
                                 "Name": workgroupName,
                                 "State": wginfo["State"],
-                                "Description": wginfo["Description"],
                                 "CreationTime": str(wginfo["CreationTime"])
                             }
                         }
@@ -343,7 +339,6 @@ def athena_encrypted_workgroup_client_override_check(cache: dict, awsAccountId: 
                             "Other": {
                                 "Name": workgroupName,
                                 "State": wginfo["State"],
-                                "Description": wginfo["Description"],
                                 "CreationTime": str(wginfo["CreationTime"])
                             }
                         }
@@ -400,7 +395,6 @@ def athena_encrypted_workgroup_client_override_check(cache: dict, awsAccountId: 
                             "Other": {
                                 "Name": workgroupName,
                                 "State": wginfo["State"],
-                                "Description": wginfo["Description"],
                                 "CreationTime": str(wginfo["CreationTime"])
                             }
                         }
