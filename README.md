@@ -513,7 +513,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 ## Supported Services and Checks
 
 These are the following services and checks perform by each Auditor, there are currently...
-- :boom: **534 Checks** :boom:
+- :boom: **536 Checks** :boom:
 - :exclamation: **97 AWS supported services/components** :exclamation:
 - :fire: **74 Auditors** :fire:
 
@@ -801,6 +801,8 @@ There are currently **62** supported response and remediation Playbooks with cov
 | AWS_Backup_Auditor.py | DynamoDB tables | Are DynamoDB tables backed up |
 | AWS_Backup_Auditor.py | RDS DB Instance | Are RDS DB instances backed up |
 | AWS_Backup_Auditor.py | EFS File System | Are EFS file systems backed up |
+| AWS_Backup_Auditor.py | Neptune cluster | Are Neptune clusters backed up |
+| AWS_Backup_Auditor.py | DocumentDB cluster | Are DocumentDB clusters backed up |
 | AWS_Cloud9_Auditor.py | Cloud9 Environment | Are Cloud9 Envs using SSM for access |
 | AWS_CloudFormation_Auditor.py | CloudFormation Stack | Is drift detection enabled |
 | AWS_CloudFormation_Auditor.py | CloudFormation Stack | Are stacks monitored |
