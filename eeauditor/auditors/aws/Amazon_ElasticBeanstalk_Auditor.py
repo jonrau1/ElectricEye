@@ -51,13 +51,7 @@ def elasticbeanstalk_imdsv1_disabled_check(cache: dict, awsAccountId: str, awsRe
             ApplicationName=appName,
             EnvironmentName=envName
         )["ConfigurationSettings"]:
-            # TODO : DELETE THIS
-            optionSets = configs["OptionSettings"]
-            with open('./ebconfigs.json', 'w') as jsonfile:
-                json.dump(optionSets, jsonfile, indent=4, default=str)
-            # TODO : DELETE THE ABOVE
             for opts in configs["OptionSettings"]:
-                print(opts["OptionName"])
                 if opts["OptionName"] == "DisableIMDSv1":
                     # this is a failing check
                     if opts["Value"] == "false":
@@ -74,7 +68,7 @@ def elasticbeanstalk_imdsv1_disabled_check(cache: dict, awsAccountId: str, awsRe
                             "Severity": {"Label": "MEDIUM"},
                             "Confidence": 99,
                             "Title": "[ElasticBeanstalk.1] Elastic Beanstalk environments should disable IMDSv1",
-                            "Description": f"Elastic Beanstalk environment {envName} does not disable Instance Metadata Service Version 1 (IMDSv1).  IMDSv2 uses session-oriented requests and mitigates several types of vulnerabilities that could be used to try to access the IMDS. For information about these two methods, see Configuring the instance metadata service in the Amazon EC2 User Guide for Linux Instances. Refer to the remediation instructions if this configuration is not intended.",
+                            "Description": f"Elastic Beanstalk environment {envName} does not disable Instance Metadata Service Version 1 (IMDSv1). IMDSv2 uses session-oriented requests and mitigates several types of vulnerabilities that could be used to try to access the IMDS. For information about these two methods, see Configuring the instance metadata service in the Amazon EC2 User Guide for Linux Instances. Refer to the remediation instructions if this configuration is not intended.",
                             "Remediation": {
                                 "Recommendation": {
                                     "Text": "If you Elastic Beanstalk environment should be configured to use IMDSv2 only refer to the Configuring the instance metadata service on your environment's instances section of the AWS Elastic Beanstalk Developer Guide.",
@@ -91,7 +85,6 @@ def elasticbeanstalk_imdsv1_disabled_check(cache: dict, awsAccountId: str, awsRe
                                     "Details": {
                                         "AwsElasticBeanstalkEnvironment": {
                                             "ApplicationName": appName,
-                                            "Cname": envs["CNAME"],
                                             "EnvironmentArn": envArn,
                                             "EnvironmentId": envs["EnvironmentId"],
                                             "EnvironmentName": envName,
@@ -147,7 +140,7 @@ def elasticbeanstalk_imdsv1_disabled_check(cache: dict, awsAccountId: str, awsRe
                             "Severity": {"Label": "INFORMATIONAL"},
                             "Confidence": 99,
                             "Title": "[ElasticBeanstalk.1] Elastic Beanstalk environments should disable IMDSv1",
-                            "Description": f"Elastic Beanstalk environment {envName} does not disable Instance Metadata Service Version 1 (IMDSv1).  IMDSv2 uses session-oriented requests and mitigates several types of vulnerabilities that could be used to try to access the IMDS. For information about these two methods, see Configuring the instance metadata service in the Amazon EC2 User Guide for Linux Instances. Refer to the remediation instructions if this configuration is not intended.",
+                            "Description": f"Elastic Beanstalk environment {envName} disables Instance Metadata Service Version 1 (IMDSv1).",
                             "Remediation": {
                                 "Recommendation": {
                                     "Text": "If you Elastic Beanstalk environment should be configured to use IMDSv2 only refer to the Configuring the instance metadata service on your environment's instances section of the AWS Elastic Beanstalk Developer Guide.",
@@ -164,7 +157,6 @@ def elasticbeanstalk_imdsv1_disabled_check(cache: dict, awsAccountId: str, awsRe
                                     "Details": {
                                         "AwsElasticBeanstalkEnvironment": {
                                             "ApplicationName": appName,
-                                            "Cname": envs["CNAME"],
                                             "EnvironmentArn": envArn,
                                             "EnvironmentId": envs["EnvironmentId"],
                                             "EnvironmentName": envName,
@@ -210,4 +202,152 @@ def elasticbeanstalk_imdsv1_disabled_check(cache: dict, awsAccountId: str, awsRe
                 else:
                     continue
 
+@registry.register_check("elasticbeanstalk")
+def elasticbeanstalk_platform_auto_update_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ElasticBeanstalk.2] Elastic Beanstalk environments should be configured to automatically apply updates and refresh instances"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for envs in describe_environments(cache)["Environments"]:
+        envArn = envs["EnvironmentArn"]
+        envName = envs["EnvironmentName"]
+        appName = envs["ApplicationName"]
+        # loop through all of the configs and option sets to find what we want
+        for configs in elasticbeanstalk.describe_configuration_settings(
+            ApplicationName=appName,
+            EnvironmentName=envName
+        )["ConfigurationSettings"]:
+            for opts in configs["OptionSettings"]:
+                if opts["OptionName"] == "InstanceRefreshEnabled":
+                    # this is a failing check
+                    if opts["Value"] == "false":
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": f"{envArn}/beanstalk-env-auto-update-refresh-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": envArn,
+                            "AwsAccountId": awsAccountId,
+                            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "MEDIUM"},
+                            "Confidence": 99,
+                            "Title": "[ElasticBeanstalk.2] Elastic Beanstalk environments should be configured to automatically apply updates and refresh instances",
+                            "Description": f"Elastic Beanstalk environment {envName} is not configured to automatically update and refresh instances. Elastic Beanstalk regularly releases platform updates to provide fixes, software updates, and new features. With managed platform updates, you can configure your environment to automatically upgrade to the latest version of a platform during a scheduled maintenance window. Your application remains in service during the update process with no reduction in capacity. Managed updates are available on both single-instance and load-balanced environments. Refer to the remediation instructions if this configuration is not intended.",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "If you Elastic Beanstalk environment should be configured to use IMDSv2 only refer to the Configuring the instance metadata service on your environment's instances section of the AWS Elastic Beanstalk Developer Guide.",
+                                    "Url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-cfg-ec2-imds.html",
+                                }
+                            },
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsElasticBeanstalkEnvironment",
+                                    "Id": envArn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "AwsElasticBeanstalkEnvironment": {
+                                            "ApplicationName": appName,
+                                            "EnvironmentArn": envArn,
+                                            "EnvironmentId": envs["EnvironmentId"],
+                                            "EnvironmentName": envName,
+                                            "PlatformArn": envs["PlatformArn"],
+                                            "Status": envs["Status"],
+                                            "VersionLabel": envs["VersionLabel"],
+                                            "Tier": {
+                                                "Name": envs["Tier"]["Name"],
+                                                "Type": envs["Tier"]["Type"],
+                                                "Version": envs["Tier"]["Version"]
+                                            }
+                                        }
+                                    }
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "FAILED",
+                                "RelatedRequirements": [
+                                    "NIST CSF ID.AM-2",
+                                    "NIST SP 800-53 CM-8",
+                                    "NIST SP 800-53 PM-5",
+                                    "AICPA TSC CC3.2",
+                                    "AICPA TSC CC6.1",
+                                    "ISO 27001:2013 A.8.1.1",
+                                    "ISO 27001:2013 A.8.1.2",
+                                    "ISO 27001:2013 A.12.5.1"
+                                ]
+                            },
+                            "Workflow": {"Status": "NEW"},
+                            "RecordState": "ACTIVE"
+                        }
+                        yield finding
+                    # this is a passing check
+                    else:
+                        finding = {
+                            "SchemaVersion": "2018-10-08",
+                            "Id": f"{envArn}/beanstalk-env-auto-update-refresh-check",
+                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                            "GeneratorId": envArn,
+                            "AwsAccountId": awsAccountId,
+                            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                            "FirstObservedAt": iso8601Time,
+                            "CreatedAt": iso8601Time,
+                            "UpdatedAt": iso8601Time,
+                            "Severity": {"Label": "INFORMATIONAL"},
+                            "Confidence": 99,
+                            "Title": "[ElasticBeanstalk.2] Elastic Beanstalk environments should be configured to automatically apply updates and refresh instances",
+                            "Description": f"Elastic Beanstalk environment {envName} is configured to automatically update and refresh instances.",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "If you Elastic Beanstalk environment should be configured to use IMDSv2 only refer to the Configuring the instance metadata service on your environment's instances section of the AWS Elastic Beanstalk Developer Guide.",
+                                    "Url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-cfg-ec2-imds.html",
+                                }
+                            },
+                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "Resources": [
+                                {
+                                    "Type": "AwsElasticBeanstalkEnvironment",
+                                    "Id": envArn,
+                                    "Partition": awsPartition,
+                                    "Region": awsRegion,
+                                    "Details": {
+                                        "AwsElasticBeanstalkEnvironment": {
+                                            "ApplicationName": appName,
+                                            "EnvironmentArn": envArn,
+                                            "EnvironmentId": envs["EnvironmentId"],
+                                            "EnvironmentName": envName,
+                                            "PlatformArn": envs["PlatformArn"],
+                                            "Status": envs["Status"],
+                                            "VersionLabel": envs["VersionLabel"],
+                                            "Tier": {
+                                                "Name": envs["Tier"]["Name"],
+                                                "Type": envs["Tier"]["Type"],
+                                                "Version": envs["Tier"]["Version"]
+                                            }
+                                        }
+                                    }
+                                }
+                            ],
+                            "Compliance": {
+                                "Status": "PASSED",
+                                "RelatedRequirements": [
+                                    "NIST CSF ID.AM-2",
+                                    "NIST SP 800-53 CM-8",
+                                    "NIST SP 800-53 PM-5",
+                                    "AICPA TSC CC3.2",
+                                    "AICPA TSC CC6.1",
+                                    "ISO 27001:2013 A.8.1.1",
+                                    "ISO 27001:2013 A.8.1.2",
+                                    "ISO 27001:2013 A.12.5.1"
+                                ]
+                            },
+                            "Workflow": {"Status": "RESOLVED"},
+                            "RecordState": "ARCHIVED"
+                        }
+                        yield finding
+                    # stop the loop after the right option is found
+                    break
+                else:
+                    continue
 #

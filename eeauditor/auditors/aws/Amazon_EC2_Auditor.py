@@ -661,7 +661,6 @@ def ec2_source_dest_verification_check(cache: dict, awsAccountId: str, awsRegion
             }
             yield finding
 
-
 @registry.register_check("ec2")
 def ec2_serial_console_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EC2.5] Serial port access to EC2 should be prohibited unless absolutely required"""
@@ -785,7 +784,6 @@ def ec2_serial_console_access_check(cache: dict, awsAccountId: str, awsRegion: s
             "RecordState": "ARCHIVED"
         }
         yield finding
-
 
 @registry.register_check("ec2")
 def ec2_ami_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -932,7 +930,6 @@ def ec2_ami_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
                 yield finding
         except IndexError or KeyError:
             pass
-
 
 @registry.register_check("ec2")
 def ec2_ami_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
