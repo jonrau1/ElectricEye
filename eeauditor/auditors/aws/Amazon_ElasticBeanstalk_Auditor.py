@@ -38,25 +38,29 @@ def describe_environments(cache):
     return cache["describe_environments"]
 
 @registry.register_check("elasticbeanstalk")
-def beanstalk_imdsv1_disabled_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[BeanStalk.1] Elastic BeanStalk applications should disable IMDSv1"""
+def elasticbeanstalk_imdsv1_disabled_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ElasticBeanstalk.1] Elastic Beanstalk applications should disable IMDSv1"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for envs in describe_environments(cache)["Environments"]:
         envName = envs["EnvironmentName"]
         appName = envs["ApplicationName"]
-        r = elasticbeanstalk.describe_configuration_settings(
+        # loop through all of the configs and option sets to find what we want
+        for configs in elasticbeanstalk.describe_configuration_settings(
             ApplicationName=appName,
             EnvironmentName=envName
-        )
-
-        print(
-            json.dumps(
-                r,
-                indent=4,
-                default=str
-            )
-        )
+        )["ConfigurationSettings"]:
+            for opts in configs["OptionSettings"]:
+                print(opts["OptionName"])
+                if opts["OptionName"] == "DisableIMDSv1":
+                    if opts["Value"] == False:
+                        print('False value')
+                    else:
+                        print('True value')
+                    # stop the loop after the right option is found
+                    break
+                else:
+                    continue
 
 '''
 @registry.register_check("ec2")
