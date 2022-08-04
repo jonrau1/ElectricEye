@@ -414,11 +414,11 @@ def elbv2_internet_facing_secure_listeners_check(cache: dict, awsAccountId: str,
                             "ISO 27001:2013 A.13.2.1",
                             "ISO 27001:2013 A.13.2.3",
                             "ISO 27001:2013 A.14.1.2",
-                            "ISO 27001:2013 A.14.1.3",
-                        ],
+                            "ISO 27001:2013 A.14.1.3"
+                        ]
                     },
                     "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
+                    "RecordState": "ACTIVE"
                 }
                 yield finding
             else:
@@ -477,11 +477,11 @@ def elbv2_internet_facing_secure_listeners_check(cache: dict, awsAccountId: str,
                             "ISO 27001:2013 A.13.2.1",
                             "ISO 27001:2013 A.13.2.3",
                             "ISO 27001:2013 A.14.1.2",
-                            "ISO 27001:2013 A.14.1.3",
-                        ],
+                            "ISO 27001:2013 A.14.1.3"
+                        ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED",
+                    "RecordState": "ARCHIVED"
                 }
                 yield finding
 
