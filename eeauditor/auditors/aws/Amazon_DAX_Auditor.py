@@ -79,7 +79,7 @@ def dax_encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str,
                                 "NodeType": cluster["NodeType"],
                                 "Status": cluster["Status"],
                                 "Address": cluster["ClusterDiscoveryEndpoint"]["Address"],
-                                "Port": cluster["ClusterDiscoveryEndpoint"]["Port"],
+                                "Port": str(cluster["ClusterDiscoveryEndpoint"]["Port"]),
                                 "URL": cluster["ClusterDiscoveryEndpoint"]["URL"],
                                 "SubnetGroup": cluster["SubnetGroup"],
                                 "SecurityGroupIdentifier": cluster["SecurityGroups"][0]["SecurityGroupIdentifier"],
@@ -139,7 +139,7 @@ def dax_encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str,
                                 "NodeType": cluster["NodeType"],
                                 "Status": cluster["Status"],
                                 "Address": cluster["ClusterDiscoveryEndpoint"]["Address"],
-                                "Port": cluster["ClusterDiscoveryEndpoint"]["Port"],
+                                "Port": str(cluster["ClusterDiscoveryEndpoint"]["Port"]),
                                 "URL": cluster["ClusterDiscoveryEndpoint"]["URL"],
                                 "SubnetGroup": cluster["SubnetGroup"],
                                 "SecurityGroupIdentifier": cluster["SecurityGroups"][0]["SecurityGroupIdentifier"],
@@ -164,3 +164,7 @@ def dax_encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str,
                 "RecordState": "ARCHIVED"
             }
             yield finding
+
+"""[DAX.2] DynamoDB Accelerator (DAX) clusters should enforce be encryption in transit"""
+
+"""[DAX.3] DynamoDB Accelerator (DAX) clusters should enforce a cache TTL value"""
