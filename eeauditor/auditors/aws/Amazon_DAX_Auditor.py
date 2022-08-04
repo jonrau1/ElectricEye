@@ -307,4 +307,153 @@ def dax_encryption_in_transit_check(cache: dict, awsAccountId: str, awsRegion: s
             }
             yield finding
 
-"""[DAX.3] DynamoDB Accelerator (DAX) clusters should enforce a cache TTL value"""
+@registry.register_check("dax")
+def dax_encryption_in_transit_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[DAX.3] DynamoDB Accelerator (DAX) clusters should enforce a cache TTL value"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for cluster in describe_clusters(cache)["Clusters"]:
+        clusterName = cluster["ClusterName"]
+        clusterArn = cluster["ClusterArn"]
+        pgName = cluster["ParameterGroup"]["ParameterGroupName"]
+        # retrieve the parameters within the parameter group associated with the cluster
+        for parameter in dax.describe_parameters(ParameterGroupName=pgName)["Parameters"]:
+            if parameter["ParameterName"] == "record-ttl-millis":
+                # this is a failing check
+                if parameter["ParameterValue"] == "0":
+                    finding={
+                        "SchemaVersion": "2018-10-08",
+                        "Id": f"{clusterArn}/dax-cache-ttl-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": clusterArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "LOW"},
+                        "Confidence": 99,
+                        "Title": "[DAX.3] DynamoDB Accelerator (DAX) clusters should enforce cache Time-to-Live (TTL)",
+                        "Description": f"DynamoDB Accelerator (DAX) cluster {clusterName} does not enforce cache Time-to-Live (TTL). DAX maintains an item cache to store the results from GetItem and BatchGetItem operations. The items in the cache represent eventually consistent data from DynamoDB, and are stored by their primary key values. The item cache has a Time to Live (TTL) setting, which is 5 minutes by default. DAX assigns a timestamp to every item that it writes to the item cache. An item expires if it has remained in the cache for longer than the TTL setting. If you issue a GetItem request on an expired item, this is considered a cache miss, and DAX sends the GetItem request to DynamoDB. Refer to the remediation instructions if this configuration is not intended.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For more information on DAX caching refer to the Item cache subsection of the DAX: How it works section of the Amazon DynamoDB Developer Guide",
+                                "Url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.concepts.html#DAX.concepts.item-cache"
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsDaxCluster",
+                                "Id": clusterArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "Other": {
+                                        "ClusterName": clusterName,
+                                        "TotalNodes": str(cluster["TotalNodes"]),
+                                        "NodeType": cluster["NodeType"],
+                                        "Status": cluster["Status"],
+                                        "Address": cluster["ClusterDiscoveryEndpoint"]["Address"],
+                                        "Port": str(cluster["ClusterDiscoveryEndpoint"]["Port"]),
+                                        "URL": cluster["ClusterDiscoveryEndpoint"]["URL"],
+                                        "SubnetGroup": cluster["SubnetGroup"],
+                                        "SecurityGroupIdentifier": cluster["SecurityGroups"][0]["SecurityGroupIdentifier"],
+                                        "IamRoleArn": cluster["IamRoleArn"],
+                                        "ParameterGroupName": pgName
+                                    }
+                                }
+                            }
+                        ],
+                        "Compliance": { 
+                            "Status": "FAILED",
+                            "RelatedRequirements": [
+                                "NIST CSF ID.BE-5",
+                                "NIST CSF PR.PT-5",
+                                "NIST SP 800-53 CP-2",
+                                "NIST SP 800-53 CP-11",
+                                "NIST SP 800-53 SA-13",
+                                "NIST SP 800-53 SA14",
+                                "AICPA TSC CC3.1",
+                                "AICPA TSC A1.2",
+                                "ISO 27001:2013 A.11.1.4",
+                                "ISO 27001:2013 A.17.1.1",
+                                "ISO 27001:2013 A.17.1.2",
+                                "ISO 27001:2013 A.17.2.1"
+                            ]
+                        },
+                        "Workflow": {"Status": "NEW"},
+                        "RecordState": "ACTIVE"
+                    }
+                    yield finding
+                # this is a passing check
+                else:
+                    finding={
+                        "SchemaVersion": "2018-10-08",
+                        "Id": f"{clusterArn}/dax-cache-ttl-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": clusterArn,
+                        "AwsAccountId": awsAccountId,
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "INFORMATIONAL"},
+                        "Confidence": 99,
+                        "Title": "[DAX.3] DynamoDB Accelerator (DAX) clusters should enforce cache Time-to-Live (TTL)",
+                        "Description": f"DynamoDB Accelerator (DAX) cluster {clusterName} enforces cache Time-to-Live (TTL).",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For more information on DAX caching refer to the Item cache subsection of the DAX: How it works section of the Amazon DynamoDB Developer Guide",
+                                "Url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.concepts.html#DAX.concepts.item-cache"
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsDaxCluster",
+                                "Id": clusterArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "Other": {
+                                        "ClusterName": clusterName,
+                                        "TotalNodes": str(cluster["TotalNodes"]),
+                                        "NodeType": cluster["NodeType"],
+                                        "Status": cluster["Status"],
+                                        "Address": cluster["ClusterDiscoveryEndpoint"]["Address"],
+                                        "Port": str(cluster["ClusterDiscoveryEndpoint"]["Port"]),
+                                        "URL": cluster["ClusterDiscoveryEndpoint"]["URL"],
+                                        "SubnetGroup": cluster["SubnetGroup"],
+                                        "SecurityGroupIdentifier": cluster["SecurityGroups"][0]["SecurityGroupIdentifier"],
+                                        "IamRoleArn": cluster["IamRoleArn"],
+                                        "ParameterGroupName": pgName
+                                    }
+                                }
+                            }
+                        ],
+                        "Compliance": { 
+                            "Status": "PASSED",
+                            "RelatedRequirements": [
+                                "NIST CSF ID.BE-5",
+                                "NIST CSF PR.PT-5",
+                                "NIST SP 800-53 CP-2",
+                                "NIST SP 800-53 CP-11",
+                                "NIST SP 800-53 SA-13",
+                                "NIST SP 800-53 SA14",
+                                "AICPA TSC CC3.1",
+                                "AICPA TSC A1.2",
+                                "ISO 27001:2013 A.11.1.4",
+                                "ISO 27001:2013 A.17.1.1",
+                                "ISO 27001:2013 A.17.1.2",
+                                "ISO 27001:2013 A.17.2.1"
+                            ]
+                        },
+                        "Workflow": {"Status": "RESOLVED"},
+                        "RecordState": "ARCHIVED"
+                    }
+                    yield finding
+                # close the loop once the correct parameter is found
+                break
+            else:
+                continue
