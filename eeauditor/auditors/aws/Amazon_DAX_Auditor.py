@@ -44,7 +44,7 @@ def dax_encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str,
         clusterName = cluster["ClusterName"]
         clusterArn = cluster["ClusterArn"]
         # this is a failing check
-        if cluster["SSEDescription"]["Status"] != ("ENABLING" or "ENABLED"):
+        if cluster["SSEDescription"]["Status"] == ("DISABLED" or "DISABLING"):
             finding={
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{clusterArn}/dax-encryption-at-rest-check",
