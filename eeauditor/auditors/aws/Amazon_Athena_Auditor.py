@@ -420,6 +420,257 @@ def athena_encrypted_workgroup_client_override_check(cache: dict, awsAccountId: 
             print(f"Athena workgroup {workgroupName} has an encryption option or 'EnforceWorkGroupConfiguration' which was not accounted for...")
             continue
 
-"""[Athena.3] Athena workgroups should be configured to publish metrics"""
+@registry.register_check("athena")
+def athena_workgroup_metrics_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Athena.3] Athena workgroups should be configured to publish metrics"""
+    # ISO time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    # loop work groups from cache
+    for wgroup in list_work_groups(cache)["WorkGroups"]:
+        workgroupName = wgroup["Name"]
+        workgroupArn = f"arn:{awsPartition}:athena:{awsRegion}:{awsAccountId}:workgroup/{workgroupName}"
+        # get specific details from workgroup
+        wginfo = athena.get_work_group(WorkGroup=workgroupName)["WorkGroup"]
+        # next check the workgroup metrics configuration, this *shouldn't* be missing, ever...but will plan for it
+        try:
+            metricsConfig = wginfo["Configuration"]["PublishCloudWatchMetricsEnabled"]
+        except KeyError:
+            metricsConfig = False
+        # this is a failing check
+        if metricsConfig == False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{workgroupArn}/athena-workgroup-metrics-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": workgroupArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[Athena.3] Athena workgroups should be configured to publish metrics",
+                "Description": f"Athena workgroup {workgroupName} is not configured to publish metrics. Athena publishes query-related metrics to Amazon CloudWatch, when the publish query metrics to CloudWatch option is selected. You can create custom dashboards, set alarms and triggers on metrics in CloudWatch, or use pre-populated dashboards directly from the Athena console. Refer to the remediation instructions to remediate this behavior.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Athena metrics refer to the Monitoring Athena queries with CloudWatch metrics section in the Amazon Athena User Guide.",
+                        "Url": "https://docs.aws.amazon.com/athena/latest/ug/query-metrics-viewing.html"
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsAthenaWorkGroup",
+                        "Id": workgroupArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "Name": workgroupName,
+                                "State": wginfo["State"],
+                                "CreationTime": str(wginfo["CreationTime"])
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF DE.AE-3",
+                        "NIST SP 800-53 AU-6",
+                        "NIST SP 800-53 CA-7",
+                        "NIST SP 800-53 IR-4",
+                        "NIST SP 800-53 IR-5",
+                        "NIST SP 800-53 IR-8",
+                        "NIST SP 800-53 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        # this is a passing check
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{workgroupArn}/athena-workgroup-metrics-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": workgroupArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Athena.3] Athena workgroups should be configured to publish metrics",
+                "Description": f"Athena workgroup {workgroupName} is configured to publish metrics.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Athena metrics refer to the Monitoring Athena queries with CloudWatch metrics section in the Amazon Athena User Guide.",
+                        "Url": "https://docs.aws.amazon.com/athena/latest/ug/query-metrics-viewing.html"
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsAthenaWorkGroup",
+                        "Id": workgroupArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "Name": workgroupName,
+                                "State": wginfo["State"],
+                                "CreationTime": str(wginfo["CreationTime"])
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF DE.AE-3",
+                        "NIST SP 800-53 AU-6",
+                        "NIST SP 800-53 CA-7",
+                        "NIST SP 800-53 IR-4",
+                        "NIST SP 800-53 IR-5",
+                        "NIST SP 800-53 IR-8",
+                        "NIST SP 800-53 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
-"""[Athena.4] Athena workgroups should be configured to auto-select the latest engine version"""
+@registry.register_check("athena")
+def athena_workgroup_engine_autoupdate_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Athena.4] Athena workgroups should be configured to auto-select the latest engine version"""
+    # ISO time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    # loop work groups from cache
+    for wgroup in list_work_groups(cache)["WorkGroups"]:
+        workgroupName = wgroup["Name"]
+        workgroupArn = f"arn:{awsPartition}:athena:{awsRegion}:{awsAccountId}:workgroup/{workgroupName}"
+        # get specific details from workgroup
+        wginfo = athena.get_work_group(WorkGroup=workgroupName)["WorkGroup"]
+        # next check the workgroup engine selection configuration
+        selectedEngineVersion = wginfo["Configuration"]["EngineVersion"]["SelectedEngineVersion"]
+        # this is a failing check
+        if selectedEngineVersion != "AUTO":
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{workgroupArn}/athena-workgroup-engine-autoupdate-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": workgroupArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[Athena.4] Athena workgroups should be configured to auto-select the latest engine version",
+                "Description": f"Athena workgroup {workgroupName} is not configured to auto-select the latest engine version. Athena occasionally releases a new engine version to provide improved performance, functionality, and code fixes. When a new engine version is available, Athena notifies you in the console. You can choose to let Athena decide when to upgrade, or manually specify an Athena engine version per workgroup. Refer to the remediation instructions to remediate this behavior.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Athena engine versions refer to the Changing Athena engine versions section in the Amazon Athena User Guide.",
+                        "Url": "https://docs.aws.amazon.com/athena/latest/ug/engine-versions-changing.html"
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsAthenaWorkGroup",
+                        "Id": workgroupArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "Name": workgroupName,
+                                "State": wginfo["State"],
+                                "CreationTime": str(wginfo["CreationTime"])
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.AM-2",
+                        "NIST SP 800-53 CM-8",
+                        "NIST SP 800-53 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        # this is a passing check
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{workgroupArn}/athena-workgroup-engine-autoupdate-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": workgroupArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Athena.4] Athena workgroups should be configured to auto-select the latest engine version",
+                "Description": f"Athena workgroup {workgroupName} is configured to auto-select the latest engine version.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Athena engine versions refer to the Changing Athena engine versions section in the Amazon Athena User Guide.",
+                        "Url": "https://docs.aws.amazon.com/athena/latest/ug/engine-versions-changing.html"
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsAthenaWorkGroup",
+                        "Id": workgroupArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "Name": workgroupName,
+                                "State": wginfo["State"],
+                                "CreationTime": str(wginfo["CreationTime"])
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.AM-2",
+                        "NIST SP 800-53 CM-8",
+                        "NIST SP 800-53 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
