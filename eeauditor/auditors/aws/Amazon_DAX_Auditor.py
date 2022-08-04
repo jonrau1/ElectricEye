@@ -308,7 +308,7 @@ def dax_encryption_in_transit_check(cache: dict, awsAccountId: str, awsRegion: s
             yield finding
 
 @registry.register_check("dax")
-def dax_encryption_in_transit_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def dax_cache_ttl_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DAX.3] DynamoDB Accelerator (DAX) clusters should enforce a cache TTL value"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()

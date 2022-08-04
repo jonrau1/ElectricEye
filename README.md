@@ -513,9 +513,9 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 ## Supported Services and Checks
 
 These are the following services and checks perform by each Auditor, there are currently...
-- :boom: **545 Checks** :boom:
-- :exclamation: **99 AWS supported services/components** :exclamation:
-- :fire: **76 Auditors** :fire:
+- :boom: **548 Checks** :boom:
+- :exclamation: **100 AWS supported services/components** :exclamation:
+- :fire: **77 Auditors** :fire:
 
 There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
@@ -578,6 +578,9 @@ There are currently **62** supported response and remediation Playbooks with cov
 | Amazon_DynamoDB_Auditor.py | DynamoDB Table | Do tables use KMS CMK for encryption |
 | Amazon_DynamoDB_Auditor.py | DynamoDB Table | Do tables have PITR enabled |
 | Amazon_DynamoDB_Auditor.py | DynamoDB Table | Do tables have TTL enabled |
+| Amazon_DAX_Auditor.py | DAX Cluster | Do clusters encrypt data at rest |
+| Amazon_DAX_Auditor.py | DAX Cluster | Do clusters encrypt data in transit |
+| Amazon_DAX_Auditor.py | DAX Cluster | Do clusters have cache item TTL defined |
 | Amazon_EBS_Auditor.py | EBS Volume | Is the Volume attached |
 | Amazon_EBS_Auditor.py | EBS Volume | Is the Volume configured to be deleted on instance termination |
 | Amazon_EBS_Auditor.py | EBS Volume | Is the Volume encrypted |
