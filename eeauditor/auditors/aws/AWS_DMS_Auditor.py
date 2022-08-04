@@ -26,21 +26,27 @@ registry = CheckRegister()
 # create boto3 clients
 dms = boto3.client("dms")
 
+def describe_replication_instances(cache):
+    response = cache.get("describe_replication_instances")
+    if response:
+        return response
+    cache["describe_replication_instances"] = dms.describe_replication_instances()
+    return cache["describe_replication_instances"]
 
 @registry.register_check("dms")
 def dms_replication_instance_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DMS.1] Database Migration Service instances should not be publicly accessible"""
-    # loop through dms replication instances
-    response = dms.describe_replication_instances()
-    for repinstances in response["ReplicationInstances"]:
-        dmsInstanceId = str(repinstances["ReplicationInstanceIdentifier"])
-        dmsInstanceArn = str(repinstances["ReplicationInstanceArn"])
-        publicAccessCheck = str(repinstances["PubliclyAccessible"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for ri in describe_replication_instances(cache)["ReplicationInstances"]:
+        dmsInstanceId = ri["ReplicationInstanceIdentifier"]
+        dmsInstanceArn = ri["ReplicationInstanceArn"]
+        publicAccessCheck = str(ri["PubliclyAccessible"])
+        # this is a failing check
         if publicAccessCheck == "True":
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": dmsInstanceArn + "/dms-replication-instance-public-access-check",
+                "Id": f"{dmsInstanceArn}/dms-replication-instance-public-access-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": dmsInstanceArn,
                 "AwsAccountId": awsAccountId,
@@ -51,15 +57,13 @@ def dms_replication_instance_public_access_check(cache: dict, awsAccountId: str,
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "HIGH"},
+                "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
                 "Title": "[DMS.1] Database Migration Service instances should not be publicly accessible",
-                "Description": "Database Migration Service instance "
-                + dmsInstanceId
-                + " is publicly accessible. Refer to the remediation instructions to remediate this behavior",
+                "Description": f"Database Migration Service instance {dmsInstanceId} is publicly accessible. A private replication instance has a private IP address that you can't access outside the replication network. You use a private instance when both source and target databases are in the same network that is connected to the replication instance's VPC. The network can be connected to the VPC by using a VPN, AWS Direct Connect, or VPC peering. Refer to the remediation instructions to remediate this behavior.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "Public access on DMS instances cannot be changed, however, you can change the subnets that are in the subnet group that is associated with the replication instance to private subnets. For more informaton see the AWS Premium Support post How can I disable public access for an AWS DMS replication instance?.",
+                        "Text": "Public access on DMS instances cannot be changed, however, you can change the subnets that are in the subnet group that is associated with the replication instance to private subnets. For more informaton see the AWS Premium Support post How can I disable public access for an AWS DMS replication instance?",
                         "Url": "https://aws.amazon.com/premiumsupport/knowledge-center/dms-disable-public-access/",
                     }
                 },
@@ -72,7 +76,7 @@ def dms_replication_instance_public_access_check(cache: dict, awsAccountId: str,
                         "Region": awsRegion,
                         "Details": {
                             "Other": {
-                                "ReplicationInstanceId": dmsInstanceId
+                                "ReplicationInstanceIdentifier": dmsInstanceId
                             }
                         }
                     }
@@ -91,17 +95,18 @@ def dms_replication_instance_public_access_check(cache: dict, awsAccountId: str,
                         "ISO 27001:2013 A.6.2.2",
                         "ISO 27001:2013 A.11.2.6",
                         "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1",
-                    ],
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
+        # this is a passing check
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": dmsInstanceArn + "/dms-replication-instance-public-access-check",
+                "Id": f"{dmsInstanceArn}/dms-replication-instance-public-access-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": dmsInstanceArn,
                 "AwsAccountId": awsAccountId,
@@ -115,12 +120,10 @@ def dms_replication_instance_public_access_check(cache: dict, awsAccountId: str,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[DMS.1] Database Migration Service instances should not be publicly accessible",
-                "Description": "Database Migration Service instance "
-                + dmsInstanceId
-                + " is not publicly accessible.",
+                "Description": f"Database Migration Service instance {dmsInstanceId} is not publicly accessible.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "Public access on DMS instances cannot be changed, however, you can change the subnets that are in the subnet group that is associated with the replication instance to private subnets. For more informaton see the AWS Premium Support post How can I disable public access for an AWS DMS replication instance?.",
+                        "Text": "Public access on DMS instances cannot be changed, however, you can change the subnets that are in the subnet group that is associated with the replication instance to private subnets. For more informaton see the AWS Premium Support post How can I disable public access for an AWS DMS replication instance?",
                         "Url": "https://aws.amazon.com/premiumsupport/knowledge-center/dms-disable-public-access/",
                     }
                 },
@@ -133,7 +136,7 @@ def dms_replication_instance_public_access_check(cache: dict, awsAccountId: str,
                         "Region": awsRegion,
                         "Details": {
                             "Other": {
-                                "ReplicationInstanceId": dmsInstanceId
+                                "ReplicationInstanceIdentifier": dmsInstanceId
                             }
                         }
                     }
@@ -152,28 +155,28 @@ def dms_replication_instance_public_access_check(cache: dict, awsAccountId: str,
                         "ISO 27001:2013 A.6.2.2",
                         "ISO 27001:2013 A.11.2.6",
                         "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1",
-                    ],
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
 
 @registry.register_check("dms")
 def dms_replication_instance_multi_az_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DMS.2] Database Migration Service instances should have Multi-AZ configured"""
-    # loop through dms replication instances
-    response = dms.describe_replication_instances()
-    for repinstances in response["ReplicationInstances"]:
-        dmsInstanceId = str(repinstances["ReplicationInstanceIdentifier"])
-        dmsInstanceArn = str(repinstances["ReplicationInstanceArn"])
-        mutltiAzCheck = str(repinstances["MultiAZ"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for ri in describe_replication_instances(cache)["ReplicationInstances"]:
+        dmsInstanceId = ri["ReplicationInstanceIdentifier"]
+        dmsInstanceArn = ri["ReplicationInstanceArn"]
+        mutltiAzCheck = str(ri["MultiAZ"])
+        # this is a failing check
         if mutltiAzCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": dmsInstanceArn + "/dms-replication-instance-multi-az-check",
+                "Id": f"{dmsInstanceArn}/dms-replication-instance-multi-az-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": dmsInstanceArn,
                 "AwsAccountId": awsAccountId,
@@ -184,13 +187,11 @@ def dms_replication_instance_multi_az_check(cache: dict, awsAccountId: str, awsR
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
                 "Title": "[DMS.2] Database Migration Service instances should have Multi-AZ configured",
-                "Description": "Database Migration Service instance "
-                + dmsInstanceId
-                + " does not have Multi-AZ configured. Refer to the remediation instructions to remediate this behavior",
+                "Description": f"Database Migration Service instance {dmsInstanceId} does not have Multi-AZ configured. Choosing a Multi-AZ instance can protect your migration from storage failures. Most migrations are transient and aren't intended to run for long periods of time. If you use AWS DMS for ongoing replication purposes, choosing a Multi-AZ instance can improve your availability should a storage issue occur. Refer to the remediation instructions to remediate this behavior.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "For more information on configuring DMS instances for Multi-AZ refer to the Working with an AWS DMS Replication Instance section of the AWS Database Migration Service User Guide",
-                        "Url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_ReplicationInstance.html",
+                        "Text": "For more information on when to configure DMS instances for Multi-AZ refer to the Improving the performance of an AWS DMS migration subsection of the Best pratices section of the AWS Database Migration Service User Guide.",
+                        "Url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_BestPractices.html#CHAP_BestPractices.Performance",
                     }
                 },
                 "ProductFields": {"Product Name": "ElectricEye"},
@@ -202,7 +203,7 @@ def dms_replication_instance_multi_az_check(cache: dict, awsAccountId: str, awsR
                         "Region": awsRegion,
                         "Details": {
                             "Other": {
-                                "ReplicationInstanceId": dmsInstanceId
+                                "ReplicationInstanceIdentifier": dmsInstanceId
                             }
                         }
                     }
@@ -221,17 +222,18 @@ def dms_replication_instance_multi_az_check(cache: dict, awsAccountId: str, awsR
                         "ISO 27001:2013 A.11.1.4",
                         "ISO 27001:2013 A.17.1.1",
                         "ISO 27001:2013 A.17.1.2",
-                        "ISO 27001:2013 A.17.2.1",
-                    ],
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
+        # this is a passing check
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": dmsInstanceArn + "/dms-replication-instance-multi-az-check",
+                "Id": f"{dmsInstanceArn}/dms-replication-instance-multi-az-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": dmsInstanceArn,
                 "AwsAccountId": awsAccountId,
@@ -242,13 +244,11 @@ def dms_replication_instance_multi_az_check(cache: dict, awsAccountId: str, awsR
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[DMS.2] Database Migration Service instances should have Multi-AZ configured",
-                "Description": "Database Migration Service instance "
-                + dmsInstanceId
-                + " has Multi-AZ configured.",
+                "Description": f"Database Migration Service instance {dmsInstanceId} has Multi-AZ configured.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "For more information on configuring DMS instances for Multi-AZ refer to the Working with an AWS DMS Replication Instance section of the AWS Database Migration Service User Guide",
-                        "Url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_ReplicationInstance.html",
+                        "Text": "For more information on when to configure DMS instances for Multi-AZ refer to the Improving the performance of an AWS DMS migration subsection of the Best pratices section of the AWS Database Migration Service User Guide.",
+                        "Url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_BestPractices.html#CHAP_BestPractices.Performance",
                     }
                 },
                 "ProductFields": {"Product Name": "ElectricEye"},
@@ -260,7 +260,7 @@ def dms_replication_instance_multi_az_check(cache: dict, awsAccountId: str, awsR
                         "Region": awsRegion,
                         "Details": {
                             "Other": {
-                                "ReplicationInstanceId": dmsInstanceId
+                                "ReplicationInstanceIdentifier": dmsInstanceId
                             }
                         }
                     }
@@ -279,28 +279,28 @@ def dms_replication_instance_multi_az_check(cache: dict, awsAccountId: str, awsR
                         "ISO 27001:2013 A.11.1.4",
                         "ISO 27001:2013 A.17.1.1",
                         "ISO 27001:2013 A.17.1.2",
-                        "ISO 27001:2013 A.17.2.1",
-                    ],
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
 
 @registry.register_check("dms")
 def dms_replication_instance_minor_version_update_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DMS.3] Database Migration Service instances should be configured to have minor version updates be automatically applied"""
-    # loop through dms replication instances
-    response = dms.describe_replication_instances()
-    for repinstances in response["ReplicationInstances"]:
-        dmsInstanceId = str(repinstances["ReplicationInstanceIdentifier"])
-        dmsInstanceArn = str(repinstances["ReplicationInstanceArn"])
-        minorVersionUpgradeCheck = str(repinstances["AutoMinorVersionUpgrade"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for ri in describe_replication_instances(cache)["ReplicationInstances"]:
+        dmsInstanceId = ri["ReplicationInstanceIdentifier"]
+        dmsInstanceArn = ri["ReplicationInstanceArn"]
+        minorVersionUpgradeCheck = str(ri["AutoMinorVersionUpgrade"])
+        # this is a failing check
         if minorVersionUpgradeCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": dmsInstanceArn + "/dms-replication-instance-minor-version-auto-update-check",
+                "Id": f"{dmsInstanceArn}/dms-replication-instance-minor-version-auto-update-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": dmsInstanceArn,
                 "AwsAccountId": awsAccountId,
@@ -310,14 +310,12 @@ def dms_replication_instance_minor_version_update_check(cache: dict, awsAccountI
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[DMS.3] Database Migration Service instances should be configured to have minor version updates be automatically applied",
-                "Description": "Database Migration Service instance "
-                + dmsInstanceId
-                + " is not configured to have minor version updates be automatically applied. Refer to the remediation instructions to remediate this behavior",
+                "Title": "[DMS.3] Database Migration Service instances should be configured to have minor version updates automatically applied",
+                "Description": f"Database Migration Service instance {dmsInstanceId} is not configured to have minor version updates automatically applied. AWS periodically releases new versions of the AWS DMS replication engine software, with new features and performance improvements. Each version of the replication engine software has its own version number. It's critical to test the existing version of your AWS DMS replication instance running a production work load before you upgrade your replication instance to a later version. Refer to the remediation instructions to remediate this behavior.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "For more information on configuring DMS instances for minor version updates refer to the AWS DMS Maintenance section of the AWS Database Migration Service User Guide",
-                        "Url": "https://docs.amazonaws.cn/en_us/dms/latest/userguide/CHAP_ReplicationInstance.html#CHAP_ReplicationInstance.Maintenance",
+                        "Text": "For more information on configuring DMS instances for minor version updates refer to the Upgrading a replication instance version subsection of the Best practices section of the AWS Database Migration Service User Guide.",
+                        "Url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_BestPractices.html#CHAP_BestPractices.RIUpgrade",
                     }
                 },
                 "ProductFields": {"Product Name": "ElectricEye"},
@@ -329,7 +327,7 @@ def dms_replication_instance_minor_version_update_check(cache: dict, awsAccountI
                         "Region": awsRegion,
                         "Details": {
                             "Other": {
-                                "ReplicationInstanceId": dmsInstanceId
+                                "ReplicationInstanceIdentifier": dmsInstanceId
                             }
                         }
                     }
@@ -346,17 +344,18 @@ def dms_replication_instance_minor_version_update_check(cache: dict, awsAccountI
                         "ISO 27001:2013 A.11.1.2",
                         "ISO 27001:2013 A.11.2.4",
                         "ISO 27001:2013 A.11.2.5",
-                        "ISO 27001:2013 A.11.2.6",
-                    ],
+                        "ISO 27001:2013 A.11.2.6"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
+        # this is a passing check
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": dmsInstanceArn + "/dms-replication-instance-minor-version-auto-update-check",
+                "Id": f"{dmsInstanceArn}/dms-replication-instance-minor-version-auto-update-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": dmsInstanceArn,
                 "AwsAccountId": awsAccountId,
@@ -366,14 +365,12 @@ def dms_replication_instance_minor_version_update_check(cache: dict, awsAccountI
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[DMS.3] Database Migration Service instances should be configured to have minor version updates be automatically applied",
-                "Description": "Database Migration Service instance "
-                + dmsInstanceId
-                + " is configured to have minor version updates be automatically applied.",
+                "Title": "[DMS.3] Database Migration Service instances should be configured to have minor version updates automatically applied",
+                "Description": f"Database Migration Service instance {dmsInstanceId} is configured to have minor version updates automatically applied.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "For more information on configuring DMS instances for minor version updates refer to the AWS DMS Maintenance section of the AWS Database Migration Service User Guide",
-                        "Url": "https://docs.amazonaws.cn/en_us/dms/latest/userguide/CHAP_ReplicationInstance.html#CHAP_ReplicationInstance.Maintenance",
+                        "Text": "For more information on configuring DMS instances for minor version updates refer to the Upgrading a replication instance version subsection of the Best practices section of the AWS Database Migration Service User Guide.",
+                        "Url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_BestPractices.html#CHAP_BestPractices.RIUpgrade",
                     }
                 },
                 "ProductFields": {"Product Name": "ElectricEye"},
@@ -385,7 +382,7 @@ def dms_replication_instance_minor_version_update_check(cache: dict, awsAccountI
                         "Region": awsRegion,
                         "Details": {
                             "Other": {
-                                "ReplicationInstanceId": dmsInstanceId
+                                "ReplicationInstanceIdentifier": dmsInstanceId
                             }
                         }
                     }
@@ -402,8 +399,8 @@ def dms_replication_instance_minor_version_update_check(cache: dict, awsAccountI
                         "ISO 27001:2013 A.11.1.2",
                         "ISO 27001:2013 A.11.2.4",
                         "ISO 27001:2013 A.11.2.5",
-                        "ISO 27001:2013 A.11.2.6",
-                    ],
+                        "ISO 27001:2013 A.11.2.6"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED"

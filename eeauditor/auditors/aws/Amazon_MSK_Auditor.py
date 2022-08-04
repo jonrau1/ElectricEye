@@ -38,13 +38,11 @@ def list_clusters(cache):
 @registry.register_check("kafka")
 def inter_cluster_encryption_in_transit_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[MSK.1] Managed Kafka Stream clusters should have inter-cluster encryption in transit enabled"""
-    response = list_clusters(cache)
-    myMskClusters = response["ClusterInfoList"]
-    for clusters in myMskClusters:
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for clusters in list_clusters(cache)["ClusterInfoList"]:
         clusterArn = str(clusters["ClusterArn"])
         clusterName = str(clusters["ClusterName"])
         interClusterEITCheck = str(clusters["EncryptionInfo"]["EncryptionInTransit"]["InCluster"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if interClusterEITCheck != "True":
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -155,15 +153,11 @@ def inter_cluster_encryption_in_transit_check(cache: dict, awsAccountId: str, aw
 @registry.register_check("kafka")
 def client_broker_encryption_in_transit_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[MSK.2] Managed Kafka Stream clusters should enforce TLS-only communications between clients and brokers"""
-    response = list_clusters(cache)
-    myMskClusters = response["ClusterInfoList"]
-    for clusters in myMskClusters:
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for clusters in list_clusters(cache)["ClusterInfoList"]:
         clusterArn = str(clusters["ClusterArn"])
         clusterName = str(clusters["ClusterName"])
-        clientBrokerTlsCheck = str(
-            clusters["EncryptionInfo"]["EncryptionInTransit"]["ClientBroker"]
-        )
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        clientBrokerTlsCheck = str(clusters["EncryptionInfo"]["EncryptionInTransit"]["ClientBroker"])
         if clientBrokerTlsCheck != "TLS":
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -274,16 +268,12 @@ def client_broker_encryption_in_transit_check(cache: dict, awsAccountId: str, aw
 @registry.register_check("kafka")
 def client_authentication_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[MSK.3] Managed Kafka Stream clusters should use TLS for client authentication"""
-    response = list_clusters(cache)
-    myMskClusters = response["ClusterInfoList"]
-    for clusters in myMskClusters:
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for clusters in list_clusters(cache)["ClusterInfoList"]:
         clusterArn = str(clusters["ClusterArn"])
         clusterName = str(clusters["ClusterName"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
-            clientAuthCheck = str(
-                clusters["ClientAuthentication"]["Tls"]["CertificateAuthorityArnList"]
-            )
+            caal = clusters["ClientAuthentication"]["Tls"]["CertificateAuthorityArnList"]
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": clusterArn + "/tls-client-auth",
@@ -297,9 +287,7 @@ def client_authentication_check(cache: dict, awsAccountId: str, awsRegion: str, 
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[MSK.3] Managed Kafka Stream clusters should use TLS for client authentication",
-                "Description": "MSK cluster "
-                + clusterName
-                + " uses TLS for client authentication.",
+                "Description": f"MSK cluster {clusterName} uses TLS for client authentication.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your cluster should use TLS for client authentication refer to the Client Authentication section of the Amazon Managed Streaming for Apache Kakfa Developer Guide",
@@ -329,14 +317,15 @@ def client_authentication_check(cache: dict, awsAccountId: str, awsRegion: str, 
                         "ISO 27001:2013 A.13.2.1",
                         "ISO 27001:2013 A.13.2.3",
                         "ISO 27001:2013 A.14.1.2",
-                        "ISO 27001:2013 A.14.1.3",
-                    ],
+                        "ISO 27001:2013 A.14.1.3"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
+            del caal
             yield finding
-        except:
+        except KeyError:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": clusterArn + "/tls-client-auth",
@@ -393,13 +382,11 @@ def client_authentication_check(cache: dict, awsAccountId: str, awsRegion: str, 
 @registry.register_check("kafka")
 def cluster_enhanced_monitoring_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[MSK.4] Managed Kafka Stream clusters should use enhanced monitoring"""
-    response = list_clusters(cache)
-    myMskClusters = response["ClusterInfoList"]
-    for clusters in myMskClusters:
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for clusters in list_clusters(cache)["ClusterInfoList"]:
         clusterArn = str(clusters["ClusterArn"])
         clusterName = str(clusters["ClusterName"])
         enhancedMonitoringCheck = str(clusters["EnhancedMonitoring"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if enhancedMonitoringCheck == "DEFAULT":
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -445,11 +432,11 @@ def cluster_enhanced_monitoring_check(cache: dict, awsAccountId: str, awsRegion:
                         "NIST SP 800-53 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
-                        "ISO 27001:2013 A.16.1.7",
-                    ],
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
         else:
@@ -480,7 +467,7 @@ def cluster_enhanced_monitoring_check(cache: dict, awsAccountId: str, awsRegion:
                         "Id": clusterArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"Other": {"ClusterName": clusterName}},
+                        "Details": {"Other": {"ClusterName": clusterName}}
                     }
                 ],
                 "Compliance": {
@@ -495,10 +482,10 @@ def cluster_enhanced_monitoring_check(cache: dict, awsAccountId: str, awsRegion:
                         "NIST SP 800-53 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
-                        "ISO 27001:2013 A.16.1.7",
-                    ],
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding

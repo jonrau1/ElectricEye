@@ -152,7 +152,7 @@ def iam_access_key_age_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                             + keyId
                             + " for user "
                             + keyUserName
-                            + " is over 90 days old. As a security best practice, AWS recommends that you regularly rotate (change) IAM user access keys. If your administrator granted you the necessary permissions, you can rotate your own access keys. Refer to the remediation section to remediate this behavior.",
+                            + " is over 90 days old. As a security best practice, AWS recommends that you regularly rotate (change) IAM user access keys. If your administrator granted you the necessary permissions, you can rotate your own access keys. Refer to the remediation section if this behavior is not intended.",
                             "Remediation": {
                                 "Recommendation": {
                                     "Text": "For information on IAM access key rotation refer to the Rotating Access Keys section of the AWS IAM User Guide",
@@ -253,11 +253,10 @@ def user_permission_boundary_check(cache: dict, awsAccountId: str, awsRegion: st
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
-                            "Other": {
-                                "PrincipalName": userName,
-                                "permissionsBoundaryArn": permBoundaryArn,
+                            "AwsIamUser": {
+                                "UserName": userName
                             }
-                        },
+                        }
                     }
                 ],
                 "Compliance": {
@@ -278,11 +277,11 @@ def user_permission_boundary_check(cache: dict, awsAccountId: str, awsRegion: st
                         "ISO 27001:2013 A.9.2.3",
                         "ISO 27001:2013 A.9.4.1",
                         "ISO 27001:2013 A.9.4.4",
-                        "ISO 27001:2013 A.9.4.5",
-                    ],
+                        "ISO 27001:2013 A.9.4.5"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding
         except Exception as e:
@@ -302,7 +301,7 @@ def user_permission_boundary_check(cache: dict, awsAccountId: str, awsRegion: st
                     "Title": "[IAM.2] IAM users should have permissions boundaries attached",
                     "Description": "IAM user "
                     + userName
-                    + " does not have a permissions boundary attached. A permissions boundary is an advanced feature for using a managed policy to set the maximum permissions that an identity-based policy can grant to an IAM entity. A permissions boundary allows it to perform only the actions that are allowed by both its identity-based policies and its permissions boundaries. Refer to the remediation section to remediate this behavior.",
+                    + " does not have a permissions boundary attached. A permissions boundary is an advanced feature for using a managed policy to set the maximum permissions that an identity-based policy can grant to an IAM entity. A permissions boundary allows it to perform only the actions that are allowed by both its identity-based policies and its permissions boundaries. Refer to the remediation section if this behavior is not intended.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For information on permissions boundaries refer to the Permissions Boundaries for IAM Entities section of the AWS IAM User Guide",
@@ -316,7 +315,11 @@ def user_permission_boundary_check(cache: dict, awsAccountId: str, awsRegion: st
                             "Id": userArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
-                            "Details": {"Other": {"PrincipalName": userName}},
+                            "Details": {
+                                "AwsIamUser": {
+                                    "UserName": userName
+                                }
+                            }
                         }
                     ],
                     "Compliance": {
@@ -337,8 +340,8 @@ def user_permission_boundary_check(cache: dict, awsAccountId: str, awsRegion: st
                             "ISO 27001:2013 A.9.2.3",
                             "ISO 27001:2013 A.9.4.1",
                             "ISO 27001:2013 A.9.4.4",
-                            "ISO 27001:2013 A.9.4.5",
-                        ],
+                            "ISO 27001:2013 A.9.4.5"
+                        ]
                     },
                     "Workflow": {"Status": "NEW"},
                     "RecordState": "ACTIVE",
@@ -350,8 +353,9 @@ def user_permission_boundary_check(cache: dict, awsAccountId: str, awsRegion: st
 @registry.register_check("iam")
 def user_mfa_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[IAM.3] IAM users with passwords should have Multi-Factor Authentication (MFA) enabled"""
-    user = list_users(cache=cache)
-    for users in user["Users"]:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for users in list_users(cache)["Users"]:
         userName = str(users["UserName"])
         userArn = str(users["Arn"])
         # check if the user has a password
@@ -359,8 +363,6 @@ def user_mfa_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition:
             pwCheck = str(users["PasswordLastUsed"])
         except KeyError:
             pwCheck = "False"
-        # ISO Time
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
 
         if pwCheck != "False":
             try:
@@ -381,7 +383,7 @@ def user_mfa_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition:
                         "Title": "[IAM.3] IAM users should have Multi-Factor Authentication (MFA) enabled",
                         "Description": "IAM user "
                         + userName
-                        + " does not have MFA enabled. For increased security, AWS recommends that you configure multi-factor authentication (MFA) to help protect your AWS resources. Refer to the remediation section to remediate this behavior.",
+                        + " does not have MFA enabled. For increased security, AWS recommends that you configure multi-factor authentication (MFA) to help protect your AWS resources. Refer to the remediation section if this behavior is not intended.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "For information on MFA refer to the Using Multi-Factor Authentication (MFA) in AWS section of the AWS IAM User Guide",
@@ -395,7 +397,11 @@ def user_mfa_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition:
                                 "Id": userArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
-                                "Details": {"Other": {"PrincipalName": userName}},
+                                "Details": {
+                                    "AwsIamUser": {
+                                        "UserName": userName
+                                    }
+                                }
                             }
                         ],
                         "Compliance": {
@@ -459,7 +465,11 @@ def user_mfa_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition:
                                 "Id": userArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
-                                "Details": {"Other": {"PrincipalName": userName}},
+                                "Details": {
+                                    "AwsIamUser": {
+                                        "UserName": userName
+                                    }
+                                }
                             }
                         ],
                         "Compliance": {
@@ -503,13 +513,11 @@ def user_mfa_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition:
 @registry.register_check("iam")
 def user_inline_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[IAM.4] IAM users should not have attached in-line policies"""
-    user = list_users(cache=cache)
-    allUsers = user["Users"]
-    for users in allUsers:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for users in list_users(cache)["Users"]:
         userName = str(users["UserName"])
         userArn = str(users["Arn"])
-        # ISO Time
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
             response = iam.list_user_policies(UserName=userName)
             if str(response["PolicyNames"]) != "[]":
@@ -528,7 +536,7 @@ def user_inline_policy_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                     "Title": "[IAM.4] IAM users should not have attached in-line policies",
                     "Description": "IAM user "
                     + userName
-                    + " has an in-line policy attached. It is recommended that IAM policies be applied directly to groups and roles but not users. Refer to the remediation section to remediate this behavior.",
+                    + " has an in-line policy attached. It is recommended that IAM policies be applied directly to groups and roles but not users. Refer to the remediation section if this behavior is not intended.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For information on user attached policies refer to the Managed Policies and Inline Policies section of the AWS IAM User Guide",
@@ -542,7 +550,11 @@ def user_inline_policy_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                             "Id": userArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
-                            "Details": {"Other": {"PrincipalName": userName}},
+                            "Details": {
+                                "AwsIamUser": {
+                                    "UserName": userName
+                                }
+                            }
                         }
                     ],
                     "Compliance": {
@@ -571,11 +583,11 @@ def user_inline_policy_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                             "ISO 27001:2013 A.9.2.6",
                             "ISO 27001:2013 A.9.3.1",
                             "ISO 27001:2013 A.9.4.2",
-                            "ISO 27001:2013 A.9.4.3",
-                        ],
+                            "ISO 27001:2013 A.9.4.3"
+                        ]
                     },
                     "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
+                    "RecordState": "ACTIVE"
                 }
                 yield finding
             else:
@@ -608,7 +620,11 @@ def user_inline_policy_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                             "Id": userArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
-                            "Details": {"Other": {"PrincipalName": userName}},
+                            "Details": {
+                                "AwsIamUser": {
+                                    "UserName": userName
+                                }
+                            }
                         }
                     ],
                     "Compliance": {
@@ -637,11 +653,11 @@ def user_inline_policy_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                             "ISO 27001:2013 A.9.2.6",
                             "ISO 27001:2013 A.9.3.1",
                             "ISO 27001:2013 A.9.4.2",
-                            "ISO 27001:2013 A.9.4.3",
-                        ],
+                            "ISO 27001:2013 A.9.4.3"
+                        ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED",
+                    "RecordState": "ARCHIVED"
                 }
                 yield finding
         except Exception as e:
@@ -650,13 +666,11 @@ def user_inline_policy_check(cache: dict, awsAccountId: str, awsRegion: str, aws
 @registry.register_check("iam")
 def user_direct_attached_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[IAM.5] IAM users should not have attached managed policies"""
-    user = list_users(cache=cache)
-    allUsers = user["Users"]
-    for users in allUsers:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for users in list_users(cache)["Users"]:
         userName = str(users["UserName"])
         userArn = str(users["Arn"])
-        # ISO Time
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
             response = iam.list_attached_user_policies(UserName=userName)
             if str(response["AttachedPolicies"]) != "[]":
@@ -675,7 +689,7 @@ def user_direct_attached_policy_check(cache: dict, awsAccountId: str, awsRegion:
                     "Title": "[IAM.5] IAM users should not have attached managed policies",
                     "Description": "IAM user "
                     + userName
-                    + " has a managed policy attached. It is recommended that IAM policies be applied directly to groups and roles but not users. Refer to the remediation section to remediate this behavior.",
+                    + " has a managed policy attached. It is recommended that IAM policies be applied directly to groups and roles but not users. Refer to the remediation section if this behavior is not intended.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For information on user attached policies refer to the Managed Policies and Inline Policies section of the AWS IAM User Guide",
@@ -689,7 +703,11 @@ def user_direct_attached_policy_check(cache: dict, awsAccountId: str, awsRegion:
                             "Id": userArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
-                            "Details": {"Other": {"PrincipalName": userName}},
+                            "Details": {
+                                "AwsIamUser": {
+                                    "UserName": userName
+                                }
+                            }
                         }
                     ],
                     "Compliance": {
@@ -718,11 +736,11 @@ def user_direct_attached_policy_check(cache: dict, awsAccountId: str, awsRegion:
                             "ISO 27001:2013 A.9.2.6",
                             "ISO 27001:2013 A.9.3.1",
                             "ISO 27001:2013 A.9.4.2",
-                            "ISO 27001:2013 A.9.4.3",
-                        ],
+                            "ISO 27001:2013 A.9.4.3"
+                        ]
                     },
                     "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
+                    "RecordState": "ACTIVE"
                 }
                 yield finding
             else:
@@ -755,7 +773,11 @@ def user_direct_attached_policy_check(cache: dict, awsAccountId: str, awsRegion:
                             "Id": userArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
-                            "Details": {"Other": {"PrincipalName": userName}},
+                            "Details": {
+                                "AwsIamUser": {
+                                    "UserName": userName
+                                }
+                            }
                         }
                     ],
                     "Compliance": {
@@ -784,11 +806,11 @@ def user_direct_attached_policy_check(cache: dict, awsAccountId: str, awsRegion:
                             "ISO 27001:2013 A.9.2.6",
                             "ISO 27001:2013 A.9.3.1",
                             "ISO 27001:2013 A.9.4.2",
-                            "ISO 27001:2013 A.9.4.3",
-                        ],
+                            "ISO 27001:2013 A.9.4.3"
+                        ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED",
+                    "RecordState": "ARCHIVED"
                 }
                 yield finding
         except Exception as e:
@@ -1156,55 +1178,54 @@ def server_certs_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartit
     except Exception as e:
         print(e)
 
-
 @registry.register_check("iam")
 def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[IAM.8] Managed policies should follow least privilege principles"""
     try:
         policies = iam.list_policies(Scope='Local')
         for mngd_policy in policies['Policies']:
-            policy_arn = mngd_policy['Arn']
-            version_id = mngd_policy['DefaultVersionId']
+            policyArn = mngd_policy['Arn']
+            versionId = mngd_policy['DefaultVersionId']
 
-            policy_doc = iam.get_policy_version(
-                PolicyArn=policy_arn,
-                VersionId=version_id
+            policyDocument = iam.get_policy_version(
+                PolicyArn=policyArn,
+                VersionId=versionId
             )['PolicyVersion']['Document']
             #handle policies docs returned as strings
-            if type(policy_doc) == str:
-                policy_doc = json.loads(policy_doc)
+            if type(policyDocument) == str:
+                policyDocument = json.loads(policyDocument)
 
-            least_priv_rating = 'passing'
-            for statement in policy_doc['Statement']:
+            leastPrivilegeRating = 'passing'
+            for statement in policyDocument['Statement']:
                 if statement["Effect"] == 'Allow':
                     if statement.get('Condition') == None: 
                         # action structure could be a string or a list
                         if type(statement['Action']) == list: 
                             if len(['True' for x in statement['Action'] if ":*" in x or '*' == x]) > 0:
                                 if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                    least_priv_rating = 'failed_high'
+                                    leastPrivilegeRating = 'failed_high'
                                     # Means that an initial failure will not be overwritten by a lower finding later
                                     next
                                 elif type(statement['Resource']) == list: 
-                                    least_priv_rating = 'failed_low'
+                                    leastPrivilegeRating = 'failed_low'
 
                         # Single action in a statement
                         elif type(statement['Action']) == str:
                             if ":*" in statement['Action'] or statement['Action'] == '*':
                                 if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                    least_priv_rating = 'failed_high'
+                                    leastPrivilegeRating = 'failed_high'
                                     # Means that an initial failure will not be overwritten by a lower finding later
                                     next
                                 elif type(statement['Resource']) == list: 
-                                    least_priv_rating = 'failed_low'
+                                    leastPrivilegeRating = 'failed_low'
 
             iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-            if least_priv_rating == 'passing':
+            if leastPrivilegeRating == 'passing':
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": policy_arn + "/mngd_policy_least_priv",
+                    "Id": f"{policyArn}/mngd_policy_least_priv",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": policy_arn + "mngd_policy_least_priv",
+                    "GeneratorId": policyArn,
                     "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
@@ -1213,7 +1234,7 @@ def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
                     "Title": "[IAM.8] Managed policies should follow least privilege principles",
-                    "Description": f"The customer managed policy {policy_arn} is following least privilege principles.",
+                    "Description": f"The customer managed policy {policyArn} is following least privilege principles.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For information on IAM least privilege refer to the Controlling access section of the AWS IAM User Guide",
@@ -1224,9 +1245,14 @@ def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                     "Resources": [
                         {
                             "Type": "AwsIamPolicy",
-                            "Id": policy_arn,
+                            "Id": policyArn,
                             "Partition": awsPartition,
-                            "Region": awsRegion
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsIamPolicy": {
+                                    "DefaultVersionId": versionId
+                                }
+                            }
                         }
                     ],
                     "Compliance": {
@@ -1250,12 +1276,12 @@ def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                     "RecordState": "ARCHIVED",
                 }
                 yield finding
-            elif least_priv_rating == 'failed_low':
+            elif leastPrivilegeRating == 'failed_low':
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": policy_arn + "/mngd_policy_least_priv",
+                    "Id": f"{policyArn}/mngd_policy_least_priv",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": policy_arn + "mngd_policy_least_priv",
+                    "GeneratorId": policyArn,
                     "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
@@ -1264,7 +1290,7 @@ def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                     "Severity": {"Label": "LOW"},
                     "Confidence": 99,
                     "Title": "[IAM.8] Managed policies should follow least privilege principles",
-                    "Description": f"The customer managed policy {policy_arn} is not following least privilege principles and has been rated: {least_priv_rating}.",
+                    "Description": f"The customer managed policy {policyArn} is not following least privilege principles and has been rated: {leastPrivilegeRating}. Refer to the remediation section if this behavior is not intended.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For information on IAM least privilege refer to the Controlling access section of the AWS IAM User Guide",
@@ -1275,9 +1301,14 @@ def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                     "Resources": [
                         {
                             "Type": "AwsIamPolicy",
-                            "Id": policy_arn,
+                            "Id": policyArn,
                             "Partition": awsPartition,
-                            "Region": awsRegion
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsIamPolicy": {
+                                    "DefaultVersionId": versionId
+                                }
+                            }
                         }
                     ],
                     "Compliance": {
@@ -1301,12 +1332,12 @@ def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                     "RecordState": "ACTIVE",
                 }
                 yield finding
-            elif least_priv_rating == 'failed_high':
+            elif leastPrivilegeRating == 'failed_high':
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": policy_arn + "/mngd_policy_least_priv",
+                    "Id": f"{policyArn}/mngd_policy_least_priv",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": policy_arn + "mngd_policy_least_priv",
+                    "GeneratorId": policyArn,
                     "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
@@ -1315,7 +1346,7 @@ def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                     "Severity": {"Label": "HIGH"},
                     "Confidence": 99,
                     "Title": "[IAM.8] Managed policies should follow least privilege principles",
-                    "Description": f"The customer managed policy {policy_arn} is not following least privilege principles and has been rated: {least_priv_rating}.",
+                    "Description": f"The customer managed policy {policyArn} is not following least privilege principles and has been rated: {leastPrivilegeRating}. Refer to the remediation section if this behavior is not intended.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For information on IAM least privilege refer to the Controlling access section of the AWS IAM User Guide",
@@ -1326,9 +1357,14 @@ def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                     "Resources": [
                         {
                             "Type": "AwsIamPolicy",
-                            "Id": policy_arn,
+                            "Id": policyArn,
                             "Partition": awsPartition,
-                            "Region": awsRegion
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsIamPolicy": {
+                                    "DefaultVersionId": versionId
+                                }
+                            }
                         }
                     ],
                     "Compliance": {
@@ -1355,60 +1391,58 @@ def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
     except: 
         pass
 
-
 @registry.register_check("iam")
 def iam_user_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[IAM.9] User inline policies should follow least privilege principles"""
     try:
-        Users = iam.list_users()
-        for user in Users['Users']:
-            user_arn = user['Arn']
-            UserName = user['UserName']
+        for users in list_users(cache)["Users"]:
+            userArn = users['Arn']
+            userName = users['UserName']
 
-            policy_names = iam.list_user_policies(
-                UserName=UserName
+            policyNames = iam.list_user_policies(
+                UserName=userName
             )['PolicyNames']
-            for policy_name in policy_names:
-                policy_doc = iam.get_user_policy(
-                    UserName=UserName,
-                    PolicyName=policy_name
+            for policyName in policyNames:
+                policyDocument = iam.get_user_policy(
+                    UserName=userName,
+                    PolicyName=policyName
                 )['PolicyDocument']
 
                 #handle policies docs returned as strings
-                if type(policy_doc) == str:
-                    policy_doc = json.loads(policy_doc)
+                if type(policyDocument) == str:
+                    policyDocument = json.loads(policyDocument)
 
-                least_priv_rating = 'passing'
-                for statement in policy_doc['Statement']:
+                leastPrivilegeRating = 'passing'
+                for statement in policyDocument['Statement']:
                     if statement["Effect"] == 'Allow':
                         if statement.get('Condition') == None: 
                             # action structure could be a string or a list
                             if type(statement['Action']) == list: 
                                 if len(['True' for x in statement['Action'] if ":*" in x or '*' == x]) > 0:
                                     if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                        least_priv_rating = 'failed_high'
+                                        leastPrivilegeRating = 'failed_high'
                                         # Means that an initial failure will not be overwritten by a lower finding later
                                         next
                                     elif type(statement['Resource']) == list: 
-                                        least_priv_rating = 'failed_low'
+                                        leastPrivilegeRating = 'failed_low'
 
                             # Single action in a statement
                             elif type(statement['Action']) == str:
                                 if ":*" in statement['Action'] or statement['Action'] == '*':
                                     if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                        least_priv_rating = 'failed_high'
+                                        leastPrivilegeRating = 'failed_high'
                                         # Means that an initial failure will not be overwritten by a lower finding later
                                         next
                                     elif type(statement['Resource']) == list: 
-                                        least_priv_rating = 'failed_low'
+                                        leastPrivilegeRating = 'failed_low'
 
                 iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-                if least_priv_rating == 'passing':
+                if leastPrivilegeRating == 'passing':
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": user_arn + "/user_policy_least_priv",
+                        "Id": f"{userArn}/user_policy_least_priv",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": user_arn + "user_policy_least_priv",
+                        "GeneratorId": userArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
@@ -1417,7 +1451,7 @@ def iam_user_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         "Severity": {"Label": "INFORMATIONAL"},
                         "Confidence": 99,
                         "Title": "[IAM.9] User inline policies should follow least privilege principles",
-                        "Description": f"The user {user_arn} inline policy {policy_name} is following least privilege principles.",
+                        "Description": f"The user {userArn} inline policy {policyName} is following least privilege principles.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "For information on IAM least privilege refer to the inline policy section of the AWS IAM User Guide",
@@ -1426,16 +1460,21 @@ def iam_user_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         },
                         "ProductFields": {"Product Name": "ElectricEye"},
                         "Resources": [
-                        {
-                        "Type": "AwsIamUser",
-                        "Id": user_arn,
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
-                        "Details": {
-                            "Other": {
-                                "PrincipalName": UserName
+                            {
+                                "Type": "AwsIamUser",
+                                "Id": userArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsIamUser": {
+                                        "UserPolicyList": [
+                                            {
+                                                "PolicyName": policyName
+                                            }
+                                        ],
+                                        "UserName": userName
                                     }
-                                },
+                                }
                             }
                         ],
                         "Compliance": {
@@ -1459,12 +1498,12 @@ def iam_user_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         "RecordState": "ARCHIVED",
                     }
                     yield finding
-                elif least_priv_rating == 'failed_low':
+                elif leastPrivilegeRating == 'failed_low':
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": user_arn + "/user_policy_least_priv",
+                        "Id": f"{userArn}/user_policy_least_priv",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": user_arn + "user_policy_least_priv",
+                        "GeneratorId": userArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
@@ -1473,7 +1512,7 @@ def iam_user_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         "Severity": {"Label": "LOW"},
                         "Confidence": 99,
                         "Title": "[IAM.9] User inline policies should follow least privilege principles",
-                        "Description": f"The user {user_arn} inline policy {policy_name} is not following least privilege principles.",
+                        "Description": f"The user {userArn} inline policy {policyName} is not following least privilege principles. Refer to the remediation section if this behavior is not intended.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "For information on IAM least privilege refer to the inline policy section of the AWS IAM User Guide",
@@ -1482,16 +1521,21 @@ def iam_user_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         },
                         "ProductFields": {"Product Name": "ElectricEye"},
                         "Resources": [
-                        {
-                        "Type": "AwsIamUser",
-                        "Id": user_arn,
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
-                        "Details": {
-                            "Other": {
-                                "PrincipalName": UserName
+                            {
+                                "Type": "AwsIamUser",
+                                "Id": userArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsIamUser": {
+                                        "UserPolicyList": [
+                                            {
+                                                "PolicyName": policyName
+                                            }
+                                        ],
+                                        "UserName": userName
                                     }
-                                },
+                                }
                             }
                         ],
                         "Compliance": {
@@ -1515,12 +1559,12 @@ def iam_user_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         "RecordState": "ACTIVE",
                     }
                     yield finding
-                elif least_priv_rating == 'failed_high':
+                elif leastPrivilegeRating == 'failed_high':
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": user_arn + "/user_policy_least_priv",
+                        "Id": f"{userArn}/user_policy_least_priv",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": user_arn + "user_policy_least_priv",
+                        "GeneratorId": userArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
@@ -1529,7 +1573,7 @@ def iam_user_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         "Severity": {"Label": "HIGH"},
                         "Confidence": 99,
                         "Title": "[IAM.9] User inline policies should follow least privilege principles",
-                        "Description": f"The user {user_arn} inline policy {policy_name} is not following least privilege principles.",
+                        "Description": f"The user {userArn} inline policy {policyName} is not following least privilege principles. Refer to the remediation section if this behavior is not intended.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "For information on IAM least privilege refer to the inline policy section of the AWS IAM User Guide",
@@ -1538,14 +1582,19 @@ def iam_user_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         },
                         "ProductFields": {"Product Name": "ElectricEye"},
                         "Resources": [
-                        {
-                        "Type": "AwsIamUser",
-                        "Id": user_arn,
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
-                        "Details": {
-                            "Other": {
-                                    "PrincipalName": UserName
+                            {
+                                "Type": "AwsIamUser",
+                                "Id": userArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsIamUser": {
+                                        "UserPolicyList": [
+                                            {
+                                                "PolicyName": policyName
+                                            }
+                                        ],
+                                        "UserName": userName
                                     }
                                 }
                             }
@@ -1574,60 +1623,59 @@ def iam_user_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
     except: 
         pass
 
-
 @registry.register_check("iam")
 def iam_group_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[IAM.10] Group inline policies should follow least privilege principles"""
     try:
         Groups = iam.list_groups()
         for group in Groups['Groups']:
-            group_arn = group['Arn']
-            GroupName = group['GroupName']
+            groupArn = group['Arn']
+            groupName = group['GroupName']
 
-            policy_names = iam.list_group_policies(
-                GroupName=GroupName
+            policyNames = iam.list_group_policies(
+                GroupName=groupName
             )['PolicyNames']
-            for policy_name in policy_names:
-                policy_doc = iam.get_group_policy(
-                    GroupName=GroupName,
-                    PolicyName=policy_name
+            for policyName in policyNames:
+                policyDocument = iam.get_group_policy(
+                    GroupName=groupName,
+                    PolicyName=policyName
                 )['PolicyDocument']
 
                 #handle policies docs returned as strings
-                if type(policy_doc) == str:
-                    policy_doc = json.loads(policy_doc)
+                if type(policyDocument) == str:
+                    policyDocument = json.loads(policyDocument)
 
-                least_priv_rating = 'passing'
-                for statement in policy_doc['Statement']:
+                leastPrivilegeRating = 'passing'
+                for statement in policyDocument['Statement']:
                     if statement["Effect"] == 'Allow':
                         if statement.get('Condition') == None: 
                             # action structure could be a string or a list
                             if type(statement['Action']) == list: 
                                 if len(['True' for x in statement['Action'] if ":*" in x or '*' == x]) > 0:
                                     if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                        least_priv_rating = 'failed_high'
+                                        leastPrivilegeRating = 'failed_high'
                                         # Means that an initial failure will not be overwritten by a lower finding later
                                         next
                                     elif type(statement['Resource']) == list: 
-                                        least_priv_rating = 'failed_low'
+                                        leastPrivilegeRating = 'failed_low'
 
                             # Single action in a statement
                             elif type(statement['Action']) == str:
                                 if ":*" in statement['Action'] or statement['Action'] == '*':
                                     if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                        least_priv_rating = 'failed_high'
+                                        leastPrivilegeRating = 'failed_high'
                                         # Means that an initial failure will not be overwritten by a lower finding later
                                         next
                                     elif type(statement['Resource']) == list: 
-                                        least_priv_rating = 'failed_low'
+                                        leastPrivilegeRating = 'failed_low'
 
                 iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-                if least_priv_rating == 'passing':
+                if leastPrivilegeRating == 'passing':
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": group_arn + "/group_policy_least_priv",
+                        "Id": f"{groupArn}/group_policy_least_priv",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": group_arn + "group_policy_least_priv",
+                        "GeneratorId": groupArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
@@ -1636,7 +1684,7 @@ def iam_group_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion:
                         "Severity": {"Label": "INFORMATIONAL"},
                         "Confidence": 99,
                         "Title": "[IAM.10] Group inline policies should follow least privilege principles",
-                        "Description": f"The group {group_arn} inline policy {policy_name} is following least privilege principles.",
+                        "Description": f"The group {groupArn} inline policy {policyName} is following least privilege principles.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "For information on IAM least privilege refer to the inline policy section of the AWS IAM User Guide",
@@ -1647,10 +1695,19 @@ def iam_group_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion:
                         "Resources": [
                             {
                                 "Type": "AwsIamGroup",
-                                "Id": group_arn,
+                                "Id": groupArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
-                                "Details": {"Other": {"PolicyName": policy_name}},
+                                "Details": {
+                                    "AwsIamGroup": {
+                                        "GroupPolicyList": [
+                                            {
+                                                "PolicyName": policyName
+                                            }
+                                        ],
+                                        "GroupName": groupName
+                                    }
+                                }
                             }
                         ],
                         "Compliance": {
@@ -1674,12 +1731,12 @@ def iam_group_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion:
                         "RecordState": "ARCHIVED",
                     }
                     yield finding
-                elif least_priv_rating == 'failed_low':
+                elif leastPrivilegeRating == 'failed_low':
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": group_arn + "/group_policy_least_priv",
+                        "Id": f"{groupArn}/group_policy_least_priv",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": group_arn + "group_policy_least_priv",
+                        "GeneratorId": groupArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
@@ -1688,7 +1745,7 @@ def iam_group_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion:
                         "Severity": {"Label": "LOW"},
                         "Confidence": 99,
                         "Title": "[IAM.10] Group inline policies should follow least privilege principles",
-                        "Description": f"The group {group_arn} inline policy {policy_name} is not following least privilege principles.",
+                        "Description": f"The group {groupArn} inline policy {policyName} is not following least privilege principles. Refer to the remediation section if this behavior is not intended.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "For information on IAM least privilege refer to the inline policy section of the AWS IAM User Guide",
@@ -1699,10 +1756,19 @@ def iam_group_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion:
                         "Resources": [
                             {
                                 "Type": "AwsIamGroup",
-                                "Id": group_arn,
+                                "Id": groupArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
-                                "Details": {"Other": {"PolicyName": policy_name}},
+                                "Details": {
+                                    "AwsIamGroup": {
+                                        "GroupPolicyList": [
+                                            {
+                                                "PolicyName": policyName
+                                            }
+                                        ],
+                                        "GroupName": groupName
+                                    }
+                                }
                             }
                         ],
                         "Compliance": {
@@ -1726,12 +1792,12 @@ def iam_group_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion:
                         "RecordState": "ACTIVE",
                     }
                     yield finding
-                elif least_priv_rating == 'failed_high':
+                elif leastPrivilegeRating == 'failed_high':
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": group_arn + "/group_policy_least_priv",
+                        "Id": f"{groupArn}/group_policy_least_priv",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": group_arn + "group_policy_least_priv",
+                        "GeneratorId": groupArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
@@ -1740,7 +1806,7 @@ def iam_group_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion:
                         "Severity": {"Label": "HIGH"},
                         "Confidence": 99,
                         "Title": "[IAM.10] Group inline policies should follow least privilege principles",
-                        "Description": f"The group {group_arn} inline policy {policy_name} is not following least privilege principles.",
+                        "Description": f"The group {groupArn} inline policy {policyName} is not following least privilege principles. Refer to the remediation section if this behavior is not intended.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "For information on IAM least privilege refer to the inline policy section of the AWS IAM User Guide",
@@ -1751,10 +1817,19 @@ def iam_group_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion:
                         "Resources": [
                             {
                                 "Type": "AwsIamGroup",
-                                "Id": group_arn,
+                                "Id": groupArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
-                                "Details": {"Other": {"PolicyName": policy_name}},
+                                "Details": {
+                                    "AwsIamGroup": {
+                                        "GroupPolicyList": [
+                                            {
+                                                "PolicyName": policyName
+                                            }
+                                        ],
+                                        "GroupName": groupName
+                                    }
+                                }
                             }
                         ],
                         "Compliance": {
@@ -1781,60 +1856,59 @@ def iam_group_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion:
     except: 
         pass
 
-
 @registry.register_check("iam")
 def iam_role_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[IAM.11] Role inline policies should follow least privilege principles"""
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
         Roles = iam.list_roles()
         for role in Roles['Roles']:
-            role_arn = role['Arn']
-            RoleName = role['RoleName']
+            roleArn = role['Arn']
+            roleName = role['RoleName']
 
-            policy_names = iam.list_role_policies(
-                RoleName=RoleName
+            policyNames = iam.list_role_policies(
+                RoleName=roleName
             )['PolicyNames']
-            for policy_name in policy_names:
-                policy_doc = iam.get_role_policy(
-                    RoleName=RoleName,
-                    PolicyName=policy_name
+            for policyName in policyNames:
+                policyDocument = iam.get_role_policy(
+                    RoleName=roleName,
+                    PolicyName=policyName
                 )['PolicyDocument']
 
                 #handle policies docs returned as strings
-                if type(policy_doc) == str:
-                    policy_doc = json.loads(policy_doc)
+                if type(policyDocument) == str:
+                    policyDocument = json.loads(policyDocument)
 
-                least_priv_rating = 'passing'
-                for statement in policy_doc['Statement']:
+                leastPrivilegeRating = 'passing'
+                for statement in policyDocument['Statement']:
                     if statement["Effect"] == 'Allow':
                         if statement.get('Condition') == None: 
                             # action structure could be a string or a list
                             if type(statement['Action']) == list: 
                                 if len(['True' for x in statement['Action'] if ":*" in x or '*' == x]) > 0:
                                     if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                        least_priv_rating = 'failed_high'
+                                        leastPrivilegeRating = 'failed_high'
                                         # Means that an initial failure will not be overwritten by a lower finding later
                                         next
                                     elif type(statement['Resource']) == list: 
-                                        least_priv_rating = 'failed_low'
+                                        leastPrivilegeRating = 'failed_low'
 
                             # Single action in a statement
                             elif type(statement['Action']) == str:
                                 if ":*" in statement['Action'] or statement['Action'] == '*':
                                     if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                        least_priv_rating = 'failed_high'
+                                        leastPrivilegeRating = 'failed_high'
                                         # Means that an initial failure will not be overwritten by a lower finding later
                                         next
                                     elif type(statement['Resource']) == list: 
-                                        least_priv_rating = 'failed_low'
-
-                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-                if least_priv_rating == 'passing':
+                                        leastPrivilegeRating = 'failed_low'
+                
+                if leastPrivilegeRating == 'passing':
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": role_arn + "/role_policy_least_priv",
+                        "Id": f"{roleArn}/role_policy_least_priv",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": role_arn + "role_policy_least_priv",
+                        "GeneratorId": roleArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
@@ -1843,7 +1917,7 @@ def iam_role_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         "Severity": {"Label": "INFORMATIONAL"},
                         "Confidence": 99,
                         "Title": "[IAM.11] Role inline policies should follow least privilege principles",
-                        "Description": f"The role {role_arn} inline policy {policy_name} is following least privilege principles.",
+                        "Description": f"The role {roleArn} inline policy {policyName} is following least privilege principles.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "For information on IAM least privilege refer to the inline policy section of the AWS IAM User Guide",
@@ -1854,11 +1928,19 @@ def iam_role_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         "Resources": [
                             {
                                 "Type": "AwsIamRole",
-                                "Id": role_arn,
+                                "Id": roleArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
-                                "Details": {"Other": {
-                                    "PolicyName": policy_name}},
+                                "Details": {
+                                    "AwsIamRole": {
+                                        "RolePolicyList": [
+                                            {
+                                                "PolicyName": policyName
+                                            }
+                                        ],
+                                        "RoleName": roleName
+                                    }
+                                }
                             }
                         ],
                         "Compliance": {
@@ -1876,18 +1958,18 @@ def iam_role_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                                 "ISO 27001:2013 A.11.2.6",
                                 "ISO 27001:2013 A.13.1.1",
                                 "ISO 27001:2013 A.13.2.1"
-                            ],
+                            ]
                         },
                         "Workflow": {"Status": "RESOLVED"},
                         "RecordState": "ARCHIVED",
                     }
                     yield finding
-                elif least_priv_rating == 'failed_low':
+                elif leastPrivilegeRating == 'failed_low':
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": role_arn + "/role_policy_least_priv",
+                        "Id": f"{roleArn}/role_policy_least_priv",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": role_arn + "role_policy_least_priv",
+                        "GeneratorId": roleArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
@@ -1896,7 +1978,7 @@ def iam_role_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         "Severity": {"Label": "LOW"},
                         "Confidence": 99,
                         "Title": "[IAM.11] Role inline policies should follow least privilege principles",
-                        "Description": f"The role {role_arn} inline policy {policy_name} is not following least privilege principles.",
+                        "Description": f"The role {roleArn} inline policy {policyName} is not following least privilege principles. Refer to the remediation section if this behavior is not intended.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "For information on IAM least privilege refer to the inline policy section of the AWS IAM User Guide",
@@ -1907,11 +1989,19 @@ def iam_role_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         "Resources": [
                             {
                                 "Type": "AwsIamRole",
-                                "Id": role_arn,
+                                "Id": roleArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
-                                "Details": {"Other": {
-                                    "PolicyName": policy_name}},
+                                "Details": {
+                                    "AwsIamRole": {
+                                        "RolePolicyList": [
+                                            {
+                                                "PolicyName": policyName
+                                            }
+                                        ],
+                                        "RoleName": roleName
+                                    }
+                                }
                             }
                         ],
                         "Compliance": {
@@ -1929,18 +2019,18 @@ def iam_role_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                                 "ISO 27001:2013 A.11.2.6",
                                 "ISO 27001:2013 A.13.1.1",
                                 "ISO 27001:2013 A.13.2.1"
-                            ],
+                            ]
                         },
                         "Workflow": {"Status": "NEW"},
                         "RecordState": "ACTIVE",
                     }
                     yield finding
-                elif least_priv_rating == 'failed_high':
+                elif leastPrivilegeRating == 'failed_high':
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": role_arn + "/role_policy_least_priv",
+                        "Id": f"{roleArn}/role_policy_least_priv",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": role_arn + "role_policy_least_priv",
+                        "GeneratorId": roleArn,
                         "AwsAccountId": awsAccountId,
                         "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
@@ -1949,7 +2039,7 @@ def iam_role_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         "Severity": {"Label": "HIGH"},
                         "Confidence": 99,
                         "Title": "[IAM.11] Role inline policies should follow least privilege principles",
-                        "Description": f"The role {role_arn} inline policy {policy_name} is not following least privilege principles.",
+                        "Description": f"The role {roleArn} inline policy {policyName} is not following least privilege principles. Refer to the remediation section if this behavior is not intended.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "For information on IAM least privilege refer to the inline policy section of the AWS IAM User Guide",
@@ -1960,11 +2050,19 @@ def iam_role_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         "Resources": [
                             {
                                 "Type": "AwsIamRole",
-                                "Id": role_arn,
+                                "Id": roleArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
-                                "Details": {"Other": {
-                                    "PolicyName": policy_name}},
+                                "Details": {
+                                    "AwsIamRole": {
+                                        "RolePolicyList": [
+                                            {
+                                                "PolicyName": policyName
+                                            }
+                                        ],
+                                        "RoleName": roleName
+                                    }
+                                }
                             }
                         ],
                         "Compliance": {

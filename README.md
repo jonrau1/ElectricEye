@@ -513,9 +513,9 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 ## Supported Services and Checks
 
 These are the following services and checks perform by each Auditor, there are currently...
-- :boom: **526 Checks** :boom:
-- :exclamation: **95 AWS supported services/components** :exclamation:
-- :fire: **73 Auditors** :fire:
+- :boom: **548 Checks** :boom:
+- :exclamation: **100 AWS supported services/components** :exclamation:
+- :fire: **77 Auditors** :fire:
 
 There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
 
@@ -540,6 +540,10 @@ There are currently **62** supported response and remediation Playbooks with cov
 | Amazon_AppStream_Auditor.py | AppStream 2.0 (Images) | Are Images Public |
 | Amazon_AppStream_Auditor.py | AppStream 2.0 (Users) | Are users reported as Compromised |
 | Amazon_AppStream_Auditor.py | AppStream 2.0 (Users) | Do users use SAML authentication |
+| Amazon_Athena_Auditor.py | Athena workgroup | Do workgroups enforce query result encryption |
+| Amazon_Athena_Auditor.py | Athena workgroup | Do workgroups with query result encryption override client settings |
+| Amazon_Athena_Auditor.py | Athena workgroup | Do workgroups publish metrics |
+| Amazon_Athena_Auditor.py | Athena workgroup | Do workgroups auto-update the Athena engine version |
 | Amazon_Autoscaling_Auditor.py | Autoscaling groups | Do ASGs protect instances from scale-in |
 | Amazon_Autoscaling_Auditor.py | Autoscaling groups | Do ASGs with ELB or Target Groups use ELB health checks |
 | Amazon_Autoscaling_Auditor.py | Autoscaling groups | Do ASGs use at least half or more of a Region's open AZs |
@@ -574,6 +578,9 @@ There are currently **62** supported response and remediation Playbooks with cov
 | Amazon_DynamoDB_Auditor.py | DynamoDB Table | Do tables use KMS CMK for encryption |
 | Amazon_DynamoDB_Auditor.py | DynamoDB Table | Do tables have PITR enabled |
 | Amazon_DynamoDB_Auditor.py | DynamoDB Table | Do tables have TTL enabled |
+| Amazon_DAX_Auditor.py | DAX Cluster | Do clusters encrypt data at rest |
+| Amazon_DAX_Auditor.py | DAX Cluster | Do clusters encrypt data in transit |
+| Amazon_DAX_Auditor.py | DAX Cluster | Do clusters have cache item TTL defined |
 | Amazon_EBS_Auditor.py | EBS Volume | Is the Volume attached |
 | Amazon_EBS_Auditor.py | EBS Volume | Is the Volume configured to be deleted on instance termination |
 | Amazon_EBS_Auditor.py | EBS Volume | Is the Volume encrypted |
@@ -647,6 +654,11 @@ There are currently **62** supported response and remediation Playbooks with cov
 | Amazon_Elasticache_Redis_Auditor.py | Elasticache Redis Cluster | Is an AUTH Token used |
 | Amazon_Elasticache_Redis_Auditor.py | Elasticache Redis Cluster | Is the cluster encrypted at rest |
 | Amazon_Elasticache_Redis_Auditor.py | Elasticache Redis Cluster | Does the cluster encrypt in transit |
+| Amazon_ElasticBeanstalk_Auditor.py | Elastic Beanstalk environment | Is IMDSv1 disabled |
+| Amazon_ElasticBeanstalk_Auditor.py | Elastic Beanstalk environment | Is platform auto-update and instance refresh enabled |
+| Amazon_ElasticBeanstalk_Auditor.py | Elastic Beanstalk environment | Is enhanced health reporting enabled |
+| Amazon_ElasticBeanstalk_Auditor.py | Elastic Beanstalk environment | Is CloudWatch log streaming enabled |
+| Amazon_ElasticBeanstalk_Auditor.py | Elastic Beanstalk environment | Is AWS X-Ray tracing enabled |
 | Amazon_ElasticsearchService_Auditor.py | OpenSearch domain | Are dedicated masters used |
 | Amazon_ElasticsearchService_Auditor.py | OpenSearch domain | Is Cognito auth used |
 | Amazon_ElasticsearchService_Auditor.py | OpenSearch domain | Is encryption at rest used |
@@ -700,11 +712,16 @@ There are currently **62** supported response and remediation Playbooks with cov
 | Amazon_MWAA_Auditor.py | Airflow Environment | Are Task logs configured |
 | Amazon_MWAA_Auditor.py | Airflow Environment | Are Webserver logs configured |
 | Amazon_MWAA_Auditor.py | Airflow Environment | Are Worker logs configured |
-| Amazon_Neptune_Auditor.py | Neptune instance | Is Neptune configured for HA |
-| Amazon_Neptune_Auditor.py | Neptune instance | Is Neptune storage encrypted |
-| Amazon_Neptune_Auditor.py | Neptune instance | Does Neptune use IAM DB Auth |
+| Amazon_Neptune_Auditor.py | Neptune instance | Is Neptune instance configured for HA |
+| Amazon_Neptune_Auditor.py | Neptune instance | Is Neptune instance storage encrypted |
+| Amazon_Neptune_Auditor.py | Neptune instance | Does Neptune instance use IAM DB Auth |
 | Amazon_Neptune_Auditor.py | Neptune cluster | Is SSL connection enforced |
-| Amazon_Neptune_Auditor.py | Neptune cluster | Is audit logging enabled |
+| ~~Amazon_Neptune_Auditor.py~~ | ~~Neptune cluster~~ | ~~Is audit logging enabled~~ **THIS FINDING HAS BEEN RETIRED** |
+| Amazon_Neptune_Auditor.py | Neptune instance | Does Neptune instance export audit logs |
+| Amazon_Neptune_Auditor.py | Neptune instance | Is Neptune instance deletion protected |
+| Amazon_Neptune_Auditor.py | Neptune instance | Does Neptune instance automatically update minor versions |
+| Amazon_Neptune_Auditor.py | Neptune cluster | Are Neptune clusters configured to auto-scale |
+| Amazon_Neptune_Auditor.py | Neptune cluster | Are Neptune clusters configured to cache query results |
 | Amazon_QLDB_Auditor.py | QLDB Ledger | Does ledger have deletion protection |
 | Amazon_QLDB_Auditor.py | QLDB Export | Is export encryption enabled |
 | Amazon_RDS_Auditor.py | RDS DB Instance | Is HA configured |
@@ -796,6 +813,8 @@ There are currently **62** supported response and remediation Playbooks with cov
 | AWS_Backup_Auditor.py | DynamoDB tables | Are DynamoDB tables backed up |
 | AWS_Backup_Auditor.py | RDS DB Instance | Are RDS DB instances backed up |
 | AWS_Backup_Auditor.py | EFS File System | Are EFS file systems backed up |
+| AWS_Backup_Auditor.py | Neptune cluster | Are Neptune clusters backed up |
+| AWS_Backup_Auditor.py | DocumentDB cluster | Are DocumentDB clusters backed up |
 | AWS_Cloud9_Auditor.py | Cloud9 Environment | Are Cloud9 Envs using SSM for access |
 | AWS_CloudFormation_Auditor.py | CloudFormation Stack | Is drift detection enabled |
 | AWS_CloudFormation_Auditor.py | CloudFormation Stack | Are stacks monitored |
@@ -823,7 +842,7 @@ There are currently **62** supported response and remediation Playbooks with cov
 | AWS_DMS_Auditor.py | DMS Replication Instance | Is DMS multi-az configured |
 | AWS_DMS_Auditor.py | DMS Replication Instance | Are minor version updates configured |
 | AWS_Global_Accelerator_Auditor.py | Global Accelerator Endpoint | Is the endpoint healthy |
-| AWS_Global_Accelerator_Auditor.py | Global Accelerator Accelerator | Is flow logs enabled for accelerator |
+| AWS_Global_Accelerator_Auditor.py | Global Accelerator Accelerator | Are flow logs enabled for accelerator |
 | AWS_Health_Auditor.py | AWS Health Event | Are there active Security Events |
 | AWS_Health_Auditor.py | AWS Health Event | Are there active Abuse Events |
 | AWS_Health_Auditor.py | AWS Health Event | Are there active Risk Events |
@@ -844,6 +863,11 @@ There are currently **62** supported response and remediation Playbooks with cov
 | AWS_IAM_Auditor.py | IAM User | Do User IAM inline policies adhere to least privilege principles |
 | AWS_IAM_Auditor.py | IAM Group | Do Group IAM inline policies adhere to least privilege principles |
 | AWS_IAM_Auditor.py | IAM Role | Do Role IAM inline policies adhere to least privilege principles |
+| AWS_IAMRA_Auditor.py | IAMRA Trust Anchor | Do Trust Anchors contain self-signed certificates |
+| AWS_IAMRA_Auditor.py | IAMRA Trust Anchor | Do Trust Anchors use a Certificate Revocation List (CRL) |
+| AWS_IAMRA_Auditor.py | IAMRA Profile | Do IAMRA Profiles specify a Session Policy |
+| AWS_IAMRA_Auditor.py | IAMRA Profile | Do IAMRA Profiles specify a Permission Boundary |
+| AWS_IAMRA_Auditor.py | IAM Role | Do IAM Roles associated with IAMRA use Condition statements in the Trust Policy |
 | AWS_Keyspaces_Auditor.py | Keyspaces table | Are Keyspaces Tables encrypted with a KMS CMK |
 | AWS_Keyspaces_Auditor.py | Keyspaces table | Do Keyspaces Tables have PTR enabled |
 | AWS_Keyspaces_Auditor.py | Keyspaces table | Are Keyspaces Tables in an unusable state |

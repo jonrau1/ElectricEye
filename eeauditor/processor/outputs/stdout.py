@@ -28,10 +28,13 @@ class StdoutProvider(object):
         checkedIds = []
 
         for finding in findings:
-            if finding["Id"] not in checkedIds:
-                checkedIds.append(finding["Id"])
+            parsedFinding = json.loads(json.dumps(finding))
+            if parsedFinding["Id"] not in checkedIds:
+                checkedIds.append(parsedFinding["Id"])
                 print(json.dumps(finding,default=str))
             else:
+                del parsedFinding
                 continue
-            
+    
+        del checkedIds
         return True
