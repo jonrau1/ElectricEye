@@ -59,7 +59,7 @@ def iam_access_key_age_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                     # this is a passing check
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": keyUserName + keyId + "/iam-access-key-age-check",
+                        "Id": f"{keyUserName}{keyId}/iam-access-key-age-check",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": userArn + keyId,
                         "AwsAccountId": awsAccountId,
@@ -72,15 +72,11 @@ def iam_access_key_age_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                         "Severity": {"Label": "INFORMATIONAL"},
                         "Confidence": 99,
                         "Title": "[IAM.1] IAM Access Keys should be rotated every 90 days",
-                        "Description": "IAM access key "
-                        + keyId
-                        + " for user "
-                        + keyUserName
-                        + " is not over 90 days old.",
+                        "Description": f"IAM access key {keyId} for user {keyUserName} is not over 90 days old.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "For information on IAM access key rotation refer to the Rotating Access Keys section of the AWS IAM User Guide",
-                                "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_RotateAccessKey",
+                                "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_RotateAccessKey"
                             }
                         },
                         "ProductFields": {"Product Name": "ElectricEye"},
@@ -94,9 +90,9 @@ def iam_access_key_age_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                                     "AwsIamAccessKey": {
                                         "PrincipalId": keyId,
                                         "PrincipalName": keyUserName,
-                                        "Status": keyStatus,
+                                        "Status": keyStatus
                                     }
-                                },
+                                }
                             }
                         ],
                         "Compliance": {
@@ -126,37 +122,34 @@ def iam_access_key_age_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                                 "ISO 27001:2013 A.9.3.1",
                                 "ISO 27001:2013 A.9.4.2",
                                 "ISO 27001:2013 A.9.4.3",
-                            ],
+                                "MITRE ATT&CK T1589",
+                                "MITRE ATT&CK T1586"
+                            ]
                         },
                         "Workflow": {"Status": "RESOLVED"},
-                        "RecordState": "ARCHIVED",
+                        "RecordState": "ARCHIVED"
                     }
                     yield finding
                 else:
+                    # this is a failing check
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": keyUserName + keyId + "/iam-access-key-age-check",
+                        "Id": f"{keyUserName}{keyId}/iam-access-key-age-check",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": userArn + keyId,
                         "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices"
-                        ],
+                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                         "FirstObservedAt": iso8601Time,
                         "CreatedAt": iso8601Time,
                         "UpdatedAt": iso8601Time,
                         "Severity": {"Label": "MEDIUM"},
                         "Confidence": 99,
                         "Title": "[IAM.1] IAM Access Keys should be rotated every 90 days",
-                        "Description": "IAM access key "
-                        + keyId
-                        + " for user "
-                        + keyUserName
-                        + " is over 90 days old. As a security best practice, AWS recommends that you regularly rotate (change) IAM user access keys. If your administrator granted you the necessary permissions, you can rotate your own access keys. Refer to the remediation section if this behavior is not intended.",
+                        "Description": f"IAM access key {keyId} for user {keyUserName} is over 90 days old. As a security best practice, AWS recommends that you regularly rotate (change) IAM user access keys. If your administrator granted you the necessary permissions, you can rotate your own access keys. Refer to the remediation section if this behavior is not intended.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "For information on IAM access key rotation refer to the Rotating Access Keys section of the AWS IAM User Guide",
-                                "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_RotateAccessKey",
+                                "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_RotateAccessKey"
                             }
                         },
                         "ProductFields": {"Product Name": "ElectricEye"},
@@ -170,9 +163,9 @@ def iam_access_key_age_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                                     "AwsIamAccessKey": {
                                         "PrincipalId": keyId,
                                         "PrincipalName": keyUserName,
-                                        "Status": keyStatus,
+                                        "Status": keyStatus
                                     }
-                                },
+                                }
                             }
                         ],
                         "Compliance": {
@@ -202,12 +195,15 @@ def iam_access_key_age_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                                 "ISO 27001:2013 A.9.3.1",
                                 "ISO 27001:2013 A.9.4.2",
                                 "ISO 27001:2013 A.9.4.3",
-                            ],
+                                "MITRE ATT&CK T1589",
+                                "MITRE ATT&CK T1586"
+                            ]
                         },
                         "Workflow": {"Status": "NEW"},
-                        "RecordState": "ACTIVE",
+                        "RecordState": "ACTIVE"
                     }
                     yield finding
+            # skip Inactive keys
             else:
                 continue
 

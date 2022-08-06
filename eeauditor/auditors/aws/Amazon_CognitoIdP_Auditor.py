@@ -23,9 +23,10 @@ from check_register import CheckRegister, accumulate_paged_results
 
 registry = CheckRegister()
 
+# boto3 clients
 cognitoidp = boto3.client("cognito-idp")
 
-
+# loop through Cognito User Pools
 def list_user_pools(cache):
     response = cache.get("list_user_pools")
     if response:
@@ -63,7 +64,7 @@ def cognitoidp_cis_password_check(cache: dict, awsAccountId: str, awsRegion: str
             # this is a passing check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": userPoolArn + "/cognito-user-pool-password-policy",
+                "Id": f"{userPoolArn}/cognito-user-pool-password-policy",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": userPoolId,
                 "awsAccountId": awsAccountId,
@@ -128,7 +129,7 @@ def cognitoidp_cis_password_check(cache: dict, awsAccountId: str, awsRegion: str
             # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": userPoolArn + "/cognito-user-pool-password-policy",
+                "Id": f"{userPoolArn}/cognito-user-pool-password-policy",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": userPoolId,
                 "AwsAccountId": awsAccountId,
