@@ -20,12 +20,14 @@
 
 import boto3
 import datetime
-from check_register import CheckRegister
 import json
+from check_register import CheckRegister
 
 registry = CheckRegister()
+
 # import boto3 clients
 iam = boto3.client("iam")
+
 # loop through IAM users
 def list_users(cache):
     response = cache.get("list_users")
@@ -37,191 +39,186 @@ def list_users(cache):
 @registry.register_check("iam")
 def iam_access_key_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[IAM.1] IAM Access Keys should be rotated every 90 days"""
-    user = list_users(cache=cache)
-    for users in user["Users"]:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for users in list_users(cache)["Users"]:
         userName = str(users["UserName"])
         userArn = str(users["Arn"])
-        try:
-            response = iam.list_access_keys(UserName=userName)
-            for keys in response["AccessKeyMetadata"]:
-                keyUserName = str(keys["UserName"])
-                keyId = str(keys["AccessKeyId"])
-                keyStatus = str(keys["Status"])
-                # ISO Time
-                iso8601Time = (
-                    datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-                )
-                if keyStatus == "Active":
-                    keyCreateDate = keys["CreateDate"]
-                    todaysDatetime = datetime.datetime.now(datetime.timezone.utc)
-                    keyAgeFinder = todaysDatetime - keyCreateDate
-                    if keyAgeFinder <= datetime.timedelta(days=90):
-                        # this is a passing check
-                        finding = {
-                            "SchemaVersion": "2018-10-08",
-                            "Id": keyUserName + keyId + "/iam-access-key-age-check",
-                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                            "GeneratorId": userArn + keyId,
-                            "AwsAccountId": awsAccountId,
-                            "Types": [
-                                "Software and Configuration Checks/AWS Security Best Practices"
+        # Get keys per User
+        response = iam.list_access_keys(UserName=userName)
+        for keys in response["AccessKeyMetadata"]:
+            keyUserName = str(keys["UserName"])
+            keyId = str(keys["AccessKeyId"])
+            keyStatus = str(keys["Status"])
+            # If there is an active key, see if it has been rotated in the last 90
+            if keyStatus == "Active":
+                keyCreateDate = keys["CreateDate"]
+                todaysDatetime = datetime.datetime.now(datetime.timezone.utc)
+                keyAgeFinder = todaysDatetime - keyCreateDate
+                if keyAgeFinder <= datetime.timedelta(days=90):
+                    # this is a passing check
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": keyUserName + keyId + "/iam-access-key-age-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": userArn + keyId,
+                        "AwsAccountId": awsAccountId,
+                        "Types": [
+                            "Software and Configuration Checks/AWS Security Best Practices"
+                        ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "INFORMATIONAL"},
+                        "Confidence": 99,
+                        "Title": "[IAM.1] IAM Access Keys should be rotated every 90 days",
+                        "Description": "IAM access key "
+                        + keyId
+                        + " for user "
+                        + keyUserName
+                        + " is not over 90 days old.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For information on IAM access key rotation refer to the Rotating Access Keys section of the AWS IAM User Guide",
+                                "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_RotateAccessKey",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsIamAccessKey",
+                                "Id": userArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsIamAccessKey": {
+                                        "PrincipalId": keyId,
+                                        "PrincipalName": keyUserName,
+                                        "Status": keyStatus,
+                                    }
+                                },
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "PASSED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-1",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-2",
+                                "NIST SP 800-53 IA-1",
+                                "NIST SP 800-53 IA-2",
+                                "NIST SP 800-53 IA-3",
+                                "NIST SP 800-53 IA-4",
+                                "NIST SP 800-53 IA-5",
+                                "NIST SP 800-53 IA-6",
+                                "NIST SP 800-53 IA-7",
+                                "NIST SP 800-53 IA-8",
+                                "NIST SP 800-53 IA-9",
+                                "NIST SP 800-53 IA-10",
+                                "NIST SP 800-53 IA-11",
+                                "AICPA TSC CC6.1",
+                                "AICPA TSC CC6.2",
+                                "ISO 27001:2013 A.9.2.1",
+                                "ISO 27001:2013 A.9.2.2",
+                                "ISO 27001:2013 A.9.2.3",
+                                "ISO 27001:2013 A.9.2.4",
+                                "ISO 27001:2013 A.9.2.6",
+                                "ISO 27001:2013 A.9.3.1",
+                                "ISO 27001:2013 A.9.4.2",
+                                "ISO 27001:2013 A.9.4.3",
                             ],
-                            "FirstObservedAt": iso8601Time,
-                            "CreatedAt": iso8601Time,
-                            "UpdatedAt": iso8601Time,
-                            "Severity": {"Label": "INFORMATIONAL"},
-                            "Confidence": 99,
-                            "Title": "[IAM.1] IAM Access Keys should be rotated every 90 days",
-                            "Description": "IAM access key "
-                            + keyId
-                            + " for user "
-                            + keyUserName
-                            + " is not over 90 days old.",
-                            "Remediation": {
-                                "Recommendation": {
-                                    "Text": "For information on IAM access key rotation refer to the Rotating Access Keys section of the AWS IAM User Guide",
-                                    "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_RotateAccessKey",
-                                }
-                            },
-                            "ProductFields": {"Product Name": "ElectricEye"},
-                            "Resources": [
-                                {
-                                    "Type": "AwsIamAccessKey",
-                                    "Id": userArn,
-                                    "Partition": awsPartition,
-                                    "Region": awsRegion,
-                                    "Details": {
-                                        "AwsIamAccessKey": {
-                                            "PrincipalId": keyId,
-                                            "PrincipalName": keyUserName,
-                                            "Status": keyStatus,
-                                        }
-                                    },
-                                }
-                            ],
-                            "Compliance": {
-                                "Status": "PASSED",
-                                "RelatedRequirements": [
-                                    "NIST CSF PR.AC-1",
-                                    "NIST SP 800-53 AC-1",
-                                    "NIST SP 800-53 AC-2",
-                                    "NIST SP 800-53 IA-1",
-                                    "NIST SP 800-53 IA-2",
-                                    "NIST SP 800-53 IA-3",
-                                    "NIST SP 800-53 IA-4",
-                                    "NIST SP 800-53 IA-5",
-                                    "NIST SP 800-53 IA-6",
-                                    "NIST SP 800-53 IA-7",
-                                    "NIST SP 800-53 IA-8",
-                                    "NIST SP 800-53 IA-9",
-                                    "NIST SP 800-53 IA-10",
-                                    "NIST SP 800-53 IA-11",
-                                    "AICPA TSC CC6.1",
-                                    "AICPA TSC CC6.2",
-                                    "ISO 27001:2013 A.9.2.1",
-                                    "ISO 27001:2013 A.9.2.2",
-                                    "ISO 27001:2013 A.9.2.3",
-                                    "ISO 27001:2013 A.9.2.4",
-                                    "ISO 27001:2013 A.9.2.6",
-                                    "ISO 27001:2013 A.9.3.1",
-                                    "ISO 27001:2013 A.9.4.2",
-                                    "ISO 27001:2013 A.9.4.3",
-                                ],
-                            },
-                            "Workflow": {"Status": "RESOLVED"},
-                            "RecordState": "ARCHIVED",
-                        }
-                        yield finding
-                    else:
-                        finding = {
-                            "SchemaVersion": "2018-10-08",
-                            "Id": keyUserName + keyId + "/iam-access-key-age-check",
-                            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                            "GeneratorId": userArn + keyId,
-                            "AwsAccountId": awsAccountId,
-                            "Types": [
-                                "Software and Configuration Checks/AWS Security Best Practices"
-                            ],
-                            "FirstObservedAt": iso8601Time,
-                            "CreatedAt": iso8601Time,
-                            "UpdatedAt": iso8601Time,
-                            "Severity": {"Label": "MEDIUM"},
-                            "Confidence": 99,
-                            "Title": "[IAM.1] IAM Access Keys should be rotated every 90 days",
-                            "Description": "IAM access key "
-                            + keyId
-                            + " for user "
-                            + keyUserName
-                            + " is over 90 days old. As a security best practice, AWS recommends that you regularly rotate (change) IAM user access keys. If your administrator granted you the necessary permissions, you can rotate your own access keys. Refer to the remediation section if this behavior is not intended.",
-                            "Remediation": {
-                                "Recommendation": {
-                                    "Text": "For information on IAM access key rotation refer to the Rotating Access Keys section of the AWS IAM User Guide",
-                                    "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_RotateAccessKey",
-                                }
-                            },
-                            "ProductFields": {"Product Name": "ElectricEye"},
-                            "Resources": [
-                                {
-                                    "Type": "AwsIamAccessKey",
-                                    "Id": userArn,
-                                    "Partition": awsPartition,
-                                    "Region": awsRegion,
-                                    "Details": {
-                                        "AwsIamAccessKey": {
-                                            "PrincipalId": keyId,
-                                            "PrincipalName": keyUserName,
-                                            "Status": keyStatus,
-                                        }
-                                    },
-                                }
-                            ],
-                            "Compliance": {
-                                "Status": "FAILED",
-                                "RelatedRequirements": [
-                                    "NIST CSF PR.AC-1",
-                                    "NIST SP 800-53 AC-1",
-                                    "NIST SP 800-53 AC-2",
-                                    "NIST SP 800-53 IA-1",
-                                    "NIST SP 800-53 IA-2",
-                                    "NIST SP 800-53 IA-3",
-                                    "NIST SP 800-53 IA-4",
-                                    "NIST SP 800-53 IA-5",
-                                    "NIST SP 800-53 IA-6",
-                                    "NIST SP 800-53 IA-7",
-                                    "NIST SP 800-53 IA-8",
-                                    "NIST SP 800-53 IA-9",
-                                    "NIST SP 800-53 IA-10",
-                                    "NIST SP 800-53 IA-11",
-                                    "AICPA TSC CC6.1",
-                                    "AICPA TSC CC6.2",
-                                    "ISO 27001:2013 A.9.2.1",
-                                    "ISO 27001:2013 A.9.2.2",
-                                    "ISO 27001:2013 A.9.2.3",
-                                    "ISO 27001:2013 A.9.2.4",
-                                    "ISO 27001:2013 A.9.2.6",
-                                    "ISO 27001:2013 A.9.3.1",
-                                    "ISO 27001:2013 A.9.4.2",
-                                    "ISO 27001:2013 A.9.4.3",
-                                ],
-                            },
-                            "Workflow": {"Status": "NEW"},
-                            "RecordState": "ACTIVE",
-                        }
-                        yield finding
+                        },
+                        "Workflow": {"Status": "RESOLVED"},
+                        "RecordState": "ARCHIVED",
+                    }
+                    yield finding
                 else:
-                    pass
-        except Exception as e:
-            print(e)
+                    finding = {
+                        "SchemaVersion": "2018-10-08",
+                        "Id": keyUserName + keyId + "/iam-access-key-age-check",
+                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                        "GeneratorId": userArn + keyId,
+                        "AwsAccountId": awsAccountId,
+                        "Types": [
+                            "Software and Configuration Checks/AWS Security Best Practices"
+                        ],
+                        "FirstObservedAt": iso8601Time,
+                        "CreatedAt": iso8601Time,
+                        "UpdatedAt": iso8601Time,
+                        "Severity": {"Label": "MEDIUM"},
+                        "Confidence": 99,
+                        "Title": "[IAM.1] IAM Access Keys should be rotated every 90 days",
+                        "Description": "IAM access key "
+                        + keyId
+                        + " for user "
+                        + keyUserName
+                        + " is over 90 days old. As a security best practice, AWS recommends that you regularly rotate (change) IAM user access keys. If your administrator granted you the necessary permissions, you can rotate your own access keys. Refer to the remediation section if this behavior is not intended.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "For information on IAM access key rotation refer to the Rotating Access Keys section of the AWS IAM User Guide",
+                                "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_RotateAccessKey",
+                            }
+                        },
+                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "Resources": [
+                            {
+                                "Type": "AwsIamAccessKey",
+                                "Id": userArn,
+                                "Partition": awsPartition,
+                                "Region": awsRegion,
+                                "Details": {
+                                    "AwsIamAccessKey": {
+                                        "PrincipalId": keyId,
+                                        "PrincipalName": keyUserName,
+                                        "Status": keyStatus,
+                                    }
+                                },
+                            }
+                        ],
+                        "Compliance": {
+                            "Status": "FAILED",
+                            "RelatedRequirements": [
+                                "NIST CSF PR.AC-1",
+                                "NIST SP 800-53 AC-1",
+                                "NIST SP 800-53 AC-2",
+                                "NIST SP 800-53 IA-1",
+                                "NIST SP 800-53 IA-2",
+                                "NIST SP 800-53 IA-3",
+                                "NIST SP 800-53 IA-4",
+                                "NIST SP 800-53 IA-5",
+                                "NIST SP 800-53 IA-6",
+                                "NIST SP 800-53 IA-7",
+                                "NIST SP 800-53 IA-8",
+                                "NIST SP 800-53 IA-9",
+                                "NIST SP 800-53 IA-10",
+                                "NIST SP 800-53 IA-11",
+                                "AICPA TSC CC6.1",
+                                "AICPA TSC CC6.2",
+                                "ISO 27001:2013 A.9.2.1",
+                                "ISO 27001:2013 A.9.2.2",
+                                "ISO 27001:2013 A.9.2.3",
+                                "ISO 27001:2013 A.9.2.4",
+                                "ISO 27001:2013 A.9.2.6",
+                                "ISO 27001:2013 A.9.3.1",
+                                "ISO 27001:2013 A.9.4.2",
+                                "ISO 27001:2013 A.9.4.3",
+                            ],
+                        },
+                        "Workflow": {"Status": "NEW"},
+                        "RecordState": "ACTIVE",
+                    }
+                    yield finding
+            else:
+                continue
 
 @registry.register_check("iam")
 def user_permission_boundary_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[IAM.2] IAM users should have permissions boundaries attached"""
-    user = list_users(cache=cache)
-    for users in user["Users"]:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for users in list_users(cache)["Users"]:
         userName = str(users["UserName"])
         userArn = str(users["Arn"])
-        # ISO Time
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
             permBoundaryArn = str(users["PermissionsBoundary"]["PermissionsBoundaryArn"])
             # this is a passing check
