@@ -870,7 +870,6 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, awsAccountId: str,
     """[IAM.6] The IAM password policy should meet or exceed the AWS CIS Foundations Benchmark standard"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-
     try:
         response = iam.get_account_password_policy()
         pwPolicy = response["PasswordPolicy"]
@@ -1092,81 +1091,187 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, awsAccountId: str,
 @registry.register_check("iam")
 def server_certs_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[IAM.7] There should not be any server certificates stored in AWS IAM"""
-    try:
-        response = iam.list_server_certificates()
-        # ISO Time
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        if str(response["ServerCertificateMetadataList"]) != "[]":
-            finding = {
-                "SchemaVersion": "2018-10-08",
-                "Id": awsAccountId + "/server-x509-certs-check",
-                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": awsAccountId + "server-cert",
-                "AwsAccountId": awsAccountId,
-                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                "FirstObservedAt": iso8601Time,
-                "CreatedAt": iso8601Time,
-                "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "MEDIUM"},
-                "Confidence": 99,
-                "Title": "[IAM.7] There should not be any server certificates stored in AWS IAM",
-                "Description": "There are server certificates stored in AWS IAM for the account "
-                + awsAccountId
-                + ". ACM is the preferred tool to provision, manage, and deploy your server certificates. With ACM you can request a certificate or deploy an existing ACM or external certificate to AWS resources. Certificates provided by ACM are free and automatically renew. Refer to the remediation instructions if this configuration is not intended.",
-                "Remediation": {
-                    "Recommendation": {
-                        "Text": "For information on server certificates refer to the Working with Server Certificates section of the AWS IAM User Guide",
-                        "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_server-certs.html",
-                    }
-                },
-                "ProductFields": {"Product Name": "ElectricEye"},
-                "Resources": [
-                    {
-                        "Type": "AwsAccount",
-                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
-                    }
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    # use a list comprehension to find any server certs in IAM
+    # this is a failing check
+    if iam.list_server_certificates()["ServerCertificateMetadataList"]:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": awsAccountId + "/server-x509-certs-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": awsAccountId + "server-cert",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "MEDIUM"},
+            "Confidence": 99,
+            "Title": "[IAM.7] There should not be any server certificates stored in AWS IAM",
+            "Description": "There are server certificates stored in AWS IAM for the account "
+            + awsAccountId
+            + ". ACM is the preferred tool to provision, manage, and deploy your server certificates. With ACM you can request a certificate or deploy an existing ACM or external certificate to AWS resources. Certificates provided by ACM are free and automatically renew. Refer to the remediation instructions if this configuration is not intended.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For information on server certificates refer to the Working with Server Certificates section of the AWS IAM User Guide",
+                    "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_server-certs.html",
+                }
+            },
+            "ProductFields": {"Product Name": "ElectricEye"},
+            "Resources": [
+                {
+                    "Type": "AwsAccount",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.AC-1",
+                    "NIST SP 800-53 AC-1",
+                    "NIST SP 800-53 AC-2",
+                    "NIST SP 800-53 IA-1",
+                    "NIST SP 800-53 IA-2",
+                    "NIST SP 800-53 IA-3",
+                    "NIST SP 800-53 IA-4",
+                    "NIST SP 800-53 IA-5",
+                    "NIST SP 800-53 IA-6",
+                    "NIST SP 800-53 IA-7",
+                    "NIST SP 800-53 IA-8",
+                    "NIST SP 800-53 IA-9",
+                    "NIST SP 800-53 IA-10",
+                    "NIST SP 800-53 IA-11",
+                    "AICPA TSC CC6.1",
+                    "AICPA TSC CC6.2",
+                    "ISO 27001:2013 A.9.2.1",
+                    "ISO 27001:2013 A.9.2.2",
+                    "ISO 27001:2013 A.9.2.3",
+                    "ISO 27001:2013 A.9.2.4",
+                    "ISO 27001:2013 A.9.2.6",
+                    "ISO 27001:2013 A.9.3.1",
+                    "ISO 27001:2013 A.9.4.2",
+                    "ISO 27001:2013 A.9.4.3",
                 ],
-                "Compliance": {
-                    "Status": "FAILED",
-                    "RelatedRequirements": [
-                        "NIST CSF PR.AC-1",
-                        "NIST SP 800-53 AC-1",
-                        "NIST SP 800-53 AC-2",
-                        "NIST SP 800-53 IA-1",
-                        "NIST SP 800-53 IA-2",
-                        "NIST SP 800-53 IA-3",
-                        "NIST SP 800-53 IA-4",
-                        "NIST SP 800-53 IA-5",
-                        "NIST SP 800-53 IA-6",
-                        "NIST SP 800-53 IA-7",
-                        "NIST SP 800-53 IA-8",
-                        "NIST SP 800-53 IA-9",
-                        "NIST SP 800-53 IA-10",
-                        "NIST SP 800-53 IA-11",
-                        "AICPA TSC CC6.1",
-                        "AICPA TSC CC6.2",
-                        "ISO 27001:2013 A.9.2.1",
-                        "ISO 27001:2013 A.9.2.2",
-                        "ISO 27001:2013 A.9.2.3",
-                        "ISO 27001:2013 A.9.2.4",
-                        "ISO 27001:2013 A.9.2.6",
-                        "ISO 27001:2013 A.9.3.1",
-                        "ISO 27001:2013 A.9.4.2",
-                        "ISO 27001:2013 A.9.4.3",
-                    ],
-                },
-                "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
-            }
-            yield finding
-        else:
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE",
+        }
+        yield finding
+    # this is a passing check
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": awsAccountId + "/server-x509-certs-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": awsAccountId + "server-cert",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[IAM.7] There should not be any server certificates stored in AWS IAM",
+            "Description": "There are not server certificates stored in AWS IAM for the account "
+            + awsAccountId
+            + ".",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For information on server certificates refer to the Working with Server Certificates section of the AWS IAM User Guide",
+                    "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_server-certs.html",
+                }
+            },
+            "ProductFields": {"Product Name": "ElectricEye"},
+            "Resources": [
+                {
+                    "Type": "AwsAccount",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.AC-1",
+                    "NIST SP 800-53 AC-1",
+                    "NIST SP 800-53 AC-2",
+                    "NIST SP 800-53 IA-1",
+                    "NIST SP 800-53 IA-2",
+                    "NIST SP 800-53 IA-3",
+                    "NIST SP 800-53 IA-4",
+                    "NIST SP 800-53 IA-5",
+                    "NIST SP 800-53 IA-6",
+                    "NIST SP 800-53 IA-7",
+                    "NIST SP 800-53 IA-8",
+                    "NIST SP 800-53 IA-9",
+                    "NIST SP 800-53 IA-10",
+                    "NIST SP 800-53 IA-11",
+                    "AICPA TSC CC6.1",
+                    "AICPA TSC CC6.2",
+                    "ISO 27001:2013 A.9.2.1",
+                    "ISO 27001:2013 A.9.2.2",
+                    "ISO 27001:2013 A.9.2.3",
+                    "ISO 27001:2013 A.9.2.4",
+                    "ISO 27001:2013 A.9.2.6",
+                    "ISO 27001:2013 A.9.3.1",
+                    "ISO 27001:2013 A.9.4.2",
+                    "ISO 27001:2013 A.9.4.3",
+                ],
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED",
+        }
+        yield finding
+
+@registry.register_check("iam")
+def iam_created_managed_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[IAM.8] Managed policies should follow least privilege principles"""
+    # ISO time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for mpolicy in iam.list_policies(Scope='Local')['Policies']:
+        policyArn = mpolicy['Arn']
+        versionId = mpolicy['DefaultVersionId']
+        policyDocument = iam.get_policy_version(
+            PolicyArn=policyArn,
+            VersionId=versionId
+        )['PolicyVersion']['Document']
+        #handle policies docs returned as strings
+        if type(policyDocument) == str:
+            policyDocument = json.loads(policyDocument)
+
+        leastPrivilegeRating = 'passing'
+        for statement in policyDocument['Statement']:
+            if statement["Effect"] == 'Allow':
+                if statement.get('Condition') == None: 
+                    # action structure could be a string or a list
+                    if type(statement['Action']) == list: 
+                        if len(['True' for x in statement['Action'] if ":*" in x or '*' == x]) > 0:
+                            if type(statement['Resource']) == str and statement['Resource'] == '*':
+                                leastPrivilegeRating = 'failedHigh'
+                                # Means that an initial failure will not be overwritten by a lower finding later
+                                next
+                            elif type(statement['Resource']) == list: 
+                                leastPrivilegeRating = 'failedLow'
+
+                    # Single action in a statement
+                    elif type(statement['Action']) == str:
+                        if ":*" in statement['Action'] or statement['Action'] == '*':
+                            if type(statement['Resource']) == str and statement['Resource'] == '*':
+                                leastPrivilegeRating = 'failedHigh'
+                                # Means that an initial failure will not be overwritten by a lower finding later
+                                next
+                            elif type(statement['Resource']) == list: 
+                                leastPrivilegeRating = 'failedLow'
+        if leastPrivilegeRating == 'passing':
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": awsAccountId + "/server-x509-certs-check",
+                "Id": f"{policyArn}/mpolicy_least_priv",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": awsAccountId + "server-cert",
+                "GeneratorId": policyArn,
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                 "FirstObservedAt": iso8601Time,
@@ -1174,74 +1279,178 @@ def server_certs_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartit
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[IAM.7] There should not be any server certificates stored in AWS IAM",
-                "Description": "There are not server certificates stored in AWS IAM for the account "
-                + awsAccountId
-                + ".",
+                "Title": "[IAM.8] Managed policies should follow least privilege principles",
+                "Description": f"The customer managed policy {policyArn} is following least privilege principles.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "For information on server certificates refer to the Working with Server Certificates section of the AWS IAM User Guide",
-                        "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_server-certs.html",
+                        "Text": "For information on IAM least privilege refer to the Controlling access section of the AWS IAM User Guide",
+                        "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_controlling.html",
                     }
                 },
                 "ProductFields": {"Product Name": "ElectricEye"},
                 "Resources": [
                     {
-                        "Type": "AwsAccount",
-                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                        "Type": "AwsIamPolicy",
+                        "Id": policyArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
+                        "Details": {
+                            "AwsIamPolicy": {
+                                "DefaultVersionId": versionId
+                            }
+                        }
                     }
                 ],
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.AC-1",
+                        "NIST CSF PR.AC-3",
                         "NIST SP 800-53 AC-1",
-                        "NIST SP 800-53 AC-2",
-                        "NIST SP 800-53 IA-1",
-                        "NIST SP 800-53 IA-2",
-                        "NIST SP 800-53 IA-3",
-                        "NIST SP 800-53 IA-4",
-                        "NIST SP 800-53 IA-5",
-                        "NIST SP 800-53 IA-6",
-                        "NIST SP 800-53 IA-7",
-                        "NIST SP 800-53 IA-8",
-                        "NIST SP 800-53 IA-9",
-                        "NIST SP 800-53 IA-10",
-                        "NIST SP 800-53 IA-11",
-                        "AICPA TSC CC6.1",
-                        "AICPA TSC CC6.2",
-                        "ISO 27001:2013 A.9.2.1",
-                        "ISO 27001:2013 A.9.2.2",
-                        "ISO 27001:2013 A.9.2.3",
-                        "ISO 27001:2013 A.9.2.4",
-                        "ISO 27001:2013 A.9.2.6",
-                        "ISO 27001:2013 A.9.3.1",
-                        "ISO 27001:2013 A.9.4.2",
-                        "ISO 27001:2013 A.9.4.3",
+                        "NIST SP 800-53 AC-17",
+                        "NIST SP 800-53 AC-19",
+                        "NIST SP 800-53 AC-20",
+                        "NIST SP 800-53 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
                     ],
                 },
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED",
             }
             yield finding
-    except Exception as e:
-        print(e)
+        elif leastPrivilegeRating == 'failedLow':
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{policyArn}/mpolicy_least_priv",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": policyArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[IAM.8] Managed policies should follow least privilege principles",
+                "Description": f"The customer managed policy {policyArn} is not following least privilege principles and has been rated: {leastPrivilegeRating}. Refer to the remediation section if this behavior is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on IAM least privilege refer to the Controlling access section of the AWS IAM User Guide",
+                        "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_controlling.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsIamPolicy",
+                        "Id": policyArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsIamPolicy": {
+                                "DefaultVersionId": versionId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-3",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-17",
+                        "NIST SP 800-53 AC-19",
+                        "NIST SP 800-53 AC-20",
+                        "NIST SP 800-53 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ],
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE",
+            }
+            yield finding
+        elif leastPrivilegeRating == 'failedHigh':
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{policyArn}/mpolicy_least_priv",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": policyArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "HIGH"},
+                "Confidence": 99,
+                "Title": "[IAM.8] Managed policies should follow least privilege principles",
+                "Description": f"The customer managed policy {policyArn} is not following least privilege principles and has been rated: {leastPrivilegeRating}. Refer to the remediation section if this behavior is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For information on IAM least privilege refer to the Controlling access section of the AWS IAM User Guide",
+                        "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_controlling.html",
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsIamPolicy",
+                        "Id": policyArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsIamPolicy": {
+                                "DefaultVersionId": versionId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-3",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-17",
+                        "NIST SP 800-53 AC-19",
+                        "NIST SP 800-53 AC-20",
+                        "NIST SP 800-53 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ],
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE",
+            }
+            yield finding
 
 @registry.register_check("iam")
-def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[IAM.8] Managed policies should follow least privilege principles"""
-    try:
-        policies = iam.list_policies(Scope='Local')
-        for mngd_policy in policies['Policies']:
-            policyArn = mngd_policy['Arn']
-            versionId = mngd_policy['DefaultVersionId']
+def iam_user_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[IAM.9] User inline policies should follow least privilege principles"""
+    for users in list_users(cache)["Users"]:
+        userArn = users['Arn']
+        userName = users['UserName']
 
-            policyDocument = iam.get_policy_version(
-                PolicyArn=policyArn,
-                VersionId=versionId
-            )['PolicyVersion']['Document']
+        policyNames = iam.list_user_policies(
+            UserName=userName
+        )['PolicyNames']
+        for policyName in policyNames:
+            policyDocument = iam.get_user_policy(
+                UserName=userName,
+                PolicyName=policyName
+            )['PolicyDocument']
+
             #handle policies docs returned as strings
             if type(policyDocument) == str:
                 policyDocument = json.loads(policyDocument)
@@ -1254,29 +1463,29 @@ def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         if type(statement['Action']) == list: 
                             if len(['True' for x in statement['Action'] if ":*" in x or '*' == x]) > 0:
                                 if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                    leastPrivilegeRating = 'failed_high'
+                                    leastPrivilegeRating = 'failedHigh'
                                     # Means that an initial failure will not be overwritten by a lower finding later
                                     next
                                 elif type(statement['Resource']) == list: 
-                                    leastPrivilegeRating = 'failed_low'
+                                    leastPrivilegeRating = 'failedLow'
 
                         # Single action in a statement
                         elif type(statement['Action']) == str:
                             if ":*" in statement['Action'] or statement['Action'] == '*':
                                 if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                    leastPrivilegeRating = 'failed_high'
+                                    leastPrivilegeRating = 'failedHigh'
                                     # Means that an initial failure will not be overwritten by a lower finding later
                                     next
                                 elif type(statement['Resource']) == list: 
-                                    leastPrivilegeRating = 'failed_low'
+                                    leastPrivilegeRating = 'failedLow'
 
             iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             if leastPrivilegeRating == 'passing':
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{policyArn}/mngd_policy_least_priv",
+                    "Id": f"{userArn}/user_policy_least_priv",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": policyArn,
+                    "GeneratorId": userArn,
                     "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
@@ -1284,24 +1493,29 @@ def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
-                    "Title": "[IAM.8] Managed policies should follow least privilege principles",
-                    "Description": f"The customer managed policy {policyArn} is following least privilege principles.",
+                    "Title": "[IAM.9] User inline policies should follow least privilege principles",
+                    "Description": f"The user {userArn} inline policy {policyName} is following least privilege principles.",
                     "Remediation": {
                         "Recommendation": {
-                            "Text": "For information on IAM least privilege refer to the Controlling access section of the AWS IAM User Guide",
-                            "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_controlling.html",
+                            "Text": "For information on IAM least privilege refer to the inline policy section of the AWS IAM User Guide",
+                            "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
                         }
                     },
                     "ProductFields": {"Product Name": "ElectricEye"},
                     "Resources": [
                         {
-                            "Type": "AwsIamPolicy",
-                            "Id": policyArn,
+                            "Type": "AwsIamUser",
+                            "Id": userArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
-                                "AwsIamPolicy": {
-                                    "DefaultVersionId": versionId
+                                "AwsIamUser": {
+                                    "UserPolicyList": [
+                                        {
+                                            "PolicyName": policyName
+                                        }
+                                    ],
+                                    "UserName": userName
                                 }
                             }
                         }
@@ -1327,12 +1541,12 @@ def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                     "RecordState": "ARCHIVED",
                 }
                 yield finding
-            elif leastPrivilegeRating == 'failed_low':
+            elif leastPrivilegeRating == 'failedLow':
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{policyArn}/mngd_policy_least_priv",
+                    "Id": f"{userArn}/user_policy_least_priv",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": policyArn,
+                    "GeneratorId": userArn,
                     "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
@@ -1340,24 +1554,29 @@ def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "LOW"},
                     "Confidence": 99,
-                    "Title": "[IAM.8] Managed policies should follow least privilege principles",
-                    "Description": f"The customer managed policy {policyArn} is not following least privilege principles and has been rated: {leastPrivilegeRating}. Refer to the remediation section if this behavior is not intended.",
+                    "Title": "[IAM.9] User inline policies should follow least privilege principles",
+                    "Description": f"The user {userArn} inline policy {policyName} is not following least privilege principles. Refer to the remediation section if this behavior is not intended.",
                     "Remediation": {
                         "Recommendation": {
-                            "Text": "For information on IAM least privilege refer to the Controlling access section of the AWS IAM User Guide",
-                            "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_controlling.html",
+                            "Text": "For information on IAM least privilege refer to the inline policy section of the AWS IAM User Guide",
+                            "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
                         }
                     },
                     "ProductFields": {"Product Name": "ElectricEye"},
                     "Resources": [
                         {
-                            "Type": "AwsIamPolicy",
-                            "Id": policyArn,
+                            "Type": "AwsIamUser",
+                            "Id": userArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
-                                "AwsIamPolicy": {
-                                    "DefaultVersionId": versionId
+                                "AwsIamUser": {
+                                    "UserPolicyList": [
+                                        {
+                                            "PolicyName": policyName
+                                        }
+                                    ],
+                                    "UserName": userName
                                 }
                             }
                         }
@@ -1383,12 +1602,12 @@ def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                     "RecordState": "ACTIVE",
                 }
                 yield finding
-            elif leastPrivilegeRating == 'failed_high':
+            elif leastPrivilegeRating == 'failedHigh':
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": f"{policyArn}/mngd_policy_least_priv",
+                    "Id": f"{userArn}/user_policy_least_priv",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": policyArn,
+                    "GeneratorId": userArn,
                     "AwsAccountId": awsAccountId,
                     "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
                     "FirstObservedAt": iso8601Time,
@@ -1396,24 +1615,29 @@ def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "HIGH"},
                     "Confidence": 99,
-                    "Title": "[IAM.8] Managed policies should follow least privilege principles",
-                    "Description": f"The customer managed policy {policyArn} is not following least privilege principles and has been rated: {leastPrivilegeRating}. Refer to the remediation section if this behavior is not intended.",
+                    "Title": "[IAM.9] User inline policies should follow least privilege principles",
+                    "Description": f"The user {userArn} inline policy {policyName} is not following least privilege principles. Refer to the remediation section if this behavior is not intended.",
                     "Remediation": {
                         "Recommendation": {
-                            "Text": "For information on IAM least privilege refer to the Controlling access section of the AWS IAM User Guide",
-                            "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_controlling.html",
+                            "Text": "For information on IAM least privilege refer to the inline policy section of the AWS IAM User Guide",
+                            "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
                         }
                     },
                     "ProductFields": {"Product Name": "ElectricEye"},
                     "Resources": [
                         {
-                            "Type": "AwsIamPolicy",
-                            "Id": policyArn,
+                            "Type": "AwsIamUser",
+                            "Id": userArn,
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
-                                "AwsIamPolicy": {
-                                    "DefaultVersionId": versionId
+                                "AwsIamUser": {
+                                    "UserPolicyList": [
+                                        {
+                                            "PolicyName": policyName
+                                        }
+                                    ],
+                                    "UserName": userName
                                 }
                             }
                         }
@@ -1439,240 +1663,6 @@ def iam_mngd_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                     "RecordState": "ACTIVE",
                 }
                 yield finding
-    except: 
-        pass
-
-@registry.register_check("iam")
-def iam_user_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[IAM.9] User inline policies should follow least privilege principles"""
-    try:
-        for users in list_users(cache)["Users"]:
-            userArn = users['Arn']
-            userName = users['UserName']
-
-            policyNames = iam.list_user_policies(
-                UserName=userName
-            )['PolicyNames']
-            for policyName in policyNames:
-                policyDocument = iam.get_user_policy(
-                    UserName=userName,
-                    PolicyName=policyName
-                )['PolicyDocument']
-
-                #handle policies docs returned as strings
-                if type(policyDocument) == str:
-                    policyDocument = json.loads(policyDocument)
-
-                leastPrivilegeRating = 'passing'
-                for statement in policyDocument['Statement']:
-                    if statement["Effect"] == 'Allow':
-                        if statement.get('Condition') == None: 
-                            # action structure could be a string or a list
-                            if type(statement['Action']) == list: 
-                                if len(['True' for x in statement['Action'] if ":*" in x or '*' == x]) > 0:
-                                    if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                        leastPrivilegeRating = 'failed_high'
-                                        # Means that an initial failure will not be overwritten by a lower finding later
-                                        next
-                                    elif type(statement['Resource']) == list: 
-                                        leastPrivilegeRating = 'failed_low'
-
-                            # Single action in a statement
-                            elif type(statement['Action']) == str:
-                                if ":*" in statement['Action'] or statement['Action'] == '*':
-                                    if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                        leastPrivilegeRating = 'failed_high'
-                                        # Means that an initial failure will not be overwritten by a lower finding later
-                                        next
-                                    elif type(statement['Resource']) == list: 
-                                        leastPrivilegeRating = 'failed_low'
-
-                iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-                if leastPrivilegeRating == 'passing':
-                    finding = {
-                        "SchemaVersion": "2018-10-08",
-                        "Id": f"{userArn}/user_policy_least_priv",
-                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": userArn,
-                        "AwsAccountId": awsAccountId,
-                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                        "FirstObservedAt": iso8601Time,
-                        "CreatedAt": iso8601Time,
-                        "UpdatedAt": iso8601Time,
-                        "Severity": {"Label": "INFORMATIONAL"},
-                        "Confidence": 99,
-                        "Title": "[IAM.9] User inline policies should follow least privilege principles",
-                        "Description": f"The user {userArn} inline policy {policyName} is following least privilege principles.",
-                        "Remediation": {
-                            "Recommendation": {
-                                "Text": "For information on IAM least privilege refer to the inline policy section of the AWS IAM User Guide",
-                                "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
-                            }
-                        },
-                        "ProductFields": {"Product Name": "ElectricEye"},
-                        "Resources": [
-                            {
-                                "Type": "AwsIamUser",
-                                "Id": userArn,
-                                "Partition": awsPartition,
-                                "Region": awsRegion,
-                                "Details": {
-                                    "AwsIamUser": {
-                                        "UserPolicyList": [
-                                            {
-                                                "PolicyName": policyName
-                                            }
-                                        ],
-                                        "UserName": userName
-                                    }
-                                }
-                            }
-                        ],
-                        "Compliance": {
-                            "Status": "PASSED",
-                            "RelatedRequirements": [
-                                "NIST CSF PR.AC-3",
-                                "NIST SP 800-53 AC-1",
-                                "NIST SP 800-53 AC-17",
-                                "NIST SP 800-53 AC-19",
-                                "NIST SP 800-53 AC-20",
-                                "NIST SP 800-53 SC-15",
-                                "AICPA TSC CC6.6",
-                                "ISO 27001:2013 A.6.2.1",
-                                "ISO 27001:2013 A.6.2.2",
-                                "ISO 27001:2013 A.11.2.6",
-                                "ISO 27001:2013 A.13.1.1",
-                                "ISO 27001:2013 A.13.2.1"
-                            ],
-                        },
-                        "Workflow": {"Status": "RESOLVED"},
-                        "RecordState": "ARCHIVED",
-                    }
-                    yield finding
-                elif leastPrivilegeRating == 'failed_low':
-                    finding = {
-                        "SchemaVersion": "2018-10-08",
-                        "Id": f"{userArn}/user_policy_least_priv",
-                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": userArn,
-                        "AwsAccountId": awsAccountId,
-                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                        "FirstObservedAt": iso8601Time,
-                        "CreatedAt": iso8601Time,
-                        "UpdatedAt": iso8601Time,
-                        "Severity": {"Label": "LOW"},
-                        "Confidence": 99,
-                        "Title": "[IAM.9] User inline policies should follow least privilege principles",
-                        "Description": f"The user {userArn} inline policy {policyName} is not following least privilege principles. Refer to the remediation section if this behavior is not intended.",
-                        "Remediation": {
-                            "Recommendation": {
-                                "Text": "For information on IAM least privilege refer to the inline policy section of the AWS IAM User Guide",
-                                "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
-                            }
-                        },
-                        "ProductFields": {"Product Name": "ElectricEye"},
-                        "Resources": [
-                            {
-                                "Type": "AwsIamUser",
-                                "Id": userArn,
-                                "Partition": awsPartition,
-                                "Region": awsRegion,
-                                "Details": {
-                                    "AwsIamUser": {
-                                        "UserPolicyList": [
-                                            {
-                                                "PolicyName": policyName
-                                            }
-                                        ],
-                                        "UserName": userName
-                                    }
-                                }
-                            }
-                        ],
-                        "Compliance": {
-                            "Status": "FAILED",
-                            "RelatedRequirements": [
-                                "NIST CSF PR.AC-3",
-                                "NIST SP 800-53 AC-1",
-                                "NIST SP 800-53 AC-17",
-                                "NIST SP 800-53 AC-19",
-                                "NIST SP 800-53 AC-20",
-                                "NIST SP 800-53 SC-15",
-                                "AICPA TSC CC6.6",
-                                "ISO 27001:2013 A.6.2.1",
-                                "ISO 27001:2013 A.6.2.2",
-                                "ISO 27001:2013 A.11.2.6",
-                                "ISO 27001:2013 A.13.1.1",
-                                "ISO 27001:2013 A.13.2.1"
-                            ],
-                        },
-                        "Workflow": {"Status": "NEW"},
-                        "RecordState": "ACTIVE",
-                    }
-                    yield finding
-                elif leastPrivilegeRating == 'failed_high':
-                    finding = {
-                        "SchemaVersion": "2018-10-08",
-                        "Id": f"{userArn}/user_policy_least_priv",
-                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": userArn,
-                        "AwsAccountId": awsAccountId,
-                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                        "FirstObservedAt": iso8601Time,
-                        "CreatedAt": iso8601Time,
-                        "UpdatedAt": iso8601Time,
-                        "Severity": {"Label": "HIGH"},
-                        "Confidence": 99,
-                        "Title": "[IAM.9] User inline policies should follow least privilege principles",
-                        "Description": f"The user {userArn} inline policy {policyName} is not following least privilege principles. Refer to the remediation section if this behavior is not intended.",
-                        "Remediation": {
-                            "Recommendation": {
-                                "Text": "For information on IAM least privilege refer to the inline policy section of the AWS IAM User Guide",
-                                "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
-                            }
-                        },
-                        "ProductFields": {"Product Name": "ElectricEye"},
-                        "Resources": [
-                            {
-                                "Type": "AwsIamUser",
-                                "Id": userArn,
-                                "Partition": awsPartition,
-                                "Region": awsRegion,
-                                "Details": {
-                                    "AwsIamUser": {
-                                        "UserPolicyList": [
-                                            {
-                                                "PolicyName": policyName
-                                            }
-                                        ],
-                                        "UserName": userName
-                                    }
-                                }
-                            }
-                        ],
-                        "Compliance": {
-                            "Status": "FAILED",
-                            "RelatedRequirements": [
-                                "NIST CSF PR.AC-3",
-                                "NIST SP 800-53 AC-1",
-                                "NIST SP 800-53 AC-17",
-                                "NIST SP 800-53 AC-19",
-                                "NIST SP 800-53 AC-20",
-                                "NIST SP 800-53 SC-15",
-                                "AICPA TSC CC6.6",
-                                "ISO 27001:2013 A.6.2.1",
-                                "ISO 27001:2013 A.6.2.2",
-                                "ISO 27001:2013 A.11.2.6",
-                                "ISO 27001:2013 A.13.1.1",
-                                "ISO 27001:2013 A.13.2.1"
-                            ],
-                        },
-                        "Workflow": {"Status": "NEW"},
-                        "RecordState": "ACTIVE",
-                    }
-                    yield finding
-    except: 
-        pass
 
 @registry.register_check("iam")
 def iam_group_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -1704,21 +1694,21 @@ def iam_group_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion:
                             if type(statement['Action']) == list: 
                                 if len(['True' for x in statement['Action'] if ":*" in x or '*' == x]) > 0:
                                     if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                        leastPrivilegeRating = 'failed_high'
+                                        leastPrivilegeRating = 'failedHigh'
                                         # Means that an initial failure will not be overwritten by a lower finding later
                                         next
                                     elif type(statement['Resource']) == list: 
-                                        leastPrivilegeRating = 'failed_low'
+                                        leastPrivilegeRating = 'failedLow'
 
                             # Single action in a statement
                             elif type(statement['Action']) == str:
                                 if ":*" in statement['Action'] or statement['Action'] == '*':
                                     if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                        leastPrivilegeRating = 'failed_high'
+                                        leastPrivilegeRating = 'failedHigh'
                                         # Means that an initial failure will not be overwritten by a lower finding later
                                         next
                                     elif type(statement['Resource']) == list: 
-                                        leastPrivilegeRating = 'failed_low'
+                                        leastPrivilegeRating = 'failedLow'
 
                 iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
                 if leastPrivilegeRating == 'passing':
@@ -1782,7 +1772,7 @@ def iam_group_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion:
                         "RecordState": "ARCHIVED",
                     }
                     yield finding
-                elif leastPrivilegeRating == 'failed_low':
+                elif leastPrivilegeRating == 'failedLow':
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": f"{groupArn}/group_policy_least_priv",
@@ -1843,7 +1833,7 @@ def iam_group_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion:
                         "RecordState": "ACTIVE",
                     }
                     yield finding
-                elif leastPrivilegeRating == 'failed_high':
+                elif leastPrivilegeRating == 'failedHigh':
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": f"{groupArn}/group_policy_least_priv",
@@ -1938,21 +1928,21 @@ def iam_role_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                             if type(statement['Action']) == list: 
                                 if len(['True' for x in statement['Action'] if ":*" in x or '*' == x]) > 0:
                                     if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                        leastPrivilegeRating = 'failed_high'
+                                        leastPrivilegeRating = 'failedHigh'
                                         # Means that an initial failure will not be overwritten by a lower finding later
                                         next
                                     elif type(statement['Resource']) == list: 
-                                        leastPrivilegeRating = 'failed_low'
+                                        leastPrivilegeRating = 'failedLow'
 
                             # Single action in a statement
                             elif type(statement['Action']) == str:
                                 if ":*" in statement['Action'] or statement['Action'] == '*':
                                     if type(statement['Resource']) == str and statement['Resource'] == '*':
-                                        leastPrivilegeRating = 'failed_high'
+                                        leastPrivilegeRating = 'failedHigh'
                                         # Means that an initial failure will not be overwritten by a lower finding later
                                         next
                                     elif type(statement['Resource']) == list: 
-                                        leastPrivilegeRating = 'failed_low'
+                                        leastPrivilegeRating = 'failedLow'
                 
                 if leastPrivilegeRating == 'passing':
                     finding = {
@@ -2015,7 +2005,7 @@ def iam_role_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         "RecordState": "ARCHIVED",
                     }
                     yield finding
-                elif leastPrivilegeRating == 'failed_low':
+                elif leastPrivilegeRating == 'failedLow':
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": f"{roleArn}/role_policy_least_priv",
@@ -2076,7 +2066,7 @@ def iam_role_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
                         "RecordState": "ACTIVE",
                     }
                     yield finding
-                elif leastPrivilegeRating == 'failed_high':
+                elif leastPrivilegeRating == 'failedHigh':
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": f"{roleArn}/role_policy_least_priv",
