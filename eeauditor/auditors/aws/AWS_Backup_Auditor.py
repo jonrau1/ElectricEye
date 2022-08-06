@@ -151,7 +151,7 @@ def volume_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for volumes in describe_volumes(cache)["Volumes"]:
         volumeId = str(volumes["VolumeId"])
-        volumeArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}/{volumeId}"
+        volumeArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:volume/{volumeId}"
         # this is a passing check
         try:
             backup.describe_protected_resource(ResourceArn=volumeArn)
