@@ -99,6 +99,9 @@ def shield_advanced_route_53_protection_check(cache: dict, awsAccountId: str, aw
                         "ISO 27001:2013 A.17.1.1",
                         "ISO 27001:2013 A.17.1.2",
                         "ISO 27001:2013 A.17.2.1",
+                        "MITRE ATT&CK T1595",
+                        "MITRE ATT&CK T1590",
+                        "MITRE ATT&CK T1498"
                     ],
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -157,6 +160,9 @@ def shield_advanced_route_53_protection_check(cache: dict, awsAccountId: str, aw
                             "ISO 27001:2013 A.17.1.1",
                             "ISO 27001:2013 A.17.1.2",
                             "ISO 27001:2013 A.17.2.1",
+                            "MITRE ATT&CK T1595",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1498"
                         ],
                     },
                     "Workflow": {"Status": "NEW"},
@@ -223,6 +229,9 @@ def shield_advanced_elb_protection_check(cache: dict, awsAccountId: str, awsRegi
                         "ISO 27001:2013 A.17.1.1",
                         "ISO 27001:2013 A.17.1.2",
                         "ISO 27001:2013 A.17.2.1",
+                        "MITRE ATT&CK T1595",
+                        "MITRE ATT&CK T1590",
+                        "MITRE ATT&CK T1498"
                     ],
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -281,6 +290,9 @@ def shield_advanced_elb_protection_check(cache: dict, awsAccountId: str, awsRegi
                             "ISO 27001:2013 A.17.1.1",
                             "ISO 27001:2013 A.17.1.2",
                             "ISO 27001:2013 A.17.2.1",
+                            "MITRE ATT&CK T1595",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1498"
                         ],
                     },
                     "Workflow": {"Status": "NEW"},
@@ -362,6 +374,9 @@ def shield_advanced_elb_v2_protection_check(cache: dict, awsAccountId: str, awsR
                         "ISO 27001:2013 A.17.1.1",
                         "ISO 27001:2013 A.17.1.2",
                         "ISO 27001:2013 A.17.2.1",
+                        "MITRE ATT&CK T1595",
+                        "MITRE ATT&CK T1590",
+                        "MITRE ATT&CK T1498"
                     ],
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -430,6 +445,9 @@ def shield_advanced_elb_v2_protection_check(cache: dict, awsAccountId: str, awsR
                             "ISO 27001:2013 A.17.1.1",
                             "ISO 27001:2013 A.17.1.2",
                             "ISO 27001:2013 A.17.2.1",
+                            "MITRE ATT&CK T1595",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1498"
                         ],
                     },
                     "Workflow": {"Status": "NEW"},
@@ -496,6 +514,9 @@ def shield_advanced_eip_protection_check(cache: dict, awsAccountId: str, awsRegi
                         "ISO 27001:2013 A.17.1.1",
                         "ISO 27001:2013 A.17.1.2",
                         "ISO 27001:2013 A.17.2.1",
+                        "MITRE ATT&CK T1595",
+                        "MITRE ATT&CK T1590",
+                        "MITRE ATT&CK T1498"
                     ],
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -554,6 +575,9 @@ def shield_advanced_eip_protection_check(cache: dict, awsAccountId: str, awsRegi
                             "ISO 27001:2013 A.17.1.1",
                             "ISO 27001:2013 A.17.1.2",
                             "ISO 27001:2013 A.17.2.1",
+                            "MITRE ATT&CK T1595",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1498"
                         ],
                     },
                     "Workflow": {"Status": "NEW"},
@@ -625,6 +649,9 @@ def shield_advanced_cloudfront_protection_check(cache: dict, awsAccountId: str, 
                         "ISO 27001:2013 A.17.1.1",
                         "ISO 27001:2013 A.17.1.2",
                         "ISO 27001:2013 A.17.2.1",
+                        "MITRE ATT&CK T1595",
+                        "MITRE ATT&CK T1590",
+                        "MITRE ATT&CK T1498"
                     ],
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -685,6 +712,9 @@ def shield_advanced_cloudfront_protection_check(cache: dict, awsAccountId: str, 
                             "ISO 27001:2013 A.17.1.1",
                             "ISO 27001:2013 A.17.1.2",
                             "ISO 27001:2013 A.17.2.1",
+                            "MITRE ATT&CK T1595",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1498"
                         ],
                     },
                     "Workflow": {"Status": "NEW"},
@@ -1119,7 +1149,10 @@ def shield_advanced_global_accelerator_protection_check(cache: dict, awsAccountI
                             "ISO 27001:2013 A.11.1.4",
                             "ISO 27001:2013 A.17.1.1",
                             "ISO 27001:2013 A.17.1.2",
-                            "ISO 27001:2013 A.17.2.1"
+                            "ISO 27001:2013 A.17.2.1",
+                            "MITRE ATT&CK T1595",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1498"
                         ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
@@ -1179,7 +1212,10 @@ def shield_advanced_global_accelerator_protection_check(cache: dict, awsAccountI
                                 "ISO 27001:2013 A.11.1.4",
                                 "ISO 27001:2013 A.17.1.1",
                                 "ISO 27001:2013 A.17.1.2",
-                                "ISO 27001:2013 A.17.2.1"
+                                "ISO 27001:2013 A.17.2.1",
+                                "MITRE ATT&CK T1595",
+                                "MITRE ATT&CK T1590",
+                                "MITRE ATT&CK T1498"
                             ]
                         },
                         "Workflow": {"Status": "NEW"},
@@ -1219,7 +1255,7 @@ def shield_advanced_subscription_latest_attacks(cache: dict, awsAccountId: str, 
             "Remediation": {
                 "Recommendation": {
                     "Text": "View the docs for more details about how to ensure your AWS environments are protected against DDOS attacks.",
-                    "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-manage-protected-resources.html",
+                    "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-manage-protected-resources.html"
                 }
             },
             "ProductFields": {"Product Name": "ElectricEye"},
@@ -1242,10 +1278,13 @@ def shield_advanced_subscription_latest_attacks(cache: dict, awsAccountId: str, 
                     "ISO 27001:2013 A.8.1.1",
                     "ISO 27001:2013 A.8.1.2",
                     "ISO 27001:2013 A.12.5.1",
-                ],
+                    "MITRE ATT&CK T1595",
+                    "MITRE ATT&CK T1590",
+                    "MITRE ATT&CK T1498"
+                ]
             },
             "Workflow": {"Status": "RESOLVED"},
-            "RecordState": "ARCHIVED",
+            "RecordState": "ARCHIVED"
         }
         yield finding
     # this is a failing check
@@ -1289,10 +1328,13 @@ def shield_advanced_subscription_latest_attacks(cache: dict, awsAccountId: str, 
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.8.1.1",
                     "ISO 27001:2013 A.8.1.2",
-                    "ISO 27001:2013 A.12.5.1"
+                    "ISO 27001:2013 A.12.5.1",
+                    "MITRE ATT&CK T1595",
+                    "MITRE ATT&CK T1590",
+                    "MITRE ATT&CK T1498"
                 ]
             },
             "Workflow": {"Status": "NEW"},
-            "RecordState": "ACTIVE",
+            "RecordState": "ACTIVE"
         }
         yield finding
