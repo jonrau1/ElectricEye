@@ -1187,9 +1187,9 @@ def shield_advanced_global_accelerator_protection_check(cache: dict, awsAccountI
                     }
                     yield finding
 
-
 @registry.register_check("shield")
 def shield_advanced_subscription_latest_attacks(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ShieldAdvanced.10] AWS Shield resources under attack in the last two weeks should be investigated"""
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     response = shield.list_attacks(
@@ -1200,7 +1200,8 @@ def shield_advanced_subscription_latest_attacks(cache: dict, awsAccountId: str, 
             'ToExclusive': datetime.datetime.utcnow()
         }
     )
-    if len(response['AttackSummaries']) == 0:
+    # this is a passing check
+    if not response['AttackSummaries']:
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": awsAccountId + "/shield-adv-subscription-latest-attacks",
@@ -1213,7 +1214,7 @@ def shield_advanced_subscription_latest_attacks(cache: dict, awsAccountId: str, 
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[ShieldAdvanced.9] Resources under attack in the last week",
+            "Title": "[ShieldAdvanced.10] AWS Shield resources under attack in the last two weeks should be investigated",
             "Description": f"The resources in {awsAccountId} have not had an attack mitigated by AWS Shield Advanced in the last week",
             "Remediation": {
                 "Recommendation": {
@@ -1247,6 +1248,7 @@ def shield_advanced_subscription_latest_attacks(cache: dict, awsAccountId: str, 
             "RecordState": "ARCHIVED",
         }
         yield finding
+    # this is a failing check
     else:
         finding = {
             "SchemaVersion": "2018-10-08",
@@ -1260,7 +1262,7 @@ def shield_advanced_subscription_latest_attacks(cache: dict, awsAccountId: str, 
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[ShieldAdvanced.9] Resources under attack in the last week",
+            "Title": "[ShieldAdvanced.10] AWS Shield resources under attack in the last two weeks should be investigated",
             "Description": f"The resources in {awsAccountId} have had at least one attack mitigated by AWS Shield Advanced in the last week",
             "Remediation": {
                 "Recommendation": {
@@ -1287,8 +1289,8 @@ def shield_advanced_subscription_latest_attacks(cache: dict, awsAccountId: str, 
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.8.1.1",
                     "ISO 27001:2013 A.8.1.2",
-                    "ISO 27001:2013 A.12.5.1",
-                ],
+                    "ISO 27001:2013 A.12.5.1"
+                ]
             },
             "Workflow": {"Status": "NEW"},
             "RecordState": "ACTIVE",
