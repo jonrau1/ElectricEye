@@ -124,10 +124,16 @@ def public_ec2_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                             "ISO 27001:2013 A.12.4.1",
                             "ISO 27001:2013 A.16.1.1",
                             "ISO 27001:2013 A.16.1.4",
-                        ],
+                            "MITRE ATT&CK T1040",
+                            "MITRE ATT&CK T1046",
+                            "MITRE ATT&CK T1580",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1592",
+                            "MITRE ATT&CK T1595"
+                        ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED",
+                    "RecordState": "ARCHIVED"
                 }
                 yield finding
             else:
@@ -194,10 +200,16 @@ def public_ec2_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                             "ISO 27001:2013 A.12.4.1",
                             "ISO 27001:2013 A.16.1.1",
                             "ISO 27001:2013 A.16.1.4",
-                        ],
+                            "MITRE ATT&CK T1040",
+                            "MITRE ATT&CK T1046",
+                            "MITRE ATT&CK T1580",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1592",
+                            "MITRE ATT&CK T1595"
+                        ]
                     },
                     "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
+                    "RecordState": "ACTIVE"
                 }
                 yield finding
 
@@ -270,10 +282,16 @@ def public_alb_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                             "ISO 27001:2013 A.12.4.1",
                             "ISO 27001:2013 A.16.1.1",
                             "ISO 27001:2013 A.16.1.4",
-                        ],
+                            "MITRE ATT&CK T1040",
+                            "MITRE ATT&CK T1046",
+                            "MITRE ATT&CK T1580",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1592",
+                            "MITRE ATT&CK T1595"
+                        ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED",
+                    "RecordState": "ARCHIVED"
                 }
                 yield finding
             else:
@@ -341,10 +359,16 @@ def public_alb_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                             "ISO 27001:2013 A.12.4.1",
                             "ISO 27001:2013 A.16.1.1",
                             "ISO 27001:2013 A.16.1.4",
-                        ],
+                            "MITRE ATT&CK T1040",
+                            "MITRE ATT&CK T1046",
+                            "MITRE ATT&CK T1580",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1592",
+                            "MITRE ATT&CK T1595"
+                        ]
                     },
                     "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
+                    "RecordState": "ACTIVE"
                 }
                 yield finding
         else:
@@ -424,10 +448,16 @@ def public_rds_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                             "ISO 27001:2013 A.12.4.1",
                             "ISO 27001:2013 A.16.1.1",
                             "ISO 27001:2013 A.16.1.4",
-                        ],
+                            "MITRE ATT&CK T1040",
+                            "MITRE ATT&CK T1046",
+                            "MITRE ATT&CK T1580",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1592",
+                            "MITRE ATT&CK T1595"
+                        ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED",
+                    "RecordState": "ARCHIVED"
                 }
                 yield finding
             else:
@@ -496,10 +526,16 @@ def public_rds_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                             "ISO 27001:2013 A.12.4.1",
                             "ISO 27001:2013 A.16.1.1",
                             "ISO 27001:2013 A.16.1.4",
-                        ],
+                            "MITRE ATT&CK T1040",
+                            "MITRE ATT&CK T1046",
+                            "MITRE ATT&CK T1580",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1592",
+                            "MITRE ATT&CK T1595"
+                        ]
                     },
                     "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
+                    "RecordState": "ACTIVE"
                 }
                 yield finding
         else:
@@ -585,10 +621,16 @@ def public_es_domain_shodan_check(cache: dict, awsAccountId: str, awsRegion: str
                                 "ISO 27001:2013 A.12.4.1",
                                 "ISO 27001:2013 A.16.1.1",
                                 "ISO 27001:2013 A.16.1.4",
-                            ],
+                                "MITRE ATT&CK T1040",
+                                "MITRE ATT&CK T1046",
+                                "MITRE ATT&CK T1580",
+                                "MITRE ATT&CK T1590",
+                                "MITRE ATT&CK T1592",
+                                "MITRE ATT&CK T1595"
+                            ]
                         },
                         "Workflow": {"Status": "RESOLVED"},
-                        "RecordState": "ARCHIVED",
+                        "RecordState": "ARCHIVED"
                     }
                     yield finding
                 else:
@@ -659,10 +701,16 @@ def public_es_domain_shodan_check(cache: dict, awsAccountId: str, awsRegion: str
                                 "ISO 27001:2013 A.12.4.1",
                                 "ISO 27001:2013 A.16.1.1",
                                 "ISO 27001:2013 A.16.1.4",
-                            ],
+                                "MITRE ATT&CK T1040",
+                                "MITRE ATT&CK T1046",
+                                "MITRE ATT&CK T1580",
+                                "MITRE ATT&CK T1590",
+                                "MITRE ATT&CK T1592",
+                                "MITRE ATT&CK T1595"
+                            ]
                         },
                         "Workflow": {"Status": "NEW"},
-                        "RecordState": "ACTIVE",
+                        "RecordState": "ACTIVE"
                     }
                     yield finding
             else:
@@ -733,10 +781,16 @@ def public_clb_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                             "ISO 27001:2013 A.12.4.1",
                             "ISO 27001:2013 A.16.1.1",
                             "ISO 27001:2013 A.16.1.4",
-                        ],
+                            "MITRE ATT&CK T1040",
+                            "MITRE ATT&CK T1046",
+                            "MITRE ATT&CK T1580",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1592",
+                            "MITRE ATT&CK T1595"
+                        ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED",
+                    "RecordState": "ARCHIVED"
                 }
                 yield finding
             else:
@@ -800,10 +854,16 @@ def public_clb_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                             "ISO 27001:2013 A.12.4.1",
                             "ISO 27001:2013 A.16.1.1",
                             "ISO 27001:2013 A.16.1.4",
-                        ],
+                            "MITRE ATT&CK T1040",
+                            "MITRE ATT&CK T1046",
+                            "MITRE ATT&CK T1580",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1592",
+                            "MITRE ATT&CK T1595"
+                        ]
                     },
                     "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
+                    "RecordState": "ACTIVE"
                 }
                 yield finding
         else:
@@ -872,10 +932,16 @@ def public_dms_replication_instance_shodan_check(cache: dict, awsAccountId: str,
                             "ISO 27001:2013 A.12.4.1",
                             "ISO 27001:2013 A.16.1.1",
                             "ISO 27001:2013 A.16.1.4",
-                        ],
+                            "MITRE ATT&CK T1040",
+                            "MITRE ATT&CK T1046",
+                            "MITRE ATT&CK T1580",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1592",
+                            "MITRE ATT&CK T1595"
+                        ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED",
+                    "RecordState": "ARCHIVED"
                 }
                 yield finding
             else:
@@ -937,10 +1003,16 @@ def public_dms_replication_instance_shodan_check(cache: dict, awsAccountId: str,
                             "ISO 27001:2013 A.12.4.1",
                             "ISO 27001:2013 A.16.1.1",
                             "ISO 27001:2013 A.16.1.4",
-                        ],
+                            "MITRE ATT&CK T1040",
+                            "MITRE ATT&CK T1046",
+                            "MITRE ATT&CK T1580",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1592",
+                            "MITRE ATT&CK T1595"
+                        ]
                     },
                     "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
+                    "RecordState": "ACTIVE"
                 }
                 yield finding
         else:
@@ -1023,10 +1095,16 @@ def public_amazon_mq_broker_shodan_check(cache: dict, awsAccountId: str, awsRegi
                                 "ISO 27001:2013 A.12.4.1",
                                 "ISO 27001:2013 A.16.1.1",
                                 "ISO 27001:2013 A.16.1.4",
-                            ],
+                                "MITRE ATT&CK T1040",
+                                "MITRE ATT&CK T1046",
+                                "MITRE ATT&CK T1580",
+                                "MITRE ATT&CK T1590",
+                                "MITRE ATT&CK T1592",
+                                "MITRE ATT&CK T1595"
+                            ]
                         },
                         "Workflow": {"Status": "RESOLVED"},
-                        "RecordState": "ARCHIVED",
+                        "RecordState": "ARCHIVED"
                     }
                     yield finding
                 else:
@@ -1082,10 +1160,16 @@ def public_amazon_mq_broker_shodan_check(cache: dict, awsAccountId: str, awsRegi
                                 "ISO 27001:2013 A.12.4.1",
                                 "ISO 27001:2013 A.16.1.1",
                                 "ISO 27001:2013 A.16.1.4",
-                            ],
+                                "MITRE ATT&CK T1040",
+                                "MITRE ATT&CK T1046",
+                                "MITRE ATT&CK T1580",
+                                "MITRE ATT&CK T1590",
+                                "MITRE ATT&CK T1592",
+                                "MITRE ATT&CK T1595"
+                            ]
                         },
                         "Workflow": {"Status": "NEW"},
-                        "RecordState": "ACTIVE",
+                        "RecordState": "ACTIVE"
                     }
                     yield finding
         else:
@@ -1156,10 +1240,16 @@ def cloudfront_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                             "ISO 27001:2013 A.12.4.1",
                             "ISO 27001:2013 A.16.1.1",
                             "ISO 27001:2013 A.16.1.4",
-                        ],
+                            "MITRE ATT&CK T1040",
+                            "MITRE ATT&CK T1046",
+                            "MITRE ATT&CK T1580",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1592",
+                            "MITRE ATT&CK T1595"
+                        ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED",
+                    "RecordState": "ARCHIVED"
                 }
                 yield finding
             else:
@@ -1222,10 +1312,16 @@ def cloudfront_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                             "ISO 27001:2013 A.12.4.1",
                             "ISO 27001:2013 A.16.1.1",
                             "ISO 27001:2013 A.16.1.4",
-                        ],
+                            "MITRE ATT&CK T1040",
+                            "MITRE ATT&CK T1046",
+                            "MITRE ATT&CK T1580",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1592",
+                            "MITRE ATT&CK T1595"
+                        ]
                     },
                     "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
+                    "RecordState": "ACTIVE"
                 }
                 yield finding
 
@@ -1298,10 +1394,16 @@ def global_accelerator_shodan_check(cache: dict, awsAccountId: str, awsRegion: s
                             "ISO 27001:2013 A.12.4.1",
                             "ISO 27001:2013 A.16.1.1",
                             "ISO 27001:2013 A.16.1.4",
-                        ],
+                            "MITRE ATT&CK T1040",
+                            "MITRE ATT&CK T1046",
+                            "MITRE ATT&CK T1580",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1592",
+                            "MITRE ATT&CK T1595"
+                        ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED",
+                    "RecordState": "ARCHIVED"
                 }
                 yield finding
             else:
@@ -1365,9 +1467,15 @@ def global_accelerator_shodan_check(cache: dict, awsAccountId: str, awsRegion: s
                             "ISO 27001:2013 A.12.4.1",
                             "ISO 27001:2013 A.16.1.1",
                             "ISO 27001:2013 A.16.1.4",
-                        ],
+                            "MITRE ATT&CK T1040",
+                            "MITRE ATT&CK T1046",
+                            "MITRE ATT&CK T1580",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1592",
+                            "MITRE ATT&CK T1595"
+                        ]
                     },
                     "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
+                    "RecordState": "ACTIVE"
                 }
                 yield finding
