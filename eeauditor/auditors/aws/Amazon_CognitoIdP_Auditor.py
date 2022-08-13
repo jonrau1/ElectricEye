@@ -492,10 +492,116 @@ def cognitoidp_waf_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
         # Get specific user pool info
         r = cognitoidp.describe_user_pool(UserPoolId=userPoolId)
         userPoolArn = str(r["UserPool"]["Arn"])
-        # determine if the User Pool ARN is covered by WAFv2
-        # this is a passing check
+        # attempt to retrieve a WAFv2 WebACL for the resource - errors or other values are not given for a lack of coverage
+        # so we end up having to create our own way to determine
+        getacl = wafv2.get_web_acl_for_resource(ResourceArn=userPoolArn)
         try:
-            wafv2.get_web_acl_for_resource(ResourceArn=userPoolArn)
-        except botocore.exceptions.ClientError as error:
-            if error.response['Error']['Code'] == 'WAFUnavailableEntityException':
-                print('You are not subscribed to AWS Premium Support - cannot use the Health Auditor')
+            coverage = getacl["WebACL"]["ARN"]
+        except KeyError:
+            coverage = False
+        # this is a failing check
+        if coverage == False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{userPoolArn}/cognito-user-pool-waf-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": userPoolId,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "HIGH"},
+                "Confidence": 99,
+                "Title": "[Cognito.4] Cognito user pools should be protected by AWS Web Application Firewall",
+                "Description": f"Cognito user pool {userPoolArn} is not protected by an AWS WAF Web ACL. For additional protection, you can use WAF to protect Amazon Cognito user pools from web-based attacks and unwanted bots. Cognito's integration with WAF enables you to define rules that enforce rate limits, gain visibility into the web traffic to your applications, and allow or block traffic to Cognito user pools based on business or security requirements, and optimize costs by controlling bot traffic. Refer to the remediation instructions to remediate this behavior.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "To ensure you Cognito user pools are protected by AWS WAF refer to the Associating an AWS WAF web ACL with a user pool section of the Amazon Cognito Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-waf.html"
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsCognitoUserPool",
+                        "Id": userPoolArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {"Other": {"UserPoolId": userPoolId}}
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF DE.AE-2",
+                        "NIST SP 800-53 AU-6",
+                        "NIST SP 800-53 CA-7",
+                        "NIST SP 800-53 IR-4",
+                        "NIST SP 800-53 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.1",
+                        "ISO 27001:2013 A.16.1.4",
+                        "MITRE ATT&CK T1595",
+                        "MITRE ATT&CK T1590",
+                        "MITRE ATT&CK T1190"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        # this is a passing check
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{userPoolArn}/cognito-user-pool-waf-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": userPoolId,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Cognito.4] Cognito user pools should be protected by AWS Web Application Firewall",
+                "Description": f"Cognito user pool {userPoolArn} is protected by an AWS WAF Web ACL.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "To ensure you Cognito user pools are protected by AWS WAF refer to the Associating an AWS WAF web ACL with a user pool section of the Amazon Cognito Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-waf.html"
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsCognitoUserPool",
+                        "Id": userPoolArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {"Other": {"UserPoolId": userPoolId}}
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF DE.AE-2",
+                        "NIST SP 800-53 AU-6",
+                        "NIST SP 800-53 CA-7",
+                        "NIST SP 800-53 IR-4",
+                        "NIST SP 800-53 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.1",
+                        "ISO 27001:2013 A.16.1.4",
+                        "MITRE ATT&CK T1595",
+                        "MITRE ATT&CK T1590",
+                        "MITRE ATT&CK T1190"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
