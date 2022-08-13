@@ -802,7 +802,10 @@ def cloudfront_waf_enabled_check(cache: dict, awsAccountId: str, awsRegion: str,
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
                         "ISO 27001:2013 A.16.1.1",
-                        "ISO 27001:2013 A.16.1.4"
+                        "ISO 27001:2013 A.16.1.4",
+                        "MITRE ATT&CK T1595",
+                        "MITRE ATT&CK T1590",
+                        "MITRE ATT&CK T1190"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -857,7 +860,10 @@ def cloudfront_waf_enabled_check(cache: dict, awsAccountId: str, awsRegion: str,
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
                         "ISO 27001:2013 A.16.1.1",
-                        "ISO 27001:2013 A.16.1.4"
+                        "ISO 27001:2013 A.16.1.4",
+                        "MITRE ATT&CK T1595",
+                        "MITRE ATT&CK T1590",
+                        "MITRE ATT&CK T1190"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
