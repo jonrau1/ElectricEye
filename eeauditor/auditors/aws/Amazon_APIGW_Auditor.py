@@ -738,7 +738,7 @@ def api_gateway_stage_waf_check_check(cache: dict, awsAccountId: str, awsRegion:
                     "AwsAccountId": awsAccountId,
                     "Types": [
                         "Software and Configuration Checks/AWS Security Best Practices",
-                        "Effects/Data Exposure",
+                        "Effects/Data Exposure"
                     ],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
@@ -770,7 +770,7 @@ def api_gateway_stage_waf_check_check(cache: dict, awsAccountId: str, awsRegion:
                                     "StageName": apiStageName,
                                     "WebAclArn": wafCheck
                                 }
-                            },
+                            }
                         }
                     ],
                     "Compliance": {
@@ -785,10 +785,13 @@ def api_gateway_stage_waf_check_check(cache: dict, awsAccountId: str, awsRegion:
                             "ISO 27001:2013 A.12.4.1",
                             "ISO 27001:2013 A.16.1.1",
                             "ISO 27001:2013 A.16.1.4",
-                        ],
+                            "MITRE ATT&CK T1595",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1190"
+                        ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED",
+                    "RecordState": "ARCHIVED"
                 }
                 yield finding
             # this is a failing check
@@ -801,7 +804,7 @@ def api_gateway_stage_waf_check_check(cache: dict, awsAccountId: str, awsRegion:
                     "AwsAccountId": awsAccountId,
                     "Types": [
                         "Software and Configuration Checks/AWS Security Best Practices",
-                        "Effects/Data Exposure",
+                        "Effects/Data Exposure"
                     ],
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
@@ -830,9 +833,9 @@ def api_gateway_stage_waf_check_check(cache: dict, awsAccountId: str, awsRegion:
                             "Details": {
                                 "AwsApiGatewayStage": {
                                     "DeploymentId": apiStageDeploymentId,
-                                    "StageName": apiStageName,
+                                    "StageName": apiStageName
                                 }
-                            },
+                            }
                         }
                     ],
                     "Compliance": {
@@ -847,10 +850,13 @@ def api_gateway_stage_waf_check_check(cache: dict, awsAccountId: str, awsRegion:
                             "ISO 27001:2013 A.12.4.1",
                             "ISO 27001:2013 A.16.1.1",
                             "ISO 27001:2013 A.16.1.4",
-                        ],
+                            "MITRE ATT&CK T1595",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1190"
+                        ]
                     },
                     "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
+                    "RecordState": "ACTIVE"
                 }
                 yield finding
 

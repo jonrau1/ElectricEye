@@ -381,6 +381,7 @@ resource "aws_iam_role_policy" "Electric_Eye_Task_Role_Policy" {
                 "wafv2:ListWebACLs",
                 "wafv2:GetLoggingConfiguration",
                 "wafv2:GetWebACL",
+                "wafv2:GetWebACLForResource",
                 "cloudfront:ListDistributions",
                 "sagemaker:ListModels",
                 "ds:DescribeDirectories",

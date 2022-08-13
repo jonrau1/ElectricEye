@@ -513,7 +513,7 @@ In this stage we will use the console the manually run the ElectricEye ECS task,
 ## Supported Services and Checks
 
 These are the following services and checks perform by each Auditor, there are currently...
-- :boom: **548 Checks** :boom:
+- :boom: **550 Checks** :boom:
 - :exclamation: **100 AWS supported services/components** :exclamation:
 - :fire: **77 Auditors** :fire:
 
@@ -566,6 +566,7 @@ There are currently **62** supported response and remediation Playbooks with cov
 | Amazon_CognitoIdP_Auditor.py | Cognito Identity Pool | Does the Password policy comply with AWS CIS Foundations Benchmark |
 | Amazon_CognitoIdP_Auditor.py | Cognito Identity Pool | Cognito Temporary Password Age |
 | Amazon_CognitoIdP_Auditor.py | Cognito Identity Pool | Does the Identity pool enforce MFA |
+| Amazon_CognitoIdP_Auditor.py | Cognito Identity Pool | Is the Identity pool protected by WAF |
 | Amazon_DocumentDB_Auditor.py | DocumentDB Instance | Are Instances publicly accessible |
 | Amazon_DocumentDB_Auditor.py | DocumentDB Instance | Are Instance encrypted |
 | Amazon_DocumentDB_Auditor.py | DocumentDB Instance | Is audit logging enabled |
@@ -681,6 +682,7 @@ There are currently **62** supported response and remediation Playbooks with cov
 | Amazon_ELBv2_Auditor.py | ELBv2 (NLB) | Do NLBs with TLS listeners have access logging enabled |
 | Amazon_ELBv2_Auditor.py | ELBv2 (ALB) | Do ALBs have HTTP Desync protection enabled |
 | Amazon_ELBv2_Auditor.py | ELBv2 (ALB) | Do ALBs SGs allow access to non-Listener ports |
+| Amazon_ELBv2_Auditor.py | ELBv2 (ALB) | Ares ALBs protected by WAF |
 | Amazon_EMR_Auditor.py | EMR Cluster | Do clusters have a sec configuration attached |
 | Amazon_EMR_Auditor.py | EMR Cluster | Do cluster sec configs enforce encryption in transit |
 | Amazon_EMR_Auditor.py | EMR Cluster | Do cluster sec configs enforce encryption at rest for EMRFS |

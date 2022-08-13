@@ -27,6 +27,7 @@ registry = CheckRegister()
 # boto3 clients
 elbv2 = boto3.client("elbv2")
 ec2 = boto3.client("ec2")
+wafv2 = boto3.client("wafv2")
 
 def describe_load_balancers(cache):
     # loop through ELBv2 load balancers
@@ -1303,3 +1304,209 @@ def elbv2_alb_sg_risk_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                         yield finding
         else:
             continue
+
+@registry.register_check("elbv2")
+def elbv2_alb_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[ELBv2.9] Application Load Balancers should be protected by AWS Web Application Firewall"""
+    # ISO Time
+    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+    for lb in describe_load_balancers(cache)["LoadBalancers"]:
+        elbv2Arn = str(lb["LoadBalancerArn"])
+        elbv2Name = str(lb["LoadBalancerName"])
+        elbv2DnsName = str(lb["DNSName"])
+        elbv2LbType = str(lb["Type"])
+        elbv2Scheme = str(lb["Scheme"])
+        elbv2VpcId = str(lb["VpcId"])
+        elbv2IpAddressType = str(lb["IpAddressType"])
+        # only ALBs can be covered by WAF
+        if elbv2LbType == "application":
+            # attempt to retrieve a WAFv2 WebACL for the resource - errors or other values are not given for a lack of coverage
+            # so we end up having to create our own way to determine
+            getacl = wafv2.get_web_acl_for_resource(ResourceArn=elbv2Arn)
+            try:
+                coverage = getacl["WebACL"]["ARN"]
+            except KeyError:
+                coverage = False
+            # this is a failing check
+            if coverage == False:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{elbv2Arn}/alb-waf-coverage-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": elbv2Arn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "HIGH"},
+                    "Confidence": 99,
+                    "Title": "[ELBv2.9] Application Load Balancers should be protected by AWS Web Application Firewall",
+                    "Description": f"Application load balancer {elbv2Name} is not protected by an AWS WAF Web ACL. AWS WAF is a web application firewall that lets you monitor the HTTP and HTTPS requests that are forwarded to your protected web application resources. AWS WAF also lets you control access to your content. Based on conditions that you specify, such as the IP addresses that requests originate from or the values of query strings, your protected resource responds to requests either with the requested content, with an HTTP 403 status code (Forbidden), or with a custom response. Refer to the remediation instructions to remediate this behavior.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on ELBv2 WAF Coverage refer to the What are AWS WAF, AWS Shield, and AWS Firewall Manager? section of the AWS WAF, AWS Firewall Manager, and AWS Shield Advanced Developer Guide.",
+                            "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html"
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsElbv2LoadBalancer",
+                            "Id": elbv2Arn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsElbv2LoadBalancer": {
+                                    "DNSName": elbv2DnsName,
+                                    "IpAddressType": elbv2IpAddressType,
+                                    "Scheme": elbv2Scheme,
+                                    "Type": elbv2LbType,
+                                    "VpcId": elbv2VpcId
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF DE.AE-2",
+                            "NIST SP 800-53 AU-6",
+                            "NIST SP 800-53 CA-7",
+                            "NIST SP 800-53 IR-4",
+                            "NIST SP 800-53 SI-4",
+                            "AICPA TSC CC7.2",
+                            "ISO 27001:2013 A.12.4.1",
+                            "ISO 27001:2013 A.16.1.1",
+                            "ISO 27001:2013 A.16.1.4",
+                            "MITRE ATT&CK T1595",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1190"
+                        ]
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE"
+                }
+                yield finding
+            # this is a passing check
+            else:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{elbv2Arn}/alb-waf-coverage-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": elbv2Arn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Confidence": 99,
+                    "Title": "[ELBv2.9] Application Load Balancers should be protected by AWS Web Application Firewall",
+                    "Description": f"Application load balancer {elbv2Name} is protected by an AWS WAF Web ACL.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information on ELBv2 WAF Coverage refer to the What are AWS WAF, AWS Shield, and AWS Firewall Manager? section of the AWS WAF, AWS Firewall Manager, and AWS Shield Advanced Developer Guide.",
+                            "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html"
+                        }
+                    },
+                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "Resources": [
+                        {
+                            "Type": "AwsElbv2LoadBalancer",
+                            "Id": elbv2Arn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsElbv2LoadBalancer": {
+                                    "DNSName": elbv2DnsName,
+                                    "IpAddressType": elbv2IpAddressType,
+                                    "Scheme": elbv2Scheme,
+                                    "Type": elbv2LbType,
+                                    "VpcId": elbv2VpcId
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF DE.AE-2",
+                            "NIST SP 800-53 AU-6",
+                            "NIST SP 800-53 CA-7",
+                            "NIST SP 800-53 IR-4",
+                            "NIST SP 800-53 SI-4",
+                            "AICPA TSC CC7.2",
+                            "ISO 27001:2013 A.12.4.1",
+                            "ISO 27001:2013 A.16.1.1",
+                            "ISO 27001:2013 A.16.1.4",
+                            "MITRE ATT&CK T1595",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1190"
+                        ]
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED"
+                }
+                yield finding
+        else:
+            # this is a passing check too
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{elbv2Arn}/alb-waf-coverage-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": elbv2Arn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[ELBv2.9] Application Load Balancers should be protected by AWS Web Application Firewall",
+                "Description": f"Elastic load balancer {elbv2Name} is not an Application load balancer and cannot be protected by an AWS WAF Web ACL.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on ELBv2 WAF Coverage refer to the What are AWS WAF, AWS Shield, and AWS Firewall Manager? section of the AWS WAF, AWS Firewall Manager, and AWS Shield Advanced Developer Guide.",
+                        "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html"
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsElbv2LoadBalancer",
+                        "Id": elbv2Arn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsElbv2LoadBalancer": {
+                                "DNSName": elbv2DnsName,
+                                "IpAddressType": elbv2IpAddressType,
+                                "Scheme": elbv2Scheme,
+                                "Type": elbv2LbType,
+                                "VpcId": elbv2VpcId
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF DE.AE-2",
+                        "NIST SP 800-53 AU-6",
+                        "NIST SP 800-53 CA-7",
+                        "NIST SP 800-53 IR-4",
+                        "NIST SP 800-53 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.1",
+                        "ISO 27001:2013 A.16.1.4",
+                        "MITRE ATT&CK T1595",
+                        "MITRE ATT&CK T1590",
+                        "MITRE ATT&CK T1190"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
