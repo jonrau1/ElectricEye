@@ -18,6 +18,7 @@
 #specific language governing permissions and limitations
 #under the License.
 import boto3
+import botocore
 import datetime
 from check_register import CheckRegister, accumulate_paged_results
 
@@ -25,6 +26,7 @@ registry = CheckRegister()
 
 # boto3 clients
 cognitoidp = boto3.client("cognito-idp")
+wafv2 = boto3.client("wafv2")
 
 # loop through Cognito User Pools
 def list_user_pools(cache):
@@ -38,9 +40,9 @@ def list_user_pools(cache):
     )
     return cache["list_user_pools"]
 
-@registry.register_check("sns")
+@registry.register_check("cognito-idp")
 def cognitoidp_cis_password_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Cognito-IdP.1] Cognito user pools should have a password policy that meets or exceed AWS CIS Foundations Benchmark standards"""
+    """[Cognito.1] Cognito user pools should have a password policy that meets or exceed AWS CIS Foundations Benchmark standards"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for userpools in list_user_pools(cache)["UserPools"]:
@@ -74,7 +76,7 @@ def cognitoidp_cis_password_check(cache: dict, awsAccountId: str, awsRegion: str
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Cognito-IdP.1] Cognito user pools should have a password policy that meets or exceed AWS CIS Foundations Benchmark standards",
+                "Title": "[Cognito.1] Cognito user pools should have a password policy that meets or exceed AWS CIS Foundations Benchmark standards",
                 "Description": f"Cognito user pool {userPoolArn} meets the password guidelines.",
                 "Remediation": {
                     "Recommendation": {
@@ -139,7 +141,7 @@ def cognitoidp_cis_password_check(cache: dict, awsAccountId: str, awsRegion: str
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": "[Cognito-IdP.1] Cognito user pools should have a password policy that meets or exceed AWS CIS Foundations Benchmark standards",
+                "Title": "[Cognito.1] Cognito user pools should have a password policy that meets or exceed AWS CIS Foundations Benchmark standards",
                 "Description": f"Cognito user pool {userPoolArn} does not meet the password guidelines. Password policies, in part, enforce password complexity requirements, setting a password complexity policy increases account resiliency against brute force login attempts. Refer to the remediation instructions to remediate this behavior.",
                 "Remediation": {
                     "Recommendation": {
@@ -191,10 +193,9 @@ def cognitoidp_cis_password_check(cache: dict, awsAccountId: str, awsRegion: str
             }
             yield finding
 
-
-@registry.register_check("sns")
+@registry.register_check("cognito-idp")
 def cognitoidp_temp_password_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Cognito-IdP.2] Cognito user pools should not allow temporary passwords to stay valid beyond 24 hours"""
+    """[Cognito.2] Cognito user pools should not allow temporary passwords to stay valid beyond 24 hours"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for userpools in list_user_pools(cache)["UserPools"]:
@@ -218,7 +219,7 @@ def cognitoidp_temp_password_check(cache: dict, awsAccountId: str, awsRegion: st
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": "[Cognito-IdP.2] Cognito user pools should not allow temporary passwords to stay valid beyond 24 hours",
+                "Title": "[Cognito.2] Cognito user pools should not allow temporary passwords to stay valid beyond 24 hours",
                 "Description": f"Cognito user pool {userPoolArn} allows temporary passwords to stay valid beyond 24 hours. Password policies, in part, enforce password complexity requirements, setting a password complexity policy increases account resiliency against brute force login attempts. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
@@ -285,7 +286,7 @@ def cognitoidp_temp_password_check(cache: dict, awsAccountId: str, awsRegion: st
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Cognito-IdP.2] Cognito user pools should not allow temporary passwords to stay valid beyond 24 hours",
+                "Title": "[Cognito.2] Cognito user pools should not allow temporary passwords to stay valid beyond 24 hours",
                 "Description": f"Cognito user pool {userPoolArn} does not allow temporary passwords to stay valid beyond 24 hours.",
                 "Remediation": {
                     "Recommendation": {
@@ -339,9 +340,9 @@ def cognitoidp_temp_password_check(cache: dict, awsAccountId: str, awsRegion: st
             }
             yield finding
 
-@registry.register_check("sns")
+@registry.register_check("cognito-idp")
 def cognitoidp_mfa_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Cognito-IdP.3] Cognito user pools should enforce multi factor authentication (MFA)"""
+    """[Cognito.3] Cognito user pools should enforce multi factor authentication (MFA)"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for userpools in list_user_pools(cache)["UserPools"]:
@@ -365,7 +366,7 @@ def cognitoidp_mfa_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
-                "Title": "[Cognito-IdP.3] Cognito user pools should enforce multi factor authentication (MFA)",
+                "Title": "[Cognito.3] Cognito user pools should enforce multi factor authentication (MFA)",
                 "Description": f"Cognito user pool {userPoolArn} does not enforce multi factor authentication (MFA). AWS recommends enabling MFA for all accounts that have a console password. Enabling MFA provides increased security for console access because it requires the authenticating principal to possess a device that emits a time-sensitive key and have knowledge of a credential. Refer to the remediation instructions to remediate this behavior.",
                 "Remediation": {
                     "Recommendation": {
@@ -429,7 +430,7 @@ def cognitoidp_mfa_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Cognito-IdP.3] Cognito user pools should enforce multi factor authentication (MFA)",
+                "Title": "[Cognito.3] Cognito user pools should enforce multi factor authentication (MFA)",
                 "Description": f"Cognito user pool {userPoolArn} enforces multi factor authentication (MFA).",
                 "Remediation": {
                     "Recommendation": {
@@ -480,3 +481,21 @@ def cognitoidp_mfa_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
                 "RecordState": "ARCHIVED"
             }
             yield finding
+
+@registry.register_check("cognito-idp")
+def cognitoidp_waf_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Cognito.4] Cognito user pools should be protected by AWS Web Application Firewall"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for userpools in list_user_pools(cache)["UserPools"]:
+        userPoolId = str(userpools["Id"])
+        # Get specific user pool info
+        r = cognitoidp.describe_user_pool(UserPoolId=userPoolId)
+        userPoolArn = str(r["UserPool"]["Arn"])
+        # determine if the User Pool ARN is covered by WAFv2
+        # this is a passing check
+        try:
+            wafv2.get_web_acl_for_resource(ResourceArn=userPoolArn)
+        except botocore.exceptions.ClientError as error:
+            if error.response['Error']['Code'] == 'WAFUnavailableEntityException':
+                print('You are not subscribed to AWS Premium Support - cannot use the Health Auditor')
