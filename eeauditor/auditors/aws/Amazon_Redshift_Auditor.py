@@ -1377,7 +1377,7 @@ def redshift_cluster_auto_version_upgrade_check(cache: dict, awsAccountId: str, 
         endpointPort = cluster["Endpoint"]["Port"]
         nodeType = cluster["NodeType"]
         vpcId = cluster["VpcId"]
-        if cluster["AutomatedSnapshotRetentionPeriod"] == 0:
+        if cluster["AllowVersionUpgrade"] == False:
             # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
