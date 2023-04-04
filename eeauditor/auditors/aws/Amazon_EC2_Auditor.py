@@ -426,7 +426,7 @@ def ec2_public_facing_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                     }
                 ],
                 "Compliance": {
-                    "Status": "PASSED",
+                    "Status": "FAILED",
                     "RelatedRequirements": [
                         "NIST CSF PR.AC-3",
                         "NIST SP 800-53 AC-1",
@@ -492,7 +492,7 @@ def ec2_public_facing_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                     }
                 ],
                 "Compliance": {
-                    "Status": "FAILED",
+                    "Status": "PASSED",
                     "RelatedRequirements": [
                         "NIST CSF PR.AC-3",
                         "NIST SP 800-53 AC-1",
@@ -787,7 +787,7 @@ def ec2_serial_console_access_check(cache: dict, awsAccountId: str, awsRegion: s
 
 @registry.register_check("ec2")
 def ec2_ami_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EC2.5] EC2 Instances should use AMIs that are less than 3 months old"""
+    """[EC2.6] EC2 Instances should use AMIs that are less than 3 months old"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for i in describe_instances(cache):
@@ -933,7 +933,7 @@ def ec2_ami_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
 
 @registry.register_check("ec2")
 def ec2_ami_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EC2.6] EC2 Instances should use AMIs that are currently registered"""
+    """[EC2.7] EC2 Instances should use AMIs that are currently registered"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for i in describe_instances(cache):
@@ -1197,7 +1197,7 @@ def ec2_ami_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
 
 @registry.register_check("ec2")
 def ec2_concentration_risk(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EC2.7] EC2 Instances should be deployed across multiple Availability Zones"""
+    """[EC2.8] EC2 Instances should be deployed across multiple Availability Zones"""
     # Create empty list to hold unique Subnet IDs - for future lookup against AZs
     uSubnets = []
     # Create another empty list to hold unique AZs based on Subnets
