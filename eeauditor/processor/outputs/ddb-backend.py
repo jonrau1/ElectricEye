@@ -81,7 +81,7 @@ class JsonProvider(object):
                     "Provider": "AWS",
                     "ProviderAccountId": fi["AwsAccountId"],
                     "CreatedAt": str(fi["CreatedAt"]),
-                    "Severity": fi["Severity"]["Label"],
+                    "Severity": fi["Severity"]["Label"].lower().capitalize(),
                     "Title": title,
                     "Description": fi["Description"],
                     "RecommendationText": str(fi["Remediation"]["Recommendation"]["Text"]),
@@ -90,7 +90,7 @@ class JsonProvider(object):
                     "ResourceId": str(fi["Resources"][0]["Id"]),
                     "ResourcePartition": partitionName,
                     "ResourceDetails": resourceDetails,
-                    "FindingStatus": fi["Workflow"]["Status"],
+                    "FindingStatus": fi["Workflow"]["Status"].lower().capitalize(),
                     "AuditReadinessMapping": fi["Compliance"]["RelatedRequirements"],
                     "AuditReadinessStatus": fi["Compliance"]["Status"].lower().capitalize()
                 }
