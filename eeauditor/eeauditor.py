@@ -61,7 +61,8 @@ class EEAuditor(object):
         elif self.awsRegion in ["us-isob-east-1"]:
             self.awsPartition = "aws-isob"
         # AWS Top Secret Region override
-        elif self.awsRegion in ["us-iso-east-1"]:
+        # TS West: https://aws.amazon.com/blogs/publicsector/announcing-second-aws-top-secret-region-extending-support-us-government-classified-missions/
+        elif self.awsRegion in ["us-iso-east-1", "us-iso-west-1"]:
             self.awsPartition = "aws-iso"
 
         # If there is a desire to add support for multiple clouds, this would be

@@ -52,13 +52,25 @@ class JsonProvider(object):
         for fi in findings:
             # Pull out the Finding ID just in case there is an underlying `KeyError` issue for debug
             findingId = fi["Id"]
-            # some values may not always be present (Details, etc.) - write in fake values to handle this
+            # some values may not always be present (Details, etc.) - change this to an empty Map
             try:
                 resourceDetails = fi["Resources"][0]["Details"]
                 if not resourceDetails:
                     resourceDetails = []
             except KeyError:
                 resourceDetails = []
+            # Partition data mapping
+            partition = fi["Resources"][0]["Partition"]
+            if partition == "aws":
+                partitionName = "AWS Commercial"
+            elif partition == "aws-us-gov":
+                partitionName = "AWS GovCloud"
+            elif partition == "aws-cn":
+                partitionName = "AWS China"
+            elif partition == "aws-isob":
+                partitionName = "AWS ISOB" # Secret Region
+            elif partition == "aws-iso":
+                partitionName = "AWS ISO" # Top Secret Region
 
             try:
                 # This format should map to FastAPI schema
@@ -67,17 +79,18 @@ class JsonProvider(object):
                     "Provider": "AWS",
                     "ProviderAccountId": fi["AwsAccountId"],
                     "CreatedAt": str(fi["CreatedAt"]),
-                    "Severity": fi["Severity"],
+                    "Severity": fi["Severity"]["Label"],
                     "Title": fi["Title"],
                     "Description": fi["Description"],
                     "RecommendationText": str(fi["Remediation"]["Recommendation"]["Text"]),
                     "RecommendationUrl": str(fi["Remediation"]["Recommendation"]["Url"]),
                     "ResourceType": str(fi["Resources"][0]["Type"]),
                     "ResourceId": str(fi["Resources"][0]["Id"]),
-                    "ResourcePartition": str(fi["Resources"][0]["Partition"]).upper(),
+                    "ResourcePartition": partition,
                     "ResourceDetails": resourceDetails,
                     "FindingStatus": fi["Workflow"]["Status"],
-                    "AuditReadinessMapping": fi["Compliance"]["RelatedRequirements"]
+                    "AuditReadinessMapping": fi["Compliance"]["RelatedRequirements"],
+                    "AuditReadinessStatus": fi["Compliance"]["Status"].lower().capitalize()
                 }
                 # Write to DDB
                 table.put_item(
