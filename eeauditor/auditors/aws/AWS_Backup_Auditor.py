@@ -89,7 +89,6 @@ def describe_db_instances(cache):
                 {
                     "Name": "engine",
                     "Values": [
-                        "aurora",
                         "aurora-mysql",
                         "aurora-postgresql",
                         "mariadb",
