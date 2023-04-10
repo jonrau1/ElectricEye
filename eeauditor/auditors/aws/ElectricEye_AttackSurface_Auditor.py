@@ -158,7 +158,10 @@ def ec2_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
                     elif portNumber == 4040:
                         serviceName = 'SPARK-WEBUI'
                     else:
-                        serviceName = str(p["service"]["name"]).upper()
+                        try:
+                            serviceName = str(p["service"]["name"]).upper()
+                        except KeyError:
+                            serviceName = "Unknown"
                     serviceStateReason = str(p["reason"])
                     serviceState = str(p["state"])
                     # This is a failing check
@@ -340,7 +343,10 @@ def elbv2_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, aws
                     elif portNumber == 4040:
                         serviceName = 'SPARK-WEBUI'
                     else:
-                        serviceName = str(p["service"]["name"]).upper()
+                        try:
+                            serviceName = str(p["service"]["name"]).upper()
+                        except KeyError:
+                            serviceName = "Unknown"
                     serviceStateReason = str(p["reason"])
                     serviceState = str(p["state"])
                     # This is a failing check
@@ -524,7 +530,10 @@ def elb_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
                     elif portNumber == 4040:
                         serviceName = 'SPARK-WEBUI'
                     else:
-                        serviceName = str(p["service"]["name"]).upper()
+                        try:
+                            serviceName = str(p["service"]["name"]).upper()
+                        except KeyError:
+                            serviceName = "Unknown"
                     serviceStateReason = str(p["reason"])
                     serviceState = str(p["state"])
                     # This is a failing check
@@ -706,7 +715,10 @@ def eip_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
                 elif portNumber == 4040:
                     serviceName = 'SPARK-WEBUI'
                 else:
-                    serviceName = str(p["service"]["name"]).upper()
+                    try:
+                        serviceName = str(p["service"]["name"]).upper()
+                    except KeyError:
+                        serviceName = "Unknown"
                 serviceStateReason = str(p["reason"])
                 serviceState = str(p["state"])
                 # This is a failing check
@@ -880,7 +892,10 @@ def cloudfront_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str
                 elif portNumber == 4040:
                     serviceName = 'SPARK-WEBUI'
                 else:
-                    serviceName = str(p["service"]["name"]).upper()
+                    try:
+                        serviceName = str(p["service"]["name"]).upper()
+                    except KeyError:
+                        serviceName = "Unknown"
                 serviceStateReason = str(p["reason"])
                 serviceState = str(p["state"])
                 # This is a failing check
@@ -1059,7 +1074,10 @@ def route53_public_hz_attack_surface_open_tcp_port_check(cache: dict, awsAccount
                         elif portNumber == 4040:
                             serviceName = 'SPARK-WEBUI'
                         else:
-                            serviceName = str(p["service"]["name"]).upper()
+                            try:
+                                serviceName = str(p["service"]["name"]).upper()
+                            except KeyError:
+                                serviceName = "Unknown"
                         serviceStateReason = str(p["reason"])
                         serviceState = str(p["state"])
                         # This is a failing check
@@ -1203,4 +1221,4 @@ def route53_public_hz_attack_surface_open_tcp_port_check(cache: dict, awsAccount
                             }
                             yield finding
 
-# TODO: Global Accelerator
+# TODO: Global Accelerator ?!
