@@ -67,7 +67,7 @@ class JsonProvider(object):
                     "Provider": "AWS",
                     "ProviderAccountId": fi["AwsAccountId"],
                     "CreatedAt": str(fi["CreatedAt"]),
-                    "Severity": fi["SeverityLabel"],
+                    "Severity": fi["Severity"],
                     "Title": fi["Title"],
                     "Description": fi["Description"],
                     "RecommendationText": str(fi["Remediation"]["Recommendation"]["Text"]),
