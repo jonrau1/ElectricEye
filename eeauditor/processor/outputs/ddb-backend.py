@@ -71,6 +71,8 @@ class JsonProvider(object):
                 partitionName = "AWS ISOB" # Secret Region
             elif partition == "aws-iso":
                 partitionName = "AWS ISO" # Top Secret Region
+            # Chop up the Title to remove the finding ID
+            title = str(fi["Title"]).split('] ')[1]
 
             try:
                 # This format should map to FastAPI schema
@@ -80,13 +82,13 @@ class JsonProvider(object):
                     "ProviderAccountId": fi["AwsAccountId"],
                     "CreatedAt": str(fi["CreatedAt"]),
                     "Severity": fi["Severity"]["Label"],
-                    "Title": fi["Title"],
+                    "Title": title,
                     "Description": fi["Description"],
                     "RecommendationText": str(fi["Remediation"]["Recommendation"]["Text"]),
                     "RecommendationUrl": str(fi["Remediation"]["Recommendation"]["Url"]),
                     "ResourceType": str(fi["Resources"][0]["Type"]),
                     "ResourceId": str(fi["Resources"][0]["Id"]),
-                    "ResourcePartition": partition,
+                    "ResourcePartition": partitionName,
                     "ResourceDetails": resourceDetails,
                     "FindingStatus": fi["Workflow"]["Status"],
                     "AuditReadinessMapping": fi["Compliance"]["RelatedRequirements"],
