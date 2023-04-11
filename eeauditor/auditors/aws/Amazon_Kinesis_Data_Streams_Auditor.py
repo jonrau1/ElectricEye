@@ -18,16 +18,14 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
-# import boto3 clients
-kinesis = boto3.client("kinesis")
 
 # loop through kinesis streams
-def list_streams(cache):
+def list_streams(cache, session):
+    kinesis = session.client("kinesis")
     response = cache.get("list_streams")
     if response:
         return response
@@ -35,9 +33,10 @@ def list_streams(cache):
     return cache["list_streams"]
 
 @registry.register_check("kinesis")
-def kinesis_stream_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def kinesis_stream_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Kinesis.1] Kinesis Data Streams should be encrypted"""
-    response = list_streams(cache)
+    kinesis = session.client("kinesis")
+    response = list_streams(cache, session)
     myKinesisStreams = response["StreamNames"]
     for streams in myKinesisStreams:
         response = kinesis.describe_stream(StreamName=streams)
@@ -147,9 +146,10 @@ def kinesis_stream_encryption_check(cache: dict, awsAccountId: str, awsRegion: s
             yield finding
 
 @registry.register_check("kinesis")
-def kinesis_enhanced_monitoring_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def kinesis_enhanced_monitoring_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Kinesis.2] Business-critical Kinesis Data Streams should have detailed monitoring configured"""
-    response = list_streams(cache)
+    kinesis = session.client("kinesis")
+    response = list_streams(cache, session)
     myKinesisStreams = response["StreamNames"]
     for streams in myKinesisStreams:
         response = kinesis.describe_stream(StreamName=streams)

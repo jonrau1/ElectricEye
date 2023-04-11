@@ -18,17 +18,13 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-# import boto3 clients
-amb = boto3.client("managedblockchain")
-
-# loop through AMB Fabric networks
-def list_networks(cache):
+def list_networks(cache, session):
+    amb = session.client("managedblockchain")
     response = cache.get("list_networks")
     if response:
         return response
@@ -36,9 +32,10 @@ def list_networks(cache):
     return cache["list_networks"]
 
 @registry.register_check("managedblockchain")
-def amb_fabric_node_chaincode_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def amb_fabric_node_chaincode_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AMB.Fabric.1] Amazon Managed Blockchain Fabric peer nodes should have chaincode logging enabled"""
-    response = list_networks(cache)
+    amb = session.client("managedblockchain")
+    response = list_networks(cache, session)
     myFabricNetworks = response["Networks"]
     for networks in myFabricNetworks:
         fabricNetworkId = str(networks["Id"])
@@ -199,9 +196,10 @@ def amb_fabric_node_chaincode_logging_check(cache: dict, awsAccountId: str, awsR
             print(e)
 
 @registry.register_check("managedblockchain")
-def amb_fabric_node_peernode_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def amb_fabric_node_peernode_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AMB.Fabric.2] Amazon Managed Blockchain Fabric peer nodes should have peer node logging enabled"""
-    response = list_networks(cache)
+    amb = session.client("managedblockchain")
+    response = list_networks(cache, session)
     myFabricNetworks = response["Networks"]
     for networks in myFabricNetworks:
         fabricNetworkId = str(networks["Id"])
@@ -362,9 +360,10 @@ def amb_fabric_node_peernode_logging_check(cache: dict, awsAccountId: str, awsRe
             print(e)
 
 @registry.register_check("managedblockchain")
-def amb_fabric_member_ca_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def amb_fabric_member_ca_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AMB.Fabric.3] Amazon Managed Blockchain Fabric members should have certificate authority (CA) logging enabled"""
-    response = list_networks(cache)
+    amb = session.client("managedblockchain")
+    response = list_networks(cache, session)
     myFabricNetworks = response["Networks"]
     for networks in myFabricNetworks:
         fabricNetworkId = str(networks["Id"])
