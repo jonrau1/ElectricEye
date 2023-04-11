@@ -150,6 +150,7 @@ class EEAuditor(object):
                         print(f"Executing Check: {check_name}")
                         for finding in check(
                             cache=auditor_cache,
+                            session=self.session,
                             awsAccountId=self.awsAccountId,
                             awsRegion=self.awsRegion,
                             awsPartition=self.awsPartition,
