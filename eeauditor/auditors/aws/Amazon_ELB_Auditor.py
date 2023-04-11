@@ -18,15 +18,13 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
-# create boto3 clients
-elb = boto3.client("elb")
 
-def describe_clbs(cache):
+def describe_clbs(cache, session):
+    elb = session.client("elb")
     # loop through ELB load balancers
     response = cache.get("describe_load_balancers")
     if response:
@@ -35,11 +33,11 @@ def describe_clbs(cache):
     return cache["describe_load_balancers"]
 
 @registry.register_check("elb")
-def internet_facing_clb_https_listener_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def internet_facing_clb_https_listener_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELB.1] Classic load balancers that are internet-facing should use secure listeners"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for lb in describe_clbs(cache)["LoadBalancerDescriptions"]:
+    for lb in describe_clbs(cache, session)["LoadBalancerDescriptions"]:
         clbName = str(lb["LoadBalancerName"])
         clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
         dnsName = str(lb["DNSName"])
@@ -181,11 +179,11 @@ def internet_facing_clb_https_listener_check(cache: dict, awsAccountId: str, aws
             continue
 
 @registry.register_check("elb")
-def clb_https_listener_tls12_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def clb_https_listener_tls12_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELB.2] Classic load balancers should use TLS 1.2 listener policies"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for lb in describe_clbs(cache)["LoadBalancerDescriptions"]:
+    for lb in describe_clbs(cache, session)["LoadBalancerDescriptions"]:
         clbName = str(lb["LoadBalancerName"])
         clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
         dnsName = str(lb["DNSName"])
@@ -326,11 +324,12 @@ def clb_https_listener_tls12_policy_check(cache: dict, awsAccountId: str, awsReg
                 yield finding
 
 @registry.register_check("elb")
-def clb_cross_zone_balancing_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def clb_cross_zone_balancing_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELB.3] Classic load balancers should have cross-zone load balancing configured"""
+    elb = session.client("elb")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for lb in describe_clbs(cache)["LoadBalancerDescriptions"]:
+    for lb in describe_clbs(cache, session)["LoadBalancerDescriptions"]:
         clbName = str(lb["LoadBalancerName"])
         clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
         dnsName = str(lb["DNSName"])
@@ -474,11 +473,12 @@ def clb_cross_zone_balancing_check(cache: dict, awsAccountId: str, awsRegion: st
             yield finding
 
 @registry.register_check("elb")
-def clb_connection_draining_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def clb_connection_draining_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELB.4] Classic load balancers should have connection draining configured"""
+    elb = session.client("elb")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for lb in describe_clbs(cache)["LoadBalancerDescriptions"]:
+    for lb in describe_clbs(cache, session)["LoadBalancerDescriptions"]:
         clbName = str(lb["LoadBalancerName"])
         clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
         dnsName = str(lb["DNSName"])
@@ -622,11 +622,12 @@ def clb_connection_draining_check(cache: dict, awsAccountId: str, awsRegion: str
             yield finding
 
 @registry.register_check("elb")
-def clb_access_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def clb_access_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELB.5] Classic load balancers should enable access logging"""
+    elb = session.client("elb")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for lb in describe_clbs(cache)["LoadBalancerDescriptions"]:
+    for lb in describe_clbs(cache, session)["LoadBalancerDescriptions"]:
         clbName = str(lb["LoadBalancerName"])
         clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
         dnsName = str(lb["DNSName"])

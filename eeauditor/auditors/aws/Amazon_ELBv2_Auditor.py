@@ -18,18 +18,13 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-# boto3 clients
-elbv2 = boto3.client("elbv2")
-ec2 = boto3.client("ec2")
-wafv2 = boto3.client("wafv2")
-
-def describe_load_balancers(cache):
+def describe_load_balancers(cache, session):
+    elbv2 = session.client("elbv2")
     # loop through ELBv2 load balancers
     response = cache.get("describe_load_balancers")
     if response:
@@ -38,11 +33,12 @@ def describe_load_balancers(cache):
     return cache["describe_load_balancers"]
 
 @registry.register_check("elbv2")
-def elbv2_alb_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def elbv2_alb_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELBv2.1] Application Load Balancers should have access logging enabled"""
+    elbv2 = session.client("elbv2")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for lb in describe_load_balancers(cache)["LoadBalancers"]:
+    for lb in describe_load_balancers(cache, session)["LoadBalancers"]:
         elbv2Arn = str(lb["LoadBalancerArn"])
         elbv2Name = str(lb["LoadBalancerName"])
         elbv2DnsName = str(lb["DNSName"])
@@ -188,11 +184,12 @@ def elbv2_alb_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
             continue
 
 @registry.register_check("elbv2")
-def elbv2_deletion_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def elbv2_deletion_protection_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELBv2.2] Application and Network Load Balancers should have deletion protection enabled"""
+    elbv2 = session.client("elbv2")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for lb in describe_load_balancers(cache)["LoadBalancers"]:
+    for lb in describe_load_balancers(cache, session)["LoadBalancers"]:
         elbv2Arn = str(lb["LoadBalancerArn"])
         elbv2Name = str(lb["LoadBalancerName"])
         elbv2DnsName = str(lb["DNSName"])
@@ -341,11 +338,12 @@ def elbv2_deletion_protection_check(cache: dict, awsAccountId: str, awsRegion: s
                 continue
 
 @registry.register_check("elbv2")
-def elbv2_internet_facing_secure_listeners_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def elbv2_internet_facing_secure_listeners_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELBv2.3] Internet-facing Application and Network Load Balancers should have secure listeners configured"""
+    elbv2 = session.client("elbv2")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for lb in describe_load_balancers(cache)["LoadBalancers"]:
+    for lb in describe_load_balancers(cache, session)["LoadBalancers"]:
         elbv2Arn = str(lb["LoadBalancerArn"])
         elbv2Name = str(lb["LoadBalancerName"])
         elbv2DnsName = str(lb["DNSName"])
@@ -487,8 +485,9 @@ def elbv2_internet_facing_secure_listeners_check(cache: dict, awsAccountId: str,
                 yield finding
 
 @registry.register_check("elbv2")
-def elbv2_tls12_listener_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def elbv2_tls12_listener_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELBv2.4] Application and Network Load Balancers with HTTPS or TLS listeners should enforce TLS 1.2 or TLS 1.3 policies"""
+    elbv2 = session.client("elbv2")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # valid TLS 1.2 and 1.3 Policies
@@ -505,7 +504,7 @@ def elbv2_tls12_listener_policy_check(cache: dict, awsAccountId: str, awsRegion:
         "ELBSecurityPolicy-TLS13-1-2-2021-06" 
     ]
 
-    for lb in describe_load_balancers(cache)["LoadBalancers"]:
+    for lb in describe_load_balancers(cache, session)["LoadBalancers"]:
         elbv2Arn = str(lb["LoadBalancerArn"])
         elbv2Name = str(lb["LoadBalancerName"])
         elbv2DnsName = str(lb["DNSName"])
@@ -656,11 +655,12 @@ def elbv2_tls12_listener_policy_check(cache: dict, awsAccountId: str, awsRegion:
                 continue
 
 @registry.register_check("elbv2")
-def elbv2_drop_invalid_header_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def elbv2_drop_invalid_header_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELBv2.5] Application Load Balancers should drop invalid HTTP header fields"""
+    elbv2 = session.client("elbv2")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for lb in describe_load_balancers(cache)["LoadBalancers"]:
+    for lb in describe_load_balancers(cache, session)["LoadBalancers"]:
         elbv2Arn = str(lb["LoadBalancerArn"])
         elbv2Name = str(lb["LoadBalancerName"])
         elbv2DnsName = str(lb["DNSName"])
@@ -801,11 +801,12 @@ def elbv2_drop_invalid_header_check(cache: dict, awsAccountId: str, awsRegion: s
                 continue
 
 @registry.register_check("elbv2")
-def elbv2_nlb_tls_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def elbv2_nlb_tls_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELBv2.6] Network Load Balancers with TLS listeners should have access logging enabled"""
+    elbv2 = session.client("elbv2")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for lb in describe_load_balancers(cache)["LoadBalancers"]:
+    for lb in describe_load_balancers(cache, session)["LoadBalancers"]:
         elbv2Arn = str(lb["LoadBalancerArn"])
         elbv2Name = str(lb["LoadBalancerName"])
         elbv2DnsName = str(lb["DNSName"])
@@ -957,11 +958,12 @@ def elbv2_nlb_tls_logging_check(cache: dict, awsAccountId: str, awsRegion: str, 
             continue
 
 @registry.register_check("elbv2")
-def elbv2_alb_http_desync_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def elbv2_alb_http_desync_protection_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELBv2.7] Application Load Balancers should have HTTP Desync protection enabled"""
+    elbv2 = session.client("elbv2")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for lb in describe_load_balancers(cache)["LoadBalancers"]:
+    for lb in describe_load_balancers(cache, session)["LoadBalancers"]:
         elbv2Arn = str(lb["LoadBalancerArn"])
         elbv2Name = str(lb["LoadBalancerName"])
         elbv2DnsName = str(lb["DNSName"])
@@ -1129,12 +1131,14 @@ def elbv2_alb_http_desync_protection_check(cache: dict, awsAccountId: str, awsRe
             continue
 
 @registry.register_check("elbv2")
-def elbv2_alb_sg_risk_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def elbv2_alb_sg_risk_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELBv2.8] Application Load Balancer security groups should not allow non-Listener ports access"""
+    elbv2 = session.client("elbv2")
+    ec2 = session.client("ec2")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # Evaluations
-    response = describe_load_balancers(cache)
+    response = describe_load_balancers(cache, session)
     myElbv2LoadBalancers = response["LoadBalancers"]
     for loadbalancers in myElbv2LoadBalancers:
         elbv2LbType = str(loadbalancers["Type"])
@@ -1306,11 +1310,12 @@ def elbv2_alb_sg_risk_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
             continue
 
 @registry.register_check("elbv2")
-def elbv2_alb_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def elbv2_alb_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELBv2.9] Application Load Balancers should be protected by AWS Web Application Firewall"""
+    wafv2 = session.client("wafv2")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for lb in describe_load_balancers(cache)["LoadBalancers"]:
+    for lb in describe_load_balancers(cache, session)["LoadBalancers"]:
         elbv2Arn = str(lb["LoadBalancerArn"])
         elbv2Name = str(lb["LoadBalancerName"])
         elbv2DnsName = str(lb["DNSName"])
