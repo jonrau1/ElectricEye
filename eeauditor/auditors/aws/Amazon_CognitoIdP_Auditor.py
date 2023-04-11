@@ -17,19 +17,15 @@
 #KIND, either express or implied.  See the License for the
 #specific language governing permissions and limitations
 #under the License.
-import boto3
-import botocore
 import datetime
 from check_register import CheckRegister, accumulate_paged_results
 
 registry = CheckRegister()
 
-# boto3 clients
-cognitoidp = boto3.client("cognito-idp")
-wafv2 = boto3.client("wafv2")
-
 # loop through Cognito User Pools
-def list_user_pools(cache):
+def list_user_pools(cache, session):
+    cognitoidp = session.client("cognito-idp")
+
     response = cache.get("list_user_pools")
     if response:
         return response
@@ -41,11 +37,12 @@ def list_user_pools(cache):
     return cache["list_user_pools"]
 
 @registry.register_check("cognito-idp")
-def cognitoidp_cis_password_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def cognitoidp_cis_password_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Cognito.1] Cognito user pools should have a password policy that meets or exceed AWS CIS Foundations Benchmark standards"""
+    cognitoidp = session.client("cognito-idp")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for userpools in list_user_pools(cache)["UserPools"]:
+    for userpools in list_user_pools(cache, session)["UserPools"]:
         userPoolId = str(userpools["Id"])
         response = cognitoidp.describe_user_pool(UserPoolId=userPoolId)
         userPoolArn = str(response["UserPool"]["Arn"])
@@ -194,11 +191,12 @@ def cognitoidp_cis_password_check(cache: dict, awsAccountId: str, awsRegion: str
             yield finding
 
 @registry.register_check("cognito-idp")
-def cognitoidp_temp_password_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def cognitoidp_temp_password_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Cognito.2] Cognito user pools should not allow temporary passwords to stay valid beyond 24 hours"""
+    cognitoidp = session.client("cognito-idp")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for userpools in list_user_pools(cache)["UserPools"]:
+    for userpools in list_user_pools(cache, session)["UserPools"]:
         userPoolId = str(userpools["Id"])
         response = cognitoidp.describe_user_pool(UserPoolId=userPoolId)
         userPoolArn = str(response["UserPool"]["Arn"])
@@ -341,11 +339,12 @@ def cognitoidp_temp_password_check(cache: dict, awsAccountId: str, awsRegion: st
             yield finding
 
 @registry.register_check("cognito-idp")
-def cognitoidp_mfa_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def cognitoidp_mfa_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Cognito.3] Cognito user pools should enforce multi factor authentication (MFA)"""
+    cognitoidp = session.client("cognito-idp")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for userpools in list_user_pools(cache)["UserPools"]:
+    for userpools in list_user_pools(cache, session)["UserPools"]:
         userPoolId = str(userpools["Id"])
         # Get specific user pool info
         r = cognitoidp.describe_user_pool(UserPoolId=userPoolId)
@@ -483,11 +482,13 @@ def cognitoidp_mfa_check(cache: dict, awsAccountId: str, awsRegion: str, awsPart
             yield finding
 
 @registry.register_check("cognito-idp")
-def cognitoidp_waf_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def cognitoidp_waf_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Cognito.4] Cognito user pools should be protected by AWS Web Application Firewall"""
+    cognitoidp = session.client("cognito-idp")
+    wafv2 = session.client("wafv2")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for userpools in list_user_pools(cache)["UserPools"]:
+    for userpools in list_user_pools(cache, session)["UserPools"]:
         userPoolId = str(userpools["Id"])
         # Get specific user pool info
         r = cognitoidp.describe_user_pool(UserPoolId=userPoolId)

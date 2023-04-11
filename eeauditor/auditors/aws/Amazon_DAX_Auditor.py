@@ -18,17 +18,13 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-# import boto3 clients
-dax = boto3.client("dax")
-
-# loop through DAX clusters
-def describe_clusters(cache):
+def describe_clusters(cache, session):
+    dax = session.client("dax")
     response = cache.get("describe_clusters")
     if response:
         return response
@@ -36,11 +32,11 @@ def describe_clusters(cache):
     return cache["describe_clusters"]
 
 @registry.register_check("dax")
-def dax_encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def dax_encryption_at_rest_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DAX.1] DynamoDB Accelerator (DAX) clusters should be encrypted at rest"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for cluster in describe_clusters(cache)["Clusters"]:
+    for cluster in describe_clusters(cache, session)["Clusters"]:
         clusterName = cluster["ClusterName"]
         clusterArn = cluster["ClusterArn"]
         # this is a failing check
@@ -167,11 +163,11 @@ def dax_encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str,
             yield finding
 
 @registry.register_check("dax")
-def dax_encryption_in_transit_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def dax_encryption_in_transit_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DAX.2] DynamoDB Accelerator (DAX) clusters should enforce encryption in transit"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for cluster in describe_clusters(cache)["Clusters"]:
+    for cluster in describe_clusters(cache, session)["Clusters"]:
         clusterName = cluster["ClusterName"]
         clusterArn = cluster["ClusterArn"]
         # this is a failing check
@@ -308,11 +304,12 @@ def dax_encryption_in_transit_check(cache: dict, awsAccountId: str, awsRegion: s
             yield finding
 
 @registry.register_check("dax")
-def dax_cache_ttl_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def dax_cache_ttl_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DAX.3] DynamoDB Accelerator (DAX) clusters should enforce a cache TTL value"""
+    dax = session.client("dax")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for cluster in describe_clusters(cache)["Clusters"]:
+    for cluster in describe_clusters(cache, session)["Clusters"]:
         clusterName = cluster["ClusterName"]
         clusterArn = cluster["ClusterArn"]
         pgName = cluster["ParameterGroup"]["ParameterGroupName"]
