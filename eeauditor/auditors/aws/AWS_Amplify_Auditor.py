@@ -18,28 +18,23 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-# import boto3 clients
-amplify = boto3.client("amplify")
-
-
-def list_apps(cache):
+def list_apps(cache, session):
+    amplify = session.client("amplify")
     response = cache.get("list_apps")
     if response:
         return response
     cache["list_apps"] = amplify.list_apps()
     return cache["list_apps"]
 
-
 @registry.register_check("amplify")
-def amplify_basic_auth_enabled_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def amplify_basic_auth_enabled_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Amplify.1] AWS Amplify should have basic auth enabled for branches"""
-    response = list_apps(cache)
+    response = list_apps(cache, session)
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     
     for apps in response["apps"]:
@@ -149,9 +144,9 @@ def amplify_basic_auth_enabled_check(cache: dict, awsAccountId: str, awsRegion: 
             yield finding
 
 @registry.register_check("amplify")
-def amplify_branch_auto_deletion_enabled_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def amplify_branch_auto_deletion_enabled_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Amplify.2] AWS Amplify apps should have auto-deletion disabled for branches"""
-    response = list_apps(cache)
+    response = list_apps(cache, session)
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     
     for apps in response["apps"]:

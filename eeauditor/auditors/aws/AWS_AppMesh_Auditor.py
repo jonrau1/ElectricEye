@@ -18,17 +18,13 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
-# import boto3 clients
-appmesh = boto3.client("appmesh")
-# loop through AWS App Mesh meshes
 
-
-def list_meshes(cache):
+def list_meshes(cache, session):
+    appmesh = session.client("appmesh")
     response = cache.get("list_meshes")
     if response:
         return response
@@ -37,9 +33,10 @@ def list_meshes(cache):
 
 
 @registry.register_check("appmesh")
-def appmesh_mesh_egress_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def appmesh_mesh_egress_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AppMesh.1] App Mesh meshes should have the egress filter configured to DROP_ALL"""
-    mesh = list_meshes(cache=cache)
+    appmesh = session.client("appmesh")
+    mesh = list_meshes(cache, session)
     myMesh = mesh["meshes"]
     for meshes in myMesh:
         meshName = str(meshes["meshName"])
@@ -166,9 +163,10 @@ def appmesh_mesh_egress_check(cache: dict, awsAccountId: str, awsRegion: str, aw
             print(e)
 
 @registry.register_check("appmesh")
-def appmesh_virt_node_backed_default_tls_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def appmesh_virt_node_backed_default_tls_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AppMesh.2] App Mesh virtual nodes should enforce TLS by default for all backends"""
-    mesh = list_meshes(cache=cache)
+    appmesh = session.client("appmesh")
+    mesh = list_meshes(cache, session)
     myMesh = mesh["meshes"]
     for meshes in myMesh:
         meshName = str(meshes["meshName"])
@@ -389,9 +387,10 @@ def appmesh_virt_node_backed_default_tls_policy_check(cache: dict, awsAccountId:
             print(e)
 
 @registry.register_check("appmesh")
-def appmesh_virt_node_listener_strict_tls_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def appmesh_virt_node_listener_strict_tls_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AppMesh.3] App Mesh virtual node listeners should only accept connections with TLS enabled"""
-    mesh = list_meshes(cache=cache)
+    appmesh = session.client("appmesh")
+    mesh = list_meshes(cache, session)
     myMesh = mesh["meshes"]
     for meshes in myMesh:
         meshName = str(meshes["meshName"])
@@ -548,9 +547,10 @@ def appmesh_virt_node_listener_strict_tls_check(cache: dict, awsAccountId: str, 
             print(e)
 
 @registry.register_check("appmesh")
-def appmesh_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def appmesh_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AppMesh.4] App Mesh virtual nodes should define an HTTP access log path to enable log exports for Envoy proxies"""
-    mesh = list_meshes(cache=cache)
+    appmesh = session.client("appmesh")
+    mesh = list_meshes(cache, session)
     myMesh = mesh["meshes"]
     for meshes in myMesh:
         meshName = str(meshes["meshName"])
