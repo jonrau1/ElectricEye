@@ -18,17 +18,16 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import botocore.exceptions
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
-appstream = boto3.client("appstream")
 
 @registry.register_check("appstream")
-def default_internet_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def default_internet_access_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AppStream.1] AppStream 2.0 fleets should not provide default internet access"""
+    appstream = session.client("appstream")
     # loop through AppStream 2.0 fleets
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     try:
@@ -151,10 +150,10 @@ def default_internet_access_check(cache: dict, awsAccountId: str, awsRegion: str
             print(f'We found another error! {error}')
 
 @registry.register_check("appstream")
-def public_image_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def public_image_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AppStream.2] AppStream 2.0 images you build should not be publicly accessible"""
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-
+    appstream = session.client("appstream")
     try:
         myAppstreamImages = appstream.describe_images()["Images"]
         for images in myAppstreamImages:
@@ -224,10 +223,10 @@ def public_image_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartit
             print(f'We found another error! {error}')
 
 @registry.register_check("appstream")
-def compromise_appstream_user_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def compromise_appstream_user_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AppStream.3] AppStream 2.0 users should be monitored for signs of compromise"""
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-
+    appstream = session.client("appstream")
     try:
         # loop through AppStream 2.0 users
         myAppStreamUsers = appstream.describe_users(AuthenticationType="USERPOOL")["Users"]
@@ -371,10 +370,10 @@ def compromise_appstream_user_check(cache: dict, awsAccountId: str, awsRegion: s
             print(f'We found another error! {error}')
 
 @registry.register_check("appstream")
-def userpool_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def userpool_auth_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AppStream.4] AppStream 2.0 users should be configured to authenticate using SAML"""
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-
+    appstream = session.client("appstream")
     try:
         # loop through AppStream 2.0 users
         myAppStreamUsers = appstream.describe_users(AuthenticationType="USERPOOL")["Users"]
