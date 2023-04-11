@@ -38,6 +38,8 @@ def run_auditor(session_override=None, region_override=None, auditor_name=None, 
         # default to AWS SecHub even if somehow Click destination is stripped
         outputs = ["sechub"]
 
+    print(type(session_override))
+
     if not region_override:
         region_override = boto3.Session().region_name
 
