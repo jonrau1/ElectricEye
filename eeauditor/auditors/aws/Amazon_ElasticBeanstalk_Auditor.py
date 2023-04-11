@@ -18,17 +18,14 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-# import boto3 clients
-elasticbeanstalk = boto3.client("elasticbeanstalk")
-
 # loop through EBS volumes
-def describe_environments(cache):
+def describe_environments(cache, session):
+    elasticbeanstalk = session.client("elasticbeanstalk")
     response = cache.get("describe_environments")
     if response:
         return response
@@ -36,11 +33,12 @@ def describe_environments(cache):
     return cache["describe_environments"]
 
 @registry.register_check("elasticbeanstalk")
-def elasticbeanstalk_imdsv1_disabled_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def elasticbeanstalk_imdsv1_disabled_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ElasticBeanstalk.1] Elastic Beanstalk environments should disable IMDSv1"""
+    elasticbeanstalk = session.client("elasticbeanstalk")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for envs in describe_environments(cache)["Environments"]:
+    for envs in describe_environments(cache, session)["Environments"]:
         envArn = envs["EnvironmentArn"]
         envName = envs["EnvironmentName"]
         appName = envs["ApplicationName"]
@@ -201,11 +199,12 @@ def elasticbeanstalk_imdsv1_disabled_check(cache: dict, awsAccountId: str, awsRe
                     continue
 
 @registry.register_check("elasticbeanstalk")
-def elasticbeanstalk_platform_auto_update_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def elasticbeanstalk_platform_auto_update_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ElasticBeanstalk.2] Elastic Beanstalk environments should be configured to automatically apply updates and refresh instances"""
+    elasticbeanstalk = session.client("elasticbeanstalk")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for envs in describe_environments(cache)["Environments"]:
+    for envs in describe_environments(cache, session)["Environments"]:
         envArn = envs["EnvironmentArn"]
         envName = envs["EnvironmentName"]
         appName = envs["ApplicationName"]
@@ -350,11 +349,12 @@ def elasticbeanstalk_platform_auto_update_check(cache: dict, awsAccountId: str, 
                     continue
 
 @registry.register_check("elasticbeanstalk")
-def elasticbeanstalk_enhanced_health_reporting_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def elasticbeanstalk_enhanced_health_reporting_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ElasticBeanstalk.3] Elastic Beanstalk environments should have enhanced health reporting enabled"""
+    elasticbeanstalk = session.client("elasticbeanstalk")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for envs in describe_environments(cache)["Environments"]:
+    for envs in describe_environments(cache, session)["Environments"]:
         envArn = envs["EnvironmentArn"]
         envName = envs["EnvironmentName"]
         appName = envs["ApplicationName"]
@@ -503,11 +503,12 @@ def elasticbeanstalk_enhanced_health_reporting_check(cache: dict, awsAccountId: 
                     continue
 
 @registry.register_check("elasticbeanstalk")
-def elasticbeanstalk_log_streaming_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def elasticbeanstalk_log_streaming_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ElasticBeanstalk.4] Elastic Beanstalk environments should have log streaming enabled"""
+    elasticbeanstalk = session.client("elasticbeanstalk")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for envs in describe_environments(cache)["Environments"]:
+    for envs in describe_environments(cache, session)["Environments"]:
         envArn = envs["EnvironmentArn"]
         envName = envs["EnvironmentName"]
         appName = envs["ApplicationName"]
@@ -656,11 +657,12 @@ def elasticbeanstalk_log_streaming_check(cache: dict, awsAccountId: str, awsRegi
                     continue
 
 @registry.register_check("elasticbeanstalk")
-def elasticbeanstalk_xray_tracing_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def elasticbeanstalk_xray_tracing_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ElasticBeanstalk.5] Elastic Beanstalk environments should have tracing enabled"""
+    elasticbeanstalk = session.client("elasticbeanstalk")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for envs in describe_environments(cache)["Environments"]:
+    for envs in describe_environments(cache, session)["Environments"]:
         envArn = envs["EnvironmentArn"]
         envName = envs["EnvironmentName"]
         appName = envs["ApplicationName"]

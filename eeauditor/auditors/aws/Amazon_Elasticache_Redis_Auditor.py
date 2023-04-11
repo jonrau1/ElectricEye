@@ -18,19 +18,15 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-# import boto3 clients
-elasticache = boto3.client("elasticache")
-
-
 @registry.register_check("elasticache")
-def redis_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def redis_auth_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Elasticache.Redis.1] Elasticache Redis clusters should have an AUTH token enabled"""
+    elasticache = session.client("elasticache")
     # loop through EC clusters
     response = elasticache.describe_cache_clusters(MaxRecords=100)
     myElasticacheClusters = response["CacheClusters"]
@@ -178,8 +174,9 @@ def redis_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                 yield finding
 
 @registry.register_check("elasticache")
-def encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def encryption_at_rest_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Elasticache.Redis.2] Elasticache Redis clusters should have encryption at rest enabled"""
+    elasticache = session.client("elasticache")
     # loop through EC clusters
     response = elasticache.describe_cache_clusters(MaxRecords=100)
     myElasticacheClusters = response["CacheClusters"]
@@ -306,8 +303,9 @@ def encryption_at_rest_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                 yield finding
 
 @registry.register_check("elasticache")
-def encryption_in_transit_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def encryption_in_transit_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Elasticache.Redis.3] Elasticache Redis clusters should have encryption in transit enabled"""
+    elasticache = session.client("elasticache")
     # loop through EC clusters
     response = elasticache.describe_cache_clusters(MaxRecords=100)
     myElasticacheClusters = response["CacheClusters"]

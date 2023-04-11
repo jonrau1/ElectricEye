@@ -18,17 +18,13 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-# import boto3 clients
-efs = boto3.client("efs")
-
-# loop through EFS file systems
-def describe_file_systems(cache):
+def describe_file_systems(cache, session):
+    efs = session.client("efs")
     response = cache.get("describe_file_systems")
     if response:
         return response
@@ -36,11 +32,11 @@ def describe_file_systems(cache):
     return cache["describe_file_systems"]
 
 @registry.register_check("efs")
-def efs_filesys_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def efs_filesys_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EFS.1] EFS File Systems should have encryption enabled"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for filesys in describe_file_systems(cache)["FileSystems"]:
+    for filesys in describe_file_systems(cache, session)["FileSystems"]:
         encryptionCheck = str(filesys["Encrypted"])
         fileSysId = str(filesys["FileSystemId"])
         fileSysArn = f"arn:{awsPartition}:elasticfilesystem:{awsRegion}:{awsAccountId}:file-system/{fileSysId}"
@@ -144,11 +140,12 @@ def efs_filesys_encryption_check(cache: dict, awsAccountId: str, awsRegion: str,
             yield finding
 
 @registry.register_check("efs")
-def efs_filesys_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def efs_filesys_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EFS.2] EFS File Systems should not use the default file system policy"""
+    efs = session.client("efs")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for filesys in describe_file_systems(cache)["FileSystems"]:
+    for filesys in describe_file_systems(cache, session)["FileSystems"]:
         fileSysId = str(filesys["FileSystemId"])
         fileSysArn = f"arn:{awsPartition}:elasticfilesystem:{awsRegion}:{awsAccountId}:file-system/{fileSysId}"
         # this is a passing check
