@@ -18,16 +18,13 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
-import json
-import os
 from check_register import CheckRegister
 
 registry = CheckRegister()
-cloudhsm = boto3.client("cloudhsmv2")
 
-def describe_clusters(cache):
+def describe_clusters(cache, session):
+    cloudhsm = session.client("cloudhsmv2")
     response = cache.get("describe_clusters")
     if response:
         return response
@@ -36,9 +33,9 @@ def describe_clusters(cache):
 
 
 @registry.register_check("cloudhsm")
-def cloudhsm_cluster_degradation_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def cloudhsm_cluster_degradation_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudHsm.1] CloudHsm clusters should not be degraded"""
-    hsm_clusters = describe_clusters(cache=cache)
+    hsm_clusters = describe_clusters(cache, session)
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for clstr in hsm_clusters["Clusters"]:
         ClusterId = clstr["ClusterId"]
@@ -158,9 +155,9 @@ def cloudhsm_cluster_degradation_check(cache: dict, awsAccountId: str, awsRegion
 
 
 @registry.register_check("cloudhsm")
-def cloudhsm_hsm_degradation_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def cloudhsm_hsm_degradation_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudHsm.2] CloudHsm HSMs should not be degraded"""
-    hsm_clusters = describe_clusters(cache=cache)
+    hsm_clusters = describe_clusters(cache, session)
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for clstr in hsm_clusters["Clusters"]:
         ClusterId = clstr["ClusterId"]
@@ -283,9 +280,10 @@ def cloudhsm_hsm_degradation_check(cache: dict, awsAccountId: str, awsRegion: st
 
 
 @registry.register_check("cloudhsm")
-def cloudhsm_cluster_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def cloudhsm_cluster_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudHsm.3] CloudHsm clusters should have at least 1 backup in a READY state"""
-    hsm_clusters = describe_clusters(cache=cache)
+    cloudhsm = session.client("cloudhsmv2")
+    hsm_clusters = describe_clusters(cache, session)
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for clstr in hsm_clusters["Clusters"]:
         ClusterId = clstr["ClusterId"]

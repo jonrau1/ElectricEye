@@ -18,15 +18,13 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
-# create boto3 clients
-dms = boto3.client("dms")
 
-def describe_replication_instances(cache):
+def describe_replication_instances(cache, session):
+    dms = session.client("dms")
     response = cache.get("describe_replication_instances")
     if response:
         return response
@@ -34,11 +32,11 @@ def describe_replication_instances(cache):
     return cache["describe_replication_instances"]
 
 @registry.register_check("dms")
-def dms_replication_instance_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def dms_replication_instance_public_access_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DMS.1] Database Migration Service instances should not be publicly accessible"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for ri in describe_replication_instances(cache)["ReplicationInstances"]:
+    for ri in describe_replication_instances(cache, session)["ReplicationInstances"]:
         dmsInstanceId = ri["ReplicationInstanceIdentifier"]
         dmsInstanceArn = ri["ReplicationInstanceArn"]
         publicAccessCheck = str(ri["PubliclyAccessible"])
@@ -164,11 +162,11 @@ def dms_replication_instance_public_access_check(cache: dict, awsAccountId: str,
             yield finding
 
 @registry.register_check("dms")
-def dms_replication_instance_multi_az_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def dms_replication_instance_multi_az_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DMS.2] Database Migration Service instances should have Multi-AZ configured"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for ri in describe_replication_instances(cache)["ReplicationInstances"]:
+    for ri in describe_replication_instances(cache, session)["ReplicationInstances"]:
         dmsInstanceId = ri["ReplicationInstanceIdentifier"]
         dmsInstanceArn = ri["ReplicationInstanceArn"]
         mutltiAzCheck = str(ri["MultiAZ"])
@@ -288,11 +286,11 @@ def dms_replication_instance_multi_az_check(cache: dict, awsAccountId: str, awsR
             yield finding
 
 @registry.register_check("dms")
-def dms_replication_instance_minor_version_update_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def dms_replication_instance_minor_version_update_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DMS.3] Database Migration Service instances should be configured to have minor version updates be automatically applied"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for ri in describe_replication_instances(cache)["ReplicationInstances"]:
+    for ri in describe_replication_instances(cache, session)["ReplicationInstances"]:
         dmsInstanceId = ri["ReplicationInstanceIdentifier"]
         dmsInstanceArn = ri["ReplicationInstanceArn"]
         minorVersionUpgradeCheck = str(ri["AutoMinorVersionUpgrade"])

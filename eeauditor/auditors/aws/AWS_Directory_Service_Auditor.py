@@ -18,27 +18,23 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
-# import boto3 clients
-ds = boto3.client("ds")
-# loop through Directory Service directories
-# not to be confused with weird ass cloud directory
-def describe_directories(cache):
+
+def describe_directories(cache, session):
+    ds = session.client("ds")
     response = cache.get("describe_directories")
     if response:
         return response
     cache["describe_directories"] = ds.describe_directories()
     return cache["describe_directories"]
 
-
 @registry.register_check("ds")
-def directory_service_radius_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def directory_service_radius_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DirectoryService.1] Supported directories should have RADIUS enabled for multi-factor authentication (MFA)"""
-    directories = describe_directories(cache=cache)
+    directories = describe_directories(cache, session)
     myDirectories = directories["DirectoryDescriptions"]
     for directory in myDirectories:
         directoryId = str(directory["DirectoryId"])
@@ -172,9 +168,10 @@ def directory_service_radius_check(cache: dict, awsAccountId: str, awsRegion: st
             pass
 
 @registry.register_check("ds")
-def directory_service_cloudwatch_logs_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def directory_service_cloudwatch_logs_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DirectoryService.2] Directories should have log forwarding enabled"""
-    directories = describe_directories(cache=cache)
+    ds = session.client("ds")
+    directories = describe_directories(cache, session)
     myDirectories = directories["DirectoryDescriptions"]
     for directory in myDirectories:
         directoryId = str(directory["DirectoryId"])

@@ -18,15 +18,13 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
-# import boto3 clients
-cloudformation = boto3.client("cloudformation")
 
-def describe_stacks(cache):
+def describe_stacks(cache, session):
+    cloudformation = session.client("cloudformation")
     response = cache.get("describe_stacks")
     if response:
         return response
@@ -34,9 +32,9 @@ def describe_stacks(cache):
     return cache["describe_stacks"]
 
 @registry.register_check("cloudformation")
-def cfn_drift_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def cfn_drift_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFormation.1] CloudFormation stacks should be monitored for configuration drift"""
-    for stacks in describe_stacks(cache=cache)["Stacks"]:
+    for stacks in describe_stacks(cache, session)["Stacks"]:
         stackName = str(stacks["StackName"])
         stackArn = str(stacks["StackId"])
         driftCheck = str(stacks["DriftInformation"]["StackDriftStatus"])
@@ -145,9 +143,9 @@ def cfn_drift_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition
             yield finding
 
 @registry.register_check("cloudformation")
-def cfn_monitoring_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def cfn_monitoring_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFormation.2] CloudFormation stacks should be monitored for changes"""
-    for stacks in describe_stacks(cache=cache)["Stacks"]:
+    for stacks in describe_stacks(cache, session)["Stacks"]:
         stackName = str(stacks["StackName"])
         stackArn = str(stacks["StackId"])
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
