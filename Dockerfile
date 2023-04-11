@@ -18,10 +18,10 @@
 #specific language governing permissions and limitations
 #under the License.
 
-# latest hash as of 8 AUG 2022 - Alpine 3.16.2
-# https://hub.docker.com/layers/library/alpine/3.16.2/images/sha256-1304f174557314a7ed9eddb4eab12fed12cb0cd9809e4c28f29af86979a3c870?context=explore
+# latest hash as of 11 APR 2023 - Alpine 3.17.3
+# https://hub.docker.com/layers/library/alpine/3.17.3/images/sha256-b6ca290b6b4cdcca5b3db3ffa338ee0285c11744b4a6abaa9627746ee3291d8d?context=explore
 # use as builder image to pull in required deps
-FROM alpine@sha256:1304f174557314a7ed9eddb4eab12fed12cb0cd9809e4c28f29af86979a3c870 AS builder
+FROM alpine@sha256:b6ca290b6b4cdcca5b3db3ffa338ee0285c11744b4a6abaa9627746ee3291d8d AS builder
 
 # This hack is widely applied to avoid python printing issues in docker containers.
 # See: https://github.com/Docker-Hub-frolvlad/docker-alpine-python3/pull/13
@@ -33,7 +33,7 @@ COPY ./eeauditor/ /eeauditor/
 # Installing dependencies
 RUN \
     apk update && \
-    apk add --no-cache python3 postgresql-libs bash nmap && \
+    apk add --no-cache python3 postgresql-libs bash nmap git && \
     apk add --no-cache --virtual .build-deps gcc python3-dev musl-dev postgresql-dev && \
     python3 -m ensurepip && \
     pip3 install --no-cache --upgrade pip setuptools wheel && \
@@ -61,11 +61,13 @@ ENV \
     # DOCUMENTDB/MONGO VARS
     MONGODB_USERNAME=MONGODB_USERNAME \
     MONGODB_HOSTNAME=MONGODB_HOSTNAME \
-    MONGODB_PASSWORD_PARAMETER=MONGODB_PASSWORD_PARAMETER
+    MONGODB_PASSWORD_PARAMETER=MONGODB_PASSWORD_PARAMETER \
+    # DYNAMODB VARS
+    DYNAMODB_TABLE_NAME=DYNAMODB_TABLE_NAME
 
 LABEL \ 
     maintainer="https://github.com/jonrau1" \
-    version="3.1" \
+    version="3.9" \
     license="Apache-2.0" \
     description="ElectricEye continuously monitor your AWS services for configurations that can lead to degradation of confidentiality, integrity \ 
     or availability. All results can be exported to Security Hub, JSON, CSV, Databases, and more for further aggregation and analysis."
@@ -83,9 +85,6 @@ RUN \
 USER eeuser
 
 CMD \
-    # Upon startup we will run all checks and auditors - we grab the latest from S3
-    # in case there are updates so you can just grab the latest auditors from the
-    # bucket versus rebuilding the entire Docker image!
-    aws s3 cp s3://${SH_SCRIPTS_BUCKET}/ /eeauditor/auditors/aws/ --recursive && \
+    git clone https://github.com/jonrau1/ElectricEye.git && \
     # this would also be a good place to modify the `controller.py` command to output to where you wanted if you didn't want sechub
-    python3 eeauditor/controller.py
+    python3 ElectricEye/eeauditor/controller.py
