@@ -166,7 +166,7 @@ def main(
         sys.exit(2)
 
     run_auditor(
-        session_override=session_override.replace("'",""),
+        session_override=session_override,
         region_override=region_override,
         auditor_name=auditor_name,
         check_name=check_name,
