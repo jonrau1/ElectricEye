@@ -350,6 +350,7 @@ def ddb_pitr_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsP
             }
             yield finding
 
+'''
 @registry.register_check("dynamodb")
 def ddb_ttl_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DynamoDB.3] DynamoDB tables should have Time to Live (TTL) enabled"""
@@ -483,3 +484,6 @@ def ddb_ttl_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPa
                 "RecordState": "ARCHIVED"
             }
             yield finding
+'''
+
+### TODO: Retire TTL
