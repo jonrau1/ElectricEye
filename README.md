@@ -22,7 +22,7 @@ python3 eeauditor/controller.py -o stdout
 
 - [Quick Run Down](#quick-run-down)
 - [Description](#tell-me-more)
-- [## How do I use this](#how-do-i-use-this)
+- [How do I use this](#how-do-i-use-this)
   - [Multi Account Usage](#multi-account-usage)
   - [Attack Surface Monitoring Only](#attack-surface-monitoring-only)
   - [ElectricEye and Custom Outputs](#electriceye-and-custom-outputs)
@@ -122,19 +122,33 @@ python3 eeauditor/controller.py --list-checks
 
 ElectricEye supports running all Auditors in remote AWS Accounts as long as the remote AWS Account trusts your ***current*** AWS Account or IAM Principal. Consider deploying a StackSet from the [ElectricEye Organizations StackSet template](./cloudformation/ElectricEye_Organizations_StackSet.yaml) for easier setup.
 
-To specify a remote Account supply both an Account ID using `--assume-role-account` and the name of the IAM Role in that Account using `--assume-role-name`. ElectricEye will attempt to Assume the role and create a new Boto3 Session.
+> - To specify a remote Account supply both an Account ID using `--assume-role-account` and the name of the IAM Role in that Account using `--assume-role-name`. ElectricEye will attempt to Assume the role and create a new Boto3 Session.
 
 ```bash
 python3 eeauditor/controller.py --assume-role-account 111111111111 --assume-role-name CrossAccountElectricEyeRole -o stdout
 ```
 
-You can additionally override the Region for multi-Region assessments by supplying an AWS Region using `--region-override`, ensure the Region you specify match your current Partition (e.g., GovCloud, AWS China, etc.) otherwise ElectricEye will be very upset at you.
+> - To target all Accounts in a specific Organizational Unit, use the following snippet, this will only run on Active Accounts and fail gracefully for Accounts without the specified Role.
+
+```bash
+ACCOUNTS_IN_OU=$(aws organizations list-accounts-for-parent --parent-id ou-p6ba-2hwy74oa --query 'Accounts[?Status==`ACTIVE`].Id' --output text)
+for accountId in $ACCOUNTS_IN_OU; do python3 ElectricEye/eeauditor/controller.py --assume-role-account $accountId --assume-role-name CrossAccountElectricEyeRole -o stdout; done
+```
+
+> - To target all Accounts in your entire AWS Organization, use the following snippet, this will only run on Active Accounts and fail gracefully for Accounts without the specified Role.
+
+```bash
+ACCOUNTS_IN_ORG=$(aws organizations list-accounts --query 'Accounts[?Status==`ACTIVE`].Id' --output text)
+for accountId in $ACCOUNTS_IN_ORG; do python3 ElectricEye/eeauditor/controller.py -a Amazon_EC2_Auditor --assume-role-account $accountId --assume-role-name CrossAccountElectricEyeRole -o stdout; done
+```
+
+> - You can additionally override the Region for multi-Region assessments by supplying an AWS Region using `--region-override`, ensure the Region you specify match your current Partition (e.g., GovCloud, AWS China, etc.) otherwise ElectricEye will be very upset at you.
 
 ```bash
 python3 eeauditor/controller.py --assume-role-account 111111111111 --assume-role-name CrossAccountElectricEyeRole --region-override eu-central-1 -o stdout
 ```
 
-You can also override your current Region without specifying a remote Account, ElectricEye will still attempt to swap to the proper Region for Auditors that require running in a specific Region such as us-east-1 for AWS Health, AWS Trusted Advisor (`support`), AWS WAFv2 in Global context (`cloudfront`) and us-west-2 for Global Accelerator.
+> - You can also override your current Region without specifying a remote Account, ElectricEye will still attempt to swap to the proper Region for Auditors that require running in a specific Region such as us-east-1 for AWS Health, AWS Trusted Advisor (`support`), AWS WAFv2 in Global context (`cloudfront`) and us-west-2 for Global Accelerator.
 
 ```bash
 python3 eeauditor/controller.py --region-override us-west-1 -o stdout
