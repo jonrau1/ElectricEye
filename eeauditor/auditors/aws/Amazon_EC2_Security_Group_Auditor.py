@@ -18,7 +18,6 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import json
 import os
 import datetime
@@ -30,10 +29,9 @@ registry = CheckRegister()
 dirPath = os.path.dirname(os.path.realpath(__file__))
 configFile = f"{dirPath}/electriceye_secgroup_auditor_config.json"
 
-ec2 = boto3.client("ec2")
-
 # loop through security groups
-def describe_security_groups(cache):
+def describe_security_groups(cache, session):
+    ec2 = session.client("ec2")
     response = cache.get("describe_security_groups")
     if response:
         return response
@@ -41,9 +39,9 @@ def describe_security_groups(cache):
     return cache["describe_security_groups"]
 
 @registry.register_check("ec2")
-def security_group_all_open_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def security_group_all_open_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SecurityGroup.1] Security groups should not allow unrestricted access to all ports and protocols"""
-    response = describe_security_groups(cache)
+    response = describe_security_groups(cache, session)
     mySgs = response["SecurityGroups"]
     for secgroup in mySgs:
         sgName = str(secgroup["GroupName"])
@@ -182,7 +180,7 @@ def security_group_all_open_check(cache: dict, awsAccountId: str, awsRegion: str
                     continue
 
 @registry.register_check("ec2")
-def security_group_master_auditor_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def security_group_master_auditor_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """The Security Group Master Auditor check generates findings for every configuration file entry"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
 
@@ -199,7 +197,7 @@ def security_group_master_auditor_check(cache: dict, awsAccountId: str, awsRegio
             print(f"Auditing all Security Groups for unrestricted {checkDescription} access")
 
             # Parse security groups from Cache
-            response = describe_security_groups(cache)
+            response = describe_security_groups(cache, session)
             mySgs = response["SecurityGroups"]
             for secgroup in mySgs:
                 sgName = str(secgroup["GroupName"])
