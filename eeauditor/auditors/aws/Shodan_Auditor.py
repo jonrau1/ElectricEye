@@ -26,21 +26,12 @@ import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
-# import boto3 clients
-ssm = boto3.client("ssm")
-ec2 = boto3.client("ec2")
-elbv2 = boto3.client("elbv2")
-rds = boto3.client("rds")
-elasticsearch = boto3.client("es")
-elb = boto3.client("elb")
-dms = boto3.client("dms")
-amzmq = boto3.client("mq")
-cloudfront = boto3.client("cloudfront")
 
 class ShodanError(Exception):
     pass
 
 try:
+    ssm = boto3.client("ssm")
     apiKeyParam = os.environ["SHODAN_API_KEY_PARAM"]
     if apiKeyParam == ("placeholder" or "" or None):
         raise ShodanError("No valid Shodan API Key")
@@ -53,8 +44,9 @@ except KeyError:
 shodanUrl = "https://api.shodan.io/shodan/host/"
 
 @registry.register_check("shodan")
-def public_ec2_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def public_ec2_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.EC2.1] EC2 instances with public IP addresses should be monitored for being indexed by Shodan"""
+    ec2 = session.client("ec2")
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     response = ec2.describe_instances(DryRun=False, MaxResults=500)
@@ -214,8 +206,9 @@ def public_ec2_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                 yield finding
 
 @registry.register_check("shodan")
-def public_alb_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def public_alb_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.ELBv2.1] Internet-facing Application Load Balancers should be monitored for being indexed by Shodan"""
+    elbv2 = session.client("elbv2")
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     response = elbv2.describe_load_balancers()
@@ -375,8 +368,9 @@ def public_alb_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
             continue
 
 @registry.register_check("shodan")
-def public_rds_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def public_rds_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.RDS.1] Public accessible RDS instances should be monitored for being indexed by Shodan"""
+    rds = session.client("rds")
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     response = rds.describe_db_instances()
@@ -542,8 +536,9 @@ def public_rds_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
             continue
 
 @registry.register_check("shodan")
-def public_es_domain_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Shodan.Elasticsearch.1] ElasticSearch Service domains outside of a VPC should be monitored for being indexed by Shodan"""
+def public_es_domain_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Shodan.Elasticsearch.1] OpenSearch/ElasticSearch Service domains outside of a VPC should be monitored for being indexed by Shodan"""
+    elasticsearch = session.client("elasticsearch")
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     response = elasticsearch.list_domain_names()
@@ -582,7 +577,7 @@ def public_es_domain_shodan_check(cache: dict, awsAccountId: str, awsRegion: str
                         "CreatedAt": iso8601time,
                         "UpdatedAt": iso8601time,
                         "Severity": {"Label": "INFORMATIONAL"},
-                        "Title": "[Shodan.Elasticsearch.1] ElasticSearch Service domains outside of a VPC should be monitored for being indexed by Shodan",
+                        "Title": "[Shodan.Elasticsearch.1] OpenSearch/ElasticSearch Service domains outside of a VPC should be monitored for being indexed by Shodan",
                         "Description": "ElasticSearch Service domain "
                         + esDomainName
                         + " has not been indexed by Shodan.",
@@ -647,7 +642,7 @@ def public_es_domain_shodan_check(cache: dict, awsAccountId: str, awsRegion: str
                         "CreatedAt": iso8601time,
                         "UpdatedAt": iso8601time,
                         "Severity": {"Label": "MEDIUM"},
-                        "Title": "[Shodan.Elasticsearch.1] ElasticSearch Service domains outside of a VPC should be monitored for being indexed by Shodan",
+                        "Title": "[Shodan.Elasticsearch.1] OpenSearch/ElasticSearch Service domains outside of a VPC should be monitored for being indexed by Shodan",
                         "Description": "ElasticSearch Service domain "
                         + esDomainName
                         + " has been indexed by Shodan on IP address "
@@ -717,8 +712,9 @@ def public_es_domain_shodan_check(cache: dict, awsAccountId: str, awsRegion: str
                 continue
 
 @registry.register_check("shodan")
-def public_clb_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def public_clb_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.ELB.1] Internet-facing Classic Load Balancers should be monitored for being indexed by Shodan"""
+    elb = session.client("elb")
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     response = elb.describe_load_balancers()
@@ -870,8 +866,9 @@ def public_clb_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
             continue
 
 @registry.register_check("shodan")
-def public_dms_replication_instance_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def public_dms_replication_instance_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.DMS.1] Publicly accessible Database Migration Service (DMS) Replication Instances should be monitored for being indexed by Shodan"""
+    dms = session.client("dms")
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     response = dms.describe_replication_instances()
@@ -1019,8 +1016,9 @@ def public_dms_replication_instance_shodan_check(cache: dict, awsAccountId: str,
             continue
 
 @registry.register_check("shodan")
-def public_amazon_mq_broker_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def public_amazon_mq_broker_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.AmazonMQ.1] Publicly accessible Amazon MQ message brokers should be monitored for being indexed by Shodan"""
+    amzmq = session.client("mq")
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     response = amzmq.list_brokers(MaxResults=100)
@@ -1176,8 +1174,9 @@ def public_amazon_mq_broker_shodan_check(cache: dict, awsAccountId: str, awsRegi
             continue
 
 @registry.register_check("shodan")
-def cloudfront_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def cloudfront_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.CloudFront.1] CloudFront Distributions should be monitored for being indexed by Shodan"""
+    cloudfront = session.client("cloudfront")
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     paginator = cloudfront.get_paginator("list_distributions")
@@ -1326,12 +1325,12 @@ def cloudfront_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                 yield finding
 
 @registry.register_check("shodan")
-def global_accelerator_shodan_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def global_accelerator_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.CloudFront.1] CloudFront Distributions should be monitored for being indexed by Shodan"""
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # Create a Session is us-west-2 - which is where the Global Accelerator API is in
-    session = boto3.Session(region_name="us-west-2")
+    session = session.Session(region_name="us-west-2")
     gax = session.client("globalaccelerator")
     paginator = gax.get_paginator("list_accelerators")
     iterator = paginator.paginate()

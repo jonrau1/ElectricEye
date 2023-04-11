@@ -18,7 +18,6 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 import time
 import os
@@ -29,19 +28,13 @@ from dateutil.parser import parse
 from check_register import CheckRegister
 
 registry = CheckRegister()
-# import boto3 clients
 
 dirPath = os.path.dirname(os.path.realpath(__file__))
 
-codebuild = boto3.client("codebuild")
-lambdas = boto3.client("lambda")
-ec2 = boto3.client("ec2")
-cloudformation = boto3.client("cloudformation")
-ecs = boto3.client("ecs")
-
 @registry.register_check("codebuild")
-def secret_scan_codebuild_envvar_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def secret_scan_codebuild_envvar_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Secrets.CodeBuild.1] CodeBuild Project environment variables should not have secrets stored in Plaintext"""
+    codebuild = session.client("codebuild")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # setup some reusable variables
     scanFile = f"{dirPath}/codebuild-data-sample.json"
@@ -220,8 +213,9 @@ def secret_scan_codebuild_envvar_check(cache: dict, awsAccountId: str, awsRegion
         del data
 
 @registry.register_check("cloudformation")
-def secret_scan_cloudformation_parameters_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def secret_scan_cloudformation_parameters_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Secrets.CloudFormation.1] CloudFormation Stack parameters should not have secrets stored in Plaintext"""
+    cloudformation = session.client("cloudformation")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # setup some reusable variables
     scanFile = f"{dirPath}/cloudformation-data-sample.json"
@@ -406,8 +400,9 @@ def secret_scan_cloudformation_parameters_check(cache: dict, awsAccountId: str, 
                 continue
 
 @registry.register_check("ecs")
-def secret_scan_ecs_task_def_envvar_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def secret_scan_ecs_task_def_envvar_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Secrets.ECS.1] ECS Task Definition environment variables should not have secrets stored in Plaintext"""
+    ecs = session.client("ecs")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # setup some reusable variables
     scanFile = f"{dirPath}/ecs-data-sample.json"
@@ -593,8 +588,9 @@ def secret_scan_ecs_task_def_envvar_check(cache: dict, awsAccountId: str, awsReg
             del data
 
 @registry.register_check("ec2")
-def secret_scan_ec2_userdata_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def secret_scan_ec2_userdata_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Secrets.EC2.1] EC2 User Data should not have secrets stored in Plaintext"""
+    ec2 = session.client("ec2")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # setup some reusable variables
     scanFile = f"{dirPath}/ec2-data-sample.json"
@@ -775,6 +771,6 @@ def secret_scan_ec2_userdata_check(cache: dict, awsAccountId: str, awsRegion: st
 '''
 TODO :)
 @registry.register_check("lambda")
-def secret_scan_lambda_envvar_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def secret_scan_lambda_envvar_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Secrets.Lambda.1] Lambda Function environment variables should not have secrets stored in Plaintext"""
 '''
