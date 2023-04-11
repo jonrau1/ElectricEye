@@ -42,8 +42,6 @@ def run_auditor(session_override=None, region_override=None, auditor_name=None, 
         region_override = boto3.Session().region_name
 
     if session_override:
-        session_override = tuple(session_override)
-        print(session_override[0])
         session = boto3.Session(
             aws_access_key_id=session_override[0],
             aws_secret_access_key=session_override[1],
@@ -68,6 +66,7 @@ def run_auditor(session_override=None, region_override=None, auditor_name=None, 
 # Session Object Override
 @click.option(
     "--session-override",
+    type=tuple,
     default="",
     help="To use ElectricEye on other AWS Accounts provide a BASE64 ENCODED TUPLE of ('aws_access_key_id','aws_secret_access_key','aws_session_token') received from STS AssumeRole  - this can be used with --region-override"
 )
