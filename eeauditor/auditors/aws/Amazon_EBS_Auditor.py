@@ -18,25 +18,21 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-# import boto3 clients
-ec2 = boto3.client("ec2")
-
-# loop through EBS volumes
-def describe_volumes(cache):
+def describe_volumes(cache, session):
+    ec2 = session.client("ec2")
     response = cache.get("describe_volumes")
     if response:
         return response
     cache["describe_volumes"] = ec2.describe_volumes(DryRun=False, MaxResults=500)
     return cache["describe_volumes"]
 
-# loop through EBS snapshots
-def describe_snapshots(cache, awsAccountId):
+def describe_snapshots(cache, session, awsAccountId):
+    ec2 = session.client("ec2")
     response = cache.get("describe_snapshots")
     if response:
         return response
@@ -44,7 +40,7 @@ def describe_snapshots(cache, awsAccountId):
     return cache["describe_snapshots"]
 
 @registry.register_check("ec2")
-def ebs_volume_attachment_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ebs_volume_attachment_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EBS.1] EBS Volumes should be in an attached state"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -154,7 +150,7 @@ def ebs_volume_attachment_check(cache: dict, awsAccountId: str, awsRegion: str, 
                 yield finding
 
 @registry.register_check("ec2")
-def ebs_volume_delete_on_termination_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ebs_volume_delete_on_termination_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EBS.2] EBS Volumes should be configured to be deleted on termination"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -266,7 +262,7 @@ def ebs_volume_delete_on_termination_check(cache: dict, awsAccountId: str, awsRe
                 yield finding
 
 @registry.register_check("ec2")
-def ebs_volume_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ebs_volume_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EBS.3] EBS Volumes should be encrypted"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -386,11 +382,11 @@ def ebs_volume_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, 
             yield finding
 
 @registry.register_check("ec2")
-def ebs_snapshot_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ebs_snapshot_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EBS.4] EBS Snapshots should be encrypted"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for snapshots in describe_snapshots(cache, awsAccountId)["Snapshots"]:
+    for snapshots in describe_snapshots(cache, session, awsAccountId)["Snapshots"]:
         snapshotId = str(snapshots["SnapshotId"])
         snapshotArn = f"arn:{awsPartition}:ec2:{awsRegion}::snapshot/{snapshotId}"
         snapshotEncryptionCheck = snapshots["Encrypted"]
@@ -508,11 +504,12 @@ def ebs_snapshot_encryption_check(cache: dict, awsAccountId: str, awsRegion: str
             yield finding
 
 @registry.register_check("ec2")
-def ebs_snapshot_public_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ebs_snapshot_public_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EBS.5] EBS Snapshots should not be public"""
+    ec2 = session.client("ec2")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for snapshots in describe_snapshots(cache, awsAccountId)["Snapshots"]:
+    for snapshots in describe_snapshots(cache, session, awsAccountId)["Snapshots"]:
         snapshotId = str(snapshots["SnapshotId"])
         snapshotArn = f"arn:{awsPartition}:ec2:{awsRegion}::snapshot/{snapshotId}"
         # determine if there are any permissions to share the snapshot
@@ -709,8 +706,9 @@ def ebs_snapshot_public_check(cache: dict, awsAccountId: str, awsRegion: str, aw
                 break
 
 @registry.register_check("ec2")
-def ebs_account_encryption_by_default_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ebs_account_encryption_by_default_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EBS.6] Account-level EBS Volume encryption should be enabled"""
+    ec2 = session.client("ec2")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # this is a failing check
@@ -807,7 +805,7 @@ def ebs_account_encryption_by_default_check(cache: dict, awsAccountId: str, awsR
         yield finding
 
 @registry.register_check("ec2")
-def ebs_volume_snapshot_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ebs_volume_snapshot_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EBS.7] EBS Volumes should have snapshots"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())

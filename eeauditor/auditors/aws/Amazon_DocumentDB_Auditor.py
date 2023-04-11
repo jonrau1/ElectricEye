@@ -18,16 +18,13 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-documentdb = boto3.client("docdb")
-
-# Get all DB Instances
-def describe_db_instances(cache):
+def describe_db_instances(cache, session):
+    documentdb = session.client("docdb")
     docdbInstances = []
     response = cache.get("describe_db_instances")
     if response:
@@ -43,8 +40,8 @@ def describe_db_instances(cache):
     cache["describe_db_instances"] = docdbInstances
     return cache["describe_db_instances"]
 
-# Get all DB Clusters
-def describe_db_clusters(cache):
+def describe_db_clusters(cache, session):
+    documentdb = session.client("docdb")
     response = cache.get("describe_db_clusters")
     if response:
         return response
@@ -53,8 +50,8 @@ def describe_db_clusters(cache):
     )
     return cache["describe_db_clusters"]
 
-# Get all DB Cluster Parameter Groups
-def describe_db_cluster_parameter_groups(cache):
+def describe_db_cluster_parameter_groups(cache, session):
+    documentdb = session.client("docdb")
     response = cache.get("describe_db_cluster_parameter_groups")
     if response:
         return response
@@ -62,11 +59,11 @@ def describe_db_cluster_parameter_groups(cache):
     return cache["describe_db_cluster_parameter_groups"]
 
 @registry.register_check("docdb")
-def docdb_public_instance_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def docdb_public_instance_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DocumentDB.1] DocumentDB instances should not be exposed to the public"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for docdb in describe_db_instances(cache):
+    for docdb in describe_db_instances(cache, session):
         docdbId = str(docdb["DBInstanceIdentifier"])
         docdbArn = str(docdb["DBInstanceArn"])
         publicAccessCheck = str(docdb["PubliclyAccessible"])
@@ -208,11 +205,11 @@ def docdb_public_instance_check(cache: dict, awsAccountId: str, awsRegion: str, 
             yield finding
 
 @registry.register_check("docdb")
-def docdb_instance_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def docdb_instance_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DocumentDB.2] DocumentDB instances should be encrypted"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for docdb in describe_db_instances(cache):
+    for docdb in describe_db_instances(cache, session):
         docdbId = str(docdb["DBInstanceIdentifier"])
         docdbArn = str(docdb["DBInstanceArn"])
         encryptionCheck = str(docdb["StorageEncrypted"])
@@ -342,11 +339,11 @@ def docdb_instance_encryption_check(cache: dict, awsAccountId: str, awsRegion: s
             yield finding
 
 @registry.register_check("docdb")
-def docdb_instance_audit_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def docdb_instance_audit_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DocumentDB.3] DocumentDB instances should have audit logging configured"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for docdb in describe_db_instances(cache):
+    for docdb in describe_db_instances(cache, session):
         docdbId = str(docdb["DBInstanceIdentifier"])
         docdbArn = str(docdb["DBInstanceArn"])
         # this is a passing check
@@ -479,11 +476,11 @@ def docdb_instance_audit_logging_check(cache: dict, awsAccountId: str, awsRegion
             yield finding
 
 @registry.register_check("docdb")
-def docdb_cluster_multiaz_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def docdb_cluster_multiaz_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DocumentDB.4] DocumentDB clusters should be configured for Multi-AZ"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for docdbcluster in describe_db_clusters(cache)["DBClusters"]:
+    for docdbcluster in describe_db_clusters(cache, session)["DBClusters"]:
         docdbclusterId = str(docdbcluster["DBClusterIdentifier"])
         docdbClusterArn = str(docdbcluster["DBClusterArn"])
         multiAzCheck = str(docdbcluster["MultiAZ"])
@@ -625,11 +622,11 @@ def docdb_cluster_multiaz_check(cache: dict, awsAccountId: str, awsRegion: str, 
             yield finding
 
 @registry.register_check("docdb")
-def docdb_cluster_deletion_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def docdb_cluster_deletion_protection_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DocumentDB.5] DocumentDB clusters should have deletion protection enabled"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for docdbcluster in describe_db_clusters(cache)["DBClusters"]:
+    for docdbcluster in describe_db_clusters(cache, session)["DBClusters"]:
         docdbclusterId = str(docdbcluster["DBClusterIdentifier"])
         docdbClusterArn = str(docdbcluster["DBClusterArn"])
         multiAzCheck = str(docdbcluster["MultiAZ"])
@@ -767,11 +764,12 @@ def docdb_cluster_deletion_protection_check(cache: dict, awsAccountId: str, awsR
             yield finding
 
 @registry.register_check("docdb")
-def documentdb_parameter_group_audit_log_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def documentdb_parameter_group_audit_log_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DocumentDB.6] DocumentDB cluster parameter groups should enforce audit logging for DocumentDB databases"""
+    documentdb = session.client("docdb")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for parametergroup in describe_db_cluster_parameter_groups(cache)["DBClusterParameterGroups"]:
+    for parametergroup in describe_db_cluster_parameter_groups(cache, session)["DBClusterParameterGroups"]:
         if str(parametergroup["DBParameterGroupFamily"]) == ("docdb3.6" or "docdb4.0"):
             parameterGroupName = str(parametergroup["DBClusterParameterGroupName"])
             parameterGroupArn = str(parametergroup["DBClusterParameterGroupArn"])
@@ -896,11 +894,12 @@ def documentdb_parameter_group_audit_log_check(cache: dict, awsAccountId: str, a
             continue
 
 @registry.register_check("docdb")
-def documentdb_parameter_group_tls_enforcement_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def documentdb_parameter_group_tls_enforcement_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DocumentDB.7] DocumentDB cluster parameter groups should enforce TLS connections to DocumentDB databases"""
+    documentdb = session.client("docdb")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for parametergroup in describe_db_cluster_parameter_groups(cache)["DBClusterParameterGroups"]:
+    for parametergroup in describe_db_cluster_parameter_groups(cache, session)["DBClusterParameterGroups"]:
         if str(parametergroup["DBParameterGroupFamily"]) == ("docdb3.6" or "docdb4.0"):
             parameterGroupName = str(parametergroup["DBClusterParameterGroupName"])
             parameterGroupArn = str(parametergroup["DBClusterParameterGroupArn"])
@@ -1029,11 +1028,12 @@ def documentdb_parameter_group_tls_enforcement_check(cache: dict, awsAccountId: 
             continue
 
 @registry.register_check("docdb")
-def documentdb_cluster_snapshot_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def documentdb_cluster_snapshot_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DocumentDB.8] DocumentDB cluster snapshots should be encrypted"""
+    documentdb = session.client("docdb")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for docdbcluster in describe_db_clusters(cache)["DBClusters"]:
+    for docdbcluster in describe_db_clusters(cache, session)["DBClusters"]:
         clusterId = str(docdbcluster["DBClusterIdentifier"])
         response = documentdb.describe_db_cluster_snapshots(DBClusterIdentifier=clusterId)
         for snapshots in response["DBClusterSnapshots"]:
@@ -1142,11 +1142,12 @@ def documentdb_cluster_snapshot_encryption_check(cache: dict, awsAccountId: str,
                 yield finding
 
 @registry.register_check("docdb")
-def documentdb_cluster_snapshot_public_share_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def documentdb_cluster_snapshot_public_share_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DocumentDB.9] DocumentDB cluster snapshots should not be publicly shared"""
+    documentdb = session.client("docdb")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for docdbcluster in describe_db_clusters(cache)["DBClusters"]:
+    for docdbcluster in describe_db_clusters(cache, session)["DBClusters"]:
         clusterId = str(docdbcluster["DBClusterIdentifier"])
         response = documentdb.describe_db_cluster_snapshots(DBClusterIdentifier=clusterId)
         for snapshots in response["DBClusterSnapshots"]:
