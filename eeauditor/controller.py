@@ -33,12 +33,25 @@ def print_checks():
     
     app.print_checks_md()
 
-def run_auditor(auditor_name=None, check_name=None, delay=0, outputs=None, output_file=""):
+def run_auditor(session_override=None, region_override=None, auditor_name=None, check_name=None, delay=0, outputs=None, output_file=""):
     if not outputs:
         # default to AWS SecHub even if somehow Click destination is stripped
         outputs = ["sechub"]
 
-    app = EEAuditor(name="AWS Auditor")
+    if not region_override:
+        region_override = boto3.Session().region_name
+
+    if session_override:
+        session = boto3.Session(
+            aws_access_key_id=session_override[0],
+            aws_secret_access_key=session_override[1],
+            aws_session_token=session_override[2],
+            region_name=region_override
+        )
+    else:
+        session = boto3.Session()
+
+    app = EEAuditor(name="AWS Auditor", session=session, region=region_override)
 
     app.load_plugins(plugin_name=auditor_name)
 
@@ -51,7 +64,16 @@ def run_auditor(auditor_name=None, check_name=None, delay=0, outputs=None, outpu
 
 @click.command()
 # Session Object Override
-
+@click.option(
+    "--session-override",
+    default="",
+    help="To use ElectricEye on other AWS Accounts provide a tuple of ('aws_access_key_id','aws_secret_access_key','aws_session_token') received from STS AssumeRole  - this can be used with --region-override"
+)
+@click.option(
+    "--region-override",
+    default="",
+    help="To use ElectricEye in other Regions provide a region name (e.g., eu-central-1) - this can be used with --session-override"
+)
 # AWSCLI Profile
 @click.option(
     "-p",
@@ -115,6 +137,8 @@ def run_auditor(auditor_name=None, check_name=None, delay=0, outputs=None, outpu
 )
 
 def main(
+    session_override,
+    region_override,
     profile_name,
     auditor_name,
     check_name,
@@ -141,6 +165,8 @@ def main(
         sys.exit(2)
 
     run_auditor(
+        session_override=session_override,
+        region_override=region_override,
         auditor_name=auditor_name,
         check_name=check_name,
         delay=delay,

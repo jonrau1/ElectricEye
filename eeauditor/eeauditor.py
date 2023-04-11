@@ -27,8 +27,6 @@ from pluginbase import PluginBase
 
 here = os.path.abspath(os.path.dirname(__file__))
 get_path = partial(os.path.join, here)
-ssm = boto3.client("ssm")
-sts = boto3.client("sts")
 
 class EEAuditor(object):
     """ElectricEye controller
@@ -36,7 +34,7 @@ class EEAuditor(object):
         This class manages loading auditor plugins and running checks
     """
 
-    def __init__(self, name, search_path=None):
+    def __init__(self, name, session, region, search_path=None):
         if not search_path:
             search_path = "./auditors/aws"
 
@@ -47,10 +45,14 @@ class EEAuditor(object):
         # to be discovered during plugin loading.
         self.registry = CheckRegister()
 
+        # Here is where STS AssumeRole Creds are supplied or a default Session object is used
+        self.session = session
+        sts = session.client("sts")
+
         # vendor specific credentials dictionary
         self.awsAccountId = sts.get_caller_identity()["Account"]
         # pull Region from STS Meta - we can use this to cheese which partition we are in
-        self.awsRegion = boto3.Session().region_name
+        self.awsRegion = region
         
         # GovCloud partition override
         if self.awsRegion in ["us-gov-east-1", "us-gov-west-1"]:
@@ -89,6 +91,10 @@ class EEAuditor(object):
                     print(f"Failed to load plugin {plugin_name} with exception {e}")
 
     def get_regions(self, service):
+        # Pull session
+        session = self.session
+        ssm = session.client("ssm")
+
         # create an empty list for Commercial Region lookups
         values = []
 
@@ -123,6 +129,8 @@ class EEAuditor(object):
 
     # called from eeauditor/controller.py run_auditor()
     def run_checks(self, requested_check_name=None, delay=0):
+        # Last call for session validation logging
+        print(f'Running ElectricEye in AWS Account {self.awsAccountId}, in Region {self.awsRegion}')
 
         for service_name, check_list in self.registry.checks.items():
             # only check regions if in AWS Commerical Partition
