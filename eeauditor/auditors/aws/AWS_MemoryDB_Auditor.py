@@ -18,15 +18,13 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-memorydb = boto3.client("memorydb")
-
-def describe_clusters(cache):
+def describe_clusters(cache, session):
+    memorydb = session.client("memorydb")
     response = cache.get("describe_clusters")
     if response:
         return response
@@ -34,10 +32,10 @@ def describe_clusters(cache):
     return cache["describe_clusters"]
 
 @registry.register_check("memorydb")
-def memorydb_cluster_tls_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def memorydb_cluster_tls_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[MemoryDB.1] MemoryDB Clusters should configured to use encryption in transit"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for c in describe_clusters(cache=cache)["Clusters"]:
+    for c in describe_clusters(cache, session)["Clusters"]:
         # Gather basic information
         memDbArn = str(c["ARN"])
         memDbName = str(c["Name"])
@@ -180,10 +178,10 @@ def memorydb_cluster_tls_encryption_check(cache: dict, awsAccountId: str, awsReg
             yield finding
 
 @registry.register_check("memorydb")
-def memorydb_cluster_kms_cmk_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def memorydb_cluster_kms_cmk_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[MemoryDB.2] MemoryDB Clusters should used KMS CMKs for encryption at rest"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for c in describe_clusters(cache=cache)["Clusters"]:
+    for c in describe_clusters(cache, session)["Clusters"]:
         # Gather basic information
         memDbArn = str(c["ARN"])
         memDbName = str(c["Name"])
@@ -323,10 +321,10 @@ def memorydb_cluster_kms_cmk_encryption_check(cache: dict, awsAccountId: str, aw
             yield finding
 
 @registry.register_check("memorydb")
-def memorydb_auto_minor_version_update_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def memorydb_auto_minor_version_update_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[MemoryDB.3] MemoryDB Clusters should be configured to conduct automatic minor version updates"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for c in describe_clusters(cache=cache)["Clusters"]:
+    for c in describe_clusters(cache, session)["Clusters"]:
         # Gather basic information
         memDbArn = str(c["ARN"])
         memDbName = str(c["Name"])
@@ -462,10 +460,10 @@ def memorydb_auto_minor_version_update_check(cache: dict, awsAccountId: str, aws
             yield finding
 
 @registry.register_check("memorydb")
-def memorydb_sns_notification_tracking_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def memorydb_sns_notification_tracking_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[MemoryDB.4] MemoryDB Clusters should be actively monitored with SNS"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for c in describe_clusters(cache=cache)["Clusters"]:
+    for c in describe_clusters(cache, session)["Clusters"]:
         # Gather basic information
         memDbArn = str(c["ARN"])
         memDbName = str(c["Name"])
@@ -604,10 +602,11 @@ def memorydb_sns_notification_tracking_check(cache: dict, awsAccountId: str, aws
             yield finding
 
 @registry.register_check("memorydb")
-def memorydb_user_admin_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def memorydb_user_admin_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[MemoryDB.5] MemoryDB Cluster Users with administrative privileges should be validated"""
+    memorydb = session.client("memorydb")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for c in describe_clusters(cache=cache)["Clusters"]:
+    for c in describe_clusters(cache, session)["Clusters"]:
         # Gather basic information
         memDbArn = str(c["ARN"])
         memDbName = str(c["Name"])
@@ -786,10 +785,11 @@ def memorydb_user_admin_check(cache: dict, awsAccountId: str, awsRegion: str, aw
                     yield finding
 
 @registry.register_check("memorydb")
-def memorydb_user_password_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def memorydb_user_password_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[MemoryDB.6] MemoryDB Cluster Users should require additional password authentication"""
+    memorydb = session.client("memorydb")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for c in describe_clusters(cache=cache)["Clusters"]:
+    for c in describe_clusters(cache, session)["Clusters"]:
         # Gather basic information
         memDbArn = str(c["ARN"])
         memDbName = str(c["Name"])

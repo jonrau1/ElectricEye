@@ -18,18 +18,15 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
-import os
 from check_register import CheckRegister
 
 registry = CheckRegister()
-# import boto3 clients
-licensemanager = boto3.client("license-manager")
 
 @registry.register_check("license-manager")
-def license_manager_hard_count_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def license_manager_hard_count_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[LicenseManager.1] License Manager license configurations should be configured to enforce a hard limit"""
+    licensemanager = session.client("license-manager")
     try:
         # TODO: need to catch the case that License Manager is not setup
         response = licensemanager.list_license_configurations()
@@ -171,8 +168,9 @@ def license_manager_hard_count_check(cache: dict, awsAccountId: str, awsRegion: 
         print(e)
 
 @registry.register_check("license-manager")
-def license_manager_disassociation_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def license_manager_disassociation_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[LicenseManager.2] License Manager license configurations should disassociate hosts when license in scope is not found"""
+    licensemanager = session.client("license-manager")
     try:
         # TODO: need to catch the case that License Manager is not setup
         response = licensemanager.list_license_configurations()

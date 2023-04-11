@@ -18,34 +18,34 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 import botocore.exceptions
 import json
 from check_register import CheckRegister
 
 registry = CheckRegister()
-kms = boto3.client("kms")
 
-def list_keys(cache):
+def list_keys(cache, session):
+    kms = session.client("kms")
     response = cache.get("list_keys")
     if response:
         return response
     cache["list_keys"] = kms.list_keys()
     return cache["list_keys"]
 
-def list_aliases(cache):
+def list_aliases(cache, session):
+    kms = session.client("kms")
     response = cache.get("list_aliases")
     if response:
         return response
     cache["list_aliases"] = kms.list_aliases()
     return cache["list_aliases"]
 
-
 @registry.register_check("kms")
-def kms_key_rotation_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def kms_key_rotation_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[KMS.1] KMS keys should have key rotation enabled"""
-    keys = list_keys(cache=cache)
+    kms = session.client("kms")
+    keys = list_keys(cache, session)
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for key in keys["Keys"]:
         keyid = key["KeyId"]
@@ -265,9 +265,10 @@ def kms_key_rotation_check(cache: dict, awsAccountId: str, awsRegion: str, awsPa
                 print(f'We found another error! {error}')
 
 @registry.register_check("kms")
-def kms_key_exposed_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def kms_key_exposed_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[KMS.2] KMS keys should not have public access"""
-    response = list_aliases(cache=cache)
+    kms = session.client("kms")
+    response = list_aliases(cache, session)
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for alias in response["Aliases"]:
         if "TargetKeyId" in alias:
