@@ -1,59 +1,77 @@
+#This file is part of ElectricEye.
+#SPDX-License-Identifier: Apache-2.0
+
+#Licensed to the Apache Software Foundation (ASF) under one
+#or more contributor license agreements.  See the NOTICE file
+#distributed with this work for additional information
+#regarding copyright ownership.  The ASF licenses this file
+#to you under the Apache License, Version 2.0 (the
+#"License"); you may not use this file except in compliance
+#with the License.  You may obtain a copy of the License at
+
+#http://www.apache.org/licenses/LICENSE-2.0
+
+#Unless required by applicable law or agreed to in writing,
+#software distributed under the License is distributed on an
+#"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+#KIND, either express or implied.  See the License for the
+#specific language governing permissions and limitations
+#under the License.
+
 from check_register import CheckRegister
-import boto3
 import datetime
 
 registry = CheckRegister()
 
-keyspaces = boto3.client("keyspaces")
+def gather_table(cache, session):
+    keyspaces = session.client("keyspaces")
+    awsKeyspaceInfo = []
+    # AWS-managed Keyspaces - we need to ignore these
+    defaultKeyspaceNames = [
+        'system_schema',
+        'system_schema_mcs',
+        'system'
+    ]
 
-awsKeyspaceInfo = []
-# AWS-managed Keyspaces - we need to ignore these
-defaultKeyspaceNames = [
-    'system_schema',
-    'system_schema_mcs',
-    'system'
-]
+    # First, paginate all Keyspace names and pass them to another Paginator which will attempt to enumerate all Tables
+    # Then write both of the data points to a list to be used for all Checks within this Auditor
+    # We will also not include any Keyspace Name that corresponds to AWS-managed system Keyspaces
+    keyspace_paginator = keyspaces.get_paginator("list_keyspaces")
+    table_paginator = keyspaces.get_paginator("list_tables")
+    keyspace_iterator = keyspace_paginator.paginate()
+    for page in keyspace_iterator:
+        for k in page["keyspaces"]:
+            keyspaceName = k["keyspaceName"]
+            if keyspaceName in defaultKeyspaceNames:
+                continue
+            else:
+                # Now get all of the tables per Keyspace - setup a new iterator
+                table_iterator = table_paginator.paginate(keyspaceName=keyspaceName)
+                for page in table_iterator:
+                    for t in page["tables"]:
+                        tableName = t["tableName"]
+                        # Write dict of Keyspace Name & Table Name to list
+                        keyspacesDict = {
+                            "KeyspaceName": keyspaceName,
+                            "TableName": tableName
+                        }
+                        awsKeyspaceInfo.append(keyspacesDict)
 
-# First, paginate all Keyspace names and pass them to another Paginator which will attempt to enumerate all Tables
-# Then write both of the data points to a list to be used for all Checks within this Auditor
-# We will also not include any Keyspace Name that corresponds to AWS-managed system Keyspaces
-keyspace_paginator = keyspaces.get_paginator("list_keyspaces")
-table_paginator = keyspaces.get_paginator("list_tables")
-keyspace_iterator = keyspace_paginator.paginate()
-for page in keyspace_iterator:
-    for k in page["keyspaces"]:
-        keyspaceName = k["keyspaceName"]
-        if keyspaceName in defaultKeyspaceNames:
-            continue
-        else:
-            # Now get all of the tables per Keyspace - setup a new iterator
-            table_iterator = table_paginator.paginate(keyspaceName=keyspaceName)
-            for page in table_iterator:
-                for t in page["tables"]:
-                    tableName = t["tableName"]
-                    # Write dict of Keyspace Name & Table Name to list
-                    keyspacesDict = {
-                        "KeyspaceName": keyspaceName,
-                        "TableName": tableName
-                    }
-                    awsKeyspaceInfo.append(keyspacesDict)
+    del keyspace_iterator
+    del keyspace_paginator
+    del table_iterator
+    del table_paginator
 
-del keyspace_iterator
-del keyspace_paginator
-del table_iterator
-del table_paginator
-
-if not awsKeyspaceInfo:
-    # If there is an empty list no need to attempt anything else
-    pass
+    return awsKeyspaceInfo
 
 @registry.register_check("keyspaces")
-def keyspaces_customer_managed_encryption(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def keyspaces_customer_managed_encryption(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Keyspaces.1] AWS Keyspaces (Cassandra) Tables should be encrypted with customer-managed keys"""
+    keyspaces = session.client("keyspaces")
     # ISO8061 Timestamp
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # Grab table information from saved dict in script
-    for x in awsKeyspaceInfo:
+    for x in gather_table(cache, session):
         keyspaceName = x["KeyspaceName"]
         tableName = x["TableName"]
         # Retrieve information from `get_table()` API
@@ -175,12 +193,13 @@ def keyspaces_customer_managed_encryption(cache: dict, awsAccountId: str, awsReg
             yield finding
 
 @registry.register_check("keyspaces")
-def keyspaces_inaccessible_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def keyspaces_inaccessible_status_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Keyspaces.2] AWS Keyspaces (Cassandra) Tables should not be in an inaccessible state"""
+    keyspaces = session.client("keyspaces")
     # ISO8061 Timestamp
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # Grab table information from saved dict in script
-    for x in awsKeyspaceInfo:
+    for x in gather_table(cache, session):
         keyspaceName = x["KeyspaceName"]
         tableName = x["TableName"]
         # Retrieve information from `get_table()` API
@@ -318,12 +337,13 @@ def keyspaces_inaccessible_status_check(cache: dict, awsAccountId: str, awsRegio
             yield finding
 
 @registry.register_check("keyspaces")
-def keyspaces_pitr_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def keyspaces_pitr_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Keyspaces.3] AWS Keyspaces (Cassandra) Tables should have Point-in-Time Recovery (PITR) enabled"""
+    keyspaces = session.client("keyspaces")
     # ISO8061 Timestamp
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # Grab table information from saved dict in script
-    for x in awsKeyspaceInfo:
+    for x in gather_table(cache, session):
         keyspaceName = x["KeyspaceName"]
         tableName = x["TableName"]
         # Retrieve information from `get_table()` API
