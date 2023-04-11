@@ -18,17 +18,13 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-# import boto3 clients
-rds = boto3.client("rds")
-ec2 = boto3.client("ec2")
-
-def describe_db_instances(cache):
+def describe_db_instances(cache, session):
+    rds = session.client("rds")
     dbInstances = []
     response = cache.get("describe_db_instances")
     if response:
@@ -66,7 +62,8 @@ def describe_db_instances(cache):
     cache["describe_db_instances"] = dbInstances
     return cache["describe_db_instances"]
 
-def describe_db_snapshots(cache):
+def describe_db_snapshots(cache, session):
+    rds = session.client("rds")
     dbSnaps = []
     response = cache.get("describe_db_snapshots")
     if response:
@@ -79,7 +76,8 @@ def describe_db_snapshots(cache):
         cache["describe_db_snapshots"] = dbSnaps
         return cache["describe_db_snapshots"]
 
-def describe_db_clusters(cache):
+def describe_db_clusters(cache, session):
+    rds = session.client("rds")
     dbClusters = []
     response = cache.get("describe_db_clusters")
     if response:
@@ -93,11 +91,11 @@ def describe_db_clusters(cache):
         return cache["describe_db_clusters"]
 
 @registry.register_check("rds")
-def rds_instance_ha_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def rds_instance_ha_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.1] RDS instances should be configured for high availability"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for dbinstances in describe_db_instances(cache):
+    for dbinstances in describe_db_instances(cache, session):
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -233,11 +231,11 @@ def rds_instance_ha_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
             yield finding
 
 @registry.register_check("rds")
-def rds_instance_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def rds_instance_public_access_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.2] RDS instances should not be publicly accessible"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for dbinstances in describe_db_instances(cache):
+    for dbinstances in describe_db_instances(cache, session):
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -380,11 +378,11 @@ def rds_instance_public_access_check(cache: dict, awsAccountId: str, awsRegion: 
             yield finding
 
 @registry.register_check("rds")
-def rds_instance_storage_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def rds_instance_storage_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.3] RDS instances should have encrypted storage"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for dbinstances in describe_db_instances(cache):
+    for dbinstances in describe_db_instances(cache, session):
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -512,7 +510,7 @@ def rds_instance_storage_encryption_check(cache: dict, awsAccountId: str, awsReg
             yield finding
 
 @registry.register_check("rds")
-def rds_instance_iam_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def rds_instance_iam_auth_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.4] RDS instances that support IAM Authentication should use IAM Authentication"""
     iamAuthNSupportedEngines = [
         "mariadb",
@@ -521,7 +519,7 @@ def rds_instance_iam_auth_check(cache: dict, awsAccountId: str, awsRegion: str, 
     ]
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for dbinstances in describe_db_instances(cache):
+    for dbinstances in describe_db_instances(cache, session):
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -736,7 +734,7 @@ def rds_instance_iam_auth_check(cache: dict, awsAccountId: str, awsRegion: str, 
             yield finding
 
 @registry.register_check("rds")
-def rds_instance_domain_join_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def rds_instance_domain_join_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.5] RDS instances that support Kerberos Authentication should be joined to a domain"""
     # Engines that support Kerberos AuthN
     kerberosAuthNSupportedEngines = [
@@ -757,7 +755,7 @@ def rds_instance_domain_join_check(cache: dict, awsAccountId: str, awsRegion: st
     ]
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for dbinstances in describe_db_instances(cache):
+    for dbinstances in describe_db_instances(cache, session):
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -971,11 +969,11 @@ def rds_instance_domain_join_check(cache: dict, awsAccountId: str, awsRegion: st
             yield finding
 
 @registry.register_check("rds")
-def rds_instance_performance_insights_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def rds_instance_performance_insights_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.6] RDS instances should have performance insights enabled"""
      # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for dbinstances in describe_db_instances(cache):
+    for dbinstances in describe_db_instances(cache, session):
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -1105,11 +1103,11 @@ def rds_instance_performance_insights_check(cache: dict, awsAccountId: str, awsR
             yield finding
 
 @registry.register_check("rds")
-def rds_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def rds_instance_deletion_protection_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.7] RDS instances should have deletion protection enabled"""
      # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for dbinstances in describe_db_instances(cache):
+    for dbinstances in describe_db_instances(cache, session):
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -1245,11 +1243,11 @@ def rds_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRe
             yield finding
 
 @registry.register_check("rds")
-def rds_instance_cloudwatch_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def rds_instance_cloudwatch_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.8] RDS instances should publish database logs to CloudWatch Logs"""
      # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for dbinstances in describe_db_instances(cache):
+    for dbinstances in describe_db_instances(cache, session):
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -1382,11 +1380,11 @@ def rds_instance_cloudwatch_logging_check(cache: dict, awsAccountId: str, awsReg
             yield finding
 
 @registry.register_check("rds")
-def rds_snapshot_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def rds_snapshot_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.9] RDS snapshots should be encrypted"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for snapshot in describe_db_snapshots(cache):
+    for snapshot in describe_db_snapshots(cache, session):
         snapshotId = str(snapshot["DBSnapshotIdentifier"])
         snapshotArn = str(snapshot["DBSnapshotArn"])
         snapshotEncryptionCheck = str(snapshot["Encrypted"])
@@ -1492,11 +1490,12 @@ def rds_snapshot_encryption_check(cache: dict, awsAccountId: str, awsRegion: str
             yield finding
 
 @registry.register_check("rds")
-def rds_snapshot_public_share_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def rds_snapshot_public_share_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.10] RDS snapshots should not be publicly shared"""
+    rds = session.client("rds")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for snapshot in describe_db_snapshots(cache):
+    for snapshot in describe_db_snapshots(cache, session):
         snapshotId = str(snapshot["DBSnapshotIdentifier"])
         snapshotArn = str(snapshot["DBSnapshotArn"])
         response = rds.describe_db_snapshot_attributes(DBSnapshotIdentifier=snapshotId)
@@ -1624,10 +1623,10 @@ def rds_snapshot_public_share_check(cache: dict, awsAccountId: str, awsRegion: s
                 continue
 
 @registry.register_check("rds")
-def rds_aurora_cluster_activity_streams_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def rds_aurora_cluster_activity_streams_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.11] RDS Aurora Clusters should use Database Activity Streams"""
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dbc in describe_db_clusters(cache):
+    for dbc in describe_db_clusters(cache, session):
         ddcArn = str(dbc["DBClusterArn"])
         dbcId = str(dbc["DBClusterIdentifier"])
         allocStorage = int(dbc["AllocatedStorage"])
@@ -1764,10 +1763,10 @@ def rds_aurora_cluster_activity_streams_check(cache: dict, awsAccountId: str, aw
             yield finding
 
 @registry.register_check("rds")
-def rds_aurora_cluster_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def rds_aurora_cluster_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.12] RDS Aurora Clusters should be encrypted"""
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dbc in describe_db_clusters(cache):
+    for dbc in describe_db_clusters(cache, session):
         ddcArn = str(dbc["DBClusterArn"])
         dbcId = str(dbc["DBClusterIdentifier"])
         allocStorage = int(dbc["AllocatedStorage"])
@@ -1899,11 +1898,12 @@ def rds_aurora_cluster_encryption_check(cache: dict, awsAccountId: str, awsRegio
             yield finding
 
 @registry.register_check("rds")
-def rds_instance_snapshot_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def rds_instance_snapshot_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.13] RDS instances should be have snapshots"""
+    rds = session.client("rds")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for dbinstances in describe_db_instances(cache):
+    for dbinstances in describe_db_instances(cache, session):
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -2039,11 +2039,12 @@ def rds_instance_snapshot_check(cache: dict, awsAccountId: str, awsRegion: str, 
             yield finding
 
 @registry.register_check("rds")
-def rds_instance_secgroup_risk_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def rds_instance_secgroup_risk_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.14] RDS instance security groups should not allow public access to DB ports"""
+    ec2 = session.client("ec2")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for dbinstances in describe_db_snapshots(cache):
+    for dbinstances in describe_db_snapshots(cache, session):
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -2206,8 +2207,9 @@ def rds_instance_secgroup_risk_check(cache: dict, awsAccountId: str, awsRegion: 
                         continue
 
 @registry.register_check("rds")
-def rds_instance_instance_alerting_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def rds_instance_instance_alerting_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.15] RDS instances should be monitored for important events using Event Subscriptions"""
+    rds = session.client("rds")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # Determine if there are any alerts at all via list comprehension - fail if empty
@@ -2422,8 +2424,9 @@ def rds_instance_instance_alerting_check(cache: dict, awsAccountId: str, awsRegi
         yield finding
 
 @registry.register_check("rds")
-def rds_instance_parameter_group_alerting_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def rds_instance_parameter_group_alerting_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.16] RDS parameter groups should be monitored for important events using Event Subscriptions"""
+    rds = session.client("rds")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # Determine if there are any alerts at all via list comprehension - fail if empty
@@ -2638,7 +2641,7 @@ def rds_instance_parameter_group_alerting_check(cache: dict, awsAccountId: str, 
         yield finding
 
 @registry.register_check("rds")
-def rds_postgresql_log_fwd_vuln_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def rds_postgresql_log_fwd_vuln_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.17] RDS instances with PostgreSQL engines should not use a version that is vulnerable to the Lightspin log_fwd internal cluster access attack"""
     # from https://aws.amazon.com/security/security-bulletins/AWS-2022-004/
     vulnerableMinorVersions = [
@@ -2699,7 +2702,7 @@ def rds_postgresql_log_fwd_vuln_check(cache: dict, awsAccountId: str, awsRegion:
     ]
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for dbinstances in describe_db_instances(cache):
+    for dbinstances in describe_db_instances(cache, session):
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -2961,7 +2964,7 @@ def rds_postgresql_log_fwd_vuln_check(cache: dict, awsAccountId: str, awsRegion:
             yield finding
 
 @registry.register_check("rds")
-def rds_aurora_postgresql_log_fwd_vuln_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def rds_aurora_postgresql_log_fwd_vuln_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RDS.18] Aurora instances with PostgreSQL engines should not use a version that is vulnerable to the Lightspin log_fwd internal cluster access attack"""
     # from https://aws.amazon.com/security/security-bulletins/AWS-2022-004/
     vulnerableMinorVersions = [
@@ -2974,7 +2977,7 @@ def rds_aurora_postgresql_log_fwd_vuln_check(cache: dict, awsAccountId: str, aws
     ]
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for dbinstances in describe_db_instances(cache):
+    for dbinstances in describe_db_instances(cache, session):
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])

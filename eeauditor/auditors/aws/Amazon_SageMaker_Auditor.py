@@ -19,16 +19,14 @@
 #under the License.
 
 import datetime
-import boto3
 from check_register import CheckRegister
 
 registry = CheckRegister()
-# import boto3 clients
-sagemaker = boto3.client("sagemaker")
 
 @registry.register_check("sagemaker")
-def sagemaker_notebook_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def sagemaker_notebook_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SageMaker.1] SageMaker notebook instance storage volumes should be encrypted"""
+    sagemaker = session.client("sagemaker")
     # loop through sagemaker notebooks
     response = sagemaker.list_notebook_instances()
     mySageMakerNotebooks = response["NotebookInstances"]
@@ -141,8 +139,10 @@ def sagemaker_notebook_encryption_check(cache: dict, awsAccountId: str, awsRegio
             yield finding
 
 @registry.register_check("sagemaker")
-def sagemaker_notebook_direct_internet_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def sagemaker_notebook_direct_internet_access_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SageMaker.2] SageMaker notebook instances should not have direct internet access configured"""
+    sagemaker = session.client("sagemaker")
+
     # loop through sagemaker notebooks
     response = sagemaker.list_notebook_instances()
     mySageMakerNotebooks = response["NotebookInstances"]
@@ -264,8 +264,9 @@ def sagemaker_notebook_direct_internet_access_check(cache: dict, awsAccountId: s
             yield finding
 
 @registry.register_check("sagemaker")
-def sagemaker_notebook_in_vpc_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def sagemaker_notebook_in_vpc_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SageMaker.3] SageMaker notebook instances should be placed in a VPC"""
+    sagemaker = session.client("sagemaker")
     # loop through sagemaker notebooks
     response = sagemaker.list_notebook_instances()
     mySageMakerNotebooks = response["NotebookInstances"]
@@ -386,8 +387,9 @@ def sagemaker_notebook_in_vpc_check(cache: dict, awsAccountId: str, awsRegion: s
             yield finding
 
 @registry.register_check("sagemaker")
-def sagemaker_endpoint_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def sagemaker_endpoint_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SageMaker.4] SageMaker endpoints should be encrypted"""
+    sagemaker = session.client("sagemaker")
     # loop through sagemaker endpoints
     response = sagemaker.list_endpoints()
     mySageMakerEndpoints = response["Endpoints"]
@@ -500,8 +502,9 @@ def sagemaker_endpoint_encryption_check(cache: dict, awsAccountId: str, awsRegio
             yield finding
 
 @registry.register_check("sagemaker")
-def sagemaker_model_network_isolation_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def sagemaker_model_network_isolation_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SageMaker.5] SageMaker models should have network isolation enabled"""
+    sagemaker = session.client("sagemaker")
     # loop through sagemaker models
     response = sagemaker.list_models()
     mySageMakerModels = response["Models"]

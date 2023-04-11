@@ -18,18 +18,13 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-# create boto3 clients
-ec2 = boto3.client("ec2")
-route53resolver = boto3.client("route53resolver")
-
-# loop through vpcs
-def describe_vpcs(cache):
+def describe_vpcs(cache, session):
+    ec2 = session.client("ec2")
     response = cache.get("describe_vpcs")
     if response:
         return response
@@ -37,12 +32,13 @@ def describe_vpcs(cache):
     return cache["describe_vpcs"]
 
 @registry.register_check("route53resolver")
-def vpc_route53_query_logging_association_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def vpc_route53_query_logging_association_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Route53Resolver.1] VPCs should have Route 53 Resolver DNS Query Logging configured"""
+    route53resolver = session.client("route53resolver")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # Loop the VPCs in Cache
-    for vpcs in describe_vpcs(cache=cache)["Vpcs"]:
+    for vpcs in describe_vpcs(cache, session)["Vpcs"]:
         vpcId = str(vpcs["VpcId"])
         vpcArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}vpc/{vpcId}"
         # Check for Query Log Configs filtered by VPC ID. 
@@ -166,12 +162,13 @@ def vpc_route53_query_logging_association_check(cache: dict, awsAccountId: str, 
             yield finding
 
 @registry.register_check("route53resolver")
-def vpc_route53_resolver_firewall_association_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def vpc_route53_resolver_firewall_association_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Route53Resolver.2] VPCs should have Route 53 Resolver DNS Firewalls associated"""
+    route53resolver = session.client("route53resolver")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # Loop the VPCs in Cache
-    for vpcs in describe_vpcs(cache=cache)["Vpcs"]:
+    for vpcs in describe_vpcs(cache, session)["Vpcs"]:
         vpcId = str(vpcs["VpcId"])
         vpcArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}vpc/{vpcId}"
         # Check for Firewall Associations filtered by VPC ID. 
@@ -287,8 +284,9 @@ def vpc_route53_resolver_firewall_association_check(cache: dict, awsAccountId: s
             yield finding
 
 @registry.register_check("route53resolver")
-def vpc_route53_resolver_dnssec_validation_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def vpc_route53_resolver_dnssec_validation_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Route53Resolver.3] Consider enabling DNSSEC validation in your VPC for Route 53 Public Zones"""
+    route53resolver = session.client("route53resolver")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # Create a list of VPCs that have DNSSEC Validation enabled, as we cannot filter
@@ -299,7 +297,7 @@ def vpc_route53_resolver_dnssec_validation_check(cache: dict, awsAccountId: str,
         else:
             continue
     # Loop the VPCs in Cache
-    for vpcs in describe_vpcs(cache=cache)["Vpcs"]:
+    for vpcs in describe_vpcs(cache, session)["Vpcs"]:
         vpcId = str(vpcs["VpcId"])
         vpcArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}vpc/{vpcId}"
         # This is a failing check as the VPC is not in the list of "dnssecVpcs"
@@ -415,12 +413,13 @@ def vpc_route53_resolver_dnssec_validation_check(cache: dict, awsAccountId: str,
             yield finding
 
 @registry.register_check("route53resolver")
-def vpc_route53_resolver_firewall_fail_open_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def vpc_route53_resolver_firewall_fail_open_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Route53Resolver.4] VPCs with Route 53 Resolver DNS Firewalls associated should be configured to Fail Open"""
+    route53resolver = session.client("route53resolver")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # Loop the VPCs in Cache
-    for vpcs in describe_vpcs(cache=cache)["Vpcs"]:
+    for vpcs in describe_vpcs(cache, session)["Vpcs"]:
         vpcId = str(vpcs["VpcId"])
         vpcArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}vpc/{vpcId}"
         # Check for Firewall Associations filtered by VPC ID. 

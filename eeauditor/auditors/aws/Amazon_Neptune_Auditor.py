@@ -18,17 +18,13 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-# import boto3 clients
-neptune = boto3.client("neptune")
-
-# loop through neptune instances
-def describe_db_instances(cache):
+def describe_db_instances(cache, session):
+    neptune = session.client("neptune")
     response = cache.get("describe_db_instances")
     if response:
         return response
@@ -37,8 +33,8 @@ def describe_db_instances(cache):
     )
     return cache["describe_db_instances"]
 
-# loop through clusters
-def describe_db_clusters(cache):
+def describe_db_clusters(cache, session):
+    neptune = session.client("neptune")
     response = cache.get("describe_db_clusters")
     if response:
         return response
@@ -47,8 +43,8 @@ def describe_db_clusters(cache):
     )
     return cache["describe_db_clusters"]
 
-# loop through cluster parameter groups
-def describe_db_cluster_parameter_groups(cache):
+def describe_db_cluster_parameter_groups(cache, session):
+    neptune = session.client("neptune")
     response = cache.get("describe_db_cluster_parameter_groups")
     if response:
         return response
@@ -56,11 +52,11 @@ def describe_db_cluster_parameter_groups(cache):
     return cache["describe_db_cluster_parameter_groups"]
 
 @registry.register_check("neptune")
-def neptune_instance_multi_az_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def neptune_instance_multi_az_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Neptune.1] Neptune database instances should be configured to be highly available"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for instances in describe_db_instances(cache)["DBInstances"]:
+    for instances in describe_db_instances(cache, session)["DBInstances"]:
         neptuneInstanceArn = str(instances["DBInstanceArn"])
         neptuneDbId = str(instances["DBInstanceIdentifier"])
         mutliAzCheck = str(instances["MultiAZ"])
@@ -198,11 +194,11 @@ def neptune_instance_multi_az_check(cache: dict, awsAccountId: str, awsRegion: s
             yield finding
 
 @registry.register_check("neptune")
-def neptune_instance_storage_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def neptune_instance_storage_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Neptune.2] Neptune database instace storage should be encrypted"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for instances in describe_db_instances(cache)["DBInstances"]:
+    for instances in describe_db_instances(cache, session)["DBInstances"]:
         neptuneInstanceArn = str(instances["DBInstanceArn"])
         neptuneDbId = str(instances["DBInstanceIdentifier"])
         storageEncryptionCheck = str(instances["StorageEncrypted"])
@@ -336,11 +332,11 @@ def neptune_instance_storage_encryption_check(cache: dict, awsAccountId: str, aw
             yield finding
 
 @registry.register_check("neptune")
-def neptune_instance_iam_authentication_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def neptune_instance_iam_authentication_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Neptune.3] Neptune database instaces storage should use IAM Database Authentication"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for instances in describe_db_instances(cache)["DBInstances"]:
+    for instances in describe_db_instances(cache, session)["DBInstances"]:
         neptuneInstanceArn = str(instances["DBInstanceArn"])
         neptuneDbId = str(instances["DBInstanceIdentifier"])
         iamDbAuthCheck = str(instances["IAMDatabaseAuthenticationEnabled"])
@@ -496,11 +492,12 @@ def neptune_instance_iam_authentication_check(cache: dict, awsAccountId: str, aw
             yield finding
 
 @registry.register_check("neptune")
-def neptune_cluster_parameter_ssl_enforcement_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def neptune_cluster_parameter_ssl_enforcement_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Neptune.4] Neptune cluster parameter groups should enforce SSL connections to Neptune databases"""
+    neptune = session.client("neptune")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for parametergroup in describe_db_cluster_parameter_groups(cache)["DBClusterParameterGroups"]:
+    for parametergroup in describe_db_cluster_parameter_groups(cache, session)["DBClusterParameterGroups"]:
         parameterGroupName = str(parametergroup["DBClusterParameterGroupName"])
         parameterGroupArn = str(parametergroup["DBClusterParameterGroupArn"])
         # Parse the parameters in the PG
@@ -621,11 +618,11 @@ def neptune_cluster_parameter_ssl_enforcement_check(cache: dict, awsAccountId: s
 THIS CHECK HAS BEEN RETIRED AND A NEW [Neptune.5] has been created in its place
 
 @registry.register_check("neptune")
-def neptune_cluster_parameter_audit_log_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def neptune_cluster_parameter_audit_log_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Neptune.5] Neptune cluster parameter groups should enforce audit logging for Neptune databases"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for parametergroup in describe_db_cluster_parameter_groups(cache)["DBClusterParameterGroups"]:
+    for parametergroup in describe_db_cluster_parameter_groups(cache, session)["DBClusterParameterGroups"]:
         parameterGroupName = str(parametergroup["DBClusterParameterGroupName"])
         parameterGroupArn = str(parametergroup["DBClusterParameterGroupArn"])
         # Parse the parameters in the PG
@@ -742,11 +739,11 @@ def neptune_cluster_parameter_audit_log_check(cache: dict, awsAccountId: str, aw
 '''
 
 @registry.register_check("neptune")
-def neptune_instance_audit_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def neptune_instance_audit_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Neptune.5] Neptune database instaces should send audit logs to CloudWatch"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for instances in describe_db_instances(cache)["DBInstances"]:
+    for instances in describe_db_instances(cache, session)["DBInstances"]:
         neptuneInstanceArn = str(instances["DBInstanceArn"])
         neptuneDbId = str(instances["DBInstanceIdentifier"])
         cwlExports = instances["EnabledCloudwatchLogsExports"]
@@ -882,11 +879,11 @@ def neptune_instance_audit_logging_check(cache: dict, awsAccountId: str, awsRegi
             yield finding
 
 @registry.register_check("neptune")
-def neptune_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def neptune_instance_deletion_protection_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Neptune.6] Neptune database instances should be protected from deletion"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for instances in describe_db_instances(cache)["DBInstances"]:
+    for instances in describe_db_instances(cache, session)["DBInstances"]:
         neptuneInstanceArn = str(instances["DBInstanceArn"])
         neptuneDbId = str(instances["DBInstanceIdentifier"])
         delProtCheck = str(instances["DeletionProtection"])
@@ -1026,11 +1023,11 @@ def neptune_instance_deletion_protection_check(cache: dict, awsAccountId: str, a
             yield finding
 
 @registry.register_check("neptune")
-def neptune_instance_minor_version_upgrade_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def neptune_instance_minor_version_upgrade_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Neptune.7] Neptune database instances should be protected from deletion"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for instances in describe_db_instances(cache)["DBInstances"]:
+    for instances in describe_db_instances(cache, session)["DBInstances"]:
         neptuneInstanceArn = str(instances["DBInstanceArn"])
         neptuneDbId = str(instances["DBInstanceIdentifier"])
         minorVersionUpgradeCheck = str(instances["AutoMinorVersionUpgrade"])
@@ -1166,11 +1163,12 @@ def neptune_instance_minor_version_upgrade_check(cache: dict, awsAccountId: str,
             yield finding
 
 @registry.register_check("neptune")
-def neptune_cluster_autoscaling_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def neptune_cluster_autoscaling_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Neptune.8] Neptune clusters should be configured for auto-scaling"""
+    neptune = session.client("neptune")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for cluster in describe_db_clusters(cache)["DBClusters"]:
+    for cluster in describe_db_clusters(cache, session)["DBClusters"]:
         clusterArn = cluster["DBClusterArn"]
         clusterId = cluster["DBClusterIdentifier"]
         clusterParameterGroupName = cluster["DBClusterParameterGroup"]
@@ -1322,11 +1320,12 @@ def neptune_cluster_autoscaling_check(cache: dict, awsAccountId: str, awsRegion:
                 continue
 
 @registry.register_check("neptune")
-def neptune_cluster_gremlin_query_result_cache_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Neptune.9] Neptune clusters should be configured for result caching"""
+def neptune_cluster_gremlin_query_result_cache_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[Neptune.9] Neptune clusters should be configured for Gremlin result caching"""
+    neptune = session.client("neptune")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for cluster in describe_db_clusters(cache)["DBClusters"]:
+    for cluster in describe_db_clusters(cache, session)["DBClusters"]:
         clusterArn = cluster["DBClusterArn"]
         clusterId = cluster["DBClusterIdentifier"]
         clusterParameterGroupName = cluster["DBClusterParameterGroup"]
