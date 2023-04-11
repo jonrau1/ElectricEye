@@ -39,17 +39,18 @@ class EEAuditor(object):
     def __init__(self, name, search_path=None):
         if not search_path:
             search_path = "./auditors/aws"
+
         self.name = name
         self.plugin_base = PluginBase(package="electriceye")
+
         # each check must be decorated with the @registry.register_check("cache_name")
         # to be discovered during plugin loading.
         self.registry = CheckRegister()
+
         # vendor specific credentials dictionary
         self.awsAccountId = sts.get_caller_identity()["Account"]
         # pull Region from STS Meta - we can use this to cheese which partition we are in
         self.awsRegion = boto3.Session().region_name
-        # default to Commercial AWS Partition
-        self.awsPartition = "aws"
         
         # GovCloud partition override
         if self.awsRegion in ["us-gov-east-1", "us-gov-west-1"]:
@@ -64,6 +65,9 @@ class EEAuditor(object):
         # TS West: https://aws.amazon.com/blogs/publicsector/announcing-second-aws-top-secret-region-extending-support-us-government-classified-missions/
         elif self.awsRegion in ["us-iso-east-1", "us-iso-west-1"]:
             self.awsPartition = "aws-iso"
+        else:
+            # default to Commercial AWS Partition
+            self.awsPartition = "aws"
 
         # If there is a desire to add support for multiple clouds, this would be
         # a great place to implement it.
@@ -87,6 +91,7 @@ class EEAuditor(object):
     def get_regions(self, service):
         # create an empty list for Commercial Region lookups
         values = []
+
         if self.awsPartition == "aws":
             # only check validity for AWS Commercial Region
             # Handle the weird v2 services names - global service overrides for lookup
@@ -100,6 +105,7 @@ class EEAuditor(object):
                 service = 'waf'
             else:
                 service = service
+
             paginator = ssm.get_paginator("get_parameters_by_path")
             response_iterator = paginator.paginate(
                 Path=f"/aws/service/global-infrastructure/services/{service}/regions",
@@ -111,19 +117,12 @@ class EEAuditor(object):
             for parameter in results["Parameters"]:
                 values.append(parameter["Value"])
         else:
-            print(f"Your partition is {self.awsPartition} and therfore service endpoint validity cannot be checked which may lead to a lot of Boto3 errors, sorry!")
-            values = values
+            print(f"Service endpoint validity cannot be checked in {self.awsPartition}.")
 
         return values
 
     # called from eeauditor/controller.py run_auditor()
     def run_checks(self, requested_check_name=None, delay=0):
-        # Gather STS information
-        details = sts.get_caller_identity()
-        awsAccount = str(details["Account"])
-        awsArn = str(details["Arn"])
-        # Print some very basic orientation data
-        print(f"Running ElectricEye in AWS Region {self.awsRegion}.\n Located in Partition {self.awsPartition}.\n Profile AWS Account is {awsAccount}.\n Profile current IAM principal ARN is {awsArn}")
 
         for service_name, check_list in self.registry.checks.items():
             # only check regions if in AWS Commerical Partition
@@ -174,4 +173,5 @@ class EEAuditor(object):
                 table.append(
                     f"|{inspect.getfile(check).rpartition('/')[2]} | {service_name} | {description}"
                 )
+
         print("\n".join(table))

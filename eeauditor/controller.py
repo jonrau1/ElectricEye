@@ -50,6 +50,8 @@ def run_auditor(auditor_name=None, check_name=None, delay=0, outputs=None, outpu
     print("Done running Checks")
 
 @click.command()
+# Session Object Override
+
 # AWSCLI Profile
 @click.option(
     "-p",
@@ -97,7 +99,7 @@ def run_auditor(auditor_name=None, check_name=None, delay=0, outputs=None, outpu
 @click.option(
     "--list-options",
     is_flag=True,
-    help="Lists all valid Output locations"
+    help="Lists all valid Output options"
 )
 # List Checks
 @click.option(
