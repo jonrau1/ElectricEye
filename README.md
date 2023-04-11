@@ -1032,14 +1032,10 @@ registry = CheckRegister()
 
 The boto3 client will also need imported for whichever service is being audited. You can get these from the `Boto3` Documentation website, but for example, the client for EC2 Image Build is below. To match the style of other Auditors, the variable name should closely (preferably, exactly) match the name of the Client.
 
-```python
-imagebuilder = boto3.client("imagebuilder")
-```
-
-**NOTE** If a boto call is used multiple times within an auditor and could be put in the global space it should be cached. For example in Amazon_SNS_Auditor list_topics is used for every function so it is cached like this:
 
 ```python
-def list_topics(cache):
+def list_topics(cache, session):
+    imagebuilder = session.client("imagebuilder")
     response = cache.get("list_topics")
     if response:
         return response
@@ -1050,7 +1046,8 @@ def list_topics(cache):
 **NOTE 2:** For Auditors that expect to scan dozens or hundreds of potential resources, it is apt to use a Paginator instead of the standard Describe call due to upper limits (usually 100-500 per "regular" call). The below example is a cached Paginator from the EC2 Auditor with filters.
 
 ```python
-def paginate(cache):
+def paginate(cache, session):
+    ec2 = session.client("ec2")
     response = cache.get("paginate")
     if response:
         return response
@@ -1064,7 +1061,7 @@ def paginate(cache):
 
 ```python
 @registry.register_check("imagebuilder")
-def imagebuilder_pipeline_tests_enabled_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def imagebuilder_pipeline_tests_enabled_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
 """[ImageBuilder.1] Image pipeline tests should be enabled"""
 ```
 
