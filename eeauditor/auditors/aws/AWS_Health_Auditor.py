@@ -18,25 +18,16 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 import botocore
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-# import boto3 clients
-sesh = boto3.session.Session()
-currentRegion = sesh.region_name
-if currentRegion != "us-east-1":
-    session = boto3.Session(region_name="us-east-1")
-    health = session.client("health")
-else:
-    health = boto3.client("health")
-
 @registry.register_check("health")
-def open_health_abuse_events_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def open_health_abuse_events_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Health.1] Open Abuse Events from AWS Health should be investigated"""
+    health = session.client("health", region_name="us-east-1")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
@@ -107,8 +98,9 @@ def open_health_abuse_events_check(cache: dict, awsAccountId: str, awsRegion: st
             print('You are not subscribed to AWS Premium Support - cannot use the Health Auditor')
 
 @registry.register_check("health")
-def open_health_risk_events_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def open_health_risk_events_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Health.2] Open Risk Events from AWS Health should be investigated"""
+    health = session.client("health", region_name="us-east-1")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
@@ -179,8 +171,9 @@ def open_health_risk_events_check(cache: dict, awsAccountId: str, awsRegion: str
             print('You are not subscribed to AWS Premium Support - cannot use the Health Auditor')
 
 @registry.register_check("health")
-def open_health_security_events_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def open_health_security_events_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Health.3] Open Security Events from AWS Health should be investigated"""
+    health = session.client("health", region_name="us-east-1")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:

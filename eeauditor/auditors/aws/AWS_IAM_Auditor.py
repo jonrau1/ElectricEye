@@ -18,7 +18,6 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import botocore.exceptions
 import datetime
 import json
@@ -26,11 +25,8 @@ from check_register import CheckRegister
 
 registry = CheckRegister()
 
-# import boto3 clients
-iam = boto3.client("iam")
-
-# loop through IAM users
-def list_users(cache):
+def list_users(cache, session):
+    iam = session.client("iam")
     response = cache.get("list_users")
     if response:
         return response
@@ -38,11 +34,12 @@ def list_users(cache):
     return cache["list_users"]
 
 @registry.register_check("iam")
-def iam_access_key_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def iam_access_key_age_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[IAM.1] IAM Access Keys should be rotated every 90 days"""
+    iam = session.client("iam")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for users in list_users(cache)["Users"]:
+    for users in list_users(cache, session)["Users"]:
         userName = str(users["UserName"])
         userArn = str(users["Arn"])
         # Get keys per User
@@ -209,11 +206,11 @@ def iam_access_key_age_check(cache: dict, awsAccountId: str, awsRegion: str, aws
                 continue
 
 @registry.register_check("iam")
-def user_permission_boundary_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def user_permission_boundary_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[IAM.2] IAM users should have permissions boundaries attached"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for users in list_users(cache)["Users"]:
+    for users in list_users(cache, session)["Users"]:
         userName = str(users["UserName"])
         userArn = str(users["Arn"])
         try:
@@ -346,11 +343,12 @@ def user_permission_boundary_check(cache: dict, awsAccountId: str, awsRegion: st
             yield finding
 
 @registry.register_check("iam")
-def user_mfa_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def user_mfa_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[IAM.3] IAM users with passwords should have Multi-Factor Authentication (MFA) enabled"""
+    iam = session.client("iam")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for users in list_users(cache)["Users"]:
+    for users in list_users(cache, session)["Users"]:
         userName = str(users["UserName"])
         userArn = str(users["Arn"])
         # check if the user has a password
@@ -570,11 +568,12 @@ def user_mfa_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition:
             yield finding
 
 @registry.register_check("iam")
-def user_inline_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def user_inline_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[IAM.4] IAM users should not have attached in-line policies"""
+    iam = session.client("iam")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for users in list_users(cache)["Users"]:
+    for users in list_users(cache, session)["Users"]:
         userName = str(users["UserName"])
         userArn = str(users["Arn"])
         # use a list comprehension to check if there are any inline policies
@@ -718,11 +717,12 @@ def user_inline_policy_check(cache: dict, awsAccountId: str, awsRegion: str, aws
             yield finding
 
 @registry.register_check("iam")
-def user_direct_attached_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def user_direct_attached_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[IAM.5] IAM users should not have attached managed policies"""
+    iam = session.client("iam")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for users in list_users(cache)["Users"]:
+    for users in list_users(cache, session)["Users"]:
         userName = str(users["UserName"])
         userArn = str(users["Arn"])
         # use a list comprehension to check if there are any attached managed policies
@@ -866,8 +866,9 @@ def user_direct_attached_policy_check(cache: dict, awsAccountId: str, awsRegion:
             yield finding
 
 @registry.register_check("iam")
-def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[IAM.6] The IAM password policy should meet or exceed the AWS CIS Foundations Benchmark standard"""
+    iam = session.client("iam")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
@@ -1089,8 +1090,9 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, awsAccountId: str,
             yield finding
 
 @registry.register_check("iam")
-def server_certs_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def server_certs_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[IAM.7] There should not be any server certificates stored in AWS IAM"""
+    iam = session.client("iam")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # use a list comprehension to find any server certs in IAM
@@ -1228,8 +1230,9 @@ def server_certs_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartit
         yield finding
 
 @registry.register_check("iam")
-def iam_created_managed_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def iam_created_managed_policy_least_priv_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[IAM.8] Managed policies should follow least privilege principles"""
+    iam = session.client("iam")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
@@ -1440,10 +1443,11 @@ def iam_created_managed_policy_least_priv_check(cache: dict, awsAccountId: str, 
         pass
 
 @registry.register_check("iam")
-def iam_user_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def iam_user_policy_least_priv_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[IAM.9] User inline policies should follow least privilege principles"""
+    iam = session.client("iam")
     try:
-        for users in list_users(cache)["Users"]:
+        for users in list_users(cache, session)["Users"]:
             userArn = users['Arn']
             userName = users['UserName']
 
@@ -1673,8 +1677,9 @@ def iam_user_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: 
         pass
 
 @registry.register_check("iam")
-def iam_group_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def iam_group_policy_least_priv_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[IAM.10] Group inline policies should follow least privilege principles"""
+    iam = session.client("iam")
     try:
         Groups = iam.list_groups()
         for group in Groups['Groups']:
@@ -1907,8 +1912,9 @@ def iam_group_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion:
         pass
 
 @registry.register_check("iam")
-def iam_role_policy_least_priv_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def iam_role_policy_least_priv_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[IAM.11] Role inline policies should follow least privilege principles"""
+    iam = session.client("iam")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
         Roles = iam.list_roles()
