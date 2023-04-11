@@ -44,7 +44,7 @@ def ebs_volume_attachment_check(cache: dict, session, awsAccountId: str, awsRegi
     """[EBS.1] EBS Volumes should be in an attached state"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for volumes in describe_volumes(cache)["Volumes"]:
+    for volumes in describe_volumes(cache, session)["Volumes"]:
         volumeId = str(volumes["VolumeId"])
         volumeArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:volume/{volumeId}"
         ebsAttachments = volumes["Attachments"]
@@ -154,7 +154,7 @@ def ebs_volume_delete_on_termination_check(cache: dict, session, awsAccountId: s
     """[EBS.2] EBS Volumes should be configured to be deleted on termination"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for volumes in describe_volumes(cache)["Volumes"]:
+    for volumes in describe_volumes(cache, session)["Volumes"]:
         volumeId = str(volumes["VolumeId"])
         volumeArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:volume/{volumeId}"
         ebsAttachments = volumes["Attachments"]
@@ -266,7 +266,7 @@ def ebs_volume_encryption_check(cache: dict, session, awsAccountId: str, awsRegi
     """[EBS.3] EBS Volumes should be encrypted"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for volumes in describe_volumes(cache)["Volumes"]:
+    for volumes in describe_volumes(cache, session)["Volumes"]:
         volumeId = str(volumes["VolumeId"])
         volumeArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:volume/{volumeId}"
         ebsEncryptionCheck = volumes["Encrypted"]
@@ -809,7 +809,7 @@ def ebs_volume_snapshot_check(cache: dict, session, awsAccountId: str, awsRegion
     """[EBS.7] EBS Volumes should have snapshots"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for volumes in describe_volumes(cache)["Volumes"]:
+    for volumes in describe_volumes(cache, session)["Volumes"]:
         volumeId = str(volumes["VolumeId"])
         volumeArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:volume/{volumeId}"
         # Check if there is a volume
