@@ -122,7 +122,7 @@ def ec2_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # Paginate the iterator object from Cache
-    for i in ec2_paginate(cache=cache):
+    for i in ec2_paginate(cache, session):
         instanceId = str(i["InstanceId"])
         instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
         instanceType = str(i["InstanceType"])
@@ -314,7 +314,7 @@ def elbv2_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId:
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # Loop ELBs and select the public ALBs
-    for lb in describe_load_balancers(cache)["LoadBalancers"]:
+    for lb in describe_load_balancers(cache, session)["LoadBalancers"]:
         elbv2Arn = str(lb["LoadBalancerArn"])
         elbv2Name = str(lb["LoadBalancerName"])
         elbv2DnsName = str(lb["DNSName"])
@@ -500,7 +500,7 @@ def elb_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
     """[AttackSurface.ELB.{checkIdNumber}] Classic Load Balancers should not be publicly reachable on {serviceName}"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for lb in describe_clbs(cache)["LoadBalancerDescriptions"]:
+    for lb in describe_clbs(cache, session)["LoadBalancerDescriptions"]:
         clbName = str(lb["LoadBalancerName"])
         clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
         dnsName = str(lb["DNSName"])
@@ -867,7 +867,7 @@ def cloudfront_attack_surface_open_tcp_port_check(cache: dict, session, awsAccou
     """[AttackSurface.Cloudfront.{checkIdNumber}] Cloudfront Distributions should not be publicly reachable on {serviceName}"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in cloudfront_paginate(cache):
+    for dist in cloudfront_paginate(cache, session):
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]
@@ -1045,7 +1045,7 @@ def route53_public_hz_attack_surface_open_tcp_port_check(cache: dict, session, a
 
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for zone in get_public_hosted_zones(cache=cache):
+    for zone in get_public_hosted_zones(cache, session):
         hzId = zone["Id"]
         hzName = zone["Name"]
         hzArn = f"arn:aws:route53:::hostedzone/{hzName}"
