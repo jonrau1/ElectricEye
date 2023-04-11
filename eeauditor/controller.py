@@ -25,7 +25,6 @@ from insights import create_sechub_insights
 from eeauditor import EEAuditor
 from processor.main import get_providers, process_findings
 
-
 def print_checks():
     app = EEAuditor(name="AWS Auditor")
 

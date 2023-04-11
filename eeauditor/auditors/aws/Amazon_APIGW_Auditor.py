@@ -17,16 +17,14 @@
 #KIND, either express or implied.  See the License for the
 #specific language governing permissions and limitations
 #under the License.
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-# import boto3 clients
-apigateway = boto3.client("apigateway")
+def get_rest_apis(cache, session):
+    apigateway = session.client("apigateway")
 
-def get_rest_apis(cache):
     response = cache.get("get_rest_apis")
     if response:
         return response
@@ -34,10 +32,12 @@ def get_rest_apis(cache):
     return cache["get_rest_apis"]
 
 @registry.register_check("apigateway")
-def api_gateway_stage_metrics_enabled_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def api_gateway_stage_metrics_enabled_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[APIGateway.1] API Gateway Rest API Stages should have CloudWatch Metrics enabled"""
+    apigateway = session.client("apigateway")
+
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for restapi in get_rest_apis(cache)["items"]:
+    for restapi in get_rest_apis(cache, session)["items"]:
         apiGwApiId = str(restapi["id"])
         apiGwApiName = str(restapi["name"])
         response = apigateway.get_stages(restApiId=apiGwApiId)
@@ -172,10 +172,12 @@ def api_gateway_stage_metrics_enabled_check(cache: dict, awsAccountId: str, awsR
                 yield finding
 
 @registry.register_check("apigateway")
-def api_gateway_stage_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def api_gateway_stage_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[APIGateway.2] API Gateway Rest API Stages should have CloudWatch API Logging enabled"""
+    apigateway = session.client("apigateway")
+
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for restapi in get_rest_apis(cache)["items"]:
+    for restapi in get_rest_apis(cache, session)["items"]:
         apiGwApiId = str(restapi["id"])
         apiGwApiName = str(restapi["name"])
         response = apigateway.get_stages(restApiId=apiGwApiId)
@@ -308,10 +310,12 @@ def api_gateway_stage_logging_check(cache: dict, awsAccountId: str, awsRegion: s
                 yield finding
 
 @registry.register_check("apigateway")
-def api_gateway_stage_cacheing_enabled_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def api_gateway_stage_cacheing_enabled_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[APIGateway.3] API Gateway Rest API Stages should have Caching enabled"""
+    apigateway = session.client("apigateway")
+
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for restapi in get_rest_apis(cache)["items"]:
+    for restapi in get_rest_apis(cache, session)["items"]:
         apiGwApiId = str(restapi["id"])
         apiGwApiName = str(restapi["name"])
         response = apigateway.get_stages(restApiId=apiGwApiId)
@@ -450,10 +454,12 @@ def api_gateway_stage_cacheing_enabled_check(cache: dict, awsAccountId: str, aws
                 yield finding
 
 @registry.register_check("apigateway")
-def api_gateway_stage_cache_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def api_gateway_stage_cache_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[APIGateway.4] API Gateway Rest API Stages should have cache encryption enabled"""
+    apigateway = session.client("apigateway")
+
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for restapi in get_rest_apis(cache)["items"]:
+    for restapi in get_rest_apis(cache, session)["items"]:
         apiGwApiId = str(restapi["id"])
         apiGwApiName = str(restapi["name"])
         response = apigateway.get_stages(restApiId=apiGwApiId)
@@ -587,10 +593,12 @@ def api_gateway_stage_cache_encryption_check(cache: dict, awsAccountId: str, aws
                 yield finding
 
 @registry.register_check("apigateway")
-def api_gateway_stage_xray_tracing_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def api_gateway_stage_xray_tracing_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[APIGateway.5] API Gateway Rest API Stages should have tracing enabled"""
+    apigateway = session.client("apigateway")
+
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for restapi in get_rest_apis(cache)["items"]:
+    for restapi in get_rest_apis(cache, session)["items"]:
         apiGwApiId = str(restapi["id"])
         apiGwApiName = str(restapi["name"])
         response = apigateway.get_stages(restApiId=apiGwApiId)
@@ -713,10 +721,12 @@ def api_gateway_stage_xray_tracing_check(cache: dict, awsAccountId: str, awsRegi
                 yield finding
 
 @registry.register_check("apigateway")
-def api_gateway_stage_waf_check_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def api_gateway_stage_waf_check_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[APIGateway.6] API Gateway Rest API Stages should be protected by an AWS WAF Web ACL"""
+    apigateway = session.client("apigateway")
+
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for restapi in get_rest_apis(cache)["items"]:
+    for restapi in get_rest_apis(cache, session)["items"]:
         apiGwApiId = str(restapi["id"])
         apiGwApiName = str(restapi["name"])
         response = apigateway.get_stages(restApiId=apiGwApiId)
@@ -861,10 +871,10 @@ def api_gateway_stage_waf_check_check(cache: dict, awsAccountId: str, awsRegion:
                 yield finding
 
 @registry.register_check("apigateway")
-def api_gateway_rest_api_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def api_gateway_rest_api_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[APIGateway.7] API Gateway Rest APIs should use an API Gateway resource policy"""
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for restapi in get_rest_apis(cache)["items"]:
+    for restapi in get_rest_apis(cache, session)["items"]:
         apiGwApiId = str(restapi["id"])
         apiGwApiName = str(restapi["name"])
         apiRestArn = f"arn:{awsPartition}:apigateway:{awsRegion}::/restapis/{apiGwApiId}"
@@ -999,10 +1009,10 @@ def api_gateway_rest_api_policy_check(cache: dict, awsAccountId: str, awsRegion:
             yield finding
 
 @registry.register_check("apigateway")
-def api_gateway_rest_api_authorizer_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def api_gateway_rest_api_authorizer_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[APIGateway.8] API Gateway Rest APIs should use an API Gateway Lambda authorizer"""
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for restapi in get_rest_apis(cache)["items"]:
+    for restapi in get_rest_apis(cache, session)["items"]:
         apiGwApiId = str(restapi["id"])
         apiGwApiName = str(restapi["name"])
         apiRestArn = f"arn:{awsPartition}:apigateway:{awsRegion}::/restapis/{apiGwApiId}"
