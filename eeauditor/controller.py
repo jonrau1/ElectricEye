@@ -33,7 +33,7 @@ def print_checks():
     
     app.print_checks_md()
 
-def run_auditor(session_override=None, region_override=None, auditor_name=None, check_name=None, delay=0, outputs=None, output_file=""):
+def run_auditor(assume_role_account=None, assume_role_name=None, region_override=None, auditor_name=None, check_name=None, delay=0, outputs=None, output_file=""):
     if not outputs:
         # default to AWS SecHub even if somehow Click destination is stripped
         outputs = ["sechub"]
@@ -41,11 +41,18 @@ def run_auditor(session_override=None, region_override=None, auditor_name=None, 
     if not region_override:
         region_override = boto3.Session().region_name
 
-    if session_override:
+    if assume_role_account and assume_role_name:
+        sts = boto3.client("sts")
+        crossAccountRoleArn = f"arn:aws:iam::{assume_role_account}:role/{assume_role_name}"
+        memberAcct = sts.assume_role(
+            RoleArn=crossAccountRoleArn,
+            RoleSessionName="ElectricEye"
+        )
+
         session = boto3.Session(
-            aws_access_key_id=session_override[0],
-            aws_secret_access_key=session_override[1],
-            aws_session_token=session_override[2],
+            aws_access_key_id=memberAcct["Credentials"]["AccessKeyId"],
+            aws_secret_access_key=memberAcct["Credentials"]["SecretAccessKey"],
+            aws_session_token=memberAcct["Credentials"]["SessionToken"],
             region_name=region_override
         )
     else:
@@ -63,13 +70,18 @@ def run_auditor(session_override=None, region_override=None, auditor_name=None, 
     print("Done running Checks")
 
 @click.command()
-# Session Object Override
+# Remote Account Options
 @click.option(
-    "--session-override",
-    type=tuple,
+    "--assume-role-account",
     default="",
-    help="To use ElectricEye on other AWS Accounts provide a BASE64 ENCODED TUPLE of ('aws_access_key_id','aws_secret_access_key','aws_session_token') received from STS AssumeRole  - this can be used with --region-override"
+    help="AWS Account ID of an Account to attempt to assume the role supplied by --assume-role-name"
 )
+@click.option(
+    "--assume-role-name",
+    default="",
+    help="Name of an AWS IAM Role in another Account supplied by --assume-role-account that trusts the current Account "
+)
+# Region Override
 @click.option(
     "--region-override",
     default="",
@@ -138,7 +150,8 @@ def run_auditor(session_override=None, region_override=None, auditor_name=None, 
 )
 
 def main(
-    session_override,
+    assume_role_account,
+    assume_role_name,
     region_override,
     profile_name,
     auditor_name,
@@ -166,7 +179,8 @@ def main(
         sys.exit(2)
 
     run_auditor(
-        session_override=session_override,
+        assume_role_account=assume_role_account,
+        assume_role_name=assume_role_name,
         region_override=region_override,
         auditor_name=auditor_name,
         check_name=check_name,
