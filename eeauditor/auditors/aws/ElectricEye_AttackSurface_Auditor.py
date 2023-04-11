@@ -117,7 +117,7 @@ def scan_host(host_ip, host_name, asset_type):
         results = None
 
 @registry.register_check("ec2")
-def ec2_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ec2_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AttackSurface.EC2.{checkIdNumber}] EC2 Instances should not be publicly reachable on {serviceName}"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
@@ -309,7 +309,7 @@ def ec2_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
                         yield finding
 
 @registry.register_check("elbv2")
-def elbv2_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def elbv2_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AttackSurface.ELBv2.{checkIdNumber}] Application Load Balancers should not be publicly reachable on {serviceName}"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
@@ -496,7 +496,7 @@ def elbv2_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, aws
             continue
 
 @registry.register_check("elb")
-def elb_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def elb_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AttackSurface.ELB.{checkIdNumber}] Classic Load Balancers should not be publicly reachable on {serviceName}"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
@@ -863,7 +863,7 @@ def eip_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
                     yield finding
 
 @registry.register_check("cloudfront")
-def cloudfront_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def cloudfront_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AttackSurface.Cloudfront.{checkIdNumber}] Cloudfront Distributions should not be publicly reachable on {serviceName}"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
