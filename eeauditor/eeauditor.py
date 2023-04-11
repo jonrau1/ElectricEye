@@ -139,7 +139,7 @@ class EEAuditor(object):
 
             for check_name, check in check_list.items():
                 # clearing cache for each control whithin a auditor
-                auditor_cache = {}
+                auditor_cache = {self.session}
                 # if a specific check is requested, only run that one check
                 if (
                     not requested_check_name
