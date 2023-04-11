@@ -453,7 +453,7 @@ def certificate_renewal_status_check(cache: dict, session, awsAccountId: str, aw
     acm = session.client("acm")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:    
-        acm_certs = list_certificates(cache=cache)
+        acm_certs = list_certificates(cache, session)
         for carn in acm_certs:
             # Get ACM Cert Details
             cert = acm.describe_certificate(CertificateArn=carn)["Certificate"]
@@ -648,7 +648,7 @@ def certificate_status_check(cache: dict, session, awsAccountId: str, awsRegion:
     """[ACM.5] ACM Certificates should be correctly validated"""
     acm = session.client("acm")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    acm_certs = list_certificates(cache=cache)
+    acm_certs = list_certificates(cache, session)
     for carn in acm_certs:
         # Get ACM Cert Details
         cert = acm.describe_certificate(CertificateArn=carn)["Certificate"]
