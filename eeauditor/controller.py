@@ -69,7 +69,7 @@ def run_auditor(session_override=None, region_override=None, auditor_name=None, 
 @click.option(
     "--session-override",
     default="",
-    help="To use ElectricEye on other AWS Accounts provide a tuple of ('aws_access_key_id','aws_secret_access_key','aws_session_token') received from STS AssumeRole  - this can be used with --region-override"
+    help="To use ElectricEye on other AWS Accounts provide a BASE64 ENCODED TUPLE of ('aws_access_key_id','aws_secret_access_key','aws_session_token') received from STS AssumeRole  - this can be used with --region-override"
 )
 @click.option(
     "--region-override",
@@ -167,7 +167,7 @@ def main(
         sys.exit(2)
 
     run_auditor(
-        session_override=tuple(session_override),
+        session_override=tuple(session_override.replace("'","")),
         region_override=region_override,
         auditor_name=auditor_name,
         check_name=check_name,
