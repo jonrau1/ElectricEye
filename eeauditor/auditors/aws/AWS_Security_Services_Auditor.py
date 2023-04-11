@@ -18,29 +18,23 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import uuid
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
-# import boto3 clients
-accessanalyzer = boto3.client("accessanalyzer")
-guardduty = boto3.client("guardduty")
-detective = boto3.client("detective")
-macie2 = boto3.client("macie2")
-wafv2 = boto3.client("wafv2")
 
 @registry.register_check("accessanalyzer")
-def iam_access_analyzer_detector_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def iam_access_analyzer_detector_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SecSvcs.1] Amazon IAM Access Analyzer should be enabled"""
     response = accessanalyzer.list_analyzers()
-    iamAccessAnalyzerCheck = str(response["analyzers"])
+    accessanalyzer = session.client("accessanalyzer")
+
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # unique ID
     generatorUuid = str(uuid.uuid4())
-    if iamAccessAnalyzerCheck == "[]":
+    if not response["analyzers"]:
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": awsAccountId + awsRegion + "/security-services-iaa-enabled-check",
@@ -142,8 +136,10 @@ def iam_access_analyzer_detector_check(cache: dict, awsAccountId: str, awsRegion
         yield finding
 
 @registry.register_check("guardduty")
-def guard_duty_detector_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def guard_duty_detector_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SecSvcs.2] Amazon GuardDuty should be enabled"""
+    guardduty = session.client("guardduty")
+
     response = guardduty.list_detectors()
     guarddutyDetectorCheck = str(response["DetectorIds"])
     # ISO Time
@@ -254,8 +250,10 @@ def guard_duty_detector_check(cache: dict, awsAccountId: str, awsRegion: str, aw
         yield finding
 
 @registry.register_check("detective")
-def detective_graph_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def detective_graph_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SecSvcs.3] Amazon Detective should be enabled"""
+    detective = session.client("detective")
+
     try:
         response = detective.list_graphs(MaxResults=200)
         # ISO Time
@@ -370,8 +368,9 @@ def detective_graph_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
         print(e)
 
 @registry.register_check("macie2")
-def macie_in_use_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def macie_in_use_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SecSvcs.4] Amazon Macie V2 should be enabled"""
+    macie2 = session.client("macie2")
     try:
         # ISO Time
         iso8601Time = (
@@ -491,8 +490,9 @@ def macie_in_use_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartit
         print(e)
 
 @registry.register_check("macie2")
-def wafv2_regional_in_use_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def wafv2_regional_in_use_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SecSvcs.5] AWS WAFv2 Regional Web ACLs should be used"""
+    wafv2 = session.client("wafv2")
     try:
         # ISO Time
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -607,120 +607,118 @@ def wafv2_regional_in_use_check(cache: dict, awsAccountId: str, awsRegion: str, 
         print(e)
 
 @registry.register_check("macie2")
-def wafv2_global_in_use_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def wafv2_global_in_use_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SecSvcs.6] AWS WAFv2 Global (CloudFront) Web ACLs should be used"""
-    if awsRegion == "us-east-1":
-        try:
-            # ISO Time
-            iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-            # unique ID
-            generatorUuid = str(uuid.uuid4())
-            # this is a failing check
-            if str(wafv2.list_web_acls(Scope='CLOUDFRONT')["WebACLs"]) == "[]":
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": awsAccountId + awsRegion + "/security-services-wafv2-global-in-use-check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": generatorUuid,
-                    "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
-                    "FirstObservedAt": iso8601Time,
-                    "CreatedAt": iso8601Time,
-                    "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "MEDIUM"},
-                    "Confidence": 99,
-                    "Title": "[SecSvcs.6] AWS WAFv2 Global (CloudFront) Web ACLs should be used",
-                    "Description": "AWS WAFv2 is present in "
-                    + awsRegion
-                    + " .",
-                    "Remediation": {
-                        "Recommendation": {
-                            "Text": "If WAFv2 should be enabled refer to the Getting started with AWS WAF section of the AWS WAF, AWS Firewall Manager, and AWS Shield Advanced Developer Guide",
-                            "Url": "https://docs.aws.amazon.com/detective/latest/adminguide/detective-setup.html"
-                        }
-                    },
-                    "ProductFields": {"Product Name": "ElectricEye"},
-                    "Resources": [
-                        {
-                            "Type": "AwsAccount",
-                            "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
-                            "Partition": "aws",
-                            "Region": awsRegion,
-                        }
-                    ],
-                    "Compliance": {
-                        "Status": "FAILED",
-                        "RelatedRequirements": [
-                            "NIST CSF DE.AE-2",
-                            "NIST SP 800-53 AU-6",
-                            "NIST SP 800-53 CA-7",
-                            "NIST SP 800-53 IR-4",
-                            "NIST SP 800-53 SI-4",
-                            "AICPA TSC 7.2",
-                            "ISO 27001:2013 A.12.4.1",
-                            "ISO 27001:2013 A.16.1.1",
-                            "ISO 27001:2013 A.16.1.4"
-                        ]
-                    },
-                    "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE"
-                }
-                yield finding
-            else:
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": awsAccountId + awsRegion + "/security-services-wafv2-global-in-use-check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": generatorUuid,
-                    "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
-                    "FirstObservedAt": iso8601Time,
-                    "CreatedAt": iso8601Time,
-                    "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "INFORMATIONAL"},
-                    "Confidence": 99,
-                    "Title": "[SecSvcs.6] AWS WAFv2 Global (CloudFront) Web ACLs should be used",
-                    "Description": "AWS WAFv2 is present in "
-                    + awsRegion
-                    + " .",
-                    "Remediation": {
-                        "Recommendation": {
-                            "Text": "If WAFv2 should be enabled refer to the Getting started with AWS WAF section of the AWS WAF, AWS Firewall Manager, and AWS Shield Advanced Developer Guide",
-                            "Url": "https://docs.aws.amazon.com/detective/latest/adminguide/detective-setup.html"
-                        }
-                    },
-                    "ProductFields": {"Product Name": "ElectricEye"},
-                    "Resources": [
-                        {
-                            "Type": "AwsAccount",
-                            "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
-                            "Partition": "aws",
-                            "Region": awsRegion,
-                        }
-                    ],
-                    "Compliance": {
-                        "Status": "PASSED",
-                        "RelatedRequirements": [
-                            "NIST CSF DE.AE-2",
-                            "NIST SP 800-53 AU-6",
-                            "NIST SP 800-53 CA-7",
-                            "NIST SP 800-53 IR-4",
-                            "NIST SP 800-53 SI-4",
-                            "AICPA TSC 7.2",
-                            "ISO 27001:2013 A.12.4.1",
-                            "ISO 27001:2013 A.16.1.1",
-                            "ISO 27001:2013 A.16.1.4"
-                        ]
-                    },
-                    "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED"
-                }
-                yield finding
-        except Exception as e:
-            print(e)
-    else:
-        print('Global WAFv2 Web ACLs for CloudFront can only be checked in us-east-1')
+    wafv2 = session.client("wafv2", region_name="us-east-1")
+    try:
+        # ISO Time
+        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        # unique ID
+        generatorUuid = str(uuid.uuid4())
+        # this is a failing check
+        if str(wafv2.list_web_acls(Scope='CLOUDFRONT')["WebACLs"]) == "[]":
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": awsAccountId + awsRegion + "/security-services-wafv2-global-in-use-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": generatorUuid,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices"
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[SecSvcs.6] AWS WAFv2 Global (CloudFront) Web ACLs should be used",
+                "Description": "AWS WAFv2 is present in "
+                + awsRegion
+                + " .",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If WAFv2 should be enabled refer to the Getting started with AWS WAF section of the AWS WAF, AWS Firewall Manager, and AWS Shield Advanced Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/detective/latest/adminguide/detective-setup.html"
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsAccount",
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                        "Partition": "aws",
+                        "Region": awsRegion,
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF DE.AE-2",
+                        "NIST SP 800-53 AU-6",
+                        "NIST SP 800-53 CA-7",
+                        "NIST SP 800-53 IR-4",
+                        "NIST SP 800-53 SI-4",
+                        "AICPA TSC 7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.1",
+                        "ISO 27001:2013 A.16.1.4"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": awsAccountId + awsRegion + "/security-services-wafv2-global-in-use-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": generatorUuid,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices"
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[SecSvcs.6] AWS WAFv2 Global (CloudFront) Web ACLs should be used",
+                "Description": "AWS WAFv2 is present in "
+                + awsRegion
+                + " .",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If WAFv2 should be enabled refer to the Getting started with AWS WAF section of the AWS WAF, AWS Firewall Manager, and AWS Shield Advanced Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/detective/latest/adminguide/detective-setup.html"
+                    }
+                },
+                "ProductFields": {"Product Name": "ElectricEye"},
+                "Resources": [
+                    {
+                        "Type": "AwsAccount",
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                        "Partition": "aws",
+                        "Region": awsRegion,
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF DE.AE-2",
+                        "NIST SP 800-53 AU-6",
+                        "NIST SP 800-53 CA-7",
+                        "NIST SP 800-53 IR-4",
+                        "NIST SP 800-53 SI-4",
+                        "AICPA TSC 7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.1",
+                        "ISO 27001:2013 A.16.1.4"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+    except Exception as e:
+        print(e)

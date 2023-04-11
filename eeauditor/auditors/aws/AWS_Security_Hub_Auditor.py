@@ -18,15 +18,13 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
-# import boto3 clients
-securityhub = boto3.client("securityhub")
 
-def get_findings(cache, awsAccountId):
+def get_findings(cache, session, awsAccountId):
+    securityhub = session.client("securityhub")
     response = cache.get("get_findings")
     if response:
         return response
@@ -56,9 +54,9 @@ def get_findings(cache, awsAccountId):
 
 
 @registry.register_check("securityhub")
-def high_critical_findings(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def high_critical_findings(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SecurityHub.1] Security Hub should not have active high or critical severity findings from AWS services"""
-    getFindings = get_findings(cache=cache, awsAccountId=awsAccountId)
+    getFindings = get_findings(cache, session, awsAccountId)
     generatorId = str(getFindings["ResponseMetadata"]["RequestId"])
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()

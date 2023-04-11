@@ -19,15 +19,13 @@
 #under the License.
 
 import datetime
-from dateutil import parser
 import uuid
-import boto3
 from check_register import CheckRegister, accumulate_paged_results
 
 registry = CheckRegister()
-ram = boto3.client("ram")
 
-def get_resource_shares(cache):
+def get_resource_shares(cache, session):
+    ram = session.client("ram")
     response = cache.get("get_resource_shares")
     if response:
         return response
@@ -41,10 +39,11 @@ def get_resource_shares(cache):
 
 
 @registry.register_check("ram")
-def ram_resource_shares_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ram_resource_shares_status_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RAM.1] Resource share should not have a failed status"""
+    ram = session.client("ram")
     responses = []
-    responses.append(get_resource_shares(cache))
+    responses.append(get_resource_shares(cache, session))
     paginator = ram.get_paginator("get_resource_shares")
     response_iterator = paginator.paginate(resourceOwner="OTHER-ACCOUNTS")
     responses.append(
@@ -162,9 +161,9 @@ def ram_resource_shares_status_check(cache: dict, awsAccountId: str, awsRegion: 
                 yield finding
 
 @registry.register_check("ram")
-def ram_allow_external_principals_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ram_allow_external_principals_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RAM.2] Resource share should not allow external principals"""
-    response = get_resource_shares(cache)
+    response = get_resource_shares(cache, session)
     resourceShares = response["resourceShares"]
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for resourceShare in resourceShares:
