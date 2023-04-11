@@ -46,7 +46,6 @@ RUN \
 FROM builder as electriceye
 
 ENV \
-    SH_SCRIPTS_BUCKET=SH_SCRIPTS_BUCKET \
     # SHODAN ENV VARS
     SHODAN_API_KEY_PARAM=SHODAN_API_KEY_PARAM \
     # DISRUPTOPS ENV VARS
@@ -85,6 +84,6 @@ RUN \
 USER eeuser
 
 CMD \
-    git clone https://github.com/jonrau1/ElectricEye.git && \
+    git clone https://github.com/jonrau1/ElectricEye.git -b backend && \
     # this would also be a good place to modify the `controller.py` command to output to where you wanted if you didn't want sechub
     python3 ElectricEye/eeauditor/controller.py
