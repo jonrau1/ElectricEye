@@ -20,15 +20,12 @@
 
 import datetime
 import json
-import boto3
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-# import boto3 clients
-sns = boto3.client("sns")
-
-def list_topics(cache):
+def list_topics(cache, session):
+    sns = session.client("sns")
     response = cache.get("list_topics")
     if response:
         return response
@@ -36,10 +33,11 @@ def list_topics(cache):
     return cache["list_topics"]
 
 @registry.register_check("sns")
-def sns_topic_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def sns_topic_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SNS.1] SNS topics should be encrypted"""
+    sns = session.client("sns")
     # loop through SNS topics
-    response = list_topics(cache)
+    response = list_topics(cache, session)
     mySnsTopics = response["Topics"]
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for topic in mySnsTopics:
@@ -157,10 +155,11 @@ def sns_topic_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, a
             yield finding
 
 @registry.register_check("sns")
-def sns_http_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def sns_http_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SNS.2] SNS topics should not use HTTP subscriptions"""
+    sns = session.client("sns")
     # loop through SNS topics
-    response = list_topics(cache)
+    response = list_topics(cache, session)
     mySnsTopics = response["Topics"]
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for topic in mySnsTopics:
@@ -280,10 +279,11 @@ def sns_http_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, aw
                 yield finding
 
 @registry.register_check("sns")
-def sns_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def sns_public_access_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SNS.3] SNS topics should not have public access"""
+    sns = session.client("sns")
     # loop through SNS topics
-    response = list_topics(cache)
+    response = list_topics(cache, session)
     mySnsTopics = response["Topics"]
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for topic in mySnsTopics:
@@ -422,10 +422,11 @@ def sns_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
             yield finding
 
 @registry.register_check("sns")
-def sns_cross_account_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def sns_cross_account_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SNS.4] SNS topics should not allow cross-account access"""
+    sns = session.client("sns")
     # loop through SNS topics
-    response = list_topics(cache)
+    response = list_topics(cache, session)
     mySnsTopics = response["Topics"]
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for topic in mySnsTopics:

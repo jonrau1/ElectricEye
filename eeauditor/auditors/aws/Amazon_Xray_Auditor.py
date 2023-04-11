@@ -18,17 +18,15 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-xray = boto3.client('xray')
-
 @registry.register_check('xray')
-def xray_kms_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def xray_kms_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[XRAY.1] X-Ray Encryption Configuration should use a KMS CMK"""
+    xray = session.client('xray')
     # Check the encryption config for X-Ray. It uses AES-256 by default, but we're looking for KMS
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())

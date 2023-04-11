@@ -18,32 +18,25 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-acm = boto3.client("acm")
-
-acmCerts = []
-for c in acm.list_certificates()["CertificateSummaryList"]:
-    certArn = str(c["CertificateArn"])
-    acmCerts.append(certArn)
-
-def list_certificates(cache):
+def list_certificates(cache, session):
+    acm = session.client("acm")
     response = cache.get("list_certificates")
     if response:
         return response
     cache["list_certificates"] = [x["CertificateArn"] for x in acm.list_certificates()['CertificateSummaryList']]
     return cache["list_certificates"]
 
-
 @registry.register_check("acm")
-def certificate_revocation_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def certificate_revocation_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ACM.1] ACM Certificates should be monitored for revocation"""
+    acm = session.client("acm")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for carn in acmCerts:
+    for carn in list_certificates(cache, session):
         # Get ACM Cert Details
         cert = acm.describe_certificate(CertificateArn=carn)["Certificate"]
         cDomainName = str(cert['DomainName'])
@@ -187,10 +180,11 @@ def certificate_revocation_check(cache: dict, awsAccountId: str, awsRegion: str,
                 print(e)
 
 @registry.register_check("acm")
-def certificate_in_use_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def certificate_in_use_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ACM.2] ACM Certificates should be in use"""
+    acm = session.client("acm")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for carn in acmCerts:
+    for carn in list_certificates(cache, session):
         # Get ACM Cert Details
         cert = acm.describe_certificate(CertificateArn=carn)["Certificate"]
         cDomainName = str(cert['DomainName'])
@@ -318,10 +312,11 @@ def certificate_in_use_check(cache: dict, awsAccountId: str, awsRegion: str, aws
             yield finding
 
 @registry.register_check("acm")
-def certificate_transparency_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def certificate_transparency_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ACM.3] ACM Certificates should have certificate transparency logs enabled"""
+    acm = session.client("acm")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for carn in acmCerts:
+    for carn in list_certificates(cache, session):
         # Get ACM Cert Details
         cert = acm.describe_certificate(CertificateArn=carn)["Certificate"]
         cDomainName = str(cert['DomainName'])
@@ -453,8 +448,9 @@ def certificate_transparency_logging_check(cache: dict, awsAccountId: str, awsRe
 
 
 @registry.register_check("acm")
-def certificate_renewal_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def certificate_renewal_status_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ACM.4] ACM Certificates should be renewed successfully"""
+    acm = session.client("acm")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:    
         acm_certs = list_certificates(cache=cache)
@@ -648,8 +644,9 @@ def certificate_renewal_status_check(cache: dict, awsAccountId: str, awsRegion: 
 
 
 @registry.register_check("acm")
-def certificate_status_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def certificate_status_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ACM.5] ACM Certificates should be correctly validated"""
+    acm = session.client("acm")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     acm_certs = list_certificates(cache=cache)
     for carn in acm_certs:
