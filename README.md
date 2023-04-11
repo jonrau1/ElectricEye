@@ -56,15 +56,13 @@ python3 eeauditor/controller.py -o stdout
 
 ## Tell Me More :round_pushpin: :round_pushpin:
 
-ElectricEye is a Python-native CLI framework that controls individual Python scripts (affectionately called **Auditors**) which align to a specific AWS service or resource (such as an EC2 Security Group, or Systems Manager Managed Instance) that contain one or more **Checks**. Checks (continuously) monitor your AWS attack surface and evaluate services for configurations that can lead to degradation of confidentiality, integrity or availability. By default, the output of these checks are formatted using the [AWS Security Finding Format](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html) (ASFF) and sent to AWS Security Hub but can be sent to many other locations.
+ElectricEye was created in early 2019 as an extension to AWS Security Hub, AWS Cloud's native Cloud Security Posture Management (CSPM) solution, with the goal to extend beyond only AWS Config-supported Services and add extra checks and Audit Readiness Standards (AKA "Compliance Standards") to support Cloud Security, DevOps, IT, and Risk teams running workloads on AWS.
 
-As of **30 MARCH 2022** ElectricEye now supports External Attack Surface Management (EASM) capabilities, showing you potentially dangerous and exploitable services running on publicly reachable assets such as EC2 Instances and Amazon Elastic Load Balancing (ELB) Application Load Balancers (ALB).
+Since then, ElectricEye has continued to expand into the most comprehensive AWS CSPM tool from a service support and check support perspective, adding additional functionality such as Secrets Management (powered by Yelp's Detect-Secrets), External Attack Surface Management (powered by NMAP and Shodan.io) and integration into multiple downstream data formats, databases, as well as AWS Security Hub itself. All findings are mapped to the AWS Security Finding Format (ASFF) for portability into AWS Security Lake and AWS Security Hub, and can be further parsed by supported outputs.
 
-ElectricEye is extensible, however, and can output to JSON, CSV, PostgreSQL, MongoDB/AWS DocumentDB, and other locations and formats. All Checks within ElectricEye are also mapped against popular security framework controls such as the AICPA's Trust Service Criteria (TSCs), NIST 800-53 Rev 4, the NIST Cyber Security Framework (CSF), ISO/IEC 27001:2013 and the EASM Checks are mapped to MITRE ATT&CK Techniques.
+As a CLI tool, ElectricEye can be ran from anywhere AWS credentials are supplied allowing for ultimate flexibility in deployment options and quick testing. All checks are organized into Service-specific files named **Auditors** with each Auditor comprised of one ore more **Checks** which produce **Findings**. The CLI supports running specific Auditors, Checks, or the entire library of Auditors by default.
 
-Additionally, ElectricEye comes with several add-on modules to extend the core model which provides dozens of detection-based controls. ElectricEye-Response provides a multi-account response and remediation platform (also known as SOAR), ElectricEye-ChatOps integrates with Slack/Pagerduty/Microsoft Teams, and ElectricEye-Reports integrates with QuickSight. All add-ons are supported by both CloudFormation and Terraform and can also be used independently of the core module itself.
-
-Numerous personas can make effective usage of ElectricEye such as: Security Operations (SecOps), DevOps, DevSecOps, IT Audit, Governance/Risk/Compliance (GRC) Analysts, Enterprise Architects, Security Architects, Cloud Center of Excellence (CCOE) members, Software Development Engineers (SDEs) using Cloud-native services, Red Teamers, Purple Teamers, and Security Engineering. That said, ElectricEye can also serve as an important assurance tool or educational tool for nearly any persona who works with or is learning the AWS Cloud.
+Multi-Account and Multi-Region operations are supported by the CLI options to supply a remote AWS Account and Role Name and/or AWS Region to dynamically created Boto3 Sessions with `AssumeRole` credentials but also retaining the original credentials to allow access to local AWS-native datastores for storing all of this information. To avoid throttling API responses, ElectricEye uses a locally developed caching mechanism which pulls required asset data at most once per Auditor and assesses the data in-memory. The cache is purged when not needed leading to lower CPU, memory, and network consumption.
 
 ## Running locally
 
@@ -139,7 +137,7 @@ Some considerations...
 
 - To output to JSON, add the following arguments to your call to `controller.py`: `-o json --output-file electriceye-findings` (**Note:** `.json` will be automatically appended)
 
-  - Normalized / flatteneded JSON can output instead using `-o json_normalized`. This is better suited for sending findings to BI tools as the structure eliminates all nested lists and dicts.
+- Normalized / flatteneded JSON can output instead using `-o json_normalized`. This is better suited for sending findings to BI tools as the structure eliminates all nested lists and dicts.
 
 - To output to CSV, add the following arguments to your call to `controller.py`: `-o csv --output-file electriceye-findings` (**Note:** `.csv` will be automatically appended)
 
@@ -218,6 +216,12 @@ aws ssm put-parameter \
 
 ```bash
 export SHODAN_API_KEY_PARAM="electriceye-shodan-api-key"
+```
+
+- If you will be outputting to Amazon DynamoDB use the below `EXPORT` commands and switch any value that says `$PLACEHOLDER`, but keep the double quotes (`"`) along with the output of `-o ddb_backend`.
+
+```bash
+export DYNAMODB_TABLE_NAME="$PLACEHOLDER"
 ```
 
 ## Setting Up ElectricEye on Fargate
