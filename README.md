@@ -22,7 +22,8 @@ python3 eeauditor/controller.py -o stdout
 
 - [Quick Run Down](#quick-run-down)
 - [Description](#tell-me-more)
-- [Running locally](#running-locally)
+- [## How do I use this](#how-do-i-use-this)
+  - [Multi Account Usage](#multi-account-usage)
   - [Attack Surface Monitoring Only](#attack-surface-monitoring-only)
   - [ElectricEye and Custom Outputs](#electriceye-and-custom-outputs)
 - [Setting Up on Fargate](#setting-up-electriceye-on-fargate)
@@ -64,9 +65,7 @@ As a CLI tool, ElectricEye can be ran from anywhere AWS credentials are supplied
 
 Multi-Account and Multi-Region operations are supported by the CLI options to supply a remote AWS Account and Role Name and/or AWS Region to dynamically created Boto3 Sessions with `AssumeRole` credentials but also retaining the original credentials to allow access to local AWS-native datastores for storing all of this information. To avoid throttling API responses, ElectricEye uses a locally developed caching mechanism which pulls required asset data at most once per Auditor and assesses the data in-memory. The cache is purged when not needed leading to lower CPU, memory, and network consumption.
 
-## Running locally
-
-**NOTE:** While this section is titled "Running Locally" - you can use the following setup to run anywhere you can run Python such as EKS, Kubernetes, a self-managed Docker Container, AWS CloudShell, etc. The usage of `venv` for those utilities is optional, but strongly recommended.
+## How do I use this :thinking: :thinking: ??
 
 1. Navigate to the IAM console and click on **Policies** under **Access management**. Select **Create policy** and under the JSON tab, copy and paste the contents [Instance Profile IAM Policy](policies/Instance_Profile_IAM_Policy.json). Click **Review policy**, create a name, and then click **Create policy**.
 
@@ -117,6 +116,28 @@ You can get a full name of the auditors (as well as their checks within comments
 
 ```bash
 python3 eeauditor/controller.py --list-checks
+```
+
+### Multi Account Usage
+
+ElectricEye supports running all Auditors in remote AWS Accounts as long as the remote AWS Account trusts your ***current*** AWS Account or IAM Principal. Consider deploying a StackSet from the [ElectricEye Organizations StackSet template](./cloudformation/ElectricEye_Organizations_StackSet.yaml) for easier setup.
+
+To specify a remote Account supply both an Account ID using `--assume-role-account` and the name of the IAM Role in that Account using `--assume-role-name`. ElectricEye will attempt to Assume the role and create a new Boto3 Session.
+
+```bash
+python3 eeauditor/controller.py --assume-role-account 111111111111 --assume-role-name CrossAccountElectricEyeRole -o stdout
+```
+
+You can additionally override the Region for multi-Region assessments by supplying an AWS Region using `--region-override`, ensure the Region you specify match your current Partition (e.g., GovCloud, AWS China, etc.) otherwise ElectricEye will be very upset at you.
+
+```bash
+python3 eeauditor/controller.py --assume-role-account 111111111111 --assume-role-name CrossAccountElectricEyeRole --region-override eu-central-1 -o stdout
+```
+
+You can also override your current Region without specifying a remote Account, ElectricEye will still attempt to swap to the proper Region for Auditors that require running in a specific Region such as us-east-1 for AWS Health, AWS Trusted Advisor (`support`), AWS WAFv2 in Global context (`cloudfront`) and us-west-2 for Global Accelerator.
+
+```bash
+python3 eeauditor/controller.py --region-override us-west-1 -o stdout
 ```
 
 ### Attack Surface Monitoring Only
