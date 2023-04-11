@@ -25,17 +25,13 @@ from check_register import CheckRegister
 from dateutil.parser import parse
 
 registry = CheckRegister()
-# Boto3 clients
-ec2 = boto3.client("ec2")
-elbv2 = boto3.client("elbv2")
-elb = boto3.client("elb")
-cloudfront = boto3.client("cloudfront")
-route53 = boto3.client("route53")
 
 # Instantiate a NMAP scanner for TCP scans to define ports
 nmap = nmap3.NmapScanTechniques()
 
-def ec2_paginate(cache):
+def ec2_paginate(cache, session):
+    ec2 = session.client("ec2")
+    
     instanceList = []
     response = cache.get("instances")
     if response:
@@ -49,7 +45,9 @@ def ec2_paginate(cache):
         cache["instances"] = instanceList
         return cache["instances"]
 
-def describe_load_balancers(cache):
+def describe_load_balancers(cache, session):
+    elbv2 = session.client("elbv2")
+
     # loop through ELBv2 load balancers
     response = cache.get("describe_load_balancers")
     if response:
@@ -57,7 +55,9 @@ def describe_load_balancers(cache):
     cache["describe_load_balancers"] = elbv2.describe_load_balancers()
     return cache["describe_load_balancers"]
 
-def describe_clbs(cache):
+def describe_clbs(cache, session):
+    elb = session.client("elb")
+
     # loop through ELB load balancers
     response = cache.get("describe_load_balancers")
     if response:
@@ -65,7 +65,9 @@ def describe_clbs(cache):
     cache["describe_load_balancers"] = elb.describe_load_balancers()
     return cache["describe_load_balancers"]
 
-def cloudfront_paginate(cache):
+def cloudfront_paginate(cache, session):
+    cloudfront = session.client("cloudfront")
+
     itemList = []
     response = cache.get("items")
     if response:
@@ -81,7 +83,9 @@ def cloudfront_paginate(cache):
         cache["items"] = itemList
         return cache["items"]
 
-def get_public_hosted_zones(cache):
+def get_public_hosted_zones(cache, session):
+    route53 = session.client("route53")
+
     zones = []
     response = cache.get("get_hosted_zones")
     if response:
@@ -683,11 +687,12 @@ def elb_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
             continue
 
 @registry.register_check("ec2")
-def eip_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def eip_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AttackSurface.EIP.{checkIdNumber}] Elastic IPs should not advertise publicly reachable {serviceName} services"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # Gather all EIPs
+    ec2 = session.client("ec2")
     for x in ec2.describe_addresses()["Addresses"]:
         publicIp = x["PublicIp"]
         allocationId = x["AllocationId"]
@@ -1034,8 +1039,10 @@ def cloudfront_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str
                     yield finding
 
 @registry.register_check("cloudfront")
-def route53_public_hz_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def route53_public_hz_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AttackSurface.Route53.{checkIdNumber}] Route53 Public Hosted Zones A Records should not be publicly reachable on {serviceName}"""
+    route53 = session.client("route53")
+
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for zone in get_public_hosted_zones(cache=cache):

@@ -21,7 +21,6 @@ from functools import partial
 import inspect
 import os
 from time import sleep
-import boto3
 from check_register import CheckRegister, accumulate_paged_results
 from pluginbase import PluginBase
 
@@ -130,7 +129,7 @@ class EEAuditor(object):
     # called from eeauditor/controller.py run_auditor()
     def run_checks(self, requested_check_name=None, delay=0):
         # Last call for session validation logging
-        print(f'Running ElectricEye in AWS Account {self.awsAccountId}, in Region {self.awsRegion}')
+        print(f'Running ElectricEye in AWS Account {self.awsAccountId} in Region {self.awsRegion}')
 
         for service_name, check_list in self.registry.checks.items():
             # only check regions if in AWS Commerical Partition
