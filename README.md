@@ -10,7 +10,7 @@ Continuously monitor your AWS attack surface and evaluate services for configura
 ***Everything you do***<br/>
 <sub>*Judas Priest, 1982*</sub>
 
-## Super Quick Start :running: :running:
+## Super Quick Start :triangular_flag_on_post: :triangular_flag_on_post:
 
 ```bash
 git clone https://github.com/jonrau1/ElectricEye.git
@@ -20,9 +20,8 @@ python3 eeauditor/controller.py -o stdout
 
 ## Table of Contents
 
-- [Synopsis](#synopsis)
-- [Description](#description)
-- [Solution Architecture](#solution-architecture)
+- [Quick Run Down](#quick-run-down)
+- [Description](#tell-me-more)
 - [Running locally](#running-locally)
   - [Attack Surface Monitoring Only](#attack-surface-monitoring-only)
   - [ElectricEye and Custom Outputs](#electriceye-and-custom-outputs)
@@ -41,47 +40,31 @@ python3 eeauditor/controller.py -o stdout
 - [Auditor testing](#auditor-testing)
 - [License](#license)
 
-## Synopsis
+## Quick Run Down :running: :running:
 
-- :fire: :fire: **500+ security & AWS best practice detections** including services not covered by Security Hub/Config (MemoryDB, Cognito, DocDB, Amazon Managed Blockchain, etc.), all findings are **aligned to NIST CSF, NIST 800-53, AICPA's TSCs, ISO 27001:2013 and (some findings) MITRE ATT&CK Techniques**.
+> - The most comprehensive AWS Cloud Security Posture Management (CSPM) & External Attack Surface Management (EASM) tool supporting **550+ Checks and 80+ AWS Services** including atypical services not covered by mainstream or AWS-native tooling such as AWS Managed Blockchain, AWS Keyspaces, Amazon Neptune, and AWS Amplify.
 
-- :anger: :anger: Provides basic **External Attack Surface Management (EASM)** capabilities, checking for **more than 20 highly dangerous** services running on publicly reachable assets that adversaries can potentially exploit.
+> - All checks mapped to controls from NIST CSF, NIST 800-53 r4, AICPA TSCs, and ISO 27001:2013 to support Audit readiness and general cloud GRC practices.
 
-- :clap: :clap: Supports every **AWS Region and Partition**: Commercial (`aws`), AWS GovCloud (`aws-gov`), AWS China (`aws-cn`), :busts_in_silhouette: AWS Secret (`aws-iso-b`) :busts_in_silhouette: and :busts_in_silhouette: AWS Top Secret (`aws-iso`). Built-in support for cross-Account and cross-Region operations. :busts_in_silhouette:.
+> - Configurable EASM module supports 20+ out-of-the-box publicly available services for any public facing resource (e.g., EC2, ALB, CloudFront, EIP).
 
-- :satellite: :satellite: Built with **full AWS Security Hub support** in mind, can optionally output to MongoDB, PostgreSQL, JSON or CSV. **Can run as a CLI tool, in Fargate, as a standalone Container, or anywhere else** you can run Python (K8s, Batch, CodeBuild, EC2, etc.)
+> - Support for every single AWS Paritition: Commercial (`aws`), AWS GovCloud (`aws-gov`), AWS China (`aws-cn`), AWS Secret Region (`aws-iso-b`) and AWS Top Secret Region (`aws-iso`).
 
-## Description
+> - Multi-account and Multi-region support via simple CLI commands.
+
+> - Outputs to AWS Security Hub, AWS DocumentDB, AWS Aurora for PostgreSQL, AWS RDS for PostgreSQL, PostgreSQL standalone, MongoDB, JSON, CSV, and Amazon DynamoDB.
+
+## Tell Me More :round_pushpin: :round_pushpin:
 
 ElectricEye is a Python-native CLI framework that controls individual Python scripts (affectionately called **Auditors**) which align to a specific AWS service or resource (such as an EC2 Security Group, or Systems Manager Managed Instance) that contain one or more **Checks**. Checks (continuously) monitor your AWS attack surface and evaluate services for configurations that can lead to degradation of confidentiality, integrity or availability. By default, the output of these checks are formatted using the [AWS Security Finding Format](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html) (ASFF) and sent to AWS Security Hub but can be sent to many other locations.
 
-As of **30 MARCH 2022** ElectricEye now supports Attack Surface Management (ASM) capabilities, showing you potentially dangerous and exploitable services running on publicly reachable assets such as EC2 Instances and Amazon Elastic Load Balancing (ELB) Application Load Balancers (ALB).
+As of **30 MARCH 2022** ElectricEye now supports External Attack Surface Management (EASM) capabilities, showing you potentially dangerous and exploitable services running on publicly reachable assets such as EC2 Instances and Amazon Elastic Load Balancing (ELB) Application Load Balancers (ALB).
 
-ElectricEye is extensible, however, and can output to JSON, CSV, PostgreSQL, MongoDB/AWS DocumentDB, and other locations and formats. All Checks within ElectricEye are also mapped against popular security framework controls such as the AICPA's Trust Service Criteria (TSCs), NIST 800-53 Rev 5, the NIST Cyber Security Framework (CSF), ISO/IEC 27001:2013 and the ASM Checks are mapped to MITRE ATT&CK Techniques.
+ElectricEye is extensible, however, and can output to JSON, CSV, PostgreSQL, MongoDB/AWS DocumentDB, and other locations and formats. All Checks within ElectricEye are also mapped against popular security framework controls such as the AICPA's Trust Service Criteria (TSCs), NIST 800-53 Rev 4, the NIST Cyber Security Framework (CSF), ISO/IEC 27001:2013 and the EASM Checks are mapped to MITRE ATT&CK Techniques.
 
 Additionally, ElectricEye comes with several add-on modules to extend the core model which provides dozens of detection-based controls. ElectricEye-Response provides a multi-account response and remediation platform (also known as SOAR), ElectricEye-ChatOps integrates with Slack/Pagerduty/Microsoft Teams, and ElectricEye-Reports integrates with QuickSight. All add-ons are supported by both CloudFormation and Terraform and can also be used independently of the core module itself.
 
 Numerous personas can make effective usage of ElectricEye such as: Security Operations (SecOps), DevOps, DevSecOps, IT Audit, Governance/Risk/Compliance (GRC) Analysts, Enterprise Architects, Security Architects, Cloud Center of Excellence (CCOE) members, Software Development Engineers (SDEs) using Cloud-native services, Red Teamers, Purple Teamers, and Security Engineering. That said, ElectricEye can also serve as an important assurance tool or educational tool for nearly any persona who works with or is learning the AWS Cloud.
-
-**Note**: If you would like to use the "classic" version of ElectricEye it is available in [this branch](https://github.com/jonrau1/ElectricEye/tree/electriceye-classic), however, it will not include any new auditors for services such as QLDB, RAM, etc. Some screenshots may not work correctly due to the linking, sorry about that.
-
-**Note:**: If you are working on another project whether open-source or commercial and want to include parts of ElectricEye (or the full thing) in your product / project, please contact me and at least give me credit. At the very least I can help you integrate and I'd appreciate any cool features you add being partially added back upstream!
-
-## Solution Architecture
-
-**Note:** This high level architecture shows potential places to run ElectricEye, as of V2.0 ElectricEye now uses a controller CLI mechanism that does not rely on running in Fargate (though you can still do that). Theoretically you should be able to run ElectricEye anywhere you have at least `Python 3.6` installed with access to required AWS credentials and Python dependencies.
-
-![High-level Architecture](./screenshots/high-level-architecture.jpg)
-
-> - You run ElectricEye anywhere you have AWS Credentials and the [required IAM Permissions](policies/Instance_Profile_IAM_Policy.json) - this can be on a Raspberry Pi, a Google Compute Engine instance, on AWS EKS or Amazon EC2.
-
-> - ElectricEye will evaluate all resources in scope using **Auditors** and write the findings to a local cache
-
-> - If supplied, ElectricEye will evaluate specific internet-facing AWS services against indexed results on Shodan.io as additional enrichment.
-
-> - ElectricEye will report all findings to AWS Security Hub, if configured ElectricEye can also output to CSV and JSON files or to a PostgreSQL Database (hosted on AWS RDS, or otherwise). Finally (and optionally) you can report findings to the [DisruptOps](https://disruptops.com/electriceye-v2-0/) platform which also has its [own integration with Security Hub](https://disruptops.com/cloud-providers/aws/).
-
-> - Using add-ons and native AWS Security Hub integrations, you can extend your findings into other workflows using tools such as Azure DevOps Boards, Slack, PagerDuty, Teams, or otherwise.
 
 ## Running locally
 
