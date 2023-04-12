@@ -152,6 +152,10 @@ def run_auditor(gcp_project_id, target_provider, assume_role_account=None, assum
         # This function writes the findings to Security Hub, or otherwise
         process_findings(findings=findings, outputs=outputs, output_file=output_file)
     elif target_provider == "GCP":
+        if gcp_project_id == (None or ""):
+            print("GCP assessment target requires a GCP Project ID")
+            sys.exit(2)
+
         setup_gcp_credentials()
 
         app = EEAuditor(target_provider=target_provider, session=None, region=None, gcp_project_id=gcp_project_id)
