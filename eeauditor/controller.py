@@ -109,7 +109,7 @@ def print_checks(gcp_project_id=None, target_provider=None, assume_role_account=
     if target_provider == "AWS":
         awsCreds = setup_aws_credentials(assume_role_account, assume_role_name, region_override)
 
-        app = EEAuditor(target_provider, awsCreds[0], awsCreds[1])
+        app = EEAuditor(target_provider, awsCreds[0], awsCreds[1], gcp_project_id=None)
 
         app.load_plugins()
         
