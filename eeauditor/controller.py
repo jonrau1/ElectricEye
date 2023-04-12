@@ -128,7 +128,7 @@ def print_checks(gcp_project_id=None, target_provider=None, assume_role_account=
         # Save these locally
         setup_gcp_credentials()
 
-        app = EEAuditor(gcp_project_id, target_provider, session=None, region=None)
+        app = EEAuditor(target_provider, session=None, region=None, gcp_project_id=gcp_project_id)
 
         app.load_plugins()
         
