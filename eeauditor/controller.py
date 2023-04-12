@@ -75,9 +75,9 @@ def setup_github_credentials():
 
 def print_checks(target_provider, assume_role_account=None, assume_role_name=None, region_override=None):
     if target_provider == "AWS":
-        session = setup_aws_credentials(assume_role_account, assume_role_name, region_override)
+        aws_creds = setup_aws_credentials(assume_role_account, assume_role_name, region_override)
 
-        app = EEAuditor(target_provider, session[0], session[1])
+        app = EEAuditor(target_provider, aws_creds[0], aws_creds[1])
 
         app.load_plugins()
         
@@ -98,16 +98,16 @@ def run_auditor(target_provider, assume_role_account=None, assume_role_name=None
         
 
     if target_provider == "AWS":
-        session = setup_aws_credentials(assume_role_account, assume_role_name, region_override)
+        aws_creds = setup_aws_credentials(assume_role_account, assume_role_name, region_override)
 
-    app = EEAuditor(target_provider=target_provider, session=session, region=region_override)
+        app = EEAuditor(target_provider=target_provider, session=aws_creds[0], region=aws_creds[1])
 
-    app.load_plugins(plugin_name=auditor_name)
+        app.load_plugins(plugin_name=auditor_name)
 
-    findings = list(app.run_aws_checks(requested_check_name=check_name, delay=delay))
+        findings = list(app.run_aws_checks(requested_check_name=check_name, delay=delay))
 
-    # This function writes the findings to Security Hub, or otherwise
-    process_findings(findings=findings, outputs=outputs, output_file=output_file)
+        # This function writes the findings to Security Hub, or otherwise
+        process_findings(findings=findings, outputs=outputs, output_file=output_file)
 
     print("Done running Checks")
 
