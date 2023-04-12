@@ -85,6 +85,9 @@ def run_auditor(target_provider, assume_role_account=None, assume_role_name=None
         # default to AWS SecHub even if somehow Click destination is stripped
         outputs = ["sechub"]
 
+    if not region_override:
+        region_override = boto3.Session().region_name
+
     if target_provider == "AWS":
         session = setup_aws_credentials(assume_role_account, assume_role_name, region_override)
 
