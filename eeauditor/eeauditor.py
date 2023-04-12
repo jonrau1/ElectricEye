@@ -28,9 +28,18 @@ here = os.path.abspath(os.path.dirname(__file__))
 get_path = partial(os.path.join, here)
 
 class EEAuditor(object):
-    """ElectricEye controller
+    """
+    ElectricEye controller
 
-        This class manages loading auditor plugins and running checks
+    This class manages loading auditor plugins and running checks
+
+    AWS Requires `session` and `region` which are assembled within controller.py setup_aws_credentials()
+
+    Azure Requires...
+
+    GCP Requires...
+
+    GitHub Requires...
     """
 
     def __init__(self, target_provider, session, region, search_path=None):
@@ -79,7 +88,9 @@ class EEAuditor(object):
             searchpath=[get_path(search_path)], identifier=self.name
         )
 
-
+    """
+    Loads from pluginbase, works on a search path override as long as the checks have the registry class and decorator
+    """
     def load_plugins(self, plugin_name=None):
         if plugin_name:
             try:
@@ -93,6 +104,10 @@ class EEAuditor(object):
                 except Exception as e:
                     print(f"Failed to load plugin {plugin_name} with exception {e}")
 
+    """
+    This is only used for AWS and only for Commerical Partition -- checks against SSM-managed Parameter to see what services are available in a Region
+    It is not exactly foolproof as AMB and CloudSearch and a few others are still jacked up...
+    """
     def get_regions(self, service):
         # Pull session
         session = self.session
@@ -130,7 +145,9 @@ class EEAuditor(object):
 
         return values
 
-    # called from eeauditor/controller.py run_auditor()
+    """
+    Separated logic for different checks - this one is for AWS as it calls get_regions(self, service) for the Commerical Partition
+    """
     def run_aws_checks(self, requested_check_name=None, delay=0):
         # Last call for session validation logging
         print(f'Running ElectricEye in AWS Account {self.awsAccountId} in Region {self.awsRegion}')

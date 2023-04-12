@@ -54,21 +54,31 @@ def setup_aws_credentials(assume_role_account=None, assume_role_name=None, regio
 
 def setup_azure_credentials():
     """
-    For Azure
+    For Azure...TODO: Implement
     """
 
     return {}
 
 def setup_gcp_credentials():
     """
-    For GCP
+    Google Cloud Platform's (GCP's) simplest identity primitive is a Service Account (SA). SA's are given roles for a specific Project (or Folder/Org) and can
+    save the credentials into a JSON file where it is picked up by gcloud. The entire JSON payload can be stored in AWS SSM Parameter Store as a SecureString and loaded
+    into memory dynamically within a container so it's safer.
+
+    In external_providers.toml specify the name of the SSM SecureString Parameter in `gcp_service_account_json_payload_parameter_name = ""` under [gcp]
     """
+
+    ssm = boto3.client("ssm")
+
+    
+
+    gcp_creds = ssm.get_parameter(Name="", WithDecryption=True)["Parameter"]["Value"]
 
     return {}
 
 def setup_github_credentials():
     """
-    For GitHub
+    Retrieves a Personal Access Token (PAT) from a SSM
     """
 
     return {}

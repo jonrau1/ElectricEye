@@ -1,0 +1,19 @@
+# This TOML Document maps SSM SecureString Parameters to multi-cloud & SaaS access tokens
+
+title = "ElectricEye External Providers"
+
+[azure]
+azure_sp_client_id_parameter_name = ""
+azure_sp_tenant_id_parameter_name = ""
+azure_sp_client_secret_id_parameter_name = ""
+
+[gcp]
+gcp_service_account_json_payload_parameter_name = ""
+
+[github]
+gh_personal_access_token_parameter_name = ""
+
+[m365]
+m365_ent_app_client_id_parameter_name = ""
+m365_ent_app_tenant_id_parameter_name = ""
+m365_ent_app_client_secret_id_parameter_name = ""
