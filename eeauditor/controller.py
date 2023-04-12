@@ -50,7 +50,7 @@ def setup_aws_credentials(assume_role_account=None, assume_role_name=None, regio
     else:
         session = boto3.Session()
 
-    return session
+    return session, region_override
 
 def setup_azure_credentials():
     """
@@ -77,7 +77,7 @@ def print_checks(target_provider, assume_role_account=None, assume_role_name=Non
     if target_provider == "AWS":
         session = setup_aws_credentials(assume_role_account, assume_role_name, region_override)
 
-    app = EEAuditor(target_provider, session=None, region=None)
+    app = EEAuditor(target_provider, session[0], session[1])
 
     app.load_plugins()
     
