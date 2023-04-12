@@ -36,6 +36,31 @@ class EEAuditor(object):
     def __init__(self, target_provider, session, region, search_path=None):
         if target_provider == "AWS":
             search_path = "./auditors/aws"
+            # Here is where STS AssumeRole Creds are supplied or a default Session object is used
+            self.session = session
+            sts = session.client("sts")
+
+            # vendor specific credentials dictionary
+            self.awsAccountId = sts.get_caller_identity()["Account"]
+            # pull Region from STS Meta - we can use this to cheese which partition we are in
+            self.awsRegion = region
+            
+            # GovCloud partition override
+            if self.awsRegion in ["us-gov-east-1", "us-gov-west-1"]:
+                self.awsPartition = "aws-us-gov"
+            # China partition override
+            elif self.awsRegion in ["cn-north-1", "cn-northwest-1"]:
+                self.awsPartition = "aws-cn"
+            # AWS Secret Region override
+            elif self.awsRegion in ["us-isob-east-1"]:
+                self.awsPartition = "aws-isob"
+            # AWS Top Secret Region override
+            # TS West: https://aws.amazon.com/blogs/publicsector/announcing-second-aws-top-secret-region-extending-support-us-government-classified-missions/
+            elif self.awsRegion in ["us-iso-east-1", "us-iso-west-1"]:
+                self.awsPartition = "aws-iso"
+            else:
+                # default to Commercial AWS Partition
+                self.awsPartition = "aws"
         elif target_provider == "AZURE":
             search_path = "./auditors/azure"
         elif target_provider == "GCP":
@@ -50,32 +75,7 @@ class EEAuditor(object):
         # to be discovered during plugin loading.
         self.registry = CheckRegister()
 
-        # Here is where STS AssumeRole Creds are supplied or a default Session object is used
-        self.session = session
-        sts = session.client("sts")
-
-        # vendor specific credentials dictionary
-        self.awsAccountId = sts.get_caller_identity()["Account"]
-        # pull Region from STS Meta - we can use this to cheese which partition we are in
-        self.awsRegion = region
         
-        # GovCloud partition override
-        if self.awsRegion in ["us-gov-east-1", "us-gov-west-1"]:
-            self.awsPartition = "aws-us-gov"
-        # China partition override
-        elif self.awsRegion in ["cn-north-1", "cn-northwest-1"]:
-            self.awsPartition = "aws-cn"
-        # AWS Secret Region override
-        elif self.awsRegion in ["us-isob-east-1"]:
-            self.awsPartition = "aws-isob"
-        # AWS Top Secret Region override
-        # TS West: https://aws.amazon.com/blogs/publicsector/announcing-second-aws-top-secret-region-extending-support-us-government-classified-missions/
-        elif self.awsRegion in ["us-iso-east-1", "us-iso-west-1"]:
-            self.awsPartition = "aws-iso"
-        else:
-            # default to Commercial AWS Partition
-            self.awsPartition = "aws"
-
         # If there is a desire to add support for multiple clouds, this would be
         # a great place to implement it.
         self.source = self.plugin_base.make_plugin_source(
