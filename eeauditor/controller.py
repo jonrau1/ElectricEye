@@ -26,7 +26,7 @@ from eeauditor import EEAuditor
 from processor.main import get_providers, process_findings
 
 def print_checks(target_provider):
-    app = EEAuditor(name=target_provider)
+    app = EEAuditor(target_provider)
 
     app.load_plugins()
     
@@ -57,7 +57,7 @@ def run_auditor(target_provider, assume_role_account=None, assume_role_name=None
     else:
         session = boto3.Session()
 
-    app = EEAuditor(name=target_provider, session=session, region=region_override)
+    app = EEAuditor(target_provider=target_provider, session=session, region=region_override)
 
     app.load_plugins(plugin_name=auditor_name)
 
