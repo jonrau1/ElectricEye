@@ -6,3 +6,4 @@ pluginbase
 psycopg2-binary
 pymongo
 python3-nmap
+tomli

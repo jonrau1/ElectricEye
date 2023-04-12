@@ -21,9 +21,17 @@
 import sys
 import boto3
 import click
+import tomli
+import json
 from insights import create_sechub_insights
 from eeauditor import EEAuditor
 from processor.main import get_providers, process_findings
+
+def read_toml():
+    with open("./external_providers.toml", "rb") as f:
+        data = tomli.load(f)
+
+    return data
 
 def setup_aws_credentials(assume_role_account=None, assume_role_name=None, region_override=None):
     """
@@ -70,11 +78,16 @@ def setup_gcp_credentials():
 
     ssm = boto3.client("ssm")
 
-    
+    # GCP only needs the JSON Document
+    gcpCredLocation = read_toml()["gcp"]["gcp_service_account_json_payload_parameter_name"]
 
-    gcp_creds = ssm.get_parameter(Name="", WithDecryption=True)["Parameter"]["Value"]
+    gcpCreds = ssm.get_parameter(Name=gcpCredLocation, WithDecryption=True)["Parameter"]["Value"]
 
-    return {}
+    # Write the creds locally
+    with open("./gcp_cred.json", 'w') as jsonfile:
+        json.dump(json.loads(gcpCreds), jsonfile, indent=2)
+
+    return True
 
 def setup_github_credentials():
     """
@@ -85,9 +98,9 @@ def setup_github_credentials():
 
 def print_checks(target_provider, assume_role_account=None, assume_role_name=None, region_override=None):
     if target_provider == "AWS":
-        aws_creds = setup_aws_credentials(assume_role_account, assume_role_name, region_override)
+        awsCreds = setup_aws_credentials(assume_role_account, assume_role_name, region_override)
 
-        app = EEAuditor(target_provider, aws_creds[0], aws_creds[1])
+        app = EEAuditor(target_provider, awsCreds[0], awsCreds[1])
 
         app.load_plugins()
         
@@ -95,6 +108,17 @@ def print_checks(target_provider, assume_role_account=None, assume_role_name=Non
     elif target_provider == "GitHub":
         github_creds = setup_github_credentials()
 
+        # TODO: EXPAND TO INCLUDE THE VALUES
+        app = EEAuditor(target_provider, session=None, region=None)
+
+        app.load_plugins()
+        
+        app.print_checks_md()
+    elif target_provider == "GCP":
+        # Save these locally
+        setup_gcp_credentials()
+
+        # TODO: EXPAND TO INCLUDE THE VALUES
         app = EEAuditor(target_provider, session=None, region=None)
 
         app.load_plugins()
@@ -108,9 +132,9 @@ def run_auditor(target_provider, assume_role_account=None, assume_role_name=None
         
 
     if target_provider == "AWS":
-        aws_creds = setup_aws_credentials(assume_role_account, assume_role_name, region_override)
+        awsCreds = setup_aws_credentials(assume_role_account, assume_role_name, region_override)
 
-        app = EEAuditor(target_provider=target_provider, session=aws_creds[0], region=aws_creds[1])
+        app = EEAuditor(target_provider=target_provider, session=awsCreds[0], region=awsCreds[1])
 
         app.load_plugins(plugin_name=auditor_name)
 
