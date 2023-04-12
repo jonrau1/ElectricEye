@@ -158,8 +158,10 @@ def run_auditor(gcp_project_id, target_provider, assume_role_account=None, assum
 
         app.load_plugins(plugin_name=auditor_name)
 
-        # TODO: Implement findings and processing findings
+        findings = list(app.run_gcp_checks(requested_check_name=check_name, delay=delay))
 
+        # This function writes the findings to Security Hub, or otherwise
+        process_findings(findings=findings, outputs=outputs, output_file=output_file)
 
     print("Done running Checks")
 

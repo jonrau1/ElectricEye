@@ -185,6 +185,55 @@ class EEAuditor(object):
             # optional sleep if specified - hardcode to 0 seconds
             sleep(delay)
 
+    def run_gcp_checks(self, requested_check_name=None, delay=0):
+        # Even though we are running GCP checks we stil need AWS-account info in case they send the info to SecHub
+        import boto3
+
+        sts = boto3.client("sts")
+
+        region = boto3.Session().region_name
+        account = sts.get_caller_identity()["Account"]
+
+        # GovCloud partition override
+        if region in ["us-gov-east-1", "us-gov-west-1"]:
+            partition = "aws-us-gov"
+        # China partition override
+        elif region in ["cn-north-1", "cn-northwest-1"]:
+            partition = "aws-cn"
+        # AWS Secret Region override
+        elif region in ["us-isob-east-1"]:
+            partition = "aws-isob"
+        # AWS Top Secret Region override
+        elif region in ["us-iso-east-1", "us-iso-west-1"]:
+            partition = "aws-iso"
+        else:
+            partition = "aws"
+
+        for service_name, check_list in self.registry.checks.items():
+            for check_name, check in check_list.items():
+                # clearing cache for each control whithin a auditor
+                auditor_cache = {}
+                # if a specific check is requested, only run that one check
+                if (
+                    not requested_check_name
+                    or requested_check_name
+                    and requested_check_name == check_name
+                ):
+                    try:
+                        print(f"Executing Check: {check_name}")
+                        for finding in check(
+                            cache=auditor_cache,
+                            awsAccountId=account,
+                            awsRegion=region,
+                            awsPartition=partition,
+                            gcpProjectId=self.gcpProjectId
+                        ):
+                            yield finding
+                    except Exception as e:
+                        print(f"Failed to execute check {check_name} with exception {e}")
+            # optional sleep if specified - hardcode to 0 seconds
+            sleep(delay)
+
     # called from eeauditor/controller.py print_checks()
     def print_checks_md(self):
         table = []
