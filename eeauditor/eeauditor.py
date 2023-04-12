@@ -81,7 +81,7 @@ class EEAuditor(object):
             search_path = "./auditors/gcp"
 
             self.gcpProjectId = gcp_project_id
-            
+
         elif target_provider == "GitHub":
             search_path = "./auditors/github"
 
@@ -189,7 +189,7 @@ class EEAuditor(object):
     def print_checks_md(self):
         table = []
         table.append(
-            "| Auditor File Name                      | AWS Service                   | Auditor Scan Description                                                               |"
+            "| Auditor File Name                      | Scanned Resource Name         | Auditor Scan Description                                                               |"
         )
         table.append(
             "|----------------------------------------|-------------------------------|----------------------------------------------------------------------------------------|"
