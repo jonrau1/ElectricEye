@@ -23,12 +23,15 @@ import boto3
 import click
 import tomli
 import json
+import os
 from insights import create_sechub_insights
 from eeauditor import EEAuditor
 from processor.main import get_providers, process_findings
 
+here = os.path.abspath(os.path.dirname(__file__))
+
 def read_toml():
-    with open("./external_providers.toml", "rb") as f:
+    with open(f"{here}/external_providers.toml", "rb") as f:
         data = tomli.load(f)
 
     return data
@@ -75,8 +78,6 @@ def setup_gcp_credentials():
 
     In external_providers.toml specify the name of the SSM SecureString Parameter in `gcp_service_account_json_payload_parameter_name = ""` under [gcp]
     """
-
-    import os
 
     ssm = boto3.client("ssm")
 
