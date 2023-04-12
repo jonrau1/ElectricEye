@@ -76,16 +76,25 @@ def setup_gcp_credentials():
     In external_providers.toml specify the name of the SSM SecureString Parameter in `gcp_service_account_json_payload_parameter_name = ""` under [gcp]
     """
 
+    import os
+
     ssm = boto3.client("ssm")
 
     # GCP only needs the JSON Document
     gcpCredLocation = read_toml()["gcp"]["gcp_service_account_json_payload_parameter_name"]
+
+    if gcpCredLocation == (None or ""):
+        print("GCP Credential SSM Parameter not provided!")
+        sys.exit(2)
 
     gcpCreds = ssm.get_parameter(Name=gcpCredLocation, WithDecryption=True)["Parameter"]["Value"]
 
     # Write the creds locally
     with open("./gcp_cred.json", 'w') as jsonfile:
         json.dump(json.loads(gcpCreds), jsonfile, indent=2)
+
+    # Set Cred global path
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "./gcp_cred.json"
 
     return True
 
@@ -96,7 +105,7 @@ def setup_github_credentials():
 
     return {}
 
-def print_checks(target_provider, assume_role_account=None, assume_role_name=None, region_override=None):
+def print_checks(gcp_project_id=None, target_provider=None, assume_role_account=None, assume_role_name=None, region_override=None):
     if target_provider == "AWS":
         awsCreds = setup_aws_credentials(assume_role_account, assume_role_name, region_override)
 
@@ -118,14 +127,13 @@ def print_checks(target_provider, assume_role_account=None, assume_role_name=Non
         # Save these locally
         setup_gcp_credentials()
 
-        # TODO: EXPAND TO INCLUDE THE VALUES
-        app = EEAuditor(target_provider, session=None, region=None)
+        app = EEAuditor(gcp_project_id, target_provider, session=None, region=None)
 
         app.load_plugins()
         
         app.print_checks_md()
 
-def run_auditor(target_provider, assume_role_account=None, assume_role_name=None, region_override=None, auditor_name=None, check_name=None, delay=0, outputs=None, output_file=""):
+def run_auditor(gcp_project_id, target_provider, assume_role_account=None, assume_role_name=None, region_override=None, auditor_name=None, check_name=None, delay=0, outputs=None, output_file=""):
     if not outputs:
         # default to AWS SecHub even if somehow Click destination is stripped
         outputs = ["sechub"]
@@ -134,7 +142,7 @@ def run_auditor(target_provider, assume_role_account=None, assume_role_name=None
     if target_provider == "AWS":
         awsCreds = setup_aws_credentials(assume_role_account, assume_role_name, region_override)
 
-        app = EEAuditor(target_provider=target_provider, session=awsCreds[0], region=awsCreds[1])
+        app = EEAuditor(target_provider=target_provider, session=awsCreds[0], region=awsCreds[1], gcp_project_id=None)
 
         app.load_plugins(plugin_name=auditor_name)
 
@@ -142,10 +150,25 @@ def run_auditor(target_provider, assume_role_account=None, assume_role_name=None
 
         # This function writes the findings to Security Hub, or otherwise
         process_findings(findings=findings, outputs=outputs, output_file=output_file)
+    elif target_provider == "GCP":
+        setup_gcp_credentials()
+
+        app = EEAuditor(target_provider=target_provider, session=None, region=None, gcp_project_id=gcp_project_id)
+
+        app.load_plugins(plugin_name=auditor_name)
+
+        # TODO: Implement findings and processing findings
+
 
     print("Done running Checks")
 
 @click.command()
+# GCP Project
+@click.option(
+    "--gcp-project-id",
+    default="",
+    help="GCP Project ID for when --target-provider is set to GCP. Must match the Service Account JSON stored in SSM Parameter Store mentioned in external_providers.toml"
+)
 # Assessment Target
 @click.option(
     "-t",
@@ -233,6 +256,7 @@ def run_auditor(target_provider, assume_role_account=None, assume_role_name=None
 )
 
 def main(
+    gcp_project_id,
     target_provider,
     assume_role_account,
     assume_role_name,
@@ -253,6 +277,7 @@ def main(
 
     if list_checks:
         print_checks(
+            gcp_project_id,
             target_provider,
             assume_role_account=assume_role_account,
             assume_role_name=assume_role_name,
@@ -268,6 +293,7 @@ def main(
         sys.exit(2)
 
     run_auditor(
+        gcp_project_id=gcp_project_id,
         target_provider=target_provider,
         assume_role_account=assume_role_account,
         assume_role_name=assume_role_name,

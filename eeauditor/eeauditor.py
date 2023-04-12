@@ -37,12 +37,12 @@ class EEAuditor(object):
 
     Azure Requires...
 
-    GCP Requires...
+    GCP requires a Project ID that matches the provided Service Account JSON payload stored in SSM that is referenced in the TOML
 
     GitHub Requires...
     """
 
-    def __init__(self, target_provider, session, region, search_path=None):
+    def __init__(self, target_provider, session, region, gcp_project_id, search_path=None):
         # each check must be decorated with the @registry.register_check("cache_name")
         # to be discovered during plugin loading.
         self.registry = CheckRegister()
@@ -79,6 +79,9 @@ class EEAuditor(object):
             search_path = "./auditors/azure"
         elif target_provider == "GCP":
             search_path = "./auditors/gcp"
+
+            self.gcpProjectId = gcp_project_id
+            
         elif target_provider == "GitHub":
             search_path = "./auditors/github"
 
