@@ -26,7 +26,7 @@ from eeauditor import EEAuditor
 from processor.main import get_providers, process_findings
 
 def print_checks(target_provider):
-    app = EEAuditor(target_provider)
+    app = EEAuditor(target_provider, session=None, region=None)
 
     app.load_plugins()
     
