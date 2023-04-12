@@ -34,15 +34,14 @@ class EEAuditor(object):
     """
 
     def __init__(self, target_provider, session, region, search_path=None):
+        # each check must be decorated with the @registry.register_check("cache_name")
+        # to be discovered during plugin loading.
+        self.registry = CheckRegister()
+        self.name = target_provider
+        self.plugin_base = PluginBase(package="electriceye")
+        
         if target_provider == "AWS":
             search_path = "./auditors/aws"
-
-            self.name = target_provider
-            self.plugin_base = PluginBase(package="electriceye")
-
-            # each check must be decorated with the @registry.register_check("cache_name")
-            # to be discovered during plugin loading.
-            self.registry = CheckRegister()
 
             # Here is where STS AssumeRole Creds are supplied or a default Session object is used
             self.session = session
