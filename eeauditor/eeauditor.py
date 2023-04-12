@@ -33,11 +33,17 @@ class EEAuditor(object):
         This class manages loading auditor plugins and running checks
     """
 
-    def __init__(self, name, session, region, search_path=None):
-        if not search_path:
+    def __init__(self, target_provider, session, region, search_path=None):
+        if target_provider == "AWS":
             search_path = "./auditors/aws"
+        elif target_provider == "AZURE":
+            search_path = "./auditors/azure"
+        elif target_provider == "GCP":
+            search_path = "./auditors/gcp"
+        elif target_provider == "GitHub":
+            search_path = "./auditors/github"
 
-        self.name = name
+        self.name = target_provider
         self.plugin_base = PluginBase(package="electriceye")
 
         # each check must be decorated with the @registry.register_check("cache_name")
@@ -127,7 +133,7 @@ class EEAuditor(object):
         return values
 
     # called from eeauditor/controller.py run_auditor()
-    def run_checks(self, requested_check_name=None, delay=0):
+    def run_aws_checks(self, requested_check_name=None, delay=0):
         # Last call for session validation logging
         print(f'Running ElectricEye in AWS Account {self.awsAccountId} in Region {self.awsRegion}')
 

@@ -25,14 +25,14 @@ from insights import create_sechub_insights
 from eeauditor import EEAuditor
 from processor.main import get_providers, process_findings
 
-def print_checks():
-    app = EEAuditor(name="AWS Auditor")
+def print_checks(target_provider):
+    app = EEAuditor(name=target_provider)
 
     app.load_plugins()
     
     app.print_checks_md()
 
-def run_auditor(assume_role_account=None, assume_role_name=None, region_override=None, auditor_name=None, check_name=None, delay=0, outputs=None, output_file=""):
+def run_auditor(target_provider, assume_role_account=None, assume_role_name=None, region_override=None, auditor_name=None, check_name=None, delay=0, outputs=None, output_file=""):
     if not outputs:
         # default to AWS SecHub even if somehow Click destination is stripped
         outputs = ["sechub"]
@@ -57,11 +57,11 @@ def run_auditor(assume_role_account=None, assume_role_name=None, region_override
     else:
         session = boto3.Session()
 
-    app = EEAuditor(name="AWS Auditor", session=session, region=region_override)
+    app = EEAuditor(name=target_provider, session=session, region=region_override)
 
     app.load_plugins(plugin_name=auditor_name)
 
-    findings = list(app.run_checks(requested_check_name=check_name, delay=delay))
+    findings = list(app.run_aws_checks(requested_check_name=check_name, delay=delay))
 
     # This function writes the findings to Security Hub, or otherwise
     process_findings(findings=findings, outputs=outputs, output_file=output_file)
@@ -69,6 +69,13 @@ def run_auditor(assume_role_account=None, assume_role_name=None, region_override
     print("Done running Checks")
 
 @click.command()
+# Assessment Target
+@click.option(
+    "-t",
+    "--target-provider",
+    default="AWS",
+    help="CSP or SaaS Vendor to perform assessments against and load specific plugins, ensure that any -a or -c arg maps to your target provider e.g., -t AWS -a Amazon_APGIW_Auditor"
+)
 # Remote Account Options
 @click.option(
     "--assume-role-account",
@@ -149,6 +156,7 @@ def run_auditor(assume_role_account=None, assume_role_name=None, region_override
 )
 
 def main(
+    target_provider,
     assume_role_account,
     assume_role_name,
     region_override,
@@ -167,7 +175,7 @@ def main(
         sys.exit(2)
 
     if list_checks:
-        print_checks()
+        print_checks(target_provider)
         sys.exit(2)
 
     if profile_name:
@@ -178,6 +186,7 @@ def main(
         sys.exit(2)
 
     run_auditor(
+        target_provider=target_provider,
         assume_role_account=assume_role_account,
         assume_role_name=assume_role_name,
         region_override=region_override,
