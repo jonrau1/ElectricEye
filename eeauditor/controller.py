@@ -25,17 +25,10 @@ from insights import create_sechub_insights
 from eeauditor import EEAuditor
 from processor.main import get_providers, process_findings
 
-def print_checks(target_provider):
-    app = EEAuditor(target_provider, session=None, region=None)
-
-    app.load_plugins()
-    
-    app.print_checks_md()
-
-def run_auditor(target_provider, assume_role_account=None, assume_role_name=None, region_override=None, auditor_name=None, check_name=None, delay=0, outputs=None, output_file=""):
-    if not outputs:
-        # default to AWS SecHub even if somehow Click destination is stripped
-        outputs = ["sechub"]
+def setup_aws_credentials(assume_role_account=None, assume_role_name=None, region_override=None):
+    """
+    For AWS-specific provider
+    """
 
     if not region_override:
         region_override = boto3.Session().region_name
@@ -56,6 +49,44 @@ def run_auditor(target_provider, assume_role_account=None, assume_role_name=None
         )
     else:
         session = boto3.Session()
+
+    return session
+
+def setup_azure_credentials():
+    """
+    For Azure
+    """
+
+    return {}
+
+def setup_gcp_credentials():
+    """
+    For GCP
+    """
+
+    return {}
+
+def setup_github_credentials():
+    """
+    For GitHub
+    """
+
+    return {}
+
+def print_checks(target_provider):
+    app = EEAuditor(target_provider, session=None, region=None)
+
+    app.load_plugins()
+    
+    app.print_checks_md()
+
+def run_auditor(target_provider, assume_role_account=None, assume_role_name=None, region_override=None, auditor_name=None, check_name=None, delay=0, outputs=None, output_file=""):
+    if not outputs:
+        # default to AWS SecHub even if somehow Click destination is stripped
+        outputs = ["sechub"]
+
+    if target_provider == "AWS":
+        session = setup_aws_credentials(assume_role_account, assume_role_name, region_override)
 
     app = EEAuditor(target_provider=target_provider, session=session, region=region_override)
 

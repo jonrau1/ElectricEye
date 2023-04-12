@@ -36,13 +36,18 @@ class EEAuditor(object):
     def __init__(self, target_provider, session, region, search_path=None):
         if target_provider == "AWS":
             search_path = "./auditors/aws"
+
+            self.name = target_provider
+            self.plugin_base = PluginBase(package="electriceye")
+
+            # each check must be decorated with the @registry.register_check("cache_name")
+            # to be discovered during plugin loading.
+            self.registry = CheckRegister()
+
             # Here is where STS AssumeRole Creds are supplied or a default Session object is used
             self.session = session
             sts = session.client("sts")
-
-            # vendor specific credentials dictionary
             self.awsAccountId = sts.get_caller_identity()["Account"]
-            # pull Region from STS Meta - we can use this to cheese which partition we are in
             self.awsRegion = region
             
             # GovCloud partition override
@@ -61,6 +66,7 @@ class EEAuditor(object):
             else:
                 # default to Commercial AWS Partition
                 self.awsPartition = "aws"
+
         elif target_provider == "AZURE":
             search_path = "./auditors/azure"
         elif target_provider == "GCP":
@@ -68,30 +74,23 @@ class EEAuditor(object):
         elif target_provider == "GitHub":
             search_path = "./auditors/github"
 
-        self.name = target_provider
-        self.plugin_base = PluginBase(package="electriceye")
-
-        # each check must be decorated with the @registry.register_check("cache_name")
-        # to be discovered during plugin loading.
-        self.registry = CheckRegister()
-
-        
         # If there is a desire to add support for multiple clouds, this would be
         # a great place to implement it.
         self.source = self.plugin_base.make_plugin_source(
             searchpath=[get_path(search_path)], identifier=self.name
         )
 
+
     def load_plugins(self, plugin_name=None):
         if plugin_name:
             try:
-                plugin = self.source.load_plugin(plugin_name)
+                self.source.load_plugin(plugin_name)
             except Exception as e:
                 print(f"Failed to load plugin {plugin_name} with exception {e}")
         else:
             for plugin_name in self.source.list_plugins():
                 try:
-                    plugin = self.source.load_plugin(plugin_name)
+                    self.source.load_plugin(plugin_name)
                 except Exception as e:
                     print(f"Failed to load plugin {plugin_name} with exception {e}")
 
