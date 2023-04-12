@@ -77,11 +77,19 @@ def print_checks(target_provider, assume_role_account=None, assume_role_name=Non
     if target_provider == "AWS":
         session = setup_aws_credentials(assume_role_account, assume_role_name, region_override)
 
-    app = EEAuditor(target_provider, session[0], session[1])
+        app = EEAuditor(target_provider, session[0], session[1])
 
-    app.load_plugins()
-    
-    app.print_checks_md()
+        app.load_plugins()
+        
+        app.print_checks_md()
+    elif target_provider == "GitHub":
+        github_creds = setup_github_credentials()
+
+        app = EEAuditor(target_provider, session=None, region=None)
+
+        app.load_plugins()
+        
+        app.print_checks_md()
 
 def run_auditor(target_provider, assume_role_account=None, assume_role_name=None, region_override=None, auditor_name=None, check_name=None, delay=0, outputs=None, output_file=""):
     if not outputs:
