@@ -57,6 +57,7 @@ def get_compute_engine_instances(cache: dict, gcpProjectId: str):
 
     return results
 
+@registry.register_check("gcp_gce")
 def gce_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
     """
     [GCP.GCE.1] Google Compute Engine VM instances should have deletion protection enabled
@@ -207,6 +208,7 @@ def gce_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRe
             }
             yield finding
 
+@registry.register_check("gcp_gce")
 def gce_instance_ip_forwarding_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
     """
     [GCP.GCE.2] Google Compute Engine VM instances should not have IP forwarding enabled
