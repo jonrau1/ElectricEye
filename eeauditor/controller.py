@@ -88,6 +88,23 @@ def run_auditor(target_provider, assume_role_account=None, assume_role_name=None
     if not region_override:
         region_override = boto3.Session().region_name
 
+    if assume_role_account and assume_role_name:
+        sts = boto3.client("sts")
+        crossAccountRoleArn = f"arn:aws:iam::{assume_role_account}:role/{assume_role_name}"
+        memberAcct = sts.assume_role(
+            RoleArn=crossAccountRoleArn,
+            RoleSessionName="ElectricEye"
+        )
+
+        session = boto3.Session(
+            aws_access_key_id=memberAcct["Credentials"]["AccessKeyId"],
+            aws_secret_access_key=memberAcct["Credentials"]["SecretAccessKey"],
+            aws_session_token=memberAcct["Credentials"]["SessionToken"],
+            region_name=region_override
+        )
+    else:
+        session = boto3.Session()
+
     if target_provider == "AWS":
         session = setup_aws_credentials(assume_role_account, assume_role_name, region_override)
 
