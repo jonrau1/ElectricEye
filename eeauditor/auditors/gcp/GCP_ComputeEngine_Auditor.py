@@ -1783,7 +1783,6 @@ def gce_instance_oslogon_2fa_access_check(cache: dict, awsAccountId: str, awsReg
                 }
                 yield finding
 
-# Project Wide SSH Keys
 @registry.register_check("gce")
 def gce_instance_block_proj_ssh_keys_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
     """
@@ -1953,4 +1952,154 @@ def gce_instance_block_proj_ssh_keys_check(cache: dict, awsAccountId: str, awsRe
             }
             yield finding
 
-# Public IP Check
+@registry.register_check("gce")
+def gce_instance_public_ip_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+    """
+    [GCP.GCE.13] Google Compute Engine VM instances should not have IP forwarding enabled
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    for gce in get_compute_engine_instances(cache, gcpProjectId):
+        id = gce["id"]
+        name = gce["name"]
+        description = gce["description"]
+        zone = gce["zone"].split('/')[-1]
+        machineType = gce["machineType"].split('/')[-1]
+        createdAt = gce["creationTimestamp"]
+        lastStartedAt = gce["lastStartTimestamp"]
+        status = gce["status"]
+        if gce["networkInterfaces"][0]["accessConfigs"][0]["natIP"]:
+            print(f"VM {name} has a public ip")
+            """finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-ip-forward-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{id}/gce-instance-ip-forward-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[GCP.GCE.2] Google Compute Engine VM instances should not have IP forwarding enabled",
+                "Description": f"Google Compute Engine instance {name} in {zone} allows IP forwarding. When the IP Forwarding feature is enabled the instance's network interface (NIC) acts as a router and can receive traffic addressed to other destinations. IP forwarding is rarely required, unless the VM instance is used as a network virtual appliance, thus each VM instance should be reviewed in order to decide whether the IP forwarding is really needed for the verified instance. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your GCE VM instance should not have IP forwarding enabled refer to the Enable IP forwarding for instances section of the GCP Virtual Private Cloud guide.",
+                        "Url": "https://cloud.google.com/vpc/docs/using-routes#canipforward",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpGceVmInstance",
+                        "Id": f"{id}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "Id": id,
+                                "Description": description,
+                                "MachineType": machineType,
+                                "CreatedAt": createdAt,
+                                "LastStartedAt": lastStartedAt,
+                                "Status": status
+                            }
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-3",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-17",
+                        "NIST SP 800-53 AC-19",
+                        "NIST SP 800-53 AC-20",
+                        "NIST SP 800-53 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding    
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-ip-forward-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{id}/gce-instance-ip-forward-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[GCP.GCE.2] Google Compute Engine VM instances should not have IP forwarding enabled",
+                "Description": f"Google Compute Engine instance {name} in {zone} does not allow IP forwarding.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your GCE VM instance should not have IP forwarding enabled refer to the Enable IP forwarding for instances section of the GCP Virtual Private Cloud guide.",
+                        "Url": "https://cloud.google.com/vpc/docs/using-routes#canipforward",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpGceVmInstance",
+                        "Id": f"{id}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "Id": id,
+                                "Description": description,
+                                "MachineType": machineType,
+                                "CreatedAt": createdAt,
+                                "LastStartedAt": lastStartedAt,
+                                "Status": status
+                            }
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-3",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-17",
+                        "NIST SP 800-53 AC-19",
+                        "NIST SP 800-53 AC-20",
+                        "NIST SP 800-53 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding"""
