@@ -1431,18 +1431,89 @@ def gce_instance_oslogon_access_check(cache: dict, awsAccountId: str, awsRegion:
         # Check for Serial Port Access
         response = compute.instances().getSerialPortOutput(project=gcpProjectId, zone=zone, instance=id).execute()
 
-        if "enable-oslogin" in response["metadata"]["items"]:
-            osLogonEnabled = True
-        else:
+        # Check if OS Logon 2FA is available for the Instance
+        try:
+            if "enable-oslogin" in response["metadata"]["items"]:
+                osLogonEnabled = True
+            else:
+                osLogonEnabled = False
+        except KeyError:
             osLogonEnabled = False
 
-        print(f"OS Login is enabled: {osLogonEnabled}")
+        # this is a failing check
+        if osLogonEnabled == False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-oslogon-access-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{id}/gce-instance-oslogon-access-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "HIGH"},
+                "Confidence": 99,
+                "Title": "[GCP.GCE.10] Google Compute Engine VM instances should be configured to be accessed using OS Logon",
+                "Description": f"Google Compute Engine instance {name} in {zone} is not configured for OS Logon access. Serial port access provides a direct, unencrypted connection to the console, which can be used to perform a wide range of attacks, such as injecting commands, modifying system files, or escalating privileges. Additionally, it may be difficult to monitor and audit serial port access, which can make it difficult to detect and respond to potential security incidents. It is generally recommended to disable serial port access for GCE VM instances unless it is specifically required for debugging or troubleshooting purposes, in which case it should be carefully controlled and monitored. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your GCE VM instance should not have Serial Port access enabled refer to the Enabling interactive access on the serial console section of the GCP Compute Engine guide.",
+                        "Url": "https://cloud.google.com/compute/docs/troubleshooting/troubleshooting-using-serial-console#enabling_interactive_access_on_the_serial_console",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpGceVmInstance",
+                        "Id": f"{id}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "Id": id,
+                                "Description": description,
+                                "MachineType": machineType,
+                                "CreatedAt": createdAt,
+                                "LastStartedAt": lastStartedAt,
+                                "Status": status
+                            }
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-3",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-17",
+                        "NIST SP 800-53 AC-19",
+                        "NIST SP 800-53 AC-20",
+                        "NIST SP 800-53 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
 
 # OSLogon with 2FA Check
 @registry.register_check("gce")
 def gce_instance_oslogon_2fa_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
     """
-    [GCP.GCE.11] Google Compute Engine VM instances configured to be accessed using OS Logon should enable 2FA
+    [GCP.GCE.11] Google Compute Engine VM instances should be configured to be accessed using OS Logon with 2FA
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     compute = googleapiclient.discovery.build('compute', 'v1')
@@ -1459,12 +1530,8 @@ def gce_instance_oslogon_2fa_access_check(cache: dict, awsAccountId: str, awsReg
         # Check for Serial Port Access
         response = compute.instances().getSerialPortOutput(project=gcpProjectId, zone=zone, instance=id).execute()
 
+        # Check if OS Logon 2FA is available for the Instance
         try:
-            if "enable-oslogin" in response["metadata"]["items"]:
-                osLogonEnabled = True
-            else:
-                osLogonEnabled = False
-
             if "enable-oslogin-2fa" in response["metadata"]["items"]:
                 if response["metadata"]["items"]["enable-oslogin-2fa"] == "TRUE":
                     osLogon2faEnabled = True
@@ -1472,15 +1539,12 @@ def gce_instance_oslogon_2fa_access_check(cache: dict, awsAccountId: str, awsReg
                     osLogon2faEnabled = False
             else:
                 osLogon2faEnabled = False
+        except KeyError:
+            osLogon2faEnabled = False
 
-            print(f"OS Login is enabled: {osLogonEnabled}")
-            print(f"OS Login with 2FA/MFA is enabled: {osLogon2faEnabled}")
-        except KeyError as ke:
-            if ke == "'metadata'":
-                print('No OS Lg')
-            else:
-                print(ke)
-                continue
+        os = response['disks'][0]['licenses'][0].split('/')[-1].split('-')[0]
+
+        print(f"The OS of the instance {name} is {os}")
 
 # Project Wide SSH Keys
 
