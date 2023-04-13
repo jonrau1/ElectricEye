@@ -21,6 +21,7 @@
 import datetime
 from check_register import CheckRegister
 import googleapiclient.discovery
+import traceback
 
 registry = CheckRegister()
 
@@ -1475,8 +1476,8 @@ def gce_instance_oslogon_2fa_access_check(cache: dict, awsAccountId: str, awsReg
 
             print(f"OS Login is enabled: {oslogin_enabled}")
             print(f"OS Login with 2FA/MFA is enabled: {oslogin_2fa_enabled}")
-        except Exception:
-            print(Exception)
+        except:
+            traceback.print_exc()
 
 # Project Wide SSH Keys
 
