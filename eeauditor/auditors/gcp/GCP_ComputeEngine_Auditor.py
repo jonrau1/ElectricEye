@@ -1528,7 +1528,7 @@ def gce_instance_oslogon_2fa_access_check(cache: dict, awsAccountId: str, awsReg
         lastStartedAt = gce["lastStartTimestamp"]
         status = gce["status"]
         # Check for Serial Port Access
-        response = compute.instances().getSerialPortOutput(project=gcpProjectId, zone=zone, instance=id).execute()
+        response = compute.instances().get(project=gcpProjectId, zone=zone, instance=id).execute()
 
         # Check if OS Logon 2FA is available for the Instance
         try:
