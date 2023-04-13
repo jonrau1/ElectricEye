@@ -1968,7 +1968,13 @@ def gce_instance_public_ip_check(cache: dict, awsAccountId: str, awsRegion: str,
         createdAt = gce["creationTimestamp"]
         lastStartedAt = gce["lastStartTimestamp"]
         status = gce["status"]
-        if gce["networkInterfaces"][0]["accessConfigs"][0]["natIP"]:
+        # Check if a Public IP is available in the NICs via "natIP"
+        try:
+            pubIp = gce["networkInterfaces"][0]["accessConfigs"][0]["natIP"]
+        except KeyError:
+            pubIp = None
+        # this is a failing check
+        if pubIp is not None:
             print(f"VM {name} has a public ip")
             """finding = {
                 "SchemaVersion": "2018-10-08",
