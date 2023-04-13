@@ -1955,7 +1955,7 @@ def gce_instance_block_proj_ssh_keys_check(cache: dict, awsAccountId: str, awsRe
 @registry.register_check("gce")
 def gce_instance_public_ip_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
     """
-    [GCP.GCE.13] Google Compute Engine VM instances should not have IP forwarding enabled
+    [GCP.GCE.13] Google Compute Engine VM instances should not be publicly reachable
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -1975,27 +1975,24 @@ def gce_instance_public_ip_check(cache: dict, awsAccountId: str, awsRegion: str,
             pubIp = None
         # this is a failing check
         if pubIp is not None:
-            print(f"VM {name} has a public ip")
-        else:
-            print(f"VM {name} no have a public ip")
-            """finding = {
+            finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-ip-forward-check",
+                "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-public-ip-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{gcpProjectId}/{zone}/{id}/gce-instance-ip-forward-check",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{id}/gce-instance-public-ip-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "LOW"},
+                "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": "[GCP.GCE.2] Google Compute Engine VM instances should not have IP forwarding enabled",
-                "Description": f"Google Compute Engine instance {name} in {zone} allows IP forwarding. When the IP Forwarding feature is enabled the instance's network interface (NIC) acts as a router and can receive traffic addressed to other destinations. IP forwarding is rarely required, unless the VM instance is used as a network virtual appliance, thus each VM instance should be reviewed in order to decide whether the IP forwarding is really needed for the verified instance. Refer to the remediation instructions if this configuration is not intended.",
+                "Title": "[GCP.GCE.13] Google Compute Engine VM instances should not be publicly reachable",
+                "Description": f"Google Compute Engine instance {name} in {zone} is publicly reachable due to having an assigned NAT IP. Unless an application or workload absolutely must be reached over the public internet to serve its business objective, VM instances should not be publicly available. Consider using Cloud Load Balancer and other networking constructs for provide access. Adversaries and unauthorized personnel can potentially access or exploit unpatched vulnerabilities on machines over the internet, by making instances private you can lessen this attack surface. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "If your GCE VM instance should not have IP forwarding enabled refer to the Enable IP forwarding for instances section of the GCP Virtual Private Cloud guide.",
-                        "Url": "https://cloud.google.com/vpc/docs/using-routes#canipforward",
+                        "Text": "If your GCE VM instance should not have an External IP address refer to the IP addresses section of the GCP Google Compute Engine guide.",
+                        "Url": "https://cloud.google.com/compute/docs/ip-addresses",
                     }
                 },
                 "ProductFields": {
@@ -2047,9 +2044,9 @@ def gce_instance_public_ip_check(cache: dict, awsAccountId: str, awsRegion: str,
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-ip-forward-check",
+                "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-public-ip-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{gcpProjectId}/{zone}/{id}/gce-instance-ip-forward-check",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{id}/gce-instance-public-ip-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -2057,12 +2054,12 @@ def gce_instance_public_ip_check(cache: dict, awsAccountId: str, awsRegion: str,
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[GCP.GCE.2] Google Compute Engine VM instances should not have IP forwarding enabled",
-                "Description": f"Google Compute Engine instance {name} in {zone} does not allow IP forwarding.",
+                "Title": "[GCP.GCE.13] Google Compute Engine VM instances should not be publicly reachable",
+                "Description": f"Google Compute Engine instance {name} in {zone} is not publicly reachable due to not having an assigned NAT IP.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "If your GCE VM instance should not have IP forwarding enabled refer to the Enable IP forwarding for instances section of the GCP Virtual Private Cloud guide.",
-                        "Url": "https://cloud.google.com/vpc/docs/using-routes#canipforward",
+                        "Text": "If your GCE VM instance should not have an External IP address refer to the IP addresses section of the GCP Google Compute Engine guide.",
+                        "Url": "https://cloud.google.com/compute/docs/ip-addresses",
                     }
                 },
                 "ProductFields": {
@@ -2110,4 +2107,6 @@ def gce_instance_public_ip_check(cache: dict, awsAccountId: str, awsRegion: str,
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED"
             }
-            yield finding"""
+            yield finding 
+
+# To be continued...?
