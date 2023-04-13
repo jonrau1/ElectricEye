@@ -262,13 +262,15 @@ pip3 install --user -r requirements.txt
 7. Run the controller
 
 ```bash
-python3 eeauditor/controller.py -t GCP
+export GCP_PROJECT_ID='<My_project_id>'
+python3 eeauditor/controller.py -t GCP --gcp-project-id $GCP_PROJECT_ID
 ```
 
 Add the `--help` option for info on running individual checks and auditors and different outputs options. For instance, if you wanted to specify a specific Auditor use the following command to run it, specifiy the *name* of the Auditor **without** the `.py` ending.
 
 ```bash
-python3 eeauditor/controller.py -t GCP -a GCP_ComputeEngine_Auditor
+export GCP_PROJECT_ID='<My_project_id>'
+python3 eeauditor/controller.py -t GCP -a GCP_ComputeEngine_Auditor --gcp-project-id $GCP_PROJECT_ID
 ```
 
 You can get a full name of the auditors (as well as their checks within comments by using the following command).

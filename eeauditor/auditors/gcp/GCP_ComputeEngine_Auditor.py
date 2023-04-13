@@ -1264,6 +1264,9 @@ def gce_instance_confidential_serial_port_access_check(cache: dict, awsAccountId
         lastStartedAt = gce['lastStartTimestamp']
         status = gce['status']
         # Check for Serial Port Access
-        response = compute.instances().getSerialPortOutput(project=gcpProjectId, zone=zone, instance=id).execute()
+        try:
+            response = compute.instances().getSerialPortOutput(project=gcpProjectId, zone=zone, instance=id).execute()
 
-        print(response)
+            print(response)
+        except Exception as e:
+            print(e)
