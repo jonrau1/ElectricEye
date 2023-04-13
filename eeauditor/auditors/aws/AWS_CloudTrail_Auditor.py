@@ -552,10 +552,10 @@ def cloudtrail_log_file_validation_check(cache: dict, session, awsAccountId: str
                             "ISO 27001:2013 A.14.1.2",
                             "ISO 27001:2013 A.14.1.3",
                             "ISO 27001:2013 A.14.2.4",
-                        ],
+                        ]
                     },
                     "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
+                    "RecordState": "ACTIVE"
                 }
                 yield finding
             else:

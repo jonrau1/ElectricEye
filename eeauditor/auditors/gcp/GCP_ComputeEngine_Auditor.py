@@ -508,9 +508,9 @@ def gce_instance_auto_restart_check(cache: dict, awsAccountId: str, awsRegion: s
 
 # Secure Boot
 @registry.register_check("gcp_gce")
-def gce_instance_auto_restart_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def gce_instance_secure_Boot_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
     """
-    [GCP.GCE.3] Google Compute Engine VM instances should have automatic restart enabled
+    [GCP.GCE.4] Google Compute Engine VM instances should have Secure Boot enabled
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -523,25 +523,25 @@ def gce_instance_auto_restart_check(cache: dict, awsAccountId: str, awsRegion: s
         createdAt = gce['creationTimestamp']
         lastStartedAt = gce['lastStartTimestamp']
         status = gce['status']
-        if gce['scheduling']['automaticRestart'] is False:
+        if gce['shieldedInstanceConfig']['enableSecureBoot'] is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-instance-restart-check",
+                "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-secure-boot-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{gcpProjectId}/{zone}/{id}/gce-instance-instance-restart-check",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{id}/gce-instance-secure-boot-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "MEDIUM"},
+                "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
-                "Title": "[GCP.GCE.3] Google Compute Engine VM instances should have automatic restart enabled",
-                "Description": f"Google Compute Engine instance {name} in {zone} does not have automatic restarts enabled. Enabling GCP VM instance Auto Restart increases availability by automatically restarting an instance in the event of a failure or error. This reduces downtime, ensures application accessibility, and improves overall system reliability.. Refer to the remediation instructions if this configuration is not intended.",
+                "Title": "[GCP.GCE.4] Google Compute Engine VM instances should have Secure Boot enabled",
+                "Description": f"Google Compute Engine instance {name} in {zone} does not have Secure Boot enabled. Secure Boot is a feature that ensures the integrity of the boot process by verifying the digital signature of the boot loader and the kernel. If Secure Boot is not enabled, the boot process may be susceptible to malware or unauthorized modifications that could compromise the security of the instance. Without Secure Boot malware may modify the boot loader or kernel to gain unauthorized access or otherwise interfere with the instance. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "If your GCE VM instance should have automatic restarts enabled refer to the Set host maintenance policy of a VM section of the GCP Virtual Private Cloud guide.",
-                        "Url": "https://cloud.google.com/compute/docs/instances/setting-vm-host-options",
+                        "Text": "If your GCE VM instance should have Secure Boot enabled refer to the Secure Boot section of the GCP Virtual Private Cloud guide.",
+                        "Url": "https://cloud.google.com/compute/shielded-vm/docs/shielded-vm#secure-boot",
                     }
                 },
                 "ProductFields": {
@@ -572,16 +572,22 @@ def gce_instance_auto_restart_check(cache: dict, awsAccountId: str, awsRegion: s
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.MA-1",
-                        "NIST SP 800-53 MA-2",
-                        "NIST SP 800-53 MA-3",
-                        "NIST SP 800-53 MA-5",
-                        "NIST SP 800-53 MA-6",
-                        "AICPA TSC CC8.1",
-                        "ISO 27001:2013 A.11.1.2",
-                        "ISO 27001:2013 A.11.2.4",
-                        "ISO 27001:2013 A.11.2.5",
-                        "ISO 27001:2013 A.11.2.6"
+                        "NIST CSF PR.AC-4",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-2",
+                        "NIST SP 800-53 AC-3",
+                        "NIST SP 800-53 AC-5",
+                        "NIST SP 800-53 AC-6",
+                        "NIST SP 800-53 AC-14",
+                        "NIST SP 800-53 AC-16",
+                        "NIST SP 800-53 AC-24",
+                        "AICPA TSC CC6.3",
+                        "ISO 27001:2013 A.6.1.2",
+                        "ISO 27001:2013 A.9.1.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.4.1",
+                        "ISO 27001:2013 A.9.4.4",
+                        "ISO 27001:2013 A.9.4.5"
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -591,9 +597,9 @@ def gce_instance_auto_restart_check(cache: dict, awsAccountId: str, awsRegion: s
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-instance-restart-check",
+                "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-secure-boot-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{gcpProjectId}/{zone}/{id}/gce-instance-instance-restart-check",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{id}/gce-instance-secure-boot-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -601,12 +607,12 @@ def gce_instance_auto_restart_check(cache: dict, awsAccountId: str, awsRegion: s
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[GCP.GCE.3] Google Compute Engine VM instances should have automatic restart enabled",
-                "Description": f"Google Compute Engine instance {name} in {zone} has automatic restarts enabled.",
+                "Title": "[GCP.GCE.4] Google Compute Engine VM instances should have Secure Boot enabled",
+                "Description": f"Google Compute Engine instance {name} in {zone} has Secure Boot enabled.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "If your GCE VM instance should have automatic restarts enabled refer to the Set host maintenance policy of a VM section of the GCP Virtual Private Cloud guide.",
-                        "Url": "https://cloud.google.com/compute/docs/instances/setting-vm-host-options",
+                        "Text": "If your GCE VM instance should have Secure Boot enabled refer to the Secure Boot section of the GCP Virtual Private Cloud guide.",
+                        "Url": "https://cloud.google.com/compute/shielded-vm/docs/shielded-vm#secure-boot",
                     }
                 },
                 "ProductFields": {
@@ -635,26 +641,176 @@ def gce_instance_auto_restart_check(cache: dict, awsAccountId: str, awsRegion: s
                     }
                 ],
                 "Compliance": {
-                    "Status": "Passed",
+                    "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.MA-1",
-                        "NIST SP 800-53 MA-2",
-                        "NIST SP 800-53 MA-3",
-                        "NIST SP 800-53 MA-5",
-                        "NIST SP 800-53 MA-6",
-                        "AICPA TSC CC8.1",
-                        "ISO 27001:2013 A.11.1.2",
-                        "ISO 27001:2013 A.11.2.4",
-                        "ISO 27001:2013 A.11.2.5",
-                        "ISO 27001:2013 A.11.2.6"
+                        "NIST CSF PR.AC-4",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-2",
+                        "NIST SP 800-53 AC-3",
+                        "NIST SP 800-53 AC-5",
+                        "NIST SP 800-53 AC-6",
+                        "NIST SP 800-53 AC-14",
+                        "NIST SP 800-53 AC-16",
+                        "NIST SP 800-53 AC-24",
+                        "AICPA TSC CC6.3",
+                        "ISO 27001:2013 A.6.1.2",
+                        "ISO 27001:2013 A.9.1.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.4.1",
+                        "ISO 27001:2013 A.9.4.4",
+                        "ISO 27001:2013 A.9.4.5"
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED"
+                "RecordState": "NEW"
             }
             yield finding
 
 # VTPM
+@registry.register_check("gcp_gce")
+def gce_instance_secure_Boot_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+    """
+    [GCP.GCE.4] Google Compute Engine VM instances should have Secure Boot enabled
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    for gce in get_compute_engine_instances(cache, gcpProjectId):
+        id = gce['id']
+        name = gce['name']
+        description = gce['description']
+        zone = gce['zone'].split('/')[-1]
+        machineType = gce['machineType'].split('/')[-1]
+        createdAt = gce['creationTimestamp']
+        lastStartedAt = gce['lastStartTimestamp']
+        status = gce['status']
+        if gce['shieldedInstanceConfig']['enableSecureBoot'] is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-secure-boot-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{id}/gce-instance-secure-boot-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "HIGH"},
+                "Confidence": 99,
+                "Title": "[GCP.GCE.4] Google Compute Engine VM instances should have Secure Boot enabled",
+                "Description": f"Google Compute Engine instance {name} in {zone} does not have Secure Boot enabled. Secure Boot is a feature that ensures the integrity of the boot process by verifying the digital signature of the boot loader and the kernel. If Secure Boot is not enabled, the boot process may be susceptible to malware or unauthorized modifications that could compromise the security of the instance. Without Secure Boot malware may modify the boot loader or kernel to gain unauthorized access or otherwise interfere with the instance. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your GCE VM instance should have Secure Boot enabled refer to the Secure Boot section of the GCP Virtual Private Cloud guide.",
+                        "Url": "https://cloud.google.com/compute/shielded-vm/docs/shielded-vm#secure-boot",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpGceVmInstance",
+                        "Id": f"{id}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "Id": id,
+                                "Description": description,
+                                "MachineType": machineType,
+                                "CreatedAt": createdAt,
+                                "LastStartedAt": lastStartedAt,
+                                "Status": status
+                            }
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.DS-6",
+                        "NIST SP 800-53 SC-16",
+                        "NIST SP 800-53 SI-7",
+                        "AICPA TSC CC7.1",
+                        "ISO 27001:2013 A.12.2.1",
+                        "ISO 27001:2013 A.12.5.1",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3",
+                        "ISO 27001:2013 A.14.2.4",
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-secure-boot-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{id}/gce-instance-secure-boot-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[GCP.GCE.4] Google Compute Engine VM instances should have Secure Boot enabled",
+                "Description": f"Google Compute Engine instance {name} in {zone} has Secure Boot enabled.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your GCE VM instance should have Secure Boot enabled refer to the Secure Boot section of the GCP Virtual Private Cloud guide.",
+                        "Url": "https://cloud.google.com/compute/shielded-vm/docs/shielded-vm#secure-boot",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpGceVmInstance",
+                        "Id": f"{id}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "Id": id,
+                                "Description": description,
+                                "MachineType": machineType,
+                                "CreatedAt": createdAt,
+                                "LastStartedAt": lastStartedAt,
+                                "Status": status
+                            }
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.DS-6",
+                        "NIST SP 800-53 SC-16",
+                        "NIST SP 800-53 SI-7",
+                        "AICPA TSC CC7.1",
+                        "ISO 27001:2013 A.12.2.1",
+                        "ISO 27001:2013 A.12.5.1",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3",
+                        "ISO 27001:2013 A.14.2.4",
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "NEW"
+            }
+            yield finding
 
 # Integrity Monitoring
 

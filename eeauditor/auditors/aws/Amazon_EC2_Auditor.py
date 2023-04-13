@@ -204,7 +204,7 @@ def ec2_imdsv2_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
 
 @registry.register_check("ec2")
 def ec2_secure_enclave_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EC2.2] EC2 Instances should be configured to use Secure Enclaves"""
+    """[EC2.2] EC2 Instances running critical or high-security workloads should be configured to use Secure Enclaves"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for i in describe_instances(cache, session):
@@ -236,7 +236,7 @@ def ec2_secure_enclave_check(cache: dict, session, awsAccountId: str, awsRegion:
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": "[EC2.2] EC2 Instances should be configured to use Secure Enclaves",
+                "Title": "[EC2.2] EC2 Instances running critical or high-security workloads should be configured to use Secure Enclaves",
                 "Description": "EC2 Instance "
                 + instanceId
                 + " is not configured to use a Secure Enclave. AWS Nitro Enclaves is an Amazon EC2 feature that allows you to create isolated execution environments, called enclaves, from Amazon EC2 instances. Enclaves are separate, hardened, and highly constrained virtual machines. They provide only secure local socket connectivity with their parent instance. Refer to the remediation instructions if this configuration is not intended",
@@ -306,7 +306,7 @@ def ec2_secure_enclave_check(cache: dict, session, awsAccountId: str, awsRegion:
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[EC2.2] EC2 Instances should be configured to use Secure Enclaves",
+                "Title": "[EC2.2] EC2 Instances running critical or high-security workloads should be configured to use Secure Enclaves",
                 "Description": "EC2 Instance "
                 + instanceId
                 + " is configured to use a Secure Enclave.",
