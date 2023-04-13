@@ -506,9 +506,8 @@ def gce_instance_auto_restart_check(cache: dict, awsAccountId: str, awsRegion: s
             }
             yield finding
 
-# Secure Boot
 @registry.register_check("gcp_gce")
-def gce_instance_secure_Boot_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def gce_instance_secure_boot_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
     """
     [GCP.GCE.4] Google Compute Engine VM instances should have Secure Boot enabled
     """
@@ -523,7 +522,7 @@ def gce_instance_secure_Boot_check(cache: dict, awsAccountId: str, awsRegion: st
         createdAt = gce['creationTimestamp']
         lastStartedAt = gce['lastStartTimestamp']
         status = gce['status']
-        if gce['shieldedInstanceConfig']['enableSecureBoot'] is False:
+        if gce['shieldedInstanceConfig']['enableVtpm'] is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-secure-boot-check",
@@ -572,22 +571,15 @@ def gce_instance_secure_Boot_check(cache: dict, awsAccountId: str, awsRegion: st
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.AC-4",
-                        "NIST SP 800-53 AC-1",
-                        "NIST SP 800-53 AC-2",
-                        "NIST SP 800-53 AC-3",
-                        "NIST SP 800-53 AC-5",
-                        "NIST SP 800-53 AC-6",
-                        "NIST SP 800-53 AC-14",
-                        "NIST SP 800-53 AC-16",
-                        "NIST SP 800-53 AC-24",
-                        "AICPA TSC CC6.3",
-                        "ISO 27001:2013 A.6.1.2",
-                        "ISO 27001:2013 A.9.1.2",
-                        "ISO 27001:2013 A.9.2.3",
-                        "ISO 27001:2013 A.9.4.1",
-                        "ISO 27001:2013 A.9.4.4",
-                        "ISO 27001:2013 A.9.4.5"
+                        "NIST CSF PR.DS-6",
+                        "NIST SP 800-53 SC-16",
+                        "NIST SP 800-53 SI-7",
+                        "AICPA TSC CC7.1",
+                        "ISO 27001:2013 A.12.2.1",
+                        "ISO 27001:2013 A.12.5.1",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3",
+                        "ISO 27001:2013 A.14.2.4",
                     ]
                 },
                 "Workflow": {"Status": "NEW"},
@@ -643,22 +635,15 @@ def gce_instance_secure_Boot_check(cache: dict, awsAccountId: str, awsRegion: st
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.AC-4",
-                        "NIST SP 800-53 AC-1",
-                        "NIST SP 800-53 AC-2",
-                        "NIST SP 800-53 AC-3",
-                        "NIST SP 800-53 AC-5",
-                        "NIST SP 800-53 AC-6",
-                        "NIST SP 800-53 AC-14",
-                        "NIST SP 800-53 AC-16",
-                        "NIST SP 800-53 AC-24",
-                        "AICPA TSC CC6.3",
-                        "ISO 27001:2013 A.6.1.2",
-                        "ISO 27001:2013 A.9.1.2",
-                        "ISO 27001:2013 A.9.2.3",
-                        "ISO 27001:2013 A.9.4.1",
-                        "ISO 27001:2013 A.9.4.4",
-                        "ISO 27001:2013 A.9.4.5"
+                        "NIST CSF PR.DS-6",
+                        "NIST SP 800-53 SC-16",
+                        "NIST SP 800-53 SI-7",
+                        "AICPA TSC CC7.1",
+                        "ISO 27001:2013 A.12.2.1",
+                        "ISO 27001:2013 A.12.5.1",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3",
+                        "ISO 27001:2013 A.14.2.4",
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
@@ -668,9 +653,9 @@ def gce_instance_secure_Boot_check(cache: dict, awsAccountId: str, awsRegion: st
 
 # VTPM
 @registry.register_check("gcp_gce")
-def gce_instance_secure_Boot_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def gce_instance_vtpm_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
     """
-    [GCP.GCE.4] Google Compute Engine VM instances should have Secure Boot enabled
+    [GCP.GCE.5] Google Compute Engine VM instances should have Virtual Trusted Platform Module enabled
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -686,9 +671,9 @@ def gce_instance_secure_Boot_check(cache: dict, awsAccountId: str, awsRegion: st
         if gce['shieldedInstanceConfig']['enableSecureBoot'] is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-secure-boot-check",
+                "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-vtpm-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{gcpProjectId}/{zone}/{id}/gce-instance-secure-boot-check",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{id}/gce-instance-vtpm-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -696,12 +681,12 @@ def gce_instance_secure_Boot_check(cache: dict, awsAccountId: str, awsRegion: st
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
-                "Title": "[GCP.GCE.4] Google Compute Engine VM instances should have Secure Boot enabled",
-                "Description": f"Google Compute Engine instance {name} in {zone} does not have Secure Boot enabled. Secure Boot is a feature that ensures the integrity of the boot process by verifying the digital signature of the boot loader and the kernel. If Secure Boot is not enabled, the boot process may be susceptible to malware or unauthorized modifications that could compromise the security of the instance. Without Secure Boot malware may modify the boot loader or kernel to gain unauthorized access or otherwise interfere with the instance. Refer to the remediation instructions if this configuration is not intended.",
+                "Title": "[GCP.GCE.5] Google Compute Engine VM instances should have Virtual Trusted Platform Module enabled",
+                "Description": f"Google Compute Engine instance {name} in {zone} does not have Virtual Trusted Platform Module (vTPM) enabled. VTPM is a feature that provides hardware-level security by emulating a hardware TPM in a virtualized environment. If vTPM is not enabled, cryptographic keys and other sensitive data may be vulnerable to attacks that could compromise the security of the instance. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "If your GCE VM instance should have Secure Boot enabled refer to the Secure Boot section of the GCP Virtual Private Cloud guide.",
-                        "Url": "https://cloud.google.com/compute/shielded-vm/docs/shielded-vm#secure-boot",
+                        "Text": "If your GCE VM instance should have VTPM enabled refer to the Virtual Trusted Platform Module (vTPM) section of the GCP Virtual Private Cloud guide.",
+                        "Url": "https://cloud.google.com/compute/shielded-vm/docs/shielded-vm#vtpm",
                     }
                 },
                 "ProductFields": {
@@ -750,9 +735,9 @@ def gce_instance_secure_Boot_check(cache: dict, awsAccountId: str, awsRegion: st
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-secure-boot-check",
+                "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-vtpm-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{gcpProjectId}/{zone}/{id}/gce-instance-secure-boot-check",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{id}/gce-instance-vtpm-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -760,12 +745,12 @@ def gce_instance_secure_Boot_check(cache: dict, awsAccountId: str, awsRegion: st
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[GCP.GCE.4] Google Compute Engine VM instances should have Secure Boot enabled",
-                "Description": f"Google Compute Engine instance {name} in {zone} has Secure Boot enabled.",
+                "Title": "[GCP.GCE.5] Google Compute Engine VM instances should have Virtual Trusted Platform Module enabled",
+                "Description": f"Google Compute Engine instance {name} in {zone} has Virtual Trusted Platform Module (vTPM) enabled.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "If your GCE VM instance should have Secure Boot enabled refer to the Secure Boot section of the GCP Virtual Private Cloud guide.",
-                        "Url": "https://cloud.google.com/compute/shielded-vm/docs/shielded-vm#secure-boot",
+                        "Text": "If your GCE VM instance should have VTPM enabled refer to the Virtual Trusted Platform Module (vTPM) section of the GCP Virtual Private Cloud guide.",
+                        "Url": "https://cloud.google.com/compute/shielded-vm/docs/shielded-vm#vtpm",
                     }
                 },
                 "ProductFields": {
@@ -808,7 +793,7 @@ def gce_instance_secure_Boot_check(cache: dict, awsAccountId: str, awsRegion: st
                     ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "NEW"
+                "RecordState": "ARCHIVED"
             }
             yield finding
 

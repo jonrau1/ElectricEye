@@ -234,7 +234,7 @@ def ec2_secure_enclave_check(cache: dict, session, awsAccountId: str, awsRegion:
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "MEDIUM"},
+                "Severity": {"Label": "LOW"},
                 "Confidence": 99,
                 "Title": "[EC2.2] EC2 Instances running critical or high-security workloads should be configured to use Secure Enclaves",
                 "Description": "EC2 Instance "
