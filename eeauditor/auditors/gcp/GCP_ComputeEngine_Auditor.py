@@ -1476,7 +1476,7 @@ def gce_instance_oslogon_2fa_access_check(cache: dict, awsAccountId: str, awsReg
             print(f"OS Login is enabled: {osLogonEnabled}")
             print(f"OS Login with 2FA/MFA is enabled: {osLogon2faEnabled}")
         except KeyError as ke:
-            if ke == "metadata":
+            if ke == "'metadata'":
                 print('No OS Lg')
             else:
                 print(ke)
