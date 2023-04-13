@@ -39,17 +39,17 @@ def get_compute_engine_instances(cache: dict, gcpProjectId: str):
 
     # Write all Zones to list
     zoneList = []
-    for zone in aggResult['items'].keys():
+    for zone in aggResult["items"].keys():
         zoneList.append(zone)
 
     # If the Zone has a top level key of "warning" it does not contain entries
     for z in zoneList:
-        for agg in aggResult['items'][z]:
+        for agg in aggResult["items"][z]:
             if agg == 'warning':
                 continue
             # reloop the list except looking at instances - this is a normal List we can loop
             else:
-                for i in aggResult['items'][z]['instances']:
+                for i in aggResult["items"][z]["instances"]:
                     results.append(i)
 
     del aggResult
@@ -65,15 +65,15 @@ def gce_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRe
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for gce in get_compute_engine_instances(cache, gcpProjectId):
-        id = gce['id']
-        name = gce['name']
-        description = gce['description']
-        zone = gce['zone'].split('/')[-1]
-        machineType = gce['machineType'].split('/')[-1]
-        createdAt = gce['creationTimestamp']
-        lastStartedAt = gce['lastStartTimestamp']
-        status = gce['status']
-        if gce['deletionProtection'] is False:
+        id = gce["id"]
+        name = gce["name"]
+        description = gce["description"]
+        zone = gce["zone"].split('/')[-1]
+        machineType = gce["machineType"].split('/')[-1]
+        createdAt = gce["creationTimestamp"]
+        lastStartedAt = gce["lastStartTimestamp"]
+        status = gce["status"]
+        if gce["deletionProtection"] is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-del-protection-check",
@@ -216,15 +216,15 @@ def gce_instance_ip_forwarding_check(cache: dict, awsAccountId: str, awsRegion: 
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for gce in get_compute_engine_instances(cache, gcpProjectId):
-        id = gce['id']
-        name = gce['name']
-        description = gce['description']
-        zone = gce['zone'].split('/')[-1]
-        machineType = gce['machineType'].split('/')[-1]
-        createdAt = gce['creationTimestamp']
-        lastStartedAt = gce['lastStartTimestamp']
-        status = gce['status']
-        if gce['canIpForward'] is True:
+        id = gce["id"]
+        name = gce["name"]
+        description = gce["description"]
+        zone = gce["zone"].split('/')[-1]
+        machineType = gce["machineType"].split('/')[-1]
+        createdAt = gce["creationTimestamp"]
+        lastStartedAt = gce["lastStartTimestamp"]
+        status = gce["status"]
+        if gce["canIpForward"] is True:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-ip-forward-check",
@@ -367,15 +367,15 @@ def gce_instance_auto_restart_check(cache: dict, awsAccountId: str, awsRegion: s
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for gce in get_compute_engine_instances(cache, gcpProjectId):
-        id = gce['id']
-        name = gce['name']
-        description = gce['description']
-        zone = gce['zone'].split('/')[-1]
-        machineType = gce['machineType'].split('/')[-1]
-        createdAt = gce['creationTimestamp']
-        lastStartedAt = gce['lastStartTimestamp']
-        status = gce['status']
-        if gce['scheduling']['automaticRestart'] is False:
+        id = gce["id"]
+        name = gce["name"]
+        description = gce["description"]
+        zone = gce["zone"].split('/')[-1]
+        machineType = gce["machineType"].split('/')[-1]
+        createdAt = gce["creationTimestamp"]
+        lastStartedAt = gce["lastStartTimestamp"]
+        status = gce["status"]
+        if gce["scheduling"]["automaticRestart"] is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-instance-restart-check",
@@ -514,15 +514,15 @@ def gce_instance_secure_boot_check(cache: dict, awsAccountId: str, awsRegion: st
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for gce in get_compute_engine_instances(cache, gcpProjectId):
-        id = gce['id']
-        name = gce['name']
-        description = gce['description']
-        zone = gce['zone'].split('/')[-1]
-        machineType = gce['machineType'].split('/')[-1]
-        createdAt = gce['creationTimestamp']
-        lastStartedAt = gce['lastStartTimestamp']
-        status = gce['status']
-        if gce['shieldedInstanceConfig']['enableVtpm'] is False:
+        id = gce["id"]
+        name = gce["name"]
+        description = gce["description"]
+        zone = gce["zone"].split('/')[-1]
+        machineType = gce["machineType"].split('/')[-1]
+        createdAt = gce["creationTimestamp"]
+        lastStartedAt = gce["lastStartTimestamp"]
+        status = gce["status"]
+        if gce["shieldedInstanceConfig"]["enableVtpm"] is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-secure-boot-check",
@@ -659,15 +659,15 @@ def gce_instance_vtpm_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for gce in get_compute_engine_instances(cache, gcpProjectId):
-        id = gce['id']
-        name = gce['name']
-        description = gce['description']
-        zone = gce['zone'].split('/')[-1]
-        machineType = gce['machineType'].split('/')[-1]
-        createdAt = gce['creationTimestamp']
-        lastStartedAt = gce['lastStartTimestamp']
-        status = gce['status']
-        if gce['shieldedInstanceConfig']['enableVtpm'] is False:
+        id = gce["id"]
+        name = gce["name"]
+        description = gce["description"]
+        zone = gce["zone"].split('/')[-1]
+        machineType = gce["machineType"].split('/')[-1]
+        createdAt = gce["creationTimestamp"]
+        lastStartedAt = gce["lastStartTimestamp"]
+        status = gce["status"]
+        if gce["shieldedInstanceConfig"]["enableVtpm"] is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-vtpm-check",
@@ -804,15 +804,15 @@ def gce_instance_integrity_mon_check(cache: dict, awsAccountId: str, awsRegion: 
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for gce in get_compute_engine_instances(cache, gcpProjectId):
-        id = gce['id']
-        name = gce['name']
-        description = gce['description']
-        zone = gce['zone'].split('/')[-1]
-        machineType = gce['machineType'].split('/')[-1]
-        createdAt = gce['creationTimestamp']
-        lastStartedAt = gce['lastStartTimestamp']
-        status = gce['status']
-        if gce['shieldedInstanceConfig']['enableIntegrityMonitoring'] is False:
+        id = gce["id"]
+        name = gce["name"]
+        description = gce["description"]
+        zone = gce["zone"].split('/')[-1]
+        machineType = gce["machineType"].split('/')[-1]
+        createdAt = gce["creationTimestamp"]
+        lastStartedAt = gce["lastStartTimestamp"]
+        status = gce["status"]
+        if gce["shieldedInstanceConfig"]["enableIntegrityMonitoring"] is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-integrity-mon-check",
@@ -949,15 +949,15 @@ def gce_instance_siip_auto_update_check(cache: dict, awsAccountId: str, awsRegio
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for gce in get_compute_engine_instances(cache, gcpProjectId):
-        id = gce['id']
-        name = gce['name']
-        description = gce['description']
-        zone = gce['zone'].split('/')[-1]
-        machineType = gce['machineType'].split('/')[-1]
-        createdAt = gce['creationTimestamp']
-        lastStartedAt = gce['lastStartTimestamp']
-        status = gce['status']
-        if gce['shieldedInstanceIntegrityPolicy']['updateAutoLearnPolicy'] is False:
+        id = gce["id"]
+        name = gce["name"]
+        description = gce["description"]
+        zone = gce["zone"].split('/')[-1]
+        machineType = gce["machineType"].split('/')[-1]
+        createdAt = gce["creationTimestamp"]
+        lastStartedAt = gce["lastStartTimestamp"]
+        status = gce["status"]
+        if gce["shieldedInstanceIntegrityPolicy"]["updateAutoLearnPolicy"] is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-integrity-update-auto-learn-check",
@@ -1094,15 +1094,15 @@ def gce_instance_confidential_compute_update_check(cache: dict, awsAccountId: st
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for gce in get_compute_engine_instances(cache, gcpProjectId):
-        id = gce['id']
-        name = gce['name']
-        description = gce['description']
-        zone = gce['zone'].split('/')[-1]
-        machineType = gce['machineType'].split('/')[-1]
-        createdAt = gce['creationTimestamp']
-        lastStartedAt = gce['lastStartTimestamp']
-        status = gce['status']
-        if gce['confidentialInstanceConfig']['enableConfidentialCompute'] is False:
+        id = gce["id"]
+        name = gce["name"]
+        description = gce["description"]
+        zone = gce["zone"].split('/')[-1]
+        machineType = gce["machineType"].split('/')[-1]
+        createdAt = gce["creationTimestamp"]
+        lastStartedAt = gce["lastStartTimestamp"]
+        status = gce["status"]
+        if gce["confidentialInstanceConfig"]["enableConfidentialCompute"] is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-confidential-computing-check",
@@ -1255,22 +1255,159 @@ def gce_instance_confidential_serial_port_access_check(cache: dict, awsAccountId
     compute = googleapiclient.discovery.build('compute', 'v1')
 
     for gce in get_compute_engine_instances(cache, gcpProjectId):
-        id = gce['id']
-        name = gce['name']
-        description = gce['description']
-        zone = gce['zone'].split('/')[-1]
-        machineType = gce['machineType'].split('/')[-1]
-        createdAt = gce['creationTimestamp']
-        lastStartedAt = gce['lastStartTimestamp']
-        status = gce['status']
+        id = gce["id"]
+        name = gce["name"]
+        description = gce["description"]
+        zone = gce["zone"].split('/')[-1]
+        machineType = gce["machineType"].split('/')[-1]
+        createdAt = gce["creationTimestamp"]
+        lastStartedAt = gce["lastStartTimestamp"]
+        status = gce["status"]
         # Check for Serial Port Access
         response = compute.instances().getSerialPortOutput(project=gcpProjectId, zone=zone, instance=id).execute()
 
         # Check if the serial port output indicates that Serial Console Access is enabled
+        # Set an internal bool to go off to avoid writing multiple checks in the loops
         if 'Serial port 1 output' in response:
-            if 'Serial console is listening' in response['Serial port 1 output']:
-                print('Serial Console Access is enabled')
+            if 'Serial console is listening' in response["Serial port 1 output"]:
+                serialPortAccess = True
             else:
-                print('Serial Console Access is disabled')
+                serialPortAccess = False
         else:
-            print('Serial Console Access is disabled')
+            serialPortAccess = False
+        # this is a failing check
+        if serialPortAccess == True:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-serial-port-access-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{id}/gce-instance-serial-port-access-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "HIGH"},
+                "Confidence": 99,
+                "Title": "[GCP.GCE.9] Google Compute Engine VM instances should not enabled serial port access",
+                "Description": f"Google Compute Engine instance {name} in {zone} allows Serial Port access. Serial port access provides a direct, unencrypted connection to the console, which can be used to perform a wide range of attacks, such as injecting commands, modifying system files, or escalating privileges. Additionally, it may be difficult to monitor and audit serial port access, which can make it difficult to detect and respond to potential security incidents. It is generally recommended to disable serial port access for GCE VM instances unless it is specifically required for debugging or troubleshooting purposes, in which case it should be carefully controlled and monitored. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your GCE VM instance should not have Serial Port access enabled refer to the Enabling interactive access on the serial console section of the GCP Compute Engine guide.",
+                        "Url": "https://cloud.google.com/compute/docs/troubleshooting/troubleshooting-using-serial-console#enabling_interactive_access_on_the_serial_console",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpGceVmInstance",
+                        "Id": f"{id}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "Id": id,
+                                "Description": description,
+                                "MachineType": machineType,
+                                "CreatedAt": createdAt,
+                                "LastStartedAt": lastStartedAt,
+                                "Status": status
+                            }
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-3",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-17",
+                        "NIST SP 800-53 AC-19",
+                        "NIST SP 800-53 AC-20",
+                        "NIST SP 800-53 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-serial-port-access-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{id}/gce-instance-serial-port-access-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[GCP.GCE.9] Google Compute Engine VM instances should not enabled serial port access",
+                "Description": f"Google Compute Engine instance {name} in {zone} does not allow Serial Port access.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your GCE VM instance should not have Serial Port access enabled refer to the Enabling interactive access on the serial console section of the GCP Compute Engine guide.",
+                        "Url": "https://cloud.google.com/compute/docs/troubleshooting/troubleshooting-using-serial-console#enabling_interactive_access_on_the_serial_console",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpGceVmInstance",
+                        "Id": f"{id}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "Id": id,
+                                "Description": description,
+                                "MachineType": machineType,
+                                "CreatedAt": createdAt,
+                                "LastStartedAt": lastStartedAt,
+                                "Status": status
+                            }
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-3",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-17",
+                        "NIST SP 800-53 AC-19",
+                        "NIST SP 800-53 AC-20",
+                        "NIST SP 800-53 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+        
