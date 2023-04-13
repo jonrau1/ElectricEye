@@ -69,6 +69,7 @@ def cloudsql_instance_public_check(cache: dict, awsAccountId: str, awsRegion: st
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
+    get_cloudsql_dbs(cache, gcpProjectId)
 
 
     """for gce in get_cloudsql_dbs(cache, gcpProjectId):
