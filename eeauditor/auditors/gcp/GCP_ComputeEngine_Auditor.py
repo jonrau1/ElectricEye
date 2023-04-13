@@ -1787,7 +1787,6 @@ def gce_instance_block_proj_ssh_keys_check(cache: dict, awsAccountId: str, awsRe
             for item in response['metadata']['items']:
                 if item['key'] == 'block-project-ssh-keys' and item['value'] == 'TRUE':
                     print('Project-wide SSH keys are blocked for this VM instance')
-                    break
         else:
             print('bollocks')
 
