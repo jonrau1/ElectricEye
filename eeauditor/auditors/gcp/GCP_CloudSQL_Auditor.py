@@ -56,7 +56,7 @@ def cloudsql_instance_public_check(cache: dict, awsAccountId: str, awsRegion: st
         maintenanceVersion = csql["maintenanceVersion"]
         ipAddress = csql["ipAddresses"][0]["ipAddress"]
         # If this value is True, it means a Public IP is assigned
-        if csql["ipConfiguration"]["ipv4Enabled"] == True:
+        if csql["settings"]["ipConfiguration"]["ipv4Enabled"] == True:
             print(f"{name} in {zone} is public")
         else:
             print(f"{name} in {zone} is private ip")
