@@ -392,7 +392,7 @@ def gce_instance_auto_restart_check(cache: dict, awsAccountId: str, awsRegion: s
                 "Description": f"Google Compute Engine instance {name} in {zone} does not have automatic restarts enabled. Enabling GCP VM instance Auto Restart increases availability by automatically restarting an instance in the event of a failure or error. This reduces downtime, ensures application accessibility, and improves overall system reliability.. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "If your GCE VM instance should have automatic restarts enabled refer to the Set host maintenance policy of a VM section of the GCP Virtual Private Cloud guide.",
+                        "Text": "If your GCE VM instance should have automatic restarts enabled refer to the Set host maintenance policy of a VM section of the GCP Compute Engine guide.",
                         "Url": "https://cloud.google.com/compute/docs/instances/setting-vm-host-options",
                     }
                 },
@@ -457,7 +457,7 @@ def gce_instance_auto_restart_check(cache: dict, awsAccountId: str, awsRegion: s
                 "Description": f"Google Compute Engine instance {name} in {zone} has automatic restarts enabled.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "If your GCE VM instance should have automatic restarts enabled refer to the Set host maintenance policy of a VM section of the GCP Virtual Private Cloud guide.",
+                        "Text": "If your GCE VM instance should have automatic restarts enabled refer to the Set host maintenance policy of a VM section of the GCP Compute Engine guide.",
                         "Url": "https://cloud.google.com/compute/docs/instances/setting-vm-host-options",
                     }
                 },
@@ -667,7 +667,7 @@ def gce_instance_vtpm_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
         createdAt = gce['creationTimestamp']
         lastStartedAt = gce['lastStartTimestamp']
         status = gce['status']
-        if gce['shieldedInstanceConfig']['enableSecureBoot'] is False:
+        if gce['shieldedInstanceConfig']['enableVtpm'] is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-vtpm-check",
@@ -684,7 +684,7 @@ def gce_instance_vtpm_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                 "Description": f"Google Compute Engine instance {name} in {zone} does not have Virtual Trusted Platform Module (vTPM) enabled. VTPM is a feature that provides hardware-level security by emulating a hardware TPM in a virtualized environment. If vTPM is not enabled, cryptographic keys and other sensitive data may be vulnerable to attacks that could compromise the security of the instance. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "If your GCE VM instance should have VTPM enabled refer to the Virtual Trusted Platform Module (vTPM) section of the GCP Virtual Private Cloud guide.",
+                        "Text": "If your GCE VM instance should have VTPM enabled refer to the Virtual Trusted Platform Module (vTPM) section of the GCP Compute Engine guide.",
                         "Url": "https://cloud.google.com/compute/shielded-vm/docs/shielded-vm#vtpm",
                     }
                 },
@@ -748,7 +748,7 @@ def gce_instance_vtpm_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                 "Description": f"Google Compute Engine instance {name} in {zone} has Virtual Trusted Platform Module (vTPM) enabled.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "If your GCE VM instance should have VTPM enabled refer to the Virtual Trusted Platform Module (vTPM) section of the GCP Virtual Private Cloud guide.",
+                        "Text": "If your GCE VM instance should have VTPM enabled refer to the Virtual Trusted Platform Module (vTPM) section of the GCP Compute Engine guide.",
                         "Url": "https://cloud.google.com/compute/shielded-vm/docs/shielded-vm#vtpm",
                     }
                 },
@@ -812,7 +812,7 @@ def gce_instance_integrity_mon_check(cache: dict, awsAccountId: str, awsRegion: 
         createdAt = gce['creationTimestamp']
         lastStartedAt = gce['lastStartTimestamp']
         status = gce['status']
-        if gce['shieldedInstanceConfig']['enableSecureBoot'] is False:
+        if gce['shieldedInstanceConfig']['enableIntegrityMonitoring'] is False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-integrity-mon-check",
@@ -829,7 +829,7 @@ def gce_instance_integrity_mon_check(cache: dict, awsAccountId: str, awsRegion: 
                 "Description": f"Google Compute Engine instance {name} in {zone} does not have Integrity Monitoring enabled. Integrity Monitoring is a feature that provides continuous monitoring and detection of changes to the system and application files on the instance. If Integrity Monitoring is not enabled, changes to critical system files or applications may go undetected, allowing attackers to compromise the security of the instance. Without it, changes to critical system files or applications may go undetected, allowing attackers to install malware or tamper with the system. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "If your GCE VM instance should have VTPM enabled refer to the Integrity Monitoring section of the GCP Virtual Private Cloud guide.",
+                        "Text": "If your GCE VM instance should have Integrity Monitoring enabled refer to the Integrity Monitoring section of the GCP Compute Engine guide.",
                         "Url": "https://cloud.google.com/compute/shielded-vm/docs/shielded-vm#integrity-monitoring",
                     }
                 },
@@ -893,7 +893,7 @@ def gce_instance_integrity_mon_check(cache: dict, awsAccountId: str, awsRegion: 
                 "Description": f"Google Compute Engine instance {name} in {zone} has Integrity Monitoring enabled.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "If your GCE VM instance should have VTPM enabled refer to the Integrity Monitoring section of the GCP Virtual Private Cloud guide.",
+                        "Text": "If your GCE VM instance should have Integrity Monitoring enabled refer to the Integrity Monitoring section of the GCP Compute Engine guide.",
                         "Url": "https://cloud.google.com/compute/shielded-vm/docs/shielded-vm#integrity-monitoring",
                     }
                 },
@@ -941,6 +941,149 @@ def gce_instance_integrity_mon_check(cache: dict, awsAccountId: str, awsRegion: 
             }
             yield finding
 
-# Autolearn Policy
+@registry.register_check("gcp_gce")
+def gce_instance_siip_auto_update_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+    """
+    [GCP.GCE.7] Google Compute Engine VM instances should be configured to auto-update the Shielded Instance Integrity Auto-learn Policy
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    for gce in get_compute_engine_instances(cache, gcpProjectId):
+        id = gce['id']
+        name = gce['name']
+        description = gce['description']
+        zone = gce['zone'].split('/')[-1]
+        machineType = gce['machineType'].split('/')[-1]
+        createdAt = gce['creationTimestamp']
+        lastStartedAt = gce['lastStartTimestamp']
+        status = gce['status']
+        if gce['shieldedInstanceIntegrityPolicy']['updateAutoLearnPolicy'] is False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-integrity-update-auto-learn-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{id}/gce-instance-integrity-update-auto-learn-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "HIGH"},
+                "Confidence": 99,
+                "Title": "[GCP.GCE.7] Google Compute Engine VM instances should be configured to auto-update the Shielded Instance Integrity Auto-learn Policy",
+                "Description": f"Google Compute Engine instance {name} in {zone} is not configured to auto-update the Shielded Instance Integrity Auto-learn Policy. The Shielded Instance Integrity Policy is a security feature in Google Cloud that helps protect VM instances against tampering and other unauthorized changes. This policy specifies a set of conditions that the instance must meet in order to be considered 'trusted', such as having a valid firmware, kernel, and boot loader, and not being modified since its last boot. It is recommended to set the Auto Learn Policy to Update for the Shielded Instance Integrity Policy on VM instances. This ensures that instances are always checked against the latest policy. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your GCE VM instance should have instance integirty autolearning policy enabled refer to the Updating the integrity policy baseline section of the GCP Compute Engine guide.",
+                        "Url": "https://cloud.google.com/compute/shielded-vm/docs/integrity-monitoring#updating-baseline",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpGceVmInstance",
+                        "Id": f"{id}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "Id": id,
+                                "Description": description,
+                                "MachineType": machineType,
+                                "CreatedAt": createdAt,
+                                "LastStartedAt": lastStartedAt,
+                                "Status": status
+                            }
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.DS-6",
+                        "NIST SP 800-53 SC-16",
+                        "NIST SP 800-53 SI-7",
+                        "AICPA TSC CC7.1",
+                        "ISO 27001:2013 A.12.2.1",
+                        "ISO 27001:2013 A.12.5.1",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3",
+                        "ISO 27001:2013 A.14.2.4",
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-integrity-update-auto-learn-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{id}/gce-instance-integrity-update-auto-learn-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[GCP.GCE.7] Google Compute Engine VM instances should be configured to auto-update the Shielded Instance Integrity Auto-learn Policy",
+                "Description": f"Google Compute Engine instance {name} in {zone} is configured to auto-update the Shielded Instance Integrity Auto-learn Policy.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your GCE VM instance should have instance integirty autolearning policy enabled refer to the Updating the integrity policy baseline section of the GCP Compute Engine guide.",
+                        "Url": "https://cloud.google.com/compute/shielded-vm/docs/integrity-monitoring#updating-baseline",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpGceVmInstance",
+                        "Id": f"{id}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "Id": id,
+                                "Description": description,
+                                "MachineType": machineType,
+                                "CreatedAt": createdAt,
+                                "LastStartedAt": lastStartedAt,
+                                "Status": status
+                            }
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.DS-6",
+                        "NIST SP 800-53 SC-16",
+                        "NIST SP 800-53 SI-7",
+                        "AICPA TSC CC7.1",
+                        "ISO 27001:2013 A.12.2.1",
+                        "ISO 27001:2013 A.12.5.1",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3",
+                        "ISO 27001:2013 A.14.2.4",
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
 # Confidential Compute
