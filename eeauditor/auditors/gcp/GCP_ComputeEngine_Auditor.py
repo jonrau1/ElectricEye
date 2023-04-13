@@ -1410,7 +1410,6 @@ def gce_instance_serial_port_access_check(cache: dict, awsAccountId: str, awsReg
             }
             yield finding
 
-# OSLogon Check
 @registry.register_check("gce")
 def gce_instance_oslogon_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
     """
@@ -1580,7 +1579,6 @@ def gce_instance_oslogon_access_check(cache: dict, awsAccountId: str, awsRegion:
                 }
                 yield finding
 
-# OSLogon with 2FA Check
 @registry.register_check("gce")
 def gce_instance_oslogon_2fa_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
     """
@@ -1764,5 +1762,31 @@ def gce_instance_oslogon_2fa_access_check(cache: dict, awsAccountId: str, awsReg
                 yield finding
 
 # Project Wide SSH Keys
+@registry.register_check("gce")
+def gce_instance_block_proj_ssh_keys_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+    """
+    [GCP.GCE.12] Google Compute Engine VM instances should block access from Project-wide SSH Keys
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    compute = googleapiclient.discovery.build('compute', 'v1')
+
+    for gce in get_compute_engine_instances(cache, gcpProjectId):
+        id = gce["id"]
+        name = gce["name"]
+        description = gce["description"]
+        zone = gce["zone"].split('/')[-1]
+        machineType = gce["machineType"].split('/')[-1]
+        createdAt = gce["creationTimestamp"]
+        lastStartedAt = gce["lastStartTimestamp"]
+        status = gce["status"]
+        # Check for Serial Port Access
+        response = compute.instances().get(project=gcpProjectId, zone=zone, instance=id).execute()
+
+        # Check if project-wide SSH keys are blocked
+        if 'metadata' in response and 'items' in response['metadata']:
+            for item in response['metadata']['items']:
+                if item['key'] == 'block-project-ssh-keys' and item['value'] == 'TRUE':
+                    print('Project-wide SSH keys are blocked for this VM instance')
+                    break
 
 # Public IP Check
