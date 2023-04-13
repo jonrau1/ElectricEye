@@ -1270,3 +1270,5 @@ def gce_instance_confidential_serial_port_access_check(cache: dict, awsAccountId
             print(response)
         except Exception as e:
             print(f"Instance {id} named {name} in zone {zone} had the following error: {e}")
+
+        yield {}
