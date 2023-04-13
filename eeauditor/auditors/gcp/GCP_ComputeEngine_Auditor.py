@@ -21,7 +21,6 @@
 import datetime
 from check_register import CheckRegister
 import googleapiclient.discovery
-import traceback
 
 registry = CheckRegister()
 
@@ -1433,11 +1432,11 @@ def gce_instance_oslogon_access_check(cache: dict, awsAccountId: str, awsRegion:
         response = compute.instances().getSerialPortOutput(project=gcpProjectId, zone=zone, instance=id).execute()
 
         if "enable-oslogin" in response["metadata"]["items"]:
-            oslogin_enabled = True
+            osLogonEnabled = True
         else:
-            oslogin_enabled = False
+            osLogonEnabled = False
 
-        print(f"OS Login is enabled: {oslogin_enabled}")
+        print(f"OS Login is enabled: {osLogonEnabled}")
 
 # OSLogon with 2FA Check
 @registry.register_check("gce")
@@ -1462,22 +1461,26 @@ def gce_instance_oslogon_2fa_access_check(cache: dict, awsAccountId: str, awsReg
 
         try:
             if "enable-oslogin" in response["metadata"]["items"]:
-                oslogin_enabled = True
+                osLogonEnabled = True
             else:
-                oslogin_enabled = False
+                osLogonEnabled = False
 
             if "enable-oslogin-2fa" in response["metadata"]["items"]:
                 if response["metadata"]["items"]["enable-oslogin-2fa"] == "TRUE":
-                    oslogin_2fa_enabled = True
+                    osLogon2faEnabled = True
                 else:
-                    oslogin_2fa_enabled = False
+                    osLogon2faEnabled = False
             else:
-                oslogin_2fa_enabled = False
+                osLogon2faEnabled = False
 
-            print(f"OS Login is enabled: {oslogin_enabled}")
-            print(f"OS Login with 2FA/MFA is enabled: {oslogin_2fa_enabled}")
-        except:
-            traceback.print_exc()
+            print(f"OS Login is enabled: {osLogonEnabled}")
+            print(f"OS Login with 2FA/MFA is enabled: {osLogon2faEnabled}")
+        except KeyError as ke:
+            if ke == "metadata":
+                print('No OS Lg')
+            else:
+                print(ke)
+                continue
 
 # Project Wide SSH Keys
 
