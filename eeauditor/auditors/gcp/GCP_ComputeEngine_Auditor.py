@@ -1459,22 +1459,25 @@ def gce_instance_oslogon_2fa_access_check(cache: dict, awsAccountId: str, awsReg
         # Check for Serial Port Access
         response = compute.instances().getSerialPortOutput(project=gcpProjectId, zone=zone, instance=id).execute()
 
-        print(response)
+        try:
+            if "enable-oslogin" in response["metadata"]["items"]:
+                oslogin_enabled = True
+            else:
+                oslogin_enabled = False
 
-        if "enable-oslogin" in response["metadata"]["items"]:
-            oslogin_enabled = True
-        else:
-            oslogin_enabled = False
-
-        if "enable-oslogin-2fa" in response["metadata"]["items"]:
-            if response["metadata"]["items"]["enable-oslogin-2fa"] == "TRUE":
-                oslogin_2fa_enabled = True
+            if "enable-oslogin-2fa" in response["metadata"]["items"]:
+                if response["metadata"]["items"]["enable-oslogin-2fa"] == "TRUE":
+                    oslogin_2fa_enabled = True
+                else:
+                    oslogin_2fa_enabled = False
             else:
                 oslogin_2fa_enabled = False
-        else:
-            oslogin_2fa_enabled = False
 
-        print(f"OS Login is enabled: {oslogin_enabled}")
-        print(f"OS Login with 2FA/MFA is enabled: {oslogin_2fa_enabled}")
+            print(f"OS Login is enabled: {oslogin_enabled}")
+            print(f"OS Login with 2FA/MFA is enabled: {oslogin_2fa_enabled}")
+        except Exception as e:
+            print(e)
+
+# Project Wide SSH Keys
 
 # Public IP Check
