@@ -18,7 +18,6 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import nmap3
 import datetime
 from check_register import CheckRegister

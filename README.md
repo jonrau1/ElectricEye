@@ -997,9 +997,9 @@ These are the following services and checks perform by each Auditor, there are c
 ### GCP
 
 These are the following services and checks perform by each Auditor, there are currently...
-- :boom: **9 Checks** :boom:
+- :boom: **38 Checks** :boom:
 - :exclamation: **1 GCP supported services/components** :exclamation:
-- :fire: **1 Auditors** :fire:
+- :fire: **2 Auditors** :fire:
 
 
 | Auditor File Name | AWS Service | Auditor Scan Description |
@@ -1012,6 +1012,36 @@ These are the following services and checks perform by each Auditor, there are c
 | GCP_ComputeEngine_Auditor.py | Google Compute Engine VM | Is Instance Integrity Monitoring enabled |
 | GCP_ComputeEngine_Auditor.py | Google Compute Engine VM | Is Secure Integrity Monitoring Auto-learning Policy set to Update |
 | GCP_ComputeEngine_Auditor.py | Google Compute Engine VM | Is Serial Port access disabled |
+| GCP_ComputeEngine_Auditor.py | Google Compute Engine VM | Are Linux VM Instances access with OS Logon |
+| GCP_ComputeEngine_Auditor.py | Google Compute Engine VM | Are Linux VM Instances acessed with OS Logon using 2FA/MFA |
+| GCP_ComputeEngine_Auditor.py | Google Compute Engine VM | Are project-wide SSH keys blocked from access VM instances |
+| GCP_ComputeEngine_Auditor.py | Google Compute Engine VM | Are instances publicly facing |
+| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a FTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a SSH service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a Telnet service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a SMTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a HTTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a POP3 service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a Win NetBIOS service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a SMB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a RDP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a MSSQL service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a MySQL/MariaDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a NFS service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a Docker API service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a OracleDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a PostgreSQL service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a Kibana service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a VMWARE ESXi service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a HTTP Proxy service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a SplunkD service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a Kubernetes API Server service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a Redis service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a Kafka service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a MongoDB/DocDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a Rabbit/AmazonMQ service publicly accessible |
+| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a SparkUI service publicly accessible |
+
 
 ### Azure
 
