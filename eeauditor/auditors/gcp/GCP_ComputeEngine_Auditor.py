@@ -1459,6 +1459,8 @@ def gce_instance_oslogon_2fa_access_check(cache: dict, awsAccountId: str, awsReg
         # Check for Serial Port Access
         response = compute.instances().getSerialPortOutput(project=gcpProjectId, zone=zone, instance=id).execute()
 
+        print(["metadata"]["items"])
+
         if "enable-oslogin" in response["metadata"]["items"]:
             oslogin_enabled = True
         else:
