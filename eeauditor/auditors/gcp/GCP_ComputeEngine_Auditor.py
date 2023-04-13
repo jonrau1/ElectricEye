@@ -1244,3 +1244,26 @@ def gce_instance_confidential_compute_update_check(cache: dict, awsAccountId: st
                 "RecordState": "ARCHIVED"
             }
             yield finding
+
+# Serial Port
+@registry.register_check("gcp_gce")
+def gce_instance_confidential_serial_port_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+    """
+    [GCP.GCE.9] Google Compute Engine VM instances should not enabled serial port access
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    compute = googleapiclient.discovery.build('compute', 'v1')
+
+    for gce in get_compute_engine_instances(cache, gcpProjectId):
+        id = gce['id']
+        name = gce['name']
+        description = gce['description']
+        zone = gce['zone'].split('/')[-1]
+        machineType = gce['machineType'].split('/')[-1]
+        createdAt = gce['creationTimestamp']
+        lastStartedAt = gce['lastStartTimestamp']
+        status = gce['status']
+        # Check for Serial Port Access
+        response = compute.instances().getSerialPortOutput(project=gcpProjectId, zone=zone, instance=id).execute()
+
+        print(response)
