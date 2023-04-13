@@ -1976,6 +1976,8 @@ def gce_instance_public_ip_check(cache: dict, awsAccountId: str, awsRegion: str,
         # this is a failing check
         if pubIp is not None:
             print(f"VM {name} has a public ip")
+        else:
+            print(f"VM {name} no have a public ip")
             """finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-ip-forward-check",
