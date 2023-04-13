@@ -1605,7 +1605,7 @@ def gce_instance_oslogon_2fa_access_check(cache: dict, awsAccountId: str, awsReg
         if os == "windows":
             continue
         else:
-            """# First, check if OS Logon is even on
+            # First, check if OS Logon is even on
             try:
                 if "enable-oslogin" in response["metadata"]["items"]:
                     osLogonEnabled = True
@@ -1614,7 +1614,7 @@ def gce_instance_oslogon_2fa_access_check(cache: dict, awsAccountId: str, awsReg
             except KeyError:
                 osLogonEnabled = False
             if osLogonEnabled == False:
-                continue"""
+                continue
             # Check if OS Logon 2FA is available for the Instance
             try:
                 if "enable-oslogin-2fa" in response["metadata"]["items"]:
