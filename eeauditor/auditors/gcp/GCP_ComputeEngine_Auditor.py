@@ -1427,7 +1427,6 @@ def gce_instance_oslogon_access_check(cache: dict, awsAccountId: str, awsRegion:
         createdAt = gce["creationTimestamp"]
         lastStartedAt = gce["lastStartTimestamp"]
         status = gce["status"]
-        # Check for Serial Port Access
         response = compute.instances().get(project=gcpProjectId, zone=zone, instance=id).execute()
         # First, ensure the OS is not windows
         os = response['disks'][0]['licenses'][0].split('/')[-1].split('-')[0]
@@ -1596,7 +1595,6 @@ def gce_instance_oslogon_2fa_access_check(cache: dict, awsAccountId: str, awsReg
         createdAt = gce["creationTimestamp"]
         lastStartedAt = gce["lastStartTimestamp"]
         status = gce["status"]
-        # Check for Serial Port Access
         response = compute.instances().get(project=gcpProjectId, zone=zone, instance=id).execute()
         # First, ensure the OS is not windows
         os = response['disks'][0]['licenses'][0].split('/')[-1].split('-')[0]
@@ -1675,18 +1673,30 @@ def gce_instance_oslogon_2fa_access_check(cache: dict, awsAccountId: str, awsReg
                     "Compliance": {
                         "Status": "FAILED",
                         "RelatedRequirements": [
-                            "NIST CSF PR.AC-3",
+                            "NIST CSF PR.AC-1",
                             "NIST SP 800-53 AC-1",
-                            "NIST SP 800-53 AC-17",
-                            "NIST SP 800-53 AC-19",
-                            "NIST SP 800-53 AC-20",
-                            "NIST SP 800-53 SC-15",
-                            "AICPA TSC CC6.6",
-                            "ISO 27001:2013 A.6.2.1",
-                            "ISO 27001:2013 A.6.2.2",
-                            "ISO 27001:2013 A.11.2.6",
-                            "ISO 27001:2013 A.13.1.1",
-                            "ISO 27001:2013 A.13.2.1"
+                            "NIST SP 800-53 AC-2",
+                            "NIST SP 800-53 IA-1",
+                            "NIST SP 800-53 IA-2",
+                            "NIST SP 800-53 IA-3",
+                            "NIST SP 800-53 IA-4",
+                            "NIST SP 800-53 IA-5",
+                            "NIST SP 800-53 IA-6",
+                            "NIST SP 800-53 IA-7",
+                            "NIST SP 800-53 IA-8",
+                            "NIST SP 800-53 IA-9",
+                            "NIST SP 800-53 IA-10",
+                            "NIST SP 800-53 IA-11",
+                            "AICPA TSC CC6.1",
+                            "AICPA TSC CC6.2",
+                            "ISO 27001:2013 A.9.2.1",
+                            "ISO 27001:2013 A.9.2.2",
+                            "ISO 27001:2013 A.9.2.3",
+                            "ISO 27001:2013 A.9.2.4",
+                            "ISO 27001:2013 A.9.2.6",
+                            "ISO 27001:2013 A.9.3.1",
+                            "ISO 27001:2013 A.9.4.2",
+                            "ISO 27001:2013 A.9.4.3"
                         ]
                     },
                     "Workflow": {"Status": "NEW"},
@@ -1742,18 +1752,30 @@ def gce_instance_oslogon_2fa_access_check(cache: dict, awsAccountId: str, awsReg
                     "Compliance": {
                         "Status": "PASSED",
                         "RelatedRequirements": [
-                            "NIST CSF PR.AC-3",
+                            "NIST CSF PR.AC-1",
                             "NIST SP 800-53 AC-1",
-                            "NIST SP 800-53 AC-17",
-                            "NIST SP 800-53 AC-19",
-                            "NIST SP 800-53 AC-20",
-                            "NIST SP 800-53 SC-15",
-                            "AICPA TSC CC6.6",
-                            "ISO 27001:2013 A.6.2.1",
-                            "ISO 27001:2013 A.6.2.2",
-                            "ISO 27001:2013 A.11.2.6",
-                            "ISO 27001:2013 A.13.1.1",
-                            "ISO 27001:2013 A.13.2.1"
+                            "NIST SP 800-53 AC-2",
+                            "NIST SP 800-53 IA-1",
+                            "NIST SP 800-53 IA-2",
+                            "NIST SP 800-53 IA-3",
+                            "NIST SP 800-53 IA-4",
+                            "NIST SP 800-53 IA-5",
+                            "NIST SP 800-53 IA-6",
+                            "NIST SP 800-53 IA-7",
+                            "NIST SP 800-53 IA-8",
+                            "NIST SP 800-53 IA-9",
+                            "NIST SP 800-53 IA-10",
+                            "NIST SP 800-53 IA-11",
+                            "AICPA TSC CC6.1",
+                            "AICPA TSC CC6.2",
+                            "ISO 27001:2013 A.9.2.1",
+                            "ISO 27001:2013 A.9.2.2",
+                            "ISO 27001:2013 A.9.2.3",
+                            "ISO 27001:2013 A.9.2.4",
+                            "ISO 27001:2013 A.9.2.6",
+                            "ISO 27001:2013 A.9.3.1",
+                            "ISO 27001:2013 A.9.4.2",
+                            "ISO 27001:2013 A.9.4.3"
                         ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
@@ -1779,16 +1801,156 @@ def gce_instance_block_proj_ssh_keys_check(cache: dict, awsAccountId: str, awsRe
         createdAt = gce["creationTimestamp"]
         lastStartedAt = gce["lastStartTimestamp"]
         status = gce["status"]
-        # Check for Serial Port Access
         response = compute.instances().get(project=gcpProjectId, zone=zone, instance=id).execute()
 
         # Check if project-wide SSH keys are blocked
         if 'metadata' in response and 'items' in response['metadata']:
             for item in response['metadata']['items']:
-                print(item)
-                if item['key'] == 'block-project-ssh-keys' and item['value'] == 'TRUE':
-                    print('Project-wide SSH keys are blocked for this VM instance')
+                if item['key'] == 'block-project-ssh-keys' and item['value'] == 'true':
+                    projWideSshBlock = True
         else:
-            print('bollocks')
+            projWideSshBlock = False
+
+        # this is a failing check
+        if projWideSshBlock == False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-proj-wide-ssh-access-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{id}/gce-instance-proj-wide-ssh-access-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "HIGH"},
+                "Confidence": 99,
+                "Title": "[GCP.GCE.12] Google Compute Engine VM instances should block access from Project-wide SSH Keys",
+                "Description": f"Google Compute Engine instance {name} in {zone} does not block access from Project-wide SSH Keys. OS Login is a feature that allows users to manage access to Linux instances using their Google Cloud identities instead of SSH keys or passwords. Project-wide SSH keys can provide convenient and efficient access to resources for system administrators and developers. However, allowing project-wide SSH keys to be used for VM instances can also pose significant cybersecurity risks if not properly managed. Many regulatory standards, such as PCI-DSS and HIPAA, require organizations to implement strong access controls and monitor user activity. Allowing project-wide SSH keys can make it difficult to comply with these standards, particularly with regard to monitoring and auditing access to sensitive systems. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your GCE VM instance should not allow access from Project-wide SSH Keys refer to the Restrict SSH keys from VMs section of the GCP Compute Engine guide.",
+                        "Url": "https://cloud.google.com/compute/docs/connect/restrict-ssh-keys",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpGceVmInstance",
+                        "Id": f"{id}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "Id": id,
+                                "Description": description,
+                                "MachineType": machineType,
+                                "CreatedAt": createdAt,
+                                "LastStartedAt": lastStartedAt,
+                                "Status": status
+                            }
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-4",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-2",
+                        "NIST SP 800-53 AC-3",
+                        "NIST SP 800-53 AC-5",
+                        "NIST SP 800-53 SC-6",
+                        "NIST SP 800-53 SC-14",
+                        "NIST SP 800-53 SC-16",
+                        "NIST SP 800-53 SC-24",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.9.1.1",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{id}/gce-instance-proj-wide-ssh-access-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{id}/gce-instance-proj-wide-ssh-access-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[GCP.GCE.12] Google Compute Engine VM instances should block access from Project-wide SSH Keys",
+                "Description": f"Google Compute Engine instance {name} in {zone} blocks access from Project-wide SSH Keys.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your GCE VM instance should not allow access from Project-wide SSH Keys refer to the Restrict SSH keys from VMs section of the GCP Compute Engine guide.",
+                        "Url": "https://cloud.google.com/compute/docs/connect/restrict-ssh-keys",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpGceVmInstance",
+                        "Id": f"{id}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "Id": id,
+                                "Description": description,
+                                "MachineType": machineType,
+                                "CreatedAt": createdAt,
+                                "LastStartedAt": lastStartedAt,
+                                "Status": status
+                            }
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-4",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-2",
+                        "NIST SP 800-53 AC-3",
+                        "NIST SP 800-53 AC-5",
+                        "NIST SP 800-53 SC-6",
+                        "NIST SP 800-53 SC-14",
+                        "NIST SP 800-53 SC-16",
+                        "NIST SP 800-53 SC-24",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.9.1.1",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
 # Public IP Check
