@@ -1475,8 +1475,8 @@ def gce_instance_oslogon_2fa_access_check(cache: dict, awsAccountId: str, awsReg
 
             print(f"OS Login is enabled: {oslogin_enabled}")
             print(f"OS Login with 2FA/MFA is enabled: {oslogin_2fa_enabled}")
-        except Exception as e:
-            print(e)
+        except Exception:
+            print(Exception)
 
 # Project Wide SSH Keys
 
