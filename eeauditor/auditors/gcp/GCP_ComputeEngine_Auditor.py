@@ -1264,11 +1264,13 @@ def gce_instance_confidential_serial_port_access_check(cache: dict, awsAccountId
         lastStartedAt = gce['lastStartTimestamp']
         status = gce['status']
         # Check for Serial Port Access
-        try:
-            response = compute.instances().getSerialPortOutput(project=gcpProjectId, zone=zone, instance=id).execute()
+        response = compute.instances().getSerialPortOutput(project=gcpProjectId, zone=zone, instance=id).execute()
 
-            print(response)
-        except Exception as e:
-            print(f"Instance {id} named {name} in zone {zone} had the following error: {e}")
-
-        yield {}
+        # Check if the serial port output indicates that Serial Console Access is enabled
+        if 'Serial port 1 output' in response:
+            if 'Serial console is listening' in response['Serial port 1 output']:
+                print('Serial Console Access is enabled')
+            else:
+                print('Serial Console Access is disabled')
+        else:
+            print('Serial Console Access is disabled')
