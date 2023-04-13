@@ -1004,14 +1004,14 @@ These are the following services and checks perform by each Auditor, there are c
 
 | Auditor File Name | AWS Service | Auditor Scan Description |
 |---|---|---|
-| Amazon_APIGW_Auditor.py | API Gateway Stage | Are stage metrics enabled |
-| Amazon_APIGW_Auditor.py | API Gateway Stage | Is stage API logging enabled |
-| Amazon_APIGW_Auditor.py | API Gateway Stage | Is stage caching enabled |
-| Amazon_APIGW_Auditor.py | API Gateway Stage | Is cache encryption enabled |
-| Amazon_APIGW_Auditor.py | API Gateway Stage | Is stage xray tracing configured |
-| Amazon_APIGW_Auditor.py | API Gateway Stage | Is the stage protected by a WAF WACL |
-| Amazon_APIGW_Auditor.py | API Gateway Rest API | Do Rest APIs use Policies |
-| Amazon_APIGW_Auditor.py | API Gateway Rest API | Do Rest APIs use Authorizers |
+| GCP_ComputeEngine_Auditor.py | Google Compute Engine VM | Is deletion protection enabled |
+| GCP_ComputeEngine_Auditor.py | Google Compute Engine VM | Is IP forwarding disabled |
+| GCP_ComputeEngine_Auditor.py | Google Compute Engine VM | Is auto-restart enabled |
+| GCP_ComputeEngine_Auditor.py | Google Compute Engine VM | Is Secure Boot enabled |
+| GCP_ComputeEngine_Auditor.py | Google Compute Engine VM | Is Virtual Trusted Platform Module enabled |
+| GCP_ComputeEngine_Auditor.py | Google Compute Engine VM | Is Instance Integrity Monitoring enabled |
+| GCP_ComputeEngine_Auditor.py | Google Compute Engine VM | Is Secure Integrity Monitoring Auto-learning Policy set to Update |
+| GCP_ComputeEngine_Auditor.py | Google Compute Engine VM | Is Serial Port access disabled |
 
 ### Azure
 

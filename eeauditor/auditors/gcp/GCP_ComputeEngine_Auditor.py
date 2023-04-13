@@ -26,7 +26,7 @@ registry = CheckRegister()
 
 def get_compute_engine_instances(cache: dict, gcpProjectId: str):
     '''
-    Use dark magics to get all GCE VM instances in all zones...
+    AggregatedList result provides Zone information as well as every single Instance in a Project
     '''
     if cache:
         return cache
@@ -57,7 +57,7 @@ def get_compute_engine_instances(cache: dict, gcpProjectId: str):
 
     return results
 
-@registry.register_check("gcp_gce")
+@registry.register_check("gce")
 def gce_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
     """
     [GCP.GCE.1] Google Compute Engine VM instances should have deletion protection enabled
@@ -208,7 +208,7 @@ def gce_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRe
             }
             yield finding
 
-@registry.register_check("gcp_gce")
+@registry.register_check("gce")
 def gce_instance_ip_forwarding_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
     """
     [GCP.GCE.2] Google Compute Engine VM instances should not have IP forwarding enabled
@@ -359,7 +359,7 @@ def gce_instance_ip_forwarding_check(cache: dict, awsAccountId: str, awsRegion: 
             }
             yield finding
 
-@registry.register_check("gcp_gce")
+@registry.register_check("gce")
 def gce_instance_auto_restart_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
     """
     [GCP.GCE.3] Google Compute Engine VM instances should have automatic restart enabled
@@ -506,7 +506,7 @@ def gce_instance_auto_restart_check(cache: dict, awsAccountId: str, awsRegion: s
             }
             yield finding
 
-@registry.register_check("gcp_gce")
+@registry.register_check("gce")
 def gce_instance_secure_boot_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
     """
     [GCP.GCE.4] Google Compute Engine VM instances should have Secure Boot enabled
@@ -651,7 +651,7 @@ def gce_instance_secure_boot_check(cache: dict, awsAccountId: str, awsRegion: st
             }
             yield finding
 
-@registry.register_check("gcp_gce")
+@registry.register_check("gce")
 def gce_instance_vtpm_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
     """
     [GCP.GCE.5] Google Compute Engine VM instances should have Virtual Trusted Platform Module enabled
@@ -796,7 +796,7 @@ def gce_instance_vtpm_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
             }
             yield finding
 
-@registry.register_check("gcp_gce")
+@registry.register_check("gce")
 def gce_instance_integrity_mon_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
     """
     [GCP.GCE.6] Google Compute Engine VM instances should have Integrity Monitoring enabled
@@ -941,7 +941,7 @@ def gce_instance_integrity_mon_check(cache: dict, awsAccountId: str, awsRegion: 
             }
             yield finding
 
-@registry.register_check("gcp_gce")
+@registry.register_check("gce")
 def gce_instance_siip_auto_update_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
     """
     [GCP.GCE.7] Google Compute Engine VM instances should be configured to auto-update the Shielded Instance Integrity Auto-learn Policy
@@ -1086,7 +1086,7 @@ def gce_instance_siip_auto_update_check(cache: dict, awsAccountId: str, awsRegio
             }
             yield finding
 
-@registry.register_check("gcp_gce")
+@registry.register_check("gce")
 def gce_instance_confidential_compute_update_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
     """
     [GCP.GCE.8] Google Compute Engine VM instances containing sensitive data or high-security workloads should enable Confidential Computing
@@ -1245,9 +1245,8 @@ def gce_instance_confidential_compute_update_check(cache: dict, awsAccountId: st
             }
             yield finding
 
-# Serial Port
-@registry.register_check("gcp_gce")
-def gce_instance_confidential_serial_port_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+@registry.register_check("gce")
+def gce_instance_serial_port_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
     """
     [GCP.GCE.9] Google Compute Engine VM instances should not enabled serial port access
     """
@@ -1410,4 +1409,70 @@ def gce_instance_confidential_serial_port_access_check(cache: dict, awsAccountId
                 "RecordState": "ARCHIVED"
             }
             yield finding
-        
+
+# OSLogon Check
+@registry.register_check("gce")
+def gce_instance_oslogon_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+    """
+    [GCP.GCE.10] Google Compute Engine VM instances should be configured to be accessed using OS Logon
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    compute = googleapiclient.discovery.build('compute', 'v1')
+
+    for gce in get_compute_engine_instances(cache, gcpProjectId):
+        id = gce["id"]
+        name = gce["name"]
+        description = gce["description"]
+        zone = gce["zone"].split('/')[-1]
+        machineType = gce["machineType"].split('/')[-1]
+        createdAt = gce["creationTimestamp"]
+        lastStartedAt = gce["lastStartTimestamp"]
+        status = gce["status"]
+        # Check for Serial Port Access
+        response = compute.instances().getSerialPortOutput(project=gcpProjectId, zone=zone, instance=id).execute()
+
+        if "enable-oslogin" in response["metadata"]["items"]:
+            oslogin_enabled = True
+        else:
+            oslogin_enabled = False
+
+        print(f"OS Login is enabled: {oslogin_enabled}")
+
+# OSLogon with 2FA Check
+@registry.register_check("gce")
+def gce_instance_oslogon_2fa_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+    """
+    [GCP.GCE.11] Google Compute Engine VM instances configured to be accessed using OS Logon should enable 2FA
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    compute = googleapiclient.discovery.build('compute', 'v1')
+
+    for gce in get_compute_engine_instances(cache, gcpProjectId):
+        id = gce["id"]
+        name = gce["name"]
+        description = gce["description"]
+        zone = gce["zone"].split('/')[-1]
+        machineType = gce["machineType"].split('/')[-1]
+        createdAt = gce["creationTimestamp"]
+        lastStartedAt = gce["lastStartTimestamp"]
+        status = gce["status"]
+        # Check for Serial Port Access
+        response = compute.instances().getSerialPortOutput(project=gcpProjectId, zone=zone, instance=id).execute()
+
+        if "enable-oslogin" in response["metadata"]["items"]:
+            oslogin_enabled = True
+        else:
+            oslogin_enabled = False
+
+        if "enable-oslogin-2fa" in response["metadata"]["items"]:
+            if response["metadata"]["items"]["enable-oslogin-2fa"] == "TRUE":
+                oslogin_2fa_enabled = True
+            else:
+                oslogin_2fa_enabled = False
+        else:
+            oslogin_2fa_enabled = False
+
+        print(f"OS Login is enabled: {oslogin_enabled}")
+        print(f"OS Login with 2FA/MFA is enabled: {oslogin_2fa_enabled}")
+
+# Public IP Check
