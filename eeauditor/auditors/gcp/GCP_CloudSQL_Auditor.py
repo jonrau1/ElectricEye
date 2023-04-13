@@ -50,7 +50,7 @@ def cloudsql_instance_public_check(cache: dict, awsAccountId: str, awsRegion: st
     for csql in get_cloudsql_dbs(cache, gcpProjectId):
         name = csql["name"]
         zone = csql["gceZone"]
-        databaseInstalledVersion = csql["databaseInstalledVersion"]
+        databaseVersion = csql["databaseVersion"]
         createTime = csql["createTime"]
         state = csql["state"]
         maintenanceVersion = csql["maintenanceVersion"]
