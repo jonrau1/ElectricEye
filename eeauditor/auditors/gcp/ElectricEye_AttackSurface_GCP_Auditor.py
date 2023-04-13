@@ -11,20 +11,15 @@ nmap = nmap3.NmapScanTechniques()
 def get_compute_engine_instances(cache: dict, gcpProjectId: str):
     '''
     AggregatedList result provides Zone information as well as every single Instance in a Project
-
-    This one is modified from the normal GCE Auditor as it contains a filter
     '''
     if cache:
         return cache
     
     results = []
 
-    # Running & public ip ("natIp")
-    filter_str = "status = RUNNING AND networkInterfaces.accessConfigs.natIP:*"
-
     compute = googleapiclient.discovery.build('compute', 'v1')
 
-    aggResult = compute.instances().aggregatedList(project=gcpProjectId, filter=filter_str).execute()
+    aggResult = compute.instances().aggregatedList(project=gcpProjectId).execute()
 
     # Write all Zones to list
     zoneList = []
