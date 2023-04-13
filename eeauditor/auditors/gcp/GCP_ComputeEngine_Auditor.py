@@ -1546,6 +1546,10 @@ def gce_instance_oslogon_2fa_access_check(cache: dict, awsAccountId: str, awsReg
 
         print(f"The OS of the instance {name} is {os}")
 
+        result = compute.machineTypes().aggregatedList(project=gcpProjectId).execute()
+        for family in result['items']:
+            print(family)
+
 # Project Wide SSH Keys
 
 # Public IP Check
