@@ -562,11 +562,11 @@ def sagemaker_model_network_isolation_check(cache: dict, session, awsAccountId: 
                         "ISO 27001:2013 A.13.1.3",
                         "ISO 27001:2013 A.13.2.1",
                         "ISO 27001:2013 A.14.1.2",
-                        "ISO 27001:2013 A.14.1.3",
-                    ],
+                        "ISO 27001:2013 A.14.1.3"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
+                "RecordState": "ACTIVE"
             }
             yield finding
         else:
@@ -615,10 +615,10 @@ def sagemaker_model_network_isolation_check(cache: dict, session, awsAccountId: 
                         "ISO 27001:2013 A.13.1.3",
                         "ISO 27001:2013 A.13.2.1",
                         "ISO 27001:2013 A.14.1.2",
-                        "ISO 27001:2013 A.14.1.3",
-                    ],
+                        "ISO 27001:2013 A.14.1.3"
+                    ]
                 },
                 "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
+                "RecordState": "ARCHIVED"
             }
             yield finding

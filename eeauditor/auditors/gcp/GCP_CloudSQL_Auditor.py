@@ -81,7 +81,7 @@ def cloudsql_instance_public_check(cache: dict, awsAccountId: str, awsRegion: st
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
                     "AssetClass": "Database",
-                    "AssetService": "CloudSQL",
+                    "AssetService": "Google CloudSQL",
                     "AssetType": "CloudSQL Instance"
                 },
                 "Resources": [
@@ -150,7 +150,7 @@ def cloudsql_instance_public_check(cache: dict, awsAccountId: str, awsRegion: st
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
                     "AssetClass": "Database",
-                    "AssetService": "CloudSQL",
+                    "AssetService": "Google CloudSQL",
                     "AssetType": "CloudSQL Instance"
                 },
                 "Resources": [
@@ -236,7 +236,7 @@ def cloudsql_instance_standard_backup_check(cache: dict, awsAccountId: str, awsR
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
                     "AssetClass": "Database",
-                    "AssetService": "CloudSQL",
+                    "AssetService": "Google CloudSQL",
                     "AssetType": "CloudSQL Instance"
                 },
                 "Resources": [
@@ -305,7 +305,7 @@ def cloudsql_instance_standard_backup_check(cache: dict, awsAccountId: str, awsR
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
                     "AssetClass": "Database",
-                    "AssetService": "CloudSQL",
+                    "AssetService": "Google CloudSQL",
                     "AssetType": "CloudSQL Instance"
                 },
                 "Resources": [
@@ -396,7 +396,7 @@ def cloudsql_instance_mysql_pitr_backup_check(cache: dict, awsAccountId: str, aw
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
                     "AssetClass": "Database",
-                    "AssetService": "CloudSQL",
+                    "AssetService": "Google CloudSQL",
                     "AssetType": "CloudSQL Instance"
                 },
                 "Resources": [
@@ -465,7 +465,7 @@ def cloudsql_instance_mysql_pitr_backup_check(cache: dict, awsAccountId: str, aw
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
                     "AssetClass": "Database",
-                    "AssetService": "CloudSQL",
+                    "AssetService": "Google CloudSQL",
                     "AssetType": "CloudSQL Instance"
                 },
                 "Resources": [
@@ -556,7 +556,7 @@ def cloudsql_instance_psql_pitr_backup_check(cache: dict, awsAccountId: str, aws
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
                     "AssetClass": "Database",
-                    "AssetService": "CloudSQL",
+                    "AssetService": "Google CloudSQL",
                     "AssetType": "CloudSQL Instance"
                 },
                 "Resources": [
@@ -625,7 +625,7 @@ def cloudsql_instance_psql_pitr_backup_check(cache: dict, awsAccountId: str, aws
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
                     "AssetClass": "Database",
-                    "AssetService": "CloudSQL",
+                    "AssetService": "Google CloudSQL",
                     "AssetType": "CloudSQL Instance"
                 },
                 "Resources": [
@@ -670,11 +670,10 @@ def cloudsql_instance_psql_pitr_backup_check(cache: dict, awsAccountId: str, aws
             }
             yield finding
 
-# Private Path Access ipConfiguration.enablePrivatePathForGoogleCloudServices
 @registry.register_check("cloudsql")
 def cloudsql_instance_private_gcp_services_connection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
     """
-    [GCP.CloudSQL.5] CloudSQL Instances should enable private path for Google Cloud Services connectivity
+    [GCP.CloudSQL.5] CloudSQL Instances should use private networks
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -686,15 +685,1033 @@ def cloudsql_instance_private_gcp_services_connection_check(cache: dict, awsAcco
         state = csql["state"]
         maintenanceVersion = csql["maintenanceVersion"]
         ipAddress = csql["ipAddresses"][0]["ipAddress"]
-        if 'privateNetwork' in csql["settings"]["ipConfiguration"]:
-            print(csql["settings"]["ipConfiguration"]["enablePrivatePathForGoogleCloudServices"])
-        """# "pointInTimeRecoveryEnabled" only appears for Psql
-        if csql["settings"]["backupConfiguration"]["pointInTimeRecoveryEnabled"] == False:
+        # this is a PASSING check first for a change - if "privateNetwork" is not in "ipConfiguration" there isn't a VPC
+        if "privateNetwork" in csql["settings"]["ipConfiguration"]:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-psql-pitr-backup-check",
+                "Id": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-private-network-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-psql-pitr-backup-check",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-private-network-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[GCP.CloudSQL.5] CloudSQL Instances should use private networks",
+                "Description": f"CloudSQL instance {name} in {zone} is configured to use a private network.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your CloudSQL instance should be within a private network refer to the Learn about using private IP section of the GCP CloudSQL guide.",
+                        "Url": "https://cloud.google.com/sql/docs/mysql/private-ip",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP",
+                    "AssetClass": "Database",
+                    "AssetService": "Google CloudSQL",
+                    "AssetType": "CloudSQL Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpCloudSqlInstance",
+                        "Id": f"{gcpProjectId}/{zone}/{name}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "DatabaseVersion": databaseVersion,
+                                "MaintenanceVersion": maintenanceVersion,
+                                "CreatedAt": createTime,
+                                "State": state,
+                                "IpAddress": ipAddress,
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-3",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-17",
+                        "NIST SP 800-53 AC-19",
+                        "NIST SP 800-53 AC-20",
+                        "NIST SP 800-53 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-private-network-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-private-network-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[GCP.CloudSQL.5] CloudSQL Instances should use private networks",
+                "Description": f"CloudSQL instance {name} in {zone} is not configured to use a private network. Configuring a Cloud SQL instance to use private IP requires private services access. Private services access lets you create private connections between your VPC network and the underlying Google service producer's VPC network. Google entities that offer services, such as Cloud SQL, are called service producers. Each Google service creates a subnet in which to provision resources. Private connections make services reachable without going through the internet or using external IP addresses. For this reason, private IP provides lower network latency than public IP and offer security benefits of limiting your attack surface. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your CloudSQL instance should be within a private network refer to the Learn about using private IP section of the GCP CloudSQL guide.",
+                        "Url": "https://cloud.google.com/sql/docs/mysql/private-ip",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP",
+                    "AssetClass": "Database",
+                    "AssetService": "Google CloudSQL",
+                    "AssetType": "CloudSQL Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpCloudSqlInstance",
+                        "Id": f"{gcpProjectId}/{zone}/{name}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "DatabaseVersion": databaseVersion,
+                                "MaintenanceVersion": maintenanceVersion,
+                                "CreatedAt": createTime,
+                                "State": state,
+                                "IpAddress": ipAddress,
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-3",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-17",
+                        "NIST SP 800-53 AC-19",
+                        "NIST SP 800-53 AC-20",
+                        "NIST SP 800-53 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+
+@registry.register_check("cloudsql")
+def cloudsql_instance_private_gcp_services_connection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+    """
+    [GCP.CloudSQL.6] CloudSQL Instances using private networks should enable GCP private services access
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    for csql in get_cloudsql_dbs(cache, gcpProjectId):
+        name = csql["name"]
+        zone = csql["gceZone"]
+        databaseVersion = csql["databaseVersion"]
+        createTime = csql["createTime"]
+        state = csql["state"]
+        maintenanceVersion = csql["maintenanceVersion"]
+        ipAddress = csql["ipAddresses"][0]["ipAddress"]
+        if "privateNetwork" in csql["settings"]["ipConfiguration"]:
+            if csql["settings"]["ipConfiguration"]["enablePrivatePathForGoogleCloudServices"] == False:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-private-service-acess-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-private-service-acess-check",
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "MEDIUM"},
+                    "Confidence": 99,
+                    "Title": "[GCP.CloudSQL.6] CloudSQL Instances using private networks should enable GCP private services access",
+                    "Description": f"CloudSQL instance {name} in {zone} does not have GCP private services access enabled. For databases in private networks, Private services access is implemented as a VPC peering connection between your VPC network and the underlying Google Cloud VPC network where your Cloud SQL instance resides. The private connection enables VM instances in your VPC network and the services that you access to communicate exclusively by using internal IP addresses. VM instances don't need Internet access or external IP addresses to reach services that are available through private services access. Refer to the remediation instructions if this configuration is not intended.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "If your CloudSQL instance should have private service access enabled refer to the Configure private services access section of the GCP PostgreSQL CloudSQL guide.",
+                            "Url": "https://cloud.google.com/sql/docs/mysql/configure-private-services-access",
+                        }
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "GCP",
+                        "AssetClass": "Database",
+                        "AssetService": "Google CloudSQL",
+                        "AssetType": "CloudSQL Instance"
+                    },
+                    "Resources": [
+                        {
+                            "Type": "GcpCloudSqlInstance",
+                            "Id": f"{gcpProjectId}/{zone}/{name}",
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "Other": {
+                                    "GcpProjectId": gcpProjectId,
+                                    "Zone": zone,
+                                    "Name": name,
+                                    "DatabaseVersion": databaseVersion,
+                                    "MaintenanceVersion": maintenanceVersion,
+                                    "CreatedAt": createTime,
+                                    "State": state,
+                                    "IpAddress": ipAddress,
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF PR.AC-5",
+                            "NIST SP 800-53 AC-4",
+                            "NIST SP 800-53 AC-10",
+                            "NIST SP 800-53 SC-7",
+                            "AICPA TSC CC6.1",
+                            "ISO 27001:2013 A.13.1.1",
+                            "ISO 27001:2013 A.13.1.3",
+                            "ISO 27001:2013 A.13.2.1",
+                            "ISO 27001:2013 A.14.1.2",
+                            "ISO 27001:2013 A.14.1.3"
+                        ]
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE"
+                }
+                yield finding
+            else:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-private-service-acess-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-private-service-acess-check",
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Confidence": 99,
+                    "Title": "[GCP.CloudSQL.6] CloudSQL Instances using private networks should enable GCP private services access",
+                    "Description": f"CloudSQL instance {name} in {zone} has GCP private services access enabled.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "If your CloudSQL instance should have private service access enabled refer to the Configure private services access section of the GCP PostgreSQL CloudSQL guide.",
+                            "Url": "https://cloud.google.com/sql/docs/mysql/configure-private-services-access",
+                        }
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "GCP",
+                        "AssetClass": "Database",
+                        "AssetService": "Google CloudSQL",
+                        "AssetType": "CloudSQL Instance"
+                    },
+                    "Resources": [
+                        {
+                            "Type": "GcpCloudSqlInstance",
+                            "Id": f"{gcpProjectId}/{zone}/{name}",
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "Other": {
+                                    "GcpProjectId": gcpProjectId,
+                                    "Zone": zone,
+                                    "Name": name,
+                                    "DatabaseVersion": databaseVersion,
+                                    "MaintenanceVersion": maintenanceVersion,
+                                    "CreatedAt": createTime,
+                                    "State": state,
+                                    "IpAddress": ipAddress,
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF PR.AC-5",
+                            "NIST SP 800-53 AC-4",
+                            "NIST SP 800-53 AC-10",
+                            "NIST SP 800-53 SC-7",
+                            "AICPA TSC CC6.1",
+                            "ISO 27001:2013 A.13.1.1",
+                            "ISO 27001:2013 A.13.1.3",
+                            "ISO 27001:2013 A.13.2.1",
+                            "ISO 27001:2013 A.14.1.2",
+                            "ISO 27001:2013 A.14.1.3"
+                        ]
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED"
+                }
+                yield finding
+
+@registry.register_check("cloudsql")
+def cloudsql_instance_password_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+    """
+    [GCP.CloudSQL.7] CloudSQL Instances should have a password policy enabled
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    for csql in get_cloudsql_dbs(cache, gcpProjectId):
+        name = csql["name"]
+        zone = csql["gceZone"]
+        databaseVersion = csql["databaseVersion"]
+        createTime = csql["createTime"]
+        state = csql["state"]
+        maintenanceVersion = csql["maintenanceVersion"]
+        ipAddress = csql["ipAddresses"][0]["ipAddress"]
+        if csql["settings"]["passwordValidationPolicy"]["enablePasswordPolicy"] == False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-pw-policy-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-pw-policy-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[GCP.CloudSQL.7] CloudSQL Instances should have a password policy enabled",
+                "Description": f"CloudSQL instance {name} in {zone} does not have a password policy enabled. Using a comprehensive password complexity policy is important for database security to ensure strong passwords that are difficult to guess, thereby reducing the risk of unauthorized access and data theft or damage. A strong password complexity policy can prevent attackers from using automated tools to guess passwords, making it harder for them to compromise the database. Although IAM database authentication is more secure and reliable, you might prefer to use built-in authentication or a hybrid authentication model that includes both authentication types, and a strong password policy enhances the security of your database. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your CloudSQL instance should have have a password policy enabled or should be expanded to include more complexity refer to the Cloud SQL built-in database authentication section of the GCP CloudSQL guide.",
+                        "Url": "https://cloud.google.com/sql/docs/postgres/built-in-authentication#instance_password_policies",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP",
+                    "AssetClass": "Database",
+                    "AssetService": "Google CloudSQL",
+                    "AssetType": "CloudSQL Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpCloudSqlInstance",
+                        "Id": f"{gcpProjectId}/{zone}/{name}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "DatabaseVersion": databaseVersion,
+                                "MaintenanceVersion": maintenanceVersion,
+                                "CreatedAt": createTime,
+                                "State": state,
+                                "IpAddress": ipAddress,
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-1",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-2",
+                        "NIST SP 800-53 IA-1",
+                        "NIST SP 800-53 IA-2",
+                        "NIST SP 800-53 IA-3",
+                        "NIST SP 800-53 IA-4",
+                        "NIST SP 800-53 IA-5",
+                        "NIST SP 800-53 IA-6",
+                        "NIST SP 800-53 IA-7",
+                        "NIST SP 800-53 IA-8",
+                        "NIST SP 800-53 IA-9",
+                        "NIST SP 800-53 IA-10",
+                        "NIST SP 800-53 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-pw-policy-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-pw-policy-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[GCP.CloudSQL.7] CloudSQL Instances should have a password policy enabled",
+                "Description": f"CloudSQL instance {name} in {zone} has a password policy enabled.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your CloudSQL instance should have have a password policy enabled or should be expanded to include more complexity refer to the Cloud SQL built-in database authentication section of the GCP CloudSQL guide.",
+                        "Url": "https://cloud.google.com/sql/docs/postgres/built-in-authentication#instance_password_policies",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP",
+                    "AssetClass": "Database",
+                    "AssetService": "Google CloudSQL",
+                    "AssetType": "CloudSQL Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpCloudSqlInstance",
+                        "Id": f"{gcpProjectId}/{zone}/{name}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "DatabaseVersion": databaseVersion,
+                                "MaintenanceVersion": maintenanceVersion,
+                                "CreatedAt": createTime,
+                                "State": state,
+                                "IpAddress": ipAddress,
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-1",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-2",
+                        "NIST SP 800-53 IA-1",
+                        "NIST SP 800-53 IA-2",
+                        "NIST SP 800-53 IA-3",
+                        "NIST SP 800-53 IA-4",
+                        "NIST SP 800-53 IA-5",
+                        "NIST SP 800-53 IA-6",
+                        "NIST SP 800-53 IA-7",
+                        "NIST SP 800-53 IA-8",
+                        "NIST SP 800-53 IA-9",
+                        "NIST SP 800-53 IA-10",
+                        "NIST SP 800-53 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("cloudsql")
+def cloudsql_instance_password_min_length_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+    """
+    [GCP.CloudSQL.8] CloudSQL Instances should have a password minimum length requirement defined
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    for csql in get_cloudsql_dbs(cache, gcpProjectId):
+        name = csql["name"]
+        zone = csql["gceZone"]
+        databaseVersion = csql["databaseVersion"]
+        createTime = csql["createTime"]
+        state = csql["state"]
+        maintenanceVersion = csql["maintenanceVersion"]
+        ipAddress = csql["ipAddresses"][0]["ipAddress"]
+        # Check if a "minLength" exists - who cares about length: NIST, Microsoft and CIS all say different things
+        if "minLength" not in csql["settings"]["passwordValidationPolicy"]:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-pw-min-length-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-pw-min-length-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[GCP.CloudSQL.8] CloudSQL Instances should have a password minimum length requirement defined",
+                "Description": f"CloudSQL instance {name} in {zone} does not have a password minimum length requirement defined. Using a comprehensive password complexity policy is important for database security to ensure strong passwords that are difficult to guess, thereby reducing the risk of unauthorized access and data theft or damage. A strong password complexity policy can prevent attackers from using automated tools to guess passwords, making it harder for them to compromise the database. Although IAM database authentication is more secure and reliable, you might prefer to use built-in authentication or a hybrid authentication model that includes both authentication types, and a strong password policy enhances the security of your database. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your CloudSQL instance should have have a password policy enabled or should be expanded to include more complexity refer to the Cloud SQL built-in database authentication section of the GCP CloudSQL guide.",
+                        "Url": "https://cloud.google.com/sql/docs/postgres/built-in-authentication#instance_password_policies",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP",
+                    "AssetClass": "Database",
+                    "AssetService": "Google CloudSQL",
+                    "AssetType": "CloudSQL Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpCloudSqlInstance",
+                        "Id": f"{gcpProjectId}/{zone}/{name}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "DatabaseVersion": databaseVersion,
+                                "MaintenanceVersion": maintenanceVersion,
+                                "CreatedAt": createTime,
+                                "State": state,
+                                "IpAddress": ipAddress,
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-1",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-2",
+                        "NIST SP 800-53 IA-1",
+                        "NIST SP 800-53 IA-2",
+                        "NIST SP 800-53 IA-3",
+                        "NIST SP 800-53 IA-4",
+                        "NIST SP 800-53 IA-5",
+                        "NIST SP 800-53 IA-6",
+                        "NIST SP 800-53 IA-7",
+                        "NIST SP 800-53 IA-8",
+                        "NIST SP 800-53 IA-9",
+                        "NIST SP 800-53 IA-10",
+                        "NIST SP 800-53 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-pw-min-length-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-pw-min-length-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[GCP.CloudSQL.8] CloudSQL Instances should have a password minimum length requirement defined",
+                "Description": f"CloudSQL instance {name} in {zone} has a password minimum length requirement defined.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your CloudSQL instance should have have a password policy enabled or should be expanded to include more complexity refer to the Cloud SQL built-in database authentication section of the GCP CloudSQL guide.",
+                        "Url": "https://cloud.google.com/sql/docs/postgres/built-in-authentication#instance_password_policies",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP",
+                    "AssetClass": "Database",
+                    "AssetService": "Google CloudSQL",
+                    "AssetType": "CloudSQL Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpCloudSqlInstance",
+                        "Id": f"{gcpProjectId}/{zone}/{name}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "DatabaseVersion": databaseVersion,
+                                "MaintenanceVersion": maintenanceVersion,
+                                "CreatedAt": createTime,
+                                "State": state,
+                                "IpAddress": ipAddress,
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-1",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-2",
+                        "NIST SP 800-53 IA-1",
+                        "NIST SP 800-53 IA-2",
+                        "NIST SP 800-53 IA-3",
+                        "NIST SP 800-53 IA-4",
+                        "NIST SP 800-53 IA-5",
+                        "NIST SP 800-53 IA-6",
+                        "NIST SP 800-53 IA-7",
+                        "NIST SP 800-53 IA-8",
+                        "NIST SP 800-53 IA-9",
+                        "NIST SP 800-53 IA-10",
+                        "NIST SP 800-53 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("cloudsql")
+def cloudsql_instance_password_reuse_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+    """
+    [GCP.CloudSQL.9] CloudSQL Instances should have a password reuse interval defined
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    for csql in get_cloudsql_dbs(cache, gcpProjectId):
+        name = csql["name"]
+        zone = csql["gceZone"]
+        databaseVersion = csql["databaseVersion"]
+        createTime = csql["createTime"]
+        state = csql["state"]
+        maintenanceVersion = csql["maintenanceVersion"]
+        ipAddress = csql["ipAddresses"][0]["ipAddress"]
+        # Check if a "minLength" exists - who cares about length: NIST, Microsoft and CIS all say different things
+        if "reuseInterval" not in csql["settings"]["passwordValidationPolicy"]:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-pw-reuse-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-pw-reuse-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[GCP.CloudSQL.9] CloudSQL Instances should have a password reuse interval defined",
+                "Description": f"CloudSQL instance {name} in {zone} does not have a password reuse interval defined. Using a comprehensive password complexity policy is important for database security to ensure strong passwords that are difficult to guess, thereby reducing the risk of unauthorized access and data theft or damage. A strong password complexity policy can prevent attackers from using automated tools to guess passwords, making it harder for them to compromise the database. Although IAM database authentication is more secure and reliable, you might prefer to use built-in authentication or a hybrid authentication model that includes both authentication types, and a strong password policy enhances the security of your database. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your CloudSQL instance should have have a password policy enabled or should be expanded to include more complexity refer to the Cloud SQL built-in database authentication section of the GCP CloudSQL guide.",
+                        "Url": "https://cloud.google.com/sql/docs/postgres/built-in-authentication#instance_password_policies",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP",
+                    "AssetClass": "Database",
+                    "AssetService": "Google CloudSQL",
+                    "AssetType": "CloudSQL Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpCloudSqlInstance",
+                        "Id": f"{gcpProjectId}/{zone}/{name}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "DatabaseVersion": databaseVersion,
+                                "MaintenanceVersion": maintenanceVersion,
+                                "CreatedAt": createTime,
+                                "State": state,
+                                "IpAddress": ipAddress,
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-1",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-2",
+                        "NIST SP 800-53 IA-1",
+                        "NIST SP 800-53 IA-2",
+                        "NIST SP 800-53 IA-3",
+                        "NIST SP 800-53 IA-4",
+                        "NIST SP 800-53 IA-5",
+                        "NIST SP 800-53 IA-6",
+                        "NIST SP 800-53 IA-7",
+                        "NIST SP 800-53 IA-8",
+                        "NIST SP 800-53 IA-9",
+                        "NIST SP 800-53 IA-10",
+                        "NIST SP 800-53 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-pw-reuse-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-pw-reuse-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[GCP.CloudSQL.9] CloudSQL Instances should have a password reuse interval defined",
+                "Description": f"CloudSQL instance {name} in {zone} has a password reuse interval defined.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your CloudSQL instance should have have a password policy enabled or should be expanded to include more complexity refer to the Cloud SQL built-in database authentication section of the GCP CloudSQL guide.",
+                        "Url": "https://cloud.google.com/sql/docs/postgres/built-in-authentication#instance_password_policies",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP",
+                    "AssetClass": "Database",
+                    "AssetService": "Google CloudSQL",
+                    "AssetType": "CloudSQL Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpCloudSqlInstance",
+                        "Id": f"{gcpProjectId}/{zone}/{name}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "DatabaseVersion": databaseVersion,
+                                "MaintenanceVersion": maintenanceVersion,
+                                "CreatedAt": createTime,
+                                "State": state,
+                                "IpAddress": ipAddress,
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-1",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-2",
+                        "NIST SP 800-53 IA-1",
+                        "NIST SP 800-53 IA-2",
+                        "NIST SP 800-53 IA-3",
+                        "NIST SP 800-53 IA-4",
+                        "NIST SP 800-53 IA-5",
+                        "NIST SP 800-53 IA-6",
+                        "NIST SP 800-53 IA-7",
+                        "NIST SP 800-53 IA-8",
+                        "NIST SP 800-53 IA-9",
+                        "NIST SP 800-53 IA-10",
+                        "NIST SP 800-53 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("cloudsql")
+def cloudsql_instance_password_username_block_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+    """
+    [GCP.CloudSQL.10] CloudSQL Instances should be configured to disallow the username from being part of the password
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    for csql in get_cloudsql_dbs(cache, gcpProjectId):
+        name = csql["name"]
+        zone = csql["gceZone"]
+        databaseVersion = csql["databaseVersion"]
+        createTime = csql["createTime"]
+        state = csql["state"]
+        maintenanceVersion = csql["maintenanceVersion"]
+        ipAddress = csql["ipAddresses"][0]["ipAddress"]
+        if csql["settings"]["passwordValidationPolicy"]["disallowUsernameSubstring"] == False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-pw-username-disallowed-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-pw-username-disallowed-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[GCP.CloudSQL.10] CloudSQL Instances should be configured to disallow the username from being part of the password",
+                "Description": f"CloudSQL instance {name} in {zone} is not configured to disallow the username from being part of the password. Using a comprehensive password complexity policy is important for database security to ensure strong passwords that are difficult to guess, thereby reducing the risk of unauthorized access and data theft or damage. A strong password complexity policy can prevent attackers from using automated tools to guess passwords, making it harder for them to compromise the database. Although IAM database authentication is more secure and reliable, you might prefer to use built-in authentication or a hybrid authentication model that includes both authentication types, and a strong password policy enhances the security of your database. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your CloudSQL instance should have have a password policy enabled or should be expanded to include more complexity refer to the Cloud SQL built-in database authentication section of the GCP CloudSQL guide.",
+                        "Url": "https://cloud.google.com/sql/docs/postgres/built-in-authentication#instance_password_policies",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP",
+                    "AssetClass": "Database",
+                    "AssetService": "Google CloudSQL",
+                    "AssetType": "CloudSQL Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpCloudSqlInstance",
+                        "Id": f"{gcpProjectId}/{zone}/{name}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "DatabaseVersion": databaseVersion,
+                                "MaintenanceVersion": maintenanceVersion,
+                                "CreatedAt": createTime,
+                                "State": state,
+                                "IpAddress": ipAddress,
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-1",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-2",
+                        "NIST SP 800-53 IA-1",
+                        "NIST SP 800-53 IA-2",
+                        "NIST SP 800-53 IA-3",
+                        "NIST SP 800-53 IA-4",
+                        "NIST SP 800-53 IA-5",
+                        "NIST SP 800-53 IA-6",
+                        "NIST SP 800-53 IA-7",
+                        "NIST SP 800-53 IA-8",
+                        "NIST SP 800-53 IA-9",
+                        "NIST SP 800-53 IA-10",
+                        "NIST SP 800-53 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-pw-username-disallowed-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-pw-username-disallowed-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[GCP.CloudSQL.10] CloudSQL Instances should be configured to disallow the username from being part of the password",
+                "Description": f"CloudSQL instance {name} in {zone} is configured to disallow the username from being part of the password.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your CloudSQL instance should have have a password policy enabled or should be expanded to include more complexity refer to the Cloud SQL built-in database authentication section of the GCP CloudSQL guide.",
+                        "Url": "https://cloud.google.com/sql/docs/postgres/built-in-authentication#instance_password_policies",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP",
+                    "AssetClass": "Database",
+                    "AssetService": "Google CloudSQL",
+                    "AssetType": "CloudSQL Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpCloudSqlInstance",
+                        "Id": f"{gcpProjectId}/{zone}/{name}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "DatabaseVersion": databaseVersion,
+                                "MaintenanceVersion": maintenanceVersion,
+                                "CreatedAt": createTime,
+                                "State": state,
+                                "IpAddress": ipAddress,
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-1",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-2",
+                        "NIST SP 800-53 IA-1",
+                        "NIST SP 800-53 IA-2",
+                        "NIST SP 800-53 IA-3",
+                        "NIST SP 800-53 IA-4",
+                        "NIST SP 800-53 IA-5",
+                        "NIST SP 800-53 IA-6",
+                        "NIST SP 800-53 IA-7",
+                        "NIST SP 800-53 IA-8",
+                        "NIST SP 800-53 IA-9",
+                        "NIST SP 800-53 IA-10",
+                        "NIST SP 800-53 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("cloudsql")
+def cloudsql_instance_password_reuse_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+    """
+    [GCP.CloudSQL.11] CloudSQL Instances should have a password change interval defined
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    for csql in get_cloudsql_dbs(cache, gcpProjectId):
+        name = csql["name"]
+        zone = csql["gceZone"]
+        databaseVersion = csql["databaseVersion"]
+        createTime = csql["createTime"]
+        state = csql["state"]
+        maintenanceVersion = csql["maintenanceVersion"]
+        ipAddress = csql["ipAddresses"][0]["ipAddress"]
+        # Check if a "minLength" exists - who cares about length: NIST, Microsoft and CIS all say different things
+        if "passwordChangeInterval" not in csql["settings"]["passwordValidationPolicy"]:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-pw-change-interval-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-pw-reuse-check",
                 "AwsAccountId": awsAccountId,
                 "Types": ["Software and Configuration Checks"],
                 "FirstObservedAt": iso8601Time,
@@ -702,19 +1719,197 @@ def cloudsql_instance_private_gcp_services_connection_check(cache: dict, awsAcco
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[GCP.CloudSQL.4] CloudSQL PostgreSQL Instances with mission-critical workloads should have point-in-time recovery (PITR) configured",
-                "Description": f"CloudSQL instance {name} in {zone} does not have point-in-time recovery (PITR) configured. For databases that are part of business- or mission-critical applications or that need to maintain as little data loss as possible, considered enabling PITR. PITR, or Write-Ahead Logging (WAL) for MySQL, allows the restoration of data from a specific point in time, making it easier to recover from data corruption or malicious activities, such as ransomware attacks. This is because PITR provides a way to revert the database to a state before the attack occurred, minimizing the impact of the attack and reducing the amount of data that is lost. Refer to the remediation instructions if this configuration is not intended.",
+                "Title": "[GCP.CloudSQL.11] CloudSQL Instances should have a password change interval defined",
+                "Description": f"CloudSQL instance {name} in {zone} does not have a password change interval defined. Using a comprehensive password complexity policy is important for database security to ensure strong passwords that are difficult to guess, thereby reducing the risk of unauthorized access and data theft or damage. A strong password complexity policy can prevent attackers from using automated tools to guess passwords, making it harder for them to compromise the database. Although IAM database authentication is more secure and reliable, you might prefer to use built-in authentication or a hybrid authentication model that includes both authentication types, and a strong password policy enhances the security of your database. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
-                        "Text": "If your PostgreSQL CloudSQL instance should have PITR backups enabled refer to the Use point-in-time recovery section of the GCP PostgreSQL CloudSQL guide.",
-                        "Url": "https://cloud.google.com/sql/docs/postgres/backup-recovery/pitr",
+                        "Text": "If your CloudSQL instance should have have a password policy enabled or should be expanded to include more complexity refer to the Cloud SQL built-in database authentication section of the GCP CloudSQL guide.",
+                        "Url": "https://cloud.google.com/sql/docs/postgres/built-in-authentication#instance_password_policies",
                     }
                 },
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
                     "AssetClass": "Database",
-                    "AssetService": "CloudSQL",
+                    "AssetService": "Google CloudSQL",
+                    "AssetType": "CloudSQL Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpCloudSqlInstance",
+                        "Id": f"{gcpProjectId}/{zone}/{name}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "DatabaseVersion": databaseVersion,
+                                "MaintenanceVersion": maintenanceVersion,
+                                "CreatedAt": createTime,
+                                "State": state,
+                                "IpAddress": ipAddress,
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-1",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-2",
+                        "NIST SP 800-53 IA-1",
+                        "NIST SP 800-53 IA-2",
+                        "NIST SP 800-53 IA-3",
+                        "NIST SP 800-53 IA-4",
+                        "NIST SP 800-53 IA-5",
+                        "NIST SP 800-53 IA-6",
+                        "NIST SP 800-53 IA-7",
+                        "NIST SP 800-53 IA-8",
+                        "NIST SP 800-53 IA-9",
+                        "NIST SP 800-53 IA-10",
+                        "NIST SP 800-53 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-pw-change-interval-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-pw-reuse-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[GCP.CloudSQL.11] CloudSQL Instances should have a password change interval defined",
+                "Description": f"CloudSQL instance {name} in {zone} has a password change interval defined.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your CloudSQL instance should have have a password policy enabled or should be expanded to include more complexity refer to the Cloud SQL built-in database authentication section of the GCP CloudSQL guide.",
+                        "Url": "https://cloud.google.com/sql/docs/postgres/built-in-authentication#instance_password_policies",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP",
+                    "AssetClass": "Database",
+                    "AssetService": "Google CloudSQL",
+                    "AssetType": "CloudSQL Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpCloudSqlInstance",
+                        "Id": f"{gcpProjectId}/{zone}/{name}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "DatabaseVersion": databaseVersion,
+                                "MaintenanceVersion": maintenanceVersion,
+                                "CreatedAt": createTime,
+                                "State": state,
+                                "IpAddress": ipAddress,
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.AC-1",
+                        "NIST SP 800-53 AC-1",
+                        "NIST SP 800-53 AC-2",
+                        "NIST SP 800-53 IA-1",
+                        "NIST SP 800-53 IA-2",
+                        "NIST SP 800-53 IA-3",
+                        "NIST SP 800-53 IA-4",
+                        "NIST SP 800-53 IA-5",
+                        "NIST SP 800-53 IA-6",
+                        "NIST SP 800-53 IA-7",
+                        "NIST SP 800-53 IA-8",
+                        "NIST SP 800-53 IA-9",
+                        "NIST SP 800-53 IA-10",
+                        "NIST SP 800-53 IA-11",
+                        "AICPA TSC CC6.1",
+                        "AICPA TSC CC6.2",
+                        "ISO 27001:2013 A.9.2.1",
+                        "ISO 27001:2013 A.9.2.2",
+                        "ISO 27001:2013 A.9.2.3",
+                        "ISO 27001:2013 A.9.2.4",
+                        "ISO 27001:2013 A.9.2.6",
+                        "ISO 27001:2013 A.9.3.1",
+                        "ISO 27001:2013 A.9.4.2",
+                        "ISO 27001:2013 A.9.4.3"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("cloudsql")
+def cloudsql_instance_storage_autoresize_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+    """
+    [GCP.CloudSQL.12] CloudSQL Instances should have automatic storage increase enabled
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    for csql in get_cloudsql_dbs(cache, gcpProjectId):
+        name = csql["name"]
+        zone = csql["gceZone"]
+        databaseVersion = csql["databaseVersion"]
+        createTime = csql["createTime"]
+        state = csql["state"]
+        maintenanceVersion = csql["maintenanceVersion"]
+        ipAddress = csql["ipAddresses"][0]["ipAddress"]
+        if csql["settings"]["storageAutoResize"] == False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{name}/cloudsql-storage-auto-resize-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{name}/cloudsql-storage-auto-resize-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[GCP.CloudSQL.12] CloudSQL Instances should have automatic storage increase enabled",
+                "Description": f"CloudSQL instance {name} in {zone} does not have automatic storage increase enabled. For important workloads that rely on the database but also continuously write to it, automatic storage increases can help avoid disruptions and loss of availability by auto-scaling provisioned disk space. If you enable this setting, Cloud SQL checks your available storage every 30 seconds. If the available storage falls below a threshold size, Cloud SQL automatically adds additional storage capacity. If the available storage repeatedly falls below the threshold size, Cloud SQL continues to add storage until it reaches the maximum of 64 TB. However, once increased the storage can not be decreased and the increases also apply to read replicas. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your CloudSQL instance should have automatic storage increases enabled refer to the Enable automatic storage increases section of the GCP CloudSQL guide.",
+                        "Url": "https://cloud.google.com/sql/docs/mysql/instance-settings",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP",
+                    "AssetClass": "Database",
+                    "AssetService": "Google CloudSQL",
                     "AssetType": "CloudSQL Instance"
                 },
                 "Resources": [
@@ -757,26 +1952,83 @@ def cloudsql_instance_private_gcp_services_connection_check(cache: dict, awsAcco
                 "Workflow": {"Status": "NEW"},
                 "RecordState": "ACTIVE"
             }
-            yield finding"""
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{name}/cloudsql-storage-auto-resize-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{name}/cloudsql-storage-auto-resize-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[GCP.CloudSQL.12] CloudSQL Instances should have automatic storage increase enabled",
+                "Description": f"CloudSQL instance {name} in {zone} has automatic storage increase enabled.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your CloudSQL instance should have automatic storage increases enabled refer to the Enable automatic storage increases section of the GCP CloudSQL guide.",
+                        "Url": "https://cloud.google.com/sql/docs/mysql/instance-settings",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP",
+                    "AssetClass": "Database",
+                    "AssetService": "Google CloudSQL",
+                    "AssetType": "CloudSQL Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpCloudSqlInstance",
+                        "Id": f"{gcpProjectId}/{zone}/{name}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "DatabaseVersion": databaseVersion,
+                                "MaintenanceVersion": maintenanceVersion,
+                                "CreatedAt": createTime,
+                                "State": state,
+                                "IpAddress": ipAddress,
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.BE-5",
+                        "NIST CSF PR.PT-5",
+                        "NIST SP 800-53 CP-2",
+                        "NIST SP 800-53 CP-11",
+                        "NIST SP 800-53 SA-13",
+                        "NIST SP 800-53 SA14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding 
 
-# Password Policy Enabled passwordValidationPolicy.enablePasswordPolicy
+# Deletion Protection deletionProtectionEnabled 13
 
-# Password Policy min length CIS (14) passwordValidationPolicy.minLength
+# Enable Insights Config ... "insightsConfig": {}, 14
 
-# Password Policy Reuse CIS .reuseInterval
+# For Insights Config, Log Client IP insightsConfig.recordClientAddress 15
 
-# Password Policy disallow username in PW .disallowUsernameSubstring
-
-# Password Policy change interval .passwordChangeInterval
-
-# Storage Autoresize storageAutoResize
-
-# Deletion Protection deletionProtectionEnabled
-
-# Enable Insights Config ... "insightsConfig": {},
-
-# For Insights Config, Log Client IP insightsConfig.recordClientAddress
-
-# Enforce SSL Connections ipConfiguration.requireSsl - can be missing 
+# Enforce SSL Connections ipConfiguration.requireSsl - can be missing  16
 
 # To be continued...?
