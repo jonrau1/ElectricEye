@@ -1,6 +1,6 @@
 # ElectricEye
 
-![Logo?!](./screenshots/EE-LogoLarge.png)
+![Logo](./screenshots/logo.svg)
 
 Continuously monitor your AWS attack surface and evaluate services for configurations that can lead to degradation of confidentiality, integrity or availability. All results can be exported to Security Hub, JSON, CSV, Databases, and more for further aggregation and analysis. 
 
