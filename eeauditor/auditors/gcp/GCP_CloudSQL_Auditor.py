@@ -510,9 +510,254 @@ def cloudsql_instance_mysql_pitr_backup_check(cache: dict, awsAccountId: str, aw
             }
             yield finding
 
-# PITR Postgresql Check backupConfiguration.pointInTimeRecoveryEnabled 
+@registry.register_check("cloudsql")
+def cloudsql_instance_mysql_pitr_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+    """
+    [GCP.CloudSQL.4] CloudSQL PostgreSQL Instances with mission-critical workloads should have point-in-time recovery (PITR) configured
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    for csql in get_cloudsql_dbs(cache, gcpProjectId):
+        name = csql["name"]
+        zone = csql["gceZone"]
+        databaseVersion = csql["databaseVersion"]
+        # Check if the DB engine (to use an AWS term, lol) matches what we want
+        # example output is MYSQL_8_0_26 or POSTGRES_14
+        dbEngine = databaseVersion.split("_")[0]
+        if dbEngine != "POSTGRES":
+            continue
+        createTime = csql["createTime"]
+        state = csql["state"]
+        maintenanceVersion = csql["maintenanceVersion"]
+        ipAddress = csql["ipAddresses"][0]["ipAddress"]
+        # "pointInTimeRecoveryEnabled" only appears for Psql
+        if csql["settings"]["backupConfiguration"]["pointInTimeRecoveryEnabled"] == False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-psql-pitr-backup-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-psql-pitr-backup-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[GCP.CloudSQL.4] CloudSQL PostgreSQL Instances with mission-critical workloads should have point-in-time recovery (PITR) configured",
+                "Description": f"CloudSQL instance {name} in {zone} does not have point-in-time recovery (PITR) configured. For databases that are part of business- or mission-critical applications or that need to maintain as little data loss as possible, considered enabling PITR. PITR, or Write-Ahead Logging (WAL) for MySQL, allows the restoration of data from a specific point in time, making it easier to recover from data corruption or malicious activities, such as ransomware attacks. This is because PITR provides a way to revert the database to a state before the attack occurred, minimizing the impact of the attack and reducing the amount of data that is lost. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your PostgreSQL CloudSQL instance should have PITR backups enabled refer to the Use point-in-time recovery section of the GCP PostgreSQL CloudSQL guide.",
+                        "Url": "https://cloud.google.com/sql/docs/postgres/backup-recovery/pitr",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP",
+                    "AssetClass": "Database",
+                    "AssetService": "CloudSQL",
+                    "AssetType": "CloudSQL Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpCloudSqlInstance",
+                        "Id": f"{gcpProjectId}/{zone}/{name}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "DatabaseVersion": databaseVersion,
+                                "MaintenanceVersion": maintenanceVersion,
+                                "CreatedAt": createTime,
+                                "State": state,
+                                "IpAddress": ipAddress,
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.BE-5",
+                        "NIST CSF PR.PT-5",
+                        "NIST SP 800-53 CP-2",
+                        "NIST SP 800-53 CP-11",
+                        "NIST SP 800-53 SA-13",
+                        "NIST SP 800-53 SA14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-psql-pitr-backup-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-psql-pitr-backup-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[GCP.CloudSQL.4] CloudSQL PostgreSQL Instances with mission-critical workloads should have point-in-time recovery (PITR) configured",
+                "Description": f"CloudSQL instance {name} in {zone} has point-in-time recovery (PITR) configured.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your PostgreSQL CloudSQL instance should have PITR backups enabled refer to the Use point-in-time recovery section of the GCP PostgreSQL CloudSQL guide.",
+                        "Url": "https://cloud.google.com/sql/docs/postgres/backup-recovery/pitr",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP",
+                    "AssetClass": "Database",
+                    "AssetService": "CloudSQL",
+                    "AssetType": "CloudSQL Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpCloudSqlInstance",
+                        "Id": f"{gcpProjectId}/{zone}/{name}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "DatabaseVersion": databaseVersion,
+                                "MaintenanceVersion": maintenanceVersion,
+                                "CreatedAt": createTime,
+                                "State": state,
+                                "IpAddress": ipAddress,
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.BE-5",
+                        "NIST CSF PR.PT-5",
+                        "NIST SP 800-53 CP-2",
+                        "NIST SP 800-53 CP-11",
+                        "NIST SP 800-53 SA-13",
+                        "NIST SP 800-53 SA14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
 
 # Private Path Access ipConfiguration.enablePrivatePathForGoogleCloudServices
+@registry.register_check("cloudsql")
+def cloudsql_instance_private_gcp_services_connection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+    """
+    [GCP.CloudSQL.5] CloudSQL Instances should enable private path for Google Cloud Services connectivity
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    for csql in get_cloudsql_dbs(cache, gcpProjectId):
+        name = csql["name"]
+        zone = csql["gceZone"]
+        databaseVersion = csql["databaseVersion"]
+        createTime = csql["createTime"]
+        state = csql["state"]
+        maintenanceVersion = csql["maintenanceVersion"]
+        ipAddress = csql["ipAddresses"][0]["ipAddress"]
+        if 'privateNetwork' in csql["settings"]["ipConfiguration"]:
+            print(csql["settings"]["ipConfiguration"]["ipv4Enabled"])
+        """# "pointInTimeRecoveryEnabled" only appears for Psql
+        if csql["settings"]["backupConfiguration"]["pointInTimeRecoveryEnabled"] == False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-psql-pitr-backup-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{name}/cloudsql-instance-psql-pitr-backup-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[GCP.CloudSQL.4] CloudSQL PostgreSQL Instances with mission-critical workloads should have point-in-time recovery (PITR) configured",
+                "Description": f"CloudSQL instance {name} in {zone} does not have point-in-time recovery (PITR) configured. For databases that are part of business- or mission-critical applications or that need to maintain as little data loss as possible, considered enabling PITR. PITR, or Write-Ahead Logging (WAL) for MySQL, allows the restoration of data from a specific point in time, making it easier to recover from data corruption or malicious activities, such as ransomware attacks. This is because PITR provides a way to revert the database to a state before the attack occurred, minimizing the impact of the attack and reducing the amount of data that is lost. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your PostgreSQL CloudSQL instance should have PITR backups enabled refer to the Use point-in-time recovery section of the GCP PostgreSQL CloudSQL guide.",
+                        "Url": "https://cloud.google.com/sql/docs/postgres/backup-recovery/pitr",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP",
+                    "AssetClass": "Database",
+                    "AssetService": "CloudSQL",
+                    "AssetType": "CloudSQL Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpCloudSqlInstance",
+                        "Id": f"{gcpProjectId}/{zone}/{name}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "DatabaseVersion": databaseVersion,
+                                "MaintenanceVersion": maintenanceVersion,
+                                "CreatedAt": createTime,
+                                "State": state,
+                                "IpAddress": ipAddress,
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.BE-5",
+                        "NIST CSF PR.PT-5",
+                        "NIST SP 800-53 CP-2",
+                        "NIST SP 800-53 CP-11",
+                        "NIST SP 800-53 SA-13",
+                        "NIST SP 800-53 SA14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding"""
 
 # Password Policy Enabled passwordValidationPolicy.enablePasswordPolicy
 
