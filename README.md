@@ -997,50 +997,65 @@ These are the following services and checks perform by each Auditor, there are c
 ### GCP
 
 These are the following services and checks perform by each Auditor, there are currently...
-- :boom: **38 Checks** :boom:
-- :exclamation: **1 GCP supported services/components** :exclamation:
-- :fire: **2 Auditors** :fire:
+- :boom: **53 Checks** :boom:
+- :exclamation: **2 GCP supported services/components** :exclamation:
+- :fire: **3 Auditors** :fire:
 
 
 | Auditor File Name | AWS Service | Auditor Scan Description |
 |---|---|---|
-| GCP_ComputeEngine_Auditor.py | Google Compute Engine VM | Is deletion protection enabled |
-| GCP_ComputeEngine_Auditor.py | Google Compute Engine VM | Is IP forwarding disabled |
-| GCP_ComputeEngine_Auditor.py | Google Compute Engine VM | Is auto-restart enabled |
-| GCP_ComputeEngine_Auditor.py | Google Compute Engine VM | Is Secure Boot enabled |
-| GCP_ComputeEngine_Auditor.py | Google Compute Engine VM | Is Virtual Trusted Platform Module enabled |
-| GCP_ComputeEngine_Auditor.py | Google Compute Engine VM | Is Instance Integrity Monitoring enabled |
-| GCP_ComputeEngine_Auditor.py | Google Compute Engine VM | Is Secure Integrity Monitoring Auto-learning Policy set to Update |
-| GCP_ComputeEngine_Auditor.py | Google Compute Engine VM | Is Serial Port access disabled |
-| GCP_ComputeEngine_Auditor.py | Google Compute Engine VM | Are Linux VM Instances access with OS Logon |
-| GCP_ComputeEngine_Auditor.py | Google Compute Engine VM | Are Linux VM Instances acessed with OS Logon using 2FA/MFA |
-| GCP_ComputeEngine_Auditor.py | Google Compute Engine VM | Are project-wide SSH keys blocked from access VM instances |
-| GCP_ComputeEngine_Auditor.py | Google Compute Engine VM | Are instances publicly facing |
-| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a FTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a SSH service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a Telnet service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a SMTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a HTTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a POP3 service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a Win NetBIOS service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a SMB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a RDP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a MSSQL service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a MySQL/MariaDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a NFS service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a Docker API service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a OracleDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a PostgreSQL service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a Kibana service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a VMWARE ESXi service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a HTTP Proxy service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a SplunkD service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a Kubernetes API Server service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a Redis service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a Kafka service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a MongoDB/DocDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a Rabbit/AmazonMQ service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Google Compute Engine VM | Is a SparkUI service publicly accessible |
+| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Is deletion protection enabled |
+| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Is IP forwarding disabled |
+| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Is auto-restart enabled |
+| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Is Secure Boot enabled |
+| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Is Virtual Trusted Platform Module enabled |
+| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Is Instance Integrity Monitoring enabled |
+| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Is Secure Integrity Monitoring Auto-learning Policy set to Update |
+| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Is Serial Port access disabled |
+| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Are Linux VM Instances access with OS Logon |
+| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Are Linux VM Instances acessed with OS Logon using 2FA/MFA |
+| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Are project-wide SSH keys blocked from access VM instances |
+| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Are instances publicly facing |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Are instances publicly facing |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances enabled auto-backup |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do MySQL instances enable PITR |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do PostgreSQL instances enable PITR |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have a private network enabled |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances allowe GCP services connectivity |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have a password policy enabled |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have a password min length |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have a password reuse check |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have a configuration to disallow usernames in the password |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have a password change interval check |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have storage auto-resize enabled |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have deletion protection enabled |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have query insights enabled |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have SSL/TLS Enforcement enabled |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a FTP service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a SSH service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a Telnet service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a SMTP service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a HTTP service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a POP3 service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a Win NetBIOS service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a SMB service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a RDP service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a MSSQL service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a MySQL/MariaDB service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a NFS service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a Docker API service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a OracleDB service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a PostgreSQL service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a Kibana service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a VMWARE ESXi service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a HTTP Proxy service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a SplunkD service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a Kubernetes API Server service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a Redis service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a Kafka service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a MongoDB/DocDB service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a Rabbit/AmazonMQ service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a SparkUI service publicly accessible |
 
 
 ### Azure

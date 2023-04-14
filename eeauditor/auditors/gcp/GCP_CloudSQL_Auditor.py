@@ -671,7 +671,7 @@ def cloudsql_instance_psql_pitr_backup_check(cache: dict, awsAccountId: str, aws
             yield finding
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_private_gcp_services_connection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def cloudsql_instance_private_network_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
     """
     [GCP.CloudSQL.5] CloudSQL Instances should use private networks
     """
@@ -1691,7 +1691,7 @@ def cloudsql_instance_password_username_block_check(cache: dict, awsAccountId: s
             yield finding
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_password_reuse_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def cloudsql_instance_password_change_interval_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
     """
     [GCP.CloudSQL.11] CloudSQL Instances should have a password change interval defined
     """
@@ -2023,12 +2023,480 @@ def cloudsql_instance_storage_autoresize_check(cache: dict, awsAccountId: str, a
             }
             yield finding 
 
-# Deletion Protection deletionProtectionEnabled 13
+@registry.register_check("cloudsql")
+def cloudsql_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+    """
+    [GCP.CloudSQL.13] CloudSQL Instances should have deletion protection enabled
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-# Enable Insights Config ... "insightsConfig": {}, 14
+    for csql in get_cloudsql_dbs(cache, gcpProjectId):
+        name = csql["name"]
+        zone = csql["gceZone"]
+        databaseVersion = csql["databaseVersion"]
+        createTime = csql["createTime"]
+        state = csql["state"]
+        maintenanceVersion = csql["maintenanceVersion"]
+        ipAddress = csql["ipAddresses"][0]["ipAddress"]
+        if csql["settings"]["deletionProtectionEnabled"] == False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{name}/cloudsql-deletion-protection-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{name}/cloudsql-deletion-protection-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[GCP.CloudSQL.13] CloudSQL Instances should have deletion protection enabled",
+                "Description": f"CloudSQL instance {name} in {zone} does not have deletion protection enabled. As part of your workload, your database can serve an important role as a data store or information repository. These databases might need to stay running indefinitely so you need a way to protect these VMs from being deleted. With Deletion Protection enabled, you have the guarantee that your database cannot be accidentally deleted. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your CloudSQL instance should have deletion protection enabled refer to the Instance deletion protection section of the GCP CloudSQL guide.",
+                        "Url": "https://cloud.google.com/sql/docs/mysql/instance-settings",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP",
+                    "AssetClass": "Database",
+                    "AssetService": "Google CloudSQL",
+                    "AssetType": "CloudSQL Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpCloudSqlInstance",
+                        "Id": f"{gcpProjectId}/{zone}/{name}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "DatabaseVersion": databaseVersion,
+                                "MaintenanceVersion": maintenanceVersion,
+                                "CreatedAt": createTime,
+                                "State": state,
+                                "IpAddress": ipAddress,
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.BE-5",
+                        "NIST CSF PR.PT-5",
+                        "NIST SP 800-53 CP-2",
+                        "NIST SP 800-53 CP-11",
+                        "NIST SP 800-53 SA-13",
+                        "NIST SP 800-53 SA14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1",
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{name}/cloudsql-deletion-protection-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{name}/cloudsql-deletion-protection-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[GCP.CloudSQL.13] CloudSQL Instances should have deletion protection enabled",
+                "Description": f"CloudSQL instance {name} in {zone} does not have deletion protection enabled. As part of your workload, your database can serve an important role as a data store or information repository. These databases might need to stay running indefinitely so you need a way to protect these VMs from being deleted. With Deletion Protection enabled, you have the guarantee that your database cannot be accidentally deleted. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your CloudSQL instance should have deletion protection enabled refer to the Instance deletion protection section of the GCP CloudSQL guide.",
+                        "Url": "https://cloud.google.com/sql/docs/mysql/instance-settings",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP",
+                    "AssetClass": "Database",
+                    "AssetService": "Google CloudSQL",
+                    "AssetType": "CloudSQL Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpCloudSqlInstance",
+                        "Id": f"{gcpProjectId}/{zone}/{name}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "DatabaseVersion": databaseVersion,
+                                "MaintenanceVersion": maintenanceVersion,
+                                "CreatedAt": createTime,
+                                "State": state,
+                                "IpAddress": ipAddress,
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.BE-5",
+                        "NIST CSF PR.PT-5",
+                        "NIST SP 800-53 CP-2",
+                        "NIST SP 800-53 CP-11",
+                        "NIST SP 800-53 SA-13",
+                        "NIST SP 800-53 SA14",
+                        "AICPA TSC CC3.1",
+                        "AICPA TSC A1.2",
+                        "ISO 27001:2013 A.11.1.4",
+                        "ISO 27001:2013 A.17.1.1",
+                        "ISO 27001:2013 A.17.1.2",
+                        "ISO 27001:2013 A.17.2.1",
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "RESOLVED"
+            }
+            yield finding
 
-# For Insights Config, Log Client IP insightsConfig.recordClientAddress 15
+@registry.register_check("cloudsql")
+def cloudsql_instance_query_insights_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+    """
+    [GCP.CloudSQL.14] CloudSQL Instances should have query insights enabled
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-# Enforce SSL Connections ipConfiguration.requireSsl - can be missing  16
+    for csql in get_cloudsql_dbs(cache, gcpProjectId):
+        name = csql["name"]
+        zone = csql["gceZone"]
+        databaseVersion = csql["databaseVersion"]
+        createTime = csql["createTime"]
+        state = csql["state"]
+        maintenanceVersion = csql["maintenanceVersion"]
+        ipAddress = csql["ipAddresses"][0]["ipAddress"]
+        # "insightsConfig" can be empty or have a true / false value within
+        if csql["settings"]["insightsConfig"]:
+            if csql["settings"]["queryInsightsEnabled"] == True:
+                insightQueryEnabled = True
+            else:
+                insightQueryEnabled = False
+        else:
+            insightQueryEnabled = False
+        # failing check first...
+        if insightQueryEnabled == False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{name}/cloudsql-query-insights-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{name}/cloudsql-query-insights-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[GCP.CloudSQL.14] CloudSQL Instances should have query insights enabled",
+                "Description": f"CloudSQL instance {name} in {zone} does not have query insights enabled. Query insights helps you detect, diagnose, and prevent query performance problems for Cloud SQL databases. It supports intuitive monitoring and provides diagnostic information that helps you go beyond detection to identify the root cause of performance problems. There's no additional cost for Query insights. You can access one week of data on the Query insights dashboard. While not their intended purpose, Query insights can be used for security investigations if adversarial actions are directly taken against your database. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your CloudSQL instance should have deletion protection enabled refer to the Instance deletion protection section of the GCP CloudSQL guide.",
+                        "Url": "https://cloud.google.com/sql/docs/mysql/instance-settings",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP",
+                    "AssetClass": "Database",
+                    "AssetService": "Google CloudSQL",
+                    "AssetType": "CloudSQL Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpCloudSqlInstance",
+                        "Id": f"{gcpProjectId}/{zone}/{name}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "DatabaseVersion": databaseVersion,
+                                "MaintenanceVersion": maintenanceVersion,
+                                "CreatedAt": createTime,
+                                "State": state,
+                                "IpAddress": ipAddress,
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF DE.AE-3",
+                        "NIST SP 800-53 AU-6",
+                        "NIST SP 800-53 CA-7",
+                        "NIST SP 800-53 IR-4",
+                        "NIST SP 800-53 IR-5",
+                        "NIST SP 800-53 IR-8",
+                        "NIST SP 800-53 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{name}/cloudsql-query-insights-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{name}/cloudsql-query-insights-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[GCP.CloudSQL.14] CloudSQL Instances should have query insights enabled",
+                "Description": f"CloudSQL instance {name} in {zone} has query insights enabled.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your CloudSQL instance should have deletion protection enabled refer to the Instance deletion protection section of the GCP CloudSQL guide.",
+                        "Url": "https://cloud.google.com/sql/docs/mysql/instance-settings",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP",
+                    "AssetClass": "Database",
+                    "AssetService": "Google CloudSQL",
+                    "AssetType": "CloudSQL Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpCloudSqlInstance",
+                        "Id": f"{gcpProjectId}/{zone}/{name}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "DatabaseVersion": databaseVersion,
+                                "MaintenanceVersion": maintenanceVersion,
+                                "CreatedAt": createTime,
+                                "State": state,
+                                "IpAddress": ipAddress,
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF DE.AE-3",
+                        "NIST SP 800-53 AU-6",
+                        "NIST SP 800-53 CA-7",
+                        "NIST SP 800-53 IR-4",
+                        "NIST SP 800-53 IR-5",
+                        "NIST SP 800-53 IR-8",
+                        "NIST SP 800-53 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.7"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+@registry.register_check("cloudsql")
+def cloudsql_instance_tls_enforcement_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+    """
+    [GCP.CloudSQL.15] CloudSQL Instances should enforce SSL/TLS connectivity
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    for csql in get_cloudsql_dbs(cache, gcpProjectId):
+        name = csql["name"]
+        zone = csql["gceZone"]
+        databaseVersion = csql["databaseVersion"]
+        createTime = csql["createTime"]
+        state = csql["state"]
+        maintenanceVersion = csql["maintenanceVersion"]
+        ipAddress = csql["ipAddresses"][0]["ipAddress"]
+        # "requireSsl" is not always present if it wasn't enabled from instance creation
+        if "requireSsl" in csql["settings"]["ipConfiguration"]:
+            if csql["settings"]["ipConfiguration"]["requireSsl"] == False:
+                tlsEnforcement = False
+            else:
+                tlsEnforcement = True
+        else:
+            tlsEnforcement = False
+        # failing check first...
+        if tlsEnforcement == False:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{name}/cloudsql-tls-enforcement-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{name}/cloudsql-tls-enforcement-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[GCP.CloudSQL.15] CloudSQL Instances should enforce SSL/TLS connectivity",
+                "Description": f"CloudSQL instance {name} in {zone} does not enforce SSL/TLS connectivity. Setting up your Cloud SQL instance to accept SSL/TLS connections enables SSL/TLS connections for the instance, but unencrypted and unsecure connections are still accepted. If you do not require SSL/TLS for all connections, clients without a valid certificate are allowed to connect. For this reason, if you are accessing your instance using public IP, it is strongly recommended that you enforce SSL for all connections. When the requiring SSL/TLS option is enabled, you can use either the Cloud SQL Auth proxy or SSL/TLS certificates to connect to your Cloud SQL instance. Using the Cloud SQL Auth proxy doesn't require SSL/TLS Certificates because the connection is encrypted no matter the setting. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your CloudSQL instance should have TLS enforcement enabled refer to the Enforce SSL/TLS encryption section of the GCP CloudSQL guide.",
+                        "Url": "https://cloud.google.com/sql/docs/mysql/configure-ssl-instance#enforcing-ssl",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP",
+                    "AssetClass": "Database",
+                    "AssetService": "Google CloudSQL",
+                    "AssetType": "CloudSQL Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpCloudSqlInstance",
+                        "Id": f"{gcpProjectId}/{zone}/{name}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "DatabaseVersion": databaseVersion,
+                                "MaintenanceVersion": maintenanceVersion,
+                                "CreatedAt": createTime,
+                                "State": state,
+                                "IpAddress": ipAddress,
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.DS-2",
+                        "NIST SP 800-53 SC-8",
+                        "NIST SP 800-53 SC-11",
+                        "NIST SP 800-53 SC-12",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{gcpProjectId}/{zone}/{name}/cloudsql-tls-enforcement-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{gcpProjectId}/{zone}/{name}/cloudsql-tls-enforcement-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[GCP.CloudSQL.15] CloudSQL Instances should enforce SSL/TLS connectivity",
+                "Description": f"CloudSQL instance {name} in {zone} does not enforce SSL/TLS connectivity. Setting up your Cloud SQL instance to accept SSL/TLS connections enables SSL/TLS connections for the instance, but unencrypted and unsecure connections are still accepted. If you do not require SSL/TLS for all connections, clients without a valid certificate are allowed to connect. For this reason, if you are accessing your instance using public IP, it is strongly recommended that you enforce SSL for all connections. When the requiring SSL/TLS option is enabled, you can use either the Cloud SQL Auth proxy or SSL/TLS certificates to connect to your Cloud SQL instance. Using the Cloud SQL Auth proxy doesn't require SSL/TLS Certificates because the connection is encrypted no matter the setting. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "If your CloudSQL instance should have TLS enforcement enabled refer to the Enforce SSL/TLS encryption section of the GCP CloudSQL guide.",
+                        "Url": "https://cloud.google.com/sql/docs/mysql/configure-ssl-instance#enforcing-ssl",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "GCP",
+                    "AssetClass": "Database",
+                    "AssetService": "Google CloudSQL",
+                    "AssetType": "CloudSQL Instance"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpCloudSqlInstance",
+                        "Id": f"{gcpProjectId}/{zone}/{name}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "GcpProjectId": gcpProjectId,
+                                "Zone": zone,
+                                "Name": name,
+                                "DatabaseVersion": databaseVersion,
+                                "MaintenanceVersion": maintenanceVersion,
+                                "CreatedAt": createTime,
+                                "State": state,
+                                "IpAddress": ipAddress,
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF PR.DS-2",
+                        "NIST SP 800-53 SC-8",
+                        "NIST SP 800-53 SC-11",
+                        "NIST SP 800-53 SC-12",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
+                        "ISO 27001:2013 A.13.2.3",
+                        "ISO 27001:2013 A.14.1.2",
+                        "ISO 27001:2013 A.14.1.3"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+# ClientIp Query Insights Check?
 
 # To be continued...?
