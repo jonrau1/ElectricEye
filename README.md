@@ -2,7 +2,7 @@
 
 ![Logo](./screenshots/logo.svg)
 
-Continuously monitor your AWS attack surface and evaluate services for configurations that can lead to degradation of confidentiality, integrity or availability. All results can be exported to Security Hub, JSON, CSV, Databases, and more for further aggregation and analysis. 
+ElectricEye is a Cloud Security Configuration CLI for AWS, GCP, Azure, and SaaS Security Posture Management with support for 100s of services and evaluations to harden your entire cloud footprint.
 
 ***Up here in space***<br/>
 ***I'm looking down on you***<br/>
