@@ -35,7 +35,7 @@ python3 eeauditor/controller.py -o stdout
     - [ServiceNow SSPM](#evaluating-servicenow)
     - [M365/O365 SSPM](#evaluating-m365)
     - [Custom Outputs](#custom-outputs)
-- [Supported Services and Checks](#supported-services-and-checks-1)
+- [Supported Services and Checks](#supported-services-and-checks)
     - [AWS Checks & Services](#aws-checks--services)
     - [GCP Checks & Services](#gcp-checks--services)
     - [Azure Checks & Services](#azure-checks--services)
@@ -64,6 +64,8 @@ python3 eeauditor/controller.py -o stdout
 - Outputs to AWS Security Hub, JSON, CSV, AWS DocumentDB, MongoDB, AWS RDS & Aurora for PostgreSQL, PostgreSQL, AWS DynamoDB, and DisruptOps by Firemon.
 
 ## Tell Me More :round_pushpin: :round_pushpin:
+
+![Architecture](./screenshots/ElectricEye2023Architecture.jpg)
 
 ElectricEye was created in early 2019 as an extension to AWS Security Hub, AWS Cloud's native Cloud Security Posture Management (CSPM) solution, with the goal to extend beyond only AWS Config-supported Services and add extra checks and Audit Readiness Standards (AKA "Compliance Standards") to support Cloud Security, DevOps, IT, and Risk teams running workloads on AWS.
 
@@ -334,7 +336,7 @@ ___
 *Coming Soon!*
 
 ### SaaS Security Posture Management (SSPM)
-__
+___
 
 *Coming Soon!* The following sections will be dedicated to setting up your SaaS Provider API keys / OAuth applications for use with ElectricEye
 
