@@ -511,7 +511,7 @@ def cloudsql_instance_mysql_pitr_backup_check(cache: dict, awsAccountId: str, aw
             yield finding
 
 @registry.register_check("cloudsql")
-def cloudsql_instance_mysql_pitr_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
+def cloudsql_instance_psql_pitr_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
     """
     [GCP.CloudSQL.4] CloudSQL PostgreSQL Instances with mission-critical workloads should have point-in-time recovery (PITR) configured
     """
@@ -687,7 +687,7 @@ def cloudsql_instance_private_gcp_services_connection_check(cache: dict, awsAcco
         maintenanceVersion = csql["maintenanceVersion"]
         ipAddress = csql["ipAddresses"][0]["ipAddress"]
         if 'privateNetwork' in csql["settings"]["ipConfiguration"]:
-            print(csql["settings"]["ipConfiguration"]["ipv4Enabled"])
+            print(csql["settings"]["ipConfiguration"]["enablePrivatePathForGoogleCloudServices"])
         """# "pointInTimeRecoveryEnabled" only appears for Psql
         if csql["settings"]["backupConfiguration"]["pointInTimeRecoveryEnabled"] == False:
             finding = {
