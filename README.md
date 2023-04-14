@@ -23,7 +23,12 @@ python3 eeauditor/controller.py -o stdout
 - [Quick Run Down](#quick-run-down)
 - [Description](#tell-me-more)
 - [How do I use this](#how-do-i-use-this)
-
+  - [For AWS](#aws)
+    - [Building & Pushing ElectricEye Docker Image to ECR](#build-and-push-the-docker-image-to-ecr)
+    - [AWS Multi-Account & Multi-Region Usage](#multi-account-usage)
+    - [AWS EASM Checks Only]()
+  - [For GCP](#gcp)
+  - [For Azure](#azure)
 - [Supported Services and Checks](#supported-services-and-checks)
 - [FAQ](./faq)
 - [Contributing](#contributing)
@@ -61,7 +66,11 @@ As of April 2023 ElectricEye has multi-Region support for GCP Projects offering 
 
 ## How do I use this :thinking: :thinking: ??
 
+Refer to sub-headings for per-CSP or per-SaaS setup instructions.
+
 ### AWS
+___
+
 
 1. Navigate to the IAM console and click on **Policies** under **Access management**. Select **Create policy** and under the JSON tab, copy and paste the contents [Instance Profile IAM Policy](policies/Instance_Profile_IAM_Policy.json). Click **Review policy**, create a name, and then click **Create policy**.
 
@@ -107,13 +116,15 @@ Add the `--help` option for info on running individual checks and auditors and d
 python3 eeauditor/controller.py -t AWS -a AWS_IAM_Auditor
 ```
 
-You can get a full name of the auditors (as well as their checks within comments by using the following command).
+You can get a full name of the auditors (as well as their check description within comments by using the following command).
 
 ```bash
 python3 eeauditor/controller.py -t AWS --list-checks
 ```
 
 #### Build and push the Docker image to ECR
+___
+
 
 **Note:** You must have [permissions to push images](https://docs.aws.amazon.com/AmazonECR/latest/userguide/docker-push-ecr-image.html) to ECR before performing this step. These permissions are not included in the instance profile example.
 
@@ -158,42 +169,51 @@ sudo docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/electriceye:v
 4. Navigate to the ECR console and copy the `URI` of your Docker image.
 
 #### Multi Account Usage
+___
 
 ElectricEye supports running all Auditors in remote AWS Accounts as long as the remote AWS Account trusts your ***current*** AWS Account or IAM Principal. Consider deploying a StackSet from the [ElectricEye Organizations StackSet template](./cloudformation/ElectricEye_Organizations_StackSet.yaml) for easier setup.
 
-> - To specify a remote Account supply both an Account ID using `--assume-role-account` and the name of the IAM Role in that Account using `--assume-role-name`. ElectricEye will attempt to Assume the role and create a new Boto3 Session.
+- To specify a remote Account supply both an Account ID using `--assume-role-account` and the name of the IAM Role in that Account using `--assume-role-name`. ElectricEye will attempt to Assume the role and create a new Boto3 Session.
 
 ```bash
 python3 eeauditor/controller.py -t AWS --assume-role-account 111111111111 --assume-role-name CrossAccountElectricEyeRole -o stdout
 ```
 
-> - To target all Accounts in a specific Organizational Unit, use the following snippet, this will only run on Active Accounts and fail gracefully for Accounts without the specified Role.
+- To target all Accounts in a specific Organizational Unit, use the following snippet, this will only run on Active Accounts and fail gracefully for Accounts without the specified Role.
 
 ```bash
 ACCOUNTS_IN_OU=$(aws organizations list-accounts-for-parent --parent-id ou-p6ba-2hwy74oa --query 'Accounts[?Status==`ACTIVE`].Id' --output text)
 for accountId in $ACCOUNTS_IN_OU; do python3 ElectricEye/eeauditor/controller.py -t AWS --assume-role-account $accountId --assume-role-name CrossAccountElectricEyeRole -o stdout; done
 ```
 
-> - To target all Accounts in your entire AWS Organization, use the following snippet, this will only run on Active Accounts and fail gracefully for Accounts without the specified Role.
+- To target all Accounts in your entire AWS Organization, use the following snippet, this will only run on Active Accounts and fail gracefully for Accounts without the specified Role.
 
 ```bash
 ACCOUNTS_IN_ORG=$(aws organizations list-accounts --query 'Accounts[?Status==`ACTIVE`].Id' --output text)
 for accountId in $ACCOUNTS_IN_ORG; do python3 ElectricEye/eeauditor/controller.py -t AWS -a Amazon_EC2_Auditor --assume-role-account $accountId --assume-role-name CrossAccountElectricEyeRole -o stdout; done
 ```
 
-> - You can additionally override the Region for multi-Region assessments by supplying an AWS Region using `--region-override`, ensure the Region you specify match your current Partition (e.g., GovCloud, AWS China, etc.) otherwise ElectricEye will be very upset at you.
+- You can additionally override the Region for multi-Region assessments by supplying an AWS Region using `--region-override`, ensure the Region you specify match your current Partition (e.g., GovCloud, AWS China, etc.) otherwise ElectricEye will be very upset at you.
 
 ```bash
 python3 eeauditor/controller.py -t AWS --assume-role-account 111111111111 --assume-role-name CrossAccountElectricEyeRole --region-override eu-central-1 -o stdout
 ```
 
-> - You can also override your current Region without specifying a remote Account, ElectricEye will still attempt to swap to the proper Region for Auditors that require running in a specific Region such as us-east-1 for AWS Health, AWS Trusted Advisor (`support`), AWS WAFv2 in Global context (`cloudfront`) and us-west-2 for Global Accelerator.
+- You can also override your current Region without specifying a remote Account, ElectricEye will still attempt to swap to the proper Region for Auditors that require running in a specific Region such as us-east-1 for AWS Health, AWS Trusted Advisor (`support`), AWS WAFv2 in Global context (`cloudfront`) and us-west-2 for Global Accelerator.
 
 ```bash
 python3 eeauditor/controller.py -t AWS --region-override us-west-1 -o stdout
 ```
 
+- Lastly, you can loop through all AWS Regions for evaulation as well
+
+```bash
+AWS_REGIONS=$(aws ec2 describe-regions --query 'Regions[*].RegionName' --output text)
+for regionId in $AWS_REGIONS; do python3 ElectricEye/eeauditor/controller.py -t AWS --region-override $regionId -o stdout; done
+```
+
 #### Attack Surface Monitoring Only
+___
 
 If you only wanted to run Attack Surface Monitoring checks use the following command which show an example of outputting the ASM checks into a JSON file for consumption into SIEM or BI tools.
 
@@ -202,8 +222,17 @@ python3 eeauditor/controller.py -t AWS -a ElectricEye_AttackSurface_Auditor -o j
 ```
 
 ### GCP
+___
 
 **Note** This section will be updated for GCP Organization-wide onboarding...eventually
+
+0. Enable the following APIs for your GCP Projects you wish to assess
+
+    - Compute Engine API
+    - Cloud SQL Admin API
+    - Cloud Logging API
+    - OS Config API
+    - Service Networking API
 
 1. Create a Service Account with the following permissions per Project you want to assess with ElectricEye
 
@@ -280,10 +309,34 @@ python3 eeauditor/controller.py -t GCP --list-checks
 ```
 
 ### Azure
+___
 
-Docs In Progress
+*Coming Soon!*
 
-### ElectricEye and Custom Outputs
+### SaaS Security Posture Management (SSPM)
+__
+
+*Coming Soon!* The following sections will be dedicated to setting up your SaaS Provider API keys / OAuth applications for use with ElectricEye
+
+#### Evaluating GitHub
+___
+
+*Coming Soon!*
+
+#### Evaluating ServiceNow
+___
+
+*Coming Soon!*
+
+#### Evaluating M365
+___
+
+**Important Note:** This has only been testing on a M365 E5 + ESM Tenant. Results may vary.
+
+*Coming Soon!*
+
+### Custom Outputs
+__
 
 While running on AWS Fargate and creating the infrastructure with CloudFormation or Terraform gives you the benefits of encapsulating environment variables you need, you may need to do configurations of your own different outputs. Using these different outputs like PostgreSQL, JSON, or CSV is great for any downstream use cases such as SIEM-ingestion, external tool reporting, business intelligence, machine learning, or loading a graph. Outputs are subject to change by release and will be updated here.
 
@@ -380,7 +433,8 @@ export SHODAN_API_KEY_PARAM="electriceye-shodan-api-key"
 export DYNAMODB_TABLE_NAME="$PLACEHOLDER"
 ```
 
-#### Setup Shodan.io API Key
+#### Setting up Shodan
+___
 
 This is an **optional** step to setup a Shodan.io API key to determine if your internet-facing resources have been indexed. This is not an exact science as a lot of abstracted services (ES, RDS, ELB) share IP space with other resources and AWS addresses (non-EIP / BYOIP) are always change (such as when you have an EC2 instance shutoff for a prolonged period of time). You may end up having indexed resources that were indexed when someone else was using the IP space, you should still review it either way just to make sure.
 
@@ -396,39 +450,22 @@ aws ssm put-parameter \
     --value <API-KEY-HERE>
 ```
 
-In both the Terraform config files and CloudFormation templates the value for this key is prepopulated with the value `placeholder`, overwrite them with this parameter you just created to be able to use the Shodan checks.
-
-#### Setup DisruptOps Client Id and API Key
-
-This is an optional step to setup for sending findings to DisruptOps. 
-
-1. Create a Systems Manager Parameter Store `SecureString` parameter for the client id: 
-
-```bash
-aws ssm put-parameter \
-    --name dops-client-id \
-    --description 'DisruptOps client id' \
-    --type SecureString \
-    --value <CLIENT-ID-HERE>
-```
-
-2. Create a Systems Manager Parameter Store `SecureString` parameter for this API key: 
-
-```bash
-aws ssm put-parameter \
-    --name dops-api-key \
-    --description 'DisruptOps api key' \
-    --type SecureString \
-    --value <API-KEY-HERE>
-```
-
 ## Supported Services and Checks
 
+In total there are...
+
+> - **2** Support CSPs
+> - **1** Supported SaaS Provider (*Coming Soon!*)
+> - **102** Support CSP & SaaS Resources / Asset Types
+> - **80** Auditor Plugins
+
 ### AWS
+___
 
 These are the following services and checks perform by each Auditor, there are currently...
+
 - :boom: **550 Checks** :boom:
-- :exclamation: **100 AWS supported services/components** :exclamation:
+- :exclamation: **100 supported AWS services/components** :exclamation:
 - :fire: **77 Auditors** :fire:
 
 **Regarding AWS ElasticSearch Service/OpenSearch Service:** AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
@@ -995,10 +1032,11 @@ These are the following services and checks perform by each Auditor, there are c
 | Shodan_Auditor.py | Global Accelerator Accelerator | Are Global Accelerator Accelerators indexed |
 
 ### GCP
+___
 
 These are the following services and checks perform by each Auditor, there are currently...
 - :boom: **53 Checks** :boom:
-- :exclamation: **2 GCP supported services/components** :exclamation:
+- :exclamation: **2 supported GCP services/components** :exclamation:
 - :fire: **3 Auditors** :fire:
 
 
@@ -1059,26 +1097,33 @@ These are the following services and checks perform by each Auditor, there are c
 
 
 ### Azure
+___
 
-Coming Soon!
+*Coming Soon!*
 
 ### SSPM: GitHub
+___
 
-Coming Soon!
+*Coming Soon!*
+
+### SSPM: ServiceNow
+___
+
+*Coming Soon!*
 
 ### SSPM: M365
+___
 
-Coming Soon!
+*Coming Soon!*
 
-### SSPM: Workday
-
-Coming Soon!
 
 ## Developer Guide
 
-1. Naming an auditor: To keep naming consistent auditor names are based on the name of the service from the [AWS Documentation](https://docs.aws.amazon.com/index.html) and are named after the service being audited.
+TODO: Update this for new schema changes
 
-2. Necessary Imports and Intro: At the top of the auditor insert the following intro and imports (although other imports may be needed)
+1. **Naming an auditor**: To keep naming consistent auditor names are based on the name of the service from the [AWS Documentation](https://docs.aws.amazon.com/index.html) and are named after the service being audited.
+
+2. **Necessary Imports and Intro**: At the top of the auditor insert the following intro and imports (although other imports may be needed)
 
 ```python
 # This file is part of ElectricEye.
@@ -1103,7 +1148,7 @@ from check_register import CheckRegister
 registry = CheckRegister()
 ```
 
-The boto3 client will also need imported for whichever service is being audited. You can get these from the `Boto3` Documentation website, but for example, the client for EC2 Image Build is below. To match the style of other Auditors, the variable name should closely (preferably, exactly) match the name of the Client.
+- The boto3 client will also need imported for whichever service is being audited. You can get these from the `Boto3` Documentation website, but for example, the client for EC2 Image Build is below. To match the style of other Auditors, the variable name should closely (preferably, exactly) match the name of the Client.
 
 
 ```python
@@ -1116,7 +1161,7 @@ def list_topics(cache, session):
     return cache["list_topics"]
 ```
 
-**NOTE 2:** For Auditors that expect to scan dozens or hundreds of potential resources, it is apt to use a Paginator instead of the standard Describe call due to upper limits (usually 100-500 per "regular" call). The below example is a cached Paginator from the EC2 Auditor with filters.
+- For Auditors that expect to scan dozens or hundreds of potential resources, it is apt to use a Paginator instead of the standard Describe call due to upper limits (usually 100-500 per "regular" call). The below example is a cached Paginator from the EC2 Auditor with filters.
 
 ```python
 def paginate(cache, session):
@@ -1130,7 +1175,7 @@ def paginate(cache, session):
         return cache["paginate"]
 ```
 
-3. Registering and Defining Checks: All checks are registered by the same tag and checks should describe what is being checked with the word check at the end. Example from ImageBuilder. Directly underneath the `function` that defines the Check should be a single-line, double-quoted comment which contains the **`Title`** of the Check. This is outputted by the `--list-checks` flag in the **Controller**.
+3. **Registering and Defining Checks**: All checks are registered by the same tag and checks should describe what is being checked with the word check at the end. Example from ImageBuilder. Directly underneath the `function` that defines the Check should be a single-line, double-quoted comment which contains the **`Title`** of the Check. This is outputted by the `--list-checks` flag in the **Controller**.
 
 ```python
 @registry.register_check("imagebuilder")
@@ -1138,7 +1183,7 @@ def imagebuilder_pipeline_tests_enabled_check(cache: dict, session, awsAccountId
 """[ImageBuilder.1] Image pipeline tests should be enabled"""
 ```
 
-4. Formatting Findings: Findings will be formatted for AWS Security Hub, [ASSF](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html). Look to other auditors findings format for more specifics on ElectricEye formatting. Parts that will stay consistent across checks are: `SchemaVersion`, `ProductArn`, `AwsAccountId`, `FirstObservedAt`, `CreatedAt`, `UpdatedAt`, `ProductFields.Product Name` (ElectricEye), and the `Resources` array. Example finding formatting from Amazon_EC2_Auditor's IMDSv2 Check:
+4. **Formatting Findings**: Findings will be formatted for AWS Security Hub, [ASSF](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html). Look to other auditors findings format for more specifics on ElectricEye formatting. Parts that will stay consistent across checks are: `SchemaVersion`, `ProductArn`, `AwsAccountId`, `FirstObservedAt`, `CreatedAt`, `UpdatedAt`, `ProductFields.ProductName` (ElectricEye), and the `Resources` array. Example finding formatting from Amazon_EC2_Auditor's IMDSv2 Check:
 
 **NOTE:** While not required by ASFF, it is required by ElectricEye that all checks are mapped to the supported compliance standards. It is recommended to use the mapped `Compliance.Requirements` from an existing Check within an Auditor that is similar to yours - for instance - if you are developing a check around TLS, look for an example of a Check for encryption in transit. If you are developing a check to enable Logging, look for a Check that deals with Logging.
 
@@ -1172,7 +1217,7 @@ finding = {
             "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html#instance-metadata-transition-to-version-2",
         }
     },
-    "ProductFields": {"Product Name": "ElectricEye"},
+    "ProductFields": {"ProductName": "ElectricEye"},
     "Resources": [
         {
             "Type": "AwsEc2Instance",
