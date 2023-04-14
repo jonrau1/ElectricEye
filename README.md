@@ -212,7 +212,7 @@ AWS_REGIONS=$(aws ec2 describe-regions --query 'Regions[*].RegionName' --output 
 for regionId in $AWS_REGIONS; do python3 ElectricEye/eeauditor/controller.py -t AWS --region-override $regionId -o stdout; done
 ```
 
-#### Attack Surface Monitoring Only
+#### AWS External Attack Surface Reporting
 ___
 
 If you only wanted to run Attack Surface Monitoring checks use the following command which show an example of outputting the ASM checks into a JSON file for consumption into SIEM or BI tools.
@@ -306,6 +306,15 @@ You can get a full name of the auditors (as well as their checks within comments
 
 ```bash
 python3 eeauditor/controller.py -t GCP --list-checks
+```
+
+#### GCP External Attack Surface Reporting
+___
+
+If you only wanted to run Attack Surface Monitoring checks use the following command which show an example of outputting the ASM checks into a JSON file for consumption into SIEM or BI tools.
+
+```bash
+python3 eeauditor/controller.py -t GCP -a ElectricEye_AttackSurface_GCP_Auditor -o json_normalized --output-file ElectricASM
 ```
 
 ### Azure
