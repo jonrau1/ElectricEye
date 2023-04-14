@@ -23,14 +23,20 @@ python3 eeauditor/controller.py -o stdout
 - [Quick Run Down](#quick-run-down)
 - [Description](#tell-me-more)
 - [How do I use this](#how-do-i-use-this)
-  - [For AWS](#aws)
+  - [AWS CSPM](#aws)
     - [Building & Pushing ElectricEye Docker Image to ECR](#build-and-push-the-docker-image-to-ecr)
     - [AWS Multi-Account & Multi-Region Usage](#multi-account-usage)
-    - [AWS EASM Checks Only]()
-  - [For GCP](#gcp)
-  - [For Azure](#azure)
+    - [AWS EASM Reporting](#aws-external-attack-surface-reporting)
+  - [GCP CSPM](#gcp)
+    - [GCP EASM Reporting](#gcp-external-attack-surface-reporting)
+  - [Azure CSPM](#azure)
+  - [SaaS Security Posture Management (SSPM)](#saas-security-posture-management-sspm)
+    - [GitHub SSPM](#evaluating-github)
+    - [ServiceNow SSPM](#evaluating-servicenow)
+    - [M365/O365 SSPM](#evaluating-m365)
+    -[Custom Outputs](#custom-outputs)
 - [Supported Services and Checks](#supported-services-and-checks)
-- [FAQ](./faq)
+    - 
 - [Contributing](#contributing)
 - [Developing new Checks](#developer-guide)
 - [Auditor testing](#auditor-testing)
@@ -345,7 +351,7 @@ ___
 *Coming Soon!*
 
 ### Custom Outputs
-__
+___
 
 While running on AWS Fargate and creating the infrastructure with CloudFormation or Terraform gives you the benefits of encapsulating environment variables you need, you may need to do configurations of your own different outputs. Using these different outputs like PostgreSQL, JSON, or CSV is great for any downstream use cases such as SIEM-ingestion, external tool reporting, business intelligence, machine learning, or loading a graph. Outputs are subject to change by release and will be updated here.
 
@@ -468,7 +474,7 @@ In total there are...
 > - **102** Support CSP & SaaS Resources / Asset Types
 > - **80** Auditor Plugins
 
-### AWS
+### AWS Checks & Services
 ___
 
 These are the following services and checks perform by each Auditor, there are currently...
@@ -1040,7 +1046,7 @@ These are the following services and checks perform by each Auditor, there are c
 | Shodan_Auditor.py | CloudFront Distribution | Are CloudFront distros indexed |
 | Shodan_Auditor.py | Global Accelerator Accelerator | Are Global Accelerator Accelerators indexed |
 
-### GCP
+### GCP Checks & Services
 ___
 
 These are the following services and checks perform by each Auditor, there are currently...
@@ -1105,22 +1111,22 @@ These are the following services and checks perform by each Auditor, there are c
 | ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a SparkUI service publicly accessible |
 
 
-### Azure
+### Azure Checks & Services
 ___
 
 *Coming Soon!*
 
-### SSPM: GitHub
+### SSPM: GitHub Checks & Services
 ___
 
 *Coming Soon!*
 
-### SSPM: ServiceNow
+### SSPM: ServiceNow Checks & Services
 ___
 
 *Coming Soon!*
 
-### SSPM: M365
+### SSPM: M365 Checks & Services
 ___
 
 *Coming Soon!*
