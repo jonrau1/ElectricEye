@@ -96,12 +96,15 @@ def gce_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRe
                 },
                 "ProductFields": {
                     "ProductName": "ElectricEye",
-                    "Provider": "GCP"
+                    "Provider": "GCP",
+                    "AssetClass": "Compute",
+                    "AssetService": "Google Compute Engine",
+                    "AssetType": "Google Compute Engine Instance"
                 },
                 "Resources": [
                     {
                         "Type": "GcpGceVmInstance",
-                        "Id": f"{id}",
+                        "Id": f"{gcpProjectId}/{zone}/{id}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
@@ -163,12 +166,15 @@ def gce_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRe
                 },
                 "ProductFields": {
                     "ProductName": "ElectricEye",
-                    "Provider": "GCP"
+                    "Provider": "GCP",
+                    "AssetClass": "Compute",
+                    "AssetService": "Google Compute Engine",
+                    "AssetType": "Google Compute Engine Instance"
                 },
                 "Resources": [
                     {
                         "Type": "GcpGceVmInstance",
-                        "Id": f"{id}",
+                        "Id": f"{gcpProjectId}/{zone}/{id}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
@@ -247,12 +253,15 @@ def gce_instance_ip_forwarding_check(cache: dict, awsAccountId: str, awsRegion: 
                 },
                 "ProductFields": {
                     "ProductName": "ElectricEye",
-                    "Provider": "GCP"
+                    "Provider": "GCP",
+                    "AssetClass": "Compute",
+                    "AssetService": "Google Compute Engine",
+                    "AssetType": "Google Compute Engine Instance"
                 },
                 "Resources": [
                     {
                         "Type": "GcpGceVmInstance",
-                        "Id": f"{id}",
+                        "Id": f"{gcpProjectId}/{zone}/{id}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
@@ -314,12 +323,15 @@ def gce_instance_ip_forwarding_check(cache: dict, awsAccountId: str, awsRegion: 
                 },
                 "ProductFields": {
                     "ProductName": "ElectricEye",
-                    "Provider": "GCP"
+                    "Provider": "GCP",
+                    "AssetClass": "Compute",
+                    "AssetService": "Google Compute Engine",
+                    "AssetType": "Google Compute Engine Instance"
                 },
                 "Resources": [
                     {
                         "Type": "GcpGceVmInstance",
-                        "Id": f"{id}",
+                        "Id": f"{gcpProjectId}/{zone}/{id}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
@@ -398,12 +410,15 @@ def gce_instance_auto_restart_check(cache: dict, awsAccountId: str, awsRegion: s
                 },
                 "ProductFields": {
                     "ProductName": "ElectricEye",
-                    "Provider": "GCP"
+                    "Provider": "GCP",
+                    "AssetClass": "Compute",
+                    "AssetService": "Google Compute Engine",
+                    "AssetType": "Google Compute Engine Instance"
                 },
                 "Resources": [
                     {
                         "Type": "GcpGceVmInstance",
-                        "Id": f"{id}",
+                        "Id": f"{gcpProjectId}/{zone}/{id}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
@@ -463,12 +478,15 @@ def gce_instance_auto_restart_check(cache: dict, awsAccountId: str, awsRegion: s
                 },
                 "ProductFields": {
                     "ProductName": "ElectricEye",
-                    "Provider": "GCP"
+                    "Provider": "GCP",
+                    "AssetClass": "Compute",
+                    "AssetService": "Google Compute Engine",
+                    "AssetType": "Google Compute Engine Instance"
                 },
                 "Resources": [
                     {
                         "Type": "GcpGceVmInstance",
-                        "Id": f"{id}",
+                        "Id": f"{gcpProjectId}/{zone}/{id}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
@@ -545,12 +563,15 @@ def gce_instance_secure_boot_check(cache: dict, awsAccountId: str, awsRegion: st
                 },
                 "ProductFields": {
                     "ProductName": "ElectricEye",
-                    "Provider": "GCP"
+                    "Provider": "GCP",
+                    "AssetClass": "Compute",
+                    "AssetService": "Google Compute Engine",
+                    "AssetType": "Google Compute Engine Instance"
                 },
                 "Resources": [
                     {
                         "Type": "GcpGceVmInstance",
-                        "Id": f"{id}",
+                        "Id": f"{gcpProjectId}/{zone}/{id}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
@@ -609,12 +630,15 @@ def gce_instance_secure_boot_check(cache: dict, awsAccountId: str, awsRegion: st
                 },
                 "ProductFields": {
                     "ProductName": "ElectricEye",
-                    "Provider": "GCP"
+                    "Provider": "GCP",
+                    "AssetClass": "Compute",
+                    "AssetService": "Google Compute Engine",
+                    "AssetType": "Google Compute Engine Instance"
                 },
                 "Resources": [
                     {
                         "Type": "GcpGceVmInstance",
-                        "Id": f"{id}",
+                        "Id": f"{gcpProjectId}/{zone}/{id}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
@@ -690,12 +714,15 @@ def gce_instance_vtpm_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                 },
                 "ProductFields": {
                     "ProductName": "ElectricEye",
-                    "Provider": "GCP"
+                    "Provider": "GCP",
+                    "AssetClass": "Compute",
+                    "AssetService": "Google Compute Engine",
+                    "AssetType": "Google Compute Engine Instance"
                 },
                 "Resources": [
                     {
                         "Type": "GcpGceVmInstance",
-                        "Id": f"{id}",
+                        "Id": f"{gcpProjectId}/{zone}/{id}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
@@ -754,12 +781,15 @@ def gce_instance_vtpm_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                 },
                 "ProductFields": {
                     "ProductName": "ElectricEye",
-                    "Provider": "GCP"
+                    "Provider": "GCP",
+                    "AssetClass": "Compute",
+                    "AssetService": "Google Compute Engine",
+                    "AssetType": "Google Compute Engine Instance"
                 },
                 "Resources": [
                     {
                         "Type": "GcpGceVmInstance",
-                        "Id": f"{id}",
+                        "Id": f"{gcpProjectId}/{zone}/{id}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
@@ -835,12 +865,15 @@ def gce_instance_integrity_mon_check(cache: dict, awsAccountId: str, awsRegion: 
                 },
                 "ProductFields": {
                     "ProductName": "ElectricEye",
-                    "Provider": "GCP"
+                    "Provider": "GCP",
+                    "AssetClass": "Compute",
+                    "AssetService": "Google Compute Engine",
+                    "AssetType": "Google Compute Engine Instance"
                 },
                 "Resources": [
                     {
                         "Type": "GcpGceVmInstance",
-                        "Id": f"{id}",
+                        "Id": f"{gcpProjectId}/{zone}/{id}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
@@ -899,12 +932,15 @@ def gce_instance_integrity_mon_check(cache: dict, awsAccountId: str, awsRegion: 
                 },
                 "ProductFields": {
                     "ProductName": "ElectricEye",
-                    "Provider": "GCP"
+                    "Provider": "GCP",
+                    "AssetClass": "Compute",
+                    "AssetService": "Google Compute Engine",
+                    "AssetType": "Google Compute Engine Instance"
                 },
                 "Resources": [
                     {
                         "Type": "GcpGceVmInstance",
-                        "Id": f"{id}",
+                        "Id": f"{gcpProjectId}/{zone}/{id}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
@@ -980,12 +1016,15 @@ def gce_instance_siip_auto_update_check(cache: dict, awsAccountId: str, awsRegio
                 },
                 "ProductFields": {
                     "ProductName": "ElectricEye",
-                    "Provider": "GCP"
+                    "Provider": "GCP",
+                    "AssetClass": "Compute",
+                    "AssetService": "Google Compute Engine",
+                    "AssetType": "Google Compute Engine Instance"
                 },
                 "Resources": [
                     {
                         "Type": "GcpGceVmInstance",
-                        "Id": f"{id}",
+                        "Id": f"{gcpProjectId}/{zone}/{id}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
@@ -1044,12 +1083,15 @@ def gce_instance_siip_auto_update_check(cache: dict, awsAccountId: str, awsRegio
                 },
                 "ProductFields": {
                     "ProductName": "ElectricEye",
-                    "Provider": "GCP"
+                    "Provider": "GCP",
+                    "AssetClass": "Compute",
+                    "AssetService": "Google Compute Engine",
+                    "AssetType": "Google Compute Engine Instance"
                 },
                 "Resources": [
                     {
                         "Type": "GcpGceVmInstance",
-                        "Id": f"{id}",
+                        "Id": f"{gcpProjectId}/{zone}/{id}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
@@ -1125,12 +1167,15 @@ def gce_instance_confidential_compute_update_check(cache: dict, awsAccountId: st
                 },
                 "ProductFields": {
                     "ProductName": "ElectricEye",
-                    "Provider": "GCP"
+                    "Provider": "GCP",
+                    "AssetClass": "Compute",
+                    "AssetService": "Google Compute Engine",
+                    "AssetType": "Google Compute Engine Instance"
                 },
                 "Resources": [
                     {
                         "Type": "GcpGceVmInstance",
-                        "Id": f"{id}",
+                        "Id": f"{gcpProjectId}/{zone}/{id}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
@@ -1196,12 +1241,15 @@ def gce_instance_confidential_compute_update_check(cache: dict, awsAccountId: st
                 },
                 "ProductFields": {
                     "ProductName": "ElectricEye",
-                    "Provider": "GCP"
+                    "Provider": "GCP",
+                    "AssetClass": "Compute",
+                    "AssetService": "Google Compute Engine",
+                    "AssetType": "Google Compute Engine Instance"
                 },
                 "Resources": [
                     {
                         "Type": "GcpGceVmInstance",
-                        "Id": f"{id}",
+                        "Id": f"{gcpProjectId}/{zone}/{id}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
@@ -1298,12 +1346,15 @@ def gce_instance_serial_port_access_check(cache: dict, awsAccountId: str, awsReg
                 },
                 "ProductFields": {
                     "ProductName": "ElectricEye",
-                    "Provider": "GCP"
+                    "Provider": "GCP",
+                    "AssetClass": "Compute",
+                    "AssetService": "Google Compute Engine",
+                    "AssetType": "Google Compute Engine Instance"
                 },
                 "Resources": [
                     {
                         "Type": "GcpGceVmInstance",
-                        "Id": f"{id}",
+                        "Id": f"{gcpProjectId}/{zone}/{id}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
@@ -1365,12 +1416,15 @@ def gce_instance_serial_port_access_check(cache: dict, awsAccountId: str, awsReg
                 },
                 "ProductFields": {
                     "ProductName": "ElectricEye",
-                    "Provider": "GCP"
+                    "Provider": "GCP",
+                    "AssetClass": "Compute",
+                    "AssetService": "Google Compute Engine",
+                    "AssetType": "Google Compute Engine Instance"
                 },
                 "Resources": [
                     {
                         "Type": "GcpGceVmInstance",
-                        "Id": f"{id}",
+                        "Id": f"{gcpProjectId}/{zone}/{id}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
@@ -1471,7 +1525,7 @@ def gce_instance_oslogon_access_check(cache: dict, awsAccountId: str, awsRegion:
                     "Resources": [
                         {
                             "Type": "GcpGceVmInstance",
-                            "Id": f"{id}",
+                            "Id": f"{gcpProjectId}/{zone}/{id}",
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
@@ -1538,7 +1592,7 @@ def gce_instance_oslogon_access_check(cache: dict, awsAccountId: str, awsRegion:
                     "Resources": [
                         {
                             "Type": "GcpGceVmInstance",
-                            "Id": f"{id}",
+                            "Id": f"{gcpProjectId}/{zone}/{id}",
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
@@ -1652,7 +1706,7 @@ def gce_instance_oslogon_2fa_access_check(cache: dict, awsAccountId: str, awsReg
                     "Resources": [
                         {
                             "Type": "GcpGceVmInstance",
-                            "Id": f"{id}",
+                            "Id": f"{gcpProjectId}/{zone}/{id}",
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
@@ -1731,7 +1785,7 @@ def gce_instance_oslogon_2fa_access_check(cache: dict, awsAccountId: str, awsReg
                     "Resources": [
                         {
                             "Type": "GcpGceVmInstance",
-                            "Id": f"{id}",
+                            "Id": f"{gcpProjectId}/{zone}/{id}",
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
@@ -1834,12 +1888,15 @@ def gce_instance_block_proj_ssh_keys_check(cache: dict, awsAccountId: str, awsRe
                 },
                 "ProductFields": {
                     "ProductName": "ElectricEye",
-                    "Provider": "GCP"
+                    "Provider": "GCP",
+                    "AssetClass": "Compute",
+                    "AssetService": "Google Compute Engine",
+                    "AssetType": "Google Compute Engine Instance"
                 },
                 "Resources": [
                     {
                         "Type": "GcpGceVmInstance",
-                        "Id": f"{id}",
+                        "Id": f"{gcpProjectId}/{zone}/{id}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
@@ -1904,12 +1961,15 @@ def gce_instance_block_proj_ssh_keys_check(cache: dict, awsAccountId: str, awsRe
                 },
                 "ProductFields": {
                     "ProductName": "ElectricEye",
-                    "Provider": "GCP"
+                    "Provider": "GCP",
+                    "AssetClass": "Compute",
+                    "AssetService": "Google Compute Engine",
+                    "AssetType": "Google Compute Engine Instance"
                 },
                 "Resources": [
                     {
                         "Type": "GcpGceVmInstance",
-                        "Id": f"{id}",
+                        "Id": f"{gcpProjectId}/{zone}/{id}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
@@ -1997,12 +2057,15 @@ def gce_instance_public_ip_check(cache: dict, awsAccountId: str, awsRegion: str,
                 },
                 "ProductFields": {
                     "ProductName": "ElectricEye",
-                    "Provider": "GCP"
+                    "Provider": "GCP",
+                    "AssetClass": "Compute",
+                    "AssetService": "Google Compute Engine",
+                    "AssetType": "Google Compute Engine Instance"
                 },
                 "Resources": [
                     {
                         "Type": "GcpGceVmInstance",
-                        "Id": f"{id}",
+                        "Id": f"{gcpProjectId}/{zone}/{id}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
@@ -2064,12 +2127,15 @@ def gce_instance_public_ip_check(cache: dict, awsAccountId: str, awsRegion: str,
                 },
                 "ProductFields": {
                     "ProductName": "ElectricEye",
-                    "Provider": "GCP"
+                    "Provider": "GCP",
+                    "AssetClass": "Compute",
+                    "AssetService": "Google Compute Engine",
+                    "AssetType": "Google Compute Engine Instance"
                 },
                 "Resources": [
                     {
                         "Type": "GcpGceVmInstance",
-                        "Id": f"{id}",
+                        "Id": f"{gcpProjectId}/{zone}/{id}",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
