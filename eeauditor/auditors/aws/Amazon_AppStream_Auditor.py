@@ -293,8 +293,8 @@ def compromise_appstream_user_check(cache: dict, session, awsAccountId: str, aws
                             "ISO 27001:2013 Clause 6.1.2",
                             "ISO 27001:2013 A.12.4.1",
                             "ISO 27001:2013 A.14.2.7",
-                            "ISO 27001:2013 A.15.2.1",
-                        ],
+                            "ISO 27001:2013 A.15.2.1"
+                        ]
                     },
                     "Workflow": {"Status": "NEW"},
                     "RecordState": "ACTIVE",
@@ -356,8 +356,8 @@ def compromise_appstream_user_check(cache: dict, session, awsAccountId: str, aws
                             "ISO 27001:2013 Clause 6.1.2",
                             "ISO 27001:2013 A.12.4.1",
                             "ISO 27001:2013 A.14.2.7",
-                            "ISO 27001:2013 A.15.2.1",
-                        ],
+                            "ISO 27001:2013 A.15.2.1"
+                        ]
                     },
                     "Workflow": {"Status": "RESOLVED"},
                     "RecordState": "ARCHIVED",

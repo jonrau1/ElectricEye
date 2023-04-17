@@ -229,4 +229,184 @@ def servicenow_sspm_active_user_mfa_check(cache: dict, awsAccountId: str, awsReg
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED"
             }
-            yield finding 
+            yield finding
+
+@registry.register_check("servicenow_user")
+def servicenow_sspm_active_user_failed_login_audits_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
+    """
+    [SSPM.Servicenow.2] Active users with more than {SNOW_FAILED_LOGIN_BREACHING_RATE} failed login attempts should be audited
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    for user in get_servicenow_users(cache):
+        userId = str(user["sys_id"])
+        userName = str(user["user_name"])
+        roles = str(user["roles"])
+        title = str(user["title"])
+        email = str(user["email"])
+        # Skip web services / integration "users" these are for automation it seems
+        # TODO: Confirm hypothesis?
+        if (user["web_service_access_only"] or user["internal_integration_user"]) == "true":
+            continue
+        # skip inactive users
+        if user["active"] == "false":
+            continue
+        # see if failed logins are listed & convert to int(0) if not. Then convert `SNOW_FAILED_LOGIN_BREACHING_RATE`
+        # into an int() and do a comparsion, any greater-than-or-equal-to will breach and cause a failing check
+        if user["failed_attempts"] == ("" or None):
+            failedAttempts = 0
+        else:
+            failedAttempts = int(user["failed_attempts"])
+        
+        if failedAttempts >= int(SNOW_FAILED_LOGIN_BREACHING_RATE):
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"servicenow/{SNOW_INSTANCE_NAME}/{userId}/snow-user-failed-attempt-audit-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/{userId}/snow-user-failed-attempt-audit-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": f"[SSPM.Servicenow.2] Active users with more than {SNOW_FAILED_LOGIN_BREACHING_RATE} failed login attempts should be audited",
+                "Description": f"Servicenow user {userName} in instance {SNOW_INSTANCE_NAME} has more than {SNOW_FAILED_LOGIN_BREACHING_RATE} failed login attempts and should be audited for potential indicators of compromise. While multiple failed login attempts are not necessarily a security risk on its own, as it can be an accessibility issue or legitimate forgetfulness, adversaries and other unauthorized users often attempt password spraying and credential stuffing attacks to gain illicit access to User accounts. Servicenow reccommends appplying a defined logging and auditing strategy so that you can identify and act on suspicious activity in a timely manner. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on failed login review best practices refer to the Managing failed login attempts (instance security hardening) section of the Servicenow Product Documentation.",
+                        "Url": "https://docs.servicenow.com/en-US/bundle/utah-platform-security/page/administer/security/reference/managing-failed-login-attempts.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Servicenow",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "Users & Groups",
+                    "AssetType": "User"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpCloudSqlInstance",
+                        "Id": f"{SNOW_INSTANCE_NAME}/{userId}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "ServicenowInstance": SNOW_INSTANCE_NAME,
+                                "SysId": userId,
+                                "UserName": userName,
+                                "Roles": roles,
+                                "Title": title,
+                                "Email": email
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.RA-3",
+                        "NIST CSF DE.CM-7",
+                        "NIST SP 800-53 AU-12",
+                        "NIST SP 800-53 CA-7",
+                        "NIST SP 800-53 CM-3",
+                        "NIST SP 800-53 CM-8",
+                        "NIST SP 800-53 PE-3",
+                        "NIST SP 800-53 PE-6",
+                        "NIST SP 800-53 PE-20",
+                        "NIST SP 800-53 PM-12",
+                        "NIST SP 800-53 PM-16",
+                        "NIST SP 800-53 RA-3",
+                        "NIST SP 800-53 SI-4",
+                        "NIST SP 800-53 SI-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 Clause 6.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"servicenow/{SNOW_INSTANCE_NAME}/{userId}/snow-user-failed-attempt-audit-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/{userId}/snow-user-failed-attempt-audit-check",
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": f"[SSPM.Servicenow.2] Active users with more than {SNOW_FAILED_LOGIN_BREACHING_RATE} failed login attempts should be audited",
+                "Description": f"Servicenow user {userName} in instance {SNOW_INSTANCE_NAME} has none or less than {SNOW_FAILED_LOGIN_BREACHING_RATE} failed login attempts.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on failed login review best practices refer to the Managing failed login attempts (instance security hardening) section of the Servicenow Product Documentation.",
+                        "Url": "https://docs.servicenow.com/en-US/bundle/utah-platform-security/page/administer/security/reference/managing-failed-login-attempts.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "Servicenow",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "Users & Groups",
+                    "AssetType": "User"
+                },
+                "Resources": [
+                    {
+                        "Type": "GcpCloudSqlInstance",
+                        "Id": f"{SNOW_INSTANCE_NAME}/{userId}",
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "ServicenowInstance": SNOW_INSTANCE_NAME,
+                                "SysId": userId,
+                                "UserName": userName,
+                                "Roles": roles,
+                                "Title": title,
+                                "Email": email
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF ID.RA-3",
+                        "NIST CSF DE.CM-7",
+                        "NIST SP 800-53 AU-12",
+                        "NIST SP 800-53 CA-7",
+                        "NIST SP 800-53 CM-3",
+                        "NIST SP 800-53 CM-8",
+                        "NIST SP 800-53 PE-3",
+                        "NIST SP 800-53 PE-6",
+                        "NIST SP 800-53 PE-20",
+                        "NIST SP 800-53 PM-12",
+                        "NIST SP 800-53 PM-16",
+                        "NIST SP 800-53 RA-3",
+                        "NIST SP 800-53 SI-4",
+                        "NIST SP 800-53 SI-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 Clause 6.1.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.14.2.7",
+                        "ISO 27001:2013 A.15.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+# End ??
