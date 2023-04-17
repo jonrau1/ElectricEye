@@ -49,9 +49,9 @@ python3 eeauditor/controller.py -o stdout
 
 ## Quick Run Down :running: :running:
 
-- ElectricEye is a multi-cloud & Software-as-a-Service Posture Management CLI offering Cloud Security Posture Management (CPSM), SaaS Security Posture Management (SSPM), and External Attack Surface Monitoring (EASM) capabilities for AWS, GCP, Azure (*Coming Soon*), GitHub (*Coming Soon*), M365 (*Coming Soon*), and Workday ERP (*Coming Soon*).
+- ElectricEye is a multi-cloud & Software-as-a-Service Posture Management CLI offering Cloud Security Posture Management (CPSM), SaaS Security Posture Management (SSPM), and External Attack Surface Monitoring (EASM) capabilities for **AWS**, **GCP**, **Azure** (*Coming Soon*), **Servicenow**, **M365** (*Coming Soon*), and **GitHub** (*Coming Soon*).
 
-- For AWS, ElectricEye is the most comprhensive CSPM & EASM tool supporting over **500 Checks** for Security, Reliaiblity, Monitoring, and Exposure across **100 AWS Services** including atypical services not supported by AWS Config or mainstream CSPM & Cloud Native Application Protection Platform (CNAPP) tools such as AWS Managed Blockchain, AWS Managed Workflows for Apache AirFlow, Amazon MemoryDB, AWS Amplify, Amazon MQ, and more!
+- For AWS, ElectricEye is the most comprhensive CSPM & EASM tool supporting over **600 Checks** for Security, Reliaiblity, Monitoring, and Exposure across **100 CSP Services** including atypical services not supported by AWS Config or mainstream CSPM & Cloud Native Application Protection Platform (CNAPP) tools such as AWS Managed Blockchain, AWS Managed Workflows for Apache AirFlow, Amazon MemoryDB, AWS Amplify, Amazon MQ, and more!
 
 - All checks are currently mapped to NIST CSF v1.1, NIST 800-53 r4, American Institute of Certified Public Accountants (AICPA) Trust Service Criteria (TSCs) which can be used for SOC2 Type I and SOC2 Type II, and ISO 27001:2013 ISMS controls for Audit Readiness and internal GRC requirements.
 
@@ -59,9 +59,9 @@ python3 eeauditor/controller.py -o stdout
 
 - Support for every single AWS Paritition: Commercial (`aws`), AWS GovCloud (`aws-gov`), AWS China (`aws-cn`), AWS Secret Region (`aws-iso-b`) and AWS Top Secret Region (`aws-iso`). GCP and Azure are only supported for their Commerical partitions.
 
-- Native AWS Multi-Account and Multi-Region Support. GCP supports full multi-Region CSPM & EASM out of the Box.
+- Native AWS Multi-Account and Multi-Region Support. GCP is natively multi-Region without additional configuration.
 
-- Outputs to AWS Security Hub, JSON, CSV, AWS DocumentDB, MongoDB, AWS RDS & Aurora for PostgreSQL, PostgreSQL, AWS DynamoDB, and DisruptOps by Firemon.
+- Outputs to AWS Security Hub, JSON, CSV, AWS DocumentDB, MongoDB, AWS RDS & Aurora for PostgreSQL, PostgreSQL, and DisruptOps by Firemon.
 
 ## Tell Me More :round_pushpin: :round_pushpin:
 
