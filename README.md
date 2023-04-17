@@ -32,7 +32,7 @@ python3 eeauditor/controller.py -o stdout
   - [Azure CSPM](#azure)
   - [SaaS Security Posture Management (SSPM)](#saas-security-posture-management-sspm)
     - [GitHub SSPM](#evaluating-github)
-    - [ServiceNow SSPM](#evaluating-servicenow)
+    - [Servicenow SSPM](#evaluating-servicenow)
     - [M365/O365 SSPM](#evaluating-m365)
     - [Custom Outputs](#custom-outputs)
 - [Supported Services and Checks](#supported-services-and-checks)
@@ -40,7 +40,7 @@ python3 eeauditor/controller.py -o stdout
     - [GCP Checks & Services](#gcp-checks--services)
     - [Azure Checks & Services](#azure-checks--services)
     - [SSPM: GitHub Checks & Services](#sspm-github-checks--services)
-    - [SSPM: ServiceNow Checks & Services](#sspm-servicenow-checks--services)
+    - [SSPM: Servicenow Checks & Services](#sspm-servicenow-checks--services)
     - [SSPM: M365 Checks & Services](#sspm-m365-checks--services)
 - [Contributing](#contributing)
 - [Developing new Checks](#developer-guide)
@@ -75,7 +75,10 @@ As a CLI tool, ElectricEye can be ran from anywhere AWS credentials are supplied
 
 Multi-Account and Multi-Region operations are supported by the CLI options to supply a remote AWS Account and Role Name and/or AWS Region to dynamically created Boto3 Sessions with `AssumeRole` credentials but also retaining the original credentials to allow access to local AWS-native datastores for storing all of this information. To avoid throttling API responses, ElectricEye uses a locally developed caching mechanism which pulls required asset data at most once per Auditor and assesses the data in-memory. The cache is purged when not needed leading to lower CPU, memory, and network consumption.
 
-As of April 2023 ElectricEye has multi-Region support for GCP Projects offering basic CSPM and EASM capabilities for popular GCP services with more planned as well as eventual support for Azure and SaaS Security Posture Management (SSPM) capabiltiies for M365, Workday, GitHub, and more.
+As of April 2023 ElectricEye supports the following CSPM, EASM, and SSPM capabilities. More SaaS Providers and CSPs as well as expanded service & capability coverage is under development.
+- **CSPM**: AWS, GCP
+- **SSPM**: Servicenow
+- **EASM**: AWS, GCP
 
 ## How do I use this :thinking: :thinking: ??
 
@@ -345,10 +348,82 @@ ___
 
 *Coming Soon!*
 
-#### Evaluating ServiceNow
+#### Evaluating Servicenow
 ___
 
-*Coming Soon!*
+**Note:** Currently, ElectricEye SSPM for Servicenow relies on a User being created with a specific Role, in the future this may change to an OAuth or Integration User. Also, the Instructions to add the `admin` Role are over-permissive and will be scaled down properly for subsequent releases after testing.
+
+1. In Servicenow create a new User with a `User ID` of `**electriceye_sspm**` and add the `admin` Role as an assignment.
+
+2. Select **Set Password** and generate a password, create an AWS Systems Manager `SecureString` Parameter for this value.
+
+```bash
+export SNOW_PW_PARAMETER_NAME='cool_name_here'
+aws ssm put-parameter \
+    --name $SNOW_PW_PARAMETER_NAME \
+    --description 'ElectricEye SSPM Servicenow Password for electriceye_sspm' \
+    --type SecureString \
+    --value $PLACEHOLDER
+```
+
+3. Set the value of **Password needs reset** to false and **Update** the User to save changes
+
+4. Modify the `/eeauditor/external_providers.toml` file to add your Username, Password Parameter, and your Servicenow Instance Name. Regarding the instance name, if the URL of your instance is "https://dev90210.service-now.com/" then your instance name is "dev90210". Be sure to replace the example values listed below.
+
+```toml
+[servicenow]
+snow_instance_name = "dev90210"
+snow_sspm_username = "electriceye_sspm"
+snow_sspm_password_parameter_name = $SNOW_PW_PARAMETER_NAME
+```
+
+5. With >=Python 3.6 installed, install and upgrade `pip3` and setup `virtualenv`
+
+```bash
+sudo apt install -y python3-pip
+pip3 install --upgrade pip
+pip3 install virtualenv --user
+virtualenv .venv
+```
+
+6. This will create a virtualenv directory called `.venv` which needs to be activated
+
+```bash
+#For macOS and Linux
+. .venv/bin/activate
+
+#For Windows
+.venv\scripts\activate
+```
+
+7. Clone the repo and install all dependencies
+
+```bash
+git clone https://github.com/jonrau1/ElectricEye.git
+cd ElectricEye
+pip3 install -r requirements.txt
+
+# if use AWS CloudShell
+pip3 install --user -r requirements.txt
+```
+
+8. Run the controller
+
+```bash
+python3 eeauditor/controller.py -t Servicenow
+```
+
+Add the `--help` option for info on running individual checks and auditors and different outputs options. For instance, if you wanted to specify a specific Auditor use the following command to run it, specifiy the *name* of the Auditor **without** the `.py` ending.
+
+```bash
+python3 eeauditor/controller.py -t Servicenow -a Servicenow_Users_Auditor
+```
+
+You can get a full name of the auditors (as well as their checks within comments by using the following command).
+
+```bash
+python3 eeauditor/controller.py -t Servicenow --list-checks
+```
 
 #### Evaluating M365
 ___
@@ -1128,7 +1203,7 @@ ___
 
 *Coming Soon!*
 
-### SSPM: ServiceNow Checks & Services
+### SSPM: Servicenow Checks & Services
 ___
 
 *Coming Soon!*

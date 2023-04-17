@@ -20,6 +20,6 @@ m365_ent_app_tenant_id_parameter_name = ""
 m365_ent_app_client_secret_id_parameter_name = ""
 
 [servicenow]
-snow_instance_name = "" # e.g. if your URL is "https://dev90210.service-now.com/" then your instance name is "dev90210"
+snow_instance_name = ""
 snow_sspm_username = ""
 snow_sspm_password_parameter_name = ""
