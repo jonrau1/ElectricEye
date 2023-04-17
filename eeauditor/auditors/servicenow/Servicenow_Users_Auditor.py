@@ -59,11 +59,11 @@ def servicenow_sspm_active_user_mfa_check(cache: dict, awsAccountId: str, awsReg
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for user in get_servicenow_users(cache):
-        userId = user["sys_id"]
-        userName = user["user_name"]
-        roles = user["roles"]
-        title = user["title"]
-        email = user["email"]
+        userId = str(user["sys_id"])
+        userName = str(user["user_name"])
+        roles = str(user["roles"])
+        title = str(user["title"])
+        email = str(user["email"])
         # Skip web services / integration "users" these are for automation it seems
         # TODO: Confirm hypothesis?
         if (user["web_service_access_only"] or user["internal_integration_user"]) == "true":
