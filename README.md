@@ -15,7 +15,8 @@ ElectricEye is a Cloud Security Configuration CLI for AWS, GCP, Azure, and SaaS 
 ```bash
 git clone https://github.com/jonrau1/ElectricEye.git
 cd ElectricEye
-python3 eeauditor/controller.py -o stdout
+pip3 install -r requirements.txt
+python3 eeauditor/controller.py -t AWS -o stdout
 ```
 
 ## Table of Contents
