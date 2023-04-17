@@ -551,10 +551,11 @@ aws ssm put-parameter \
 
 In total there are...
 
-> - **2** Support CSPs
-> - **1** Supported SaaS Provider (*Coming Soon!*)
-> - **102** Support CSP & SaaS Resources / Asset Types
-> - **80** Auditor Plugins
+> - **2** Supported Public CSPs
+> - **1** Supported SaaS Provider
+> - **604** Security & Resilience Best Practice Checks supported across all Public CSPs & SaaS Providers
+> - **103** Supported CSP & SaaS Resources / Asset Types
+> - **81** Auditor Plugins
 
 ### AWS Checks & Services
 ___
@@ -574,7 +575,7 @@ These are the following services and checks perform by each Auditor, there are c
 **Regarding AWS Health:** You must be on AWS Business or Enterprise Support to interact with the `support` API for Health.
 
 
-| Auditor File Name | AWS Service | Auditor Scan Description |
+| Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
 | Amazon_APIGW_Auditor.py | API Gateway Stage | Are stage metrics enabled |
 | Amazon_APIGW_Auditor.py | API Gateway Stage | Is stage API logging enabled |
@@ -1137,7 +1138,7 @@ These are the following services and checks perform by each Auditor, there are c
 - :fire: **3 Auditors** :fire:
 
 
-| Auditor File Name | AWS Service | Auditor Scan Description |
+| Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
 | GCP_ComputeEngine_Auditor.py | GCE VM Instance | Is deletion protection enabled |
 | GCP_ComputeEngine_Auditor.py | GCE VM Instance | Is IP forwarding disabled |
@@ -1206,7 +1207,14 @@ ___
 ### SSPM: Servicenow Checks & Services
 ___
 
-*Coming Soon!*
+These are the following services and checks perform by each Auditor, there are currently...
+- :boom: **1 Checks** :boom:
+- :exclamation: **1 supported Servicenow services/components** :exclamation:
+- :fire: **1 Auditors** :fire:
+
+| Auditor File Name | Scanned Resource Name | Auditor Scan Description |
+|---|---|---|
+| Servicenow_Users_Auditor.py | Servicenow User | Do active users have MFA enabled |
 
 ### SSPM: M365 Checks & Services
 ___
