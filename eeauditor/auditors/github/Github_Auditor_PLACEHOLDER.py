@@ -24,8 +24,8 @@ from check_register import CheckRegister
 registry = CheckRegister()
 
 @registry.register_check('github')
-def xray_kms_encryption_check(awsAccountId: str, awsRegion: str, awsPartition: str, github_pat: str, github_organization_id: str) -> dict:
-    """[GitHub.1] ElectricEye Placeholder GitHub Check"""
+def github_placeholder(awsAccountId: str, awsRegion: str, awsPartition: str, github_pat: str, github_organization_id: str) -> dict:
+    """[SSPM.GitHub.1] ElectricEye Placeholder GitHub Check"""
 
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     finding = {
@@ -40,7 +40,7 @@ def xray_kms_encryption_check(awsAccountId: str, awsRegion: str, awsPartition: s
         "UpdatedAt": iso8601Time,
         "Severity": {"Label": "INFORMATIONAL"},
         "Confidence": 99,
-        "Title": "[GitHub.1] ElectricEye Placeholder GitHub Check",
+        "Title": "[SSPM.GitHub.1] ElectricEye Placeholder GitHub Check",
         "Description": "PLACEHOLDER FAKE FINDING",
         "Remediation": {
             "Recommendation": {
