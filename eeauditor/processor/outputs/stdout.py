@@ -31,10 +31,11 @@ class StdoutProvider(object):
             parsedFinding = json.loads(json.dumps(finding, default=str))
             if parsedFinding["Id"] not in checkedIds:
                 checkedIds.append(parsedFinding["Id"])
-                print(json.dumps(finding,default=str))
+                print(json.dumps(finding, default=str))
             else:
                 del parsedFinding
                 continue
     
         del checkedIds
+        
         return True

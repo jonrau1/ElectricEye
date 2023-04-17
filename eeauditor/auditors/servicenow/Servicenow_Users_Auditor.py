@@ -107,7 +107,7 @@ def servicenow_sspm_active_user_mfa_check(cache: dict, awsAccountId: str, awsReg
                         "Region": awsRegion,
                         "Details": {
                             "Other": {
-                                "ServicenowInstance": {SNOW_INSTANCE_NAME},
+                                "ServicenowInstance": SNOW_INSTANCE_NAME,
                                 "SysId": userId,
                                 "UserName": userName,
                                 "Roles": roles,
@@ -186,7 +186,7 @@ def servicenow_sspm_active_user_mfa_check(cache: dict, awsAccountId: str, awsReg
                         "Region": awsRegion,
                         "Details": {
                             "Other": {
-                                "ServicenowInstance": {SNOW_INSTANCE_NAME},
+                                "ServicenowInstance": SNOW_INSTANCE_NAME,
                                 "SysId": userId,
                                 "UserName": userName,
                                 "Roles": roles,
