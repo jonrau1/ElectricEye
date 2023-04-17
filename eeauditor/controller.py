@@ -203,7 +203,7 @@ def run_auditor(gcp_project_id, target_provider, assume_role_account=None, assum
 
         app.load_plugins(plugin_name=auditor_name)
 
-        findings = list(app.run_non_aws_checks(requested_check_name=check_name, delay=delay))
+        findings = list(app.run_gcp_checks(requested_check_name=check_name, delay=delay))
 
         # This function writes the findings to Security Hub, or otherwise
         process_findings(findings=findings, outputs=outputs, output_file=output_file)
@@ -257,9 +257,9 @@ def run_auditor(gcp_project_id, target_provider, assume_role_account=None, assum
             'GCP',
             'GitHub',
             'Servicenow'
-        ]
+        ],
+        case_sensitive=True
     ),
-    case_sensitive=True,
     help="CSP or SaaS Vendor to perform assessments against and load specific plugins, ensure that any -a or -c arg maps to your target provider e.g., -t AWS -a Amazon_APGIW_Auditor"
 )
 # Remote Account Options
