@@ -66,10 +66,9 @@ ENV \
 
 LABEL \ 
     maintainer="https://github.com/jonrau1" \
-    version="3.9" \
+    version="3.0" \
     license="Apache-2.0" \
-    description="ElectricEye continuously monitor your AWS services for configurations that can lead to degradation of confidentiality, integrity \ 
-    or availability. All results can be exported to Security Hub, JSON, CSV, Databases, and more for further aggregation and analysis."
+    description="ElectricEye is a Cloud Security Configuration CLI for AWS, GCP, Azure, and SaaS Security Posture Management with support for 100s of services and evaluations to harden your entire cloud footprint."
 
 # Create a System Group and User for ElectricEye so we don't run as root
 RUN \
@@ -83,7 +82,5 @@ RUN \
 
 USER eeuser
 
-CMD \
-    git clone https://github.com/jonrau1/ElectricEye.git -b backend && \
-    # this would also be a good place to modify the `controller.py` command to output to where you wanted if you didn't want sechub
-    python3 ElectricEye/eeauditor/controller.py
+# IMPORTANT: Modify the controller.py command to run other clouds/SaaS or modify outputs
+CMD python3 eeauditor/controller.py
