@@ -18,16 +18,13 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
-# import boto3 clients
-s3 = boto3.client("s3")
-s3control = boto3.client("s3control")
-# loop through s3 buckets
-def list_buckets(cache):
+
+def list_buckets(cache, session):
+    s3 = session.client("s3")
     response = cache.get("list_buckets")
     if response:
         return response
@@ -35,9 +32,10 @@ def list_buckets(cache):
     return cache["list_buckets"]
 
 @registry.register_check("s3")
-def bucket_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def bucket_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[S3.1] S3 Buckets should be encrypted"""
-    bucket = list_buckets(cache=cache)
+    s3 = session.client("s3")
+    bucket = list_buckets(cache, session)
     myS3Buckets = bucket["Buckets"]
     iso8601Time = (
         datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -161,9 +159,10 @@ def bucket_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                 print(e)
 
 @registry.register_check("s3")
-def bucket_lifecycle_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def bucket_lifecycle_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[S3.2] S3 Buckets should implement lifecycle policies for data archival and recovery operations"""
-    bucket = list_buckets(cache=cache)
+    s3 = session.client("s3")
+    bucket = list_buckets(cache, session)
     myS3Buckets = bucket["Buckets"]
     for buckets in myS3Buckets:
         bucketName = str(buckets["Name"])
@@ -291,9 +290,10 @@ def bucket_lifecycle_check(cache: dict, awsAccountId: str, awsRegion: str, awsPa
                 print(e)
 
 @registry.register_check("s3")
-def bucket_versioning_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def bucket_versioning_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[S3.3] S3 Buckets should have versioning enabled"""
-    bucket = list_buckets(cache=cache)
+    s3 = session.client("s3")
+    bucket = list_buckets(cache, session)
     myS3Buckets = bucket["Buckets"]
     for buckets in myS3Buckets:
         bucketName = str(buckets["Name"])
@@ -419,9 +419,10 @@ def bucket_versioning_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                 print(e)
 
 @registry.register_check("s3")
-def bucket_policy_allows_public_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def bucket_policy_allows_public_access_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[S3.4] S3 Bucket Policies should not allow public access to the bucket"""
-    bucket = list_buckets(cache=cache)
+    s3 = session.client("s3")
+    bucket = list_buckets(cache, session)
     myS3Buckets = bucket["Buckets"]
     for buckets in myS3Buckets:
         bucketName = str(buckets["Name"])
@@ -553,9 +554,10 @@ def bucket_policy_allows_public_access_check(cache: dict, awsAccountId: str, aws
             pass
 
 @registry.register_check("s3")
-def bucket_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def bucket_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[S3.5] S3 Buckets should have a bucket policy configured"""
-    bucket = list_buckets(cache=cache)
+    s3 = session.client("s3")
+    bucket = list_buckets(cache, session)
     myS3Buckets = bucket["Buckets"]
     for buckets in myS3Buckets:
         bucketName = str(buckets["Name"])
@@ -684,9 +686,10 @@ def bucket_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
                 print(e)
 
 @registry.register_check("s3")
-def bucket_access_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def bucket_access_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[S3.6] S3 Buckets should have server access logging enabled"""
-    bucket = list_buckets(cache=cache)
+    s3 = session.client("s3")
+    bucket = list_buckets(cache, session)
     myS3Buckets = bucket["Buckets"]
     for buckets in myS3Buckets:
         bucketName = str(buckets["Name"])
@@ -807,9 +810,10 @@ def bucket_access_logging_check(cache: dict, awsAccountId: str, awsRegion: str, 
                 print(e)
 
 @registry.register_check("s3")
-def s3_account_level_block(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def s3_account_level_block(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[S3.7] Account-level S3 public access block should be configured"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    s3control = session.client("s3control")
 
     # If a Public Access Block is not configured at all we will fail with a higher severity
     try:

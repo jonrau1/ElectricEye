@@ -20,19 +20,14 @@
 
 import datetime
 from dateutil import parser
-import boto3
 import json
 import botocore
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-# boto3 clients
-lambdas = boto3.client("lambda")
-cloudwatch = boto3.client("cloudwatch")
-ec2 = boto3.client("ec2")
-
-def get_lambda_functions(cache):
+def get_lambda_functions(cache, session):
+    lambdas = session.client("lambda")
     lambdaFunctions = []
     response = cache.get("get_lambda_functions")
     if response:
@@ -45,7 +40,8 @@ def get_lambda_functions(cache):
         cache["get_lambda_functions"] = lambdaFunctions
         return cache["get_lambda_functions"]
 
-def get_lambda_layers(cache):
+def get_lambda_layers(cache, session):
+    lambdas = session.client("lambda")
     lambdaLayers = []
     response = cache.get("get_lambda_layers")
     if response:
@@ -59,11 +55,12 @@ def get_lambda_layers(cache):
         return cache["get_lambda_layers"]
 
 @registry.register_check("lambda")
-def unused_function_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def unused_function_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Lambda.1] Lambda functions should be deleted after 30 days of no use"""
+    cloudwatch = session.client("cloudwatch")
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for function in get_lambda_functions(cache):
+    for function in get_lambda_functions(cache, session):
         functionName = str(function["FunctionName"])
         lambdaArn = str(function["FunctionArn"])
         metricResponse = cloudwatch.get_metric_data(
@@ -195,11 +192,11 @@ def unused_function_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
                 yield finding
 
 @registry.register_check("lambda")
-def function_tracing_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def function_tracing_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Lambda.2] Lambda functions should use active tracing with AWS X-Ray"""
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for function in get_lambda_functions(cache):
+    for function in get_lambda_functions(cache, session):
         functionName = str(function["FunctionName"])
         lambdaArn = str(function["FunctionArn"])
         # This is a passing check
@@ -323,11 +320,11 @@ def function_tracing_check(cache: dict, awsAccountId: str, awsRegion: str, awsPa
             yield finding
 
 @registry.register_check("lambda")
-def function_code_signer_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def function_code_signer_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Lambda.3] Lambda functions should use code signing from AWS Signer to ensure trusted code runs in a Function"""
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for function in get_lambda_functions(cache):
+    for function in get_lambda_functions(cache, session):
         functionName = str(function["FunctionName"])
         lambdaArn = str(function["FunctionArn"])
         # This is a passing check
@@ -442,11 +439,12 @@ def function_code_signer_check(cache: dict, awsAccountId: str, awsRegion: str, a
             yield finding
 
 @registry.register_check("lambda")
-def public_lambda_layer_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def public_lambda_layer_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Lambda.4] Lambda layers should not be publicly shared"""
+    lambdas = session.client("lambda")
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for layer in get_lambda_layers(cache):
+    for layer in get_lambda_layers(cache, session):
         layerName = str(layer["LayerName"])
         layerArn = str(layer["LatestMatchingVersion"]["LayerVersionArn"])
         try:
@@ -596,11 +594,12 @@ def public_lambda_layer_check(cache: dict, awsAccountId: str, awsRegion: str, aw
                 yield finding
 
 @registry.register_check("lambda")
-def public_lambda_function_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def public_lambda_function_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Lambda.5] Lambda functions should not be publicly shared"""
+    lambdas = session.client("lambda")
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for function in get_lambda_functions(cache):
+    for function in get_lambda_functions(cache, session):
         functionName = str(function["FunctionName"])
         lambdaArn = str(function["FunctionArn"])
         # Get function policy
@@ -801,7 +800,7 @@ def public_lambda_function_check(cache: dict, awsAccountId: str, awsRegion: str,
                 yield finding
 
 @registry.register_check("lambda")
-def lambda_supported_runtimes_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def lambda_supported_runtimes_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Lambda.6] Lambda functions should use supported runtimes"""
     # Supported Runtimes
     supportedRuntimes = [
@@ -823,7 +822,7 @@ def lambda_supported_runtimes_check(cache: dict, awsAccountId: str, awsRegion: s
     ]
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for function in get_lambda_functions(cache):
+    for function in get_lambda_functions(cache, session):
         functionName = str(function["FunctionName"])
         lambdaArn = str(function["FunctionArn"])
         lambdaRuntime = str(function["Runtime"])
@@ -943,15 +942,16 @@ def lambda_supported_runtimes_check(cache: dict, awsAccountId: str, awsRegion: s
             yield finding
 
 @registry.register_check("lambda")
-def lambda_vpc_ha_subnets_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def lambda_vpc_ha_subnets_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Lambda.7] Lambda functions in VPCs should use more than one Availability Zone"""
+    ec2 = session.client("ec2")
     # Create empty list to hold unique Subnet IDs - for future lookup against AZs
     uSubnets = []
     # Create another empty list to hold unique AZs based on Subnets
     uAzs = []
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for function in get_lambda_functions(cache):
+    for function in get_lambda_functions(cache, session):
         functionName = str(function["FunctionName"])
         lambdaArn = str(function["FunctionArn"])
         # check specific metadata

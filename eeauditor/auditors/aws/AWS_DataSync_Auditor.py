@@ -18,18 +18,15 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
-from dateutil.parser import parse
 
 registry = CheckRegister()
 
-datasync = boto3.client("datasync")
-
 @registry.register_check("datasync")
-def datasync_public_agent_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def datasync_public_agent_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DataSync.1] AWS DataSync Agents should not be accessible over the Internet"""
+    datasync = session.client("datasync")
     paginator = datasync.get_paginator("list_agents")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
@@ -178,8 +175,9 @@ def datasync_public_agent_check(cache: dict, awsAccountId: str, awsRegion: str, 
         print(e)
 
 @registry.register_check("datasync")
-def datasync_task_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def datasync_task_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DataSync.2] AWS DataSync data transfer Tasks should have logging enabled"""
+    datasync = session.client("datasync")
     paginator = datasync.get_paginator("list_tasks")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())

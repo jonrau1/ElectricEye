@@ -18,16 +18,14 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
-# import boto3 clients
-firehose = boto3.client("firehose")
 
 # loop through Firehose delivery streams
-def list_delivery_streams(cache):
+def list_delivery_streams(cache, session):
+    firehose = session.client("firehose")
     response = cache.get("list_delivery_streams")
     if response:
         return response
@@ -35,9 +33,10 @@ def list_delivery_streams(cache):
     return cache["list_delivery_streams"]
 
 @registry.register_check("firehose")
-def firehose_delivery_stream_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def firehose_delivery_stream_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Firehose.1] AWS Kinesis Firehose delivery streams should be encrypted"""
-    response = list_delivery_streams(cache)
+    firehose = session.client("firehose")
+    response = list_delivery_streams(cache, session)
     myFirehoseStreams = response["DeliveryStreamNames"]
     for deliverystreams in myFirehoseStreams:
         firehoseName = str(deliverystreams)

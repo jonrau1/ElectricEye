@@ -1,0 +1,25 @@
+# This TOML Document maps SSM SecureString Parameters to multi-cloud & SaaS access tokens, APIs and usernames
+# IMPORTANT: Anywhere you see "paramater_name" means the name of an AWS Systems Manager Parameter Store SecureString Paramter
+
+title = "ElectricEye External Providers"
+
+[azure]
+azure_sp_client_id_parameter_name = ""
+azure_sp_tenant_id_parameter_name = ""
+azure_sp_client_secret_id_parameter_name = ""
+
+[gcp]
+gcp_service_account_json_payload_parameter_name = ""
+
+[github]
+gh_personal_access_token_parameter_name = ""
+
+[m365]
+m365_ent_app_client_id_parameter_name = ""
+m365_ent_app_tenant_id_parameter_name = ""
+m365_ent_app_client_secret_id_parameter_name = ""
+
+[servicenow]
+snow_instance_name = ""
+snow_sspm_username = ""
+snow_sspm_password_parameter_name = ""

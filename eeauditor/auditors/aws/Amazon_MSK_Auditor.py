@@ -18,17 +18,13 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-# import boto3 clients
-kafka = boto3.client("kafka")
-
-# loop through managed kafka clusters
-def list_clusters(cache):
+def list_clusters(cache, session):
+    kafka = session.client("kafka")
     response = cache.get("list_clusters")
     if response:
         return response
@@ -36,10 +32,10 @@ def list_clusters(cache):
     return cache["list_clusters"]
 
 @registry.register_check("kafka")
-def inter_cluster_encryption_in_transit_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def inter_cluster_encryption_in_transit_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[MSK.1] Managed Kafka Stream clusters should have inter-cluster encryption in transit enabled"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for clusters in list_clusters(cache)["ClusterInfoList"]:
+    for clusters in list_clusters(cache, session)["ClusterInfoList"]:
         clusterArn = str(clusters["ClusterArn"])
         clusterName = str(clusters["ClusterName"])
         interClusterEITCheck = str(clusters["EncryptionInfo"]["EncryptionInTransit"]["InCluster"])
@@ -151,10 +147,10 @@ def inter_cluster_encryption_in_transit_check(cache: dict, awsAccountId: str, aw
             yield finding
 
 @registry.register_check("kafka")
-def client_broker_encryption_in_transit_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def client_broker_encryption_in_transit_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[MSK.2] Managed Kafka Stream clusters should enforce TLS-only communications between clients and brokers"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for clusters in list_clusters(cache)["ClusterInfoList"]:
+    for clusters in list_clusters(cache, session)["ClusterInfoList"]:
         clusterArn = str(clusters["ClusterArn"])
         clusterName = str(clusters["ClusterName"])
         clientBrokerTlsCheck = str(clusters["EncryptionInfo"]["EncryptionInTransit"]["ClientBroker"])
@@ -266,10 +262,10 @@ def client_broker_encryption_in_transit_check(cache: dict, awsAccountId: str, aw
             yield finding
 
 @registry.register_check("kafka")
-def client_authentication_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def client_authentication_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[MSK.3] Managed Kafka Stream clusters should use TLS for client authentication"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for clusters in list_clusters(cache)["ClusterInfoList"]:
+    for clusters in list_clusters(cache, session)["ClusterInfoList"]:
         clusterArn = str(clusters["ClusterArn"])
         clusterName = str(clusters["ClusterName"])
         try:
@@ -380,10 +376,10 @@ def client_authentication_check(cache: dict, awsAccountId: str, awsRegion: str, 
             yield finding
 
 @registry.register_check("kafka")
-def cluster_enhanced_monitoring_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def cluster_enhanced_monitoring_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[MSK.4] Managed Kafka Stream clusters should use enhanced monitoring"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for clusters in list_clusters(cache)["ClusterInfoList"]:
+    for clusters in list_clusters(cache, session)["ClusterInfoList"]:
         clusterArn = str(clusters["ClusterArn"])
         clusterName = str(clusters["ClusterName"])
         enhancedMonitoringCheck = str(clusters["EnhancedMonitoring"])

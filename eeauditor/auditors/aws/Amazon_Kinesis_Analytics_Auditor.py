@@ -21,15 +21,15 @@
 import datetime
 from dateutil import parser
 import uuid
-import boto3
 from check_register import CheckRegister, accumulate_paged_results
 
 registry = CheckRegister()
-kinesisanalyticsv2 = boto3.client("kinesisanalyticsv2")
 
 @registry.register_check("kinesisanalyticsv2")
-def kda_log_to_cloudwatch_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def kda_log_to_cloudwatch_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[KinesisAnalytics.1] Applications should log to CloudWatch"""
+    kinesisanalyticsv2 = session.client("kinesisanalyticsv2")
+
     paginator = kinesisanalyticsv2.get_paginator("list_applications")
     response_iterator = paginator.paginate()
     responses = accumulate_paged_results(
@@ -52,7 +52,7 @@ def kda_log_to_cloudwatch_check(cache: dict, awsAccountId: str, awsRegion: str, 
         if not cwDescription:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": applicationArn + "/kda-log-to-cloudwatch-check",
+                "Id": f"{applicationArn}/kda-log-to-cloudwatch-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": generatorUuid,
                 "AwsAccountId": awsAccountId,
@@ -105,7 +105,7 @@ def kda_log_to_cloudwatch_check(cache: dict, awsAccountId: str, awsRegion: str, 
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": applicationArn + "/kda-log-to-cloudwatch-check",
+                "Id": f"{applicationArn}/kda-log-to-cloudwatch-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": generatorUuid,
                 "AwsAccountId": awsAccountId,

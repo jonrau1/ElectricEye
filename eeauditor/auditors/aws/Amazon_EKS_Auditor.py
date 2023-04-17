@@ -18,18 +18,17 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-# import boto3 clients
-eks = boto3.client("eks")
+supportedK8sVersions = ["1.25", "1.24", "1.23", "1.22"]
 
 @registry.register_check("eks")
-def eks_public_endpoint_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def eks_public_endpoint_access_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EKS.1] Elastic Kubernetes Service (EKS) cluster API servers should not be accessible from the internet"""
+    eks = session.client("eks")
     # loop through EKS clusters
     for clusters in eks.list_clusters(maxResults=100)["clusters"]:
         cluster = str(clusters)
@@ -175,8 +174,9 @@ def eks_public_endpoint_access_check(cache: dict, awsAccountId: str, awsRegion: 
             print(e)
 
 @registry.register_check("eks")
-def eks_latest_k8s_version_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def eks_latest_k8s_version_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EKS.2] Elastic Kubernetes Service (EKS) clusters should use the latest Kubernetes version"""
+    eks = session.client("eks")
     # loop through EKS clusters
     for clusters in eks.list_clusters(maxResults=100)["clusters"]:
         cluster = str(clusters)
@@ -189,7 +189,7 @@ def eks_latest_k8s_version_check(cache: dict, awsAccountId: str, awsRegion: str,
             iso8601Time = (
                 datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
             )
-            if k8sVersion != ("1.21" or "1.22"):
+            if k8sVersion not in supportedK8sVersions:
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": clusterArn + "/eks-latest-k8s-version-check",
@@ -308,8 +308,9 @@ def eks_latest_k8s_version_check(cache: dict, awsAccountId: str, awsRegion: str,
             print(e)
 
 @registry.register_check("eks")
-def eks_logging_audit_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def eks_logging_audit_auth_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EKS.3] Elastic Kubernetes Service (EKS) clusters should have authenticator and/or audit logging enabled"""
+    eks = session.client("eks")
     
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -452,8 +453,9 @@ def eks_logging_audit_auth_check(cache: dict, awsAccountId: str, awsRegion: str,
             continue
 
 @registry.register_check("eks")
-def eks_secrets_envelope_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def eks_secrets_envelope_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EKS.4] Elastic Kubernetes Service (EKS) clusters API servers should have envelope encryption for secrets configured"""
+    eks = session.client("eks")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # loop through EKS clusters

@@ -18,15 +18,13 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
-# import boto3 clients
-ec2 = boto3.client("ec2")
-# find AMIs created by the account
-def describe_images(cache, awsAccountId):
+
+def describe_images(cache, session, awsAccountId):
+    ec2 = session.client("ec2")
     response = cache.get("describe_images")
     if response:
         return response
@@ -36,9 +34,9 @@ def describe_images(cache, awsAccountId):
     return cache["describe_images"]
 
 @registry.register_check("ec2")
-def public_ami_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def public_ami_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AMI.1] Self-managed Amazon Machine Images (AMIs) should not be public"""
-    amis = describe_images(cache=cache, awsAccountId=awsAccountId)
+    amis = describe_images(cache, session, awsAccountId)
     myAmis = amis["Images"]
     for ami in myAmis:
         imageId = str(ami["ImageId"])
@@ -171,11 +169,11 @@ def public_ami_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
             yield finding
 
 @registry.register_check("ec2")
-def encrypted_ami_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def encrypted_ami_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AMI.2] Self-managed Amazon Machine Images (AMIs) should be encrypted"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    amis = describe_images(cache=cache, awsAccountId=awsAccountId)
+    amis = describe_images(cache, session, awsAccountId)
     myAmis = amis["Images"]
     for ami in myAmis:
         imageId = str(ami["ImageId"])

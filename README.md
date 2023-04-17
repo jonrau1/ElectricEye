@@ -1,8 +1,8 @@
 # ElectricEye
 
-![Logo?!](./screenshots/EE-LogoLarge.png)
+![Logo](./screenshots/logo.svg)
 
-Continuously monitor your AWS attack surface and evaluate services for configurations that can lead to degradation of confidentiality, integrity or availability. All results can be exported to Security Hub, JSON, CSV, Databases, and more for further aggregation and analysis. 
+ElectricEye is a Cloud Security Configuration CLI for AWS, GCP, Azure, and SaaS Security Posture Management with support for 100s of services and evaluations to harden your entire cloud footprint.
 
 ***Up here in space***<br/>
 ***I'm looking down on you***<br/>
@@ -10,94 +10,88 @@ Continuously monitor your AWS attack surface and evaluate services for configura
 ***Everything you do***<br/>
 <sub>*Judas Priest, 1982*</sub>
 
-## Super Quick Start :running: :running:
+## Super Quick Start :triangular_flag_on_post: :triangular_flag_on_post:
 
 ```bash
 git clone https://github.com/jonrau1/ElectricEye.git
 cd ElectricEye
-python3 eeauditor/controller.py -o stdout
+pip3 install -r requirements.txt
+python3 eeauditor/controller.py -t AWS -o stdout
 ```
 
 ## Table of Contents
 
-- [Synopsis](#synopsis)
-- [Description](#description)
-- [Solution Architecture](#solution-architecture)
-- [Running locally](#running-locally)
-  - [Attack Surface Monitoring Only](#attack-surface-monitoring-only)
-  - [ElectricEye and Custom Outputs](#electriceye-and-custom-outputs)
-- [Setting Up on Fargate](#setting-up-electriceye-on-fargate)
-  - [Solution Architecture for Fargate](#aws-fargate-solution-architecture)
-  - [Build and push the Docker image](#build-and-push-the-docker-image)
-  - [(OPTIONAL) Setup Shodan.io API Key](#optional-setup-shodanio-api-key)
-  - [(OPTIONAL) Setup DisruptOps Client Id and API Key](#optional-setup-disruptops-client-id-and-api-key)
-  - [Setup baseline infrastructure via Terraform](#setup-baseline-infrastructure-via-terraform)
-  - [Setup baseline infrastructure via AWS CloudFormation](#setup-baseline-infrastructure-via-aws-cloudformation)
-  - [Manually execute the ElectricEye ECS Task](#manually-execute-the-electriceye-ecs-task-you-only-need-to-do-this-once)
+- [Quick Run Down](#quick-run-down)
+- [Description](#tell-me-more)
+- [How do I use this](#how-do-i-use-this)
+  - [AWS CSPM](#aws)
+    - [Building & Pushing ElectricEye Docker Image to ECR](#build-and-push-the-docker-image-to-ecr)
+    - [AWS Multi-Account & Multi-Region Usage](#multi-account-usage)
+    - [AWS EASM Reporting](#aws-external-attack-surface-reporting)
+  - [GCP CSPM](#gcp)
+    - [GCP EASM Reporting](#gcp-external-attack-surface-reporting)
+  - [Azure CSPM](#azure)
+  - [SaaS Security Posture Management (SSPM)](#saas-security-posture-management-sspm)
+    - [GitHub SSPM](#evaluating-github)
+    - [Servicenow SSPM](#evaluating-servicenow)
+    - [M365/O365 SSPM](#evaluating-m365)
+    - [Custom Outputs](#custom-outputs)
 - [Supported Services and Checks](#supported-services-and-checks)
-- [Add-on Modules](#add-on-modules)
-  - [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response)
-  - [ElectricEye-ChatOps](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-chatops)
-  - [ElectricEye-Pagerduty-Integration](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-pagerduty-integration)
-  - [ElectricEye-Reports](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-reports)
-- [Known Issues & Limitiations](#known-issues--limitations)
-- [FAQ](./faq)
+    - [AWS Checks & Services](#aws-checks--services)
+    - [GCP Checks & Services](#gcp-checks--services)
+    - [Azure Checks & Services](#azure-checks--services)
+    - [SSPM: GitHub Checks & Services](#sspm-github-checks--services)
+    - [SSPM: Servicenow Checks & Services](#sspm-servicenow-checks--services)
+    - [SSPM: M365 Checks & Services](#sspm-m365-checks--services)
 - [Contributing](#contributing)
 - [Developing new Checks](#developer-guide)
 - [Auditor testing](#auditor-testing)
 - [License](#license)
 
-## Synopsis
+## Quick Run Down :running: :running:
 
-- :fire: :fire: **500+ security & AWS best practice detections** including services not covered by Security Hub/Config (MemoryDB, Cognito, DocDB, Amazon Managed Blockchain, etc.), all findings are **aligned to NIST CSF, NIST 800-53, AICPA's TSCs, ISO 27001:2013 and MITRE ATT&CK Techniques**.
+- ElectricEye is a multi-cloud & Software-as-a-Service Posture Management CLI offering Cloud Security Posture Management (CPSM), SaaS Security Posture Management (SSPM), and External Attack Surface Monitoring (EASM) capabilities for **AWS**, **GCP**, **Azure** (*Coming Soon*), **Servicenow**, **M365** (*Coming Soon*), and **GitHub** (*Coming Soon*).
 
-- :anger: :anger: Provides basic **Attack Surface Management (ASM)** capabilities, checking for **more than 20 highly dangerous** services running on publicly reachable assets that adversaries can potentially exploit.
+- For AWS, ElectricEye is the most comprhensive CSPM & EASM tool supporting over **600 Checks** for Security, Reliaiblity, Monitoring, and Exposure across **100 CSP Services** including atypical services not supported by AWS Config or mainstream CSPM & Cloud Native Application Protection Platform (CNAPP) tools such as AWS Managed Blockchain, AWS Managed Workflows for Apache AirFlow, Amazon MemoryDB, AWS Amplify, Amazon MQ, and more!
 
-- :clap: :clap: Supports every **AWS Region and Partition**: Commercial (`aws`), AWS GovCloud (`aws-gov`), AWS China (`aws-cn`), :busts_in_silhouette: AWS Secret (`aws-iso-b`) :busts_in_silhouette: and :busts_in_silhouette: AWS Top Secret (`aws-iso`) :busts_in_silhouette:.
+- All checks are currently mapped to NIST CSF v1.1, NIST 800-53 r4, American Institute of Certified Public Accountants (AICPA) Trust Service Criteria (TSCs) which can be used for SOC2 Type I and SOC2 Type II, and ISO 27001:2013 ISMS controls for Audit Readiness and internal GRC requirements.
 
-- :satellite: :satellite: Built with **full AWS Security Hub support** in mind, can optionally output to MongoDB, PostgreSQL, JSON or CSV. **Can run as a CLI tool, in Fargate, as a standalone Container, or anywhere else** you can run Python (K8s, Batch, CodeBuild, EC2, etc.)
+- Configurable EASM module uses NMAP for service discovery and reachability assessment of over 20 highly-dangerous ports and protocols (e.g., SMB, MongoDB, VMWARE ESXi, and more) for nearly every public-facing capable AWS and GCP (*Coming Soon*) service.
 
-- :metal: :metal: **Multiple add-ons enable automated remediation, ChatOps, and other integrations** with third-party tools such as [DisruptOps (a FireMon company)](https://www.firemon.com/products/disruptops/), [PagerDuty](https://www.pagerduty.com/), [Slack](https://slack.com/), [ServiceNow Incident Management](https://docs.servicenow.com/bundle/rome-it-service-management/page/product/incident-management/concept/c_IncidentManagement.html), [Atlassian Jira](https://www.atlassian.com/software/jira), [Azure DevOps Boards](https://azure.microsoft.com/en-us/services/devops/boards/), [Shodan](https://www.shodan.io/) and [Microsoft Teams](https://www.microsoft.com/en-us/microsoft-teams/group-chat-software)
+- Support for every single AWS Paritition: Commercial (`aws`), AWS GovCloud (`aws-gov`), AWS China (`aws-cn`), AWS Secret Region (`aws-iso-b`) and AWS Top Secret Region (`aws-iso`). GCP and Azure are only supported for their Commerical partitions.
 
-## Description
+- Native AWS Multi-Account and Multi-Region Support. GCP is natively multi-Region without additional configuration.
 
-ElectricEye is a Python-native CLI framework that controls individual Python scripts (affectionately called **Auditors**) which align to a specific AWS service or resource (such as an EC2 Security Group, or Systems Manager Managed Instance) that contain one or more **Checks**. Checks (continuously) monitor your AWS attack surface and evaluate services for configurations that can lead to degradation of confidentiality, integrity or availability. By default, the output of these checks are formatted using the [AWS Security Finding Format](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html) (ASFF) and sent to AWS Security Hub but can be sent to many other locations.
+- Outputs to AWS Security Hub, JSON, CSV, AWS DocumentDB, MongoDB, AWS RDS & Aurora for PostgreSQL, PostgreSQL, and DisruptOps by Firemon.
 
-As of **30 MARCH 2022** ElectricEye now supports Attack Surface Management (ASM) capabilities, showing you potentially dangerous and exploitable services running on publicly reachable assets such as EC2 Instances and Amazon Elastic Load Balancing (ELB) Application Load Balancers (ALB).
+## Tell Me More :round_pushpin: :round_pushpin:
 
-ElectricEye is extensible, however, and can output to JSON, CSV, PostgreSQL, MongoDB/AWS DocumentDB, and other locations and formats. All Checks within ElectricEye are also mapped against popular security framework controls such as the AICPA's Trust Service Criteria (TSCs), NIST 800-53 Rev 5, the NIST Cyber Security Framework (CSF), ISO/IEC 27001:2013 and the ASM Checks are mapped to MITRE ATT&CK Techniques.
+![Architecture](./screenshots/ElectricEye2023Architecture.jpg)
 
-Additionally, ElectricEye comes with several add-on modules to extend the core model which provides dozens of detection-based controls. ElectricEye-Response provides a multi-account response and remediation platform (also known as SOAR), ElectricEye-ChatOps integrates with Slack/Pagerduty/Microsoft Teams, and ElectricEye-Reports integrates with QuickSight. All add-ons are supported by both CloudFormation and Terraform and can also be used independently of the core module itself.
+ElectricEye was created in early 2019 as an extension to AWS Security Hub, AWS Cloud's native Cloud Security Posture Management (CSPM) solution, with the goal to extend beyond only AWS Config-supported Services and add extra checks and Audit Readiness Standards (AKA "Compliance Standards") to support Cloud Security, DevOps, IT, and Risk teams running workloads on AWS.
 
-Numerous personas can make effective usage of ElectricEye such as: Security Operations (SecOps), DevOps, DevSecOps, IT Audit, Governance/Risk/Compliance (GRC) Analysts, Enterprise Architects, Security Architects, Cloud Center of Excellence (CCOE) members, Software Development Engineers (SDEs) using Cloud-native services, Red Teamers, Purple Teamers, and Security Engineering. That said, ElectricEye can also serve as an important assurance tool or educational tool for nearly any persona who works with or is learning the AWS Cloud.
+Since then, ElectricEye has continued to expand into the most comprehensive AWS CSPM tool from a service support and check support perspective, adding additional functionality such as Secrets Management (powered by Yelp's Detect-Secrets), External Attack Surface Management (powered by NMAP and Shodan.io) and integration into multiple downstream data formats, databases, as well as AWS Security Hub itself. All findings are mapped to the AWS Security Finding Format (ASFF) for portability into AWS Security Lake and AWS Security Hub, and can be further parsed by supported outputs.
 
-**Note**: If you would like to use the "classic" version of ElectricEye it is available in [this branch](https://github.com/jonrau1/ElectricEye/tree/electriceye-classic), however, it will not include any new auditors for services such as QLDB, RAM, etc. Some screenshots may not work correctly due to the linking, sorry about that.
+As a CLI tool, ElectricEye can be ran from anywhere AWS credentials are supplied allowing for ultimate flexibility in deployment options and quick testing. All checks are organized into Service-specific files named **Auditors** with each Auditor comprised of one ore more **Checks** which produce **Findings**. The CLI supports running specific Auditors, Checks, or the entire library of Auditors by default.
 
-**Note:**: If you are working on another project whether open-source or commercial and want to include parts of ElectricEye (or the full thing) in your product / project, please contact me and at least give me credit. At the very least I can help you integrate and I'd appreciate any cool features you add being partially added back upstream!
+Multi-Account and Multi-Region operations are supported by the CLI options to supply a remote AWS Account and Role Name and/or AWS Region to dynamically created Boto3 Sessions with `AssumeRole` credentials but also retaining the original credentials to allow access to local AWS-native datastores for storing all of this information. To avoid throttling API responses, ElectricEye uses a locally developed caching mechanism which pulls required asset data at most once per Auditor and assesses the data in-memory. The cache is purged when not needed leading to lower CPU, memory, and network consumption.
 
-## Solution Architecture
+As of April 2023 ElectricEye supports the following CSPM, EASM, and SSPM capabilities. More SaaS Providers and CSPs as well as expanded service & capability coverage is under development.
+- **CSPM**: AWS, GCP
+- **SSPM**: Servicenow
+- **EASM**: AWS, GCP
 
-**Note:** This high level architecture shows potential places to run ElectricEye, as of V2.0 ElectricEye now uses a controller CLI mechanism that does not rely on running in Fargate (though you can still do that). Theoretically you should be able to run ElectricEye anywhere you have at least `Python 3.6` installed with access to required AWS credentials and Python dependencies.
+## How do I use this :thinking: :thinking: ??
 
-![High-level Architecture](./screenshots/high-level-architecture.jpg)
+Refer to sub-headings for per-CSP or per-SaaS setup instructions.
 
-> - You run ElectricEye anywhere you have AWS Credentials and the [required IAM Permissions](policies/Instance_Profile_IAM_Policy.json) - this can be on a Raspberry Pi, a Google Compute Engine instance, on AWS EKS or Amazon EC2.
+### AWS
+___
 
-> - ElectricEye will evaluate all resources in scope using **Auditors** and write the findings to a local cache
-
-> - If supplied, ElectricEye will evaluate specific internet-facing AWS services against indexed results on Shodan.io as additional enrichment.
-
-> - ElectricEye will report all findings to AWS Security Hub, if configured ElectricEye can also output to CSV and JSON files or to a PostgreSQL Database (hosted on AWS RDS, or otherwise). Finally (and optionally) you can report findings to the [DisruptOps](https://disruptops.com/electriceye-v2-0/) platform which also has its [own integration with Security Hub](https://disruptops.com/cloud-providers/aws/).
-
-> - Using add-ons and native AWS Security Hub integrations, you can extend your findings into other workflows using tools such as Azure DevOps Boards, Slack, PagerDuty, Teams, or otherwise.
-
-## Running locally
-
-**NOTE:** While this section is titled "Running Locally" - you can use the following setup to run anywhere you can run Python such as EKS, Kubernetes, a self-managed Docker Container, AWS CloudShell, etc. The usage of `venv` for those utilities is optional, but strongly recommended.
 
 1. Navigate to the IAM console and click on **Policies** under **Access management**. Select **Create policy** and under the JSON tab, copy and paste the contents [Instance Profile IAM Policy](policies/Instance_Profile_IAM_Policy.json). Click **Review policy**, create a name, and then click **Create policy**.
 
-2. Have `Python 3` and `Pip(3)` installed and setup virtualenv
+2. With >=Python 3.6 installed, install and upgrade `pip3` and setup `virtualenv`
 
 ```bash
 sudo apt install -y python3-pip
@@ -106,7 +100,7 @@ pip3 install virtualenv --user
 virtualenv .venv
 ```
 
-3. This will create a virtualenv directory called .venv which needs to be activated
+3. This will create a virtualenv directory called `.venv` which needs to be activated
 
 ```bash
 #For macOS and Linux
@@ -116,45 +110,331 @@ virtualenv .venv
 .venv\scripts\activate
 ```
 
-4. Install all dependencies
+4. Clone the repo and install all dependencies
 
 ```bash
+git clone https://github.com/jonrau1/ElectricEye.git
+cd ElectricEye
 pip3 install -r requirements.txt
-```
 
-**NOTE:** If using AWS CloudShell you will need to use `pip3` with `--user`:
-
-```bash
+# if use AWS CloudShell
 pip3 install --user -r requirements.txt
 ```
 
 5. Run the controller
 
 ```bash
-python3 eeauditor/controller.py
+python3 eeauditor/controller.py -t AWS
 ```
 
 Add the `--help` option for info on running individual checks and auditors and different outputs options. For instance, if you wanted to specify a specific Auditor use the following command to run it, specifiy the *name* of the Auditor **without** the `.py` ending.
 
 ```bash
-python3 eeauditor/controller.py -a AWS_IAM_Auditor
+python3 eeauditor/controller.py -t AWS -a AWS_IAM_Auditor
+```
+
+You can get a full name of the auditors (as well as their check description within comments by using the following command).
+
+```bash
+python3 eeauditor/controller.py -t AWS --list-checks
+```
+
+#### Build and push the Docker image to ECR
+___
+
+
+**Note:** You must have [permissions to push images](https://docs.aws.amazon.com/AmazonECR/latest/userguide/docker-push-ecr-image.html) to ECR before performing this step. These permissions are not included in the instance profile example.
+
+1. Update your machine and clone this repository
+
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y unzip awscli docker.ce python3 python3-pip
+pip3 install --upgrade pip
+pip3 install --upgrade awscli
+pip3 install --upgrade boto3
+git clone https://github.com/jonrau1/ElectricEye.git
+```
+
+2. Create an ECR Repository with the AWS CLI
+
+```bash
+aws ecr create-repository \
+    --repository-name electriceye \
+    --image-scanning-configuration scanOnPush=true
+```
+
+3. Build and push the ElectricEye Docker image. Be sure to replace the values for your region, partition, Account ID and name of the ECR repository
+
+```bash
+cd ElectricEye
+aws ecr get-login-password --region $AWS_REGION | sudo docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+```
+
+**Note**: If you are using AWS CLI v1 use the following in place of the line above
+
+```bash
+sudo $(aws ecr get-login --no-include-email --region $AWS_REGION)
+```
+
+```bash
+sudo docker build -t electriceye .
+sudo docker tag electriceye:v1 $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/electriceye:v1
+sudo docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/electriceye:v1
+```
+
+4. Navigate to the ECR console and copy the `URI` of your Docker image.
+
+#### Multi Account Usage
+___
+
+ElectricEye supports running all Auditors in remote AWS Accounts as long as the remote AWS Account trusts your ***current*** AWS Account or IAM Principal. Consider deploying a StackSet from the [ElectricEye Organizations StackSet template](./cloudformation/ElectricEye_Organizations_StackSet.yaml) for easier setup.
+
+- To specify a remote Account supply both an Account ID using `--assume-role-account` and the name of the IAM Role in that Account using `--assume-role-name`. ElectricEye will attempt to Assume the role and create a new Boto3 Session.
+
+```bash
+python3 eeauditor/controller.py -t AWS --assume-role-account 111111111111 --assume-role-name CrossAccountElectricEyeRole -o stdout
+```
+
+- To target all Accounts in a specific Organizational Unit, use the following snippet, this will only run on Active Accounts and fail gracefully for Accounts without the specified Role.
+
+```bash
+ACCOUNTS_IN_OU=$(aws organizations list-accounts-for-parent --parent-id ou-p6ba-2hwy74oa --query 'Accounts[?Status==`ACTIVE`].Id' --output text)
+for accountId in $ACCOUNTS_IN_OU; do python3 ElectricEye/eeauditor/controller.py -t AWS --assume-role-account $accountId --assume-role-name CrossAccountElectricEyeRole -o stdout; done
+```
+
+- To target all Accounts in your entire AWS Organization, use the following snippet, this will only run on Active Accounts and fail gracefully for Accounts without the specified Role.
+
+```bash
+ACCOUNTS_IN_ORG=$(aws organizations list-accounts --query 'Accounts[?Status==`ACTIVE`].Id' --output text)
+for accountId in $ACCOUNTS_IN_ORG; do python3 ElectricEye/eeauditor/controller.py -t AWS -a Amazon_EC2_Auditor --assume-role-account $accountId --assume-role-name CrossAccountElectricEyeRole -o stdout; done
+```
+
+- You can additionally override the Region for multi-Region assessments by supplying an AWS Region using `--region-override`, ensure the Region you specify match your current Partition (e.g., GovCloud, AWS China, etc.) otherwise ElectricEye will be very upset at you.
+
+```bash
+python3 eeauditor/controller.py -t AWS --assume-role-account 111111111111 --assume-role-name CrossAccountElectricEyeRole --region-override eu-central-1 -o stdout
+```
+
+- You can also override your current Region without specifying a remote Account, ElectricEye will still attempt to swap to the proper Region for Auditors that require running in a specific Region such as us-east-1 for AWS Health, AWS Trusted Advisor (`support`), AWS WAFv2 in Global context (`cloudfront`) and us-west-2 for Global Accelerator.
+
+```bash
+python3 eeauditor/controller.py -t AWS --region-override us-west-1 -o stdout
+```
+
+- Lastly, you can loop through all AWS Regions for evaulation as well
+
+```bash
+AWS_REGIONS=$(aws ec2 describe-regions --query 'Regions[*].RegionName' --output text)
+for regionId in $AWS_REGIONS; do python3 ElectricEye/eeauditor/controller.py -t AWS --region-override $regionId -o stdout; done
+```
+
+#### AWS External Attack Surface Reporting
+___
+
+If you only wanted to run Attack Surface Monitoring checks use the following command which show an example of outputting the ASM checks into a JSON file for consumption into SIEM or BI tools.
+
+```bash
+python3 eeauditor/controller.py -t AWS -a ElectricEye_AttackSurface_Auditor -o json_normalized --output-file ElectricASM
+```
+
+### GCP
+___
+
+**Note** This section will be updated for GCP Organization-wide onboarding...eventually
+
+0. Enable the following APIs for your GCP Projects you wish to assess
+
+    - Compute Engine API
+    - Cloud SQL Admin API
+    - Cloud Logging API
+    - OS Config API
+    - Service Networking API
+
+1. Create a Service Account with the following permissions per Project you want to assess with ElectricEye
+
+    - Security Reviewer
+    - Project Viewer
+
+2. Create a JSON Private Key and upload the full JSON contents to AWS Systems Manager Parameter store as a SecureString. When complete, you can delete the Private Key JSON file so you do not give it to someone...unsavory.
+
+
+```bash
+export GCP_SA_CRED_SSM_NAME='cool_name_here'
+aws ssm put-parameter \
+    --name $GCP_SA_CRED_SSM_NAME \
+    --description 'GCP SA JSON for [your SA name here?]' \
+    --type SecureString \
+    --value $PLACEHOLDER
+```
+
+3. Modify the `/eeauditor/external_providers.toml` file to point to the name of your SSM Parameter you created - ElectricEye will retrieve and write it back to another JSON file.
+
+```toml
+[gcp]
+gcp_service_account_json_payload_parameter_name = "<<cool_name_here>>"
+```
+
+4. With >=Python 3.6 installed, install and upgrade `pip3` and setup `virtualenv`
+
+```bash
+sudo apt install -y python3-pip
+pip3 install --upgrade pip
+pip3 install virtualenv --user
+virtualenv .venv
+```
+
+5. This will create a virtualenv directory called `.venv` which needs to be activated
+
+```bash
+#For macOS and Linux
+. .venv/bin/activate
+
+#For Windows
+.venv\scripts\activate
+```
+
+6. Clone the repo and install all dependencies
+
+```bash
+git clone https://github.com/jonrau1/ElectricEye.git
+cd ElectricEye
+pip3 install -r requirements.txt
+
+# if use AWS CloudShell
+pip3 install --user -r requirements.txt
+```
+
+7. Run the controller
+
+```bash
+export GCP_PROJECT_ID='<My_project_id>'
+python3 eeauditor/controller.py -t GCP --gcp-project-id $GCP_PROJECT_ID
+```
+
+Add the `--help` option for info on running individual checks and auditors and different outputs options. For instance, if you wanted to specify a specific Auditor use the following command to run it, specifiy the *name* of the Auditor **without** the `.py` ending.
+
+```bash
+export GCP_PROJECT_ID='<My_project_id>'
+python3 eeauditor/controller.py -t GCP -a GCP_ComputeEngine_Auditor --gcp-project-id $GCP_PROJECT_ID
 ```
 
 You can get a full name of the auditors (as well as their checks within comments by using the following command).
 
 ```bash
-python3 eeauditor/controller.py --list-checks
+python3 eeauditor/controller.py -t GCP --list-checks
 ```
 
-### Attack Surface Monitoring Only
+#### GCP External Attack Surface Reporting
+___
 
 If you only wanted to run Attack Surface Monitoring checks use the following command which show an example of outputting the ASM checks into a JSON file for consumption into SIEM or BI tools.
 
 ```bash
-python3 eeauditor/controller.py -a ElectricEye_AttackSurface_Auditor -o json_normalized --output-file ElectricASM
+python3 eeauditor/controller.py -t GCP -a ElectricEye_AttackSurface_GCP_Auditor -o json_normalized --output-file ElectricASM
 ```
 
-### ElectricEye and Custom Outputs
+### Azure
+___
+
+*Coming Soon!*
+
+### SaaS Security Posture Management (SSPM)
+___
+
+*Coming Soon!* The following sections will be dedicated to setting up your SaaS Provider API keys / OAuth applications for use with ElectricEye
+
+#### Evaluating GitHub
+___
+
+*Coming Soon!*
+
+#### Evaluating Servicenow
+___
+
+**Note:** Currently, ElectricEye SSPM for Servicenow relies on a User being created with a specific Role, in the future this may change to an OAuth or Integration User. Also, the Instructions to add the `admin` Role are over-permissive and will be scaled down properly for subsequent releases after testing.
+
+1. In Servicenow create a new User with a `User ID` of `**electriceye_sspm**` and add the `admin` Role as an assignment.
+
+2. Select **Set Password** and generate a password, create an AWS Systems Manager `SecureString` Parameter for this value.
+
+```bash
+export SNOW_PW_PARAMETER_NAME='cool_name_here'
+aws ssm put-parameter \
+    --name $SNOW_PW_PARAMETER_NAME \
+    --description 'ElectricEye SSPM Servicenow Password for electriceye_sspm' \
+    --type SecureString \
+    --value $PLACEHOLDER
+```
+
+3. Set the value of **Password needs reset** to false and **Update** the User to save changes
+
+4. Modify the `/eeauditor/external_providers.toml` file to add your Username, Password Parameter, and your Servicenow Instance Name. Regarding the instance name, if the URL of your instance is "https://dev90210.service-now.com/" then your instance name is "dev90210". Be sure to replace the example values listed below.
+
+```toml
+[servicenow]
+snow_instance_name = "dev90210"
+snow_sspm_username = "electriceye_sspm"
+snow_sspm_password_parameter_name = $SNOW_PW_PARAMETER_NAME
+```
+
+5. With >=Python 3.6 installed, install and upgrade `pip3` and setup `virtualenv`
+
+```bash
+sudo apt install -y python3-pip
+pip3 install --upgrade pip
+pip3 install virtualenv --user
+virtualenv .venv
+```
+
+6. This will create a virtualenv directory called `.venv` which needs to be activated
+
+```bash
+#For macOS and Linux
+. .venv/bin/activate
+
+#For Windows
+.venv\scripts\activate
+```
+
+7. Clone the repo and install all dependencies
+
+```bash
+git clone https://github.com/jonrau1/ElectricEye.git
+cd ElectricEye
+pip3 install -r requirements.txt
+
+# if use AWS CloudShell
+pip3 install --user -r requirements.txt
+```
+
+8. Run the controller
+
+```bash
+python3 eeauditor/controller.py -t Servicenow
+```
+
+Add the `--help` option for info on running individual checks and auditors and different outputs options. For instance, if you wanted to specify a specific Auditor use the following command to run it, specifiy the *name* of the Auditor **without** the `.py` ending.
+
+```bash
+python3 eeauditor/controller.py -t Servicenow -a Servicenow_Users_Auditor
+```
+
+You can get a full name of the auditors (as well as their checks within comments by using the following command).
+
+```bash
+python3 eeauditor/controller.py -t Servicenow --list-checks
+```
+
+#### Evaluating M365
+___
+
+**Important Note:** This has only been testing on a M365 E5 + ESM Tenant. Results may vary.
+
+*Coming Soon!*
+
+### Custom Outputs
+___
 
 While running on AWS Fargate and creating the infrastructure with CloudFormation or Terraform gives you the benefits of encapsulating environment variables you need, you may need to do configurations of your own different outputs. Using these different outputs like PostgreSQL, JSON, or CSV is great for any downstream use cases such as SIEM-ingestion, external tool reporting, business intelligence, machine learning, or loading a graph. Outputs are subject to change by release and will be updated here.
 
@@ -164,7 +444,7 @@ Some considerations...
 
 - To output to JSON, add the following arguments to your call to `controller.py`: `-o json --output-file electriceye-findings` (**Note:** `.json` will be automatically appended)
 
-  - Normalized / flatteneded JSON can output instead using `-o json_normalized`. This is better suited for sending findings to BI tools as the structure eliminates all nested lists and dicts.
+- Normalized / flatteneded JSON can output instead using `-o json_normalized`. This is better suited for sending findings to BI tools as the structure eliminates all nested lists and dicts.
 
 - To output to CSV, add the following arguments to your call to `controller.py`: `-o csv --output-file electriceye-findings` (**Note:** `.csv` will be automatically appended)
 
@@ -245,84 +525,14 @@ aws ssm put-parameter \
 export SHODAN_API_KEY_PARAM="electriceye-shodan-api-key"
 ```
 
-## Setting Up ElectricEye on Fargate
-
-### AWS Fargate Solution Architecture
-
-This "old" architecture diagram represents what is deployed by CloudFormation and Terraform to use ElectricEye on Fargate with EventBridge Scheduled Rules. You can opt to use the CLI directly instead of this pattern.
-
-![Architecture](screenshots/ElectricEye-Architecture.jpg)
-
-1. A [time-based CloudWatch Event](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html) runs ElectricEye every 12 hours (default value).
-
-2. The ElectricEye Task will pull the Docker image from [Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/).
-
-3. Systems Manager Parameter Store passes the bucket name from which Auditors are downloaded. Optionally, ElectricEye will retrieve you API key(s) for [DisruptOps](https://disruptops.com/features/) and [Shodan](https://www.shodan.io/explore), if those integrations are configured.
-
-4. The ElectricEye task will execute all Auditors to scan your AWS infrastructure and deliver both passed and failed findings to Security Hub. **Note:** ElectricEye will query the Shodan APIs to see if there is a match against select internet-facing AWS resources if configured.
-
-5. If configured, ElectricEye will send findings to DisruptOps. DisruptOps is also [integrated with Security Hub](https://disruptops.com/aws-security-management-with-securityhub/) and can optionally enforce guardrails and orchestrate security automation from within the platform.
-
-Refer to the [Supported Services and Checks](#supported-services-and-checks) section for an up-to-date list of supported services and checks performed by the Auditors.
-
-These steps are split across their relevant sections. All CLI commands are executed from an Ubuntu 18.04LTS [Cloud9 IDE](https://aws.amazon.com/cloud9/details/), modify them to fit your OS. 
-
-**Note 1:** If you do use Cloud9, navigate to Settings (represented by a Gear icon) > AWS Settings and **unmark** the selection for `AWS managed temporary credentials` (move the toggle to your left-hand side) as shown below. If you do not, you instance profile will not apply properly.
-
-![Cloud9TempCred](./screenshots/cloud9-temp-creds.JPG)
-
-**Note 2:** Ensure AWS Security Hub is enabled in the region you are attempting to run ElectricEye
-
-**Note 3:** If you have never used ECS before you'll likely run into a problem with the service-linked role (SLR), or lack thereof, and you should follow the [instructions here](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using-service-linked-roles.html#service-linked-role-permissions) to have it created first
-
-
-### Build and push the Docker image
-
-**Note:** You must have [permissions to push images](https://docs.aws.amazon.com/AmazonECR/latest/userguide/docker-push-ecr-image.html) to ECR before performing this step. These permissions are not included in the instance profile example.
-
-1. Update your machine and clone this repository
+- If you will be outputting to Amazon DynamoDB use the below `EXPORT` commands and switch any value that says `$PLACEHOLDER`, but keep the double quotes (`"`) along with the output of `-o ddb_backend`.
 
 ```bash
-sudo apt update && sudo apt upgrade -y
-sudo apt install -y unzip awscli docker.ce python3 python3-pip
-pip3 install --upgrade pip
-pip3 install --upgrade awscli
-pip3 install --upgrade boto3
-git clone https://github.com/jonrau1/ElectricEye.git
+export DYNAMODB_TABLE_NAME="$PLACEHOLDER"
 ```
 
-2. Create an ECR Repository with the AWS CLI
-
-```bash
-aws ecr create-repository \
-    --repository-name electriceye \
-    --image-scanning-configuration scanOnPush=true
-```
-
-3. Build and push the ElectricEye Docker image. Be sure to replace the values for your region, Account ID and name of the ECR repository
-
-**Note**: If you are in GovCloud these commands are likely very different, please review for consistency (and open a PR if there is a better option for GovCloud)
-
-```bash
-cd ElectricEye
-aws ecr get-login-password --region $AWS_REGION | sudo docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
-```
-
-**Note**: If you are using AWS CLI v1 use the following in place of the line above
-
-```bash
-sudo $(aws ecr get-login --no-include-email --region $AWS_REGION)
-```
-
-```bash
-sudo docker build -t electriceye .
-sudo docker tag electriceye:v1 $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/electriceye:v1
-sudo docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/electriceye:v1
-```
-
-4. Navigate to the ECR console and copy the `URI` of your Docker image. It will be in the format of **`$AWS_ACCOUNT_ID.dkr.ecr.<AWS_REGION.amazonaws.com/ElectricEye:latest`**. Save this as you will need it when configuring Terraform or CloudFormation.
-
-### (OPTIONAL) Setup Shodan.io API Key
+#### Setting up Shodan
+___
 
 This is an **optional** step to setup a Shodan.io API key to determine if your internet-facing resources have been indexed. This is not an exact science as a lot of abstracted services (ES, RDS, ELB) share IP space with other resources and AWS addresses (non-EIP / BYOIP) are always change (such as when you have an EC2 instance shutoff for a prolonged period of time). You may end up having indexed resources that were indexed when someone else was using the IP space, you should still review it either way just to make sure.
 
@@ -338,195 +548,35 @@ aws ssm put-parameter \
     --value <API-KEY-HERE>
 ```
 
-In both the Terraform config files and CloudFormation templates the value for this key is prepopulated with the value `placeholder`, overwrite them with this parameter you just created to be able to use the Shodan checks.
-
-### (OPTIONAL) Setup DisruptOps Client Id and API Key
-
-This is an optional step to setup for sending findings to DisruptOps. 
-
-1. Create a Systems Manager Parameter Store `SecureString` parameter for the client id: 
-
-```bash
-aws ssm put-parameter \
-    --name dops-client-id \
-    --description 'DisruptOps client id' \
-    --type SecureString \
-    --value <CLIENT-ID-HERE>
-```
-
-2. Create a Systems Manager Parameter Store `SecureString` parameter for this API key: 
-
-```bash
-aws ssm put-parameter \
-    --name dops-api-key \
-    --description 'DisruptOps api key' \
-    --type SecureString \
-    --value <API-KEY-HERE>
-```
-
-In both the Terraform config files and CloudFormation templates the value for this key is prepopulated with the value `placeholder`, overwrite them with this parameter you just created to be able to use DisruptOps.
-
-### Setup baseline infrastructure via Terraform
-
-Before starting [attach this IAM policy](https://github.com/jonrau1/ElectricEye/blob/master/policies/Instance_Profile_IAM_Policy.json) to your [Instance Profile](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html) (if you are using Cloud9 or EC2).
-
-**Important Note:** The policy for the instance profile is ***highly dangerous*** given the S3, VPC and IAM related permissions given to it, Terraform needs a wide swath of CRUD permissions and even permissions for things that aren't deployed by the config files. For rolling ElectricEye out in a Production or an otherwise highly regulated environment, consider adding [IAM Condition Keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_actions-resources-contextkeys.html#context_keys_table), using CI/CD (no human access) and backing up your Terraform state files to a S3 backend to add guardrails around this deployment. I would avoid adding these permissions to an IAM user, and any roles that use this should only be assumable by where you are deploying it from, consider adding other Condition Keys to the Trust Policy.
-
-In this stage we will install and deploy the ElectricEye infrastructure via Terraform. To securely backup your state file, you should explore the usage of a [S3 backend](https://www.terraform.io/docs/backends/index.html), this is also described in this [AWS Security Blog post](https://aws.amazon.com/blogs/security/how-use-ci-cd-deploy-configure-aws-security-services-terraform/).
-
-1. Install the dependencies for Terraform.
-
-**Note:** Ensure this is the latest version of Terraform, since authoring this tool, I do not make use of it anymore and rely on outside contributors to update the Configs.
-
-```bash
-wget https://releases.hashicorp.com/terraform/0.14.4/terraform_0.14.4_linux_amd64.zip
-unzip terraform_0.14.4_linux_amd64.zip
-sudo mv terraform /usr/local/bin/
-terraform --version
-```
-
-2. Change directories and modify the `variables.tf` config file to include the URI of your Docker image and the name of your ECR Repository as shown in the screenshot below. Optionally replace the values of the Shodan API Key, DisruptOps Client Id, and DisruptOps API Key parameters with yours if you created them in the previous optional steps.
-
-```bash
-cd terraform-config-files
-nano variables.tf
-```
-
-![Variables.tf modification](screenshots/variables-tf-uri-modification.png)
-
-3. Initialize, plan and apply your state with Terraform, this step should not take too long.
-
-```bash
-terraform init
-terraform plan
-terraform apply -auto-approve
-```
-
-4. Navigate to the S3 console and locate the name of the S3 bucket created by Terraform for the next step. It should be in the format of `electriceye-artifact-bucket-(AWS_REGION)-(ACCOUNT-NUMBER)` if you left everything else default in `variables.tf`
-
-5. Navigate to the `auditors` directory and upload the code base to your S3 bucket
-
-```bash
-cd -
-cd eeauditor/auditors/aws
-aws s3 sync . s3://<your-bucket-name>
-```
-
-6. Navigate to the `insights` directory and execute the Python script to have Security Hub Insights created. Insights are saved searches that can also be used as quick-view dashboards (though nowhere near the sophistication of a QuickSight dashboard)
-
-```bash
-cd -
-cd insights
-python3 electriceye-insights.py
-```
-
-In the next stage you will launch the ElectricEye ECS task manually because after Terraform deploys this solution it will automatically run, and it will fail due to a lack of Auditor scripts in the S3 bucket.
-
-### Setup baseline infrastructure via AWS CloudFormation
-
-1. Download the [CloudFormation template](https://github.com/jonrau1/ElectricEye/blob/master/cloudformation/ElectricEye_CFN.yaml) and create a Stack. Refer to the [Get Started](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/GettingStarted.Walkthrough.html) section of the *AWS CloudFormation User Guide* if you have not done this before.
-
-2. Enter the URI of the Docker image in the space for the parameter **ElectricEyeContainerInfo**. Leave all other parameters as the default value, unless you already used `10.77.0.0/16` as the CIDR for one of your VPCs and plan to attach this VPC to your [T-Gateway](https://aws.amazon.com/transit-gateway/). Optionally replace the values of the Shodan API Key, DisruptOps Client Id, and DisruptOps API Key parameters with yours if you created them in the previous optional steps and then create your stack.
-![Run task dropdown](screenshots/cfn-parameter-uri-modification.JPG)
-
-**NOTE**: The Terraform implementation applies a resource-based repository policy that only allows access to the ElectricEye ECS IAM Roles (Execution & Task), if you want to apply something similar for CloudFormation you will need to issue the following ECR CLI command:
-
-```bash
-aws ecr set-repository-policy \
-    --repository-name <ECR_REPO_NAME> \
-    --policy-text file://my-policy.json
-```
-
-You can create `my-policy.json` with the below example, replace the values for `<Task_Execution_Role_ARN>` and `<Task_Role.arn>` as needed.
-
-```json
-{
-  "Version": "2008-10-17",
-  "Statement": [
-    {
-      "Sid": "new statement",
-      "Effect": "Allow",
-      "Principal": {
-        "AWS": [
-          "<Task_Execution_Role_ARN>",
-          "<Task_Role.arn>"
-        ],
-        "Service": "ecs-tasks.amazonaws.com"
-      },
-      "Action": [
-        "ecr:BatchCheckLayerAvailability",
-        "ecr:BatchGetImage",
-        "ecr:DescribeImages",
-        "ecr:DescribeRepositories",
-        "ecr:GetAuthorizationToken",
-        "ecr:GetDownloadUrlForLayer",
-        "ecr:GetRepositoryPolicy",
-        "ecr:ListImages"
-      ]
-    }
-  ]
-}
-```
-
-3. Navigate to the S3 console and locate the name of the S3 bucket created by CloudFormation for the next step. It should be in the format of `electric-eye-artifact-bucket--(AWS_REGION)-(ACCOUNT-NUMBER)`
-
-4. Navigate to the `auditors` directory and upload the code base to your S3 bucket
-
-```bash
-cd -
-cd eeauditor/auditors/aws
-aws s3 sync . s3://<your-bucket-name>
-```
-
-5. Navigate to the `insights` directory and execute the Python script to have Security Hub Insights created. Insights are saved searches that can also be used as quick-view dashboards (though nowhere near the sophistication of a QuickSight dashboard)
-
-```bash
-cd -
-cd insights
-python3 electriceye-insights.py
-```
-
-### Manually execute the ElectricEye ECS Task
-
-In this stage we will use the console the manually run the ElectricEye ECS task, it is optional.
-
-1. Navigate to the ECS Console, select **Task Definitions** and toggle the `electric-eye` task definition. Select the **Actions** dropdown menu and select **Run Task** as shown in the below screenshot.
-
-![Run task dropdown](screenshots/run-ecs-task-dropdown.JPG)
-
-2. Configure the following settings in the **Run Task** screen as shown in the screenshot below.
-
-- Launch type: **Fargate**
-- Platform version: **LATEST**
-- Cluster: **electric-eye-vpc-ecs-cluster** (unless named otherwise)
-- Number of tasks: **1**
-- Task group: ***LEAVE THIS BLANK***
-- Cluster VPC: **electric-eye-vpc**
-- Subnets: ***any eletric eye Subnet***
-- Security groups: **electric-eye-vpc-sec-group** (you will need to select **Modify** and choose from another menu)
-- Auto-assign public IP: **ENABLED**
-
-![ECS task menu](screenshots/ecs-task-menu-modifications.JPG)
-
-3. Select **Run task**, in the next screen select the hyperlink in the **Task** column and select the **Logs** tab to view the result of the logs. **Note** logs coming to this screen may be delayed, and you may have several auditors report failures due to the lack of in-scope resources.
-
 ## Supported Services and Checks
 
-These are the following services and checks perform by each Auditor, there are currently...
-- :boom: **550 Checks** :boom:
-- :exclamation: **100 AWS supported services/components** :exclamation:
-- :fire: **77 Auditors** :fire:
+In total there are...
 
-There are currently **62** supported response and remediation Playbooks with coverage across **32** AWS services / components supported by [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response).
+> - **2** Supported Public CSPs
+> - **1** Supported SaaS Provider
+> - **604** Security & Resilience Best Practice Checks supported across all Public CSPs & SaaS Providers
+> - **103** Supported CSP & SaaS Resources / Asset Types
+> - **81** Auditor Plugins
+
+### AWS Checks & Services
+___
+
+These are the following services and checks perform by each Auditor, there are currently...
+
+- :boom: **550 Checks** :boom:
+- :exclamation: **100 supported AWS services/components** :exclamation:
+- :fire: **77 Auditors** :fire:
 
 **Regarding AWS ElasticSearch Service/OpenSearch Service:** AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
 
-**Regarding Shield Advanced, Health, and Trusted Advisor checks:** You must be subscribed to Shield Advanced, be on Business/Enterprise Support and be in `us-east-1` to perform all checks. The **AWS Shield Advanced**, **AWS Health** and **AWS Trusted Advisor** APIs only live in `us-east-1`, and to have the DRT look at your account you need Biz/Ent support, hence the pre-reqs.
+**Regarding AWS Shield Advanced:** You must be actively subscribed to Shield Advance with at least one Protection assigned to assess this Service.
 
-**Regarding Security Group checks:** The table shows the full amount of checks despite not being shown in the CLI due to the change to a Configuation-file based approach added on 25 MAR 2022.
+**Regarding AWS Trusted Advisor:** You must be on AWS Business or Enterprise Support to interact with the `support` API for Trusted Advisor.
+
+**Regarding AWS Health:** You must be on AWS Business or Enterprise Support to interact with the `support` API for Health.
 
 
-| Auditor File Name | AWS Service | Auditor Scan Description |
+| Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
 | Amazon_APIGW_Auditor.py | API Gateway Stage | Are stage metrics enabled |
 | Amazon_APIGW_Auditor.py | API Gateway Stage | Is stage API logging enabled |
@@ -1080,48 +1130,106 @@ There are currently **62** supported response and remediation Playbooks with cov
 | Shodan_Auditor.py | CloudFront Distribution | Are CloudFront distros indexed |
 | Shodan_Auditor.py | Global Accelerator Accelerator | Are Global Accelerator Accelerators indexed |
 
-## Add-on Modules
+### GCP Checks & Services
+___
 
-The following are optional add-on's to ElectricEye that will extend its functionality via reporting, alerting, enrichment and/or finding lifecycle management.
+These are the following services and checks perform by each Auditor, there are currently...
+- :boom: **53 Checks** :boom:
+- :exclamation: **2 supported GCP services/components** :exclamation:
+- :fire: **3 Auditors** :fire:
 
-- [ElectricEye-Response](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-response)
-  - ElectricEye-Response is a multi-account automation framework for response and remediation actions heavily influenced by [work I did when employed by AWS](https://aws.amazon.com/blogs/security/automated-response-and-remediation-with-aws-security-hub/). From your Security Hub Master, you can launch response and remediation actions by using CloudWatch Event rules, Lambda functions, Security Token Service (STS) and downstream services (such as Systems Manager Automation or Run Command). You can run these in a targetted manner (using Custom Actions) or fully automatically (using the CloudWatch detail type of `Security Hub Findings - Imported`).
 
-- [ElectricEye-ChatOps](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-chatops)
-  - ElectricEye-ChatOps utilizes EventBridge / CloudWatch Event Rules to consume `HIGH` and `CRITICAL` severity findings created by ElectricEye from Security Hub and route them to a Lambda function. Lambda will parse out certain elements from the Security Hub finding, create a message and post it to a Slack App's webhook for consumption by your security engineers or other personnel in a Slack channel.
+| Auditor File Name | Scanned Resource Name | Auditor Scan Description |
+|---|---|---|
+| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Is deletion protection enabled |
+| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Is IP forwarding disabled |
+| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Is auto-restart enabled |
+| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Is Secure Boot enabled |
+| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Is Virtual Trusted Platform Module enabled |
+| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Is Instance Integrity Monitoring enabled |
+| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Is Secure Integrity Monitoring Auto-learning Policy set to Update |
+| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Is Serial Port access disabled |
+| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Are Linux VM Instances access with OS Logon |
+| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Are Linux VM Instances acessed with OS Logon using 2FA/MFA |
+| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Are project-wide SSH keys blocked from access VM instances |
+| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Are instances publicly facing |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Are instances publicly facing |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances enabled auto-backup |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do MySQL instances enable PITR |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do PostgreSQL instances enable PITR |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have a private network enabled |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances allowe GCP services connectivity |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have a password policy enabled |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have a password min length |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have a password reuse check |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have a configuration to disallow usernames in the password |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have a password change interval check |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have storage auto-resize enabled |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have deletion protection enabled |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have query insights enabled |
+| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have SSL/TLS Enforcement enabled |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a FTP service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a SSH service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a Telnet service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a SMTP service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a HTTP service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a POP3 service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a Win NetBIOS service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a SMB service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a RDP service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a MSSQL service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a MySQL/MariaDB service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a NFS service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a Docker API service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a OracleDB service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a PostgreSQL service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a Kibana service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a VMWARE ESXi service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a HTTP Proxy service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a SplunkD service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a Kubernetes API Server service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a Redis service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a Kafka service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a MongoDB/DocDB service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a Rabbit/AmazonMQ service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a SparkUI service publicly accessible |
 
-- [ElectricEye-Reports](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-reports)
-  - ElectricEye-Reports is an add-on that allows you the created detailed business intelligence (BI) reports from ElectricEye findings in Security Hub using [Amazon QuickSight](https://aws.amazon.com/quicksight/), a "...scalable, serverless, embeddable, machine learning-powered business intelligence (BI) service built for the cloud." Using QuickSight, you can create detailed reports that breakdown all of your ElectricEye findings by Severity, Region, Resource Type, as well as breakout by-Compliance Control reporting and further enrich the dataset in this solution with business-context such as Cost Center, Division, Business Owner, and other metadata. With this data you can create visualizations that can be used by a many Personas across Information Security, IT Audit, IT Operations, Product Development, and Risk functions - such as tracking compliance with specific controls, measuring Key Risk Indicators (KRIs), or preparing evidence for a formal audit certification/attestation/examination.
 
-- [ElectricEye-Pagerduty-Integration](https://github.com/jonrau1/ElectricEye/blob/master/add-ons/electriceye-pagerduty-integration)
-  - The Pagerduty integration for ElectricEye, like ElectricEye-ChatOps, utilizes EventBridge / CloudWatch Event Rules to consume `HIGH` and `CRITICAL` severity findings created by ElectricEye from Security Hub and route them to a Lambda function. Lambda will parse out certain elements from the Security Hub finding such as the title, remediation information and resource information and to form a Pagerduty Incident to be sent using the EventsV2 API. Pagerduty is an on-call management / incident management tool that has built-in intelligence and automation to route escalations, age-off incidents and can be integrated downstream with other tools.
+### Azure Checks & Services
+___
 
-## Known Issues & Limitations
+*Coming Soon!*
 
-This section is likely to wax and wane depending on future releases, PRs and changes to AWS APIs.
+### SSPM: GitHub Checks & Services
+___
 
-- If you choose to build and run ElectricEye without the IAC on your own and use an existing VPC or, in the future, decide to build internet-facing services in the ElectricEye VPC you may run into Shodan.io false positives. The `socket` python module will use the DNS servers available to them; getting the IPv4 address for a DNS name (from RDS or ES endpoints for example) in your VPC will return the private IP address and lead to false positives with Shodan
+*Coming Soon!*
 
-- No tag-based scoping or exemption process out of the box. You will need to manually archive these, remove checks not pertinent to you and/or create your own automation to automatically archive findings for resources that shouldn't be in-scope.
+### SSPM: Servicenow Checks & Services
+___
 
-- Some resources, such as Elasticsearch Service or Elastic File System, cannot be changed after creation for some checks and will continue to show as non-compliant until you manually migrate them, or create automation to auto-archive these findings.
+These are the following services and checks perform by each Auditor, there are currently...
+- :boom: **1 Checks** :boom:
+- :exclamation: **1 supported Servicenow services/components** :exclamation:
+- :fire: **1 Auditors** :fire:
 
-- If Shodan is not working you may be getting throttled, the free tier is supposed to be 1 TPS (I've definitely hit closer to 20 TPS without issue), but it may happen. Or, you didn't rebuild the Docker image which has included `requests` since 12 MAR 2020. Pass a `--no-cache` flag if you're rebuilding on the same machine.
+| Auditor File Name | Scanned Resource Name | Auditor Scan Description |
+|---|---|---|
+| Servicenow_Users_Auditor.py | Servicenow User | Do active users have MFA enabled |
 
-- Sometimes copy and pasting the Auditors and `script.sh` to a S3 bucket via console from a Windows machine will carry over the bad line endings I sometimes accidently include from my own dirty Windows machine. Use the AWS CLI to copy over the files after a cloning / pulling this repo to avoid that, if you've already cloned do this:
+### SSPM: M365 Checks & Services
+___
 
-```bash
-cd ElectricEye
-git pull
-cd auditors
-aws s3 sync . s3://<my-bucket-full-o-auditors>
-```
+*Coming Soon!*
+
 
 ## Developer Guide
 
-1. Naming an auditor: To keep naming consistent auditor names are based on the name of the service from the [AWS Documentation](https://docs.aws.amazon.com/index.html) and are named after the service being audited.
+TODO: Update this for new schema changes
 
-2. Necessary Imports and Intro: At the top of the auditor insert the following intro and imports (although other imports may be needed)
+1. **Naming an auditor**: To keep naming consistent auditor names are based on the name of the service from the [AWS Documentation](https://docs.aws.amazon.com/index.html) and are named after the service being audited.
+
+2. **Necessary Imports and Intro**: At the top of the auditor insert the following intro and imports (although other imports may be needed)
 
 ```python
 # This file is part of ElectricEye.
@@ -1146,16 +1254,12 @@ from check_register import CheckRegister
 registry = CheckRegister()
 ```
 
-The boto3 client will also need imported for whichever service is being audited. You can get these from the `Boto3` Documentation website, but for example, the client for EC2 Image Build is below. To match the style of other Auditors, the variable name should closely (preferably, exactly) match the name of the Client.
+- The boto3 client will also need imported for whichever service is being audited. You can get these from the `Boto3` Documentation website, but for example, the client for EC2 Image Build is below. To match the style of other Auditors, the variable name should closely (preferably, exactly) match the name of the Client.
+
 
 ```python
-imagebuilder = boto3.client("imagebuilder")
-```
-
-**NOTE** If a boto call is used multiple times within an auditor and could be put in the global space it should be cached. For example in Amazon_SNS_Auditor list_topics is used for every function so it is cached like this:
-
-```python
-def list_topics(cache):
+def list_topics(cache, session):
+    imagebuilder = session.client("imagebuilder")
     response = cache.get("list_topics")
     if response:
         return response
@@ -1163,10 +1267,11 @@ def list_topics(cache):
     return cache["list_topics"]
 ```
 
-**NOTE 2:** For Auditors that expect to scan dozens or hundreds of potential resources, it is apt to use a Paginator instead of the standard Describe call due to upper limits (usually 100-500 per "regular" call). The below example is a cached Paginator from the EC2 Auditor with filters.
+- For Auditors that expect to scan dozens or hundreds of potential resources, it is apt to use a Paginator instead of the standard Describe call due to upper limits (usually 100-500 per "regular" call). The below example is a cached Paginator from the EC2 Auditor with filters.
 
 ```python
-def paginate(cache):
+def paginate(cache, session):
+    ec2 = session.client("ec2")
     response = cache.get("paginate")
     if response:
         return response
@@ -1176,15 +1281,15 @@ def paginate(cache):
         return cache["paginate"]
 ```
 
-3. Registering and Defining Checks: All checks are registered by the same tag and checks should describe what is being checked with the word check at the end. Example from ImageBuilder. Directly underneath the `function` that defines the Check should be a single-line, double-quoted comment which contains the **`Title`** of the Check. This is outputted by the `--list-checks` flag in the **Controller**.
+3. **Registering and Defining Checks**: All checks are registered by the same tag and checks should describe what is being checked with the word check at the end. Example from ImageBuilder. Directly underneath the `function` that defines the Check should be a single-line, double-quoted comment which contains the **`Title`** of the Check. This is outputted by the `--list-checks` flag in the **Controller**.
 
 ```python
 @registry.register_check("imagebuilder")
-def imagebuilder_pipeline_tests_enabled_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def imagebuilder_pipeline_tests_enabled_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
 """[ImageBuilder.1] Image pipeline tests should be enabled"""
 ```
 
-4. Formatting Findings: Findings will be formatted for AWS Security Hub, [ASSF](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html). Look to other auditors findings format for more specifics on ElectricEye formatting. Parts that will stay consistent across checks are: `SchemaVersion`, `ProductArn`, `AwsAccountId`, `FirstObservedAt`, `CreatedAt`, `UpdatedAt`, `ProductFields.Product Name` (ElectricEye), and the `Resources` array. Example finding formatting from Amazon_EC2_Auditor's IMDSv2 Check:
+4. **Formatting Findings**: Findings will be formatted for AWS Security Hub, [ASSF](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html). Look to other auditors findings format for more specifics on ElectricEye formatting. Parts that will stay consistent across checks are: `SchemaVersion`, `ProductArn`, `AwsAccountId`, `FirstObservedAt`, `CreatedAt`, `UpdatedAt`, `ProductFields.ProductName` (ElectricEye), and the `Resources` array. Example finding formatting from Amazon_EC2_Auditor's IMDSv2 Check:
 
 **NOTE:** While not required by ASFF, it is required by ElectricEye that all checks are mapped to the supported compliance standards. It is recommended to use the mapped `Compliance.Requirements` from an existing Check within an Auditor that is similar to yours - for instance - if you are developing a check around TLS, look for an example of a Check for encryption in transit. If you are developing a check to enable Logging, look for a Check that deals with Logging.
 
@@ -1218,7 +1323,7 @@ finding = {
             "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html#instance-metadata-transition-to-version-2",
         }
     },
-    "ProductFields": {"Product Name": "ElectricEye"},
+    "ProductFields": {"ProductName": "ElectricEye"},
     "Resources": [
         {
             "Type": "AwsEc2Instance",
@@ -1295,15 +1400,11 @@ Tests are located in the [eeauditor tests folder](eeauditor/tests) and individua
 
 ## Contributing
 
-I am very happy to accept PR's for the following:
+Refer to the Developer Guide for instructions on how to produce new checks, for new SaaS and CSP support please open an Issue.
 
-- Adding new Auditors
-- Adding new checks to existing Auditors
-- Adding new ElectricEye-Response playbooks
-- Adding new Event Patterns for ElectricEye-ChatOps
-- Fixing my stupid grammar errors, spelling errors and inconsistencies
-- Removing any unused IAM permissions that may have popped up
-- ~~Adding Terraform `v0.12.x` support~~
+Feel free to open PRs and Issues where syntax, grammatic, and implementation errors are encountered in the code base.
+
+ElectricEye is for sale: contact the maintainer for more imformation!
 
 ### Early Contributors
 
@@ -1329,17 +1430,6 @@ Quick shout-outs to the folks who answered the call early to test out ElectricEy
 - [Manuel Leos Rivas](https://www.linkedin.com/in/manuel-lr/)
 - [Andrew Alaniz](https://www.linkedin.com/in/andrewdalaniz/)
 - [Christopher Childers](https://www.linkedin.com/in/christopher-childers-28950537/)
-
-### To-Do
-
-As of 12 MAR 2020, most of these items will be tracked on the [roadmap project board](https://github.com/jonrau1/ElectricEye/projects/1)
-
-- [X] Create an ElectricEye Logo
-- [X] Add in Shodan.io checks for internet-facing resources (RDS, Redshift, DocDB, Elasticsearch, EC2, ELBv2, etc)
-- [X] Upload response and remediation playbooks and IAC for them - Custom Action Version (Semi Auto)
-- [X] Upload response and remediation playbooks and IAC for them - Imported Findings (Full Auto)
-- [X] Create an Alerting framework with ~~ChatBot~~ Slack for Critical findings
-- [X] Create a Reporting module for use with QuickSight
 
 ## License
 

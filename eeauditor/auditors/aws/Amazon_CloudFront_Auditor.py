@@ -19,14 +19,13 @@
 #under the License.
 
 import datetime
-import boto3
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-cloudfront = boto3.client("cloudfront")
+def paginate(cache, session):
+    cloudfront = session.client("cloudfront")
 
-def paginate(cache):
     itemList = []
     response = cache.get("items")
     if response:
@@ -43,11 +42,12 @@ def paginate(cache):
         return cache["items"]
 
 @registry.register_check("cloudfront")
-def cloudfront_active_trusted_signers_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def cloudfront_active_trusted_signers_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFront.1] Cloudfront Distributions with active Trusted Signers should use Key Pairs"""
+    cloudfront = session.client("cloudfront")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache):
+    for dist in paginate(cache, session):
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]
@@ -222,11 +222,12 @@ def cloudfront_active_trusted_signers_check(cache: dict, awsAccountId: str, awsR
             yield finding
 
 @registry.register_check("cloudfront")
-def cloudfront_origin_shield_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def cloudfront_origin_shield_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFront.2] Cloudfront Distributions Origins should have Origin Shield enabled"""
+    cloudfront = session.client("cloudfront")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache):
+    for dist in paginate(cache, session):
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]
@@ -370,11 +371,12 @@ def cloudfront_origin_shield_check(cache: dict, awsAccountId: str, awsRegion: st
                     yield finding
 
 @registry.register_check("cloudfront")
-def cloudfront_default_viewer_cert_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def cloudfront_default_viewer_cert_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFront.3] Cloudfront Distributions should not use the default Viewer certificate"""
+    cloudfront = session.client("cloudfront")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache):
+    for dist in paginate(cache, session):
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]
@@ -497,11 +499,12 @@ def cloudfront_default_viewer_cert_check(cache: dict, awsAccountId: str, awsRegi
             yield finding
 
 @registry.register_check("cloudfront")
-def cloudfront_georestriction_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def cloudfront_georestriction_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFront.4] Cloudfront Distributions should have a Georestriction configured"""
+    cloudfront = session.client("cloudfront")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache):
+    for dist in paginate(cache, session):
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]
@@ -626,11 +629,12 @@ def cloudfront_georestriction_check(cache: dict, awsAccountId: str, awsRegion: s
             yield finding
 
 @registry.register_check("cloudfront")
-def cloudfront_field_level_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def cloudfront_field_level_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFront.5] Cloudfront Distributions should implement Field-Level Encryption in default cache behavior"""
+    cloudfront = session.client("cloudfront")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache):
+    for dist in paginate(cache, session):
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]
@@ -743,11 +747,12 @@ def cloudfront_field_level_encryption_check(cache: dict, awsAccountId: str, awsR
             yield finding
 
 @registry.register_check("cloudfront")
-def cloudfront_waf_enabled_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def cloudfront_waf_enabled_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFront.6] Cloudfront Distributions should use a Web Application Firewall"""
+    cloudfront = session.client("cloudfront")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache):
+    for dist in paginate(cache, session):
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]
@@ -872,8 +877,9 @@ def cloudfront_waf_enabled_check(cache: dict, awsAccountId: str, awsRegion: str,
             yield finding
 
 @registry.register_check("cloudfront")
-def cloudfront_default_viewer_tls12_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def cloudfront_default_viewer_tls12_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFront.7] Cloudfront Distributions should enforce TLS 1.2 for the default viewer protocol"""
+    cloudfront = session.client("cloudfront")
     # TLS 1.2 policies
     compliantMinimumProtocolVersions = [
         "TLSv1.2_2021",
@@ -882,7 +888,7 @@ def cloudfront_default_viewer_tls12_check(cache: dict, awsAccountId: str, awsReg
     ]
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache):
+    for dist in paginate(cache, session):
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]
@@ -1005,8 +1011,9 @@ def cloudfront_default_viewer_tls12_check(cache: dict, awsAccountId: str, awsReg
             yield finding
 
 @registry.register_check("cloudfront")
-def cloudfront_custom_origin_tls12_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def cloudfront_custom_origin_tls12_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFront.8] Cloudfront Distributions with Custom Origins should allow only TLSv1.2 protocols"""
+    cloudfront = session.client("cloudfront")
     # Non compliant policies
     nonCompliantViewerCiphers = [
         "SSLv3",
@@ -1016,7 +1023,7 @@ def cloudfront_custom_origin_tls12_check(cache: dict, awsAccountId: str, awsRegi
     ]
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache):
+    for dist in paginate(cache, session):
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]
@@ -1225,11 +1232,12 @@ def cloudfront_custom_origin_tls12_check(cache: dict, awsAccountId: str, awsRegi
                     yield finding
 
 @registry.register_check("cloudfront")
-def cloudfront_custom_origin_https_only_protcol_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def cloudfront_custom_origin_https_only_protcol_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFront.9] Cloudfront Distributions with Custom Origins should enforce HTTPS-only protocol policies"""
+    cloudfront = session.client("cloudfront")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache):
+    for dist in paginate(cache, session):
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]
@@ -1437,11 +1445,12 @@ def cloudfront_custom_origin_https_only_protcol_check(cache: dict, awsAccountId:
                     yield finding
 
 @registry.register_check("cloudfront")
-def cloudfront_default_viewer_https_sni_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def cloudfront_default_viewer_https_sni_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFront.10] Cloudfront Distributions should enforce Server Name Indication (SNI) to serve HTTPS requests"""
+    cloudfront = session.client("cloudfront")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache):
+    for dist in paginate(cache, session):
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]
@@ -1564,11 +1573,12 @@ def cloudfront_default_viewer_https_sni_check(cache: dict, awsAccountId: str, aw
             yield finding
 
 @registry.register_check("cloudfront")
-def cloudfront_distro_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def cloudfront_distro_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFront.11] Cloudfront Distributions should have logging enabled"""
+    cloudfront = session.client("cloudfront")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache):
+    for dist in paginate(cache, session):
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]
@@ -1689,11 +1699,12 @@ def cloudfront_distro_logging_check(cache: dict, awsAccountId: str, awsRegion: s
             yield finding
 
 @registry.register_check("cloudfront")
-def cloudfront_distro_default_root_object_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def cloudfront_distro_default_root_object_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFront.12] Cloudfront Distributions should have a default root object configured"""
+    cloudfront = session.client("cloudfront")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache):
+    for dist in paginate(cache, session):
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]
@@ -1826,11 +1837,12 @@ def cloudfront_distro_default_root_object_check(cache: dict, awsAccountId: str, 
             yield finding
 
 @registry.register_check("cloudfront")
-def cloudfront_default_viewer_https_only_protcol_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def cloudfront_default_viewer_https_only_protcol_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFront.13] Cloudfront Distributions should enforce should enforce HTTPS-only for the default viewer protocol"""
+    cloudfront = session.client("cloudfront")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache):
+    for dist in paginate(cache, session):
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]
@@ -1953,11 +1965,12 @@ def cloudfront_default_viewer_https_only_protcol_check(cache: dict, awsAccountId
             yield finding
 
 @registry.register_check("cloudfront")
-def cloudfront_s3_origin_oai_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def cloudfront_s3_origin_oai_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFront.14] Cloudfront Distributions with S3 Origins should have origin access identity enabled"""
+    cloudfront = session.client("cloudfront")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache):
+    for dist in paginate(cache, session):
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]

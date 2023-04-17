@@ -19,16 +19,13 @@
 #under the License.
 
 import datetime
-from dateutil import parser
-import boto3
 import json
 from check_register import CheckRegister
 
 registry = CheckRegister()
-sqs = boto3.client("sqs")
-cloudwatch = boto3.client("cloudwatch")
 
-def list_queues(cache):
+def list_queues(cache, session):
+    sqs = session.client("sqs")
     response = cache.get("list_queues")
     if response:
         return response
@@ -36,9 +33,11 @@ def list_queues(cache):
     return cache["list_queues"]
 
 @registry.register_check("sqs")
-def sqs_old_message_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def sqs_old_message_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SQS.1] SQS messages should not be older than 80 percent of message retention"""
-    response = list_queues(cache)
+    sqs = session.client("sqs")
+    cloudwatch = session.client("cloudwatch")
+    response = list_queues(cache, session)
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     if 'QueueUrls' in response:
         for queueUrl in response["QueueUrls"]:
@@ -182,9 +181,10 @@ def sqs_old_message_check(cache: dict, awsAccountId: str, awsRegion: str, awsPar
         pass
 
 @registry.register_check("sqs")
-def sqs_queue_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def sqs_queue_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SQS.2] SQS queues should use server side encryption"""
-    response = list_queues(cache)
+    sqs = session.client("sqs")
+    response = list_queues(cache, session)
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     if 'QueueUrls' in response:
         for queueUrl in response["QueueUrls"]:
@@ -296,9 +296,10 @@ def sqs_queue_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, a
         pass
 
 @registry.register_check("sqs")
-def sqs_queue_public_accessibility_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def sqs_queue_public_accessibility_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SQS.3] SQS queues should not be unconditionally open to the public"""
-    response = list_queues(cache)
+    sqs = session.client("sqs")
+    response = list_queues(cache, session)
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     if 'QueueUrls' in response:
         for queueUrl in response["QueueUrls"]:

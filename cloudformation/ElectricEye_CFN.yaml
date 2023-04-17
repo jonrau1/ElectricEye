@@ -235,10 +235,20 @@ Resources:
                 - kms:Decrypt
                 - access-analyzer:ListAnalyzers
                 - ec2:Describe*
+                - kms:ListKeys
+                - cloudformation:ListStacks
+                - kinesisanalytics:ListApplications
                 - ec2:Get*
                 - cassandra:Select
+                - kms:ListAliases
+                - ram:GetResourceShares
+                - cloudwatch:GetMetricData
+                - qldb:ListLedgers
+                - qldb:ListJournalS3Exports
+                - rds:DescribeEventSubscriptions
                 - ssm:ListDocuments
                 - ssm:ListAssociations
+                - ssm:DescribeDocumentPermission
                 - ecs:ListClusters
                 - ecs:DescribeClusters
                 - elasticloadbalancing:DescribeLoadBalancers
@@ -414,6 +424,9 @@ Resources:
                 - route53resolver:GetFirewallConfig
                 - route53resolver:ListResolverDnssecConfigs
                 - route53resolver:ListFirewallRuleGroupAssociations
+                - imagebuilder:ListImagePipelines
+                - imagebuilder:ListImageRecipes
+                - cloudfront:GetDistribution
                 Resource: "*"
       AssumeRolePolicyDocument:
         Version: 2012-10-17

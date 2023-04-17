@@ -18,19 +18,15 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
-import json
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-imagebuilder = boto3.client("imagebuilder")
-
-
 @registry.register_check("imagebuilder")
-def imagebuilder_pipeline_tests_enabled_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def imagebuilder_pipeline_tests_enabled_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ImageBuilder.1] Image pipeline tests should be enabled"""
+    imagebuilder = session.client("imagebuilder")
     pipelines = imagebuilder.list_image_pipelines()
     pipeline_list = pipelines["imagePipelineList"]
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -154,8 +150,9 @@ def imagebuilder_pipeline_tests_enabled_check(cache: dict, awsAccountId: str, aw
             yield finding
 
 @registry.register_check("imagebuilder")
-def imagebuilder_ebs_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def imagebuilder_ebs_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ImageBuilder.2] Image recipes should encrypt EBS volumes"""
+    imagebuilder = session.client("imagebuilder")
     recipes = imagebuilder.list_image_recipes()
     recipes_list = recipes["imageRecipeSummaryList"]
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()

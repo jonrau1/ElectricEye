@@ -18,30 +18,16 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
-# import boto3 clients
-sesh = boto3.session.Session()
-currentRegion = sesh.region_name
-if currentRegion != "us-east-1":
-    session = boto3.Session(region_name="us-east-1")
-    shield = session.client("shield")
-else:
-    shield = boto3.client("shield")
-route53 = boto3.client("route53")
-elbclassic = boto3.client("elb")
-elbv2 = boto3.client("elbv2")
-ec2 = boto3.client("ec2")
-cloudfront = boto3.client("cloudfront")
-# put region conditional check in each individual function - Shield APIs only available in us-east-1
-# add a boto3.Session() to manually set Region to us-west-2 for Global Accelerators
 
 @registry.register_check("shield")
-def shield_advanced_route_53_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def shield_advanced_route_53_protection_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ShieldAdvanced.1] Route 53 Hosted Zones should be protected by Shield Advanced"""
+    route53 = session.client("route53")
+    shield = session.client("shield", region_name="us-east-1")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     response = route53.list_hosted_zones()
@@ -171,8 +157,10 @@ def shield_advanced_route_53_protection_check(cache: dict, awsAccountId: str, aw
                 yield finding
 
 @registry.register_check("shield")
-def shield_advanced_elb_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def shield_advanced_elb_protection_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ShieldAdvanced.2] Classic Load Balancers should be protected by Shield Advanced"""
+    shield = session.client("shield", region_name="us-east-1")
+    elbclassic = session.client("elb")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     response = elbclassic.describe_load_balancers()
@@ -301,8 +289,10 @@ def shield_advanced_elb_protection_check(cache: dict, awsAccountId: str, awsRegi
                 yield finding
 
 @registry.register_check("shield")
-def shield_advanced_elb_v2_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def shield_advanced_elb_v2_protection_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ShieldAdvanced.3] ELBv2 Load Balancers should be protected by Shield Advanced"""
+    shield = session.client("shield", region_name="us-east-1")
+    elbv2 = session.client("elbv2")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     response = elbv2.describe_load_balancers()
@@ -456,8 +446,10 @@ def shield_advanced_elb_v2_protection_check(cache: dict, awsAccountId: str, awsR
                 yield finding
 
 @registry.register_check("shield")
-def shield_advanced_eip_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def shield_advanced_eip_protection_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ShieldAdvanced.4] Elastic IPs should be protected by Shield Advanced"""
+    shield = session.client("shield", region_name="us-east-1")
+    ec2 = session.client("ec2")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     response = ec2.describe_addresses()
@@ -586,8 +578,10 @@ def shield_advanced_eip_protection_check(cache: dict, awsAccountId: str, awsRegi
                 yield finding
 
 @registry.register_check("shield")
-def shield_advanced_cloudfront_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def shield_advanced_cloudfront_protection_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ShieldAdvanced.5] CloudFront distributions should be protected by Shield Advanced"""
+    shield = session.client("shield", region_name="us-east-1")
+    cloudfront = session.client("cloudfront")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     response = cloudfront.list_distributions()
@@ -723,8 +717,9 @@ def shield_advanced_cloudfront_protection_check(cache: dict, awsAccountId: str, 
                 yield finding
 
 @registry.register_check("shield")
-def shield_advanced_drt_access_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def shield_advanced_drt_access_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ShieldAdvanced.6] The DDoS Response Team (DRT) should be authorized to take action in your account"""
+    shield = session.client("shield", region_name="us-east-1")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     response = shield.describe_drt_access()
@@ -850,8 +845,9 @@ def shield_advanced_drt_access_check(cache: dict, awsAccountId: str, awsRegion: 
         yield finding
 
 @registry.register_check("shield")
-def shield_advanced_drt_s3_bucket_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def shield_advanced_drt_s3_bucket_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ShieldAdvanced.7] The DDoS Response Team (DRT) should be authorized to view your AWS Web Application Firewall (WAF) logging buckets"""
+    shield = session.client("shield", region_name="us-east-1")
     response = shield.describe_drt_access()
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
@@ -973,8 +969,9 @@ def shield_advanced_drt_s3_bucket_check(cache: dict, awsAccountId: str, awsRegio
         yield finding
 
 @registry.register_check("shield")
-def shield_advanced_subscription_autorenew_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def shield_advanced_subscription_autorenew_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ShieldAdvanced.8] Shield Advanced subscription should be set to auto-renew"""
+    shield = session.client("shield", region_name="us-east-1")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     response = shield.describe_subscription()
@@ -1080,13 +1077,13 @@ def shield_advanced_subscription_autorenew_check(cache: dict, awsAccountId: str,
         yield finding
 
 @registry.register_check("shield")
-def shield_advanced_global_accelerator_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def shield_advanced_global_accelerator_protection_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ShieldAdvanced.9] Global Accelerator Accelerators should be protected by Shield Advanced"""
+    shield = session.client("shield", region_name="us-east-1")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    # Create a Session is us-west-2 - which is where the Global Accelerator API is in
-    session = boto3.Session(region_name="us-west-2")
-    gax = session.client("globalaccelerator")
+
+    gax = session.client("globalaccelerator", region_name="us-west-2")
     paginator = gax.get_paginator("list_accelerators")
     iterator = paginator.paginate()
     for page in iterator:
@@ -1224,8 +1221,9 @@ def shield_advanced_global_accelerator_protection_check(cache: dict, awsAccountI
                     yield finding
 
 @registry.register_check("shield")
-def shield_advanced_subscription_latest_attacks(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def shield_advanced_subscription_latest_attacks(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ShieldAdvanced.10] AWS Shield resources under attack in the last two weeks should be investigated"""
+    shield = session.client("shield", region_name="us-east-1")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     response = shield.list_attacks(

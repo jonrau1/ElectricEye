@@ -18,17 +18,16 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 import botocore
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-# import boto3 clients
-ecr = boto3.client("ecr")
 # loop through ECR repos
-def describe_repositories(cache):
+def describe_repositories(cache, session):
+    ecr = session.client("ecr")
+
     response = cache.get("describe_repositories")
     if response:
         return response
@@ -36,9 +35,9 @@ def describe_repositories(cache):
     return cache["describe_repositories"]
 
 @registry.register_check("ecr")
-def ecr_repo_vuln_scan_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ecr_repo_vuln_scan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ECR.1] ECR repositories should be configured to scan images on push"""
-    response = describe_repositories(cache)
+    response = describe_repositories(cache, session)
     myRepos = response["repositories"]
     for repo in myRepos:
         repoArn = str(repo["repositoryArn"])
@@ -140,9 +139,10 @@ def ecr_repo_vuln_scan_check(cache: dict, awsAccountId: str, awsRegion: str, aws
             yield finding
 
 @registry.register_check("ecr")
-def ecr_repo_image_lifecycle_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ecr_repo_image_lifecycle_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ECR.2] ECR repositories should be have an image lifecycle policy configured"""
-    response = describe_repositories(cache)
+    ecr = session.client("ecr")
+    response = describe_repositories(cache, session)
     myRepos = response["repositories"]
     for repo in myRepos:
         repoArn = str(repo["repositoryArn"])
@@ -253,9 +253,10 @@ def ecr_repo_image_lifecycle_policy_check(cache: dict, awsAccountId: str, awsReg
             yield finding
 
 @registry.register_check("ecr")
-def ecr_repo_permission_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ecr_repo_permission_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ECR.3] ECR repositories should be have a repository policy configured"""
-    response = describe_repositories(cache)
+    ecr = session.client("ecr")
+    response = describe_repositories(cache, session)
     myRepos = response["repositories"]
     for repo in myRepos:
         repoArn = str(repo["repositoryArn"])
@@ -384,9 +385,10 @@ def ecr_repo_permission_policy_check(cache: dict, awsAccountId: str, awsRegion: 
             yield finding
 
 @registry.register_check("ecr")
-def ecr_latest_image_vuln_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ecr_latest_image_vuln_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ECR.4] The latest image in an ECR Repository should not have any vulnerabilities"""
-    response = describe_repositories(cache)
+    ecr = session.client("ecr")
+    response = describe_repositories(cache, session)
     myRepos = response["repositories"]
     for repo in myRepos:
         repoArn = str(repo["repositoryArn"])
@@ -537,8 +539,9 @@ def ecr_latest_image_vuln_check(cache: dict, awsAccountId: str, awsRegion: str, 
             pass
 
 @registry.register_check("ecr")
-def ecr_registry_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ecr_registry_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ECR.5] ECR Registires should be have a registry policy configured to allow for cross-account recovery"""
+    ecr = session.client("ecr")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
         ecr.get_registry_policy()
@@ -662,8 +665,9 @@ def ecr_registry_policy_check(cache: dict, awsAccountId: str, awsRegion: str, aw
         print(e)
 
 @registry.register_check("ecr")
-def ecr_registry_backup_rules_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ecr_registry_backup_rules_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ECR.6] ECR Registires should use image replication to promote disaster recovery readiness"""
+    ecr = session.client("ecr")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     if str(ecr.describe_registry()["replicationConfiguration"]["rules"]) == "[]":
         # This is a failing check

@@ -18,7 +18,6 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 import botocore.exceptions
 from dateutil.parser import parse
@@ -26,17 +25,8 @@ from check_register import CheckRegister
 
 registry = CheckRegister()
 
-# import boto3 clients
-backup = boto3.client("backup")
-ec2 = boto3.client("ec2")
-dynamodb = boto3.client("dynamodb")
-rds = boto3.client("rds")
-efs = boto3.client("efs")
-neptune = boto3.client("neptune")
-documentdb = boto3.client("docdb")
-
-# loop through *in-use* EBS volumes
-def describe_volumes(cache):
+def describe_volumes(cache, session):
+    ec2 = session.client("ec2")
     response = cache.get("describe_volumes")
     if response:
         return response
@@ -48,7 +38,8 @@ def describe_volumes(cache):
     return cache["describe_volumes"]
 
 # loop through *running & stopped& EC2 instances
-def describe_instances(cache):
+def describe_instances(cache, session):
+    ec2 = session.client("ec2")
     instanceList = []
     response = cache.get("instances")
     if response:
@@ -63,7 +54,8 @@ def describe_instances(cache):
         return cache["instances"]
 
 # loop through DynamoDB tables
-def list_tables(cache):
+def list_tables(cache, session):
+    dynamodb = session.client("dynamodb")
     ddbTables = []
     response = cache.get("list_tables")
     if response:
@@ -77,7 +69,8 @@ def list_tables(cache):
         return cache["list_tables"]
 
 # loop through RDS/Aurora DB Instances
-def describe_db_instances(cache):
+def describe_db_instances(cache, session):
+    rds = session.client("rds")
     dbInstances = []
     response = cache.get("describe_db_instances")
     if response:
@@ -89,7 +82,6 @@ def describe_db_instances(cache):
                 {
                     "Name": "engine",
                     "Values": [
-                        "aurora",
                         "aurora-mysql",
                         "aurora-postgresql",
                         "mariadb",
@@ -117,7 +109,8 @@ def describe_db_instances(cache):
     return cache["describe_db_instances"]
 
 # loop through EFS file systems
-def describe_file_systems(cache):
+def describe_file_systems(cache, session):
+    efs = session.client("efs")
     response = cache.get("describe_file_systems")
     if response:
         return response
@@ -125,7 +118,8 @@ def describe_file_systems(cache):
     return cache["describe_file_systems"]
 
 # loop through Neptune clusters
-def describe_neptune_db_clusters(cache):
+def describe_neptune_db_clusters(cache, session):
+    neptune = session.client("neptune")
     response = cache.get("describe_db_clusters")
     if response:
         return response
@@ -135,21 +129,23 @@ def describe_neptune_db_clusters(cache):
     return cache["describe_db_clusters"]
 
 # loop through DocDb clusters
-def describe_doc_db_clusters(cache):
+def describe_doc_db_clusters(cache, session):
     response = cache.get("describe_db_clusters")
+    docdb = session.client("docdb")
     if response:
         return response
-    cache["describe_db_clusters"] = documentdb.describe_db_clusters(
+    cache["describe_db_clusters"] = docdb.describe_db_clusters(
         Filters=[{"Name": "engine", "Values": ["docdb"]}]
     )
     return cache["describe_db_clusters"]
 
 @registry.register_check("backup")
-def volume_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def volume_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Backup.1] EBS volumes should be protected by AWS Backup"""
+    backup = session.client("backup")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for volumes in describe_volumes(cache)["Volumes"]:
+    for volumes in describe_volumes(cache, session)["Volumes"]:
         volumeId = str(volumes["VolumeId"])
         volumeArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:volume/{volumeId}"
         # this is a passing check
@@ -261,11 +257,12 @@ def volume_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
                 yield finding
 
 @registry.register_check("backup")
-def ec2_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ec2_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Backup.2] EC2 instances should be protected by AWS Backup"""
+    backup = session.client("backup")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for i in describe_instances(cache):
+    for i in describe_instances(cache, session):
         instanceId = str(i["InstanceId"])
         instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
         instanceType = str(i["InstanceType"])
@@ -404,11 +401,13 @@ def ec2_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                 yield finding
 
 @registry.register_check("backup")
-def ddb_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ddb_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Backup.3] DynamoDB tables should be protected by AWS Backup"""
+    backup = session.client("backup")
+    dynamodb = session.client("dynamodb")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for table in list_tables(cache):
+    for table in list_tables(cache, session):
         response = dynamodb.describe_table(TableName=table)
         tableArn = str(response["Table"]["TableArn"])
         tableName = str(response["Table"]["TableName"])
@@ -531,11 +530,12 @@ def ddb_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                 yield finding
 
 @registry.register_check("backup")
-def rds_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def rds_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Backup.4] RDS database instances should be protected by AWS Backup"""
+    backup = session.client("backup")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for dbinstances in describe_db_instances(cache):
+    for dbinstances in describe_db_instances(cache, session):
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -669,11 +669,12 @@ def rds_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                 yield finding
 
 @registry.register_check("backup")
-def efs_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def efs_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Backup.5] EFS file systems should be protected by AWS Backup"""
+    backup = session.client("backup")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for filesys in describe_file_systems(cache)["FileSystems"]:
+    for filesys in describe_file_systems(cache, session)["FileSystems"]:
         fileSysId = str(filesys["FileSystemId"])
         fileSysArn = f"arn:{awsPartition}:elasticfilesystem:{awsRegion}:{awsAccountId}:file-system/{fileSysId}"
         # this is a passing check
@@ -785,11 +786,12 @@ def efs_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
                 yield finding
 
 @registry.register_check("backup")
-def neptune_cluster_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def neptune_cluster_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Backup.6] Neptune clusters should be protected by AWS Backup"""
+    backup = session.client("backup")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for cluster in describe_neptune_db_clusters(cache)["DBClusters"]:
+    for cluster in describe_neptune_db_clusters(cache, session)["DBClusters"]:
         clusterArn = cluster["DBClusterArn"]
         clusterId = cluster["DBClusterIdentifier"]
         clusterParameterGroupName = cluster["DBClusterParameterGroup"]
@@ -934,11 +936,12 @@ def neptune_cluster_backup_check(cache: dict, awsAccountId: str, awsRegion: str,
                 yield finding
 
 @registry.register_check("backup")
-def docdb_cluster_backup_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def docdb_cluster_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Backup.7] DocumentDB clusters should be protected by AWS Backup"""
+    backup = session.client("backup")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for docdbcluster in describe_doc_db_clusters(cache)["DBClusters"]:
+    for docdbcluster in describe_doc_db_clusters(cache, session)["DBClusters"]:
         docdbclusterId = str(docdbcluster["DBClusterIdentifier"])
         docdbClusterArn = str(docdbcluster["DBClusterArn"])
         try:

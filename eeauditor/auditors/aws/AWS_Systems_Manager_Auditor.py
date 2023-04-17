@@ -19,16 +19,12 @@
 #under the License.
 
 import datetime
-import boto3
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-# Boto3 Clients
-ssm = boto3.client("ssm")
-ec2 = boto3.client("ec2")
-
-def get_owned_ssm_docs(cache):
+def get_owned_ssm_docs(cache, session):
+    ssm = session.client("ssm")
     ssmDocs = []
     response = cache.get("get_owned_ssm_docs")
     if response:
@@ -41,7 +37,8 @@ def get_owned_ssm_docs(cache):
         cache["get_owned_ssm_docs"] = ssmDocs
         return cache["get_owned_ssm_docs"]
 
-def list_associations(cache):
+def list_associations(cache, session):
+    ssm = session.client("ssm")
     ssmAssocs = []
     response = cache.get("list_associations")
     if response:
@@ -54,7 +51,8 @@ def list_associations(cache):
         cache["list_associations"] = ssmAssocs
         return cache["list_associations"]
 
-def describe_instances(cache):
+def describe_instances(cache, session):
+    ec2 = session.client("ec2")
     instanceList = []
     response = cache.get("describe_instances")
     if response:
@@ -69,11 +67,12 @@ def describe_instances(cache):
         return cache["describe_instances"]
 
 @registry.register_check("ssm")
-def ssm_self_owned_document_public_share_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ssm_self_owned_document_public_share_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SSM.1] Self-owned SSM Documents should not be publicly shared"""
+    ssm = session.client("ssm")
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for doc in get_owned_ssm_docs(cache):
+    for doc in get_owned_ssm_docs(cache, session):
         docName = doc["Name"]
         docArn = f"arn:{awsPartition}:ssm:{awsRegion}:{awsAccountId}:document/{docName}"
         docType = doc["DocumentType"]
@@ -203,11 +202,11 @@ def ssm_self_owned_document_public_share_check(cache: dict, awsAccountId: str, a
             yield finding
 
 @registry.register_check("ssm")
-def ssm_update_ssm_agent_association_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ssm_update_ssm_agent_association_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SSM.2] AWS State Manager should be used to update SSM Agents for all EC2 instances in your Region"""
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    if len(describe_instances(cache)) == 0:
+    if len(describe_instances(cache, session)) == 0:
         # this is a passing check - there are not any EC2 instances here
         finding = {
             "SchemaVersion": "2018-10-08",
@@ -262,7 +261,7 @@ def ssm_update_ssm_agent_association_check(cache: dict, awsAccountId: str, awsRe
     else:
         # create a list to hold all of the SSM Documents that are referenced by SSM Associations
         # if we do not find a match we will fail this check
-        assocDocNames = [x["Name"] for x in list_associations(cache)]
+        assocDocNames = [x["Name"] for x in list_associations(cache, session)]
         if "AWS-UpdateSSMAgent" not in assocDocNames:
             # this is a failing check - a State Mgr Association for the "AWS-UpdateSSMAgent" Doc doesn't exist
             finding = {
@@ -317,7 +316,7 @@ def ssm_update_ssm_agent_association_check(cache: dict, awsAccountId: str, awsRe
             yield finding
         else:
             # carry out the logic
-            for assoc in list_associations(cache):
+            for assoc in list_associations(cache, session):
                 # we have established we have a matching association with this Document so we can skip all others
                 if assoc["Name"] != "AWS-UpdateSSMAgent":
                     continue
@@ -436,11 +435,11 @@ def ssm_update_ssm_agent_association_check(cache: dict, awsAccountId: str, awsRe
                                 yield finding
 
 @registry.register_check("ssm")
-def ssm_patch_instances_association_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ssm_patch_instances_association_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SSM.3] AWS State Manager should be used to patch all EC2 instances in your Region"""
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    if len(describe_instances(cache)) == 0:
+    if len(describe_instances(cache, session)) == 0:
         # this is a passing check - there are not any EC2 instances here
         finding = {
             "SchemaVersion": "2018-10-08",
@@ -491,7 +490,7 @@ def ssm_patch_instances_association_check(cache: dict, awsAccountId: str, awsReg
     else:
         # create a list to hold all of the SSM Documents that are referenced by SSM Associations
         # if we do not find a match we will fail this check
-        assocDocNames = [x["Name"] for x in list_associations(cache)]
+        assocDocNames = [x["Name"] for x in list_associations(cache, session)]
         if "AWS-RunPatchBaseline" not in assocDocNames:
             # this is a failing check - a State Mgr Association for the "AWS-RunPatchBaseline" Doc doesn't exist
             finding = {
@@ -542,7 +541,7 @@ def ssm_patch_instances_association_check(cache: dict, awsAccountId: str, awsReg
             yield finding
         else:
             # carry out the logic
-            for assoc in list_associations(cache):
+            for assoc in list_associations(cache, session):
                 # we have established we have a matching association with this Document so we can skip all others
                 if assoc["Name"] != "AWS-RunPatchBaseline":
                     continue
@@ -653,11 +652,11 @@ def ssm_patch_instances_association_check(cache: dict, awsAccountId: str, awsReg
                                 yield finding
 
 @registry.register_check("ssm")
-def ssm_gather_software_inventory_association_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ssm_gather_software_inventory_association_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SSM.4] AWS State Manager should be used to gather software inventory data from all EC2 instances in your Region"""
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    if len(describe_instances(cache)) == 0:
+    if len(describe_instances(cache, session)) == 0:
         # this is a passing check - there are not any EC2 instances here
         finding = {
             "SchemaVersion": "2018-10-08",
@@ -708,7 +707,7 @@ def ssm_gather_software_inventory_association_check(cache: dict, awsAccountId: s
     else:
         # create a list to hold all of the SSM Documents that are referenced by SSM Associations
         # if we do not find a match we will fail this check
-        assocDocNames = [x["Name"] for x in list_associations(cache)]
+        assocDocNames = [x["Name"] for x in list_associations(cache, session)]
         if "AWS-GatherSoftwareInventory" not in assocDocNames:
             # this is a failing check - a State Mgr Association for the "AWS-GatherSoftwareInventory" Doc doesn't exist
             finding = {
@@ -759,7 +758,7 @@ def ssm_gather_software_inventory_association_check(cache: dict, awsAccountId: s
             yield finding
         else:
             # carry out the logic
-            for assoc in list_associations(cache):
+            for assoc in list_associations(cache, session):
                 # we have established we have a matching association with this Document so we can skip all others
                 if assoc["Name"] != "AWS-GatherSoftwareInventory":
                     continue

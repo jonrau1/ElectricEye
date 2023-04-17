@@ -18,17 +18,15 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-cloudsearch = boto3.client("cloudsearch")
-
 @registry.register_check("cloudsearch")
-def cloudsearch_https_enforcement_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def cloudsearch_https_enforcement_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudSearch.1] CloudSearch Domains should be configured to use enforce HTTPS-only communications"""
+    cloudsearch = session.client("cloudsearch")
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # If you have one of these you're probably old as dirt lol
     for domain in cloudsearch.describe_domains()["DomainStatusList"]:
@@ -165,8 +163,9 @@ def cloudsearch_https_enforcement_check(cache: dict, awsAccountId: str, awsRegio
             yield finding
 
 @registry.register_check("cloudsearch")
-def cloudsearch_tls1dot2_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def cloudsearch_tls1dot2_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudSearch.2] CloudSearch Domains that enforce HTTPS-only communications should use TLS 1.2 cipher suites"""
+    cloudsearch = session.client("cloudsearch")
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # If you have one of these you're probably old as dirt lol
     for domain in cloudsearch.describe_domains()["DomainStatusList"]:

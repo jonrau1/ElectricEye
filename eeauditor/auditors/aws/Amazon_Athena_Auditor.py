@@ -18,17 +18,14 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-# import boto3 clients
-athena = boto3.client("athena")
-
 # Get all Athena work groups
-def list_work_groups(cache):
+def list_work_groups(cache, session):
+    athena = session.client("athena")
     response = cache.get("list_work_groups")
     if response:
         return response
@@ -36,12 +33,13 @@ def list_work_groups(cache):
     return cache["list_work_groups"]
 
 @registry.register_check("athena")
-def athena_workgroup_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def athena_workgroup_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Athena.1] Athena workgroups should be configured to enforce query result encryption"""
+    athena = session.client("athena")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # loop work groups from cache
-    for wgroup in list_work_groups(cache)["WorkGroups"]:
+    for wgroup in list_work_groups(cache, session)["WorkGroups"]:
         workgroupName = wgroup["Name"]
         workgroupArn = f"arn:{awsPartition}:athena:{awsRegion}:{awsAccountId}:workgroup/{workgroupName}"
         # get specific details from workgroup
@@ -226,12 +224,13 @@ def athena_workgroup_encryption_check(cache: dict, awsAccountId: str, awsRegion:
             continue
 
 @registry.register_check("athena")
-def athena_encrypted_workgroup_client_override_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def athena_encrypted_workgroup_client_override_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Athena.2] Athena workgroups that enforce query result encryption should be configured to override client-side settings"""
+    athena = session.client("athena")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # loop work groups from cache
-    for wgroup in list_work_groups(cache)["WorkGroups"]:
+    for wgroup in list_work_groups(cache, session)["WorkGroups"]:
         workgroupName = wgroup["Name"]
         workgroupArn = f"arn:{awsPartition}:athena:{awsRegion}:{awsAccountId}:workgroup/{workgroupName}"
         # get specific details from workgroup
@@ -421,12 +420,13 @@ def athena_encrypted_workgroup_client_override_check(cache: dict, awsAccountId: 
             continue
 
 @registry.register_check("athena")
-def athena_workgroup_metrics_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def athena_workgroup_metrics_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Athena.3] Athena workgroups should be configured to publish metrics"""
+    athena = session.client("athena")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # loop work groups from cache
-    for wgroup in list_work_groups(cache)["WorkGroups"]:
+    for wgroup in list_work_groups(cache, session)["WorkGroups"]:
         workgroupName = wgroup["Name"]
         workgroupArn = f"arn:{awsPartition}:athena:{awsRegion}:{awsAccountId}:workgroup/{workgroupName}"
         # get specific details from workgroup
@@ -552,12 +552,13 @@ def athena_workgroup_metrics_check(cache: dict, awsAccountId: str, awsRegion: st
             yield finding
 
 @registry.register_check("athena")
-def athena_workgroup_engine_autoupdate_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def athena_workgroup_engine_autoupdate_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Athena.4] Athena workgroups should be configured to auto-select the latest engine version"""
+    athena = session.client("athena")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # loop work groups from cache
-    for wgroup in list_work_groups(cache)["WorkGroups"]:
+    for wgroup in list_work_groups(cache, session)["WorkGroups"]:
         workgroupName = wgroup["Name"]
         workgroupArn = f"arn:{awsPartition}:athena:{awsRegion}:{awsAccountId}:workgroup/{workgroupName}"
         # get specific details from workgroup

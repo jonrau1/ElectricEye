@@ -18,15 +18,13 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
-# import boto3 clients
-secretsmanager = boto3.client("secretsmanager")
 
-def list_secrets(cache):
+def list_secrets(cache, session):
+    secretsmanager = session.client("secretsmanager")
     response = cache.get("list_secrets")
     if response:
         return response
@@ -34,9 +32,9 @@ def list_secrets(cache):
     return cache["list_secrets"]
 
 @registry.register_check("secretsmanager")
-def secret_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def secret_age_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SecretsManager.1] Secrets over 90 days old should be rotated"""
-    secret = list_secrets(cache=cache)
+    secret = list_secrets(cache, session)
     for secrets in secret["SecretList"]:
         secretArn = str(secrets["ARN"])
         secretName = str(secrets["Name"])
@@ -176,9 +174,9 @@ def secret_age_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartitio
             yield finding
 
 @registry.register_check("secretsmanager")
-def secret_changed_in_last_90_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def secret_changed_in_last_90_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SecretsManager.2] Secrets should have automatic rotation configured"""
-    secret = list_secrets(cache=cache)
+    secret = list_secrets(cache, session)
     for secrets in secret["SecretList"]:
         secretArn = str(secrets["ARN"])
         secretName = str(secrets["Name"])

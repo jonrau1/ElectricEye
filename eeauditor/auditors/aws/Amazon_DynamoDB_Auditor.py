@@ -18,17 +18,13 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-# import boto3 clients
-dynamodb = boto3.client("dynamodb")
-
-# loop through DynamoDB tables
-def list_tables(cache):
+def list_tables(cache, session):
+    dynamodb = session.client("dynamodb")
     ddbTables = []
     response = cache.get("list_tables")
     if response:
@@ -42,11 +38,12 @@ def list_tables(cache):
         return cache["list_tables"]
 
 @registry.register_check("dynamodb")
-def ddb_kms_cmk_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ddb_kms_cmk_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DynamoDB.1] DynamoDB tables should use KMS CMKs for encryption at rest"""
+    dynamodb = session.client("dynamodb")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for table in list_tables(cache):
+    for table in list_tables(cache, session):
         tableName = str(table)
         try:
             response = dynamodb.describe_table(TableName=tableName)
@@ -220,11 +217,12 @@ def ddb_kms_cmk_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
                 yield finding
 
 @registry.register_check("dynamodb")
-def ddb_pitr_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ddb_pitr_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DynamoDB.2] DynamoDB tables should have Point-in-Time Recovery (PITR) enabled"""
+    dynamodb = session.client("dynamodb")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for table in list_tables(cache):
+    for table in list_tables(cache, session):
         tableName = str(table)
         tableArn = dynamodb.describe_table(TableName=tableName)["Table"]["TableArn"]
         response = dynamodb.describe_continuous_backups(TableName=tableName)
@@ -352,12 +350,14 @@ def ddb_pitr_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition:
             }
             yield finding
 
+'''
 @registry.register_check("dynamodb")
-def ddb_ttl_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ddb_ttl_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DynamoDB.3] DynamoDB tables should have Time to Live (TTL) enabled"""
+    dynamodb = session.client("dynamodb")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for table in list_tables(cache):
+    for table in list_tables(cache, session):
         tableName = str(table)
         tableArn = dynamodb.describe_table(TableName=tableName)["Table"]["TableArn"]
         response = dynamodb.describe_time_to_live(TableName=tableName)
@@ -484,3 +484,6 @@ def ddb_ttl_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: 
                 "RecordState": "ARCHIVED"
             }
             yield finding
+'''
+
+### TODO: Retire TTL

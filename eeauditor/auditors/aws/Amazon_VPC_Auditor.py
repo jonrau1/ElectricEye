@@ -18,15 +18,13 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
-# create boto3 clients
-ec2 = boto3.client("ec2")
-# loop through vpcs
-def describe_vpcs(cache):
+
+def describe_vpcs(cache, session):
+    ec2 = session.client("ec2")
     response = cache.get("describe_vpcs")
     if response:
         return response
@@ -34,9 +32,9 @@ def describe_vpcs(cache):
     return cache["describe_vpcs"]
 
 @registry.register_check("ec2")
-def vpc_default_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def vpc_default_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[VPC.1] Consider deleting the Default VPC if unused"""
-    vpc = describe_vpcs(cache=cache)
+    vpc = describe_vpcs(cache, session)
     for vpcs in vpc["Vpcs"]:
         vpcId = str(vpcs["VpcId"])
         vpcArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}vpc/{vpcId}"
@@ -146,9 +144,10 @@ def vpc_default_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartiti
             yield finding
 
 @registry.register_check("ec2")
-def vpc_flow_logs_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def vpc_flow_logs_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[VPC.2] Flow Logs should be enabled for all VPCs"""
-    vpc = describe_vpcs(cache=cache)
+    ec2 = session.client("ec2")
+    vpc = describe_vpcs(cache, session)
     for vpcs in vpc["Vpcs"]:
         vpcId = str(vpcs["VpcId"])
         vpcArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}vpc/{vpcId}"
@@ -260,10 +259,11 @@ def vpc_flow_logs_check(cache: dict, awsAccountId: str, awsRegion: str, awsParti
             yield finding
 
 @registry.register_check("ec2")
-def subnet_public_ip_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def subnet_public_ip_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[VPC.3] Subnets should not automatically map Public IP addresses on launch"""
+    ec2 = session.client("ec2")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    vpc = describe_vpcs(cache=cache)
+    vpc = describe_vpcs(cache, session)
     myVpcs = vpc["Vpcs"]
     for vpcs in myVpcs:
         vpcId = str(vpcs["VpcId"])
@@ -389,10 +389,11 @@ def subnet_public_ip_check(cache: dict, awsAccountId: str, awsRegion: str, awsPa
                 yield finding
 
 @registry.register_check("ec2")
-def subnet_no_ip_space_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def subnet_no_ip_space_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[VPC.4] Subnets should be monitored for available IP address space"""
+    ec2 = session.client("ec2")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    vpc = describe_vpcs(cache=cache)
+    vpc = describe_vpcs(cache, session)
     myVpcs = vpc["Vpcs"]
     for vpcs in myVpcs:
         vpcId = str(vpcs["VpcId"])

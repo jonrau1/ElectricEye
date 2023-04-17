@@ -18,15 +18,13 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
-# import boto3 clients
-workspaces = boto3.client("workspaces")
-# loop through workspaces
-def describe_workspaces(cache):
+
+def describe_workspaces(cache, session):
+    workspaces = session.client("workspaces")
     response = cache.get("describe_workspaces", [])
     if response:
         return response
@@ -34,9 +32,9 @@ def describe_workspaces(cache):
     return cache["describe_workspaces"]
 
 @registry.register_check("workspaces")
-def workspaces_user_volume_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def workspaces_user_volume_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[WorkSpaces.1] WorkSpaces should have user volume encryption enabled"""
-    work = describe_workspaces(cache=cache)
+    work = describe_workspaces(cache, session)
     for workspace in work["Workspaces"]:
         workspaceId = str(workspace["WorkspaceId"])
         workspaceArn = (
@@ -153,9 +151,9 @@ def workspaces_user_volume_encryption_check(cache: dict, awsAccountId: str, awsR
             print(e)
 
 @registry.register_check("workspaces")
-def workspaces_root_volume_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def workspaces_root_volume_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[WorkSpaces.2] WorkSpaces should have root volume encryption enabled"""
-    work = describe_workspaces(cache=cache)
+    work = describe_workspaces(cache, session)
     for workspace in work["Workspaces"]:
         workspaceId = str(workspace["WorkspaceId"])
         workspaceArn = (
@@ -272,9 +270,9 @@ def workspaces_root_volume_encryption_check(cache: dict, awsAccountId: str, awsR
             print(e)
 
 @registry.register_check("workspaces")
-def workspaces_running_mode_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def workspaces_running_mode_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[WorkSpaces.3] WorkSpaces should be configured to auto stop after inactivity"""
-    work = describe_workspaces(cache=cache)
+    work = describe_workspaces(cache, session)
     for workspace in work["Workspaces"]:
         workspaceId = str(workspace["WorkspaceId"])
         workspaceArn = (
@@ -385,8 +383,9 @@ def workspaces_running_mode_check(cache: dict, awsAccountId: str, awsRegion: str
             yield finding
 
 @registry.register_check("workspaces")
-def workspaces_directory_default_internet_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def workspaces_directory_default_internet_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[WorkSpaces.4] WorkSpaces Directories should not be configured to provide default internet access"""
+    workspaces = session.client("workspaces")
     response = workspaces.describe_workspace_directories()
     for directory in response["Directories"]:
         workspacesDirectoryId = str(directory["DirectoryId"])

@@ -18,15 +18,13 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-route53 = boto3.client("route53")
-
-def get_hosted_zones(cache):
+def get_hosted_zones(cache, session):
+    route53 = session.client("route53")
     zones = []
     response = cache.get("get_hosted_zones")
     if response:
@@ -40,11 +38,12 @@ def get_hosted_zones(cache):
         return cache["get_hosted_zones"]
     
 @registry.register_check("route53")
-def route53_hosted_zone_query_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def route53_hosted_zone_query_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Route53.1] Route53 Hosted Zones should have query logging configured"""
+    route53 = session.client("route53")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for zone in get_hosted_zones(cache=cache):
+    for zone in get_hosted_zones(cache, session):
         hzId = zone["Id"]
         hzName = zone["Name"]
         hzArn = f"arn:aws:route53:::hostedzone/{hzName}"
@@ -168,11 +167,12 @@ def route53_hosted_zone_query_logging_check(cache: dict, awsAccountId: str, awsR
             yield finding
 
 @registry.register_check("route53")
-def route53_hosted_zone_traffic_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def route53_hosted_zone_traffic_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Route53.2] Route53 Hosted Zones should have traffic policies configured"""
+    route53 = session.client("route53")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for zone in get_hosted_zones(cache=cache):
+    for zone in get_hosted_zones(cache, session):
         hzId = zone["Id"]
         hzName = zone["Name"]
         hzArn = f"arn:aws:route53:::hostedzone/{hzName}"

@@ -18,17 +18,13 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-# Boto3 clients
-ec2 = boto3.client("ec2")
-autoscaling = boto3.client("autoscaling")
-
-def describe_auto_scaling_groups(cache):
+def describe_auto_scaling_groups(cache, session):
+    autoscaling = session.client("autoscaling")
     response = cache.get("describe_auto_scaling_groups")
     if response:
         return response
@@ -36,11 +32,11 @@ def describe_auto_scaling_groups(cache):
     return cache["describe_auto_scaling_groups"]
 
 @registry.register_check("autoscaling")
-def autoscaling_scale_in_protection_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def autoscaling_scale_in_protection_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Autoscaling.1] Autoscaling Groups should be configured to protect instances from scale-in"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for asg in describe_auto_scaling_groups(cache)["AutoScalingGroups"]:
+    for asg in describe_auto_scaling_groups(cache, session)["AutoScalingGroups"]:
         asgArn = asg["AutoScalingGroupARN"]
         asgName = asg["AutoScalingGroupName"]
         healthCheckType = asg["HealthCheckType"]
@@ -162,11 +158,11 @@ def autoscaling_scale_in_protection_check(cache: dict, awsAccountId: str, awsReg
             yield finding
 
 @registry.register_check("autoscaling")
-def autoscaling_load_balancer_healthcheck_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def autoscaling_load_balancer_healthcheck_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Autoscaling.2] Autoscaling Groups with load balancer targets should use ELB health checks"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for asg in describe_auto_scaling_groups(cache)["AutoScalingGroups"]:
+    for asg in describe_auto_scaling_groups(cache, session)["AutoScalingGroups"]:
         asgArn = asg["AutoScalingGroupARN"]
         asgName = asg["AutoScalingGroupName"]
         healthCheckType = asg["HealthCheckType"]
@@ -336,8 +332,9 @@ def autoscaling_load_balancer_healthcheck_check(cache: dict, awsAccountId: str, 
                 yield finding
 
 @registry.register_check("autoscaling")
-def autoscaling_high_availability_az_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def autoscaling_high_availability_az_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Autoscaling.3] Autoscaling Groups should use at least half of a Region's Availability Zones"""
+    ec2 = session.client("ec2")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # Collect the open AZs in the Region
@@ -347,7 +344,7 @@ def autoscaling_high_availability_az_check(cache: dict, awsAccountId: str, awsRe
             if az["ZoneName"] not in regionalAzs:
                 regionalAzs.append(az["ZoneName"])
     availableAzCount = len(regionalAzs)
-    for asg in describe_auto_scaling_groups(cache)["AutoScalingGroups"]:
+    for asg in describe_auto_scaling_groups(cache, session)["AutoScalingGroups"]:
         asgArn = asg["AutoScalingGroupARN"]
         asgName = asg["AutoScalingGroupName"]
         healthCheckType = asg["HealthCheckType"]

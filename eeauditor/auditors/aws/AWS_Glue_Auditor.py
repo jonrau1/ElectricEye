@@ -18,15 +18,13 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
-# import boto3 clients
-glue = boto3.client("glue")
 
-def list_crawlers(cache):
+def list_crawlers(cache, session):
+    glue = session.client("glue")
     response = cache.get("list_crawlers")
     if response:
         return response
@@ -34,9 +32,10 @@ def list_crawlers(cache):
     return cache["list_crawlers"]
 
 @registry.register_check("glue")
-def crawler_s3_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def crawler_s3_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Glue.1] AWS Glue crawler security configurations should enable Amazon S3 encryption"""
-    crawler = list_crawlers(cache=cache)
+    glue = session.client("glue")
+    crawler = list_crawlers(cache, session)
     myCrawlers = crawler["CrawlerNames"]
     for crawlers in myCrawlers:
         crawlerName = str(crawlers)
@@ -176,9 +175,10 @@ def crawler_s3_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, 
                 print(e)
 
 @registry.register_check("glue")
-def crawler_cloudwatch_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def crawler_cloudwatch_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Glue.2] AWS Glue crawler security configurations should enable Amazon CloudWatch Logs encryption"""
-    crawler = list_crawlers(cache=cache)
+    glue = session.client("glue")
+    crawler = list_crawlers(cache, session)
     myCrawlers = crawler["CrawlerNames"]
     for crawlers in myCrawlers:
         crawlerName = str(crawlers)
@@ -318,9 +318,10 @@ def crawler_cloudwatch_encryption_check(cache: dict, awsAccountId: str, awsRegio
                 print(e)
 
 @registry.register_check("glue")
-def crawler_job_bookmark_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def crawler_job_bookmark_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Glue.3] AWS Glue crawler security configurations should enable job bookmark encryption"""
-    crawler = list_crawlers(cache=cache)
+    glue = session.client("glue")
+    crawler = list_crawlers(cache, session)
     myCrawlers = crawler["CrawlerNames"]
     for crawlers in myCrawlers:
         crawlerName = str(crawlers)
@@ -460,8 +461,9 @@ def crawler_job_bookmark_encryption_check(cache: dict, awsAccountId: str, awsReg
                 print(e)
 
 @registry.register_check("glue")
-def glue_data_catalog_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def glue_data_catalog_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Glue.4] AWS Glue data catalogs should be encrypted at rest"""
+    glue = session.client("glue")
     catalogArn = f"arn:{awsPartition}:glue:{awsRegion}:{awsAccountId}:catalog"
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -578,8 +580,9 @@ def glue_data_catalog_encryption_check(cache: dict, awsAccountId: str, awsRegion
             print(e)
 
 @registry.register_check("glue")
-def glue_data_catalog_password_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def glue_data_catalog_password_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Glue.5] AWS Glue data catalogs should be configured to encrypt connection passwords"""
+    glue = session.client("glue")
     catalogArn = f"arn:{awsPartition}:glue:{awsRegion}:{awsAccountId}:catalog"
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -696,8 +699,9 @@ def glue_data_catalog_password_encryption_check(cache: dict, awsAccountId: str, 
             print(e)
 
 @registry.register_check("glue")
-def glue_data_catalog_resource_policy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def glue_data_catalog_resource_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Glue.6] AWS Glue data catalogs should enforce fine-grained access controls with a resource policy"""
+    glue = session.client("glue")
     catalogArn = f"arn:{awsPartition}:glue:{awsRegion}:{awsAccountId}:catalog"
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()

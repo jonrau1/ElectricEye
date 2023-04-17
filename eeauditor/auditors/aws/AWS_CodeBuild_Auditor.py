@@ -18,16 +18,13 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-# import boto3 clients
-codebuild = boto3.client("codebuild")
-
-def get_code_build_projects(cache):
+def get_code_build_projects(cache, session):
+    codebuild = session.client("codebuild")
     response = cache.get("codebuild_projects")
     if response:
         return response
@@ -40,11 +37,11 @@ def get_code_build_projects(cache):
         return {}
 
 @registry.register_check("codebuild")
-def codebuild_artifact_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def codebuild_artifact_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CodeBuild.1] CodeBuild projects should not have artifact encryption disabled"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for projects in get_code_build_projects(cache=cache):
+    for projects in get_code_build_projects(cache, session):
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
         # check if this project supports artifacts
@@ -203,11 +200,11 @@ def codebuild_artifact_encryption_check(cache: dict, awsAccountId: str, awsRegio
                 yield finding
 
 @registry.register_check("codebuild")
-def codebuild_insecure_ssl_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def codebuild_insecure_ssl_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CodeBuild.2] CodeBuild projects should not have insecure SSL configured"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for projects in get_code_build_projects(cache=cache):
+    for projects in get_code_build_projects(cache, session):
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
         # check if Insecure SSL is enabled for your Source - if KeyError is thrown it means your Source
@@ -385,11 +382,11 @@ def codebuild_insecure_ssl_check(cache: dict, awsAccountId: str, awsRegion: str,
             yield finding
 
 @registry.register_check("codebuild")
-def codebuild_plaintext_env_var_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def codebuild_plaintext_env_var_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CodeBuild.3] CodeBuild projects should not have plaintext environment variables"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for projects in get_code_build_projects(cache=cache):
+    for projects in get_code_build_projects(cache, session):
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
         # check if this project has any env vars
@@ -606,11 +603,11 @@ def codebuild_plaintext_env_var_check(cache: dict, awsAccountId: str, awsRegion:
                     break
 
 @registry.register_check("codebuild")
-def codebuild_s3_logging_encryption_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def codebuild_s3_logging_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CodeBuild.4] CodeBuild projects should not have S3 log encryption disabled"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for projects in get_code_build_projects(cache=cache):
+    for projects in get_code_build_projects(cache, session):
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
         # check if this project logs to S3 to begin with
@@ -820,11 +817,11 @@ def codebuild_s3_logging_encryption_check(cache: dict, awsAccountId: str, awsReg
             yield finding
 
 @registry.register_check("codebuild")
-def codebuild_cloudwatch_logging_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def codebuild_cloudwatch_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CodeBuild.5] CodeBuild projects should have CloudWatch logging enabled"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for projects in get_code_build_projects(cache=cache):
+    for projects in get_code_build_projects(cache, session):
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
         # check if this project logs to cloudwatch
@@ -938,8 +935,9 @@ def codebuild_cloudwatch_logging_check(cache: dict, awsAccountId: str, awsRegion
             yield finding
 
 @registry.register_check("codebuild")
-def codebuild_pat_credential_usage(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def codebuild_pat_credential_usage(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CodeBuild.6] CodeBuild should not store any source Personal Access Tokens"""
+    codebuild = session.client("codebuild")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     srcCreds = codebuild.list_source_credentials()["sourceCredentialsInfos"]
@@ -1172,11 +1170,11 @@ def codebuild_pat_credential_usage(cache: dict, awsAccountId: str, awsRegion: st
                 yield finding
 
 @registry.register_check("codebuild")
-def codebuild_public_build_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def codebuild_public_build_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CodeBuild.7] CodeBuild projects should not be publicly accessible"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for projects in get_code_build_projects(cache=cache):
+    for projects in get_code_build_projects(cache, session):
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
         # check if the build is public
@@ -1304,11 +1302,11 @@ def codebuild_public_build_check(cache: dict, awsAccountId: str, awsRegion: str,
             yield finding
 
 @registry.register_check("codebuild")
-def codebuild_privileged_envrionment_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def codebuild_privileged_envrionment_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CodeBuild.8] CodeBuild projects should not allow privileged builds"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for projects in get_code_build_projects(cache=cache):
+    for projects in get_code_build_projects(cache, session):
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
         # Check for priv access

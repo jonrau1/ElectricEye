@@ -18,22 +18,21 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 
 registry = CheckRegister()
 
-ecs = boto3.client("ecs")
-
-def list_clusters(cache):
+def list_clusters(cache, session):
+    ecs = session.client("ecs")
     response = cache.get("list_clusters")
     if response:
         return response
     cache["list_clusters"] = ecs.list_clusters()
     return cache["list_clusters"]
 
-def list_active_task_definitions(cache):
+def list_active_task_definitions(cache, session):
+    ecs = session.client("ecs")
     taskDefinitions = []
     response = cache.get("get_task_definitons")
     if response:
@@ -45,11 +44,12 @@ def list_active_task_definitions(cache):
     return cache["get_task_definitons"]
 
 @registry.register_check("ecs")
-def ecs_cluster_container_insights_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ecs_cluster_container_insights_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ECS.1] ECS clusters should have container insights enabled"""
+    ecs = session.client("ecs")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for clusters in list_clusters(cache)["clusterArns"]:
+    for clusters in list_clusters(cache, session)["clusterArns"]:
         clusterArn = str(clusters)
         response = ecs.describe_clusters(clusters=[clusterArn])
         for clusterinfo in response["clusters"]:
@@ -167,11 +167,12 @@ def ecs_cluster_container_insights_check(cache: dict, awsAccountId: str, awsRegi
                     yield finding
 
 @registry.register_check("ecs")
-def ecs_cluster_default_provider_strategy_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ecs_cluster_default_provider_strategy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ECS.2] ECS clusters should have a default cluster capacity provider strategy configured"""
+    ecs = session.client("ecs")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for clusters in list_clusters(cache)["clusterArns"]:
+    for clusters in list_clusters(cache, session)["clusterArns"]:
         clusterArn = str(clusters)
         response = ecs.describe_clusters(clusters=[clusterArn])
         for clusterinfo in response["clusters"]:
@@ -280,11 +281,11 @@ def ecs_cluster_default_provider_strategy_check(cache: dict, awsAccountId: str, 
                 yield finding
 
 @registry.register_check("ecs")
-def ecs_task_definition_privileged_container_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ecs_task_definition_privileged_container_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ECS.3] ECS Task Definitions should not run privileged containers if not required"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for taskdef in list_active_task_definitions(cache):
+    for taskdef in list_active_task_definitions(cache, session):
         taskDefinitionArn = str(taskdef['taskDefinitionArn'])
         tdefFamily = str(taskdef["family"])
         # Loop container definitions
@@ -458,11 +459,11 @@ def ecs_task_definition_privileged_container_check(cache: dict, awsAccountId: st
                 yield finding
 
 @registry.register_check("ecs")
-def ecs_task_definition_security_labels_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ecs_task_definition_security_labels_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ECS.4] ECS Task Definitions for EC2 should have Docker Security Options (SELinux or AppArmor) configured"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for taskdef in list_active_task_definitions(cache):
+    for taskdef in list_active_task_definitions(cache, session):
         taskDefinitionArn = str(taskdef['taskDefinitionArn'])
         tdefFamily = str(taskdef["family"])
         # If there is a network mode of "awsvpc" it is likely a Fargate task - even though EC2 compute can run with that...
@@ -691,11 +692,11 @@ def ecs_task_definition_security_labels_check(cache: dict, awsAccountId: str, aw
                     yield finding
 
 @registry.register_check("ecs")
-def ecs_task_definition_root_user_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ecs_task_definition_root_user_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ECS.5] ECS Task Definitions with users defined should not be set to Root"""
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for taskdef in list_active_task_definitions(cache):
+    for taskdef in list_active_task_definitions(cache, session):
         taskDefinitionArn = str(taskdef['taskDefinitionArn'])
         tdefFamily = str(taskdef["family"])
         # Loop container definitions 

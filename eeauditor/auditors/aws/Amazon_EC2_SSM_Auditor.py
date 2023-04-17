@@ -18,7 +18,6 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
 import datetime
 from check_register import CheckRegister
 from dateutil.parser import parse
@@ -32,11 +31,10 @@ config = Config(
 )
 
 registry = CheckRegister()
-# create boto3 clients
-ec2 = boto3.client("ec2",config=config)
-ssm = boto3.client("ssm",config=config)
 
-def paginate(cache):
+def paginate(cache, session):
+    ec2 = session.client("ec2",config=config)
+
     instanceList = []
     response = cache.get("instances")
     if response:
@@ -51,11 +49,12 @@ def paginate(cache):
         return cache["instances"]
 
 @registry.register_check("ec2")
-def ec2_instance_ssm_managed_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ec2_instance_ssm_managed_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EC2-SSM.1] EC2 Instances should be managed by Systems Manager"""
+    ssm = session.client("ssm",config=config)
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for i in paginate(cache=cache):
+    for i in paginate(cache, session):
         instanceId = str(i["InstanceId"])
         instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
         instanceType = str(i["InstanceType"])
@@ -190,11 +189,12 @@ def ec2_instance_ssm_managed_check(cache: dict, awsAccountId: str, awsRegion: st
             yield finding
 
 @registry.register_check("ec2")
-def ssm_instace_agent_update_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ssm_instace_agent_update_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EC2-SSM.2] EC2 Linux Instances managed by Systems Manager should have the latest SSM Agent installed"""
+    ssm = session.client("ssm",config=config)
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for i in paginate(cache=cache):
+    for i in paginate(cache, session):
         instanceId = str(i["InstanceId"])
         instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
         instanceType = str(i["InstanceType"])
@@ -336,11 +336,12 @@ def ssm_instace_agent_update_check(cache: dict, awsAccountId: str, awsRegion: st
                         yield finding
 
 @registry.register_check("ec2")
-def ssm_instance_association_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ssm_instance_association_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EC2-SSM.3] EC2 Instances managed by Systems Manager should have a successful Association status"""
+    ssm = session.client("ssm",config=config)
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for i in paginate(cache=cache):
+    for i in paginate(cache, session):
         instanceId = str(i["InstanceId"])
         instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
         instanceType = str(i["InstanceType"])
@@ -480,11 +481,12 @@ def ssm_instance_association_check(cache: dict, awsAccountId: str, awsRegion: st
                     yield finding
 
 @registry.register_check("ec2")
-def ssm_instance_patch_state_state(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+def ssm_instance_patch_state_state(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EC2-SSM.4] EC2 Instances managed by Systems Manager should have the latest patches installed by Patch Manager"""
+    ssm = session.client("ssm",config=config)
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for i in paginate(cache=cache):
+    for i in paginate(cache, session):
         instanceId = str(i["InstanceId"])
         instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
         instanceType = str(i["InstanceType"])
