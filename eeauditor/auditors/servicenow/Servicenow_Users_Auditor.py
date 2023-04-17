@@ -58,10 +58,6 @@ def servicenow_sspm_active_user_mfa_check(cache: dict, awsAccountId: str, awsReg
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    print(SNOW_INSTANCE_NAME)
-    print(SNOW_SSPM_PASSWORD)
-    print(SNOW_SSPM_USERNAME)
-
     for user in get_servicenow_users(cache):
         userId = str(user["sys_id"])
         userName = str(user["user_name"])
