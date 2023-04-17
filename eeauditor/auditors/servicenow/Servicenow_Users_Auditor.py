@@ -25,9 +25,10 @@ from check_register import CheckRegister
 
 registry = CheckRegister()
 
-SNOW_INSTANCE_NAME = os.environ['SNOW_INSTANCE_NAME']
-SNOW_SSPM_USERNAME = os.environ['SNOW_SSPM_USERNAME']
-SNOW_SSPM_PASSWORD = os.environ['SNOW_SSPM_PASSWORD']
+SNOW_INSTANCE_NAME = os.environ["SNOW_INSTANCE_NAME"]
+SNOW_SSPM_USERNAME = os.environ["SNOW_SSPM_USERNAME"]
+SNOW_SSPM_PASSWORD = os.environ["SNOW_SSPM_PASSWORD"]
+SNOW_FAILED_LOGIN_BREACHING_RATE = os.environ["SNOW_FAILED_LOGIN_BREACHING_RATE"]
 
 def get_servicenow_users(cache: dict):
     """

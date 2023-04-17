@@ -376,7 +376,10 @@ aws ssm put-parameter \
 snow_instance_name = "dev90210"
 snow_sspm_username = "electriceye_sspm"
 snow_sspm_password_parameter_name = $SNOW_PW_PARAMETER_NAME
+snow_failed_login_breaching_rate = 5
 ```
+
+**Note**: The value for `snow_failed_login_breaching_rate` is required to be set for a `Servicenow_Users_Auditor` check regarding failed logins per-user (active) - do not remove this value and do not set this value lower than 1. The default setting of 5 is completely notional.
 
 5. With >=Python 3.6 installed, install and upgrade `pip3` and setup `virtualenv`
 

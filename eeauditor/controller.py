@@ -101,7 +101,7 @@ def setup_gcp_credentials():
         json.dump(json.loads(gcpCreds), jsonfile, indent=2)
 
     # Set Cred global path
-    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "./gcp_cred.json"
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./gcp_cred.json"
 
     return True
 
@@ -132,9 +132,10 @@ def setup_servicenow_credentials():
         raise e
 
     # Set SNOW creds
-    os.environ['SNOW_INSTANCE_NAME'] = snowValues["snow_instance_name"]
-    os.environ['SNOW_SSPM_USERNAME'] = snowValues["snow_sspm_username"]
-    os.environ['SNOW_SSPM_PASSWORD'] = snowPw
+    os.environ["SNOW_INSTANCE_NAME"] = snowValues["snow_instance_name"]
+    os.environ["SNOW_SSPM_USERNAME"] = snowValues["snow_sspm_username"]
+    os.environ["SNOW_SSPM_PASSWORD"] = snowPw
+    os.environ["SNOW_FAILED_LOGIN_BREACHING_RATE"] = snowValues["snow_failed_login_breaching_rate"]
 
     return True
 
@@ -213,9 +214,9 @@ def run_auditor(gcp_project_id, target_provider, assume_role_account=None, assum
 
         # Check if the SNOW values are provided - for listing checks it's fine
         try:
-            snowInstance = os.environ['SNOW_INSTANCE_NAME']
-            snowUser = os.environ['SNOW_SSPM_USERNAME']
-            snowPw = os.environ['SNOW_SSPM_PASSWORD']
+            snowInstance = os.environ["SNOW_INSTANCE_NAME"]
+            snowUser = os.environ["SNOW_SSPM_USERNAME"]
+            snowPw = os.environ["SNOW_SSPM_PASSWORD"]
 
             if (
                 snowInstance or
