@@ -88,7 +88,13 @@ def setup_gcp_credentials():
         print("GCP Credential SSM Parameter not provided!")
         sys.exit(2)
 
-    gcpCreds = ssm.get_parameter(Name=gcpCredLocation, WithDecryption=True)["Parameter"]["Value"]
+    try:
+        gcpCreds = ssm.get_parameter(
+            Name=gcpCredLocation,
+            WithDecryption=True
+        )["Parameter"]["Value"]
+    except Exception as e:
+        raise e
 
     # Write the creds locally
     with open("./gcp_cred.json", 'w') as jsonfile:
@@ -101,10 +107,36 @@ def setup_gcp_credentials():
 
 def setup_github_credentials():
     """
-    Retrieves a Personal Access Token (PAT) from a SSM
+    TODO: Implement
     """
 
     return {}
+
+def setup_servicenow_credentials():
+    """
+    Servicenow SSPM checks use Basic Auth, e.g., a regular User with Password & Role to access specific tables (/table/users, /system_properties, etc.)
+    TOML file stores the Instance Name, Username, and a SSM Parameter for the Password which will be retrieved. All 3 of these are set as env vars
+    via os.environ to reduce the amount of variables handed over to the EEAuditor functions
+    """
+
+    ssm = boto3.client("ssm")
+
+    snowValues = read_toml()["servicenow"]
+
+    try:
+        snowPw = ssm.get_parameter(
+            Name=snowValues["snow_sspm_password_parameter_name"],
+            WithDecryption=True
+        )["Parameter"]["Value"]
+    except Exception as e:
+        raise e
+
+    # Set SNOW creds
+    os.environ['SNOW_INSTANCE_NAME'] = snowValues["snow_instance_name"]
+    os.environ['SNOW_SSPM_USERNAME'] = snowValues["snow_sspm_username"]
+    os.environ['SNOW_SSPM_PASSWORD'] = snowPw
+
+    return True
 
 def print_checks(gcp_project_id=None, target_provider=None, assume_role_account=None, assume_role_name=None, region_override=None):
     if target_provider == "AWS":
@@ -133,13 +165,21 @@ def print_checks(gcp_project_id=None, target_provider=None, assume_role_account=
         app.load_plugins()
         
         app.print_checks_md()
+    elif target_provider == "Servicenow":
+        setup_servicenow_credentials()
+
+        app = EEAuditor(target_provider, session=None, region=None, gcp_project_id=None)
+
+        app.load_plugins()
+        
+        app.print_checks_md()
 
 def run_auditor(gcp_project_id, target_provider, assume_role_account=None, assume_role_name=None, region_override=None, auditor_name=None, check_name=None, delay=0, outputs=None, output_file=""):
     if not outputs:
         # default to AWS SecHub even if somehow Click destination is stripped
         outputs = ["sechub"]
-        
-
+    
+    # CSPM :: AWS
     if target_provider == "AWS":
         awsCreds = setup_aws_credentials(assume_role_account, assume_role_name, region_override)
 
@@ -151,6 +191,7 @@ def run_auditor(gcp_project_id, target_provider, assume_role_account=None, assum
 
         # This function writes the findings to Security Hub, or otherwise
         process_findings(findings=findings, outputs=outputs, output_file=output_file)
+    # CSPM :: GCP
     elif target_provider == "GCP":
         if gcp_project_id == (None or ""):
             print("GCP assessment target requires a GCP Project ID")
@@ -162,7 +203,36 @@ def run_auditor(gcp_project_id, target_provider, assume_role_account=None, assum
 
         app.load_plugins(plugin_name=auditor_name)
 
-        findings = list(app.run_gcp_checks(requested_check_name=check_name, delay=delay))
+        findings = list(app.run_non_aws_checks(requested_check_name=check_name, delay=delay))
+
+        # This function writes the findings to Security Hub, or otherwise
+        process_findings(findings=findings, outputs=outputs, output_file=output_file)
+    # SSPM :: Servicenow
+    elif target_provider == "Servicenow":
+        setup_servicenow_credentials()
+
+        # Check if the SNOW values are provided - for listing checks it's fine
+        try:
+            snowInstance = os.environ['SNOW_INSTANCE_NAME']
+            snowUser = os.environ['SNOW_SSPM_USERNAME']
+            snowPw = os.environ['SNOW_SSPM_PASSWORD']
+
+            if (
+                snowInstance or
+                snowUser or
+                snowPw
+            ) == "" or None:
+                print(f"One or more Servicenow values missing from TOML")
+                sys.exit(2)
+        except KeyError as ke:
+            print(f"Servicenow environment variables are not set")
+            raise ke
+
+        app = EEAuditor(target_provider=target_provider, session=None, region=None, gcp_project_id=None)
+
+        app.load_plugins(plugin_name=auditor_name)
+
+        findings = list(app.run_non_aws_checks(requested_check_name=check_name, delay=delay))
 
         # This function writes the findings to Security Hub, or otherwise
         process_findings(findings=findings, outputs=outputs, output_file=output_file)
@@ -181,6 +251,15 @@ def run_auditor(gcp_project_id, target_provider, assume_role_account=None, assum
     "-t",
     "--target-provider",
     default="AWS",
+    type=click.Choice(
+        [
+            'AWS',
+            'GCP',
+            'GitHub',
+            'Servicenow'
+        ]
+    ),
+    case_sensitive=True,
     help="CSP or SaaS Vendor to perform assessments against and load specific plugins, ensure that any -a or -c arg maps to your target provider e.g., -t AWS -a Amazon_APGIW_Auditor"
 )
 # Remote Account Options

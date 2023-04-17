@@ -84,6 +84,8 @@ class EEAuditor(object):
 
         elif target_provider == "GitHub":
             search_path = "./auditors/github"
+        elif target_provider == "Servicenow":
+            search_path = "./auditors/servicenow"
 
         # If there is a desire to add support for multiple clouds, this would be
         # a great place to implement it.
@@ -91,10 +93,11 @@ class EEAuditor(object):
             searchpath=[get_path(search_path)], identifier=self.name
         )
 
-    """
-    Loads from pluginbase, works on a search path override as long as the checks have the registry class and decorator
-    """
+    
     def load_plugins(self, plugin_name=None):
+        """
+        Loads from pluginbase, works on a search path override as long as the checks have the registry class and decorator
+        """
         if plugin_name:
             try:
                 self.source.load_plugin(plugin_name)
@@ -106,12 +109,12 @@ class EEAuditor(object):
                     self.source.load_plugin(plugin_name)
                 except Exception as e:
                     print(f"Failed to load plugin {plugin_name} with exception {e}")
-
-    """
-    This is only used for AWS and only for Commerical Partition -- checks against SSM-managed Parameter to see what services are available in a Region
-    It is not exactly foolproof as AMB and CloudSearch and a few others are still jacked up...
-    """
+ 
     def get_regions(self, service):
+        """
+        This is only used for AWS and only for Commerical Partition -- checks against SSM-managed Parameter to see what services are available in a Region
+        It is not exactly foolproof as AMB and CloudSearch and a few others are still jacked up...
+        """
         # Pull session
         session = self.session
         ssm = session.client("ssm")
@@ -148,10 +151,10 @@ class EEAuditor(object):
 
         return values
 
-    """
-    Separated logic for different checks - this one is for AWS as it calls get_regions(self, service) for the Commerical Partition
-    """
     def run_aws_checks(self, requested_check_name=None, delay=0):
+        """
+        Separated logic for different checks - this one is for AWS as it calls get_regions(self, service) for the Commerical Partition
+        """
         # Last call for session validation logging
         print(f'Running ElectricEye in AWS Account {self.awsAccountId} in Region {self.awsRegion}')
 
@@ -185,8 +188,13 @@ class EEAuditor(object):
             # optional sleep if specified - hardcode to 0 seconds
             sleep(delay)
 
-    def run_gcp_checks(self, requested_check_name=None, delay=0):
-        # Even though we are running GCP checks we stil need AWS-account info in case they send the info to SecHub
+    def run_non_aws_checks(self, requested_check_name=None, delay=0):
+        """
+        This "run check" function is for all SSPM and non-AWS providers as it does not contain a check against SSM for service eligibility
+        
+        NOTE: In the future, this function may be split off into other providers if other arguments or checks are required
+        """
+
         import boto3
 
         sts = boto3.client("sts")

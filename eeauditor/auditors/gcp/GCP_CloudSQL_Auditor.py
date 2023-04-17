@@ -25,9 +25,9 @@ import googleapiclient.discovery
 registry = CheckRegister()
 
 def get_cloudsql_dbs(cache: dict, gcpProjectId: str):
-    '''
+    """
     AggregatedList result provides Zone information as well as every single Instance in a Project
-    '''
+    """
     response = cache.get("get_cloudsql_dbs")
     if response:
         return response
