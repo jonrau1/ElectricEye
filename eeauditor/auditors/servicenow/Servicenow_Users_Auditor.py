@@ -515,7 +515,7 @@ def servicenow_sspm_active_user_lockout_audit_check(cache: dict, awsAccountId: s
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "MEDIUM"},
+                "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[SSPM.Servicenow.3] Active users that are locked out should be audited",
                 "Description": f"Servicenow user {userName} in instance {SNOW_INSTANCE_NAME} is locked out and should be audited for potential indicators of compromise. While multiple failed login attempts are not necessarily a security risk on its own, as it can be an accessibility issue or legitimate forgetfulness, adversaries and other unauthorized users often attempt password spraying and credential stuffing attacks to gain illicit access to User accounts. Servicenow reccommends appplying a defined logging and auditing strategy so that you can identify and act on suspicious activity in a timely manner. Refer to the remediation instructions if this configuration is not intended.",
