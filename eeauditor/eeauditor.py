@@ -23,6 +23,7 @@ import os
 from time import sleep
 from check_register import CheckRegister, accumulate_paged_results
 from pluginbase import PluginBase
+import traceback
 
 here = os.path.abspath(os.path.dirname(__file__))
 get_path = partial(os.path.join, here)
@@ -184,6 +185,7 @@ class EEAuditor(object):
                         ):
                             yield finding
                     except Exception as e:
+                        print(traceback.format_exc())
                         print(f"Failed to execute check {check_name} with exception {e}")
             # optional sleep if specified - hardcode to 0 seconds
             sleep(delay)
