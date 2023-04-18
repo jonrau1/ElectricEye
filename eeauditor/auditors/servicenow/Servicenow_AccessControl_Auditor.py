@@ -35,34 +35,24 @@ def get_servicenow_sys_properties(cache: dict):
     """
     Pulls the entire Systems Properties table
     """
-    try:
-        response = cache["get_servicenow_sys_properties"]
-        if response:
-            print("Cache hit!")
-            return response
-        
-        # Will need to create the pysnow.Client object everywhere - doesn't appear to be thread-safe
-        snow = pysnow.Client(
-            instance=SNOW_INSTANCE_NAME,
-            user=SNOW_SSPM_USERNAME,
-            password=SNOW_SSPM_PASSWORD
-        )
+    response = cache["get_servicenow_sys_properties"]
+    if response:
+        return response
+    
+    # Will need to create the pysnow.Client object everywhere - doesn't appear to be thread-safe
+    snow = pysnow.Client(
+        instance=SNOW_INSTANCE_NAME,
+        user=SNOW_SSPM_USERNAME,
+        password=SNOW_SSPM_PASSWORD
+    )
 
-        sysPropResource = snow.resource(api_path='/table/sys_properties')
-        sysProps = sysPropResource.get().all()
+    sysPropResource = snow.resource(api_path='/table/sys_properties')
+    sysProps = sysPropResource.get().all()
 
-        print(len(sysProps))
-        
-        # Pull out all property names, used for look-ups if values are available
-        sysPropNames = []
-        for sysprop in sysProps:
-            sysPropNames.append(sysprop["name"])
-        
-        cache["get_servicenow_sys_properties"] = [sysProps, sysPropNames]
+    
+    cache["get_servicenow_sys_properties"] = sysProps
 
-        return cache["get_servicenow_sys_properties"]
-    except Exception as e:
-        raise e
+    return cache["get_servicenow_sys_properties"]
 
 @registry.register_check("servicenow.access_control")
 def servicenow_sspm_user_session_allow_unsanitzed_messages_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
@@ -73,20 +63,16 @@ def servicenow_sspm_user_session_allow_unsanitzed_messages_check(cache: dict, aw
 
     # Name of the property to evaluate against
     evalTarget = "glide.sandbox.usersession.allow_unsanitized_messages"
+    # Get cached props
+    sysPropCache = get_servicenow_sys_properties(cache)
 
-    # Cache function returns the entirety of the `sys_properties` table (list of dicts) as well as a list
-    # of property names as a tuple. If the property we want to evaluate is not there it is a failing check
-    # if it is there then we need to evaluate if it's it's set correctly. This avoids unnecessary time
-    # wasted & CPU overhead looping and accessing lists over and over
-    try:
-        sysPropCache = get_servicenow_sys_properties(cache)
-    except Exception as e:
-        raise e
+    # TODO: Comment
+    propFinder = next((sysprop for sysprop in sysPropCache if sysprop["name"] == evalTarget), False)
 
-    print(len(sysPropCache[1]))
+    print(propFinder)
 
     # If the property is not in the list, it does not exist in the instance, fill in blank values
-    if evalTarget not in sysPropCache[1]:
+    """if evalTarget not in sysPropCache[1]:
         propertyName = evalTarget
         propertyValue = "NOT_CONFIGURED"
         propDescription = ""
@@ -98,7 +84,10 @@ def servicenow_sspm_user_session_allow_unsanitzed_messages_check(cache: dict, aw
         propScope = ""
     else:
         propFinder = list(filter(lambda prop: prop["name"] == evalTarget, sysPropCache[0]))
-        print(propFinder)
+        print(propFinder)"""
+
+    finding = {}
+    yield finding
 
 
     """for sysprop in get_servicenow_sys_properties(cache):
