@@ -37,6 +37,7 @@ def get_servicenow_sys_properties(cache: dict):
     """
     response = cache.get("get_servicenow_sys_properties")
     if response:
+        print("servicenow.access_control cache hit!")
         return response
     
     # Will need to create the pysnow.Client object everywhere - doesn't appear to be thread-safe
@@ -52,6 +53,8 @@ def get_servicenow_sys_properties(cache: dict):
     cache["get_servicenow_sys_properties"] = sysProps
 
     return cache["get_servicenow_sys_properties"]
+
+# NOTE: Dict search next() iterator thingy from: https://stackoverflow.com/questions/8653516/search-a-list-of-dictionaries-in-python
 
 @registry.register_check("servicenow.access_control")
 def servicenow_sspm_user_session_allow_unsanitzed_messages_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
@@ -95,9 +98,9 @@ def servicenow_sspm_user_session_allow_unsanitzed_messages_check(cache: dict, aw
     if propertyValue != "false":
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.sandbox.usersession.allow_unsanitized_messages/check",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.sandbox.usersession.allow_unsanitized_messages/check",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
             "AwsAccountId": awsAccountId,
             "Types": ["Software and Configuration Checks"],
             "FirstObservedAt": iso8601Time,
@@ -123,7 +126,7 @@ def servicenow_sspm_user_session_allow_unsanitzed_messages_check(cache: dict, aw
             "Resources": [
                 {
                     "Type": "ServicenowInstance",
-                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/glide.sandbox.usersession.allow_unsanitized_messages",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
                     "Partition": awsPartition,
                     "Region": awsRegion,
                     "Details": {
@@ -167,9 +170,9 @@ def servicenow_sspm_user_session_allow_unsanitzed_messages_check(cache: dict, aw
     else:
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.sandbox.usersession.allow_unsanitized_messages/check",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.sandbox.usersession.allow_unsanitized_messages/check",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
             "AwsAccountId": awsAccountId,
             "Types": ["Software and Configuration Checks"],
             "FirstObservedAt": iso8601Time,
@@ -195,7 +198,191 @@ def servicenow_sspm_user_session_allow_unsanitzed_messages_check(cache: dict, aw
             "Resources": [
                 {
                     "Type": "ServicenowInstance",
-                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/glide.sandbox.usersession.allow_unsanitized_messages",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+
+@registry.register_check("servicenow.access_control")
+def servicenow_sspm_sysappmodule_script_exec_restriction_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
+    """
+    [SSPM.Servicenow.AccessControl.2] Instance should restrict authorization for script execution from the 'sys_app_module' table to specified roles
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    # Name of the property to evaluate against
+    evalTarget = "glide.script_processor.authorized_script_module_role"
+    # Get cached props
+    sysPropCache = get_servicenow_sys_properties(cache)
+
+    # There should not ever be a duplicate system property, use next() and a list comprehension to check if the
+    # property we're evaluating is in the list of properties we get from the cache. If it is NOT then set the
+    # value as `False` and we can fill in fake values. Not having a property for security hardening is the same
+    # as a failed finding with a lot less fan fair
+    propFinder = next((sysprop for sysprop in sysPropCache if sysprop["name"] == evalTarget), False)
+    # If we cannot find the property set "NOT_CONFIGURED" which will fail whatever the value should be
+    if propFinder == False:
+        propertyValue = "NOT_CONFIGURED"
+        propDescription = ""
+        propId = ""
+        propCreatedOn = ""
+        propCreatedBy = ""
+        propUpdatedOn = ""
+        propUpdatedBy = ""
+        propScope = ""
+    else:
+        propertyValue = str(propFinder["value"])
+        propDescription = str(propFinder["description"]).replace("\n    ", "")
+        propId = str(propFinder["sys_id"])
+        propCreatedOn = str(propFinder["sys_created_on"])
+        propCreatedBy = str(propFinder["sys_created_by"])
+        propUpdatedOn = str(propFinder["sys_updated_on"])
+        propUpdatedBy = str(propFinder["sys_updated_by"])
+        propScope = str(propFinder["sys_scope"]["value"])        
+    # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
+    # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
+    # are not a simple Boolean expression
+    if propertyValue != "":
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "HIGH"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.2] Instance should restrict authorization for script execution from the 'sys_app_module' table to specified roles",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not restrict authorization for script execution from the 'sys_app_module' table to specified roles. Use the glide.script_processor.authorized_script_module_role property to restrict the usage of running scripts from sys_app_module table to the defined role within the property. This property will restrict all system users of running any script from the sys_app_module unless they have the role specified within the property. Use the glide.script_processor.authorized_script_module_role property to specify the role that can run scripts. Without appropriate authorization configured on script requests, unauthorized users may access sensitive content/data on the instance. Refer to the remediation instructions if this configuration is not intended.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Authorization for script execution section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/authorization-script-execution.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.2] Instance should restrict authorization for script execution from the 'sys_app_module' table to specified roles",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} restricts authorization for script execution from the 'sys_app_module' table to specified roles.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Authorization for script execution section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/authorization-script-execution.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
                     "Partition": awsPartition,
                     "Region": awsRegion,
                     "Details": {
@@ -279,9 +466,9 @@ def servicenow_sspm_jsonv2_enforce_basic_auth_check(cache: dict, awsAccountId: s
     if propertyValue != "true":
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.jsonv2/check",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.jsonv2/check",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
             "AwsAccountId": awsAccountId,
             "Types": ["Software and Configuration Checks"],
             "FirstObservedAt": iso8601Time,
@@ -307,7 +494,7 @@ def servicenow_sspm_jsonv2_enforce_basic_auth_check(cache: dict, awsAccountId: s
             "Resources": [
                 {
                     "Type": "ServicenowInstance",
-                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.jsonv2",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
                     "Partition": awsPartition,
                     "Region": awsRegion,
                     "Details": {
@@ -351,9 +538,9 @@ def servicenow_sspm_jsonv2_enforce_basic_auth_check(cache: dict, awsAccountId: s
     else:
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.jsonv2/check",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.jsonv2/check",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
             "AwsAccountId": awsAccountId,
             "Types": ["Software and Configuration Checks"],
             "FirstObservedAt": iso8601Time,
@@ -379,7 +566,7 @@ def servicenow_sspm_jsonv2_enforce_basic_auth_check(cache: dict, awsAccountId: s
             "Resources": [
                 {
                     "Type": "ServicenowInstance",
-                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.jsonv2",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
                     "Partition": awsPartition,
                     "Region": awsRegion,
                     "Details": {
@@ -463,9 +650,9 @@ def servicenow_sspm_soap_enforce_basic_auth_check(cache: dict, awsAccountId: str
     if propertyValue != "true":
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.soap/check",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.soap/check",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
             "AwsAccountId": awsAccountId,
             "Types": ["Software and Configuration Checks"],
             "FirstObservedAt": iso8601Time,
@@ -491,14 +678,14 @@ def servicenow_sspm_soap_enforce_basic_auth_check(cache: dict, awsAccountId: str
             "Resources": [
                 {
                     "Type": "ServicenowInstance",
-                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.soap",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
                     "Partition": awsPartition,
                     "Region": awsRegion,
                     "Details": {
                         "Other": {
                             "ServicenowInstance": SNOW_INSTANCE_NAME,
                             "SysId": propId,
-                            "PropertyName": propertyName,
+                            "PropertyName": evalTarget,
                             "PropertyValue": propertyValue,
                             "Description": propDescription,
                             "CreatedBy": propCreatedBy,
@@ -535,9 +722,9 @@ def servicenow_sspm_soap_enforce_basic_auth_check(cache: dict, awsAccountId: str
     else:
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.soap/check",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.soap/check",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
             "AwsAccountId": awsAccountId,
             "Types": ["Software and Configuration Checks"],
             "FirstObservedAt": iso8601Time,
@@ -563,14 +750,382 @@ def servicenow_sspm_soap_enforce_basic_auth_check(cache: dict, awsAccountId: str
             "Resources": [
                 {
                     "Type": "ServicenowInstance",
-                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.soap",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
                     "Partition": awsPartition,
                     "Region": awsRegion,
                     "Details": {
                         "Other": {
                             "ServicenowInstance": SNOW_INSTANCE_NAME,
                             "SysId": propId,
-                            "PropertyName": propertyName,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+
+@registry.register_check("servicenow.access_control")
+def servicenow_sspm_block_access_for_delegated_dev_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
+    """
+    [SSPM.Servicenow.AccessControl.5] Instance should block access to the 'sys_user_has_role' table for delegated developer grant roles
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    # Name of the property to evaluate against
+    evalTarget = "com.glide.sys.security.delegateddev.block_grant_roles"
+    # Get cached props
+    sysPropCache = get_servicenow_sys_properties(cache)
+
+    # There should not ever be a duplicate system property, use next() and a list comprehension to check if the
+    # property we're evaluating is in the list of properties we get from the cache. If it is NOT then set the
+    # value as `False` and we can fill in fake values. Not having a property for security hardening is the same
+    # as a failed finding with a lot less fan fair
+    propFinder = next((sysprop for sysprop in sysPropCache if sysprop["name"] == evalTarget), False)
+    # If we cannot find the property set "NOT_CONFIGURED" which will fail whatever the value should be
+    if propFinder == False:
+        propertyValue = "NOT_CONFIGURED"
+        propDescription = ""
+        propId = ""
+        propCreatedOn = ""
+        propCreatedBy = ""
+        propUpdatedOn = ""
+        propUpdatedBy = ""
+        propScope = ""
+    else:
+        propertyValue = str(propFinder["value"])
+        propDescription = str(propFinder["description"]).replace("\n    ", "")
+        propId = str(propFinder["sys_id"])
+        propCreatedOn = str(propFinder["sys_created_on"])
+        propCreatedBy = str(propFinder["sys_created_by"])
+        propUpdatedOn = str(propFinder["sys_updated_on"])
+        propUpdatedBy = str(propFinder["sys_updated_by"])
+        propScope = str(propFinder["sys_scope"]["value"])        
+    # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
+    # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
+    # are not a simple Boolean expression
+    if propertyValue != "true":
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "HIGH"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.5] Instance should block access to the 'sys_user_has_role' table for delegated developer grant roles",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not block access to the 'sys_user_has_role' table for delegated developer grant roles. This configuration affects access for delegated developers that are updating user roles through script. When the configuration is compliant, the developer will not be able to update or insert records into the table sys_user_has_role without also the user_admin role. The value of this property affects whether a delegated developer is allowed to grant or receive unexpected access to functionality in the instance. When the property contains roles, only those roles may execute script modules. Without appropriate authorization, unauthorized users may access sensitive content/data on the instance. Refer to the remediation instructions if this configuration is not intended.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Block access for delegated developer section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/block-access-delegated-developers.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.5] Instance should block access to the 'sys_user_has_role' table for delegated developer grant roles",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} blocks access to the 'sys_user_has_role' table for delegated developer grant roles.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Block access for delegated developer section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/block-access-delegated-developers.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+
+@registry.register_check("servicenow.access_control")
+def servicenow_sspm_check_ui_action_conditions_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
+    """
+    [SSPM.Servicenow.AccessControl.6] Instance should check UI actions in forms and lists before execution
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    # Name of the property to evaluate against
+    evalTarget = "glide.security.strict.actions"
+    # Get cached props
+    sysPropCache = get_servicenow_sys_properties(cache)
+
+    # There should not ever be a duplicate system property, use next() and a list comprehension to check if the
+    # property we're evaluating is in the list of properties we get from the cache. If it is NOT then set the
+    # value as `False` and we can fill in fake values. Not having a property for security hardening is the same
+    # as a failed finding with a lot less fan fair
+    propFinder = next((sysprop for sysprop in sysPropCache if sysprop["name"] == evalTarget), False)
+    # If we cannot find the property set "NOT_CONFIGURED" which will fail whatever the value should be
+    if propFinder == False:
+        propertyValue = "NOT_CONFIGURED"
+        propDescription = ""
+        propId = ""
+        propCreatedOn = ""
+        propCreatedBy = ""
+        propUpdatedOn = ""
+        propUpdatedBy = ""
+        propScope = ""
+    else:
+        propertyValue = str(propFinder["value"])
+        propDescription = str(propFinder["description"]).replace("\n    ", "")
+        propId = str(propFinder["sys_id"])
+        propCreatedOn = str(propFinder["sys_created_on"])
+        propCreatedBy = str(propFinder["sys_created_by"])
+        propUpdatedOn = str(propFinder["sys_updated_on"])
+        propUpdatedBy = str(propFinder["sys_updated_by"])
+        propScope = str(propFinder["sys_scope"]["value"])        
+    # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
+    # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
+    # are not a simple Boolean expression
+    if propertyValue != "true":
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "MEDIUM"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.6] Instance should check UI actions in forms and lists before execution",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not check UI actions in forms and lists before execution. Use the 'glide.security.strict.actions' property to enable checking of UI actions conditions in forms and lists before they execute. When you set this property to true, it adds an extra layer of validation on the table UI actions before they are executed. Access request is always checked when transactions happen between two zones. This operation validates any UI actions before the form renders for the end user. Refer to the remediation instructions if this configuration is not intended.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Check UI action conditions before execution (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/check-ui-action-conditions-before-execution.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.6] Instance should check UI actions in forms and lists before execution",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} checks UI actions in forms and lists before execution.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Check UI action conditions before execution (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/check-ui-action-conditions-before-execution.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
                             "PropertyValue": propertyValue,
                             "Description": propDescription,
                             "CreatedBy": propCreatedBy,
