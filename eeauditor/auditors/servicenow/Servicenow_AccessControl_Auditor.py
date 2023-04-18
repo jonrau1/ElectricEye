@@ -35,7 +35,10 @@ def get_servicenow_sys_properties(cache: dict):
     """
     Pulls the entire Systems Properties table
     """
-    response = cache.get("get_servicenow_sys_properties")
+    response = (
+        cache.get("get_servicenow_sys_properties"),
+        cache.get("get_servicenow_sys_properties_list")
+    )
     if response:
         return response
     
@@ -47,13 +50,20 @@ def get_servicenow_sys_properties(cache: dict):
     )
 
     sysPropResource = snow.resource(api_path='/table/sys_properties')
-    sysPropsRaw = sysPropResource.get().all()
-    # jack with the JSON
-    #sysProps = json.dumps(json.loads(sysPropsRaw))
+    sysProps = sysPropResource.get().all()
     
-    cache["get_servicenow_sys_properties"] = sysPropsRaw
+    # Pull out all property names, used for look-ups if values are available
+    sysPropNames = []
+    for sysprop in sysProps:
+        sysPropNames.append(sysprop["name"])
+    
+    cache["get_servicenow_sys_properties"] = sysProps
+    cache["get_servicenow_sys_properties_list"] = sysPropNames
 
-    return cache["get_servicenow_sys_properties"]
+    return (
+        cache["get_servicenow_sys_properties"],
+        cache["get_servicenow_sys_properties_list"]
+    )
 
 @registry.register_check("servicenow.access_control")
 def servicenow_sspm_user_session_allow_unsanitzed_messages_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
@@ -62,7 +72,29 @@ def servicenow_sspm_user_session_allow_unsanitzed_messages_check(cache: dict, aw
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    for sysprop in get_servicenow_sys_properties(cache):
+    # Cache function returns the entirety of the `sys_properties` table (list of dicts) as well as a list
+    # of property names as a tuple. If the property we want to evaluate is not there it is a failing check
+    # if it is there then we need to evaluate if it's it's set correctly. This avoids unnecessary time
+    # wasted & CPU overhead looping and accessing lists over and over
+    sysPropCache = get_servicenow_sys_properties(cache)
+
+    # If the property is not in the list, it does not exist in the instance, fill in blank values
+    if "glide.sandbox.usersession.allow_unsanitized_messages" not in sysPropCache[1]:
+        propertyName = "glide.sandbox.usersession.allow_unsanitized_messages"
+        propertyValue = "NOT_CONFIGURED"
+        propDescription = ""
+        propId = ""
+        propCreatedOn = ""
+        propCreatedBy = ""
+        propUpdatedOn = ""
+        propUpdatedBy = ""
+        propScope = ""
+    else:
+        propFinder = list(filter(lambda prop: prop["name"] == "glide.sandbox.usersession.allow_unsanitized_messages", sysPropCache[0]))
+        print(propFinder)
+
+
+    """for sysprop in get_servicenow_sys_properties(cache):
         propertyName = str(sysprop["name"])
         propertyValue = str(sysprop["value"])
         # NOTE: This is where you match the sys_property you want to evaluate in reverse by continuing the loop when the 
@@ -226,12 +258,12 @@ def servicenow_sspm_user_session_allow_unsanitzed_messages_check(cache: dict, aw
                     "RecordState": "ARCHIVED"
                 }
                 yield finding
-            break
+            break"""
 
 @registry.register_check("servicenow.access_control")
 def servicenow_sspm_jsonv2_enforce_basic_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.AccessControl.2] Instance should enforce basic authentication for JSONv2 requests
+    [SSPM.Servicenow.AccessControl.3] Instance should enforce basic authentication for JSONv2 requests
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -268,7 +300,7 @@ def servicenow_sspm_jsonv2_enforce_basic_auth_check(cache: dict, awsAccountId: s
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "HIGH"},
                     "Confidence": 99,
-                    "Title": "[SSPM.Servicenow.AccessControl.2] Instance should enforce basic authentication for JSONv2 requests",
+                    "Title": "[SSPM.Servicenow.AccessControl.3] Instance should enforce basic authentication for JSONv2 requests",
                     "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not enforce basic authentication for JSONv2 requests. Use the 'glide.basicauth.required.jsonv2' property to designate if incoming JSONv2 requests should require basic authorization. Without appropriate authorization configured on the data source JSON requests, an unauthorized user can access sensitive content/data on the target instance. Refer to the remediation instructions if this configuration is not intended.",
                     "Remediation": {
                         "Recommendation": {
@@ -340,7 +372,7 @@ def servicenow_sspm_jsonv2_enforce_basic_auth_check(cache: dict, awsAccountId: s
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
-                    "Title": "[SSPM.Servicenow.AccessControl.2] Instance should enforce basic authentication for JSONv2 requests",
+                    "Title": "[SSPM.Servicenow.AccessControl.3] Instance should enforce basic authentication for JSONv2 requests",
                     "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} enforces basic authentication for JSONv2 requests.",
                     "Remediation": {
                         "Recommendation": {
@@ -404,7 +436,7 @@ def servicenow_sspm_jsonv2_enforce_basic_auth_check(cache: dict, awsAccountId: s
 @registry.register_check("servicenow.access_control")
 def servicenow_sspm_soap_enforce_basic_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.AccessControl.3] Instance should enforce basic authentication for SOAP requests
+    [SSPM.Servicenow.AccessControl.4] Instance should enforce basic authentication for SOAP requests
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -441,7 +473,7 @@ def servicenow_sspm_soap_enforce_basic_auth_check(cache: dict, awsAccountId: str
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "MEDIUM"},
                     "Confidence": 99,
-                    "Title": "[SSPM.Servicenow.AccessControl.2] Instance should enforce basic authentication for SOAP requests",
+                    "Title": "[SSPM.Servicenow.AccessControl.4] Instance should enforce basic authentication for SOAP requests",
                     "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not enforce basic authentication for SOAP requests. Use the 'glide.basicauth.required.soap' property to designate if incoming SOAP requests should require basic authorization. Without appropriate authorization configured on the data source SOAP requests, an unauthorized user can access sensitive content/data on the target instance. Refer to the remediation instructions if this configuration is not intended.",
                     "Remediation": {
                         "Recommendation": {
@@ -513,7 +545,7 @@ def servicenow_sspm_soap_enforce_basic_auth_check(cache: dict, awsAccountId: str
                     "UpdatedAt": iso8601Time,
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
-                    "Title": "[SSPM.Servicenow.AccessControl.2] Instance should enforce basic authentication for SOAP requests",
+                    "Title": "[SSPM.Servicenow.AccessControl.4] Instance should enforce basic authentication for SOAP requests",
                     "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} enforces basic authentication for SOAP requests.",
                     "Remediation": {
                         "Recommendation": {
