@@ -35,7 +35,7 @@ def get_servicenow_sys_properties(cache: dict):
     """
     Pulls the entire Systems Properties table
     """
-    response = cache["get_servicenow_sys_properties"]
+    response = cache.get("get_servicenow_sys_properties")
     if response:
         return response
     
@@ -45,10 +45,10 @@ def get_servicenow_sys_properties(cache: dict):
         user=SNOW_SSPM_USERNAME,
         password=SNOW_SSPM_PASSWORD
     )
-    print(snow)
 
     sysPropResource = snow.resource(api_path='/table/sys_properties')
     sysProps = sysPropResource.get().all()
+
     
     cache["get_servicenow_sys_properties"] = sysProps
 
@@ -70,6 +70,191 @@ def servicenow_sspm_user_session_allow_unsanitzed_messages_check(cache: dict, aw
     propFinder = next((sysprop for sysprop in sysPropCache if sysprop["name"] == evalTarget), False)
 
     print(propFinder)
+
+    # If the property is not in the list, it does not exist in the instance, fill in blank values
+    if evalTarget not in sysPropCache[1]:
+        propertyName = evalTarget
+        propertyValue = "NOT_CONFIGURED"
+        propDescription = ""
+        propId = ""
+        propCreatedOn = ""
+        propCreatedBy = ""
+        propUpdatedOn = ""
+        propUpdatedBy = ""
+        propScope = ""
+    else:
+        propFinder = list(filter(lambda prop: prop["name"] == evalTarget, sysPropCache[0]))
+        print(propFinder)
+
+    finding = {}
+    yield finding
+
+
+    """for sysprop in get_servicenow_sys_properties(cache):
+        propertyName = str(sysprop["name"])
+        propertyValue = str(sysprop["value"])
+        # NOTE: This is where you match the sys_property you want to evaluate in reverse by continuing the loop when the 
+        # value does not match what we want - should be faster than looking up a match. At the end of value evaluation
+        # you will `break` the loop
+        if propertyName != "glide.sandbox.usersession.allow_unsanitized_messages":
+            continue
+        else:
+            # NOTE: At this point you can bring in additional parsed info - we don't need to keep this shit in memory the whole loop
+            propDescription = str(sysprop["description"]).replace("\n    ", "")
+            propId = str(sysprop["sys_id"])
+            propCreatedOn = str(sysprop["sys_created_on"])
+            propCreatedBy = str(sysprop["sys_created_by"])
+            propUpdatedOn = str(sysprop["sys_updated_on"])
+            propUpdatedBy = str(sysprop["sys_updated_by"])
+            propScope = str(sysprop["sys_scope"]["value"])
+            # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
+            # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
+            # are not a simple Boolean expression
+            if propertyValue != "false":
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.sandbox.usersession.allow_unsanitized_messages/check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.sandbox.usersession.allow_unsanitized_messages/check",
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "HIGH"},
+                    "Confidence": 99,
+                    "Title": "[SSPM.Servicenow.AccessControl.1] Instance should block access to GlideSystemUserSession scriptable API unsanitized messages",
+                    "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not block access to GlideSystemUserSession scriptable API unsanitized messages. The client callable GlideSystemUserSessionSandbox scriptable API exposes GlideSystemUserSession's addErrorMessageNoSanitization and addInfoMessageNoSanitization methods to the javascript sandbox. This allows all users to call this method via script. When 'glide.sandbox.usersession.allow_unsanitized_messages' is set to 'true' a sandboxed user session is allowed to call information or error messages without sanitization. A warning will be logged when the message is called. When set to false, the call is not allowed. Without appropriate sanitization, potentially dangerous content may be accessed and the unsanitized error function is available to script. Refer to the remediation instructions if this configuration is not intended.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information refer to the Access to GlideSystemUserSession scriptable API section of the Servicenow Product Documentation.",
+                            "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/Access-GlideSystemUserSession-scriptable-API.html",
+                        }
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "Servicenow",
+                        "AssetClass": "Management & Governance",
+                        "AssetService": "Servicenow System Properties",
+                        "AssetType": "Servicenow Instance"
+                    },
+                    "Resources": [
+                        {
+                            "Type": "ServicenowInstance",
+                            "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/glide.sandbox.usersession.allow_unsanitized_messages",
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "Other": {
+                                    "ServicenowInstance": SNOW_INSTANCE_NAME,
+                                    "SysId": propId,
+                                    "PropertyName": propertyName,
+                                    "PropertyValue": propertyValue,
+                                    "Description": propDescription,
+                                    "CreatedBy": propCreatedBy,
+                                    "CreatedOn": propCreatedOn,
+                                    "UpdatedBy": propUpdatedBy,
+                                    "UpdatedOn": propUpdatedOn,
+                                    "Scope": propScope
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF PR.PT-3",
+                            "NIST SP 800-53 AC-3",
+                            "NIST SP 800-53 CM-7",
+                            "AICPA TSC CC6.1",
+                            "ISO 27001:2013 A.6.2.2", 
+                            "ISO 27001:2013 A.9.1.2",
+                            "ISO 27001:2013 A.9.4.1",
+                            "ISO 27001:2013 A.9.4.4",
+                            "ISO 27001:2013 A.9.4.5",
+                            "ISO 27001:2013 A.13.1.1",
+                            "ISO 27001:2013 A.14.1.2",
+                            "ISO 27001:2013 A.14.1.3",
+                            "ISO 27001:2013 A.18.1.3"
+                        ]
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE"
+                }
+                yield finding
+            else:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.sandbox.usersession.allow_unsanitized_messages/check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.sandbox.usersession.allow_unsanitized_messages/check",
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Confidence": 99,
+                    "Title": "[SSPM.Servicenow.AccessControl.1] Instance should block access to GlideSystemUserSession scriptable API unsanitized messages",
+                    "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} blocks access to GlideSystemUserSession scriptable API unsanitized messages.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "For more information refer to the Access to GlideSystemUserSession scriptable API section of the Servicenow Product Documentation.",
+                            "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/Access-GlideSystemUserSession-scriptable-API.html",
+                        }
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "Servicenow",
+                        "AssetClass": "Management & Governance",
+                        "AssetService": "Servicenow System Properties",
+                        "AssetType": "Servicenow Instance"
+                    },
+                    "Resources": [
+                        {
+                            "Type": "ServicenowInstance",
+                            "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/glide.sandbox.usersession.allow_unsanitized_messages",
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "Other": {
+                                    "ServicenowInstance": SNOW_INSTANCE_NAME,
+                                    "SysId": propId,
+                                    "PropertyName": propertyName,
+                                    "PropertyValue": propertyValue,
+                                    "Description": propDescription,
+                                    "CreatedBy": propCreatedBy,
+                                    "CreatedOn": propCreatedOn,
+                                    "UpdatedBy": propUpdatedBy,
+                                    "UpdatedOn": propUpdatedOn,
+                                    "Scope": propScope
+                                }
+                            }
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF PR.PT-3",
+                            "NIST SP 800-53 AC-3",
+                            "NIST SP 800-53 CM-7",
+                            "AICPA TSC CC6.1",
+                            "ISO 27001:2013 A.6.2.2", 
+                            "ISO 27001:2013 A.9.1.2",
+                            "ISO 27001:2013 A.9.4.1",
+                            "ISO 27001:2013 A.9.4.4",
+                            "ISO 27001:2013 A.9.4.5",
+                            "ISO 27001:2013 A.13.1.1",
+                            "ISO 27001:2013 A.14.1.2",
+                            "ISO 27001:2013 A.14.1.3",
+                            "ISO 27001:2013 A.18.1.3"
+                        ]
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED"
+                }
+                yield finding
+            break"""
 
 @registry.register_check("servicenow.access_control")
 def servicenow_sspm_jsonv2_enforce_basic_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
