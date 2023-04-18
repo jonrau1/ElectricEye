@@ -52,10 +52,10 @@ def get_servicenow_users(cache: dict):
 
     return cache["get_servicenow_users"]
 
-@registry.register_check("servicenow_user")
+@registry.register_check("servicenow.users")
 def servicenow_sspm_active_user_mfa_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.1] Active users should have multi-factor authentication enabled
+    [SSPM.Servicenow.Users.1] Active users should have multi-factor authentication enabled
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -85,7 +85,7 @@ def servicenow_sspm_active_user_mfa_check(cache: dict, awsAccountId: str, awsReg
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
-                "Title": "[SSPM.Servicenow.1] Active users should have multi-factor authentication enabled",
+                "Title": "[SSPM.Servicenow.Users.1] Active users should have multi-factor authentication enabled",
                 "Description": f"Servicenow user {userName} in instance {SNOW_INSTANCE_NAME} does not have multi-factor authentication (MFA) enabled. MFA, also known as two-step verification, is a security requirement that users enter more than one set of credentials to access an instance. While passwords protect digital assets, they are simply not enough. Expert cybercriminals try to actively find passwords. By discovering one password, access can potentially be gained to multiple accounts for which you might have reused the password. Multi-factor authentication acts as an additional layer of security to prevent unauthorized users from accessing these accounts, even when the password has been stolen. Businesses use multi-factor authentication to validate user identities and provide quick and convenient access to authorized users. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
@@ -164,7 +164,7 @@ def servicenow_sspm_active_user_mfa_check(cache: dict, awsAccountId: str, awsReg
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[SSPM.Servicenow.1] Active users should have multi-factor authentication enabled",
+                "Title": "[SSPM.Servicenow.Users.1] Active users should have multi-factor authentication enabled",
                 "Description": f"Servicenow user {userName} in instance {SNOW_INSTANCE_NAME} has multi-factor authentication (MFA) enabled.",
                 "Remediation": {
                     "Recommendation": {
@@ -231,10 +231,10 @@ def servicenow_sspm_active_user_mfa_check(cache: dict, awsAccountId: str, awsReg
             }
             yield finding
 
-@registry.register_check("servicenow_user")
+@registry.register_check("servicenow.users")
 def servicenow_sspm_active_user_failed_login_audits_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.2] Active users with more than {SNOW_FAILED_LOGIN_BREACHING_RATE} failed login attempts should be audited
+    [SSPM.Servicenow.Users.2] Active users with more than {SNOW_FAILED_LOGIN_BREACHING_RATE} failed login attempts should be audited
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -270,7 +270,7 @@ def servicenow_sspm_active_user_failed_login_audits_check(cache: dict, awsAccoun
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": f"[SSPM.Servicenow.2] Active users with more than {SNOW_FAILED_LOGIN_BREACHING_RATE} failed login attempts should be audited",
+                "Title": f"[SSPM.Servicenow.Users.2] Active users with more than {SNOW_FAILED_LOGIN_BREACHING_RATE} failed login attempts should be audited",
                 "Description": f"Servicenow user {userName} in instance {SNOW_INSTANCE_NAME} has more than {SNOW_FAILED_LOGIN_BREACHING_RATE} failed login attempts and should be audited for potential indicators of compromise. While multiple failed login attempts are not necessarily a security risk on its own, as it can be an accessibility issue or legitimate forgetfulness, adversaries and other unauthorized users often attempt password spraying and credential stuffing attacks to gain illicit access to User accounts. Servicenow reccommends appplying a defined logging and auditing strategy so that you can identify and act on suspicious activity in a timely manner. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
@@ -345,7 +345,7 @@ def servicenow_sspm_active_user_failed_login_audits_check(cache: dict, awsAccoun
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": f"[SSPM.Servicenow.2] Active users with more than {SNOW_FAILED_LOGIN_BREACHING_RATE} failed login attempts should be audited",
+                "Title": f"[SSPM.Servicenow.Users.2] Active users with more than {SNOW_FAILED_LOGIN_BREACHING_RATE} failed login attempts should be audited",
                 "Description": f"Servicenow user {userName} in instance {SNOW_INSTANCE_NAME} has none or less than {SNOW_FAILED_LOGIN_BREACHING_RATE} failed login attempts.",
                 "Remediation": {
                     "Recommendation": {
@@ -408,10 +408,10 @@ def servicenow_sspm_active_user_failed_login_audits_check(cache: dict, awsAccoun
             }
             yield finding
 
-@registry.register_check("servicenow_user")
+@registry.register_check("servicenow.users")
 def servicenow_sspm_active_user_lockout_audit_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.3] Active users that are locked out should be audited
+    [SSPM.Servicenow.Users.3] Active users that are locked out should be audited
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -442,7 +442,7 @@ def servicenow_sspm_active_user_lockout_audit_check(cache: dict, awsAccountId: s
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": "[SSPM.Servicenow.3] Active users that are locked out should be audited",
+                "Title": "[SSPM.Servicenow.Users.3] Active users that are locked out should be audited",
                 "Description": f"Servicenow user {userName} in instance {SNOW_INSTANCE_NAME} is locked out and should be audited for potential indicators of compromise. While multiple failed login attempts are not necessarily a security risk on its own, as it can be an accessibility issue or legitimate forgetfulness, adversaries and other unauthorized users often attempt password spraying and credential stuffing attacks to gain illicit access to User accounts. Servicenow reccommends appplying a defined logging and auditing strategy so that you can identify and act on suspicious activity in a timely manner. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
@@ -517,7 +517,7 @@ def servicenow_sspm_active_user_lockout_audit_check(cache: dict, awsAccountId: s
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[SSPM.Servicenow.3] Active users that are locked out should be audited",
+                "Title": "[SSPM.Servicenow.Users.3] Active users that are locked out should be audited",
                 "Description": f"Servicenow user {userName} in instance {SNOW_INSTANCE_NAME} is locked out and should be audited for potential indicators of compromise. While multiple failed login attempts are not necessarily a security risk on its own, as it can be an accessibility issue or legitimate forgetfulness, adversaries and other unauthorized users often attempt password spraying and credential stuffing attacks to gain illicit access to User accounts. Servicenow reccommends appplying a defined logging and auditing strategy so that you can identify and act on suspicious activity in a timely manner. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
