@@ -78,7 +78,10 @@ def servicenow_sspm_user_session_allow_unsanitzed_messages_check(cache: dict, aw
     # of property names as a tuple. If the property we want to evaluate is not there it is a failing check
     # if it is there then we need to evaluate if it's it's set correctly. This avoids unnecessary time
     # wasted & CPU overhead looping and accessing lists over and over
-    sysPropCache = get_servicenow_sys_properties(cache)
+    try:
+        sysPropCache = get_servicenow_sys_properties(cache)
+    except Exception as e:
+        raise e
 
     print(len(sysPropCache[1]))
 
@@ -96,9 +99,6 @@ def servicenow_sspm_user_session_allow_unsanitzed_messages_check(cache: dict, aw
     else:
         propFinder = list(filter(lambda prop: prop["name"] == evalTarget, sysPropCache[0]))
         print(propFinder)
-
-    finding = {}
-    yield finding
 
 
     """for sysprop in get_servicenow_sys_properties(cache):
