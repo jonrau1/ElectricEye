@@ -68,6 +68,9 @@ def servicenow_sspm_user_session_allow_unsanitzed_messages_check(cache: dict, aw
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
+    # Name of the property to evaluate against
+    evalTarget = "glide.sandbox.usersession.allow_unsanitized_messages"
+
     # Cache function returns the entirety of the `sys_properties` table (list of dicts) as well as a list
     # of property names as a tuple. If the property we want to evaluate is not there it is a failing check
     # if it is there then we need to evaluate if it's it's set correctly. This avoids unnecessary time
@@ -77,8 +80,8 @@ def servicenow_sspm_user_session_allow_unsanitzed_messages_check(cache: dict, aw
     print(len(sysPropCache[1]))
 
     # If the property is not in the list, it does not exist in the instance, fill in blank values
-    if "glide.sandbox.usersession.allow_unsanitized_messages" not in sysPropCache[1]:
-        propertyName = "glide.sandbox.usersession.allow_unsanitized_messages"
+    if evalTarget not in sysPropCache[1]:
+        propertyName = evalTarget
         propertyValue = "NOT_CONFIGURED"
         propDescription = ""
         propId = ""
@@ -88,7 +91,7 @@ def servicenow_sspm_user_session_allow_unsanitzed_messages_check(cache: dict, aw
         propUpdatedBy = ""
         propScope = ""
     else:
-        propFinder = list(filter(lambda prop: prop["name"] == "glide.sandbox.usersession.allow_unsanitized_messages", sysPropCache[0]))
+        propFinder = list(filter(lambda prop: prop["name"] == evalTarget, sysPropCache[0]))
         print(propFinder)
 
     finding = {}
