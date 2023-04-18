@@ -45,10 +45,10 @@ def get_servicenow_sys_properties(cache: dict):
         user=SNOW_SSPM_USERNAME,
         password=SNOW_SSPM_PASSWORD
     )
+    print(snow)
 
     sysPropResource = snow.resource(api_path='/table/sys_properties')
     sysProps = sysPropResource.get().all()
-
     
     cache["get_servicenow_sys_properties"] = sysProps
 
