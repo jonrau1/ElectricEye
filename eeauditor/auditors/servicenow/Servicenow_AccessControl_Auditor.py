@@ -55,7 +55,7 @@ def get_servicenow_sys_properties(cache: dict):
     for sysprop in sysProps:
         sysPropNames.append(sysprop["name"])
     
-    cache["get_servicenow_sys_properties"] = (sysProps, sysPropNames)
+    cache["get_servicenow_sys_properties"] = [sysProps, sysPropNames]
 
     return cache["get_servicenow_sys_properties"]
 
