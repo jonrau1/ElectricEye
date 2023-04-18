@@ -37,6 +37,7 @@ def get_servicenow_sys_properties(cache: dict):
     """
     response = cache["get_servicenow_sys_properties"]
     if response:
+        print("Cache hit!")
         return response
     
     # Will need to create the pysnow.Client object everywhere - doesn't appear to be thread-safe
