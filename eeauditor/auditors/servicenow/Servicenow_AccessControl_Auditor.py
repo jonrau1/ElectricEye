@@ -49,9 +49,9 @@ def get_servicenow_sys_properties(cache: dict):
     sysPropResource = snow.resource(api_path='/table/sys_properties')
     sysPropsRaw = sysPropResource.get().all()
     # jack with the JSON
-    sysProps = json.dumps(json.loads(sysPropsRaw))
+    #sysProps = json.dumps(json.loads(sysPropsRaw))
     
-    cache["get_servicenow_sys_properties"] = sysProps
+    cache["get_servicenow_sys_properties"] = sysPropsRaw
 
     return cache["get_servicenow_sys_properties"]
 
