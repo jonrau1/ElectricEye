@@ -49,6 +49,8 @@ def get_servicenow_sys_properties(cache: dict):
 
     sysPropResource = snow.resource(api_path='/table/sys_properties')
     sysProps = sysPropResource.get().all()
+
+    print(len(sysProps))
     
     # Pull out all property names, used for look-ups if values are available
     sysPropNames = []
