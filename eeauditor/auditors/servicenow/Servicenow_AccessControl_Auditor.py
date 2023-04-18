@@ -35,31 +35,34 @@ def get_servicenow_sys_properties(cache: dict):
     """
     Pulls the entire Systems Properties table
     """
-    response = cache["get_servicenow_sys_properties"]
-    if response:
-        print("Cache hit!")
-        return response
-    
-    # Will need to create the pysnow.Client object everywhere - doesn't appear to be thread-safe
-    snow = pysnow.Client(
-        instance=SNOW_INSTANCE_NAME,
-        user=SNOW_SSPM_USERNAME,
-        password=SNOW_SSPM_PASSWORD
-    )
+    try:
+        response = cache["get_servicenow_sys_properties"]
+        if response:
+            print("Cache hit!")
+            return response
+        
+        # Will need to create the pysnow.Client object everywhere - doesn't appear to be thread-safe
+        snow = pysnow.Client(
+            instance=SNOW_INSTANCE_NAME,
+            user=SNOW_SSPM_USERNAME,
+            password=SNOW_SSPM_PASSWORD
+        )
 
-    sysPropResource = snow.resource(api_path='/table/sys_properties')
-    sysProps = sysPropResource.get().all()
+        sysPropResource = snow.resource(api_path='/table/sys_properties')
+        sysProps = sysPropResource.get().all()
 
-    print(len(sysProps))
-    
-    # Pull out all property names, used for look-ups if values are available
-    sysPropNames = []
-    for sysprop in sysProps:
-        sysPropNames.append(sysprop["name"])
-    
-    cache["get_servicenow_sys_properties"] = [sysProps, sysPropNames]
+        print(len(sysProps))
+        
+        # Pull out all property names, used for look-ups if values are available
+        sysPropNames = []
+        for sysprop in sysProps:
+            sysPropNames.append(sysprop["name"])
+        
+        cache["get_servicenow_sys_properties"] = [sysProps, sysPropNames]
 
-    return cache["get_servicenow_sys_properties"]
+        return cache["get_servicenow_sys_properties"]
+    except Exception as e:
+        raise e
 
 @registry.register_check("servicenow.access_control")
 def servicenow_sspm_user_session_allow_unsanitzed_messages_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
