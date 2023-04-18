@@ -244,171 +244,182 @@ def servicenow_sspm_jsonv2_enforce_basic_auth_check(cache: dict, awsAccountId: s
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    for sysprop in get_servicenow_sys_properties(cache):
-        propertyName = str(sysprop["name"])
-        propertyValue = str(sysprop["value"])
-        # NOTE: This is where you match the sys_property you want to evaluate in reverse by continuing the loop when the 
-        # value does not match what we want - should be faster than looking up a match. At the end of value evaluation
-        # you will `break` the loop
-        if propertyName != "glide.basicauth.required.jsonv2":
-            continue
-        else:
-            # NOTE: At this point you can bring in additional parsed info - we don't need to keep this shit in memory the whole loop
-            propDescription = str(sysprop["description"]).replace("\n    ", "")
-            propId = str(sysprop["sys_id"])
-            propCreatedOn = str(sysprop["sys_created_on"])
-            propCreatedBy = str(sysprop["sys_created_by"])
-            propUpdatedOn = str(sysprop["sys_updated_on"])
-            propUpdatedBy = str(sysprop["sys_updated_by"])
-            propScope = str(sysprop["sys_scope"]["value"])
-            # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
-            # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
-            # are not a simple Boolean expression
-            if propertyValue != "true":
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.jsonv2/check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.jsonv2/check",
-                    "AwsAccountId": awsAccountId,
-                    "Types": ["Software and Configuration Checks"],
-                    "FirstObservedAt": iso8601Time,
-                    "CreatedAt": iso8601Time,
-                    "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "HIGH"},
-                    "Confidence": 99,
-                    "Title": "[SSPM.Servicenow.AccessControl.3] Instance should enforce basic authentication for JSONv2 requests",
-                    "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not enforce basic authentication for JSONv2 requests. Use the 'glide.basicauth.required.jsonv2' property to designate if incoming JSONv2 requests should require basic authorization. Without appropriate authorization configured on the data source JSON requests, an unauthorized user can access sensitive content/data on the target instance. Refer to the remediation instructions if this configuration is not intended.",
-                    "Remediation": {
-                        "Recommendation": {
-                            "Text": "For more information refer to the Basic auth: JSONv2 requests (instance security hardening) section of the Servicenow Product Documentation.",
-                            "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/basic-auth-jsonv2-requests.html",
-                        }
-                    },
-                    "ProductFields": {
-                        "ProductName": "ElectricEye",
-                        "Provider": "Servicenow",
-                        "AssetClass": "Management & Governance",
-                        "AssetService": "Servicenow System Properties",
-                        "AssetType": "Servicenow Instance"
-                    },
-                    "Resources": [
-                        {
-                            "Type": "ServicenowInstance",
-                            "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.jsonv2",
-                            "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {
-                                "Other": {
-                                    "ServicenowInstance": SNOW_INSTANCE_NAME,
-                                    "SysId": propId,
-                                    "PropertyName": propertyName,
-                                    "PropertyValue": propertyValue,
-                                    "Description": propDescription,
-                                    "CreatedBy": propCreatedBy,
-                                    "CreatedOn": propCreatedOn,
-                                    "UpdatedBy": propUpdatedBy,
-                                    "UpdatedOn": propUpdatedOn,
-                                    "Scope": propScope
-                                }
-                            }
-                        }
-                    ],
-                    "Compliance": {
-                        "Status": "FAILED",
-                        "RelatedRequirements": [
-                            "NIST CSF PR.PT-3",
-                            "NIST SP 800-53 AC-3",
-                            "NIST SP 800-53 CM-7",
-                            "AICPA TSC CC6.1",
-                            "ISO 27001:2013 A.6.2.2", 
-                            "ISO 27001:2013 A.9.1.2",
-                            "ISO 27001:2013 A.9.4.1",
-                            "ISO 27001:2013 A.9.4.4",
-                            "ISO 27001:2013 A.9.4.5",
-                            "ISO 27001:2013 A.13.1.1",
-                            "ISO 27001:2013 A.14.1.2",
-                            "ISO 27001:2013 A.14.1.3",
-                            "ISO 27001:2013 A.18.1.3"
-                        ]
-                    },
-                    "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE"
+    # Name of the property to evaluate against
+    evalTarget = "glide.basicauth.required.jsonv2"
+    # Get cached props
+    sysPropCache = get_servicenow_sys_properties(cache)
+
+    # There should not ever be a duplicate system property, use next() and a list comprehension to check if the
+    # property we're evaluating is in the list of properties we get from the cache. If it is NOT then set the
+    # value as `False` and we can fill in fake values. Not having a property for security hardening is the same
+    # as a failed finding with a lot less fan fair
+    propFinder = next((sysprop for sysprop in sysPropCache if sysprop["name"] == evalTarget), False)
+    # If we cannot find the property set "NOT_CONFIGURED" which will fail whatever the value should be
+    if propFinder == False:
+        propertyValue = "NOT_CONFIGURED"
+        propDescription = ""
+        propId = ""
+        propCreatedOn = ""
+        propCreatedBy = ""
+        propUpdatedOn = ""
+        propUpdatedBy = ""
+        propScope = ""
+    else:
+        propertyValue = str(propFinder["value"])
+        propDescription = str(propFinder["description"]).replace("\n    ", "")
+        propId = str(propFinder["sys_id"])
+        propCreatedOn = str(propFinder["sys_created_on"])
+        propCreatedBy = str(propFinder["sys_created_by"])
+        propUpdatedOn = str(propFinder["sys_updated_on"])
+        propUpdatedBy = str(propFinder["sys_updated_by"])
+        propScope = str(propFinder["sys_scope"]["value"])        
+    # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
+    # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
+    # are not a simple Boolean expression
+    if propertyValue != "true":
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.jsonv2/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.jsonv2/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "HIGH"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.3] Instance should enforce basic authentication for JSONv2 requests",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not enforce basic authentication for JSONv2 requests. Use the 'glide.basicauth.required.jsonv2' property to designate if incoming JSONv2 requests should require basic authorization. Without appropriate authorization configured on the data source JSON requests, an unauthorized user can access sensitive content/data on the target instance. Refer to the remediation instructions if this configuration is not intended.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Basic auth: JSONv2 requests (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/basic-auth-jsonv2-requests.html",
                 }
-                yield finding
-            else:
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.jsonv2/check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.jsonv2/check",
-                    "AwsAccountId": awsAccountId,
-                    "Types": ["Software and Configuration Checks"],
-                    "FirstObservedAt": iso8601Time,
-                    "CreatedAt": iso8601Time,
-                    "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "INFORMATIONAL"},
-                    "Confidence": 99,
-                    "Title": "[SSPM.Servicenow.AccessControl.3] Instance should enforce basic authentication for JSONv2 requests",
-                    "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} enforces basic authentication for JSONv2 requests.",
-                    "Remediation": {
-                        "Recommendation": {
-                            "Text": "For more information refer to the Basic auth: JSONv2 requests (instance security hardening) section of the Servicenow Product Documentation.",
-                            "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/basic-auth-jsonv2-requests.html",
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.jsonv2",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
                         }
-                    },
-                    "ProductFields": {
-                        "ProductName": "ElectricEye",
-                        "Provider": "Servicenow",
-                        "AssetClass": "Management & Governance",
-                        "AssetService": "Servicenow System Properties",
-                        "AssetType": "Servicenow Instance"
-                    },
-                    "Resources": [
-                        {
-                            "Type": "ServicenowInstance",
-                            "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.jsonv2",
-                            "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {
-                                "Other": {
-                                    "ServicenowInstance": SNOW_INSTANCE_NAME,
-                                    "SysId": propId,
-                                    "PropertyName": propertyName,
-                                    "PropertyValue": propertyValue,
-                                    "Description": propDescription,
-                                    "CreatedBy": propCreatedBy,
-                                    "CreatedOn": propCreatedOn,
-                                    "UpdatedBy": propUpdatedBy,
-                                    "UpdatedOn": propUpdatedOn,
-                                    "Scope": propScope
-                                }
-                            }
-                        }
-                    ],
-                    "Compliance": {
-                        "Status": "PASSED",
-                        "RelatedRequirements": [
-                            "NIST CSF PR.PT-3",
-                            "NIST SP 800-53 AC-3",
-                            "NIST SP 800-53 CM-7",
-                            "AICPA TSC CC6.1",
-                            "ISO 27001:2013 A.6.2.2", 
-                            "ISO 27001:2013 A.9.1.2",
-                            "ISO 27001:2013 A.9.4.1",
-                            "ISO 27001:2013 A.9.4.4",
-                            "ISO 27001:2013 A.9.4.5",
-                            "ISO 27001:2013 A.13.1.1",
-                            "ISO 27001:2013 A.14.1.2",
-                            "ISO 27001:2013 A.14.1.3",
-                            "ISO 27001:2013 A.18.1.3"
-                        ]
-                    },
-                    "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED"
+                    }
                 }
-                yield finding
-            break
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.jsonv2/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.jsonv2/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.3] Instance should enforce basic authentication for JSONv2 requests",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} enforces basic authentication for JSONv2 requests.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Basic auth: JSONv2 requests (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/basic-auth-jsonv2-requests.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.jsonv2",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
 
 @registry.register_check("servicenow.access_control")
 def servicenow_sspm_soap_enforce_basic_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
@@ -417,170 +428,181 @@ def servicenow_sspm_soap_enforce_basic_auth_check(cache: dict, awsAccountId: str
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    for sysprop in get_servicenow_sys_properties(cache):
-        propertyName = str(sysprop["name"])
-        propertyValue = str(sysprop["value"])
-        # NOTE: This is where you match the sys_property you want to evaluate in reverse by continuing the loop when the 
-        # value does not match what we want - should be faster than looking up a match. At the end of value evaluation
-        # you will `break` the loop
-        if propertyName != "glide.basicauth.required.soap":
-            continue
-        else:
-            # NOTE: At this point you can bring in additional parsed info - we don't need to keep this shit in memory the whole loop
-            propDescription = str(sysprop["description"]).replace("\n    ", "")
-            propId = str(sysprop["sys_id"])
-            propCreatedOn = str(sysprop["sys_created_on"])
-            propCreatedBy = str(sysprop["sys_created_by"])
-            propUpdatedOn = str(sysprop["sys_updated_on"])
-            propUpdatedBy = str(sysprop["sys_updated_by"])
-            propScope = str(sysprop["sys_scope"]["value"])
-            # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
-            # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
-            # are not a simple Boolean expression
-            if propertyValue != "true":
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.soap/check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.soap/check",
-                    "AwsAccountId": awsAccountId,
-                    "Types": ["Software and Configuration Checks"],
-                    "FirstObservedAt": iso8601Time,
-                    "CreatedAt": iso8601Time,
-                    "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "MEDIUM"},
-                    "Confidence": 99,
-                    "Title": "[SSPM.Servicenow.AccessControl.4] Instance should enforce basic authentication for SOAP requests",
-                    "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not enforce basic authentication for SOAP requests. Use the 'glide.basicauth.required.soap' property to designate if incoming SOAP requests should require basic authorization. Without appropriate authorization configured on the data source SOAP requests, an unauthorized user can access sensitive content/data on the target instance. Refer to the remediation instructions if this configuration is not intended.",
-                    "Remediation": {
-                        "Recommendation": {
-                            "Text": "For more information refer to the Basic auth: SOAP requests (instance security hardening) section of the Servicenow Product Documentation.",
-                            "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/basic-auth-soap-requests.html",
-                        }
-                    },
-                    "ProductFields": {
-                        "ProductName": "ElectricEye",
-                        "Provider": "Servicenow",
-                        "AssetClass": "Management & Governance",
-                        "AssetService": "Servicenow System Properties",
-                        "AssetType": "Servicenow Instance"
-                    },
-                    "Resources": [
-                        {
-                            "Type": "ServicenowInstance",
-                            "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.soap",
-                            "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {
-                                "Other": {
-                                    "ServicenowInstance": SNOW_INSTANCE_NAME,
-                                    "SysId": propId,
-                                    "PropertyName": propertyName,
-                                    "PropertyValue": propertyValue,
-                                    "Description": propDescription,
-                                    "CreatedBy": propCreatedBy,
-                                    "CreatedOn": propCreatedOn,
-                                    "UpdatedBy": propUpdatedBy,
-                                    "UpdatedOn": propUpdatedOn,
-                                    "Scope": propScope
-                                }
-                            }
-                        }
-                    ],
-                    "Compliance": {
-                        "Status": "FAILED",
-                        "RelatedRequirements": [
-                            "NIST CSF PR.PT-3",
-                            "NIST SP 800-53 AC-3",
-                            "NIST SP 800-53 CM-7",
-                            "AICPA TSC CC6.1",
-                            "ISO 27001:2013 A.6.2.2", 
-                            "ISO 27001:2013 A.9.1.2",
-                            "ISO 27001:2013 A.9.4.1",
-                            "ISO 27001:2013 A.9.4.4",
-                            "ISO 27001:2013 A.9.4.5",
-                            "ISO 27001:2013 A.13.1.1",
-                            "ISO 27001:2013 A.14.1.2",
-                            "ISO 27001:2013 A.14.1.3",
-                            "ISO 27001:2013 A.18.1.3"
-                        ]
-                    },
-                    "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE"
+    # Name of the property to evaluate against
+    evalTarget = "glide.basicauth.required.soap"
+    # Get cached props
+    sysPropCache = get_servicenow_sys_properties(cache)
+
+    # There should not ever be a duplicate system property, use next() and a list comprehension to check if the
+    # property we're evaluating is in the list of properties we get from the cache. If it is NOT then set the
+    # value as `False` and we can fill in fake values. Not having a property for security hardening is the same
+    # as a failed finding with a lot less fan fair
+    propFinder = next((sysprop for sysprop in sysPropCache if sysprop["name"] == evalTarget), False)
+    # If we cannot find the property set "NOT_CONFIGURED" which will fail whatever the value should be
+    if propFinder == False:
+        propertyValue = "NOT_CONFIGURED"
+        propDescription = ""
+        propId = ""
+        propCreatedOn = ""
+        propCreatedBy = ""
+        propUpdatedOn = ""
+        propUpdatedBy = ""
+        propScope = ""
+    else:
+        propertyValue = str(propFinder["value"])
+        propDescription = str(propFinder["description"]).replace("\n    ", "")
+        propId = str(propFinder["sys_id"])
+        propCreatedOn = str(propFinder["sys_created_on"])
+        propCreatedBy = str(propFinder["sys_created_by"])
+        propUpdatedOn = str(propFinder["sys_updated_on"])
+        propUpdatedBy = str(propFinder["sys_updated_by"])
+        propScope = str(propFinder["sys_scope"]["value"])        
+    # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
+    # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
+    # are not a simple Boolean expression
+    if propertyValue != "true":
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.soap/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.soap/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "MEDIUM"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.4] Instance should enforce basic authentication for SOAP requests",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not enforce basic authentication for SOAP requests. Use the 'glide.basicauth.required.soap' property to designate if incoming SOAP requests should require basic authorization. Without appropriate authorization configured on the data source SOAP requests, an unauthorized user can access sensitive content/data on the target instance. Refer to the remediation instructions if this configuration is not intended.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Basic auth: SOAP requests (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/basic-auth-soap-requests.html",
                 }
-                yield finding
-            else:
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.soap/check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.soap/check",
-                    "AwsAccountId": awsAccountId,
-                    "Types": ["Software and Configuration Checks"],
-                    "FirstObservedAt": iso8601Time,
-                    "CreatedAt": iso8601Time,
-                    "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "INFORMATIONAL"},
-                    "Confidence": 99,
-                    "Title": "[SSPM.Servicenow.AccessControl.4] Instance should enforce basic authentication for SOAP requests",
-                    "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} enforces basic authentication for SOAP requests.",
-                    "Remediation": {
-                        "Recommendation": {
-                            "Text": "For more information refer to the Basic auth: SOAP requests (instance security hardening) section of the Servicenow Product Documentation.",
-                            "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/basic-auth-soap-requests.html",
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.soap",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": propertyName,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
                         }
-                    },
-                    "ProductFields": {
-                        "ProductName": "ElectricEye",
-                        "Provider": "Servicenow",
-                        "AssetClass": "Management & Governance",
-                        "AssetService": "Servicenow System Properties",
-                        "AssetType": "Servicenow Instance"
-                    },
-                    "Resources": [
-                        {
-                            "Type": "ServicenowInstance",
-                            "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.soap",
-                            "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {
-                                "Other": {
-                                    "ServicenowInstance": SNOW_INSTANCE_NAME,
-                                    "SysId": propId,
-                                    "PropertyName": propertyName,
-                                    "PropertyValue": propertyValue,
-                                    "Description": propDescription,
-                                    "CreatedBy": propCreatedBy,
-                                    "CreatedOn": propCreatedOn,
-                                    "UpdatedBy": propUpdatedBy,
-                                    "UpdatedOn": propUpdatedOn,
-                                    "Scope": propScope
-                                }
-                            }
-                        }
-                    ],
-                    "Compliance": {
-                        "Status": "PASSED",
-                        "RelatedRequirements": [
-                            "NIST CSF PR.PT-3",
-                            "NIST SP 800-53 AC-3",
-                            "NIST SP 800-53 CM-7",
-                            "AICPA TSC CC6.1",
-                            "ISO 27001:2013 A.6.2.2", 
-                            "ISO 27001:2013 A.9.1.2",
-                            "ISO 27001:2013 A.9.4.1",
-                            "ISO 27001:2013 A.9.4.4",
-                            "ISO 27001:2013 A.9.4.5",
-                            "ISO 27001:2013 A.13.1.1",
-                            "ISO 27001:2013 A.14.1.2",
-                            "ISO 27001:2013 A.14.1.3",
-                            "ISO 27001:2013 A.18.1.3"
-                        ]
-                    },
-                    "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED"
+                    }
                 }
-                yield finding
-            break
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.soap/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.soap/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.4] Instance should enforce basic authentication for SOAP requests",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} enforces basic authentication for SOAP requests.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Basic auth: SOAP requests (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/basic-auth-soap-requests.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/glide.basicauth.required.soap",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": propertyName,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
 
 # END??
