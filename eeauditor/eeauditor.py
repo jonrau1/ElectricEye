@@ -184,9 +184,9 @@ class EEAuditor(object):
                             awsPartition=self.awsPartition,
                         ):
                             yield finding
-                    except Exception as e:
+                    except Exception:
                         print(traceback.format_exc())
-                        print(f"Failed to execute check {check_name} with exception {e}")
+                        #print(f"Failed to execute check {check_name} with exception {e}")
             # optional sleep if specified - hardcode to 0 seconds
             sleep(delay)
 
