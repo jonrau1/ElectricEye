@@ -56,7 +56,7 @@ def get_servicenow_sys_properties(cache: dict):
     return cache["get_servicenow_sys_properties"]
 
 @registry.register_check("servicenow.access_control")
-def servicenow_sspm_active_user_mfa_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
+def servicenow_sspm_user_session_allow_unsanitzed_messages_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
     [SSPM.Servicenow.AccessControl.1] Instance should block access to GlideSystemUserSession scriptable API unsanitized messages
     """
@@ -165,10 +165,10 @@ def servicenow_sspm_active_user_mfa_check(cache: dict, awsAccountId: str, awsReg
                     "FirstObservedAt": iso8601Time,
                     "CreatedAt": iso8601Time,
                     "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "HIGH"},
+                    "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
                     "Title": "[SSPM.Servicenow.AccessControl.1] Instance should block access to GlideSystemUserSession scriptable API unsanitized messages",
-                    "Description": f"Servicenow user {SNOW_INSTANCE_NAME} does not block access to GlideSystemUserSession scriptable API unsanitized messages. The client callable GlideSystemUserSessionSandbox scriptable API exposes GlideSystemUserSession's addErrorMessageNoSanitization and addInfoMessageNoSanitization methods to the javascript sandbox. This allows all users to call this method via script. When 'glide.sandbox.usersession.allow_unsanitized_messages' is set to 'true' a sandboxed user session is allowed to call information or error messages without sanitization. A warning will be logged when the message is called. When set to false, the call is not allowed. Without appropriate sanitization, potentially dangerous content may be accessed and the unsanitized error function is available to script. Refer to the remediation instructions if this configuration is not intended.",
+                    "Description": f"Servicenow user {SNOW_INSTANCE_NAME} blocks access to GlideSystemUserSession scriptable API unsanitized messages.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "For more information refer to the Access to GlideSystemUserSession scriptable API section of the Servicenow Product Documentation.",
@@ -205,7 +205,7 @@ def servicenow_sspm_active_user_mfa_check(cache: dict, awsAccountId: str, awsReg
                         }
                     ],
                     "Compliance": {
-                        "Status": "FAILED",
+                        "Status": "PASSED",
                         "RelatedRequirements": [
                             "NIST CSF PR.PT-3",
                             "NIST SP 800-53 AC-3",
@@ -222,8 +222,8 @@ def servicenow_sspm_active_user_mfa_check(cache: dict, awsAccountId: str, awsReg
                             "ISO 27001:2013 A.18.1.3"
                         ]
                     },
-                    "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE"
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED"
                 }
                 yield finding
             break
