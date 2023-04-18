@@ -78,6 +78,8 @@ def servicenow_sspm_user_session_allow_unsanitzed_messages_check(cache: dict, aw
     # wasted & CPU overhead looping and accessing lists over and over
     sysPropCache = get_servicenow_sys_properties(cache)
 
+    print(len(sysPropCache[1]))
+
     # If the property is not in the list, it does not exist in the instance, fill in blank values
     if "glide.sandbox.usersession.allow_unsanitized_messages" not in sysPropCache[1]:
         propertyName = "glide.sandbox.usersession.allow_unsanitized_messages"
@@ -92,6 +94,9 @@ def servicenow_sspm_user_session_allow_unsanitzed_messages_check(cache: dict, aw
     else:
         propFinder = list(filter(lambda prop: prop["name"] == "glide.sandbox.usersession.allow_unsanitized_messages", sysPropCache[0]))
         print(propFinder)
+
+    finding = {}
+    yield finding
 
 
     """for sysprop in get_servicenow_sys_properties(cache):
