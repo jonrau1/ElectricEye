@@ -35,10 +35,7 @@ def get_servicenow_sys_properties(cache: dict):
     """
     Pulls the entire Systems Properties table
     """
-    response = (
-        cache.get("get_servicenow_sys_properties"),
-        cache.get("get_servicenow_sys_properties_list")
-    )
+    response = cache["get_servicenow_sys_properties"]
     if response:
         return response
     
@@ -57,13 +54,9 @@ def get_servicenow_sys_properties(cache: dict):
     for sysprop in sysProps:
         sysPropNames.append(sysprop["name"])
     
-    cache["get_servicenow_sys_properties"] = sysProps
-    cache["get_servicenow_sys_properties_list"] = sysPropNames
+    cache["get_servicenow_sys_properties"] = (sysProps, sysPropNames)
 
-    return (
-        cache["get_servicenow_sys_properties"],
-        cache["get_servicenow_sys_properties_list"]
-    )
+    return cache["get_servicenow_sys_properties"]
 
 @registry.register_check("servicenow.access_control")
 def servicenow_sspm_user_session_allow_unsanitzed_messages_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
