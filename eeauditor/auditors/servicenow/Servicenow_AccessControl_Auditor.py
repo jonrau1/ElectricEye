@@ -229,7 +229,7 @@ def servicenow_sspm_user_session_allow_unsanitzed_messages_check(cache: dict, aw
             break
 
 @registry.register_check("servicenow.access_control")
-def servicenow_sspm_user_session_allow_unsanitzed_messages_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
+def servicenow_sspm_jsonv2_enforce_basic_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
     [SSPM.Servicenow.AccessControl.2] Instance should enforce basic authentication for JSONv2 requests
     """
