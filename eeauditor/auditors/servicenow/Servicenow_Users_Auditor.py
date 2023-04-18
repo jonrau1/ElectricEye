@@ -428,13 +428,8 @@ def servicenow_sspm_active_user_lockout_audit_check(cache: dict, awsAccountId: s
         # skip inactive users
         if user["active"] == "false":
             continue
-        # Attempt to read "failed_attempts" into an int to compare to `SNOW_FAILED_LOGIN_BREACHING_RATE` - ValueError catch to set 0
-        try:
-            failedAttempts = int(user["failed_attempts"])
-        except ValueError:
-            failedAttempts = 0
-        # This is a failing check
-        if failedAttempts >= int(SNOW_FAILED_LOGIN_BREACHING_RATE):
+        # failing check
+        if user["locked_out"] == "true":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"servicenow/{SNOW_INSTANCE_NAME}/user/{userId}/snow-user-locked-out-audit-check",
