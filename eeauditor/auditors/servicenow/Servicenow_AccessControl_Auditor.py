@@ -981,7 +981,7 @@ def servicenow_sspm_block_access_for_delegated_dev_check(cache: dict, awsAccount
 @registry.register_check("servicenow.access_control")
 def servicenow_sspm_csv_enforce_basic_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.AccessControl.7] Instance should enforce basic authentication for CSV requests
+    [SSPM.Servicenow.AccessControl.6] Instance should enforce basic authentication for CSV requests
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -1030,7 +1030,7 @@ def servicenow_sspm_csv_enforce_basic_auth_check(cache: dict, awsAccountId: str,
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "MEDIUM"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.AccessControl.7] Instance should enforce basic authentication for CSV requests",
+            "Title": "[SSPM.Servicenow.AccessControl.6] Instance should enforce basic authentication for CSV requests",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not enforce basic authentication for CSV requests. Use the 'glide.basicauth.required.csv' property to designate if incoming CSV (Comma-Separated Values) requests should require basic authentication. Without appropriate authorization configured on the incoming CSV requests, an unauthorized user can get access to sensitive content/data on the target instance. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -1102,7 +1102,7 @@ def servicenow_sspm_csv_enforce_basic_auth_check(cache: dict, awsAccountId: str,
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.AccessControl.7] Instance should enforce basic authentication for CSV requests",
+            "Title": "[SSPM.Servicenow.AccessControl.6] Instance should enforce basic authentication for CSV requests",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} enforces basic authentication for CSV requests.",
             "Remediation": {
                 "Recommendation": {
@@ -1165,7 +1165,7 @@ def servicenow_sspm_csv_enforce_basic_auth_check(cache: dict, awsAccountId: str,
 @registry.register_check("servicenow.access_control")
 def servicenow_sspm_acl_default_deny_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.AccessControl.8] Instance should be configured to deny access to objects that match wildcard table ACL rules by default
+    [SSPM.Servicenow.AccessControl.7] Instance should be configured to deny access to objects that match wildcard table ACL rules by default
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -1214,7 +1214,7 @@ def servicenow_sspm_acl_default_deny_check(cache: dict, awsAccountId: str, awsRe
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "HIGH"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.AccessControl.8] Instance should be configured to deny access to objects that match wildcard table ACL rules by default",
+            "Title": "[SSPM.Servicenow.AccessControl.7] Instance should be configured to deny access to objects that match wildcard table ACL rules by default",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is not configured to deny access to objects that match wildcard table ACL rules by default. Use the glide.sm.default_mode property to control the default behavior of security manager when it finds that existing ACL rules are a part of wildcard table ACL rules. When the High Security Settings (com.glide.high_security) plugin is activated during initial instance installation, it creates this property, and wildcard ACL rules come into existence. To provide role-based access to system tables, these rules control a significant number of ACLs and most common record-based operations. Unless you use the High Security plugin with default deny option enabled, many tables are not protected. The Now Platform uses a default deny security model that prevents non-administrator users from accessing objects unless they meet a matching ACL rule. Using this model, it removes many attack vectors, such as insecure scripts. Without the proper setting, Non-administrator users can access objects that match the wildcard table ACL rules. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -1286,7 +1286,7 @@ def servicenow_sspm_acl_default_deny_check(cache: dict, awsAccountId: str, awsRe
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.AccessControl.8] Instance should be configured to deny access to objects that match wildcard table ACL rules by default",
+            "Title": "[SSPM.Servicenow.AccessControl.7] Instance should be configured to deny access to objects that match wildcard table ACL rules by default",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is configured to deny access to objects that match wildcard table ACL rules by default.",
             "Remediation": {
                 "Recommendation": {
@@ -1349,7 +1349,7 @@ def servicenow_sspm_acl_default_deny_check(cache: dict, awsAccountId: str, awsRe
 @registry.register_check("servicenow.access_control")
 def servicenow_sspm_double_check_inbound_transactions_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
-    [SSPM.Servicenow.AccessControl.9] Instance should be configured to double check security on from submission inbound transactions
+    [SSPM.Servicenow.AccessControl.8] Instance should be configured to double check security on from submission inbound transactions
     """
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -1398,7 +1398,7 @@ def servicenow_sspm_double_check_inbound_transactions_check(cache: dict, awsAcco
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "HIGH"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.AccessControl.9] Instance should be configured to double check security on from submission inbound transactions",
+            "Title": "[SSPM.Servicenow.AccessControl.8] Instance should be configured to double check security on from submission inbound transactions",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is not configured to double check security on from submission inbound transactions. Use the 'glide.security.strict.updates' property to enable double-checking of security on inbound transactions during form submission. When you set this property to true, it adds an extra layer of table validation before a form renders in the browser. You should always check access request when transactions happen between two zones. This operation checks for permissions when the form is requested and before form rendering happens. Refer to the remediation instructions if this configuration is not intended.",
             "Remediation": {
                 "Recommendation": {
@@ -1470,12 +1470,934 @@ def servicenow_sspm_double_check_inbound_transactions_check(cache: dict, awsAcco
             "UpdatedAt": iso8601Time,
             "Severity": {"Label": "INFORMATIONAL"},
             "Confidence": 99,
-            "Title": "[SSPM.Servicenow.AccessControl.9] Instance should be configured to double check security on from submission inbound transactions",
+            "Title": "[SSPM.Servicenow.AccessControl.8] Instance should be configured to double check security on from submission inbound transactions",
             "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is configured to double check security on from submission inbound transactions.",
             "Remediation": {
                 "Recommendation": {
                     "Text": "For more information refer to the Double check inbound transactions (instance security hardening) section of the Servicenow Product Documentation.",
                     "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/double-check-inbound-transactions.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+
+@registry.register_check("servicenow.access_control")
+def servicenow_sspm_enable_acls_to_control_live_profile_details_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
+    """
+    [SSPM.Servicenow.AccessControl.9] Instance should enable ACLs to control if users can view live profile details
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    # Name of the property to evaluate against
+    evalTarget = "glide.live_profile.details"
+    # Get cached props
+    sysPropCache = get_servicenow_sys_properties(cache)
+
+    # There should not ever be a duplicate system property, use next() and a list comprehension to check if the
+    # property we're evaluating is in the list of properties we get from the cache. If it is NOT then set the
+    # value as `False` and we can fill in fake values. Not having a property for security hardening is the same
+    # as a failed finding with a lot less fan fair
+    propFinder = next((sysprop for sysprop in sysPropCache if sysprop["name"] == evalTarget), False)
+    # If we cannot find the property set "NOT_CONFIGURED" which will fail whatever the value should be
+    if propFinder == False:
+        propertyValue = "NOT_CONFIGURED"
+        propDescription = ""
+        propId = ""
+        propCreatedOn = ""
+        propCreatedBy = ""
+        propUpdatedOn = ""
+        propUpdatedBy = ""
+        propScope = ""
+    else:
+        propertyValue = str(propFinder["value"])
+        propDescription = str(propFinder["description"]).replace("\n    ", "")
+        propId = str(propFinder["sys_id"])
+        propCreatedOn = str(propFinder["sys_created_on"])
+        propCreatedBy = str(propFinder["sys_created_by"])
+        propUpdatedOn = str(propFinder["sys_updated_on"])
+        propUpdatedBy = str(propFinder["sys_updated_by"])
+        propScope = str(propFinder["sys_scope"]["value"])        
+    # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
+    # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
+    # are not a simple Boolean expression
+    if propertyValue != "ACL":
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "MEDIUM"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.9] Instance should enable ACLs to control if users can view live profile details",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not enable ACLs to control if users can view live profile details. Use the 'glide.live_profile.details' property to designate whether a user should be able to view all detail fields, such as company name and phone numbers, in a live profile. If the value is set to ACL, access to the live profile information is restricted, as per the ACLs created for the user profile. API requests should always honor table ACLs. Restriction must be applied to prevent unauthorized users accessing details of a Live Profile. Refer to the remediation instructions if this configuration is not intended.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Enable ACLs to control live profile details (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/enable-acls-to-control-live-profile-details.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.9] Instance should enable ACLs to control if users can view live profile details",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} enables ACLs to control if users can view live profile details.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Enable ACLs to control live profile details (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/enable-acls-to-control-live-profile-details.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+
+@registry.register_check("servicenow.access_control")
+def servicenow_sspm_ajaxgliderecord_acl_checking_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
+    """
+    [SSPM.Servicenow.AccessControl.10] Instance should enable ACL validation on server-side records accessed by GlideAjax APIs
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    # Name of the property to evaluate against
+    evalTarget = "glide.script.secure.ajaxgliderecord"
+    # Get cached props
+    sysPropCache = get_servicenow_sys_properties(cache)
+
+    # There should not ever be a duplicate system property, use next() and a list comprehension to check if the
+    # property we're evaluating is in the list of properties we get from the cache. If it is NOT then set the
+    # value as `False` and we can fill in fake values. Not having a property for security hardening is the same
+    # as a failed finding with a lot less fan fair
+    propFinder = next((sysprop for sysprop in sysPropCache if sysprop["name"] == evalTarget), False)
+    # If we cannot find the property set "NOT_CONFIGURED" which will fail whatever the value should be
+    if propFinder == False:
+        propertyValue = "NOT_CONFIGURED"
+        propDescription = ""
+        propId = ""
+        propCreatedOn = ""
+        propCreatedBy = ""
+        propUpdatedOn = ""
+        propUpdatedBy = ""
+        propScope = ""
+    else:
+        propertyValue = str(propFinder["value"])
+        propDescription = str(propFinder["description"]).replace("\n    ", "")
+        propId = str(propFinder["sys_id"])
+        propCreatedOn = str(propFinder["sys_created_on"])
+        propCreatedBy = str(propFinder["sys_created_by"])
+        propUpdatedOn = str(propFinder["sys_updated_on"])
+        propUpdatedBy = str(propFinder["sys_updated_by"])
+        propScope = str(propFinder["sys_scope"]["value"])        
+    # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
+    # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
+    # are not a simple Boolean expression
+    if propertyValue != "true":
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "HIGH"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.10] Instance should enable ACL validation on server-side records accessed by GlideAjax APIs",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not enable ACL validation on server-side records accessed by GlideAjax APIs. Use the 'glide.script.secure.ajaxgliderecord' property to perform access control rule (ACL) validation when server-side records, such as tables, are accessed using GlideAjax APIs within a client script. From client scripts, it is possible to query arbitrary data from the server using the AJAXGlideRecord (GlideAjax - Client) API, by using a syntax such as a server-side glide record. It is a powerful and useful tool in many deployments. If you choose to apply, Access Control Lists (ACL) to GlideAjax API calls, you can only query data to which the currently connected user has access. For example, if an ESS user who has no rights to read the cmn_location table is logged in, any GlideAjax API call to that table would fail. Through client scripts, it is possible to query arbitrary data from the server through the GlideAjax API. Server-side resources can be accessed without proper authorization, so using ACL validation helps the application validate the request based on the configured authorization. Refer to the remediation instructions if this configuration is not intended.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Enabling AJAXGlideRecord ACL checking (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/enabling-ajaxgliderecord-acl-checking.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.10] Instance should enable ACL validation on server-side records accessed by GlideAjax APIs",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} enables ACL validation on server-side records accessed by GlideAjax APIs.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Enabling AJAXGlideRecord ACL checking (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/enabling-ajaxgliderecord-acl-checking.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+
+@registry.register_check("servicenow.access_control")
+def servicenow_sspm_excel_enforce_basic_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
+    """
+    [SSPM.Servicenow.AccessControl.11] Instance should enforce basic authentication for Excel requests
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    # Name of the property to evaluate against
+    evalTarget = "glide.basicauth.required.excel"
+    # Get cached props
+    sysPropCache = get_servicenow_sys_properties(cache)
+
+    # There should not ever be a duplicate system property, use next() and a list comprehension to check if the
+    # property we're evaluating is in the list of properties we get from the cache. If it is NOT then set the
+    # value as `False` and we can fill in fake values. Not having a property for security hardening is the same
+    # as a failed finding with a lot less fan fair
+    propFinder = next((sysprop for sysprop in sysPropCache if sysprop["name"] == evalTarget), False)
+    # If we cannot find the property set "NOT_CONFIGURED" which will fail whatever the value should be
+    if propFinder == False:
+        propertyValue = "NOT_CONFIGURED"
+        propDescription = ""
+        propId = ""
+        propCreatedOn = ""
+        propCreatedBy = ""
+        propUpdatedOn = ""
+        propUpdatedBy = ""
+        propScope = ""
+    else:
+        propertyValue = str(propFinder["value"])
+        propDescription = str(propFinder["description"]).replace("\n    ", "")
+        propId = str(propFinder["sys_id"])
+        propCreatedOn = str(propFinder["sys_created_on"])
+        propCreatedBy = str(propFinder["sys_created_by"])
+        propUpdatedOn = str(propFinder["sys_updated_on"])
+        propUpdatedBy = str(propFinder["sys_updated_by"])
+        propScope = str(propFinder["sys_scope"]["value"])        
+    # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
+    # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
+    # are not a simple Boolean expression
+    if propertyValue != "true":
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "MEDIUM"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.11] Instance should enforce basic authentication for Excel requests",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not enforce basic authentication for Excel requests. Use the 'glide.basicauth.required.excel' property to designate if incoming Excel requests should require basic authentication. Without appropriate authorization configured on the incoming Excel requests, an unauthorized user can get access to sensitive content/data on the target instance. Refer to the remediation instructions if this configuration is not intended.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Excel request authorization (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/excel-request-authorization.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.11] Instance should enforce basic authentication for Excel requests",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} enforces basic authentication for Excel requests.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Excel request authorization (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/excel-request-authorization.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+
+# TODO: Explicit Role Plugin | https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/explicit-role-plugin.html
+
+@registry.register_check("servicenow.access_control")
+def servicenow_sspm_import_enforce_basic_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
+    """
+    [SSPM.Servicenow.AccessControl.12] Instance should enforce basic authentication for import processor requests
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    # Name of the property to evaluate against
+    evalTarget = "glide.basicauth.required.importprocessor"
+    # Get cached props
+    sysPropCache = get_servicenow_sys_properties(cache)
+
+    # There should not ever be a duplicate system property, use next() and a list comprehension to check if the
+    # property we're evaluating is in the list of properties we get from the cache. If it is NOT then set the
+    # value as `False` and we can fill in fake values. Not having a property for security hardening is the same
+    # as a failed finding with a lot less fan fair
+    propFinder = next((sysprop for sysprop in sysPropCache if sysprop["name"] == evalTarget), False)
+    # If we cannot find the property set "NOT_CONFIGURED" which will fail whatever the value should be
+    if propFinder == False:
+        propertyValue = "NOT_CONFIGURED"
+        propDescription = ""
+        propId = ""
+        propCreatedOn = ""
+        propCreatedBy = ""
+        propUpdatedOn = ""
+        propUpdatedBy = ""
+        propScope = ""
+    else:
+        propertyValue = str(propFinder["value"])
+        propDescription = str(propFinder["description"]).replace("\n    ", "")
+        propId = str(propFinder["sys_id"])
+        propCreatedOn = str(propFinder["sys_created_on"])
+        propCreatedBy = str(propFinder["sys_created_by"])
+        propUpdatedOn = str(propFinder["sys_updated_on"])
+        propUpdatedBy = str(propFinder["sys_updated_by"])
+        propScope = str(propFinder["sys_scope"]["value"])        
+    # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
+    # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
+    # are not a simple Boolean expression
+    if propertyValue != "true":
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "MEDIUM"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.12] Instance should enforce basic authentication for import processor requests",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not enforce basic authentication for import processor requests. Use the 'glide.basicauth.required.importprocessor ' property to designate if incoming import processor requests should require basic authentication. Without appropriate authorization configured on the incoming import processor  requests, an unauthorized user can get access to sensitive content/data on the target instance. Refer to the remediation instructions if this configuration is not intended.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the import processor request authorization (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/import-request-authorization.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.12] Instance should enforce basic authentication for import processor requests",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} enforces basic authentication for import processor requests.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the import processor request authorization (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/import-request-authorization.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+
+@registry.register_check("servicenow.access_control")
+def servicenow_sspm_pdf_enforce_basic_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
+    """
+    [SSPM.Servicenow.AccessControl.13] Instance should enforce basic authentication for PDF requests
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    # Name of the property to evaluate against
+    evalTarget = "glide.basicauth.required.pdf"
+    # Get cached props
+    sysPropCache = get_servicenow_sys_properties(cache)
+
+    # There should not ever be a duplicate system property, use next() and a list comprehension to check if the
+    # property we're evaluating is in the list of properties we get from the cache. If it is NOT then set the
+    # value as `False` and we can fill in fake values. Not having a property for security hardening is the same
+    # as a failed finding with a lot less fan fair
+    propFinder = next((sysprop for sysprop in sysPropCache if sysprop["name"] == evalTarget), False)
+    # If we cannot find the property set "NOT_CONFIGURED" which will fail whatever the value should be
+    if propFinder == False:
+        propertyValue = "NOT_CONFIGURED"
+        propDescription = ""
+        propId = ""
+        propCreatedOn = ""
+        propCreatedBy = ""
+        propUpdatedOn = ""
+        propUpdatedBy = ""
+        propScope = ""
+    else:
+        propertyValue = str(propFinder["value"])
+        propDescription = str(propFinder["description"]).replace("\n    ", "")
+        propId = str(propFinder["sys_id"])
+        propCreatedOn = str(propFinder["sys_created_on"])
+        propCreatedBy = str(propFinder["sys_created_by"])
+        propUpdatedOn = str(propFinder["sys_updated_on"])
+        propUpdatedBy = str(propFinder["sys_updated_by"])
+        propScope = str(propFinder["sys_scope"]["value"])        
+    # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
+    # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
+    # are not a simple Boolean expression
+    if propertyValue != "true":
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "MEDIUM"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.13] Instance should enforce basic authentication for PDF requests",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not enforce basic authentication for PDF requests. Use the 'glide.basicauth.required.pdf ' property to designate if incoming PDF requests should require basic authentication. Without appropriate authorization configured on the incoming PDF  requests, an unauthorized user can get access to sensitive content/data on the target instance. Refer to the remediation instructions if this configuration is not intended.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the PDF request authorization (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/pdf-request-authorization.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.13] Instance should enforce basic authentication for PDF requests",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} enforces basic authentication for PDF requests.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the PDF request authorization (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/import-request-authorization.html",
                 }
             },
             "ProductFields": {
