@@ -2397,7 +2397,7 @@ def servicenow_sspm_pdf_enforce_basic_auth_check(cache: dict, awsAccountId: str,
             "Remediation": {
                 "Recommendation": {
                     "Text": "For more information refer to the PDF request authorization (instance security hardening) section of the Servicenow Product Documentation.",
-                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/import-request-authorization.html",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/pdf-request-authorization.html",
                 }
             },
             "ProductFields": {
@@ -2451,5 +2451,1301 @@ def servicenow_sspm_pdf_enforce_basic_auth_check(cache: dict, awsAccountId: str,
             "RecordState": "ARCHIVED"
         }
         yield finding
+
+@registry.register_check("servicenow.access_control")
+def servicenow_sspm_performance_monitoring_acl_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
+    """
+    [SSPM.Servicenow.AccessControl.14] Instance should configure an ACL to protect performance monitoring from unauthorized access
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    # Name of the property to evaluate against
+    evalTarget = "glide.security.diag_txns_acl"
+    # Get cached props
+    sysPropCache = get_servicenow_sys_properties(cache)
+
+    # There should not ever be a duplicate system property, use next() and a list comprehension to check if the
+    # property we're evaluating is in the list of properties we get from the cache. If it is NOT then set the
+    # value as `False` and we can fill in fake values. Not having a property for security hardening is the same
+    # as a failed finding with a lot less fan fair
+    propFinder = next((sysprop for sysprop in sysPropCache if sysprop["name"] == evalTarget), False)
+    # If we cannot find the property set "NOT_CONFIGURED" which will fail whatever the value should be
+    if propFinder == False:
+        propertyValue = "NOT_CONFIGURED"
+        propDescription = ""
+        propId = ""
+        propCreatedOn = ""
+        propCreatedBy = ""
+        propUpdatedOn = ""
+        propUpdatedBy = ""
+        propScope = ""
+    else:
+        propertyValue = str(propFinder["value"])
+        propDescription = str(propFinder["description"]).replace("\n    ", "")
+        propId = str(propFinder["sys_id"])
+        propCreatedOn = str(propFinder["sys_created_on"])
+        propCreatedBy = str(propFinder["sys_created_by"])
+        propUpdatedOn = str(propFinder["sys_updated_on"])
+        propUpdatedBy = str(propFinder["sys_updated_by"])
+        propScope = str(propFinder["sys_scope"]["value"])        
+    # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
+    # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
+    # are not a simple Boolean expression
+    if propertyValue != "true":
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "LOW"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.14] Instance should configure an ACL to protect performance monitoring from unauthorized access",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not configure an ACL to protect performance monitoring from unauthorized access. Use the glide.security.diag_txns_acl property to control stats.do, threads.do, thread_pool_stats, and replication.do access from an unauthenticated connection. Without enabling this setting, it is still possible to access these resources from an unauthenticated connection. Refer to the remediation instructions if this configuration is not intended.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Performance monitoring (ACL) (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/performance-monitoring-acl.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.14] Instance should configure an ACL to protect performance monitoring from unauthorized access",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} configures an ACL to protect performance monitoring from unauthorized access.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Performance monitoring (ACL) (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/performance-monitoring-acl.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+
+@registry.register_check("servicenow.access_control")
+def servicenow_sspm_performance_monitoring_ip_restriction_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
+    """
+    [SSPM.Servicenow.AccessControl.15] Instance should configure an IP restriction list to protect performance monitoring from unauthorized access
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    # Name of the property to evaluate against
+    evalTarget = "glide.custom.ip.authenticate.allow"
+    # Get cached props
+    sysPropCache = get_servicenow_sys_properties(cache)
+
+    # There should not ever be a duplicate system property, use next() and a list comprehension to check if the
+    # property we're evaluating is in the list of properties we get from the cache. If it is NOT then set the
+    # value as `False` and we can fill in fake values. Not having a property for security hardening is the same
+    # as a failed finding with a lot less fan fair
+    propFinder = next((sysprop for sysprop in sysPropCache if sysprop["name"] == evalTarget), False)
+    # If we cannot find the property set "NOT_CONFIGURED" which will fail whatever the value should be
+    if propFinder == False:
+        propertyValue = "NOT_CONFIGURED"
+        propDescription = ""
+        propId = ""
+        propCreatedOn = ""
+        propCreatedBy = ""
+        propUpdatedOn = ""
+        propUpdatedBy = ""
+        propScope = ""
+    else:
+        propertyValue = str(propFinder["value"])
+        propDescription = str(propFinder["description"]).replace("\n    ", "")
+        propId = str(propFinder["sys_id"])
+        propCreatedOn = str(propFinder["sys_created_on"])
+        propCreatedBy = str(propFinder["sys_created_by"])
+        propUpdatedOn = str(propFinder["sys_updated_on"])
+        propUpdatedBy = str(propFinder["sys_updated_by"])
+        propScope = str(propFinder["sys_scope"]["value"])        
+    # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
+    # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
+    # are not a simple Boolean expression
+    if propertyValue != "":
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "LOW"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.15] Instance should configure an IP restriction list to protect performance monitoring from unauthorized access",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not configure an IP restriction list to protect performance monitoring from unauthorized access. Use the 'glide.custom.ip.authenticate.allow' property to enable only a specified comma-separated list or a range of IP addresses access to stats.do, threads.do, and replication.do pages. If this property is not enabled, it is possible to access those types of pages from any IP address. Unnecessary exposure to the target instance on the internet should be restricted with the help of IP access controls functionality. Refer to the remediation instructions if this configuration is not intended.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Performance monitoring IP restriction (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/performance-monitoring-ip-restriction.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.15] Instance should configure an IP restriction list to protect performance monitoring from unauthorized access",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} configures an IP restriction list to protect performance monitoring from unauthorized access.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Performance monitoring IP restriction (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/performance-monitoring-ip-restriction.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+
+@registry.register_check("servicenow.access_control")
+def servicenow_sspm_privacy_client_callable_script_includes_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
+    """
+    [SSPM.Servicenow.AccessControl.16] Instance should enable privacy control over all client-callable script includes accessed by public pages
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    # Name of the property to evaluate against
+    evalTarget = "glide.script.ccsi.ispublic"
+    # Get cached props
+    sysPropCache = get_servicenow_sys_properties(cache)
+
+    # There should not ever be a duplicate system property, use next() and a list comprehension to check if the
+    # property we're evaluating is in the list of properties we get from the cache. If it is NOT then set the
+    # value as `False` and we can fill in fake values. Not having a property for security hardening is the same
+    # as a failed finding with a lot less fan fair
+    propFinder = next((sysprop for sysprop in sysPropCache if sysprop["name"] == evalTarget), False)
+    # If we cannot find the property set "NOT_CONFIGURED" which will fail whatever the value should be
+    if propFinder == False:
+        propertyValue = "NOT_CONFIGURED"
+        propDescription = ""
+        propId = ""
+        propCreatedOn = ""
+        propCreatedBy = ""
+        propUpdatedOn = ""
+        propUpdatedBy = ""
+        propScope = ""
+    else:
+        propertyValue = str(propFinder["value"])
+        propDescription = str(propFinder["description"]).replace("\n    ", "")
+        propId = str(propFinder["sys_id"])
+        propCreatedOn = str(propFinder["sys_created_on"])
+        propCreatedBy = str(propFinder["sys_created_by"])
+        propUpdatedOn = str(propFinder["sys_updated_on"])
+        propUpdatedBy = str(propFinder["sys_updated_by"])
+        propScope = str(propFinder["sys_scope"]["value"])        
+    # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
+    # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
+    # are not a simple Boolean expression
+    if propertyValue != "false":
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "HIGH"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.16] Instance should enable privacy control over all client-callable script includes accessed by public pages",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not enable privacy control over all client-callable script includes accessed by public pages. By default, client-callable script includes that do not explicitly set visibility, are public. If needed, add the 'glide.script.ccsi.ispublic' property to enable privacy control over all client-callable script includes accessed by public pages. When you add this property, you must set its value to false, which designates that all client-callable script includes are private, and changes their visibility in public pages. If you do not add this property, client-side script includes circumvent ACLs, which may result in unintended public functionality. If the client script provides confidential information, it could have an adverse potential security risk. Refer to the remediation instructions if this configuration is not intended.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Privacy on client-callable script includes (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/privacy-on-client-callable-script-includes.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.16] Instance should enable privacy control over all client-callable script includes accessed by public pages",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} enables privacy control over all client-callable script includes accessed by public pages.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Privacy on client-callable script includes (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/privacy-on-client-callable-script-includes.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+
+@registry.register_check("servicenow.access_control")
+def servicenow_sspm_public_access_to_favorites_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
+    """
+    [SSPM.Servicenow.AccessControl.17] Instance should restrict public access to Favorites in the navigator
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    # Name of the property to evaluate against
+    evalTarget = "glide.ui.magellan.favorites.allow_public"
+    # Get cached props
+    sysPropCache = get_servicenow_sys_properties(cache)
+
+    # There should not ever be a duplicate system property, use next() and a list comprehension to check if the
+    # property we're evaluating is in the list of properties we get from the cache. If it is NOT then set the
+    # value as `False` and we can fill in fake values. Not having a property for security hardening is the same
+    # as a failed finding with a lot less fan fair
+    propFinder = next((sysprop for sysprop in sysPropCache if sysprop["name"] == evalTarget), False)
+    # If we cannot find the property set "NOT_CONFIGURED" which will fail whatever the value should be
+    if propFinder == False:
+        propertyValue = "NOT_CONFIGURED"
+        propDescription = ""
+        propId = ""
+        propCreatedOn = ""
+        propCreatedBy = ""
+        propUpdatedOn = ""
+        propUpdatedBy = ""
+        propScope = ""
+    else:
+        propertyValue = str(propFinder["value"])
+        propDescription = str(propFinder["description"]).replace("\n    ", "")
+        propId = str(propFinder["sys_id"])
+        propCreatedOn = str(propFinder["sys_created_on"])
+        propCreatedBy = str(propFinder["sys_created_by"])
+        propUpdatedOn = str(propFinder["sys_updated_on"])
+        propUpdatedBy = str(propFinder["sys_updated_by"])
+        propScope = str(propFinder["sys_scope"]["value"])        
+    # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
+    # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
+    # are not a simple Boolean expression
+    if propertyValue != "false":
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "MEDIUM"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.17] Instance should restrict public access to Favorites in the navigator",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not restrict public access to Favorites in the navigator. Use the 'glide.ui.magellan.favorites.allow_public' to specify whether unauthenticated users are allowed to see Favorites in the navigator. Public Access to Favorites will be compliant if 'glide.ui.magellan.favorites.allow_public' is set to false. If this property is not enabled, there is a risk of unauthorized access to sensitive data. Refer to the remediation instructions if this configuration is not intended.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Public access to favorites section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/public-access-favorites.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.17] Instance should restrict public access to Favorites in the navigator",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does restrict public access to Favorites in the navigator.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Public access to favorites section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/public-access-favorites.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+
+@registry.register_check("servicenow.access_control")
+def servicenow_sspm_ip_allowlist_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
+    """
+    [SSPM.Servicenow.AccessControl.18] Instance should restrict access to specific IP ranges
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    # Name of the property to evaluate against
+    evalTarget = "com.snc.ipauthenticator"
+    # Get cached props
+    sysPropCache = get_servicenow_sys_properties(cache)
+
+    # There should not ever be a duplicate system property, use next() and a list comprehension to check if the
+    # property we're evaluating is in the list of properties we get from the cache. If it is NOT then set the
+    # value as `False` and we can fill in fake values. Not having a property for security hardening is the same
+    # as a failed finding with a lot less fan fair
+    propFinder = next((sysprop for sysprop in sysPropCache if sysprop["name"] == evalTarget), False)
+    # If we cannot find the property set "NOT_CONFIGURED" which will fail whatever the value should be
+    if propFinder == False:
+        propertyValue = "NOT_CONFIGURED"
+        propDescription = ""
+        propId = ""
+        propCreatedOn = ""
+        propCreatedBy = ""
+        propUpdatedOn = ""
+        propUpdatedBy = ""
+        propScope = ""
+    else:
+        propertyValue = str(propFinder["value"])
+        propDescription = str(propFinder["description"]).replace("\n    ", "")
+        propId = str(propFinder["sys_id"])
+        propCreatedOn = str(propFinder["sys_created_on"])
+        propCreatedBy = str(propFinder["sys_created_by"])
+        propUpdatedOn = str(propFinder["sys_updated_on"])
+        propUpdatedBy = str(propFinder["sys_updated_by"])
+        propScope = str(propFinder["sys_scope"]["value"])        
+    # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
+    # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
+    # are not a simple Boolean expression
+    if propertyValue != "Active":
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "LOW"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.18] Instance should restrict access to specific IP ranges",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not restrict public access to specific IP ranges. Use the com.snc.ipauthenticator property to restrict access to specific IP ranges. Unless public access is intended for the instance, administrators should limit access to their assigned IP net blocks. Before setting this property, you must activate the IP Range Based Authentication com.snc.ipauthenticator plugin. To learn more, see IP range based authentication and in the Steps to configure section (below). Unnecessary exposure to the target instance on the internet should be restricted with the help of IP access controls functionality. Refer to the remediation instructions if this configuration is not intended.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Restrict access to specific IP ranges (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/restrict-access-to-specific-ip-ranges.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.18] Instance should restrict access to specific IP ranges",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does restrict public access to specific IP ranges.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Restrict access to specific IP ranges (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/restrict-access-to-specific-ip-ranges.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+
+@registry.register_check("servicenow.access_control")
+def servicenow_sspm_rss_enforce_basic_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
+    """
+    [SSPM.Servicenow.AccessControl.19] Instance should enforce basic authentication for RSS requests
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    # Name of the property to evaluate against
+    evalTarget = "glide.basicauth.required.rss"
+    # Get cached props
+    sysPropCache = get_servicenow_sys_properties(cache)
+
+    # There should not ever be a duplicate system property, use next() and a list comprehension to check if the
+    # property we're evaluating is in the list of properties we get from the cache. If it is NOT then set the
+    # value as `False` and we can fill in fake values. Not having a property for security hardening is the same
+    # as a failed finding with a lot less fan fair
+    propFinder = next((sysprop for sysprop in sysPropCache if sysprop["name"] == evalTarget), False)
+    # If we cannot find the property set "NOT_CONFIGURED" which will fail whatever the value should be
+    if propFinder == False:
+        propertyValue = "NOT_CONFIGURED"
+        propDescription = ""
+        propId = ""
+        propCreatedOn = ""
+        propCreatedBy = ""
+        propUpdatedOn = ""
+        propUpdatedBy = ""
+        propScope = ""
+    else:
+        propertyValue = str(propFinder["value"])
+        propDescription = str(propFinder["description"]).replace("\n    ", "")
+        propId = str(propFinder["sys_id"])
+        propCreatedOn = str(propFinder["sys_created_on"])
+        propCreatedBy = str(propFinder["sys_created_by"])
+        propUpdatedOn = str(propFinder["sys_updated_on"])
+        propUpdatedBy = str(propFinder["sys_updated_by"])
+        propScope = str(propFinder["sys_scope"]["value"])        
+    # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
+    # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
+    # are not a simple Boolean expression
+    if propertyValue != "true":
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "MEDIUM"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.19] Instance should enforce basic authentication for RSS requests",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not enforce basic authentication for RSS requests. Use the glide.basicauth.required.rss property to designate if incoming RSS requests should require basic authentication. Without appropriate authorization configured on the incoming RSS requests, an unauthorized user can get access to sensitive content/data on the target instance. Refer to the remediation instructions if this configuration is not intended.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the RSS request authorization (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/rss-request-authorization.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.19] Instance should enforce basic authentication for RSS requests",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} enforces basic authentication for RSS requests.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the RSS request authorization (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/rss-request-authorization.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+
+# TODO: SAML 2.0 WEB PROSER SSO PROFILE | https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/saml-20-web-browser-sso-profile.html
+
+@registry.register_check("servicenow.access_control")
+def servicenow_sspm_script_requests_enforce_basic_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
+    """
+    [SSPM.Servicenow.AccessControl.20] Instance should enforce basic authentication for script requests
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    # Name of the property to evaluate against
+    evalTarget = "glide.basicauth.required.scriptedprocessor"
+    # Get cached props
+    sysPropCache = get_servicenow_sys_properties(cache)
+
+    # There should not ever be a duplicate system property, use next() and a list comprehension to check if the
+    # property we're evaluating is in the list of properties we get from the cache. If it is NOT then set the
+    # value as `False` and we can fill in fake values. Not having a property for security hardening is the same
+    # as a failed finding with a lot less fan fair
+    propFinder = next((sysprop for sysprop in sysPropCache if sysprop["name"] == evalTarget), False)
+    # If we cannot find the property set "NOT_CONFIGURED" which will fail whatever the value should be
+    if propFinder == False:
+        propertyValue = "NOT_CONFIGURED"
+        propDescription = ""
+        propId = ""
+        propCreatedOn = ""
+        propCreatedBy = ""
+        propUpdatedOn = ""
+        propUpdatedBy = ""
+        propScope = ""
+    else:
+        propertyValue = str(propFinder["value"])
+        propDescription = str(propFinder["description"]).replace("\n    ", "")
+        propId = str(propFinder["sys_id"])
+        propCreatedOn = str(propFinder["sys_created_on"])
+        propCreatedBy = str(propFinder["sys_created_by"])
+        propUpdatedOn = str(propFinder["sys_updated_on"])
+        propUpdatedBy = str(propFinder["sys_updated_by"])
+        propScope = str(propFinder["sys_scope"]["value"])        
+    # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
+    # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
+    # are not a simple Boolean expression
+    if propertyValue != "true":
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "MEDIUM"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.20] Instance should enforce basic authentication for Script requests",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} does not enforce basic authentication for Script requests. Use the glide.basicauth.required.scriptedprocessor property to designate if incoming Script requests should require basic authentication. Without appropriate authorization configured on the incoming Script requests, an unauthorized user can get access to sensitive content/data on the target instance. Refer to the remediation instructions if this configuration is not intended.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Script request authorization (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/script-request-authorization.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.AccessControl.20] Instance should enforce basic authentication for Script requests",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} enforces basic authentication for Script requests.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Script request authorization (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/script-request-authorization.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+
+# TODO: Security jump start (ACL rules) | https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/security-jump-start-acl-rules.html
+
+# TODO: SNC Access Control plugin | https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/snc-access-control-plugin.html
+
+
 
 # END??
