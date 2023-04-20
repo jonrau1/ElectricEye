@@ -2,7 +2,7 @@
 
 ![Logo](./screenshots/logo.svg)
 
-ElectricEye is a Cloud Security Configuration CLI for AWS, GCP, Azure, and SaaS Security Posture Management with support for 100s of services and evaluations to harden your entire cloud footprint.
+ElectricEye is a Cloud Security Configuration CLI for AWS, GCP, Azure, and SaaS Security Posture Management with support for 100s of services and evaluations to harden your *entire* cloud footprint.
 
 ***Up here in space***<br/>
 ***I'm looking down on you***<br/>
@@ -325,9 +325,9 @@ In total there are...
 
 > - **2** Supported Public CSPs
 > - **1** Supported SaaS Provider
-> - **604** Security & Resilience Best Practice Checks supported across all Public CSPs & SaaS Providers
-> - **103** Supported CSP & SaaS Resources / Asset Types
-> - **81** Auditor Plugins
+> - **632** Security & Resilience Best Practice Checks supported across all Public CSPs & SaaS Providers
+> - **104** Supported CSP & SaaS Resources / Asset Types
+> - **82** Auditor Plugins
 
 ### AWS Checks & Services
 ___
@@ -980,13 +980,41 @@ ___
 ___
 
 These are the following services and checks perform by each Auditor, there are currently...
-- :boom: **1 Checks** :boom:
-- :exclamation: **1 supported Servicenow services/components** :exclamation:
-- :fire: **1 Auditors** :fire:
+- :boom: **29 Checks** :boom:
+- :exclamation: **2 supported ServiceNow services/components** :exclamation:
+- :fire: **2 Auditors** :fire:
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
 | Servicenow_Users_Auditor.py | Servicenow User | Do active users have MFA enabled |
+| Servicenow_Users_Auditor.py | Servicenow User | Audit active users for {X} failed login attempts |
+| Servicenow_Users_Auditor.py | Servicenow User | Audit active users that are locked out |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance block unsanitized messages |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance specify a script execution role |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for JSONv2 API |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for SOAP API |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does instance block delegated developer grant roles |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for CSV API |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce default deny |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance double-check inbound form transactions |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance control live profile details |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for GlideAjax API |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for Excel API |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for the import API |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for PDF API |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance protect performance monitoring for unauthorized access |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance restrict performance monitoring to specific IP |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enable privacy control for client-callable scripts |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance restrict Favorites access |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance have an IP Allowlist |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for RSS API |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for Script Requests API |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance perform validation for SOAP requests |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance restrict ServiceNow employee access
+| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for Unload API |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for WSDL API |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for XML API |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for XSD API |
 
 ### SSPM: M365 Checks & Services
 ___

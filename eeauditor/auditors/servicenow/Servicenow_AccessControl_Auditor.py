@@ -975,8 +975,6 @@ def servicenow_sspm_block_access_for_delegated_dev_check(cache: dict, awsAccount
         }
         yield finding
 
-# TODO: CONTEXTUAL SECURITY: ROLE MGMT PLUGIN CHECK | https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/contextual-security.html
-
 @registry.register_check("servicenow.access_control")
 def servicenow_sspm_csv_enforce_basic_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
@@ -2080,8 +2078,6 @@ def servicenow_sspm_excel_enforce_basic_auth_check(cache: dict, awsAccountId: st
             "RecordState": "ARCHIVED"
         }
         yield finding
-
-# TODO: Explicit Role Plugin | https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/explicit-role-plugin.html
 
 @registry.register_check("servicenow.access_control")
 def servicenow_sspm_import_enforce_basic_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
@@ -3555,8 +3551,6 @@ def servicenow_sspm_rss_enforce_basic_auth_check(cache: dict, awsAccountId: str,
         }
         yield finding
 
-# TODO: SAML 2.0 WEB PROSER SSO PROFILE | https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/saml-20-web-browser-sso-profile.html
-
 @registry.register_check("servicenow.access_control")
 def servicenow_sspm_script_requests_enforce_basic_auth_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
@@ -3740,10 +3734,6 @@ def servicenow_sspm_script_requests_enforce_basic_auth_check(cache: dict, awsAcc
             "RecordState": "ARCHIVED"
         }
         yield finding
-
-# TODO: Security jump start (ACL rules) | https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/security-jump-start-acl-rules.html
-
-# TODO: SNC Access Control plugin | https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/snc-access-control-plugin.html
 
 @registry.register_check("servicenow.access_control")
 def servicenow_sspm_soap_content_type_checking_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
@@ -4848,5 +4838,13 @@ def servicenow_sspm_xsd_request_enforce_basic_auth_check(cache: dict, awsAccount
             "RecordState": "ARCHIVED"
         }
         yield finding
+
+# TODO: Look into these Plugin-based checks and migrate??
+
+# TODO: CONTEXTUAL SECURITY: ROLE MGMT PLUGIN CHECK | https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/contextual-security.html
+# TODO: Explicit Role Plugin | https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/explicit-role-plugin.html
+# TODO: SAML 2.0 WEB PROSER SSO PROFILE | https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/saml-20-web-browser-sso-profile.html
+# TODO: Security jump start (ACL rules) | https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/security-jump-start-acl-rules.html
+# TODO: SNC Access Control plugin | https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/snc-access-control-plugin.html
 
 # END??
