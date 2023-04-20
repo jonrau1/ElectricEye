@@ -24,22 +24,18 @@ python3 eeauditor/controller.py -t AWS -o stdout
 - [Quick Run Down](#quick-run-down)
 - [Description](#tell-me-more)
 - [How do I use this](#how-do-i-use-this)
-  - [Amazon Web Services (AWS)](./docs/Setup_AWS.md)
-  - [ServiceNow SaaS Security Posture Management](./docs/Setup_ServiceNow.md)
-  - [GCP CSPM](#gcp)
-    - [GCP EASM Reporting](#gcp-external-attack-surface-reporting)
-  - [Azure CSPM](#azure)
-  - [SaaS Security Posture Management (SSPM)](#saas-security-posture-management-sspm)
-    - [GitHub SSPM](#evaluating-github)  
-    - [M365/O365 SSPM](#evaluating-m365)
-    - [Custom Outputs](#custom-outputs)
+  - [For Amazon Web Services (AWS)](./docs/Setup_AWS.md)
+  - [For Google Cloud Platform (GCP)](./docs/Setup_GCP.md)
+  - [For Microsoft Azure](./docs/Setup_Azure.md)
+  - [For ServiceNow SaaS Security Posture Management](./docs/Setup_ServiceNow.md)
+- [Custom Output](#custom-outputs)
 - [Supported Services and Checks](#supported-services-and-checks)
-    - [AWS Checks & Services](#aws-checks--services)
-    - [GCP Checks & Services](#gcp-checks--services)
-    - [Azure Checks & Services](#azure-checks--services)
-    - [SSPM: GitHub Checks & Services](#sspm-github-checks--services)
-    - [SSPM: Servicenow Checks & Services](#sspm-servicenow-checks--services)
-    - [SSPM: M365 Checks & Services](#sspm-m365-checks--services)
+  - [AWS Checks & Services](#aws-checks--services)
+  - [GCP Checks & Services](#gcp-checks--services)
+  - [Azure Checks & Services](#azure-checks--services)
+  - [SSPM: GitHub Checks & Services](#sspm-github-checks--services)
+  - [SSPM: ServiceNow Checks & Services](#sspm-servicenow-checks--services)
+  - [SSPM: M365 Checks & Services](#sspm-m365-checks--services)
 - [Contributing](#contributing)
 - [Developing new Checks](#developer-guide)
 - [Auditor testing](#auditor-testing)
@@ -47,17 +43,17 @@ python3 eeauditor/controller.py -t AWS -o stdout
 
 ## Quick Run Down :running: :running:
 
-- ElectricEye is a multi-cloud & Software-as-a-Service Posture Management CLI offering Cloud Security Posture Management (CPSM), SaaS Security Posture Management (SSPM), and External Attack Surface Monitoring (EASM) capabilities for **AWS**, **GCP**, **Azure** (*Coming Soon*), **Servicenow**, **M365** (*Coming Soon*), and **GitHub** (*Coming Soon*).
+- ElectricEye is a Python 3 Command Line Interace (CLI) that supports multi-Cloud and multi-Software-as-a-Service (multi-SaaS) Security Posture Management (CSPM, SSPM) and External Attack Surface Management (EASM) capabilities across AWS, GCP, and ServiceNow with dozens more Public Cloud Service Providers (CSPs) and SaaS Providers planned.
+
+- AWS assessments are done per-Account, per-Region. GCP assessments are done multi-Region, per Project. ServiceNow assessments are done at the Instance level.
+
+- For AWS, ElectricEye supports all 5 Parititions Commercial (`aws`), AWS GovCloud (`aws-gov`), AWS China (`aws-cn`), AWS Secret Region (`aws-iso-b`) and AWS Top Secret Region (`aws-iso`). For all other CSP and SaaS provider, only the commerical/non-US Government partitions/instances/tenants are supported.
 
 - For AWS, ElectricEye is the most comprhensive CSPM & EASM tool supporting over **600 Checks** for Security, Reliaiblity, Monitoring, and Exposure across **100 CSP Services** including atypical services not supported by AWS Config or mainstream CSPM & Cloud Native Application Protection Platform (CNAPP) tools such as AWS Managed Blockchain, AWS Managed Workflows for Apache AirFlow, Amazon MemoryDB, AWS Amplify, Amazon MQ, and more!
 
 - All checks are currently mapped to NIST CSF v1.1, NIST 800-53 r4, American Institute of Certified Public Accountants (AICPA) Trust Service Criteria (TSCs) which can be used for SOC2 Type I and SOC2 Type II, and ISO 27001:2013 ISMS controls for Audit Readiness and internal GRC requirements.
 
-- Configurable EASM module uses NMAP for service discovery and reachability assessment of over 20 highly-dangerous ports and protocols (e.g., SMB, MongoDB, VMWARE ESXi, and more) for nearly every public-facing capable AWS and GCP (*Coming Soon*) service.
-
-- Support for every single AWS Paritition: Commercial (`aws`), AWS GovCloud (`aws-gov`), AWS China (`aws-cn`), AWS Secret Region (`aws-iso-b`) and AWS Top Secret Region (`aws-iso`). GCP and Azure are only supported for their Commerical partitions.
-
-- Native AWS Multi-Account and Multi-Region Support. GCP is natively multi-Region without additional configuration.
+- Configurable EASM module uses NMAP for service discovery and reachability assessment of over 20 highly-dangerous ports and protocols (e.g., SMB, MongoDB, VMWARE ESXi, and more) for nearly every public-facing capable AWS service. GCP EASM is supported for GCE.
 
 - Outputs to AWS Security Hub, JSON, CSV, AWS DocumentDB, MongoDB, AWS RDS & Aurora for PostgreSQL, PostgreSQL, and DisruptOps by Firemon.
 
@@ -67,13 +63,16 @@ python3 eeauditor/controller.py -t AWS -o stdout
 
 ElectricEye was created in early 2019 as an extension to AWS Security Hub, AWS Cloud's native Cloud Security Posture Management (CSPM) solution, with the goal to extend beyond only AWS Config-supported Services and add extra checks and Audit Readiness Standards (AKA "Compliance Standards") to support Cloud Security, DevOps, IT, and Risk teams running workloads on AWS.
 
-Since then, ElectricEye has continued to expand into the most comprehensive AWS CSPM tool from a service support and check support perspective, adding additional functionality such as Secrets Management (powered by Yelp's Detect-Secrets), External Attack Surface Management (powered by NMAP and Shodan.io) and integration into multiple downstream data formats, databases, as well as AWS Security Hub itself. All findings are mapped to the AWS Security Finding Format (ASFF) for portability into AWS Security Lake and AWS Security Hub, and can be further parsed by supported outputs.
+Since then, ElectricEye has continued to expand into the most comprehensive AWS CSPM tool from a service support and check support perspective, adding additional functionality such as Secrets Management (powered by Yelp's **Detect-Secrets**), External Attack Surface Management (powered by **NMAP** and **Shodan.io**) and integration into multiple downstream data formats, databases, as well as AWS Security Hub itself. All findings are mapped to the AWS Security Finding Format (ASFF) for portability into AWS Security Lake and AWS Security Hub, and can be further parsed by supported outputs.
 
-As a CLI tool, ElectricEye can be ran from anywhere AWS credentials are supplied allowing for ultimate flexibility in deployment options and quick testing. All checks are organized into Service-specific files named **Auditors** with each Auditor comprised of one ore more **Checks** which produce **Findings**. The CLI supports running specific Auditors, Checks, or the entire library of Auditors by default.
+Within the control flow of ElectricEye, the "entrypoint" into the evaluation logic is controlled by the aptly named **Controller** (seen in [`controller.py`](./eeauditor/controller.py)) where all arguments are parsed and credentials are prepared. The evaluation engine is written fully in Python and mapped to the AWS Security Finding Format (ASFF) (with other Outputs provided), each CSP or SaaS tool is called an **Assessment Target**. 
 
-Multi-Account and Multi-Region operations are supported by the CLI options to supply a remote AWS Account and Role Name and/or AWS Region to dynamically created Boto3 Sessions with `AssumeRole` credentials but also retaining the original credentials to allow access to local AWS-native datastores for storing all of this information. To avoid throttling API responses, ElectricEye uses a locally developed caching mechanism which pulls required asset data at most once per Auditor and assesses the data in-memory. The cache is purged when not needed leading to lower CPU, memory, and network consumption.
+Every Assessment Target has a set of **Auditors** (also aptly named) which contain the logic to perform security, performance, resilience, and other best practice evaluations at a per-Service or per-Component level, for instance, the `AWS_IAM_Auditor` will evaluate every component of the AWS Identity & Access Management (IAM) include IAM Users, IAM Roles, IAM Groups, IAM Server Certificates, and IAM Policies. A discrete piece of logic to perform these evaluations is called a **Check** which is aligned to analyzing a single property of a specific service or component, such as checking whether AWs S3 Buckets are encrypted or whether GCP CloudSQL Instances are publicly reachable. 
 
-As of April 2023 ElectricEye supports the following CSPM, EASM, and SSPM capabilities. More SaaS Providers and CSPs as well as expanded service & capability coverage is under development.
+By default, ElectricEye will run every Auditor for a specific Assessment Target, however the Controller allows you to either run a specifc Auditor or a specific Check (not groups of them, and not interchangeably). Every single Check is written in Python and will use a native Python SDK per provider or will use the Python `requests` library to interact with a REST, SOAP or GraphQL API (depending on the Assessment Target). Each Auditor and their subsequent Checks are loaded into memory per Assessment Target using `pluginbase` Decorators which contain the information about the Auditor, each Check, and their service or component subject.
+
+As of April 2023 ElectricEye supports the following CSPM, EASM, and SSPM capabilities. More SaaS Providers and CSPs - as well as expanded service & capability coverage - is under active development.
+
 - **CSPM**: AWS, GCP
 - **SSPM**: Servicenow
 - **EASM**: AWS, GCP
@@ -82,132 +81,25 @@ As of April 2023 ElectricEye supports the following CSPM, EASM, and SSPM capabil
 
 Refer to sub-headings for per-CSP or per-SaaS setup instructions.
 
-- [Amazon Web Services (AWS)](./docs/Setup_AWS.md)
-- [ServiceNow SaaS Security Posture Management](./docs/Setup_ServiceNow.md)
+### Public Cloud Service Providers
 
-### GCP
-___
+- [For Amazon Web Services (AWS)](./docs/Setup_AWS.md)
+- [For Google Cloud Platform (GCP)](./docs/Setup_GCP.md)
+- [For Microsoft Azure (*Coming Soon*)](./docs/Setup_Azure.md)
+- [For Oracle Cloud Infrastructure (*Coming Soon*)](./docs/Setup_OCI.md)
 
-**Note** This section will be updated for GCP Organization-wide onboarding...eventually
+### Software-as-a-Service (SaaS) Providers
 
-0. Enable the following APIs for your GCP Projects you wish to assess
+- [For ServiceNow SaaS Security Posture Management (*Coming Soon*)](./docs/Setup_ServiceNow.md)
+- [For Microsoft M365 E5 SaaS Security Posture Management (*Coming Soon*)](./docs//Setup_M365.md)
+- [For Workday ERP SaaS Security Posture Management (*Coming Soon*)](./docs/Setup_WorkDay.md)
+- [For GitHub SaaS Security Posture Management (*Coming Soon*)](./docs/Setup_GitHub.md)
 
-    - Compute Engine API
-    - Cloud SQL Admin API
-    - Cloud Logging API
-    - OS Config API
-    - Service Networking API
+## Custom Outputs
 
-1. Create a Service Account with the following permissions per Project you want to assess with ElectricEye
+By default ElectricEye will send all evaluation results from Auditors to AWS Security Hub, however, several outputs are also possible.
 
-    - Security Reviewer
-    - Project Viewer
-
-2. Create a JSON Private Key and upload the full JSON contents to AWS Systems Manager Parameter store as a SecureString. When complete, you can delete the Private Key JSON file so you do not give it to someone...unsavory.
-
-
-```bash
-export GCP_SA_CRED_SSM_NAME='cool_name_here'
-aws ssm put-parameter \
-    --name $GCP_SA_CRED_SSM_NAME \
-    --description 'GCP SA JSON for [your SA name here?]' \
-    --type SecureString \
-    --value $PLACEHOLDER
-```
-
-3. Modify the `/eeauditor/external_providers.toml` file to point to the name of your SSM Parameter you created - ElectricEye will retrieve and write it back to another JSON file.
-
-```toml
-[gcp]
-gcp_service_account_json_payload_parameter_name = "<<cool_name_here>>"
-```
-
-4. With >=Python 3.6 installed, install and upgrade `pip3` and setup `virtualenv`
-
-```bash
-sudo apt install -y python3-pip
-pip3 install --upgrade pip
-pip3 install virtualenv --user
-virtualenv .venv
-```
-
-5. This will create a virtualenv directory called `.venv` which needs to be activated
-
-```bash
-#For macOS and Linux
-. .venv/bin/activate
-
-#For Windows
-.venv\scripts\activate
-```
-
-6. Clone the repo and install all dependencies
-
-```bash
-git clone https://github.com/jonrau1/ElectricEye.git
-cd ElectricEye
-pip3 install -r requirements.txt
-
-# if use AWS CloudShell
-pip3 install --user -r requirements.txt
-```
-
-7. Run the controller
-
-```bash
-export GCP_PROJECT_ID='<My_project_id>'
-python3 eeauditor/controller.py -t GCP --gcp-project-id $GCP_PROJECT_ID
-```
-
-Add the `--help` option for info on running individual checks and auditors and different outputs options. For instance, if you wanted to specify a specific Auditor use the following command to run it, specifiy the *name* of the Auditor **without** the `.py` ending.
-
-```bash
-export GCP_PROJECT_ID='<My_project_id>'
-python3 eeauditor/controller.py -t GCP -a GCP_ComputeEngine_Auditor --gcp-project-id $GCP_PROJECT_ID
-```
-
-You can get a full name of the auditors (as well as their checks within comments by using the following command).
-
-```bash
-python3 eeauditor/controller.py -t GCP --list-checks
-```
-
-#### GCP External Attack Surface Reporting
-___
-
-If you only wanted to run Attack Surface Monitoring checks use the following command which show an example of outputting the ASM checks into a JSON file for consumption into SIEM or BI tools.
-
-```bash
-python3 eeauditor/controller.py -t GCP -a ElectricEye_AttackSurface_GCP_Auditor -o json_normalized --output-file ElectricASM
-```
-
-### Azure
-___
-
-*Coming Soon!*
-
-### SaaS Security Posture Management (SSPM)
-___
-
-*Coming Soon!* The following sections will be dedicated to setting up your SaaS Provider API keys / OAuth applications for use with ElectricEye
-
-#### Evaluating GitHub
-___
-
-*Coming Soon!*
-
-
-#### Evaluating M365
-___
-
-**Important Note:** This has only been testing on a M365 E5 + ESM Tenant. Results may vary.
-
-*Coming Soon!*
-
-### Custom Outputs
-___
-
-While running on AWS Fargate and creating the infrastructure with CloudFormation or Terraform gives you the benefits of encapsulating environment variables you need, you may need to do configurations of your own different outputs. Using these different outputs like PostgreSQL, JSON, or CSV is great for any downstream use cases such as SIEM-ingestion, external tool reporting, business intelligence, machine learning, or loading a graph. Outputs are subject to change by release and will be updated here.
+**Note**: This section will be replaced at a later date.
 
 To list all currently available outputs: `python3 eeauditor/controller.py --list-options`, it will return a list of valid output locations such as `['postgres', 'sechub', 'json', 'csv', 'json_normalized', 'dops']`, by default findings go to AWS Security Hub (`sechub`).
 

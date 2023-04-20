@@ -1,6 +1,6 @@
 # ElectricEye Cloud Security Posture Management for AWS
 
-This documentation is dedicated to using ElectricEye for evaluation of AWS Environments, as well as running ElectricEye *in* AWS.
+This documentation is dedicated to using ElectricEye for evaluation of AWS Environments using CSPM and External Attack Surface Management (EASM) capabilities, as well as running ElectricEye *in* AWS
 
 ## Table of Contents
 

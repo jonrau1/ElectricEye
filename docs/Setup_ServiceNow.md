@@ -1,6 +1,6 @@
 # ElectricEye SaaS Security Posture Management (SSPM) for ServiceNow
 
-This documentation is dedicated to using ElectricEye for evaluation of ServiceNow Environments
+This documentation is dedicated to using ElectricEye for evaluation of ServiceNow instances using SSPM capabilities.
 
 ## Table of Contents
 
