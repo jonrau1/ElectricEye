@@ -938,6 +938,10 @@ These are the following services and checks perform by each Auditor, there are c
 | Servicenow_Users_Auditor.py | Servicenow Instance | Input Validation: Instances should sanitize HTML |
 | Servicenow_Users_Auditor.py | Servicenow Instance | Input Validation: Instances should prevent JavaScript injection with Jelly interpolation |
 | Servicenow_Users_Auditor.py | Servicenow Instance | Input Validation: Instances should enable SOAP request strict security |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Secure Communications: Instances should enable certficate validation on outbound connections |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Secure Communications: Instances should disable SSLv2 & SSLv3 |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Secure Communications: Instances should verify HTTP client hostnames |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Secure Communications: Instances should check revoked certificate status |
 
 ### SSPM: M365 Checks & Services
 ___
