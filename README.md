@@ -221,9 +221,9 @@ In total there are...
 
 > - **2** Supported Public CSPs
 > - **1** Supported SaaS Provider
-> - **646** Security & Resilience Best Practice Checks supported across all Public CSPs & SaaS Providers
+> - **659** Security & Resilience Best Practice Checks supported across all Public CSPs & SaaS Providers
 > - **104** Supported CSP & SaaS Resources / Asset Types
-> - **84** Auditor Plugins
+> - **85** Auditor Plugins
 
 ### AWS Checks & Services
 ___
@@ -876,9 +876,9 @@ ___
 ___
 
 These are the following services and checks perform by each Auditor, there are currently...
-- :boom: **43 Checks** :boom:
+- :boom: **56 Checks** :boom:
 - :exclamation: **2 supported ServiceNow services/components** :exclamation:
-- :fire: **4 Auditors** :fire:
+- :fire: **5 Auditors** :fire:
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
@@ -925,6 +925,19 @@ These are the following services and checks perform by each Auditor, there are c
 | Servicenow_Users_Auditor.py | Servicenow Instance | Email Security: Instances should restrict email HTML bodies from rendering |
 | Servicenow_Users_Auditor.py | Servicenow Instance | Email Security: Instances should restrict acccess to emails with empty target tables |
 | Servicenow_Users_Auditor.py | Servicenow Instance | Email Security: Instances should specify trusted domain allowlists |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Input Validation: Instances should disallow embedded HTML code |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Input Validation: Instances should disallow JavaScript in embedded HTML |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Input Validation: Instances should check unsanitized HTML |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Input Validation: Instances should enable script sandboxing |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Input Validation: Instances should disable AJAXEvaluate |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Input Validation: Instances should escape Excel formula injection |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Input Validation: Instances should escape HTML |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Input Validation: Instances should escape JavaScript |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Input Validation: Instances should escape Jelly |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Input Validation: Instances should escape XML |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Input Validation: Instances should sanitize HTML |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Input Validation: Instances should prevent JavaScript injection with Jelly interpolation |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Input Validation: Instances should enable SOAP request strict security |
 
 ### SSPM: M365 Checks & Services
 ___
