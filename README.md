@@ -24,14 +24,14 @@ python3 eeauditor/controller.py -t AWS -o stdout
 - [Quick Run Down](#quick-run-down)
 - [Description](#tell-me-more)
 - [How do I use this](#how-do-i-use-this)
-  - [For Amazon Web Services (AWS)](./docs/Setup_AWS.md)
-  - [For Google Cloud Platform (GCP)](./docs/Setup_GCP.md)
-  - [For Microsoft Azure](./docs/Setup_Azure.md)
-  - [For Oracle Cloud Infrastructure (*Coming Soon*)](./docs/Setup_OCI.md)
-  - [For ServiceNow SaaS Security Posture Management](./docs/Setup_ServiceNow.md)
-  - [For Microsoft M365 E5 SaaS Security Posture Management (*Coming Soon*)](./docs//Setup_M365.md)
-  - [For Workday ERP SaaS Security Posture Management (*Coming Soon*)](./docs/Setup_WorkDay.md)
-  - [For GitHub SaaS Security Posture Management (*Coming Soon*)](./docs/Setup_GitHub.md)
+  - [For Amazon Web Services (AWS)](./docs/setup/Setup_AWS.md)
+  - [For Google Cloud Platform (GCP)](./docs/setup/Setup_GCP.md)
+  - [For Microsoft Azure (*Coming Soon*)](./docs/setup/Setup_Azure.md)
+  - [For Oracle Cloud Infrastructure (*Coming Soon*)](./docs/setup/Setup_OCI.md)
+  - [For ServiceNow](./docs/setup/Setup_ServiceNow.md)
+  - [For Microsoft M365 (E5) (*Coming Soon*)](./docs//Setup_M365.md)
+  - [For Workday ERP (*Coming Soon*)](./docs/setup/Setup_WorkDay.md)
+  - [For GitHub (*Coming Soon*)](./docs/setup/Setup_GitHub.md)
 - [Custom Outputs](#custom-outputs)
 - [Supported Services and Checks](#supported-services-and-checks)
   - [AWS Checks & Services](#aws-checks--services)
@@ -87,17 +87,17 @@ Refer to sub-headings for per-CSP or per-SaaS setup instructions.
 
 ### Public Cloud Service Providers
 
-- [For Amazon Web Services (AWS)](./docs/Setup_AWS.md)
-- [For Google Cloud Platform (GCP)](./docs/Setup_GCP.md)
-- [For Microsoft Azure (*Coming Soon*)](./docs/Setup_Azure.md)
-- [For Oracle Cloud Infrastructure (*Coming Soon*)](./docs/Setup_OCI.md)
+- [For Amazon Web Services (AWS)](./docs/setup/Setup_AWS.md)
+- [For Google Cloud Platform (GCP)](./docs/setup/Setup_GCP.md)
+- [For Microsoft Azure (*Coming Soon*)](./docs/setup/Setup_Azure.md)
+- [For Oracle Cloud Infrastructure (*Coming Soon*)](./docs/setup/Setup_OCI.md)
 
 ### Software-as-a-Service (SaaS) Providers
 
-- [For ServiceNow SaaS Security Posture Management](./docs/Setup_ServiceNow.md)
-- [For Microsoft M365 E5 SaaS Security Posture Management (*Coming Soon*)](./docs//Setup_M365.md)
-- [For Workday ERP SaaS Security Posture Management (*Coming Soon*)](./docs/Setup_WorkDay.md)
-- [For GitHub SaaS Security Posture Management (*Coming Soon*)](./docs/Setup_GitHub.md)
+- [For ServiceNow](./docs/setup/Setup_ServiceNow.md)
+- [For Microsoft M365 (E5) (*Coming Soon*)](./docs//Setup_M365.md)
+- [For Workday ERP (*Coming Soon*)](./docs/setup/Setup_WorkDay.md)
+- [For GitHub (*Coming Soon*)](./docs/setup/Setup_GitHub.md)
 
 ## Custom Outputs
 
