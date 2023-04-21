@@ -221,9 +221,9 @@ In total there are...
 
 > - **2** Supported Public CSPs
 > - **1** Supported SaaS Provider
-> - **643** Security & Resilience Best Practice Checks supported across all Public CSPs & SaaS Providers
+> - **646** Security & Resilience Best Practice Checks supported across all Public CSPs & SaaS Providers
 > - **104** Supported CSP & SaaS Resources / Asset Types
-> - **83** Auditor Plugins
+> - **84** Auditor Plugins
 
 ### AWS Checks & Services
 ___
@@ -876,9 +876,9 @@ ___
 ___
 
 These are the following services and checks perform by each Auditor, there are currently...
-- :boom: **40 Checks** :boom:
+- :boom: **43 Checks** :boom:
 - :exclamation: **2 supported ServiceNow services/components** :exclamation:
-- :fire: **3 Auditors** :fire:
+- :fire: **4 Auditors** :fire:
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
@@ -922,6 +922,9 @@ These are the following services and checks perform by each Auditor, there are c
 | Servicenow_Users_Auditor.py | Servicenow Instance | Attachments: Instance should prevent specific file type upload |
 | Servicenow_Users_Auditor.py | Servicenow Instance | Attachments: Instance should prevent specific file type download |
 | Servicenow_Users_Auditor.py | Servicenow Instance | Attachments: Instance should enable MIME type validation |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Email Security: Instances should restrict email HTML bodies from rendering |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Email Security: Instances should restrict acccess to emails with empty target tables |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Email Security: Instances should specify trusted domain allowlists |
 
 ### SSPM: M365 Checks & Services
 ___
