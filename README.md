@@ -221,9 +221,9 @@ In total there are...
 
 > - **2** Supported Public CSPs
 > - **1** Supported SaaS Provider
-> - **659** Security & Resilience Best Practice Checks supported across all Public CSPs & SaaS Providers
+> - **663** Security & Resilience Best Practice Checks supported across all Public CSPs & SaaS Providers
 > - **104** Supported CSP & SaaS Resources / Asset Types
-> - **85** Auditor Plugins
+> - **86** Auditor Plugins
 
 ### AWS Checks & Services
 ___
@@ -876,9 +876,9 @@ ___
 ___
 
 These are the following services and checks perform by each Auditor, there are currently...
-- :boom: **56 Checks** :boom:
+- :boom: **60 Checks** :boom:
 - :exclamation: **2 supported ServiceNow services/components** :exclamation:
-- :fire: **5 Auditors** :fire:
+- :fire: **6 Auditors** :fire:
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
