@@ -28,7 +28,7 @@ python3 eeauditor/controller.py -t AWS -o stdout
   - [For Google Cloud Platform (GCP)](./docs/Setup_GCP.md)
   - [For Microsoft Azure](./docs/Setup_Azure.md)
   - [For Oracle Cloud Infrastructure (*Coming Soon*)](./docs/Setup_OCI.md)
-  - [For ServiceNow SaaS Security Posture Management (*Coming Soon*)](./docs/Setup_ServiceNow.md)
+  - [For ServiceNow SaaS Security Posture Management](./docs/Setup_ServiceNow.md)
   - [For Microsoft M365 E5 SaaS Security Posture Management (*Coming Soon*)](./docs//Setup_M365.md)
   - [For Workday ERP SaaS Security Posture Management (*Coming Soon*)](./docs/Setup_WorkDay.md)
   - [For GitHub SaaS Security Posture Management (*Coming Soon*)](./docs/Setup_GitHub.md)
@@ -53,13 +53,13 @@ python3 eeauditor/controller.py -t AWS -o stdout
 
 - For AWS, ElectricEye supports all 5 Parititions Commercial (`aws`), AWS GovCloud (`aws-gov`), AWS China (`aws-cn`), AWS Secret Region (`aws-iso-b`) and AWS Top Secret Region (`aws-iso`). For all other CSP and SaaS provider, only the commerical/non-US Government partitions/instances/tenants are supported.
 
-- For AWS, ElectricEye is the most comprhensive CSPM & EASM tool supporting over **600 Checks** for Security, Reliaiblity, Monitoring, and Exposure across **100 CSP Services** including atypical services not supported by AWS Config or mainstream CSPM & Cloud Native Application Protection Platform (CNAPP) tools such as AWS Managed Blockchain, AWS Managed Workflows for Apache AirFlow, Amazon MemoryDB, AWS Amplify, Amazon MQ, and more!
+- For AWS, ElectricEye is the most comprhensive CSPM & EASM tool supporting over **500 Checks** for Security, Reliaiblity, Monitoring, and Exposure across **100 CSP Services** including atypical services not supported by AWS Config or mainstream CSPM & Cloud Native Application Protection Platform (CNAPP) tools such as AWS Managed Blockchain, AWS Managed Workflows for Apache AirFlow, Amazon MemoryDB, AWS Amplify, Amazon MQ, and more!
 
 - All checks are currently mapped to NIST CSF v1.1, NIST 800-53 r4, American Institute of Certified Public Accountants (AICPA) Trust Service Criteria (TSCs) which can be used for SOC2 Type I and SOC2 Type II, and ISO 27001:2013 ISMS controls for Audit Readiness and internal GRC requirements.
 
 - Configurable EASM module uses NMAP for service discovery and reachability assessment of over 20 highly-dangerous ports and protocols (e.g., SMB, MongoDB, VMWARE ESXi, and more) for nearly every public-facing capable AWS service. GCP EASM is supported for GCE.
 
-- Outputs to AWS Security Hub, JSON, CSV, AWS DocumentDB, MongoDB, AWS RDS & Aurora for PostgreSQL, PostgreSQL, and DisruptOps by Firemon.
+- Outputs to AWS Security Hub, JSON, CSV, MongoDB, PostgreSQL, and DisruptOps by Firemon.
 
 ## Tell Me More :round_pushpin: :round_pushpin:
 
@@ -94,7 +94,7 @@ Refer to sub-headings for per-CSP or per-SaaS setup instructions.
 
 ### Software-as-a-Service (SaaS) Providers
 
-- [For ServiceNow SaaS Security Posture Management (*Coming Soon*)](./docs/Setup_ServiceNow.md)
+- [For ServiceNow SaaS Security Posture Management](./docs/Setup_ServiceNow.md)
 - [For Microsoft M365 E5 SaaS Security Posture Management (*Coming Soon*)](./docs//Setup_M365.md)
 - [For Workday ERP SaaS Security Posture Management (*Coming Soon*)](./docs/Setup_WorkDay.md)
 - [For GitHub SaaS Security Posture Management (*Coming Soon*)](./docs/Setup_GitHub.md)
@@ -221,9 +221,9 @@ In total there are...
 
 > - **2** Supported Public CSPs
 > - **1** Supported SaaS Provider
-> - **632** Security & Resilience Best Practice Checks supported across all Public CSPs & SaaS Providers
+> - **643** Security & Resilience Best Practice Checks supported across all Public CSPs & SaaS Providers
 > - **104** Supported CSP & SaaS Resources / Asset Types
-> - **82** Auditor Plugins
+> - **83** Auditor Plugins
 
 ### AWS Checks & Services
 ___
@@ -876,9 +876,9 @@ ___
 ___
 
 These are the following services and checks perform by each Auditor, there are currently...
-- :boom: **29 Checks** :boom:
+- :boom: **40 Checks** :boom:
 - :exclamation: **2 supported ServiceNow services/components** :exclamation:
-- :fire: **2 Auditors** :fire:
+- :fire: **3 Auditors** :fire:
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
@@ -911,12 +911,22 @@ These are the following services and checks perform by each Auditor, there are c
 | Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for WSDL API |
 | Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for XML API |
 | Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for XSD API |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Attachments: Does the instance restrict files from being rendered in the browser |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Attachments: Instance should restrict questionable file attachments |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Attachments: Instance should configure file download restrictions |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Attachments: Instances should enable access control for profile pictures |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Attachments: Instance should enforce downloading of attachments |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Attachments: Instance should define file type allowlist for uploads |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Attachments: Instance should prevent unauthorized access to attachments |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Attachments: Instance should prevent specific file extensions upload |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Attachments: Instance should prevent specific file type upload |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Attachments: Instance should prevent specific file type download |
+| Servicenow_Users_Auditor.py | Servicenow Instance | Attachments: Instance should enable MIME type validation |
 
 ### SSPM: M365 Checks & Services
 ___
 
 *Coming Soon!*
-
 
 ## Developer Guide
 

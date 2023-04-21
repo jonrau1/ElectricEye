@@ -1344,7 +1344,7 @@ def servicenow_sspm_restrict_unauthenticated_attachment_access_check(cache: dict
         yield finding
 
 @registry.register_check("servicenow.attachments")
-def servicenow_sspm_restrict_specify_excluded_attachments_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
+def servicenow_sspm_specify_excluded_attachments_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
     """
     [SSPM.Servicenow.Attachments.8] Instance should be configured to prevent upload of specific file extension types
     """
@@ -1473,6 +1473,558 @@ def servicenow_sspm_restrict_specify_excluded_attachments_check(cache: dict, aws
                 "Recommendation": {
                     "Text": "For more information refer to the Specify excluded attachment extensions (instance security hardening) section of the Servicenow Product Documentation.",
                     "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/specify-blacklisted-extensions.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+
+@registry.register_check("servicenow.attachments")
+def servicenow_sspm_specify_excluded_attachments_mime_type_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
+    """
+    [SSPM.Servicenow.Attachments.9] Instance should be configured to prevent upload of specific file (MIME) types
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    # Name of the property to evaluate against
+    evalTarget = "glide.attachment.blacklisted.types"
+    # Get cached props
+    sysPropCache = get_servicenow_sys_properties(cache)
+
+    # There should not ever be a duplicate system property, use next() and a list comprehension to check if the
+    # property we're evaluating is in the list of properties we get from the cache. If it is NOT then set the
+    # value as `False` and we can fill in fake values. Not having a property for security hardening is the same
+    # as a failed finding with a lot less fan fair
+    propFinder = next((sysprop for sysprop in sysPropCache if sysprop["name"] == evalTarget), False)
+    # If we cannot find the property set "NOT_CONFIGURED" which will fail whatever the value should be
+    if propFinder == False:
+        propertyValue = "NOT_CONFIGURED"
+        propDescription = ""
+        propId = ""
+        propCreatedOn = ""
+        propCreatedBy = ""
+        propUpdatedOn = ""
+        propUpdatedBy = ""
+        propScope = ""
+    else:
+        propertyValue = str(propFinder["value"])
+        propDescription = str(propFinder["description"]).replace("\n    ", "")
+        propId = str(propFinder["sys_id"])
+        propCreatedOn = str(propFinder["sys_created_on"])
+        propCreatedBy = str(propFinder["sys_created_by"])
+        propUpdatedOn = str(propFinder["sys_updated_on"])
+        propUpdatedBy = str(propFinder["sys_updated_by"])
+        propScope = str(propFinder["sys_scope"]["value"])        
+    # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
+    # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
+    # are not a simple Boolean expression
+    if propertyValue != "":
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "MEDIUM"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.Attachments.9] Instance should be configured to prevent upload of specific file (MIME) types",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is not configured to prevent upload of specific file (MIME) types. When the exclusion list validation is enabled in the Now Platform, use the 'glide.attachment.blacklisted.types' property to create a comma-delimited list of restricted uploadable file types. Uploading of the specified file types is restricted. A malicious user can upload malware infected attachment with common executable file types. Refer to the remediation instructions if this configuration is not intended.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Specify excluded attachment file types (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/specify-blacklisted-file-types.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.Attachments.9] Instance should be configured to prevent upload of specific file (MIME) types",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is configured to prevent upload of specific file (MIME) types.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Specify excluded attachment file types (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/specify-blacklisted-file-types.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+
+@registry.register_check("servicenow.attachments")
+def servicenow_sspm_restrict_downloaded_file_types_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
+    """
+    [SSPM.Servicenow.Attachments.10] Instance should be configured to restrict downloading specific file (MIME) types
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    # Name of the property to evaluate against
+    evalTarget = "glide.ui.strict_customer_uploaded_content_types"
+    # Get cached props
+    sysPropCache = get_servicenow_sys_properties(cache)
+
+    # There should not ever be a duplicate system property, use next() and a list comprehension to check if the
+    # property we're evaluating is in the list of properties we get from the cache. If it is NOT then set the
+    # value as `False` and we can fill in fake values. Not having a property for security hardening is the same
+    # as a failed finding with a lot less fan fair
+    propFinder = next((sysprop for sysprop in sysPropCache if sysprop["name"] == evalTarget), False)
+    # If we cannot find the property set "NOT_CONFIGURED" which will fail whatever the value should be
+    if propFinder == False:
+        propertyValue = "NOT_CONFIGURED"
+        propDescription = ""
+        propId = ""
+        propCreatedOn = ""
+        propCreatedBy = ""
+        propUpdatedOn = ""
+        propUpdatedBy = ""
+        propScope = ""
+    else:
+        propertyValue = str(propFinder["value"])
+        propDescription = str(propFinder["description"]).replace("\n    ", "")
+        propId = str(propFinder["sys_id"])
+        propCreatedOn = str(propFinder["sys_created_on"])
+        propCreatedBy = str(propFinder["sys_created_by"])
+        propUpdatedOn = str(propFinder["sys_updated_on"])
+        propUpdatedBy = str(propFinder["sys_updated_by"])
+        propScope = str(propFinder["sys_scope"]["value"])        
+    # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
+    # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
+    # are not a simple Boolean expression
+    if propertyValue != "":
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "MEDIUM"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.Attachments.10] Instance should be configured to restrict downloading specific file (MIME) types",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is not configured to restrict downloading specific file (MIME) types. Use the 'glide.ui.strict_customer_uploaded_content_types' property to create a comma-delimited list of restricted downloadable file types. The specified files types are the only ones that can be downloaded as static content from an instance. File download restrictions should be applied to any untrusted user input sources. Refer to the remediation instructions if this configuration is not intended.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Downloadable file types (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/specify-downloadable-file-types.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.Attachments.10] Instance should be configured to restrict downloading specific file (MIME) types",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is configured to restrict downloading specific file (MIME) types.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Downloadable file types (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/specify-downloadable-file-types.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED"
+        }
+        yield finding
+
+@registry.register_check("servicenow.attachments")
+def servicenow_sspm_upload_mime_type_restriction_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str):
+    """
+    [SSPM.Servicenow.Attachments.11] Instance should be configured to activate MIME type checking for uploads
+    """
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    # Name of the property to evaluate against
+    evalTarget = "glide.security.file.mime_type.validation"
+    # Get cached props
+    sysPropCache = get_servicenow_sys_properties(cache)
+
+    # There should not ever be a duplicate system property, use next() and a list comprehension to check if the
+    # property we're evaluating is in the list of properties we get from the cache. If it is NOT then set the
+    # value as `False` and we can fill in fake values. Not having a property for security hardening is the same
+    # as a failed finding with a lot less fan fair
+    propFinder = next((sysprop for sysprop in sysPropCache if sysprop["name"] == evalTarget), False)
+    # If we cannot find the property set "NOT_CONFIGURED" which will fail whatever the value should be
+    if propFinder == False:
+        propertyValue = "NOT_CONFIGURED"
+        propDescription = ""
+        propId = ""
+        propCreatedOn = ""
+        propCreatedBy = ""
+        propUpdatedOn = ""
+        propUpdatedBy = ""
+        propScope = ""
+    else:
+        propertyValue = str(propFinder["value"])
+        propDescription = str(propFinder["description"]).replace("\n    ", "")
+        propId = str(propFinder["sys_id"])
+        propCreatedOn = str(propFinder["sys_created_on"])
+        propCreatedBy = str(propFinder["sys_created_by"])
+        propUpdatedOn = str(propFinder["sys_updated_on"])
+        propUpdatedBy = str(propFinder["sys_updated_by"])
+        propScope = str(propFinder["sys_scope"]["value"])        
+    # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
+    # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
+    # are not a simple Boolean expression
+    if propertyValue != "true":
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "MEDIUM"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.Attachments.11] Instance should be configured to activate MIME type checking for uploads",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is not configured to activate MIME type checking for uploads. Use the glide.security.file.mime_type.validation property to activate MIME type checking for uploads. You can enable (set the property to true) or disable (set it to false) MIME type validation for file attachments. To reduce vulnerabilities such as file inclusion and malicious file uploads, MIME type verification should be enabled. Refer to the remediation instructions if this configuration is not intended.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Upload MIME type restriction (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/upload-mime-type-restriction.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "Servicenow",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Servicenow System Properties",
+                "AssetType": "Servicenow Instance"
+            },
+            "Resources": [
+                {
+                    "Type": "ServicenowInstance",
+                    "Id": f"{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                    "Details": {
+                        "Other": {
+                            "ServicenowInstance": SNOW_INSTANCE_NAME,
+                            "SysId": propId,
+                            "PropertyName": evalTarget,
+                            "PropertyValue": propertyValue,
+                            "Description": propDescription,
+                            "CreatedBy": propCreatedBy,
+                            "CreatedOn": propCreatedOn,
+                            "UpdatedBy": propUpdatedBy,
+                            "UpdatedOn": propUpdatedOn,
+                            "Scope": propScope
+                        }
+                    }
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF PR.PT-3",
+                    "NIST SP 800-53 AC-3",
+                    "NIST SP 800-53 CM-7",
+                    "AICPA TSC CC6.1",
+                    "ISO 27001:2013 A.6.2.2", 
+                    "ISO 27001:2013 A.9.1.2",
+                    "ISO 27001:2013 A.9.4.1",
+                    "ISO 27001:2013 A.9.4.4",
+                    "ISO 27001:2013 A.9.4.5",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.14.1.2",
+                    "ISO 27001:2013 A.14.1.3",
+                    "ISO 27001:2013 A.18.1.3"
+                ]
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE"
+        }
+        yield finding
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[SSPM.Servicenow.Attachments.11] Instance should be configured to activate MIME type checking for uploads",
+            "Description": f"Servicenow instance {SNOW_INSTANCE_NAME} is configured to activate MIME type checking for uploads.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For more information refer to the Upload MIME type restriction (instance security hardening) section of the Servicenow Product Documentation.",
+                    "Url": "https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/upload-mime-type-restriction.html",
                 }
             },
             "ProductFields": {
