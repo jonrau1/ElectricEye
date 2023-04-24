@@ -464,7 +464,7 @@ def servicenow_sspm_specify_url_allowlists_cors_iframe_communications_check(cach
     # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
     # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
     # are not a simple Boolean expression
-    if propertyValue != "":
+    if propertyValue == ("" or "NOT_CONFIGURED"):
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
@@ -648,7 +648,7 @@ def servicenow_sspm_url_allowlist_logout_redirects_check(cache: dict, awsAccount
     # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
     # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
     # are not a simple Boolean expression
-    if propertyValue != "":
+    if propertyValue == ("" or "NOT_CONFIGURED"):
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
@@ -2120,7 +2120,7 @@ def servicenow_sspm_xxe_processing_allowlist_check(cache: dict, awsAccountId: st
     # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
     # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
     # are not a simple Boolean expression
-    if propertyValue != "":
+    if propertyValue == ("" or "NOT_CONFIGURED"):
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",

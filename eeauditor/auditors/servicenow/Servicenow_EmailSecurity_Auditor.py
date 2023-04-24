@@ -464,7 +464,7 @@ def servicenow_sspm_restrict_emails_by_domain_for_user_creation_check(cache: dic
     # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
     # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
     # are not a simple Boolean expression
-    if propertyValue != "":
+    if propertyValue == ("" or "NOT_CONFIGURED"):
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": f"servicenow/{SNOW_INSTANCE_NAME}/sys_properties/{evalTarget}/check",
