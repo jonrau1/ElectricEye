@@ -223,9 +223,9 @@ In total there are...
 
 > - **2** Supported Public CSPs
 > - **1** Supported SaaS Provider
-> - **663** Security & Resilience Best Practice Checks supported across all Public CSPs & SaaS Providers
+> - **675** Security & Resilience Best Practice Checks supported across all Public CSPs & SaaS Providers
 > - **104** Supported CSP & SaaS Resources / Asset Types
-> - **86** Auditor Plugins
+> - **87** Auditor Plugins
 
 ### AWS Checks & Services
 ___
@@ -878,9 +878,9 @@ ___
 ___
 
 These are the following services and checks perform by each Auditor, there are currently...
-- :boom: **60 Checks** :boom:
+- :boom: **72 Checks** :boom:
 - :exclamation: **2 supported ServiceNow services/components** :exclamation:
-- :fire: **6 Auditors** :fire:
+- :fire: **7 Auditors** :fire:
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
@@ -944,6 +944,18 @@ These are the following services and checks perform by each Auditor, there are c
 | Servicenow_SecureCommunications_Auditor | Servicenow Instance | Secure Communications: Instances should disable SSLv2 & SSLv3 |
 | Servicenow_SecureCommunications_Auditor | Servicenow Instance | Secure Communications: Instances should verify HTTP client hostnames |
 | Servicenow_SecureCommunications_Auditor | Servicenow Instance | Secure Communications: Instances should check revoked certificate status |
+| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Enable URL allow list for cross-origin iframe communication |
+| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Enforce relative links |
+| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Specify URL allow list for cross-origin iframe communication |
+| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: URL allow list for logout redirects |
+| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Virtual agent embedded client content security policy |
+| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Virtual agent embedded client X-Frame-Options |
+| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: X-Frame-Options: SAMEORIGIN |
+| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Setting entity expansion threshold |
+| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: XMLdoc/XMLUtil entity validation with allow list |
+| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Disable entity expansion |
+| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: XMLdoc2 entity validation with allow list |
+| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: XML external entity processing - allow list |
 
 ### SSPM: M365 Checks & Services
 ___
