@@ -65,15 +65,17 @@ python3 eeauditor/controller.py -t AWS -o stdout
 
 ![Architecture](./screenshots/ElectricEye2023Architecture.jpg)
 
-ElectricEye was created in early 2019 as an extension to AWS Security Hub, AWS Cloud's native Cloud Security Posture Management (CSPM) solution, with the goal to extend beyond only AWS Config-supported Services and add extra checks and Audit Readiness Standards (AKA "Compliance Standards") to support Cloud Security, DevOps, IT, and Risk teams running workloads on AWS.
+ElectricEye was created in early 2019 as an extension to [AWS Security Hub](https://aws.amazon.com/security-hub/), AWS Cloud's native Cloud Security Posture Management (CSPM) solution, with the goal to extend beyond only AWS Config-supported Services and add extra checks and Audit Readiness Standards (AKA "Compliance Standards") to support Cloud Security, DevOps, IT, and Risk teams running workloads on AWS. ElectricEye's AWS "pedigree" is most evident in the developer experience as it utilizes AWS credentials natively and expects other credentials to be stored in AWS Systems Manager ([SSM](https://aws.amazon.com/systems-manager/)) [Parameter Store](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html).
 
-Since then, ElectricEye has continued to expand into the most comprehensive AWS CSPM tool from a service support and check support perspective, adding additional functionality such as Secrets Management (powered by Yelp's **Detect-Secrets**), External Attack Surface Management (powered by **NMAP** and **Shodan.io**) and integration into multiple downstream data formats, databases, as well as AWS Security Hub itself. All findings are mapped to the AWS Security Finding Format (ASFF) for portability into AWS Security Lake and AWS Security Hub, and can be further parsed by supported outputs.
+Since then, ElectricEye has continued to expand into the most comprehensive AWS CSPM tool from a service support and check support perspective, adding additional functionality such as Secrets Management (powered by Yelp's **Detect-Secrets**), External Attack Surface Management (powered by **NMAP** and **Shodan.io**) and integration into multiple downstream data formats, databases, as well as AWS Security Hub itself. All findings are mapped to the [AWS Security Finding Format (ASFF)](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html) for portability into [Amazon Security Lake](https://aws.amazon.com/security-lake/) and AWS Security Hub, and can be further parsed by supported outputs.
 
-Within the control flow of ElectricEye, the "entrypoint" into the evaluation logic is controlled by the aptly named **Controller** (seen in [`controller.py`](./eeauditor/controller.py)) where all arguments are parsed and credentials are prepared. The evaluation engine is written fully in Python and mapped to the AWS Security Finding Format (ASFF) (with other Outputs provided), each CSP or SaaS tool is called an **Assessment Target**. 
+ElectricEye's terminology is as follows: the "entrypoint" into the evaluation logic of the tool is contained within the aptly named **Controller** (seen in [`controller.py`](./eeauditor/controller.py)) where all arguments are parsed and credentials are prepared. Command-line arguments are provided and parsed using [`click`](https://click.palletsprojects.com/en/8.1.x/) which is an alternative to [`argparse`](https://docs.python.org/3/library/argparse.html) to direct the evaluation logic of ElectricEye. The "top-level" concept within ElectricEye is the **Assessment Target** (sometimes referenced as **Target** or **AT** in other documentation & code targets) which corresponds to a single public Cloud Service Provider (CSP) - such as Amazon Web Services (AWS) - or to a single Software-as-a-Service (SaaS) provider - such as ServiceNow or GitHub.
 
-Every Assessment Target has a set of **Auditors** (also aptly named) which contain the logic to perform security, performance, resilience, and other best practice evaluations at a per-Service or per-Component level, for instance, the `AWS_IAM_Auditor` will evaluate every component of the AWS Identity & Access Management (IAM) include IAM Users, IAM Roles, IAM Groups, IAM Server Certificates, and IAM Policies. A discrete piece of logic to perform these evaluations is called a **Check** which is aligned to analyzing a single property of a specific service or component, such as checking whether AWs S3 Buckets are encrypted or whether GCP CloudSQL Instances are publicly reachable. 
+Every Assessment Target has a corresponding set of (aptly named) **Auditors** which are individual Python scripts that encapsulate discrete logic to evaluate the overall posture of a specific Cloud resource or component called a **Check**. In some cases an Auditor can contain Checks for multiple services where it makes sense to do so, such as within the EASM Auditors or within the [Shodan Auditor](./eeauditor/auditors/aws/Shodan_Auditor.py) for AWS. 
 
-By default, ElectricEye will run every Auditor for a specific Assessment Target, however the Controller allows you to either run a specifc Auditor or a specific Check (not groups of them, and not interchangeably). Every single Check is written in Python and will use a native Python SDK per provider or will use the Python `requests` library to interact with a REST, SOAP or GraphQL API (depending on the Assessment Target). Each Auditor and their subsequent Checks are loaded into memory per Assessment Target using `pluginbase` Decorators which contain the information about the Auditor, each Check, and their service or component subject.
+While ElectricEye is primarily a security posture management (SPM) tool, some Checks align to performance, resilience, and optimization best practices which in turn are aligned to **Compliance Standards** or have some secondary or tertiary benefit. Compliance Standards are a term borrowed from the ASFF that refer to any regulatory, industry, and/or "best practice" frameworks which define **Controls** which in turn define People, Process, and/or Technology configurations or outcomes which must be met to abide by or otherwise comply with a Control. ElectricEye solely deals at the infrastructure layer of CSPs and SaaS and thus only supports Technology-relevant controls in these various standards/frameworks/laws that define these Controls.
+
+As to the rest of ElectricEye's control flow, besides the arguments from the Controller (via `click`), it also uses a [Tom's Obvious Markup Language (TOML)](https://toml.io/en/) file (a `.toml`) - named [`external_providers.toml`](./eeauditor/external_providers.toml). This `.toml` specifies non-AWS CSPs and SaaS Provider information such as GCP Project IDs, ServiceNow Instance URLs, and takes references for API Keys, Passwords, and other sensitive information as SSM Parameters - in the future this may change to support local vaulting & Privileged Access Management (PAM)/Privileged Identity Management (PIM) tools for non-AWS versions of ElectricEye. The `click` and `.toml` arguments and values are passed off the "brain" of ElectricEye which is contained in [`eeauditor.py`](./eeauditor/eeauditor.py) - this Python file will load all Auditors using [`pluginbase`](http://pluginbase.pocoo.org/) and [Decorators](https://znasibov.info/posts/2017/01/22/the_ultimate_guide_to_python_decorators.html), will run the Auditors (or specific Checks) and `yield` back the results to be sent to Security Hub or other locations instrumented by the **Outputs Processor** (defined, partially, in [`processor/main.py`](./eeauditor/processor/main.py)).
 
 As of April 2023 ElectricEye supports the following CSPM, EASM, and SSPM capabilities. More SaaS Providers and CSPs - as well as expanded service & capability coverage - is under active development.
 
@@ -245,360 +247,360 @@ These are the following services and checks perform by each Auditor, there are c
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
-| Amazon_APIGW_Auditor.py | API Gateway Stage | Are stage metrics enabled |
-| Amazon_APIGW_Auditor.py | API Gateway Stage | Is stage API logging enabled |
-| Amazon_APIGW_Auditor.py | API Gateway Stage | Is stage caching enabled |
-| Amazon_APIGW_Auditor.py | API Gateway Stage | Is cache encryption enabled |
-| Amazon_APIGW_Auditor.py | API Gateway Stage | Is stage xray tracing configured |
-| Amazon_APIGW_Auditor.py | API Gateway Stage | Is the stage protected by a WAF WACL |
-| Amazon_APIGW_Auditor.py | API Gateway Rest API | Do Rest APIs use Policies |
-| Amazon_APIGW_Auditor.py | API Gateway Rest API | Do Rest APIs use Authorizers |
-| Amazon_AppStream_Auditor.py | AppStream 2.0 (Fleets) | Do Fleets allow Default Internet Access |
-| Amazon_AppStream_Auditor.py | AppStream 2.0 (Images) | Are Images Public |
-| Amazon_AppStream_Auditor.py | AppStream 2.0 (Users) | Are users reported as Compromised |
-| Amazon_AppStream_Auditor.py | AppStream 2.0 (Users) | Do users use SAML authentication |
-| Amazon_Athena_Auditor.py | Athena workgroup | Do workgroups enforce query result encryption |
-| Amazon_Athena_Auditor.py | Athena workgroup | Do workgroups with query result encryption override client settings |
-| Amazon_Athena_Auditor.py | Athena workgroup | Do workgroups publish metrics |
-| Amazon_Athena_Auditor.py | Athena workgroup | Do workgroups auto-update the Athena engine version |
-| Amazon_Autoscaling_Auditor.py | Autoscaling groups | Do ASGs protect instances from scale-in |
-| Amazon_Autoscaling_Auditor.py | Autoscaling groups | Do ASGs with ELB or Target Groups use ELB health checks |
-| Amazon_Autoscaling_Auditor.py | Autoscaling groups | Do ASGs use at least half or more of a Region's open AZs |
-| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Do distros with trusted signers use key pairs |
-| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Do distro origins have Origin Shield enabled |
-| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Do distros use the default viewer certificate |
-| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Do distros have Georestriction enabled |
-| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Do distros have Field-Level Encryption enabled |
-| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Do distros have WAF enabled |
-| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Do distros enforce Default Viewer TLS 1.2 |
-| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Do distros enforce Custom Origin TLS 1.2 |
-| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Do distros enforce Custom Origin HTTPS-only connections |
-| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Do distros enforce Default Viewer HTTPS with SNI |
-| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Do distros have logging enabled |
-| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Do distros have default root objects |
-| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Do distros enforce Default Viewer HTTPS-only connections |
-| Amazon_CloudFront_Auditor.py | CloudFront Distribution | Do distros enforce S3 Origin Object Access Identity |
-| Amazon_CloudSearch_Auditor.py | CloudSearch Domain | Do Domains enforce HTTPS-only |
-| Amazon_CloudSearch_Auditor.py | CloudSearch Domain | Do Domains use TLS 1.2 |
-| Amazon_CognitoIdP_Auditor.py | Cognito Identity Pool | Does the Password policy comply with AWS CIS Foundations Benchmark |
-| Amazon_CognitoIdP_Auditor.py | Cognito Identity Pool | Cognito Temporary Password Age |
-| Amazon_CognitoIdP_Auditor.py | Cognito Identity Pool | Does the Identity pool enforce MFA |
-| Amazon_CognitoIdP_Auditor.py | Cognito Identity Pool | Is the Identity pool protected by WAF |
-| Amazon_DocumentDB_Auditor.py | DocumentDB Instance | Are Instances publicly accessible |
-| Amazon_DocumentDB_Auditor.py | DocumentDB Instance | Are Instance encrypted |
-| Amazon_DocumentDB_Auditor.py | DocumentDB Instance | Is audit logging enabled |
-| Amazon_DocumentDB_Auditor.py | DocumentDB Cluster | Is the Cluster configured for HA |
-| Amazon_DocumentDB_Auditor.py | DocumentDB Cluster | Is the Cluster deletion protected |
-| Amazon_DocumentDB_Auditor.py | DocumentDB Cluster | Is cluster audit logging on |
-| Amazon_DocumentDB_Auditor.py | DocumentDB Cluster | Is cluster TLS enforcement on |
-| Amazon_DocumentDB_Auditor.py | DocDB Snapshot | Are docdb cluster snapshots encrypted |
-| Amazon_DocumentDB_Auditor.py | DocDB Snapshot | Are docdb cluster snapshots public |
-| Amazon_DynamoDB_Auditor.py | DynamoDB Table | Do tables use KMS CMK for encryption |
-| Amazon_DynamoDB_Auditor.py | DynamoDB Table | Do tables have PITR enabled |
-| Amazon_DynamoDB_Auditor.py | DynamoDB Table | Do tables have TTL enabled |
-| Amazon_DAX_Auditor.py | DAX Cluster | Do clusters encrypt data at rest |
-| Amazon_DAX_Auditor.py | DAX Cluster | Do clusters encrypt data in transit |
-| Amazon_DAX_Auditor.py | DAX Cluster | Do clusters have cache item TTL defined |
-| Amazon_EBS_Auditor.py | EBS Volume | Is the Volume attached |
-| Amazon_EBS_Auditor.py | EBS Volume | Is the Volume configured to be deleted on instance termination |
-| Amazon_EBS_Auditor.py | EBS Volume | Is the Volume encrypted |
-| Amazon_EBS_Auditor.py | EBS Snapshot | Is the Snapshot encrypted |
-| Amazon_EBS_Auditor.py | EBS Snapshot | Is the Snapshot public |
-| Amazon_EBS_Auditor.py | Account | Is account level encryption by default enabled |
-| Amazon_EBS_Auditor.py | EBS Volume | Does the Volume have a snapshot |
-| Amazon_EC2_Auditor.py | EC2 Instance | Is IMDSv2 enabled |
-| Amazon_EC2_Auditor.py | EC2 Instance | Is Secure Enclave used |
-| Amazon_EC2_Auditor.py | EC2 Instance | Is the instance internet-facing |
-| Amazon_EC2_Auditor.py | EC2 Instance | Is Source/Dest Check disabled |
-| Amazon_EC2_Auditor.py | AWS Account | Is Serial Port Access restricted |
-| Amazon_EC2_Auditor.py | EC2 Instance | Is instance using an AMI baked in last 3 months |
-| Amazon_EC2_Auditor.py | EC2 Instance | Is instance using a correctly registered AMI |
-| Amazon_EC2_Auditor.py | Account | Are instances spread across Multiple AZs |
-| Amazon_EC2_Image_Builder_Auditor.py | Image Builder | Are pipeline tests enabled |
-| Amazon_EC2_Image_Builder_Auditor.py | Image Builder | Is EBS encrypted |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Are all ports (-1) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is FTP (tcp20-21) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is TelNet (tcp23) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is WSDCOM-RPC (tcp135) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is SMB (tcp445) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is MSSQL (tcp1433) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is OracleDB (tcp1521) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is MySQL/MariaDB (tcp3306) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is RDP (tcp3389) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is PostgreSQL (tcp5432) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is Kibana (tcp5601) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is Redis (tcp6379) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is Splunkd (tcp8089) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is Elasticsearch (tcp9200) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is Elasticsearch (tcp9300) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is Memcached (udp11211) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is Redshift (tcp5439) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is DocDB (tcp27017) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is Cassandra (tcp9142) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is Kafka (tcp9092) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is NFS (tcp2049) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is Rsync (tcp873) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is TFTP (udp69) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is Docker API (tcp2375) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is K8s API (tcp10250) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is SMTP (tcp25) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is NetBioas (tcp137-139) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is OpenVPN (udp1194) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is RabbitMQ (tcp5672) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is Spark WebUI (tcp4040) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is POP3 (tcp110) open to the internet |
-| Amazon_EC2_Security_Group_Auditor.py | Security Group | Is VMWare ESXi (tcp8182) open to the internet |
-| Amazon_EC2_SSM_Auditor.py | EC2 Instance | Is the instance managed by SSM |
-| Amazon_EC2_SSM_Auditor.py | EC2 Instance | Does the instance have a successful SSM association |
-| Amazon_EC2_SSM_Auditor.py | EC2 Instance | Is the SSM Agent up to date |
-| Amazon_EC2_SSM_Auditor.py | EC2 Instance | Is the Patch status up to date |
-| Amazon_ECR_Auditor.py | ECR Registry (Account) | Is there a registry access policy |
-| Amazon_ECR_Auditor.py | ECR Registry (Account) | Is image replication configured |
-| Amazon_ECR_Auditor.py | ECR Repository | Does the repository support scan-on-push |
-| Amazon_ECR_Auditor.py | ECR Repository | Is there an image lifecycle policy |
-| Amazon_ECR_Auditor.py | ECR Repository | Is there a repo access policy |
-| Amazon_ECR_Auditor.py | Image (Container) | Does the latest container have any vulns |
-| Amazon_ECS_Auditor.py | ECS Cluster | Is container insights enabled |
-| Amazon_ECS_Auditor.py | ECS Cluster | Is a default cluster provider configured |
-| Amazon_ECS_Auditor.py | ECS Task Definition | Is the Task Definition using a Privileged container |
-| Amazon_ECS_Auditor.py | ECS Task Definition | Do EC2-ECS containers use SELinux or AppArmor |
-| Amazon_ECS_Auditor.py | ECS Task Definition | Do containers use a Root user |
-| Amazon_EFS_Auditor.py | EFS File System | Are file systems encrypted |
-| Amazon_EFS_Auditor.py | EFS File System | Does the File system have a custom policy attached |
-| Amazon_EKS_Auditor.py | EKS Cluster | Is the API Server publicly accessible |
-| Amazon_EKS_Auditor.py | EKS Cluster | Is the latest K8s version used |
-| Amazon_EKS_Auditor.py | EKS Cluster | Are auth or audit logs enabled |
-| Amazon_EKS_Auditor.py | EKS Cluster | Is K8s Secrets envelope encryption used |
-| Amazon_Elasticache_Redis_Auditor.py | Elasticache Redis Cluster | Is an AUTH Token used |
-| Amazon_Elasticache_Redis_Auditor.py | Elasticache Redis Cluster | Is the cluster encrypted at rest |
-| Amazon_Elasticache_Redis_Auditor.py | Elasticache Redis Cluster | Does the cluster encrypt in transit |
-| Amazon_ElasticBeanstalk_Auditor.py | Elastic Beanstalk environment | Is IMDSv1 disabled |
-| Amazon_ElasticBeanstalk_Auditor.py | Elastic Beanstalk environment | Is platform auto-update and instance refresh enabled |
-| Amazon_ElasticBeanstalk_Auditor.py | Elastic Beanstalk environment | Is enhanced health reporting enabled |
-| Amazon_ElasticBeanstalk_Auditor.py | Elastic Beanstalk environment | Is CloudWatch log streaming enabled |
-| Amazon_ElasticBeanstalk_Auditor.py | Elastic Beanstalk environment | Is AWS X-Ray tracing enabled |
-| Amazon_ElasticsearchService_Auditor.py | OpenSearch domain | Are dedicated masters used |
-| Amazon_ElasticsearchService_Auditor.py | OpenSearch domain | Is Cognito auth used |
-| Amazon_ElasticsearchService_Auditor.py | OpenSearch domain | Is encryption at rest used |
-| Amazon_ElasticsearchService_Auditor.py | OpenSearch domain | Is Node2Node encryption used |
-| Amazon_ElasticsearchService_Auditor.py | OpenSearch domain | Is HTTPS-only enforced |
-| Amazon_ElasticsearchService_Auditor.py | OpenSearch domain | Is a TLS 1.2 policy used |
-| Amazon_ElasticsearchService_Auditor.py | OpenSearch domain | Are there available version updates |
-| Amazon_ElasticsearchService_Auditor.py | OpenSearch domain | Is ES in a VPC |
-| Amazon_ElasticsearchService_Auditor.py | OpenSearch domain | Is ES Publicly Accessible |
-| Amazon_ELB_Auditor.py | ELB (Classic Load Balancer) | Do internet facing ELBs have a secure listener |
-| Amazon_ELB_Auditor.py | ELB (Classic Load Balancer) | Do secure listeners enforce TLS 1.2 |
-| Amazon_ELB_Auditor.py | ELB (Classic Load Balancer) | Is cross zone load balancing enabled |
-| Amazon_ELB_Auditor.py | ELB (Classic Load Balancer) | Is connection draining enabled |
-| Amazon_ELB_Auditor.py | ELB (Classic Load Balancer) | Is access logging enabled |
-| Amazon_ELBv2_Auditor.py | ELBv2 (ALB) | Is access logging enabled for ALBs |
-| Amazon_ELBv2_Auditor.py | ELBv2 (ALB/NLB) | Is deletion protection enabled |
-| Amazon_ELBv2_Auditor.py | ELBv2 (ALB/NLB) | Do internet facing ELBs have a secure listener |
-| Amazon_ELBv2_Auditor.py | ELBv2 (ALB/NLB) | Do secure listeners enforce TLS 1.2 |
-| Amazon_ELBv2_Auditor.py | ELBv2 (ALB/NLB) | Are invalid HTTP headers dropped |
-| Amazon_ELBv2_Auditor.py | ELBv2 (NLB) | Do NLBs with TLS listeners have access logging enabled |
-| Amazon_ELBv2_Auditor.py | ELBv2 (ALB) | Do ALBs have HTTP Desync protection enabled |
-| Amazon_ELBv2_Auditor.py | ELBv2 (ALB) | Do ALBs SGs allow access to non-Listener ports |
-| Amazon_ELBv2_Auditor.py | ELBv2 (ALB) | Ares ALBs protected by WAF |
-| Amazon_EMR_Auditor.py | EMR Cluster | Do clusters have a sec configuration attached |
-| Amazon_EMR_Auditor.py | EMR Cluster | Do cluster sec configs enforce encryption in transit |
-| Amazon_EMR_Auditor.py | EMR Cluster | Do cluster sec configs enforce encryption at rest for EMRFS |
-| Amazon_EMR_Auditor.py | EMR Cluster | Do cluster sec configs enforce encryption at rest for EBS |
-| Amazon_EMR_Auditor.py | EMR Cluster | Do cluster sec configs enforce Kerberos authN |
-| Amazon_EMR_Auditor.py | EMR Cluster | Is cluster termination protection enabled |
-| Amazon_EMR_Auditor.py | EMR Cluster | Is cluster logging enabled |
-| Amazon_EMR_Auditor.py | AWS Account | Is EMR public SG block configured for the Account in the region |
-| Amazon_Kinesis_Analytics_Auditor.py | Kinesis analytics application | Does application log to CloudWatch |
-| Amazon_Kinesis_Data_Streams_Auditor.py | Kinesis data stream | Is stream encryption enabled |
-| Amazon_Kinesis_Data_Streams_Auditor.py | Kinesis data stream | Is enhanced monitoring enabled |
-| Amazon_Kinesis_Firehose_Auditor.py | Firehose delivery stream | Is delivery stream encryption enabled |
-| Amazon_Managed_Blockchain_Auditor.py | Fabric peer node | Are chaincode logs enabled |
-| Amazon_Managed_Blockchain_Auditor.py | Fabric peer node | Are peer node logs enabled |
-| Amazon_Managed_Blockchain_Auditor.py | Fabric member | Are member CA logs enabled |
-| Amazon_MQ_Auditor.py | Amazon MQ message broker | Message brokers should be encrypted with customer-managed KMS CMKs |
-| Amazon_MQ_Auditor.py | Amazon MQ message broker | Message brokers should have audit logging enabled |
-| Amazon_MQ_Auditor.py | Amazon MQ message broker | Message brokers should have general logging enabled |
-| Amazon_MQ_Auditor.py | Amazon MQ message broker | Message broker should not be publicly accessible |
-| Amazon_MQ_Auditor.py | Amazon MQ message broker | Message brokers should be configured to auto upgrade to the latest minor version |
-| Amazon_MSK_Auditor.py | MSK Cluster | Is inter-cluster encryption used |
-| Amazon_MSK_Auditor.py | MSK Cluster | Is client-broker communications TLS-only |
-| Amazon_MSK_Auditor.py | MSK Cluster | Is enhanced monitoring used |
-| Amazon_MSK_Auditor.py | MSK Cluster | Is Private CA TLS auth used |
-| Amazon_MWAA_Auditor.py | Airflow Environment | Is a KMS CMK used for encryption |
-| Amazon_MWAA_Auditor.py | Airflow Environment | Is the Airflow URL Public |
-| Amazon_MWAA_Auditor.py | Airflow Environment | Are DAG Processing logs configured |
-| Amazon_MWAA_Auditor.py | Airflow Environment | Are Scheduler logs configured |
-| Amazon_MWAA_Auditor.py | Airflow Environment | Are Task logs configured |
-| Amazon_MWAA_Auditor.py | Airflow Environment | Are Webserver logs configured |
-| Amazon_MWAA_Auditor.py | Airflow Environment | Are Worker logs configured |
-| Amazon_Neptune_Auditor.py | Neptune instance | Is Neptune instance configured for HA |
-| Amazon_Neptune_Auditor.py | Neptune instance | Is Neptune instance storage encrypted |
-| Amazon_Neptune_Auditor.py | Neptune instance | Does Neptune instance use IAM DB Auth |
-| Amazon_Neptune_Auditor.py | Neptune cluster | Is SSL connection enforced |
-| ~~Amazon_Neptune_Auditor.py~~ | ~~Neptune cluster~~ | ~~Is audit logging enabled~~ **THIS FINDING HAS BEEN RETIRED** |
-| Amazon_Neptune_Auditor.py | Neptune instance | Does Neptune instance export audit logs |
-| Amazon_Neptune_Auditor.py | Neptune instance | Is Neptune instance deletion protected |
-| Amazon_Neptune_Auditor.py | Neptune instance | Does Neptune instance automatically update minor versions |
-| Amazon_Neptune_Auditor.py | Neptune cluster | Are Neptune clusters configured to auto-scale |
-| Amazon_Neptune_Auditor.py | Neptune cluster | Are Neptune clusters configured to cache query results |
-| Amazon_QLDB_Auditor.py | QLDB Ledger | Does ledger have deletion protection |
-| Amazon_QLDB_Auditor.py | QLDB Export | Is export encryption enabled |
-| Amazon_RDS_Auditor.py | RDS DB Instance | Is HA configured |
-| Amazon_RDS_Auditor.py | RDS DB Instance | Are DB instances publicly accessible |
-| Amazon_RDS_Auditor.py | RDS DB Instance | Is DB storage encrypted |
-| Amazon_RDS_Auditor.py | RDS DB Instance | Do supported DBs use IAM Authentication |
-| Amazon_RDS_Auditor.py | RDS DB Instance | Are supported DBs joined to a domain |
-| Amazon_RDS_Auditor.py | RDS DB Instance | Is performance insights enabled |
-| Amazon_RDS_Auditor.py | RDS DB Instance | Is deletion protection enabled |
-| Amazon_RDS_Auditor.py | RDS DB Instance | Is database CloudWatch logging enabled |
-| Amazon_RDS_Auditor.py | RDS Snapshot | Are snapshots encrypted |
-| Amazon_RDS_Auditor.py | RDS Snapshot | Are snapshots public |
-| Amazon_RDS_Auditor.py | RDS DB Cluster (Aurora) | Is Database Activity Stream configured |
-| Amazon_RDS_Auditor.py | RDS DB Cluster (Aurora) | Is the cluster encrypted |
-| Amazon_RDS_Auditor.py | RDS DB Instance | Does Instance have any snapshots |
-| Amazon_RDS_Auditor.py | RDS DB Instance | Does the instance security group allow risky access |
-| Amazon_RDS_Auditor.py | Event Subscription (Account) | Does an Event Subscription to monitor DB instances exist |
-| Amazon_RDS_Auditor.py | Event Subscription (Account) | Does an Event Subscription to monitor paramter groups exist |
-| Amazon_RDS_Auditor.py | RDS DB Instance | Do PostgreSQL instances use a version susceptible to Lightspin "log_fwd" attack |
-| Amazon_RDS_Auditor.py | RDS DB Instance | Do Aurora PostgreSQL instances use a version susceptible to Lightspin "log_fwd" attack |
-| Amazon_Redshift_Auditor.py | Redshift cluster | Is the cluster publicly accessible |
-| Amazon_Redshift_Auditor.py | Redshift cluster | Is the cluster encrypted at rest |
-| Amazon_Redshift_Auditor.py | Redshift cluster | Is enhanced VPC routing enabled |
-| Amazon_Redshift_Auditor.py | Redshift cluster | Is cluster audit logging enabled |
-| Amazon_Redshift_Auditor.py | Redshift cluster | Does the cluster use the default Admin username |
-| Amazon_Redshift_Auditor.py | Redshift cluster | Is cluster user activity logging enabled |
-| Amazon_Redshift_Auditor.py | Redshift cluster | Does the cluster enforce encrypted in transit |
-| Amazon_Redshift_Auditor.py | Redshift cluster | Does the cluster take automated snapshots |
-| Amazon_Redshift_Auditor.py | Redshift cluster | Is the cluster configured for automated major version upgrades |
-| Amazon_Route53_Auditor.py | Route53 Hosted Zone | Do Hosted Zones have Query Logging enabled |
-| Amazon_Route53_Auditor.py | Route53 Hosted Zone | Do Hosted Zones have traffic policies associated |
-| Amazon_Route53_Resolver_Auditor.py | VPC | Do VPCs have Query Logging enabled |
-| Amazon_Route53_Resolver_Auditor.py | VPC | Do VPCs have DNS Firewalls associated |
-| Amazon_Route53_Resolver_Auditor.py | VPC | Do VPCs enabled DNSSEC resolution |
-| Amazon_Route53_Resolver_Auditor.py | VPC | Do VPCs with DNS Firewall fail open |
-| Amazon_S3_Auditor.py | S3 Bucket | Is bucket encryption enabled |
-| Amazon_S3_Auditor.py | S3 Bucket | Is a bucket lifecycle enabled |
-| Amazon_S3_Auditor.py | S3 Bucket | Is bucket versioning enabled |
-| Amazon_S3_Auditor.py | S3 Bucket | Does the bucket policy allow public access |
-| Amazon_S3_Auditor.py | S3 Bucket | Does the bucket have a policy |
-| Amazon_S3_Auditor.py | S3 Bucket | Is server access logging enabled |
-| Amazon_S3_Auditor.py | Account | Is account level public access block configured |
-| Amazon_SageMaker_Auditor.py | SageMaker Notebook | Is notebook encryption enabled |
-| Amazon_SageMaker_Auditor.py | SageMaker Notebook | Is notebook direct internet access enabled |
-| Amazon_SageMaker_Auditor.py | SageMaker Notebook | Is the notebook in a vpc |
-| Amazon_SageMaker_Auditor.py | SageMaker Endpoint | Is endpoint encryption enabled |
-| Amazon_SageMaker_Auditor.py | SageMaker Model | Is model network isolation enabled |
-| Amazon_Shield_Advanced_Auditor.py | Route53 Hosted Zone | Are Rt53 hosted zones protected by Shield Advanced |
-| Amazon_Shield_Advanced_Auditor.py | Classic Load Balancer | Are CLBs protected by Shield Adv |
-| Amazon_Shield_Advanced_Auditor.py | ELBv2 (ALB/NLB) | Are ELBv2s protected by Shield Adv |
-| Amazon_Shield_Advanced_Auditor.py | Elastic IP | Are EIPs protected by Shield Adv |
-| Amazon_Shield_Advanced_Auditor.py | CloudFront Distribution | Are CF Distros protected by Shield Adv |
-| Amazon_Shield_Advanced_Auditor.py | Account (DRT IAM Role) | Does the DRT have account authZ via IAM role |
-| Amazon_Shield_Advanced_Auditor.py | Account (DRT S3 Access) | Does the DRT have access to WAF logs S3 buckets |
-| Amazon_Shield_Advanced_Auditor.py | Account (Shield subscription) | Is Shield Adv subscription on auto renew |
-| Amazon_Shield_Advanced_Auditor.py | Global Accelerator Accelerator | Are GA Accelerators protected by Shield Adv |
-| Amazon_Shield_Advanced_Auditor.py | Account | Has Shield Adv mitigated any attacks in the last 7 days |
-| Amazon_SNS_Auditor.py | SNS Topic | Is the topic encrypted |
-| Amazon_SNS_Auditor.py | SNS Topic | Does the topic have plaintext (HTTP) subscriptions |
-| Amazon_SNS_Auditor.py | SNS Topic | Does the topic allow public access |
-| Amazon_SNS_Auditor.py | SNS Topic | Does the topic allow cross-account access |
-| Amazon_SQS_Auditor.py | SQS Queue | Are there old messages |
-| Amazon_SQS_Auditor.py | SQS Queue | Is Server Side Encryption Enabled |
-| Amazon_SQS_Auditor.py | SQS Queue | Is the SQS Queue publically accessible |
-| Amazon_VPC_Auditor.py | VPC | Is the default VPC out and about |
-| Amazon_VPC_Auditor.py | VPC | Is flow logging enabled |
-| Amazon_VPC_Auditor.py | Subnet | Do subnets map public IPs |
-| Amazon_VPC_Auditor.py | Subnet | Do subnets have available IP space |
-| Amazon_WorkSpaces_Auditor.py | Workspace | Is user volume encrypted |
-| Amazon_WorkSpaces_Auditor.py | Workspace | Is root volume encrypted |
-| Amazon_WorkSpaces_Auditor.py | Workspace | Is running mode set to auto-off |
-| Amazon_WorkSpaces_Auditor.py | DS Directory | Does directory allow default internet access |
-| Amazon_Xray_Auditor.py | XRay Encryption Config | Is KMS CMK encryption used |
-| AMI_Auditor.py | Amazon Machine Image (AMI) | Are owned AMIs public |
-| AMI_Auditor.py | Amazon Machine Image (AMI) | Are owned AMIs encrypted |
-| AWS_ACM_Auditor.py | ACM Certificate | Are certificates revoked |
-| AWS_ACM_Auditor.py | ACM Certificate | Are certificates in use |
-| AWS_ACM_Auditor.py | ACM Certificate | Is certificate transparency logging enabled |
-| AWS_ACM_Auditor.py | ACM Certificate | Have certificates been correctly renewed |
-| AWS_ACM_Auditor.py | ACM Certificate | Are certificates correctly validated |
-| AWS_Amplify_Auditor.py | AWS Amplify | Does the app have basic auth enabled on the branches |
-| AWS_Amplify_Auditor.py | AWS Amplify | Does the app have auto deletion for branches enabled |
-| AWS_AppMesh_Auditor.py | App Mesh mesh | Does the mesh egress filter DROP_ALL |
-| AWS_AppMesh_Auditor.py | App Mesh virtual node | Does the backend default client policy enforce TLS |
-| AWS_AppMesh_Auditor.py | App Mesh virtual node | Do virtual node backends have STRICT TLS mode configured for inbound connections |
-| AWS_AppMesh_Auditor.py | App Mesh virtual node | Do virtual nodes have an HTTP access log location defined |
-| AWS_Backup_Auditor.py | EC2 Instance | Are EC2 instances backed up |
-| AWS_Backup_Auditor.py | EBS Volume | Are EBS volumes backed up |
-| AWS_Backup_Auditor.py | DynamoDB tables | Are DynamoDB tables backed up |
-| AWS_Backup_Auditor.py | RDS DB Instance | Are RDS DB instances backed up |
-| AWS_Backup_Auditor.py | EFS File System | Are EFS file systems backed up |
-| AWS_Backup_Auditor.py | Neptune cluster | Are Neptune clusters backed up |
-| AWS_Backup_Auditor.py | DocumentDB cluster | Are DocumentDB clusters backed up |
-| AWS_Cloud9_Auditor.py | Cloud9 Environment | Are Cloud9 Envs using SSM for access |
-| AWS_CloudFormation_Auditor.py | CloudFormation Stack | Is drift detection enabled |
-| AWS_CloudFormation_Auditor.py | CloudFormation Stack | Are stacks monitored |
-| AWS_CloudHSM_Auditor.py | CloudHSM Cluster | Is the CloudHSM Cluster in a degraded state |
-| AWS_CloudHSM_Auditor.py | CloudHSM HSM Module | Is the CloudHSM hardware security module in a degraded state |
-| AWS_CloudHSM_Auditor.py | CloudHSM Backups | Is there at least one backup in a READY state |
-| AWS_CloudTrail_Auditor.py | CloudTrail | Is the trail multi-region |
-| AWS_CloudTrail_Auditor.py | CloudTrail | Does the trail send logs to CWL |
-| AWS_CloudTrail_Auditor.py | CloudTrail | Is the trail encrypted by KMS |
-| AWS_CloudTrail_Auditor.py | CloudTrail | Are global/management events logged |
-| AWS_CloudTrail_Auditor.py | CloudTrail | Is log file validation enabled |
-| AWS_CodeArtifact_Auditor.py | CodeArtifact Repo | Does the CodeArtifact Repo have a least privilege resource policy attached |
-| AWS_CodeArtifact_Auditor.py | CodeArtifact Domain | Does the CodeArtifact Domain have a least privilege resource policy attached |
-| AWS_CodeBuild_Auditor.py | CodeBuild project | Is artifact encryption enabled |
-| AWS_CodeBuild_Auditor.py | CodeBuild project | Is Insecure SSL enabled |
-| AWS_CodeBuild_Auditor.py | CodeBuild project | Are plaintext environmental variables used |
-| AWS_CodeBuild_Auditor.py | CodeBuild project | Is S3 logging encryption enabled |
-| AWS_CodeBuild_Auditor.py | CodeBuild project | Is CloudWatch logging enabled |
-| AWS_CodeBuild_Auditor.py | CodeBuild project | Does CodeBuild store PATs or Basic Auth creds |
-| AWS_CodeBuild_Auditor.py | CodeBuild project | Is the CodeBuild project public |
-| AWS_CodeBuild_Auditor.py | CodeBuild project | Are CodeBuild projects using privileged containers |
-| AWS_Directory_Service_Auditor.py | DS Directory | Is RADIUS enabled |
-| AWS_Directory_Service_Auditor.py | DS Directory | Is CloudWatch log forwarding enabled |
-| AWS_DMS_Auditor.py | DMS Replication Instance | Are DMS instances publicly accessible |
-| AWS_DMS_Auditor.py | DMS Replication Instance | Is DMS multi-az configured |
-| AWS_DMS_Auditor.py | DMS Replication Instance | Are minor version updates configured |
-| AWS_Global_Accelerator_Auditor.py | Global Accelerator Endpoint | Is the endpoint healthy |
-| AWS_Global_Accelerator_Auditor.py | Global Accelerator Accelerator | Are flow logs enabled for accelerator |
-| AWS_Health_Auditor.py | AWS Health Event | Are there active Security Events |
-| AWS_Health_Auditor.py | AWS Health Event | Are there active Abuse Events |
-| AWS_Health_Auditor.py | AWS Health Event | Are there active Risk Events |
-| AWS_Glue_Auditor.py | Glue Crawler | Is S3 encryption configured for the crawler |
-| AWS_Glue_Auditor.py | Glue Crawler | Is CWL encryption configured for the crawler |
-| AWS_Glue_Auditor.py | Glue Crawler | Is job bookmark encryption configured for the crawler |
-| AWS_Glue_Auditor.py | Glue Data Catalog | Is data catalog encryption configured |
-| AWS_Glue_Auditor.py | Glue Data Catalog | Is connection password encryption configured |
-| AWS_Glue_Auditor.py | Glue Data Catalog | Is a resource policy configured |
-| AWS_IAM_Auditor.py | IAM Access Key | Are access keys over 90 days old |
-| AWS_IAM_Auditor.py | IAM User | Do users have permissions boundaries |
-| AWS_IAM_Auditor.py | IAM User | Do users have MFA |
-| AWS_IAM_Auditor.py | IAM User | Do users have in-line policies attached |
-| AWS_IAM_Auditor.py | IAM User | Do users have managed policies attached |
-| AWS_IAM_Auditor.py | Password policy (Account) | Does the IAM password policy meet or exceed AWS CIS Foundations Benchmark standards |
-| AWS_IAM_Auditor.py | Server certs (Account) | Are they any Server certificates stored by IAM |
-| AWS_IAM_Auditor.py | IAM Policy | Do managed IAM policies adhere to least privilege principles |
-| AWS_IAM_Auditor.py | IAM User | Do User IAM inline policies adhere to least privilege principles |
-| AWS_IAM_Auditor.py | IAM Group | Do Group IAM inline policies adhere to least privilege principles |
-| AWS_IAM_Auditor.py | IAM Role | Do Role IAM inline policies adhere to least privilege principles |
-| AWS_IAMRA_Auditor.py | IAMRA Trust Anchor | Do Trust Anchors contain self-signed certificates |
-| AWS_IAMRA_Auditor.py | IAMRA Trust Anchor | Do Trust Anchors use a Certificate Revocation List (CRL) |
-| AWS_IAMRA_Auditor.py | IAMRA Profile | Do IAMRA Profiles specify a Session Policy |
-| AWS_IAMRA_Auditor.py | IAMRA Profile | Do IAMRA Profiles specify a Permission Boundary |
-| AWS_IAMRA_Auditor.py | IAM Role | Do IAM Roles associated with IAMRA use Condition statements in the Trust Policy |
-| AWS_Keyspaces_Auditor.py | Keyspaces table | Are Keyspaces Tables encrypted with a KMS CMK |
-| AWS_Keyspaces_Auditor.py | Keyspaces table | Do Keyspaces Tables have PTR enabled |
-| AWS_Keyspaces_Auditor.py | Keyspaces table | Are Keyspaces Tables in an unusable state |
-| AWS_KMS_Auditor.py | KMS key | Is key rotation enabled |
-| AWS_KMS_Auditor.py | KMS key | Does the key allow public access |
-| AWS_Lambda_Auditor.py | Lambda function | Has function been used or updated in the last 30 days |
-| AWS_Lambda_Auditor.py | Lambda function | Is tracing enabled |
-| AWS_Lambda_Auditor.py | Lambda function | Is code signing used |
-| AWS_Lambda_Auditor.py | Lambda layer | Is the layer public |
-| AWS_Lambda_Auditor.py | Lambda function | Is the function public |
-| AWS_Lambda_Auditor.py | Lambda function | Is the function using a supported runtime |
-| AWS_Lambda_Auditor.py | Lambda function | Are functions in VPCs highly available in at least 2 AZs |
+| Amazon_APIGW_Auditor | API Gateway Stage | Are stage metrics enabled |
+| Amazon_APIGW_Auditor | API Gateway Stage | Is stage API logging enabled |
+| Amazon_APIGW_Auditor | API Gateway Stage | Is stage caching enabled |
+| Amazon_APIGW_Auditor | API Gateway Stage | Is cache encryption enabled |
+| Amazon_APIGW_Auditor | API Gateway Stage | Is stage xray tracing configured |
+| Amazon_APIGW_Auditor | API Gateway Stage | Is the stage protected by a WAF WACL |
+| Amazon_APIGW_Auditor | API Gateway Rest API | Do Rest APIs use Policies |
+| Amazon_APIGW_Auditor | API Gateway Rest API | Do Rest APIs use Authorizers |
+| Amazon_AppStream_Auditor | AppStream 2.0 (Fleets) | Do Fleets allow Default Internet Access |
+| Amazon_AppStream_Auditor | AppStream 2.0 (Images) | Are Images Public |
+| Amazon_AppStream_Auditor | AppStream 2.0 (Users) | Are users reported as Compromised |
+| Amazon_AppStream_Auditor | AppStream 2.0 (Users) | Do users use SAML authentication |
+| Amazon_Athena_Auditor | Athena workgroup | Do workgroups enforce query result encryption |
+| Amazon_Athena_Auditor | Athena workgroup | Do workgroups with query result encryption override client settings |
+| Amazon_Athena_Auditor | Athena workgroup | Do workgroups publish metrics |
+| Amazon_Athena_Auditor | Athena workgroup | Do workgroups auto-update the Athena engine version |
+| Amazon_Autoscaling_Auditor | Autoscaling groups | Do ASGs protect instances from scale-in |
+| Amazon_Autoscaling_Auditor | Autoscaling groups | Do ASGs with ELB or Target Groups use ELB health checks |
+| Amazon_Autoscaling_Auditor | Autoscaling groups | Do ASGs use at least half or more of a Region's open AZs |
+| Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros with trusted signers use key pairs |
+| Amazon_CloudFront_Auditor | CloudFront Distribution | Do distro origins have Origin Shield enabled |
+| Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros use the default viewer certificate |
+| Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros have Georestriction enabled |
+| Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros have Field-Level Encryption enabled |
+| Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros have WAF enabled |
+| Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros enforce Default Viewer TLS 1.2 |
+| Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros enforce Custom Origin TLS 1.2 |
+| Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros enforce Custom Origin HTTPS-only connections |
+| Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros enforce Default Viewer HTTPS with SNI |
+| Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros have logging enabled |
+| Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros have default root objects |
+| Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros enforce Default Viewer HTTPS-only connections |
+| Amazon_CloudFront_Auditor | CloudFront Distribution | Do distros enforce S3 Origin Object Access Identity |
+| Amazon_CloudSearch_Auditor | CloudSearch Domain | Do Domains enforce HTTPS-only |
+| Amazon_CloudSearch_Auditor | CloudSearch Domain | Do Domains use TLS 1.2 |
+| Amazon_CognitoIdP_Auditor | Cognito Identity Pool | Does the Password policy comply with AWS CIS Foundations Benchmark |
+| Amazon_CognitoIdP_Auditor | Cognito Identity Pool | Cognito Temporary Password Age |
+| Amazon_CognitoIdP_Auditor | Cognito Identity Pool | Does the Identity pool enforce MFA |
+| Amazon_CognitoIdP_Auditor | Cognito Identity Pool | Is the Identity pool protected by WAF |
+| Amazon_DocumentDB_Auditor | DocumentDB Instance | Are Instances publicly accessible |
+| Amazon_DocumentDB_Auditor | DocumentDB Instance | Are Instance encrypted |
+| Amazon_DocumentDB_Auditor | DocumentDB Instance | Is audit logging enabled |
+| Amazon_DocumentDB_Auditor | DocumentDB Cluster | Is the Cluster configured for HA |
+| Amazon_DocumentDB_Auditor | DocumentDB Cluster | Is the Cluster deletion protected |
+| Amazon_DocumentDB_Auditor | DocumentDB Cluster | Is cluster audit logging on |
+| Amazon_DocumentDB_Auditor | DocumentDB Cluster | Is cluster TLS enforcement on |
+| Amazon_DocumentDB_Auditor | DocDB Snapshot | Are docdb cluster snapshots encrypted |
+| Amazon_DocumentDB_Auditor | DocDB Snapshot | Are docdb cluster snapshots public |
+| Amazon_DynamoDB_Auditor | DynamoDB Table | Do tables use KMS CMK for encryption |
+| Amazon_DynamoDB_Auditor | DynamoDB Table | Do tables have PITR enabled |
+| Amazon_DynamoDB_Auditor | DynamoDB Table | Do tables have TTL enabled |
+| Amazon_DAX_Auditor | DAX Cluster | Do clusters encrypt data at rest |
+| Amazon_DAX_Auditor | DAX Cluster | Do clusters encrypt data in transit |
+| Amazon_DAX_Auditor | DAX Cluster | Do clusters have cache item TTL defined |
+| Amazon_EBS_Auditor | EBS Volume | Is the Volume attached |
+| Amazon_EBS_Auditor | EBS Volume | Is the Volume configured to be deleted on instance termination |
+| Amazon_EBS_Auditor | EBS Volume | Is the Volume encrypted |
+| Amazon_EBS_Auditor | EBS Snapshot | Is the Snapshot encrypted |
+| Amazon_EBS_Auditor | EBS Snapshot | Is the Snapshot public |
+| Amazon_EBS_Auditor | Account | Is account level encryption by default enabled |
+| Amazon_EBS_Auditor | EBS Volume | Does the Volume have a snapshot |
+| Amazon_EC2_Auditor | EC2 Instance | Is IMDSv2 enabled |
+| Amazon_EC2_Auditor | EC2 Instance | Is Secure Enclave used |
+| Amazon_EC2_Auditor | EC2 Instance | Is the instance internet-facing |
+| Amazon_EC2_Auditor | EC2 Instance | Is Source/Dest Check disabled |
+| Amazon_EC2_Auditor | AWS Account | Is Serial Port Access restricted |
+| Amazon_EC2_Auditor | EC2 Instance | Is instance using an AMI baked in last 3 months |
+| Amazon_EC2_Auditor | EC2 Instance | Is instance using a correctly registered AMI |
+| Amazon_EC2_Auditor | Account | Are instances spread across Multiple AZs |
+| Amazon_EC2_Image_Builder_Auditor | Image Builder | Are pipeline tests enabled |
+| Amazon_EC2_Image_Builder_Auditor | Image Builder | Is EBS encrypted |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Are all ports (-1) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is FTP (tcp20-21) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is TelNet (tcp23) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is WSDCOM-RPC (tcp135) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is SMB (tcp445) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is MSSQL (tcp1433) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is OracleDB (tcp1521) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is MySQL/MariaDB (tcp3306) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is RDP (tcp3389) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is PostgreSQL (tcp5432) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is Kibana (tcp5601) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is Redis (tcp6379) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is Splunkd (tcp8089) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is Elasticsearch (tcp9200) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is Elasticsearch (tcp9300) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is Memcached (udp11211) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is Redshift (tcp5439) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is DocDB (tcp27017) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is Cassandra (tcp9142) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is Kafka (tcp9092) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is NFS (tcp2049) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is Rsync (tcp873) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is TFTP (udp69) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is Docker API (tcp2375) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is K8s API (tcp10250) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is SMTP (tcp25) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is NetBioas (tcp137-139) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is OpenVPN (udp1194) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is RabbitMQ (tcp5672) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is Spark WebUI (tcp4040) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is POP3 (tcp110) open to the internet |
+| Amazon_EC2_Security_Group_Auditor | Security Group | Is VMWare ESXi (tcp8182) open to the internet |
+| Amazon_EC2_SSM_Auditor | EC2 Instance | Is the instance managed by SSM |
+| Amazon_EC2_SSM_Auditor | EC2 Instance | Does the instance have a successful SSM association |
+| Amazon_EC2_SSM_Auditor | EC2 Instance | Is the SSM Agent up to date |
+| Amazon_EC2_SSM_Auditor | EC2 Instance | Is the Patch status up to date |
+| Amazon_ECR_Auditor | ECR Registry (Account) | Is there a registry access policy |
+| Amazon_ECR_Auditor | ECR Registry (Account) | Is image replication configured |
+| Amazon_ECR_Auditor | ECR Repository | Does the repository support scan-on-push |
+| Amazon_ECR_Auditor | ECR Repository | Is there an image lifecycle policy |
+| Amazon_ECR_Auditor | ECR Repository | Is there a repo access policy |
+| Amazon_ECR_Auditor | Image (Container) | Does the latest container have any vulns |
+| Amazon_ECS_Auditor | ECS Cluster | Is container insights enabled |
+| Amazon_ECS_Auditor | ECS Cluster | Is a default cluster provider configured |
+| Amazon_ECS_Auditor | ECS Task Definition | Is the Task Definition using a Privileged container |
+| Amazon_ECS_Auditor | ECS Task Definition | Do EC2-ECS containers use SELinux or AppArmor |
+| Amazon_ECS_Auditor | ECS Task Definition | Do containers use a Root user |
+| Amazon_EFS_Auditor | EFS File System | Are file systems encrypted |
+| Amazon_EFS_Auditor | EFS File System | Does the File system have a custom policy attached |
+| Amazon_EKS_Auditor | EKS Cluster | Is the API Server publicly accessible |
+| Amazon_EKS_Auditor | EKS Cluster | Is the latest K8s version used |
+| Amazon_EKS_Auditor | EKS Cluster | Are auth or audit logs enabled |
+| Amazon_EKS_Auditor | EKS Cluster | Is K8s Secrets envelope encryption used |
+| Amazon_Elasticache_Redis_Auditor | Elasticache Redis Cluster | Is an AUTH Token used |
+| Amazon_Elasticache_Redis_Auditor | Elasticache Redis Cluster | Is the cluster encrypted at rest |
+| Amazon_Elasticache_Redis_Auditor | Elasticache Redis Cluster | Does the cluster encrypt in transit |
+| Amazon_ElasticBeanstalk_Auditor | Elastic Beanstalk environment | Is IMDSv1 disabled |
+| Amazon_ElasticBeanstalk_Auditor | Elastic Beanstalk environment | Is platform auto-update and instance refresh enabled |
+| Amazon_ElasticBeanstalk_Auditor | Elastic Beanstalk environment | Is enhanced health reporting enabled |
+| Amazon_ElasticBeanstalk_Auditor | Elastic Beanstalk environment | Is CloudWatch log streaming enabled |
+| Amazon_ElasticBeanstalk_Auditor | Elastic Beanstalk environment | Is AWS X-Ray tracing enabled |
+| Amazon_ElasticsearchService_Auditor | OpenSearch domain | Are dedicated masters used |
+| Amazon_ElasticsearchService_Auditor | OpenSearch domain | Is Cognito auth used |
+| Amazon_ElasticsearchService_Auditor | OpenSearch domain | Is encryption at rest used |
+| Amazon_ElasticsearchService_Auditor | OpenSearch domain | Is Node2Node encryption used |
+| Amazon_ElasticsearchService_Auditor | OpenSearch domain | Is HTTPS-only enforced |
+| Amazon_ElasticsearchService_Auditor | OpenSearch domain | Is a TLS 1.2 policy used |
+| Amazon_ElasticsearchService_Auditor | OpenSearch domain | Are there available version updates |
+| Amazon_ElasticsearchService_Auditor | OpenSearch domain | Is ES in a VPC |
+| Amazon_ElasticsearchService_Auditor | OpenSearch domain | Is ES Publicly Accessible |
+| Amazon_ELB_Auditor | ELB (Classic Load Balancer) | Do internet facing ELBs have a secure listener |
+| Amazon_ELB_Auditor | ELB (Classic Load Balancer) | Do secure listeners enforce TLS 1.2 |
+| Amazon_ELB_Auditor | ELB (Classic Load Balancer) | Is cross zone load balancing enabled |
+| Amazon_ELB_Auditor | ELB (Classic Load Balancer) | Is connection draining enabled |
+| Amazon_ELB_Auditor | ELB (Classic Load Balancer) | Is access logging enabled |
+| Amazon_ELBv2_Auditor | ELBv2 (ALB) | Is access logging enabled for ALBs |
+| Amazon_ELBv2_Auditor | ELBv2 (ALB/NLB) | Is deletion protection enabled |
+| Amazon_ELBv2_Auditor | ELBv2 (ALB/NLB) | Do internet facing ELBs have a secure listener |
+| Amazon_ELBv2_Auditor | ELBv2 (ALB/NLB) | Do secure listeners enforce TLS 1.2 |
+| Amazon_ELBv2_Auditor | ELBv2 (ALB/NLB) | Are invalid HTTP headers dropped |
+| Amazon_ELBv2_Auditor | ELBv2 (NLB) | Do NLBs with TLS listeners have access logging enabled |
+| Amazon_ELBv2_Auditor | ELBv2 (ALB) | Do ALBs have HTTP Desync protection enabled |
+| Amazon_ELBv2_Auditor | ELBv2 (ALB) | Do ALBs SGs allow access to non-Listener ports |
+| Amazon_ELBv2_Auditor | ELBv2 (ALB) | Ares ALBs protected by WAF |
+| Amazon_EMR_Auditor | EMR Cluster | Do clusters have a sec configuration attached |
+| Amazon_EMR_Auditor | EMR Cluster | Do cluster sec configs enforce encryption in transit |
+| Amazon_EMR_Auditor | EMR Cluster | Do cluster sec configs enforce encryption at rest for EMRFS |
+| Amazon_EMR_Auditor | EMR Cluster | Do cluster sec configs enforce encryption at rest for EBS |
+| Amazon_EMR_Auditor | EMR Cluster | Do cluster sec configs enforce Kerberos authN |
+| Amazon_EMR_Auditor | EMR Cluster | Is cluster termination protection enabled |
+| Amazon_EMR_Auditor | EMR Cluster | Is cluster logging enabled |
+| Amazon_EMR_Auditor | AWS Account | Is EMR public SG block configured for the Account in the region |
+| Amazon_Kinesis_Analytics_Auditor | Kinesis analytics application | Does application log to CloudWatch |
+| Amazon_Kinesis_Data_Streams_Auditor | Kinesis data stream | Is stream encryption enabled |
+| Amazon_Kinesis_Data_Streams_Auditor | Kinesis data stream | Is enhanced monitoring enabled |
+| Amazon_Kinesis_Firehose_Auditor | Firehose delivery stream | Is delivery stream encryption enabled |
+| Amazon_Managed_Blockchain_Auditor | Fabric peer node | Are chaincode logs enabled |
+| Amazon_Managed_Blockchain_Auditor | Fabric peer node | Are peer node logs enabled |
+| Amazon_Managed_Blockchain_Auditor | Fabric member | Are member CA logs enabled |
+| Amazon_MQ_Auditor | Amazon MQ message broker | Message brokers should be encrypted with customer-managed KMS CMKs |
+| Amazon_MQ_Auditor | Amazon MQ message broker | Message brokers should have audit logging enabled |
+| Amazon_MQ_Auditor | Amazon MQ message broker | Message brokers should have general logging enabled |
+| Amazon_MQ_Auditor | Amazon MQ message broker | Message broker should not be publicly accessible |
+| Amazon_MQ_Auditor | Amazon MQ message broker | Message brokers should be configured to auto upgrade to the latest minor version |
+| Amazon_MSK_Auditor | MSK Cluster | Is inter-cluster encryption used |
+| Amazon_MSK_Auditor | MSK Cluster | Is client-broker communications TLS-only |
+| Amazon_MSK_Auditor | MSK Cluster | Is enhanced monitoring used |
+| Amazon_MSK_Auditor | MSK Cluster | Is Private CA TLS auth used |
+| Amazon_MWAA_Auditor | Airflow Environment | Is a KMS CMK used for encryption |
+| Amazon_MWAA_Auditor | Airflow Environment | Is the Airflow URL Public |
+| Amazon_MWAA_Auditor | Airflow Environment | Are DAG Processing logs configured |
+| Amazon_MWAA_Auditor | Airflow Environment | Are Scheduler logs configured |
+| Amazon_MWAA_Auditor | Airflow Environment | Are Task logs configured |
+| Amazon_MWAA_Auditor | Airflow Environment | Are Webserver logs configured |
+| Amazon_MWAA_Auditor | Airflow Environment | Are Worker logs configured |
+| Amazon_Neptune_Auditor | Neptune instance | Is Neptune instance configured for HA |
+| Amazon_Neptune_Auditor | Neptune instance | Is Neptune instance storage encrypted |
+| Amazon_Neptune_Auditor | Neptune instance | Does Neptune instance use IAM DB Auth |
+| Amazon_Neptune_Auditor | Neptune cluster | Is SSL connection enforced |
+| ~~Amazon_Neptune_Auditor~~ | ~~Neptune cluster~~ | ~~Is audit logging enabled~~ **THIS FINDING HAS BEEN RETIRED** |
+| Amazon_Neptune_Auditor | Neptune instance | Does Neptune instance export audit logs |
+| Amazon_Neptune_Auditor | Neptune instance | Is Neptune instance deletion protected |
+| Amazon_Neptune_Auditor | Neptune instance | Does Neptune instance automatically update minor versions |
+| Amazon_Neptune_Auditor | Neptune cluster | Are Neptune clusters configured to auto-scale |
+| Amazon_Neptune_Auditor | Neptune cluster | Are Neptune clusters configured to cache query results |
+| Amazon_QLDB_Auditor | QLDB Ledger | Does ledger have deletion protection |
+| Amazon_QLDB_Auditor | QLDB Export | Is export encryption enabled |
+| Amazon_RDS_Auditor | RDS DB Instance | Is HA configured |
+| Amazon_RDS_Auditor | RDS DB Instance | Are DB instances publicly accessible |
+| Amazon_RDS_Auditor | RDS DB Instance | Is DB storage encrypted |
+| Amazon_RDS_Auditor | RDS DB Instance | Do supported DBs use IAM Authentication |
+| Amazon_RDS_Auditor | RDS DB Instance | Are supported DBs joined to a domain |
+| Amazon_RDS_Auditor | RDS DB Instance | Is performance insights enabled |
+| Amazon_RDS_Auditor | RDS DB Instance | Is deletion protection enabled |
+| Amazon_RDS_Auditor | RDS DB Instance | Is database CloudWatch logging enabled |
+| Amazon_RDS_Auditor | RDS Snapshot | Are snapshots encrypted |
+| Amazon_RDS_Auditor | RDS Snapshot | Are snapshots public |
+| Amazon_RDS_Auditor | RDS DB Cluster (Aurora) | Is Database Activity Stream configured |
+| Amazon_RDS_Auditor | RDS DB Cluster (Aurora) | Is the cluster encrypted |
+| Amazon_RDS_Auditor | RDS DB Instance | Does Instance have any snapshots |
+| Amazon_RDS_Auditor | RDS DB Instance | Does the instance security group allow risky access |
+| Amazon_RDS_Auditor | Event Subscription (Account) | Does an Event Subscription to monitor DB instances exist |
+| Amazon_RDS_Auditor | Event Subscription (Account) | Does an Event Subscription to monitor paramter groups exist |
+| Amazon_RDS_Auditor | RDS DB Instance | Do PostgreSQL instances use a version susceptible to Lightspin "log_fwd" attack |
+| Amazon_RDS_Auditor | RDS DB Instance | Do Aurora PostgreSQL instances use a version susceptible to Lightspin "log_fwd" attack |
+| Amazon_Redshift_Auditor | Redshift cluster | Is the cluster publicly accessible |
+| Amazon_Redshift_Auditor | Redshift cluster | Is the cluster encrypted at rest |
+| Amazon_Redshift_Auditor | Redshift cluster | Is enhanced VPC routing enabled |
+| Amazon_Redshift_Auditor | Redshift cluster | Is cluster audit logging enabled |
+| Amazon_Redshift_Auditor | Redshift cluster | Does the cluster use the default Admin username |
+| Amazon_Redshift_Auditor | Redshift cluster | Is cluster user activity logging enabled |
+| Amazon_Redshift_Auditor | Redshift cluster | Does the cluster enforce encrypted in transit |
+| Amazon_Redshift_Auditor | Redshift cluster | Does the cluster take automated snapshots |
+| Amazon_Redshift_Auditor | Redshift cluster | Is the cluster configured for automated major version upgrades |
+| Amazon_Route53_Auditor | Route53 Hosted Zone | Do Hosted Zones have Query Logging enabled |
+| Amazon_Route53_Auditor | Route53 Hosted Zone | Do Hosted Zones have traffic policies associated |
+| Amazon_Route53_Resolver_Auditor | VPC | Do VPCs have Query Logging enabled |
+| Amazon_Route53_Resolver_Auditor | VPC | Do VPCs have DNS Firewalls associated |
+| Amazon_Route53_Resolver_Auditor | VPC | Do VPCs enabled DNSSEC resolution |
+| Amazon_Route53_Resolver_Auditor | VPC | Do VPCs with DNS Firewall fail open |
+| Amazon_S3_Auditor | S3 Bucket | Is bucket encryption enabled |
+| Amazon_S3_Auditor | S3 Bucket | Is a bucket lifecycle enabled |
+| Amazon_S3_Auditor | S3 Bucket | Is bucket versioning enabled |
+| Amazon_S3_Auditor | S3 Bucket | Does the bucket policy allow public access |
+| Amazon_S3_Auditor | S3 Bucket | Does the bucket have a policy |
+| Amazon_S3_Auditor | S3 Bucket | Is server access logging enabled |
+| Amazon_S3_Auditor | Account | Is account level public access block configured |
+| Amazon_SageMaker_Auditor | SageMaker Notebook | Is notebook encryption enabled |
+| Amazon_SageMaker_Auditor | SageMaker Notebook | Is notebook direct internet access enabled |
+| Amazon_SageMaker_Auditor | SageMaker Notebook | Is the notebook in a vpc |
+| Amazon_SageMaker_Auditor | SageMaker Endpoint | Is endpoint encryption enabled |
+| Amazon_SageMaker_Auditor | SageMaker Model | Is model network isolation enabled |
+| Amazon_Shield_Advanced_Auditor | Route53 Hosted Zone | Are Rt53 hosted zones protected by Shield Advanced |
+| Amazon_Shield_Advanced_Auditor | Classic Load Balancer | Are CLBs protected by Shield Adv |
+| Amazon_Shield_Advanced_Auditor | ELBv2 (ALB/NLB) | Are ELBv2s protected by Shield Adv |
+| Amazon_Shield_Advanced_Auditor | Elastic IP | Are EIPs protected by Shield Adv |
+| Amazon_Shield_Advanced_Auditor | CloudFront Distribution | Are CF Distros protected by Shield Adv |
+| Amazon_Shield_Advanced_Auditor | Account (DRT IAM Role) | Does the DRT have account authZ via IAM role |
+| Amazon_Shield_Advanced_Auditor | Account (DRT S3 Access) | Does the DRT have access to WAF logs S3 buckets |
+| Amazon_Shield_Advanced_Auditor | Account (Shield subscription) | Is Shield Adv subscription on auto renew |
+| Amazon_Shield_Advanced_Auditor | Global Accelerator Accelerator | Are GA Accelerators protected by Shield Adv |
+| Amazon_Shield_Advanced_Auditor | Account | Has Shield Adv mitigated any attacks in the last 7 days |
+| Amazon_SNS_Auditor | SNS Topic | Is the topic encrypted |
+| Amazon_SNS_Auditor | SNS Topic | Does the topic have plaintext (HTTP) subscriptions |
+| Amazon_SNS_Auditor | SNS Topic | Does the topic allow public access |
+| Amazon_SNS_Auditor | SNS Topic | Does the topic allow cross-account access |
+| Amazon_SQS_Auditor | SQS Queue | Are there old messages |
+| Amazon_SQS_Auditor | SQS Queue | Is Server Side Encryption Enabled |
+| Amazon_SQS_Auditor | SQS Queue | Is the SQS Queue publically accessible |
+| Amazon_VPC_Auditor | VPC | Is the default VPC out and about |
+| Amazon_VPC_Auditor | VPC | Is flow logging enabled |
+| Amazon_VPC_Auditor | Subnet | Do subnets map public IPs |
+| Amazon_VPC_Auditor | Subnet | Do subnets have available IP space |
+| Amazon_WorkSpaces_Auditor | Workspace | Is user volume encrypted |
+| Amazon_WorkSpaces_Auditor | Workspace | Is root volume encrypted |
+| Amazon_WorkSpaces_Auditor | Workspace | Is running mode set to auto-off |
+| Amazon_WorkSpaces_Auditor | DS Directory | Does directory allow default internet access |
+| Amazon_Xray_Auditor | XRay Encryption Config | Is KMS CMK encryption used |
+| AMI_Auditor | Amazon Machine Image (AMI) | Are owned AMIs public |
+| AMI_Auditor | Amazon Machine Image (AMI) | Are owned AMIs encrypted |
+| AWS_ACM_Auditor | ACM Certificate | Are certificates revoked |
+| AWS_ACM_Auditor | ACM Certificate | Are certificates in use |
+| AWS_ACM_Auditor | ACM Certificate | Is certificate transparency logging enabled |
+| AWS_ACM_Auditor | ACM Certificate | Have certificates been correctly renewed |
+| AWS_ACM_Auditor | ACM Certificate | Are certificates correctly validated |
+| AWS_Amplify_Auditor | AWS Amplify | Does the app have basic auth enabled on the branches |
+| AWS_Amplify_Auditor | AWS Amplify | Does the app have auto deletion for branches enabled |
+| AWS_AppMesh_Auditor | App Mesh mesh | Does the mesh egress filter DROP_ALL |
+| AWS_AppMesh_Auditor | App Mesh virtual node | Does the backend default client policy enforce TLS |
+| AWS_AppMesh_Auditor | App Mesh virtual node | Do virtual node backends have STRICT TLS mode configured for inbound connections |
+| AWS_AppMesh_Auditor | App Mesh virtual node | Do virtual nodes have an HTTP access log location defined |
+| AWS_Backup_Auditor | EC2 Instance | Are EC2 instances backed up |
+| AWS_Backup_Auditor | EBS Volume | Are EBS volumes backed up |
+| AWS_Backup_Auditor | DynamoDB tables | Are DynamoDB tables backed up |
+| AWS_Backup_Auditor | RDS DB Instance | Are RDS DB instances backed up |
+| AWS_Backup_Auditor | EFS File System | Are EFS file systems backed up |
+| AWS_Backup_Auditor | Neptune cluster | Are Neptune clusters backed up |
+| AWS_Backup_Auditor | DocumentDB cluster | Are DocumentDB clusters backed up |
+| AWS_Cloud9_Auditor | Cloud9 Environment | Are Cloud9 Envs using SSM for access |
+| AWS_CloudFormation_Auditor | CloudFormation Stack | Is drift detection enabled |
+| AWS_CloudFormation_Auditor | CloudFormation Stack | Are stacks monitored |
+| AWS_CloudHSM_Auditor | CloudHSM Cluster | Is the CloudHSM Cluster in a degraded state |
+| AWS_CloudHSM_Auditor | CloudHSM HSM Module | Is the CloudHSM hardware security module in a degraded state |
+| AWS_CloudHSM_Auditor | CloudHSM Backups | Is there at least one backup in a READY state |
+| AWS_CloudTrail_Auditor | CloudTrail | Is the trail multi-region |
+| AWS_CloudTrail_Auditor | CloudTrail | Does the trail send logs to CWL |
+| AWS_CloudTrail_Auditor | CloudTrail | Is the trail encrypted by KMS |
+| AWS_CloudTrail_Auditor | CloudTrail | Are global/management events logged |
+| AWS_CloudTrail_Auditor | CloudTrail | Is log file validation enabled |
+| AWS_CodeArtifact_Auditor | CodeArtifact Repo | Does the CodeArtifact Repo have a least privilege resource policy attached |
+| AWS_CodeArtifact_Auditor | CodeArtifact Domain | Does the CodeArtifact Domain have a least privilege resource policy attached |
+| AWS_CodeBuild_Auditor | CodeBuild project | Is artifact encryption enabled |
+| AWS_CodeBuild_Auditor | CodeBuild project | Is Insecure SSL enabled |
+| AWS_CodeBuild_Auditor | CodeBuild project | Are plaintext environmental variables used |
+| AWS_CodeBuild_Auditor | CodeBuild project | Is S3 logging encryption enabled |
+| AWS_CodeBuild_Auditor | CodeBuild project | Is CloudWatch logging enabled |
+| AWS_CodeBuild_Auditor | CodeBuild project | Does CodeBuild store PATs or Basic Auth creds |
+| AWS_CodeBuild_Auditor | CodeBuild project | Is the CodeBuild project public |
+| AWS_CodeBuild_Auditor | CodeBuild project | Are CodeBuild projects using privileged containers |
+| AWS_Directory_Service_Auditor | DS Directory | Is RADIUS enabled |
+| AWS_Directory_Service_Auditor | DS Directory | Is CloudWatch log forwarding enabled |
+| AWS_DMS_Auditor | DMS Replication Instance | Are DMS instances publicly accessible |
+| AWS_DMS_Auditor | DMS Replication Instance | Is DMS multi-az configured |
+| AWS_DMS_Auditor | DMS Replication Instance | Are minor version updates configured |
+| AWS_Global_Accelerator_Auditor | Global Accelerator Endpoint | Is the endpoint healthy |
+| AWS_Global_Accelerator_Auditor | Global Accelerator Accelerator | Are flow logs enabled for accelerator |
+| AWS_Health_Auditor | AWS Health Event | Are there active Security Events |
+| AWS_Health_Auditor | AWS Health Event | Are there active Abuse Events |
+| AWS_Health_Auditor | AWS Health Event | Are there active Risk Events |
+| AWS_Glue_Auditor | Glue Crawler | Is S3 encryption configured for the crawler |
+| AWS_Glue_Auditor | Glue Crawler | Is CWL encryption configured for the crawler |
+| AWS_Glue_Auditor | Glue Crawler | Is job bookmark encryption configured for the crawler |
+| AWS_Glue_Auditor | Glue Data Catalog | Is data catalog encryption configured |
+| AWS_Glue_Auditor | Glue Data Catalog | Is connection password encryption configured |
+| AWS_Glue_Auditor | Glue Data Catalog | Is a resource policy configured |
+| AWS_IAM_Auditor | IAM Access Key | Are access keys over 90 days old |
+| AWS_IAM_Auditor | IAM User | Do users have permissions boundaries |
+| AWS_IAM_Auditor | IAM User | Do users have MFA |
+| AWS_IAM_Auditor | IAM User | Do users have in-line policies attached |
+| AWS_IAM_Auditor | IAM User | Do users have managed policies attached |
+| AWS_IAM_Auditor | Password policy (Account) | Does the IAM password policy meet or exceed AWS CIS Foundations Benchmark standards |
+| AWS_IAM_Auditor | Server certs (Account) | Are they any Server certificates stored by IAM |
+| AWS_IAM_Auditor | IAM Policy | Do managed IAM policies adhere to least privilege principles |
+| AWS_IAM_Auditor | IAM User | Do User IAM inline policies adhere to least privilege principles |
+| AWS_IAM_Auditor | IAM Group | Do Group IAM inline policies adhere to least privilege principles |
+| AWS_IAM_Auditor | IAM Role | Do Role IAM inline policies adhere to least privilege principles |
+| AWS_IAMRA_Auditor | IAMRA Trust Anchor | Do Trust Anchors contain self-signed certificates |
+| AWS_IAMRA_Auditor | IAMRA Trust Anchor | Do Trust Anchors use a Certificate Revocation List (CRL) |
+| AWS_IAMRA_Auditor | IAMRA Profile | Do IAMRA Profiles specify a Session Policy |
+| AWS_IAMRA_Auditor | IAMRA Profile | Do IAMRA Profiles specify a Permission Boundary |
+| AWS_IAMRA_Auditor | IAM Role | Do IAM Roles associated with IAMRA use Condition statements in the Trust Policy |
+| AWS_Keyspaces_Auditor | Keyspaces table | Are Keyspaces Tables encrypted with a KMS CMK |
+| AWS_Keyspaces_Auditor | Keyspaces table | Do Keyspaces Tables have PTR enabled |
+| AWS_Keyspaces_Auditor | Keyspaces table | Are Keyspaces Tables in an unusable state |
+| AWS_KMS_Auditor | KMS key | Is key rotation enabled |
+| AWS_KMS_Auditor | KMS key | Does the key allow public access |
+| AWS_Lambda_Auditor | Lambda function | Has function been used or updated in the last 30 days |
+| AWS_Lambda_Auditor | Lambda function | Is tracing enabled |
+| AWS_Lambda_Auditor | Lambda function | Is code signing used |
+| AWS_Lambda_Auditor | Lambda layer | Is the layer public |
+| AWS_Lambda_Auditor | Lambda function | Is the function public |
+| AWS_Lambda_Auditor | Lambda function | Is the function using a supported runtime |
+| AWS_Lambda_Auditor | Lambda function | Are functions in VPCs highly available in at least 2 AZs |
 | AWS_License_Manager_Auditor | License Manager configuration | Do LM configurations enforce a hard limit on license consumption |
 | AWS_License_Manager_Auditor | License Manager configuration | Do LM configurations enforce auto-disassociation |
 | AWS_MemoryDB_Auditor | MemoryDB Cluster | Do clusters use TLS |
@@ -607,195 +609,195 @@ These are the following services and checks perform by each Auditor, there are c
 | AWS_MemoryDB_Auditor | MemoryDB Cluster | Are cluster events monitored with SNS |
 | AWS_MemoryDB_Auditor | MemoryDB User | MemDB Admin users should be reviewed |
 | AWS_MemoryDB_Auditor | MemoryDB User | MemDB users should use passwords |
-| AWS_RAM_Auditor.py | RAM Resource Share | Is the resource share status not failed |
-| AWS_RAM_Auditor.py | RAM Resource Share | Does the resource allow external principals |
-| AWS_Secrets_Manager_Auditor.py | Secrets Manager secret | Is the secret over 90 days old |
-| AWS_Secrets_Manager_Auditor.py | Secrets Manager secret | Is secret auto-rotation enabled |
-| AWS_Security_Hub_Auditor.py | Security Hub (Account) | Are there active high or critical findings in Security Hub |
-| AWS_Security_Services_Auditor.py | IAM Access Analyzer (Account) | Is IAM Access Analyzer enabled |
-| AWS_Security_Services_Auditor.py | GuardDuty (Account) | Is GuardDuty enabled |
-| AWS_Security_Services_Auditor.py | Detective (Account) | Is Detective enabled |
-| AWS_Security_Services_Auditor.py | Macie2 | Is Macie enabled |
-| AWS_Security_Services_Auditor.py | AWS WAFv2 (Regional) | Are Regional Web ACLs configured |
-| AWS_Security_Services_Auditor.py | AWS WAFv2 (Global) | Are Global Web ACLs (for CloudFront) configured |
-| AWS_Systems_Manager_Auditor.py | SSM Document | Are self owned SSM Documents publicly shared |
-| AWS_Systems_Manager_Auditor.py | SSM Association | Does an SSM Association that targets all Instances conduct SSM Agent updates |
-| AWS_Systems_Manager_Auditor.py | SSM Association | Does an SSM Association that targets all Instances conduct patching |
-| AWS_Systems_Manager_Auditor.py | SSM Association | Does an SSM Association that targets all Instances conduct inventory gathering |
-| AWS_TrustedAdvisor_Auditor.py | Trusted Advisor Check | Is the Trusted Advisor check for MFA on Root Account failing |
-| AWS_TrustedAdvisor_Auditor.py | Trusted Advisor Check | Is the Trusted Advisor check for ELB Listener Security failing |
-| AWS_TrustedAdvisor_Auditor.py | Trusted Advisor Check | Is the Trusted Advisor check for CloudFront SSL Certs in IAM Cert Store failing |
-| AWS_TrustedAdvisor_Auditor.py | Trusted Advisor Check | Is the Trusted Advisor check for CloudFront SSL Cert on Origin Server failing |
-| AWS_TrustedAdvisor_Auditor.py | Trusted Advisor Check | Is the Trusted Advisor check for Exposed Access Keys failing |
-| AWS_WAFv2_Auditor.py | AWS WAFv2 (Regional) | Do Regional WAFs use Cloudwatch Metrics |
-| AWS_WAFv2_Auditor.py | AWS WAFv2 (Regional) | Do Regional WAFs use Request Sampling |
-| AWS_WAFv2_Auditor.py | AWS WAFv2 (Regional) | Do Regional WAFs have Logging enabled |
-| AWS_WAFv2_Auditor.py | AWS WAFv2 (Global) | Do Global WAFs use Cloudwatch Metrics |
-| AWS_WAFv2_Auditor.py | AWS WAFv2 (Global) | Do Global WAFs use Request Sampling |
-| AWS_WAFv2_Auditor.py | AWS WAFv2 (Global) | Do Global WAFs have Logging enabled |
-| ElectricEye_AttackSurface_Auditor.py | EC2 instance | Is a FTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | EC2 instance | Is a SSH service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | EC2 instance | Is a Telnet service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | EC2 instance | Is a SMTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | EC2 instance | Is a HTTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | EC2 instance | Is a POP3 service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | EC2 instance | Is a Win NetBIOS service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | EC2 instance | Is a SMB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | EC2 instance | Is a RDP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | EC2 instance | Is a MSSQL service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | EC2 instance | Is a MySQL/MariaDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | EC2 instance | Is a NFS service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | EC2 instance | Is a Docker API service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | EC2 instance | Is a OracleDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | EC2 instance | Is a PostgreSQL service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | EC2 instance | Is a Kibana service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | EC2 instance | Is a VMWARE ESXi service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | EC2 instance | Is a HTTP Proxy service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | EC2 instance | Is a SplunkD service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | EC2 instance | Is a Kubernetes API Server service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | EC2 instance | Is a Redis service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | EC2 instance | Is a Kafka service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | EC2 instance | Is a MongoDB/DocDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | EC2 instance | Is a Rabbit/AmazonMQ service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | EC2 instance | Is a SparkUI service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Application load balancer | Is a FTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Application load balancer | Is a SSH service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Application load balancer | Is a Telnet service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Application load balancer | Is a SMTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Application load balancer | Is a HTTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Application load balancer | Is a POP3 service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Application load balancer | Is a Win NetBIOS service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Application load balancer | Is a SMB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Application load balancer | Is a RDP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Application load balancer | Is a MSSQL service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Application load balancer | Is a MySQL/MariaDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Application load balancer | Is a NFS service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Application load balancer | Is a Docker API service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Application load balancer | Is a OracleDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Application load balancer | Is a PostgreSQL service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Application load balancer | Is a Kibana service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Application load balancer | Is a VMWARE ESXi service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Application load balancer | Is a HTTP Proxy service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Application load balancer | Is a SplunkD service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Application load balancer | Is a Kubernetes API Server service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Application load balancer | Is a Redis service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Application load balancer | Is a Kafka service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Application load balancer | Is a MongoDB/DocDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Application load balancer | Is a Rabbit/AmazonMQ service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Application load balancer | Is a SparkUI service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a FTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a SSH service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a Telnet service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a SMTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a HTTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a POP3 service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a Win NetBIOS service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a SMB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a RDP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a MSSQL service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a MySQL/MariaDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a NFS service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a Docker API service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a OracleDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a PostgreSQL service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a Kibana service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a VMWARE ESXi service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a HTTP Proxy service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a SplunkD service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a Kubernetes API Server service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a Redis service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a Kafka service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a MongoDB/DocDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a Rabbit/AmazonMQ service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Classic load balancer | Is a SparkUI service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a FTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a SSH service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a Telnet service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a SMTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a HTTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a POP3 service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a Win NetBIOS service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a SMB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a RDP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a MSSQL service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a MySQL/MariaDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a NFS service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a Docker API service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a OracleDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a PostgreSQL service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a Kibana service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a VMWARE ESXi service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a HTTP Proxy service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a SplunkD service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a Kubernetes API Server service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a Redis service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a Kafka service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a MongoDB/DocDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a Rabbit/AmazonMQ service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Elastic IP | Is a SparkUI service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a FTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a SSH service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a Telnet service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a SMTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a HTTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a POP3 service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a Win NetBIOS service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a SMB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a RDP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a MSSQL service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a MySQL/MariaDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a NFS service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a Docker API service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a OracleDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a PostgreSQL service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a Kibana service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a VMWARE ESXi service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a HTTP Proxy service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a SplunkD service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a Kubernetes API Server service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a Redis service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a Kafka service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a MongoDB/DocDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a Rabbit/AmazonMQ service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | CloudFront Distribution | Is a SparkUI service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a FTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a SSH service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a Telnet service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a SMTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a HTTP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a POP3 service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a Win NetBIOS service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a SMB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a RDP service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a MSSQL service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a MySQL/MariaDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a NFS service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a Docker API service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a OracleDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a PostgreSQL service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a Kibana service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a VMWARE ESXi service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a HTTP Proxy service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a SplunkD service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a Kubernetes API Server service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a Redis service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a Kafka service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a MongoDB/DocDB service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a Rabbit/AmazonMQ service publicly accessible |
-| ElectricEye_AttackSurface_Auditor.py | Route53 Hosted Zone | Is a SparkUI service publicly accessible |
-| Secrets_Auditor.py | CodeBuild project | Do CodeBuild projects have secrets in plaintext env vars |
-| Secrets_Auditor.py | CloudFormation Stack | Do CloudFormation Stacks have secrets in parameters |
-| Secrets_Auditor.py | ECS Task Definition | Do ECS Task Definitions have secrets in env vars |
-| Secrets_Auditor.py | EC2 Instance | Do EC2 instances have secrets in User Data |
-| Shodan_Auditor.py | EC2 Instance | Are EC2 instances w/ public IPs indexed |
-| Shodan_Auditor.py | ELBv2 (ALB) | Are internet-facing ALBs indexed |
-| Shodan_Auditor.py | RDS Instance | Are public accessible RDS instances indexed |
-| Shodan_Auditor.py | OpenSearch domain | Are ES Domains outside a VPC indexed |
-| Shodan_Auditor.py | ELB (CLB) | Are internet-facing CLBs indexed |
-| Shodan_Auditor.py | DMS Replication Instance | Are public accessible DMS instances indexed |
-| Shodan_Auditor.py | Amazon MQ message broker | Are public accessible message brokers indexed |
-| Shodan_Auditor.py | CloudFront Distribution | Are CloudFront distros indexed |
-| Shodan_Auditor.py | Global Accelerator Accelerator | Are Global Accelerator Accelerators indexed |
+| AWS_RAM_Auditor | RAM Resource Share | Is the resource share status not failed |
+| AWS_RAM_Auditor | RAM Resource Share | Does the resource allow external principals |
+| AWS_Secrets_Manager_Auditor | Secrets Manager secret | Is the secret over 90 days old |
+| AWS_Secrets_Manager_Auditor | Secrets Manager secret | Is secret auto-rotation enabled |
+| AWS_Security_Hub_Auditor | Security Hub (Account) | Are there active high or critical findings in Security Hub |
+| AWS_Security_Services_Auditor | IAM Access Analyzer (Account) | Is IAM Access Analyzer enabled |
+| AWS_Security_Services_Auditor | GuardDuty (Account) | Is GuardDuty enabled |
+| AWS_Security_Services_Auditor | Detective (Account) | Is Detective enabled |
+| AWS_Security_Services_Auditor | Macie2 | Is Macie enabled |
+| AWS_Security_Services_Auditor | AWS WAFv2 (Regional) | Are Regional Web ACLs configured |
+| AWS_Security_Services_Auditor | AWS WAFv2 (Global) | Are Global Web ACLs (for CloudFront) configured |
+| AWS_Systems_Manager_Auditor | SSM Document | Are self owned SSM Documents publicly shared |
+| AWS_Systems_Manager_Auditor | SSM Association | Does an SSM Association that targets all Instances conduct SSM Agent updates |
+| AWS_Systems_Manager_Auditor | SSM Association | Does an SSM Association that targets all Instances conduct patching |
+| AWS_Systems_Manager_Auditor | SSM Association | Does an SSM Association that targets all Instances conduct inventory gathering |
+| AWS_TrustedAdvisor_Auditor | Trusted Advisor Check | Is the Trusted Advisor check for MFA on Root Account failing |
+| AWS_TrustedAdvisor_Auditor | Trusted Advisor Check | Is the Trusted Advisor check for ELB Listener Security failing |
+| AWS_TrustedAdvisor_Auditor | Trusted Advisor Check | Is the Trusted Advisor check for CloudFront SSL Certs in IAM Cert Store failing |
+| AWS_TrustedAdvisor_Auditor | Trusted Advisor Check | Is the Trusted Advisor check for CloudFront SSL Cert on Origin Server failing |
+| AWS_TrustedAdvisor_Auditor | Trusted Advisor Check | Is the Trusted Advisor check for Exposed Access Keys failing |
+| AWS_WAFv2_Auditor | AWS WAFv2 (Regional) | Do Regional WAFs use Cloudwatch Metrics |
+| AWS_WAFv2_Auditor | AWS WAFv2 (Regional) | Do Regional WAFs use Request Sampling |
+| AWS_WAFv2_Auditor | AWS WAFv2 (Regional) | Do Regional WAFs have Logging enabled |
+| AWS_WAFv2_Auditor | AWS WAFv2 (Global) | Do Global WAFs use Cloudwatch Metrics |
+| AWS_WAFv2_Auditor | AWS WAFv2 (Global) | Do Global WAFs use Request Sampling |
+| AWS_WAFv2_Auditor | AWS WAFv2 (Global) | Do Global WAFs have Logging enabled |
+| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a FTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a SSH service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a Telnet service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a SMTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a HTTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a POP3 service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a Win NetBIOS service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a SMB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a RDP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a MSSQL service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a MySQL/MariaDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a NFS service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a Docker API service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a OracleDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a PostgreSQL service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a Kibana service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a VMWARE ESXi service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a HTTP Proxy service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a SplunkD service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a Kubernetes API Server service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a Redis service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a Kafka service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a MongoDB/DocDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a Rabbit/AmazonMQ service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | EC2 instance | Is a SparkUI service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a FTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a SSH service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a Telnet service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a SMTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a HTTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a POP3 service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a Win NetBIOS service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a SMB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a RDP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a MSSQL service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a MySQL/MariaDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a NFS service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a Docker API service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a OracleDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a PostgreSQL service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a Kibana service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a VMWARE ESXi service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a HTTP Proxy service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a SplunkD service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a Kubernetes API Server service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a Redis service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a Kafka service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a MongoDB/DocDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a Rabbit/AmazonMQ service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Application load balancer | Is a SparkUI service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a FTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a SSH service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a Telnet service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a SMTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a HTTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a POP3 service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a Win NetBIOS service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a SMB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a RDP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a MSSQL service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a MySQL/MariaDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a NFS service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a Docker API service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a OracleDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a PostgreSQL service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a Kibana service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a VMWARE ESXi service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a HTTP Proxy service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a SplunkD service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a Kubernetes API Server service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a Redis service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a Kafka service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a MongoDB/DocDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a Rabbit/AmazonMQ service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Classic load balancer | Is a SparkUI service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a FTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a SSH service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a Telnet service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a SMTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a HTTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a POP3 service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a Win NetBIOS service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a SMB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a RDP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a MSSQL service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a MySQL/MariaDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a NFS service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a Docker API service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a OracleDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a PostgreSQL service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a Kibana service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a VMWARE ESXi service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a HTTP Proxy service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a SplunkD service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a Kubernetes API Server service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a Redis service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a Kafka service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a MongoDB/DocDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a Rabbit/AmazonMQ service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Elastic IP | Is a SparkUI service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a FTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a SSH service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a Telnet service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a SMTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a HTTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a POP3 service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a Win NetBIOS service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a SMB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a RDP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a MSSQL service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a MySQL/MariaDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a NFS service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a Docker API service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a OracleDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a PostgreSQL service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a Kibana service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a VMWARE ESXi service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a HTTP Proxy service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a SplunkD service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a Kubernetes API Server service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a Redis service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a Kafka service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a MongoDB/DocDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a Rabbit/AmazonMQ service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | CloudFront Distribution | Is a SparkUI service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a FTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a SSH service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a Telnet service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a SMTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a HTTP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a POP3 service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a Win NetBIOS service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a SMB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a RDP service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a MSSQL service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a MySQL/MariaDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a NFS service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a Docker API service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a OracleDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a PostgreSQL service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a Kibana service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a VMWARE ESXi service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a HTTP Proxy service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a SplunkD service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a Kubernetes API Server service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a Redis service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a Kafka service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a MongoDB/DocDB service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a Rabbit/AmazonMQ service publicly accessible |
+| ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a SparkUI service publicly accessible |
+| Secrets_Auditor | CodeBuild project | Do CodeBuild projects have secrets in plaintext env vars |
+| Secrets_Auditor | CloudFormation Stack | Do CloudFormation Stacks have secrets in parameters |
+| Secrets_Auditor | ECS Task Definition | Do ECS Task Definitions have secrets in env vars |
+| Secrets_Auditor | EC2 Instance | Do EC2 instances have secrets in User Data |
+| Shodan_Auditor | EC2 Instance | Are EC2 instances w/ public IPs indexed |
+| Shodan_Auditor | ELBv2 (ALB) | Are internet-facing ALBs indexed |
+| Shodan_Auditor | RDS Instance | Are public accessible RDS instances indexed |
+| Shodan_Auditor | OpenSearch domain | Are ES Domains outside a VPC indexed |
+| Shodan_Auditor | ELB (CLB) | Are internet-facing CLBs indexed |
+| Shodan_Auditor | DMS Replication Instance | Are public accessible DMS instances indexed |
+| Shodan_Auditor | Amazon MQ message broker | Are public accessible message brokers indexed |
+| Shodan_Auditor | CloudFront Distribution | Are CloudFront distros indexed |
+| Shodan_Auditor | Global Accelerator Accelerator | Are Global Accelerator Accelerators indexed |
 
 ### GCP Checks & Services
 ___
@@ -808,58 +810,58 @@ These are the following services and checks perform by each Auditor, there are c
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
-| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Is deletion protection enabled |
-| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Is IP forwarding disabled |
-| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Is auto-restart enabled |
-| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Is Secure Boot enabled |
-| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Is Virtual Trusted Platform Module enabled |
-| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Is Instance Integrity Monitoring enabled |
-| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Is Secure Integrity Monitoring Auto-learning Policy set to Update |
-| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Is Serial Port access disabled |
-| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Are Linux VM Instances access with OS Logon |
-| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Are Linux VM Instances acessed with OS Logon using 2FA/MFA |
-| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Are project-wide SSH keys blocked from access VM instances |
-| GCP_ComputeEngine_Auditor.py | GCE VM Instance | Are instances publicly facing |
-| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Are instances publicly facing |
-| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances enabled auto-backup |
-| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do MySQL instances enable PITR |
-| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do PostgreSQL instances enable PITR |
-| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have a private network enabled |
-| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances allowe GCP services connectivity |
-| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have a password policy enabled |
-| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have a password min length |
-| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have a password reuse check |
-| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have a configuration to disallow usernames in the password |
-| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have a password change interval check |
-| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have storage auto-resize enabled |
-| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have deletion protection enabled |
-| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have query insights enabled |
-| GCP_CloudSQL_Auditor.py | CloudSQL Instance | Do DB instances have SSL/TLS Enforcement enabled |
-| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a FTP service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a SSH service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a Telnet service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a SMTP service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a HTTP service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a POP3 service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a Win NetBIOS service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a SMB service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a RDP service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a MSSQL service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a MySQL/MariaDB service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a NFS service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a Docker API service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a OracleDB service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a PostgreSQL service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a Kibana service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a VMWARE ESXi service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a HTTP Proxy service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a SplunkD service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a Kubernetes API Server service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a Redis service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a Kafka service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a MongoDB/DocDB service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a Rabbit/AmazonMQ service publicly accessible |
-| ElectricEye_AttackSurface_GCP_Auditor.py | GCE VM Instance | Is a SparkUI service publicly accessible |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Is deletion protection enabled |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Is IP forwarding disabled |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Is auto-restart enabled |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Is Secure Boot enabled |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Is Virtual Trusted Platform Module enabled |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Is Instance Integrity Monitoring enabled |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Is Secure Integrity Monitoring Auto-learning Policy set to Update |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Is Serial Port access disabled |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Are Linux VM Instances access with OS Logon |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Are Linux VM Instances acessed with OS Logon using 2FA/MFA |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Are project-wide SSH keys blocked from access VM instances |
+| GCP_ComputeEngine_Auditor | GCE VM Instance | Are instances publicly facing |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Are instances publicly facing |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances enabled auto-backup |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do MySQL instances enable PITR |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do PostgreSQL instances enable PITR |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have a private network enabled |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances allowe GCP services connectivity |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have a password policy enabled |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have a password min length |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have a password reuse check |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have a configuration to disallow usernames in the password |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have a password change interval check |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have storage auto-resize enabled |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have deletion protection enabled |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have query insights enabled |
+| GCP_CloudSQL_Auditor | CloudSQL Instance | Do DB instances have SSL/TLS Enforcement enabled |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a FTP service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a SSH service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Telnet service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a SMTP service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a HTTP service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a POP3 service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Win NetBIOS service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a SMB service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a RDP service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a MSSQL service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a MySQL/MariaDB service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a NFS service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Docker API service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a OracleDB service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a PostgreSQL service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Kibana service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a VMWARE ESXi service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a HTTP Proxy service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a SplunkD service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Kubernetes API Server service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Redis service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Kafka service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a MongoDB/DocDB service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a Rabbit/AmazonMQ service publicly accessible |
+| ElectricEye_AttackSurface_GCP_Auditor | GCE VM Instance | Is a SparkUI service publicly accessible |
 
 
 ### Azure Checks & Services
@@ -882,66 +884,66 @@ These are the following services and checks perform by each Auditor, there are c
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
-| Servicenow_Users_Auditor.py | Servicenow User | Do active users have MFA enabled |
-| Servicenow_Users_Auditor.py | Servicenow User | Audit active users for {X} failed login attempts |
-| Servicenow_Users_Auditor.py | Servicenow User | Audit active users that are locked out |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance block unsanitized messages |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance specify a script execution role |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for JSONv2 API |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for SOAP API |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does instance block delegated developer grant roles |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for CSV API |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce default deny |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance double-check inbound form transactions |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance control live profile details |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for GlideAjax API |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for Excel API |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for the import API |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for PDF API |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance protect performance monitoring for unauthorized access |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance restrict performance monitoring to specific IP |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enable privacy control for client-callable scripts |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance restrict Favorites access |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance have an IP Allowlist |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for RSS API |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for Script Requests API |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance perform validation for SOAP requests |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance restrict ServiceNow employee access
-| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for Unload API |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for WSDL API |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for XML API |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for XSD API |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Attachments: Does the instance restrict files from being rendered in the browser |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Attachments: Instance should restrict questionable file attachments |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Attachments: Instance should configure file download restrictions |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Attachments: Instances should enable access control for profile pictures |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Attachments: Instance should enforce downloading of attachments |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Attachments: Instance should define file type allowlist for uploads |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Attachments: Instance should prevent unauthorized access to attachments |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Attachments: Instance should prevent specific file extensions upload |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Attachments: Instance should prevent specific file type upload |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Attachments: Instance should prevent specific file type download |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Attachments: Instance should enable MIME type validation |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Email Security: Instances should restrict email HTML bodies from rendering |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Email Security: Instances should restrict acccess to emails with empty target tables |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Email Security: Instances should specify trusted domain allowlists |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Input Validation: Instances should disallow embedded HTML code |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Input Validation: Instances should disallow JavaScript in embedded HTML |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Input Validation: Instances should check unsanitized HTML |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Input Validation: Instances should enable script sandboxing |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Input Validation: Instances should disable AJAXEvaluate |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Input Validation: Instances should escape Excel formula injection |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Input Validation: Instances should escape HTML |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Input Validation: Instances should escape JavaScript |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Input Validation: Instances should escape Jelly |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Input Validation: Instances should escape XML |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Input Validation: Instances should sanitize HTML |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Input Validation: Instances should prevent JavaScript injection with Jelly interpolation |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Input Validation: Instances should enable SOAP request strict security |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Secure Communications: Instances should enable certficate validation on outbound connections |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Secure Communications: Instances should disable SSLv2 & SSLv3 |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Secure Communications: Instances should verify HTTP client hostnames |
-| Servicenow_Users_Auditor.py | Servicenow Instance | Secure Communications: Instances should check revoked certificate status |
+| Servicenow_Users_Auditor | Servicenow User | Do active users have MFA enabled |
+| Servicenow_Users_Auditor | Servicenow User | Audit active users for {X} failed login attempts |
+| Servicenow_Users_Auditor | Servicenow User | Audit active users that are locked out |
+| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance block unsanitized messages |
+| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance specify a script execution role |
+| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for JSONv2 API |
+| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for SOAP API |
+| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does instance block delegated developer grant roles |
+| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for CSV API |
+| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enforce default deny |
+| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance double-check inbound form transactions |
+| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance control live profile details |
+| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for GlideAjax API |
+| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for Excel API |
+| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for the import API |
+| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for PDF API |
+| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance protect performance monitoring for unauthorized access |
+| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance restrict performance monitoring to specific IP |
+| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enable privacy control for client-callable scripts |
+| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance restrict Favorites access |
+| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance have an IP Allowlist |
+| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for RSS API |
+| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for Script Requests API |
+| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance perform validation for SOAP requests |
+| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance restrict ServiceNow employee access
+| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for Unload API |
+| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for WSDL API |
+| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for XML API |
+| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for XSD API |
+| Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Does the instance restrict files from being rendered in the browser |
+| Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instance should restrict questionable file attachments |
+| Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instance should configure file download restrictions |
+| Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instances should enable access control for profile pictures |
+| Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instance should enforce downloading of attachments |
+| Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instance should define file type allowlist for uploads |
+| Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instance should prevent unauthorized access to attachments |
+| Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instance should prevent specific file extensions upload |
+| Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instance should prevent specific file type upload |
+| Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instance should prevent specific file type download |
+| Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instance should enable MIME type validation |
+| Servicenow_EmailSecurity_Auditor | Servicenow Instance | Email Security: Instances should restrict email HTML bodies from rendering |
+| Servicenow_EmailSecurity_Auditor | Servicenow Instance | Email Security: Instances should restrict acccess to emails with empty target tables |
+| Servicenow_EmailSecurity_Auditor | Servicenow Instance | Email Security: Instances should specify trusted domain allowlists |
+| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instances should disallow embedded HTML code |
+| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instances should disallow JavaScript in embedded HTML |
+| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instances should check unsanitized HTML |
+| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instances should enable script sandboxing |
+| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instances should disable AJAXEvaluate |
+| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instances should escape Excel formula injection |
+| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instances should escape HTML |
+| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instances should escape JavaScript |
+| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instances should escape Jelly |
+| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instances should escape XML |
+| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instances should sanitize HTML |
+| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instances should prevent JavaScript injection with Jelly interpolation |
+| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instances should enable SOAP request strict security |
+| Servicenow_SecureCommunications_Auditor | Servicenow Instance | Secure Communications: Instances should enable certficate validation on outbound connections |
+| Servicenow_SecureCommunications_Auditor | Servicenow Instance | Secure Communications: Instances should disable SSLv2 & SSLv3 |
+| Servicenow_SecureCommunications_Auditor | Servicenow Instance | Secure Communications: Instances should verify HTTP client hostnames |
+| Servicenow_SecureCommunications_Auditor | Servicenow Instance | Secure Communications: Instances should check revoked certificate status |
 
 ### SSPM: M365 Checks & Services
 ___
