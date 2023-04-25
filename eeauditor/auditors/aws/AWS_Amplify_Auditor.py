@@ -77,10 +77,10 @@ def amplify_basic_auth_enabled_check(cache: dict, session, awsAccountId: str, aw
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.DS-1",
-                        "NIST CSF PR.DS-5",
-                        "NIST CSF PR.IP-3",
-                        "NIST SP 800-53 AC-6",
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST CSF V1.1 PR.DS-5",
+                        "NIST CSF V1.1 PR.IP-3",
+                        "NIST SP 800-53 Rev. 4 AC-6",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.9.4.1",
                         "ISO 27001:2013 A.9.4.2",
@@ -128,10 +128,10 @@ def amplify_basic_auth_enabled_check(cache: dict, session, awsAccountId: str, aw
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.DS-1",
-                        "NIST CSF PR.DS-5",
-                        "NIST CSF PR.IP-3",
-                        "NIST SP 800-53 AC-6",
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST CSF V1.1 PR.DS-5",
+                        "NIST CSF V1.1 PR.IP-3",
+                        "NIST SP 800-53 Rev. 4 AC-6",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.9.4.1",
                         "ISO 27001:2013 A.9.4.2",
@@ -189,10 +189,10 @@ def amplify_branch_auto_deletion_enabled_check(cache: dict, session, awsAccountI
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.DS-1",
-                        "NIST CSF PR.DS-5",
-                        "NIST CSF PR.IP-3",
-                        "NIST SP 800-53 AC-6",
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST CSF V1.1 PR.DS-5",
+                        "NIST CSF V1.1 PR.IP-3",
+                        "NIST SP 800-53 Rev. 4 AC-6",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.9.4.1",
                         "ISO 27001:2013 A.9.4.2",
@@ -240,10 +240,10 @@ def amplify_branch_auto_deletion_enabled_check(cache: dict, session, awsAccountI
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.DS-1",
-                        "NIST CSF PR.DS-5",
-                        "NIST CSF PR.IP-3",
-                        "NIST SP 800-53 AC-6",
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST CSF V1.1 PR.DS-5",
+                        "NIST CSF V1.1 PR.IP-3",
+                        "NIST SP 800-53 Rev. 4 AC-6",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.9.4.1",
                         "ISO 27001:2013 A.9.4.2",

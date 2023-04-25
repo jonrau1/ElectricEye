@@ -92,10 +92,10 @@ def mwaa_kms_encryption_check(cache: dict, session, awsAccountId: str, awsRegion
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.DS-1",
-                        "NIST SP 800-53 MP-8",
-                        "NIST SP 800-53 SC-12",
-                        "NIST SP 800-53 SC-28",
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST SP 800-53 Rev. 4 MP-8",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3"
                     ]
@@ -148,10 +148,10 @@ def mwaa_kms_encryption_check(cache: dict, session, awsAccountId: str, awsRegion
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.DS-1",
-                        "NIST SP 800-53 MP-8",
-                        "NIST SP 800-53 SC-12",
-                        "NIST SP 800-53 SC-28",
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST SP 800-53 Rev. 4 MP-8",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3"
                     ]
@@ -217,12 +217,12 @@ def mwaa_public_access_check(cache: dict, session, awsAccountId: str, awsRegion:
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.AC-3",
-                        "NIST SP 800-53 AC-1",
-                        "NIST SP 800-53 AC-17",
-                        "NIST SP 800-53 AC-19",
-                        "NIST SP 800-53 AC-20",
-                        "NIST SP 800-53 SC-15",
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
                         "AICPA TSC CC6.6",
                         "ISO 27001:2013 A.6.2.1",
                         "ISO 27001:2013 A.6.2.2",
@@ -279,12 +279,12 @@ def mwaa_public_access_check(cache: dict, session, awsAccountId: str, awsRegion:
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.AC-3",
-                        "NIST SP 800-53 AC-1",
-                        "NIST SP 800-53 AC-17",
-                        "NIST SP 800-53 AC-19",
-                        "NIST SP 800-53 AC-20",
-                        "NIST SP 800-53 SC-15",
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
                         "AICPA TSC CC6.6",
                         "ISO 27001:2013 A.6.2.1",
                         "ISO 27001:2013 A.6.2.2",
@@ -351,13 +351,13 @@ def mwaa_dag_processing_logging_check(cache: dict, session, awsAccountId: str, a
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF DE.AE-3",
-                        "NIST SP 800-53 AU-6",
-                        "NIST SP 800-53 CA-7",
-                        "NIST SP 800-53 IR-4",
-                        "NIST SP 800-53 IR-5",
-                        "NIST SP 800-53 IR-8",
-                        "NIST SP 800-53 SI-4",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
                         "ISO 27001:2013 A.16.1.7"
@@ -408,13 +408,13 @@ def mwaa_dag_processing_logging_check(cache: dict, session, awsAccountId: str, a
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF DE.AE-3",
-                        "NIST SP 800-53 AU-6",
-                        "NIST SP 800-53 CA-7",
-                        "NIST SP 800-53 IR-4",
-                        "NIST SP 800-53 IR-5",
-                        "NIST SP 800-53 IR-8",
-                        "NIST SP 800-53 SI-4",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
                         "ISO 27001:2013 A.16.1.7"
@@ -478,13 +478,13 @@ def mwaa_scheduler_logging_check(cache: dict, session, awsAccountId: str, awsReg
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF DE.AE-3",
-                        "NIST SP 800-53 AU-6",
-                        "NIST SP 800-53 CA-7",
-                        "NIST SP 800-53 IR-4",
-                        "NIST SP 800-53 IR-5",
-                        "NIST SP 800-53 IR-8",
-                        "NIST SP 800-53 SI-4",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
                         "ISO 27001:2013 A.16.1.7"
@@ -535,13 +535,13 @@ def mwaa_scheduler_logging_check(cache: dict, session, awsAccountId: str, awsReg
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF DE.AE-3",
-                        "NIST SP 800-53 AU-6",
-                        "NIST SP 800-53 CA-7",
-                        "NIST SP 800-53 IR-4",
-                        "NIST SP 800-53 IR-5",
-                        "NIST SP 800-53 IR-8",
-                        "NIST SP 800-53 SI-4",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
                         "ISO 27001:2013 A.16.1.7"
@@ -605,13 +605,13 @@ def mwaa_task_logging_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF DE.AE-3",
-                        "NIST SP 800-53 AU-6",
-                        "NIST SP 800-53 CA-7",
-                        "NIST SP 800-53 IR-4",
-                        "NIST SP 800-53 IR-5",
-                        "NIST SP 800-53 IR-8",
-                        "NIST SP 800-53 SI-4",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
                         "ISO 27001:2013 A.16.1.7"
@@ -662,13 +662,13 @@ def mwaa_task_logging_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF DE.AE-3",
-                        "NIST SP 800-53 AU-6",
-                        "NIST SP 800-53 CA-7",
-                        "NIST SP 800-53 IR-4",
-                        "NIST SP 800-53 IR-5",
-                        "NIST SP 800-53 IR-8",
-                        "NIST SP 800-53 SI-4",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
                         "ISO 27001:2013 A.16.1.7"
@@ -732,13 +732,13 @@ def mwaa_webserver_logging_check(cache: dict, session, awsAccountId: str, awsReg
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF DE.AE-3",
-                        "NIST SP 800-53 AU-6",
-                        "NIST SP 800-53 CA-7",
-                        "NIST SP 800-53 IR-4",
-                        "NIST SP 800-53 IR-5",
-                        "NIST SP 800-53 IR-8",
-                        "NIST SP 800-53 SI-4",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
                         "ISO 27001:2013 A.16.1.7"
@@ -789,13 +789,13 @@ def mwaa_webserver_logging_check(cache: dict, session, awsAccountId: str, awsReg
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF DE.AE-3",
-                        "NIST SP 800-53 AU-6",
-                        "NIST SP 800-53 CA-7",
-                        "NIST SP 800-53 IR-4",
-                        "NIST SP 800-53 IR-5",
-                        "NIST SP 800-53 IR-8",
-                        "NIST SP 800-53 SI-4",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
                         "ISO 27001:2013 A.16.1.7"
@@ -859,13 +859,13 @@ def mwaa_worker_logging_check(cache: dict, session, awsAccountId: str, awsRegion
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF DE.AE-3",
-                        "NIST SP 800-53 AU-6",
-                        "NIST SP 800-53 CA-7",
-                        "NIST SP 800-53 IR-4",
-                        "NIST SP 800-53 IR-5",
-                        "NIST SP 800-53 IR-8",
-                        "NIST SP 800-53 SI-4",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
                         "ISO 27001:2013 A.16.1.7"
@@ -916,13 +916,13 @@ def mwaa_worker_logging_check(cache: dict, session, awsAccountId: str, awsRegion
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF DE.AE-3",
-                        "NIST SP 800-53 AU-6",
-                        "NIST SP 800-53 CA-7",
-                        "NIST SP 800-53 IR-4",
-                        "NIST SP 800-53 IR-5",
-                        "NIST SP 800-53 IR-8",
-                        "NIST SP 800-53 SI-4",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
                         "ISO 27001:2013 A.16.1.7"
