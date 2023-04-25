@@ -147,9 +147,9 @@ def servicenow_sspm_downloadable_mime_types_check(cache: dict, awsAccountId: str
             "Compliance": {
                 "Status": "FAILED",
                 "RelatedRequirements": [
-                    "NIST CSF PR.PT-3",
-                    "NIST SP 800-53 AC-3",
-                    "NIST SP 800-53 CM-7",
+                    "NIST CSF V1.1 PR.PT-3",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 CM-7",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.6.2.2", 
                     "ISO 27001:2013 A.9.1.2",
@@ -219,9 +219,9 @@ def servicenow_sspm_downloadable_mime_types_check(cache: dict, awsAccountId: str
             "Compliance": {
                 "Status": "PASSED",
                 "RelatedRequirements": [
-                    "NIST CSF PR.PT-3",
-                    "NIST SP 800-53 AC-3",
-                    "NIST SP 800-53 CM-7",
+                    "NIST CSF V1.1 PR.PT-3",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 CM-7",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.6.2.2", 
                     "ISO 27001:2013 A.9.1.2",
@@ -331,9 +331,9 @@ def servicenow_sspm_enable_deny_list_for_attachments_check(cache: dict, awsAccou
             "Compliance": {
                 "Status": "FAILED",
                 "RelatedRequirements": [
-                    "NIST CSF PR.PT-3",
-                    "NIST SP 800-53 AC-3",
-                    "NIST SP 800-53 CM-7",
+                    "NIST CSF V1.1 PR.PT-3",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 CM-7",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.6.2.2", 
                     "ISO 27001:2013 A.9.1.2",
@@ -403,9 +403,9 @@ def servicenow_sspm_enable_deny_list_for_attachments_check(cache: dict, awsAccou
             "Compliance": {
                 "Status": "PASSED",
                 "RelatedRequirements": [
-                    "NIST CSF PR.PT-3",
-                    "NIST SP 800-53 AC-3",
-                    "NIST SP 800-53 CM-7",
+                    "NIST CSF V1.1 PR.PT-3",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 CM-7",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.6.2.2", 
                     "ISO 27001:2013 A.9.1.2",
@@ -515,9 +515,9 @@ def servicenow_sspm_enable_file_download_restrictions_check(cache: dict, awsAcco
             "Compliance": {
                 "Status": "FAILED",
                 "RelatedRequirements": [
-                    "NIST CSF PR.PT-3",
-                    "NIST SP 800-53 AC-3",
-                    "NIST SP 800-53 CM-7",
+                    "NIST CSF V1.1 PR.PT-3",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 CM-7",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.6.2.2", 
                     "ISO 27001:2013 A.9.1.2",
@@ -587,9 +587,9 @@ def servicenow_sspm_enable_file_download_restrictions_check(cache: dict, awsAcco
             "Compliance": {
                 "Status": "PASSED",
                 "RelatedRequirements": [
-                    "NIST CSF PR.PT-3",
-                    "NIST SP 800-53 AC-3",
-                    "NIST SP 800-53 CM-7",
+                    "NIST CSF V1.1 PR.PT-3",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 CM-7",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.6.2.2", 
                     "ISO 27001:2013 A.9.1.2",
@@ -699,9 +699,9 @@ def servicenow_sspm_strict_user_image_upload_check(cache: dict, awsAccountId: st
             "Compliance": {
                 "Status": "FAILED",
                 "RelatedRequirements": [
-                    "NIST CSF PR.PT-3",
-                    "NIST SP 800-53 AC-3",
-                    "NIST SP 800-53 CM-7",
+                    "NIST CSF V1.1 PR.PT-3",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 CM-7",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.6.2.2", 
                     "ISO 27001:2013 A.9.1.2",
@@ -771,9 +771,9 @@ def servicenow_sspm_strict_user_image_upload_check(cache: dict, awsAccountId: st
             "Compliance": {
                 "Status": "PASSED",
                 "RelatedRequirements": [
-                    "NIST CSF PR.PT-3",
-                    "NIST SP 800-53 AC-3",
-                    "NIST SP 800-53 CM-7",
+                    "NIST CSF V1.1 PR.PT-3",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 CM-7",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.6.2.2", 
                     "ISO 27001:2013 A.9.1.2",
@@ -883,9 +883,9 @@ def servicenow_sspm_force_download_mime_types_check(cache: dict, awsAccountId: s
             "Compliance": {
                 "Status": "FAILED",
                 "RelatedRequirements": [
-                    "NIST CSF PR.PT-3",
-                    "NIST SP 800-53 AC-3",
-                    "NIST SP 800-53 CM-7",
+                    "NIST CSF V1.1 PR.PT-3",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 CM-7",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.6.2.2", 
                     "ISO 27001:2013 A.9.1.2",
@@ -955,9 +955,9 @@ def servicenow_sspm_force_download_mime_types_check(cache: dict, awsAccountId: s
             "Compliance": {
                 "Status": "PASSED",
                 "RelatedRequirements": [
-                    "NIST CSF PR.PT-3",
-                    "NIST SP 800-53 AC-3",
-                    "NIST SP 800-53 CM-7",
+                    "NIST CSF V1.1 PR.PT-3",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 CM-7",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.6.2.2", 
                     "ISO 27001:2013 A.9.1.2",
@@ -1067,9 +1067,9 @@ def servicenow_sspm_restrict_file_restrictions_check(cache: dict, awsAccountId: 
             "Compliance": {
                 "Status": "FAILED",
                 "RelatedRequirements": [
-                    "NIST CSF PR.PT-3",
-                    "NIST SP 800-53 AC-3",
-                    "NIST SP 800-53 CM-7",
+                    "NIST CSF V1.1 PR.PT-3",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 CM-7",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.6.2.2", 
                     "ISO 27001:2013 A.9.1.2",
@@ -1139,9 +1139,9 @@ def servicenow_sspm_restrict_file_restrictions_check(cache: dict, awsAccountId: 
             "Compliance": {
                 "Status": "PASSED",
                 "RelatedRequirements": [
-                    "NIST CSF PR.PT-3",
-                    "NIST SP 800-53 AC-3",
-                    "NIST SP 800-53 CM-7",
+                    "NIST CSF V1.1 PR.PT-3",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 CM-7",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.6.2.2", 
                     "ISO 27001:2013 A.9.1.2",
@@ -1251,9 +1251,9 @@ def servicenow_sspm_restrict_unauthenticated_attachment_access_check(cache: dict
             "Compliance": {
                 "Status": "FAILED",
                 "RelatedRequirements": [
-                    "NIST CSF PR.PT-3",
-                    "NIST SP 800-53 AC-3",
-                    "NIST SP 800-53 CM-7",
+                    "NIST CSF V1.1 PR.PT-3",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 CM-7",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.6.2.2", 
                     "ISO 27001:2013 A.9.1.2",
@@ -1323,9 +1323,9 @@ def servicenow_sspm_restrict_unauthenticated_attachment_access_check(cache: dict
             "Compliance": {
                 "Status": "PASSED",
                 "RelatedRequirements": [
-                    "NIST CSF PR.PT-3",
-                    "NIST SP 800-53 AC-3",
-                    "NIST SP 800-53 CM-7",
+                    "NIST CSF V1.1 PR.PT-3",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 CM-7",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.6.2.2", 
                     "ISO 27001:2013 A.9.1.2",
@@ -1435,9 +1435,9 @@ def servicenow_sspm_specify_excluded_attachments_check(cache: dict, awsAccountId
             "Compliance": {
                 "Status": "FAILED",
                 "RelatedRequirements": [
-                    "NIST CSF PR.PT-3",
-                    "NIST SP 800-53 AC-3",
-                    "NIST SP 800-53 CM-7",
+                    "NIST CSF V1.1 PR.PT-3",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 CM-7",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.6.2.2", 
                     "ISO 27001:2013 A.9.1.2",
@@ -1507,9 +1507,9 @@ def servicenow_sspm_specify_excluded_attachments_check(cache: dict, awsAccountId
             "Compliance": {
                 "Status": "PASSED",
                 "RelatedRequirements": [
-                    "NIST CSF PR.PT-3",
-                    "NIST SP 800-53 AC-3",
-                    "NIST SP 800-53 CM-7",
+                    "NIST CSF V1.1 PR.PT-3",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 CM-7",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.6.2.2", 
                     "ISO 27001:2013 A.9.1.2",
@@ -1619,9 +1619,9 @@ def servicenow_sspm_specify_excluded_attachments_mime_type_check(cache: dict, aw
             "Compliance": {
                 "Status": "FAILED",
                 "RelatedRequirements": [
-                    "NIST CSF PR.PT-3",
-                    "NIST SP 800-53 AC-3",
-                    "NIST SP 800-53 CM-7",
+                    "NIST CSF V1.1 PR.PT-3",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 CM-7",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.6.2.2", 
                     "ISO 27001:2013 A.9.1.2",
@@ -1691,9 +1691,9 @@ def servicenow_sspm_specify_excluded_attachments_mime_type_check(cache: dict, aw
             "Compliance": {
                 "Status": "PASSED",
                 "RelatedRequirements": [
-                    "NIST CSF PR.PT-3",
-                    "NIST SP 800-53 AC-3",
-                    "NIST SP 800-53 CM-7",
+                    "NIST CSF V1.1 PR.PT-3",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 CM-7",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.6.2.2", 
                     "ISO 27001:2013 A.9.1.2",
@@ -1803,9 +1803,9 @@ def servicenow_sspm_restrict_downloaded_file_types_check(cache: dict, awsAccount
             "Compliance": {
                 "Status": "FAILED",
                 "RelatedRequirements": [
-                    "NIST CSF PR.PT-3",
-                    "NIST SP 800-53 AC-3",
-                    "NIST SP 800-53 CM-7",
+                    "NIST CSF V1.1 PR.PT-3",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 CM-7",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.6.2.2", 
                     "ISO 27001:2013 A.9.1.2",
@@ -1875,9 +1875,9 @@ def servicenow_sspm_restrict_downloaded_file_types_check(cache: dict, awsAccount
             "Compliance": {
                 "Status": "PASSED",
                 "RelatedRequirements": [
-                    "NIST CSF PR.PT-3",
-                    "NIST SP 800-53 AC-3",
-                    "NIST SP 800-53 CM-7",
+                    "NIST CSF V1.1 PR.PT-3",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 CM-7",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.6.2.2", 
                     "ISO 27001:2013 A.9.1.2",
@@ -1987,9 +1987,9 @@ def servicenow_sspm_upload_mime_type_restriction_check(cache: dict, awsAccountId
             "Compliance": {
                 "Status": "FAILED",
                 "RelatedRequirements": [
-                    "NIST CSF PR.PT-3",
-                    "NIST SP 800-53 AC-3",
-                    "NIST SP 800-53 CM-7",
+                    "NIST CSF V1.1 PR.PT-3",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 CM-7",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.6.2.2", 
                     "ISO 27001:2013 A.9.1.2",
@@ -2059,9 +2059,9 @@ def servicenow_sspm_upload_mime_type_restriction_check(cache: dict, awsAccountId
             "Compliance": {
                 "Status": "PASSED",
                 "RelatedRequirements": [
-                    "NIST CSF PR.PT-3",
-                    "NIST SP 800-53 AC-3",
-                    "NIST SP 800-53 CM-7",
+                    "NIST CSF V1.1 PR.PT-3",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 CM-7",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.6.2.2", 
                     "ISO 27001:2013 A.9.1.2",

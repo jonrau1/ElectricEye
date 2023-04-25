@@ -147,9 +147,9 @@ def servicenow_sspm_convert_inbound_email_html_check(cache: dict, awsAccountId: 
             "Compliance": {
                 "Status": "FAILED",
                 "RelatedRequirements": [
-                    "NIST CSF PR.PT-3",
-                    "NIST SP 800-53 AC-3",
-                    "NIST SP 800-53 CM-7",
+                    "NIST CSF V1.1 PR.PT-3",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 CM-7",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.6.2.2", 
                     "ISO 27001:2013 A.9.1.2",
@@ -219,9 +219,9 @@ def servicenow_sspm_convert_inbound_email_html_check(cache: dict, awsAccountId: 
             "Compliance": {
                 "Status": "PASSED",
                 "RelatedRequirements": [
-                    "NIST CSF PR.PT-3",
-                    "NIST SP 800-53 AC-3",
-                    "NIST SP 800-53 CM-7",
+                    "NIST CSF V1.1 PR.PT-3",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 CM-7",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.6.2.2", 
                     "ISO 27001:2013 A.9.1.2",
@@ -333,9 +333,9 @@ def servicenow_sspm_restrict_access_to_empty_target_table_emails_check(cache: di
             "Compliance": {
                 "Status": "FAILED",
                 "RelatedRequirements": [
-                    "NIST CSF PR.PT-3",
-                    "NIST SP 800-53 AC-3",
-                    "NIST SP 800-53 CM-7",
+                    "NIST CSF V1.1 PR.PT-3",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 CM-7",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.6.2.2", 
                     "ISO 27001:2013 A.9.1.2",
@@ -405,9 +405,9 @@ def servicenow_sspm_restrict_access_to_empty_target_table_emails_check(cache: di
             "Compliance": {
                 "Status": "PASSED",
                 "RelatedRequirements": [
-                    "NIST CSF PR.PT-3",
-                    "NIST SP 800-53 AC-3",
-                    "NIST SP 800-53 CM-7",
+                    "NIST CSF V1.1 PR.PT-3",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 CM-7",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.6.2.2", 
                     "ISO 27001:2013 A.9.1.2",
@@ -517,9 +517,9 @@ def servicenow_sspm_restrict_emails_by_domain_for_user_creation_check(cache: dic
             "Compliance": {
                 "Status": "FAILED",
                 "RelatedRequirements": [
-                    "NIST CSF PR.PT-3",
-                    "NIST SP 800-53 AC-3",
-                    "NIST SP 800-53 CM-7",
+                    "NIST CSF V1.1 PR.PT-3",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 CM-7",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.6.2.2", 
                     "ISO 27001:2013 A.9.1.2",
@@ -589,9 +589,9 @@ def servicenow_sspm_restrict_emails_by_domain_for_user_creation_check(cache: dic
             "Compliance": {
                 "Status": "PASSED",
                 "RelatedRequirements": [
-                    "NIST CSF PR.PT-3",
-                    "NIST SP 800-53 AC-3",
-                    "NIST SP 800-53 CM-7",
+                    "NIST CSF V1.1 PR.PT-3",
+                    "NIST SP 800-53 Rev. 4 AC-3",
+                    "NIST SP 800-53 Rev. 4 CM-7",
                     "AICPA TSC CC6.1",
                     "ISO 27001:2013 A.6.2.2", 
                     "ISO 27001:2013 A.9.1.2",

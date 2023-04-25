@@ -55,11 +55,11 @@ python3 eeauditor/controller.py -t AWS -o stdout
 
 - For AWS, ElectricEye is the most comprhensive CSPM & EASM tool supporting over **500 Checks** for Security, Reliaiblity, Monitoring, and Exposure across **100 CSP Services** including atypical services not supported by AWS Config or mainstream CSPM & Cloud Native Application Protection Platform (CNAPP) tools such as AWS Managed Blockchain, AWS Managed Workflows for Apache AirFlow, Amazon MemoryDB, AWS Amplify, Amazon MQ, and more!
 
-- All checks are currently mapped to NIST CSF v1.1, NIST 800-53 r4, American Institute of Certified Public Accountants (AICPA) Trust Service Criteria (TSCs) which can be used for SOC2 Type I and SOC2 Type II, and ISO 27001:2013 ISMS controls for Audit Readiness and internal GRC requirements.
+- All checks are currently mapped to [NIST Cybersecurity Framework V1.1](https://doi.org/10.6028/NIST.CSWP.04162018), [NIST Special Publication 800-53 Revision 4](https://csrc.nist.gov/publications/detail/sp/800-53/rev-4/archive/2015-01-22), [American Institute of Certified Public Accountants (AICPA) Trust Service Criteria (TSCs)](https://us.aicpa.org/content/dam/aicpa/interestareas/frc/assuranceadvisoryservices/downloadabledocuments/trust-services-criteria-2020.pdf) which can be used for SOC2 Type I and SOC2 Type II, and [ISO 27001:2013](https://www.iso.org/standard/27001) ISMS controls for Audit Readiness and internal GRC requirements.
 
 - Configurable EASM module uses NMAP for service discovery and reachability assessment of over 20 highly-dangerous ports and protocols (e.g., SMB, MongoDB, VMWARE ESXi, and more) for nearly every public-facing capable AWS service. GCP EASM is supported for GCE.
 
-- Outputs to AWS Security Hub, JSON, CSV, MongoDB, PostgreSQL, and DisruptOps by Firemon.
+- Outputs to AWS Security Hub, JSON, CSV, MongoDB, PostgreSQL, and [DisruptOps by Firemon](https://www.firemon.com/introducing-disruptops/).
 
 ## Tell Me More :round_pushpin: :round_pushpin:
 

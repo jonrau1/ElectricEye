@@ -94,11 +94,11 @@ def high_critical_findings(cache: dict, session, awsAccountId: str, awsRegion: s
             "Compliance": {
                 "Status": "PASSED",
                 "RelatedRequirements": [
-                    "NIST CSF DE.AE-2",
-                    "NIST SP 800-53 AU-6",
-                    "NIST SP 800-53 CA-7",
-                    "NIST SP 800-53 IR-4",
-                    "NIST SP 800-53 SI-4",
+                    "NIST CSF V1.1 DE.AE-2",
+                    "NIST SP 800-53 Rev. 4 AU-6",
+                    "NIST SP 800-53 Rev. 4 CA-7",
+                    "NIST SP 800-53 Rev. 4 IR-4",
+                    "NIST SP 800-53 Rev. 4 SI-4",
                     "AICPA TSC 7.2",
                     "ISO 27001:2013 A.12.4.1",
                     "ISO 27001:2013 A.16.1.1",
@@ -143,11 +143,11 @@ def high_critical_findings(cache: dict, session, awsAccountId: str, awsRegion: s
             "Compliance": {
                 "Status": "FAILED",
                 "RelatedRequirements": [
-                    "NIST CSF DE.AE-2",
-                    "NIST SP 800-53 AU-6",
-                    "NIST SP 800-53 CA-7",
-                    "NIST SP 800-53 IR-4",
-                    "NIST SP 800-53 SI-4",
+                    "NIST CSF V1.1 DE.AE-2",
+                    "NIST SP 800-53 Rev. 4 AU-6",
+                    "NIST SP 800-53 Rev. 4 CA-7",
+                    "NIST SP 800-53 Rev. 4 IR-4",
+                    "NIST SP 800-53 Rev. 4 SI-4",
                     "AICPA TSC 7.2",
                     "ISO 27001:2013 A.12.4.1",
                     "ISO 27001:2013 A.16.1.1",
