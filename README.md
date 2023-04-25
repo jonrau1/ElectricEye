@@ -223,9 +223,9 @@ In total there are...
 
 > - **2** Supported Public CSPs
 > - **1** Supported SaaS Provider
-> - **675** Security & Resilience Best Practice Checks supported across all Public CSPs & SaaS Providers
+> - **689** Security & Resilience Best Practice Checks supported across all Public CSPs & SaaS Providers
 > - **104** Supported CSP & SaaS Resources / Asset Types
-> - **87** Auditor Plugins
+> - **88** Auditor Plugins
 
 ### AWS Checks & Services
 ___
@@ -878,9 +878,9 @@ ___
 ___
 
 These are the following services and checks perform by each Auditor, there are currently...
-- :boom: **72 Checks** :boom:
+- :boom: **86 Checks** :boom:
 - :exclamation: **2 supported ServiceNow services/components** :exclamation:
-- :fire: **7 Auditors** :fire:
+- :fire: **8 Auditors** :fire:
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
@@ -916,7 +916,7 @@ These are the following services and checks perform by each Auditor, there are c
 | Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Does the instance restrict files from being rendered in the browser |
 | Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instance should restrict questionable file attachments |
 | Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instance should configure file download restrictions |
-| Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instances should enable access control for profile pictures |
+| Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instance should enable access control for profile pictures |
 | Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instance should enforce downloading of attachments |
 | Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instance should define file type allowlist for uploads |
 | Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instance should prevent unauthorized access to attachments |
@@ -924,38 +924,52 @@ These are the following services and checks perform by each Auditor, there are c
 | Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instance should prevent specific file type upload |
 | Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instance should prevent specific file type download |
 | Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instance should enable MIME type validation |
-| Servicenow_EmailSecurity_Auditor | Servicenow Instance | Email Security: Instances should restrict email HTML bodies from rendering |
-| Servicenow_EmailSecurity_Auditor | Servicenow Instance | Email Security: Instances should restrict acccess to emails with empty target tables |
-| Servicenow_EmailSecurity_Auditor | Servicenow Instance | Email Security: Instances should specify trusted domain allowlists |
-| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instances should disallow embedded HTML code |
-| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instances should disallow JavaScript in embedded HTML |
-| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instances should check unsanitized HTML |
-| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instances should enable script sandboxing |
-| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instances should disable AJAXEvaluate |
-| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instances should escape Excel formula injection |
-| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instances should escape HTML |
-| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instances should escape JavaScript |
-| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instances should escape Jelly |
-| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instances should escape XML |
-| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instances should sanitize HTML |
-| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instances should prevent JavaScript injection with Jelly interpolation |
-| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instances should enable SOAP request strict security |
-| Servicenow_SecureCommunications_Auditor | Servicenow Instance | Secure Communications: Instances should enable certficate validation on outbound connections |
-| Servicenow_SecureCommunications_Auditor | Servicenow Instance | Secure Communications: Instances should disable SSLv2 & SSLv3 |
-| Servicenow_SecureCommunications_Auditor | Servicenow Instance | Secure Communications: Instances should verify HTTP client hostnames |
-| Servicenow_SecureCommunications_Auditor | Servicenow Instance | Secure Communications: Instances should check revoked certificate status |
-| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Enable URL allow list for cross-origin iframe communication |
-| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Enforce relative links |
-| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Specify URL allow list for cross-origin iframe communication |
-| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: URL allow list for logout redirects |
-| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Virtual agent embedded client content security policy |
-| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Virtual agent embedded client X-Frame-Options |
-| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: X-Frame-Options: SAMEORIGIN |
-| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Setting entity expansion threshold |
-| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: XMLdoc/XMLUtil entity validation with allow list |
-| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Disable entity expansion |
-| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: XMLdoc2 entity validation with allow list |
-| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: XML external entity processing - allow list |
+| Servicenow_EmailSecurity_Auditor | Servicenow Instance | Email Security: Instance should restrict email HTML bodies from rendering |
+| Servicenow_EmailSecurity_Auditor | Servicenow Instance | Email Security: Instance should restrict acccess to emails with empty target tables |
+| Servicenow_EmailSecurity_Auditor | Servicenow Instance | Email Security: Instance should specify trusted domain allowlists |
+| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instance should disallow embedded HTML code |
+| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instance should disallow JavaScript in embedded HTML |
+| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instance should check unsanitized HTML |
+| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instance should enable script sandboxing |
+| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instance should disable AJAXEvaluate |
+| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instance should escape Excel formula injection |
+| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instance should escape HTML |
+| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instance should escape JavaScript |
+| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instance should escape Jelly |
+| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instance should escape XML |
+| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instance should sanitize HTML |
+| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instance should prevent JavaScript injection with Jelly interpolation |
+| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instance should enable SOAP request strict security |
+| Servicenow_SecureCommunications_Auditor | Servicenow Instance | Secure Communications: Instance should enable certficate validation on outbound connections |
+| Servicenow_SecureCommunications_Auditor | Servicenow Instance | Secure Communications: Instance should disable SSLv2 & SSLv3 |
+| Servicenow_SecureCommunications_Auditor | Servicenow Instance | Secure Communications: Instance should verify HTTP client hostnames |
+| Servicenow_SecureCommunications_Auditor | Servicenow Instance | Secure Communications: Instance should check revoked certificate status |
+| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Instance should enable URL allow list for cross-origin iframe communication |
+| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Instance should enforce relative links |
+| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Instance should specify URL allow list for cross-origin iframe communication |
+| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Instance should specify URL allow list for logout redirects |
+| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Instance should set virtual agent embedded client content security policy |
+| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Instance should set virtual agent embedded client X-Frame-Options |
+| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Instance should set X-Frame-Options: SAMEORIGIN |
+| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Instance should set XXE entity expansion threshold |
+| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Instance should set XMLdoc/XMLUtil entity validation allow list |
+| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Instance should disable XXE entity expansion |
+| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Instance should set XMLdoc2 entity validation allow list |
+| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Instance should enable XML external entity processing allow lists |
+| Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: Instance should set absolute session timeouts |
+| Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: Instance should set an Anti-CSRF token |
+| Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: Instance should set the HTTPOnly property for sensitive cookies |
+| Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: Instance should enable Anti-CSRF token strict validation |
+| Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: Instance should disable passwordless authentication |
+| Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: Instance should globally enable MFA |
+| Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: Instance should enforce password change validation |
+| Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: Instance should disable password autocompletes |
+| Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: Instance should disable Remember Me checkboxes |
+| Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: Instance should rotate HTTP SessionIDs |
+| Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: Instance should validate session cookies |
+| Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: Instance should set a strong security reference policy |
+| Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: Instance should set a strong session activity timeout |
+| Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: If using Remember Me, instance should set a strong rotation timeout |
 
 ### SSPM: M365 Checks & Services
 ___
