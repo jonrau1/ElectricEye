@@ -4839,12 +4839,4 @@ def servicenow_sspm_xsd_request_enforce_basic_auth_check(cache: dict, awsAccount
         }
         yield finding
 
-# TODO: Look into these Plugin-based checks and migrate??
-
-# TODO: CONTEXTUAL SECURITY: ROLE MGMT PLUGIN CHECK | https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/contextual-security.html
-# TODO: Explicit Role Plugin | https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/explicit-role-plugin.html
-# TODO: SAML 2.0 WEB PROSER SSO PROFILE | https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/saml-20-web-browser-sso-profile.html
-# TODO: Security jump start (ACL rules) | https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/security-jump-start-acl-rules.html
-# TODO: SNC Access Control plugin | https://docs.servicenow.com/bundle/utah-platform-security/page/administer/security/reference/snc-access-control-plugin.html
-
 # END??
