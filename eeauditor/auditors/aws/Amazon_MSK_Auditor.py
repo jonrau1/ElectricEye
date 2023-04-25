@@ -75,10 +75,10 @@ def inter_cluster_encryption_in_transit_check(cache: dict, session, awsAccountId
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.DS-2",
-                        "NIST SP 800-53 SC-8",
-                        "NIST SP 800-53 SC-11",
-                        "NIST SP 800-53 SC-12",
+                        "NIST CSF V1.1 PR.DS-2",
+                        "NIST SP 800-53 Rev. 4 SC-8",
+                        "NIST SP 800-53 Rev. 4 SC-11",
+                        "NIST SP 800-53 Rev. 4 SC-12",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3",
                         "ISO 27001:2013 A.13.1.1",
@@ -128,10 +128,10 @@ def inter_cluster_encryption_in_transit_check(cache: dict, session, awsAccountId
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.DS-2",
-                        "NIST SP 800-53 SC-8",
-                        "NIST SP 800-53 SC-11",
-                        "NIST SP 800-53 SC-12",
+                        "NIST CSF V1.1 PR.DS-2",
+                        "NIST SP 800-53 Rev. 4 SC-8",
+                        "NIST SP 800-53 Rev. 4 SC-11",
+                        "NIST SP 800-53 Rev. 4 SC-12",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3",
                         "ISO 27001:2013 A.13.1.1",
@@ -190,10 +190,10 @@ def client_broker_encryption_in_transit_check(cache: dict, session, awsAccountId
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.DS-2",
-                        "NIST SP 800-53 SC-8",
-                        "NIST SP 800-53 SC-11",
-                        "NIST SP 800-53 SC-12",
+                        "NIST CSF V1.1 PR.DS-2",
+                        "NIST SP 800-53 Rev. 4 SC-8",
+                        "NIST SP 800-53 Rev. 4 SC-11",
+                        "NIST SP 800-53 Rev. 4 SC-12",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3",
                         "ISO 27001:2013 A.13.1.1",
@@ -243,10 +243,10 @@ def client_broker_encryption_in_transit_check(cache: dict, session, awsAccountId
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.DS-2",
-                        "NIST SP 800-53 SC-8",
-                        "NIST SP 800-53 SC-11",
-                        "NIST SP 800-53 SC-12",
+                        "NIST CSF V1.1 PR.DS-2",
+                        "NIST SP 800-53 Rev. 4 SC-8",
+                        "NIST SP 800-53 Rev. 4 SC-11",
+                        "NIST SP 800-53 Rev. 4 SC-12",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3",
                         "ISO 27001:2013 A.13.1.1",
@@ -303,10 +303,10 @@ def client_authentication_check(cache: dict, session, awsAccountId: str, awsRegi
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.DS-2",
-                        "NIST SP 800-53 SC-8",
-                        "NIST SP 800-53 SC-11",
-                        "NIST SP 800-53 SC-12",
+                        "NIST CSF V1.1 PR.DS-2",
+                        "NIST SP 800-53 Rev. 4 SC-8",
+                        "NIST SP 800-53 Rev. 4 SC-11",
+                        "NIST SP 800-53 Rev. 4 SC-12",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3",
                         "ISO 27001:2013 A.13.1.1",
@@ -357,10 +357,10 @@ def client_authentication_check(cache: dict, session, awsAccountId: str, awsRegi
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.DS-2",
-                        "NIST SP 800-53 SC-8",
-                        "NIST SP 800-53 SC-11",
-                        "NIST SP 800-53 SC-12",
+                        "NIST CSF V1.1 PR.DS-2",
+                        "NIST SP 800-53 Rev. 4 SC-8",
+                        "NIST SP 800-53 Rev. 4 SC-11",
+                        "NIST SP 800-53 Rev. 4 SC-12",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3",
                         "ISO 27001:2013 A.13.1.1",
@@ -419,13 +419,13 @@ def cluster_enhanced_monitoring_check(cache: dict, session, awsAccountId: str, a
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF DE.AE-3",
-                        "NIST SP 800-53 AU-6",
-                        "NIST SP 800-53 CA-7",
-                        "NIST SP 800-53 IR-4",
-                        "NIST SP 800-53 IR-5",
-                        "NIST SP 800-53 IR-8",
-                        "NIST SP 800-53 SI-4",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
                         "ISO 27001:2013 A.16.1.7"
@@ -469,13 +469,13 @@ def cluster_enhanced_monitoring_check(cache: dict, session, awsAccountId: str, a
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF DE.AE-3",
-                        "NIST SP 800-53 AU-6",
-                        "NIST SP 800-53 CA-7",
-                        "NIST SP 800-53 IR-4",
-                        "NIST SP 800-53 IR-5",
-                        "NIST SP 800-53 IR-8",
-                        "NIST SP 800-53 SI-4",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
                         "ISO 27001:2013 A.16.1.7"

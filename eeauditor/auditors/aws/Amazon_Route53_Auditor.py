@@ -92,13 +92,13 @@ def route53_hosted_zone_query_logging_check(cache: dict, session, awsAccountId: 
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF DE.AE-3",
-                        "NIST SP 800-53 AU-6",
-                        "NIST SP 800-53 CA-7",
-                        "NIST SP 800-53 IR-4",
-                        "NIST SP 800-53 IR-5",
-                        "NIST SP 800-53 IR-8",
-                        "NIST SP 800-53 SI-4",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
                         "ISO 27001:2013 A.16.1.7"
@@ -149,13 +149,13 @@ def route53_hosted_zone_query_logging_check(cache: dict, session, awsAccountId: 
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF DE.AE-3",
-                        "NIST SP 800-53 AU-6",
-                        "NIST SP 800-53 CA-7",
-                        "NIST SP 800-53 IR-4",
-                        "NIST SP 800-53 IR-5",
-                        "NIST SP 800-53 IR-8",
-                        "NIST SP 800-53 SI-4",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
                         "ISO 27001:2013 A.16.1.7"
@@ -221,10 +221,10 @@ def route53_hosted_zone_traffic_policy_check(cache: dict, session, awsAccountId:
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.AC-5",
-                        "NIST SP 800-53 AC-4",
-                        "NIST SP 800-53 AC-10",
-                        "NIST SP 800-53 SC-7",
+                        "NIST CSF V1.1 PR.AC-5",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AC-10",
+                        "NIST SP 800-53 Rev. 4 SC-7",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.13.1.1",
                         "ISO 27001:2013 A.13.1.3",
@@ -278,10 +278,10 @@ def route53_hosted_zone_traffic_policy_check(cache: dict, session, awsAccountId:
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.AC-5",
-                        "NIST SP 800-53 AC-4",
-                        "NIST SP 800-53 AC-10",
-                        "NIST SP 800-53 SC-7",
+                        "NIST CSF V1.1 PR.AC-5",
+                        "NIST SP 800-53 Rev. 4 AC-4",
+                        "NIST SP 800-53 Rev. 4 AC-10",
+                        "NIST SP 800-53 Rev. 4 SC-7",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.13.1.1",
                         "ISO 27001:2013 A.13.1.3",

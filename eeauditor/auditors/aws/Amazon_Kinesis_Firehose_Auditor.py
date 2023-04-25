@@ -87,10 +87,10 @@ def firehose_delivery_stream_encryption_check(cache: dict, session, awsAccountId
                     "Compliance": {
                         "Status": "FAILED",
                         "RelatedRequirements": [
-                            "NIST CSF PR.DS-1",
-                            "NIST SP 800-53 MP-8",
-                            "NIST SP 800-53 SC-12",
-                            "NIST SP 800-53 SC-28",
+                            "NIST CSF V1.1 PR.DS-1",
+                            "NIST SP 800-53 Rev. 4 MP-8",
+                            "NIST SP 800-53 Rev. 4 SC-12",
+                            "NIST SP 800-53 Rev. 4 SC-28",
                             "AICPA TSC CC6.1",
                             "ISO 27001:2013 A.8.2.3",
                         ],
@@ -138,10 +138,10 @@ def firehose_delivery_stream_encryption_check(cache: dict, session, awsAccountId
                     "Compliance": {
                         "Status": "PASSED",
                         "RelatedRequirements": [
-                            "NIST CSF PR.DS-1",
-                            "NIST SP 800-53 MP-8",
-                            "NIST SP 800-53 SC-12",
-                            "NIST SP 800-53 SC-28",
+                            "NIST CSF V1.1 PR.DS-1",
+                            "NIST SP 800-53 Rev. 4 MP-8",
+                            "NIST SP 800-53 Rev. 4 SC-12",
+                            "NIST SP 800-53 Rev. 4 SC-28",
                             "AICPA TSC CC6.1",
                             "ISO 27001:2013 A.8.2.3",
                         ],

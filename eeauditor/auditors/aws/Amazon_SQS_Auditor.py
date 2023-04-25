@@ -112,9 +112,9 @@ def sqs_old_message_check(cache: dict, session, awsAccountId: str, awsRegion: st
                     "Compliance": {
                         "Status": "PASSED",
                         "RelatedRequirements": [
-                            "NIST CSF ID.AM-2",
-                            "NIST SP 800-53 CM-8",
-                            "NIST SP 800-53 PM-5",
+                            "NIST CSF V1.1 ID.AM-2",
+                            "NIST SP 800-53 Rev. 4 CM-8",
+                            "NIST SP 800-53 Rev. 4 PM-5",
                             "AICPA TSC CC3.2",
                             "AICPA TSC CC6.1",
                             "ISO 27001:2013 A.8.1.1",
@@ -162,9 +162,9 @@ def sqs_old_message_check(cache: dict, session, awsAccountId: str, awsRegion: st
                     "Compliance": {
                         "Status": "FAILED",
                         "RelatedRequirements": [
-                            "NIST CSF ID.AM-2",
-                            "NIST SP 800-53 CM-8",
-                            "NIST SP 800-53 PM-5",
+                            "NIST CSF V1.1 ID.AM-2",
+                            "NIST SP 800-53 Rev. 4 CM-8",
+                            "NIST SP 800-53 Rev. 4 PM-5",
                             "AICPA TSC CC3.2",
                             "AICPA TSC CC6.1",
                             "ISO 27001:2013 A.8.1.1",
@@ -234,9 +234,9 @@ def sqs_queue_encryption_check(cache: dict, session, awsAccountId: str, awsRegio
                     "Compliance": {
                         "Status": "PASSED",
                         "RelatedRequirements": [
-                            "NIST CSF PR.DS-1",
-                            "NIST CSF PR.DS-5",
-                            "NIST CSF PR.PT-3",
+                            "NIST CSF V1.1 PR.DS-1",
+                            "NIST CSF V1.1 PR.DS-5",
+                            "NIST CSF V1.1 PR.PT-3",
                             "AICPA TSC CC6.1",
                             "ISO 27001:2013 A.8.2.3"
                         ],
@@ -280,9 +280,9 @@ def sqs_queue_encryption_check(cache: dict, session, awsAccountId: str, awsRegio
                     "Compliance": {
                         "Status": "FAILED",
                         "RelatedRequirements": [
-                            "NIST CSF PR.DS-1",
-                            "NIST CSF PR.DS-5",
-                            "NIST CSF PR.PT-3",
+                            "NIST CSF V1.1 PR.DS-1",
+                            "NIST CSF V1.1 PR.DS-5",
+                            "NIST CSF V1.1 PR.PT-3",
                             "AICPA TSC CC6.1",
                             "ISO 27001:2013 A.8.2.3"
                         ],
@@ -352,13 +352,13 @@ def sqs_queue_public_accessibility_check(cache: dict, session, awsAccountId: str
                     "Compliance": {
                         "Status": "PASSED",
                         "RelatedRequirements": [
-                            "NIST CSF PR.AC-4",
-                            "NIST CSF PR.DS-5",
-                            "NIST CSF PR.PT-3",
-                            "NIST SP 800-53 AC-1"
-                            "NIST SP 800-53 AC-3"
-                            "NIST SP 800-53 AC-17"
-                            "NIST SP 800-53 AC-22"
+                            "NIST CSF V1.1 PR.AC-4",
+                            "NIST CSF V1.1 PR.DS-5",
+                            "NIST CSF V1.1 PR.PT-3",
+                            "NIST SP 800-53 Rev. 4 AC-1"
+                            "NIST SP 800-53 Rev. 4 AC-3"
+                            "NIST SP 800-53 Rev. 4 AC-17"
+                            "NIST SP 800-53 Rev. 4 AC-22"
                             "ISO 27001:2013 A.13.1.2"
                         ],
                     },
@@ -401,13 +401,13 @@ def sqs_queue_public_accessibility_check(cache: dict, session, awsAccountId: str
                     "Compliance": {
                         "Status": "FAILED",
                         "RelatedRequirements": [
-                            "NIST CSF PR.AC-4",
-                            "NIST CSF PR.DS-5",
-                            "NIST CSF PR.PT-3",
-                            "NIST SP 800-53 AC-1"
-                            "NIST SP 800-53 AC-3"
-                            "NIST SP 800-53 AC-17"
-                            "NIST SP 800-53 AC-22"
+                            "NIST CSF V1.1 PR.AC-4",
+                            "NIST CSF V1.1 PR.DS-5",
+                            "NIST CSF V1.1 PR.PT-3",
+                            "NIST SP 800-53 Rev. 4 AC-1"
+                            "NIST SP 800-53 Rev. 4 AC-3"
+                            "NIST SP 800-53 Rev. 4 AC-17"
+                            "NIST SP 800-53 Rev. 4 AC-22"
                             "ISO 27001:2013 A.13.1.2"
                         ],
                     },

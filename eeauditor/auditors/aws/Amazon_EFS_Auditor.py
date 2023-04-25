@@ -77,10 +77,10 @@ def efs_filesys_encryption_check(cache: dict, session, awsAccountId: str, awsReg
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.DS-1",
-                        "NIST SP 800-53 MP-8",
-                        "NIST SP 800-53 SC-12",
-                        "NIST SP 800-53 SC-28",
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST SP 800-53 Rev. 4 MP-8",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3"
                     ]
@@ -126,10 +126,10 @@ def efs_filesys_encryption_check(cache: dict, session, awsAccountId: str, awsReg
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.DS-1",
-                        "NIST SP 800-53 MP-8",
-                        "NIST SP 800-53 SC-12",
-                        "NIST SP 800-53 SC-28",
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST SP 800-53 Rev. 4 MP-8",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3"
                     ]
@@ -186,12 +186,12 @@ def efs_filesys_policy_check(cache: dict, session, awsAccountId: str, awsRegion:
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.DS-1",
-                        "NIST CSF PR.AC-1",
-                        "NIST CSF PR.AC-4",
-                        "NIST SP 800-53 IA-1",
-                        "NIST SP 800-53 IA-2",
-                        "NIST SP 800-53 IA-5",
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST CSF V1.1 PR.AC-1",
+                        "NIST CSF V1.1 PR.AC-4",
+                        "NIST SP 800-53 Rev. 4 IA-1",
+                        "NIST SP 800-53 Rev. 4 IA-2",
+                        "NIST SP 800-53 Rev. 4 IA-5",
                         "AICPA TSC CC6.1",
                         "AICPA TSC CC6.3",
                         "ISO 27001:2013 A.9.1.1",
@@ -239,12 +239,12 @@ def efs_filesys_policy_check(cache: dict, session, awsAccountId: str, awsRegion:
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.DS-1",
-                        "NIST CSF PR.AC-1",
-                        "NIST CSF PR.AC-4",
-                        "NIST SP 800-53 IA-1",
-                        "NIST SP 800-53 IA-2",
-                        "NIST SP 800-53 IA-5",
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST CSF V1.1 PR.AC-1",
+                        "NIST CSF V1.1 PR.AC-4",
+                        "NIST SP 800-53 Rev. 4 IA-1",
+                        "NIST SP 800-53 Rev. 4 IA-2",
+                        "NIST SP 800-53 Rev. 4 IA-5",
                         "AICPA TSC CC6.1",
                         "AICPA TSC CC6.3",
                         "ISO 27001:2013 A.9.1.1",

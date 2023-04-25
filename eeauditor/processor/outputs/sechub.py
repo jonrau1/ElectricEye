@@ -17,6 +17,7 @@
 #KIND, either express or implied.  See the License for the
 #specific language governing permissions and limitations
 #under the License.
+
 import boto3
 from processor.outputs.output_base import ElectricEyeOutput
 
@@ -25,10 +26,18 @@ class SecHubProvider(object):
     __provider__ = "sechub"
 
     def write_findings(self, findings: list, **kwargs):
-        print(f"Writing {len(findings)} results to SecurityHub")
+        print(f"Writing {len(findings)} results to AWS Security Hub")
         if findings:
             sechub = boto3.client("securityhub")
-            # write to securityhub in batches of 100
+
+            # Use a list comprehension to flatten the Description if the length exceeds Security Hub's upper-limit
+            # TODO: [for x["Description"] in findings if len(x["Description"]) > 1024 x["Description"] = x["Description"][:1022]]
+
+            # Security Hub supports batches of up to 100 findings for the "BIF" API
             for i in range(0, len(findings), 100):
-                sechub.batch_import_findings(Findings=findings[i : i + 100])
-        return
+                sechub.batch_import_findings(
+                    Findings=findings[i : i + 100]
+                )
+        
+        
+        return True

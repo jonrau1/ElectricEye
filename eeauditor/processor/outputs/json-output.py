@@ -17,11 +17,9 @@
 #KIND, either express or implied.  See the License for the
 #specific language governing permissions and limitations
 #under the License.
+
 import json
-import os
-
 from processor.outputs.output_base import ElectricEyeOutput
-
 
 @ElectricEyeOutput
 class JsonProvider(object):
@@ -32,9 +30,14 @@ class JsonProvider(object):
         
         # create output file based on inputs
         jsonfile = f"{output_file}.json"
-        print(f"Your filename is called {jsonfile}")
+        print(f"Output file named: {jsonfile}")
         
         with open(jsonfile, "w") as jsonfile:
-            json.dump(findings, jsonfile, indent=4, default=str)
+            json.dump(
+                findings,
+                jsonfile,
+                indent=4,
+                default=str
+            )
             
         return True
