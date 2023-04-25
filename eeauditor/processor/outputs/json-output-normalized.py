@@ -31,10 +31,10 @@ class JsonProvider(object):
         allIds = []
 
         print(f"Writing {len(findings)} findings to Normalized JSON file (final total may be different due to dedupe)")
+        
         # create output file based on inputs
-        jsonfile = f"{output_file}-normalized.json"
-
-        print(f"Your filename is called {jsonfile}")
+        jsonfile = f"{output_file}_normalized.json"
+        print(f"Output file named: {jsonfile}")
 
         # loop the findings and create a flatter structure - better for indexing without the nested lists
         for fi in findings:
@@ -43,7 +43,7 @@ class JsonProvider(object):
             try:
                 resourceDetails = str(fi["Resources"][0]["Details"])
             except KeyError:
-                resourceDetails = "NoAdditionalDetails"
+                resourceDetails = "{}"
 
             try:
                 # create the new dict which will receive parsed values

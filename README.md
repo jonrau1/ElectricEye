@@ -223,9 +223,9 @@ In total there are...
 
 > - **2** Supported Public CSPs
 > - **1** Supported SaaS Provider
-> - **689** Security & Resilience Best Practice Checks supported across all Public CSPs & SaaS Providers
-> - **104** Supported CSP & SaaS Resources / Asset Types
-> - **88** Auditor Plugins
+> - **695** Security & Resilience Best Practice Checks supported across all Public CSPs & SaaS Providers
+> - **105** Supported CSP & SaaS Resources / Asset Types
+> - **89** Auditor Plugins
 
 ### AWS Checks & Services
 ___
@@ -878,9 +878,9 @@ ___
 ___
 
 These are the following services and checks perform by each Auditor, there are currently...
-- :boom: **86 Checks** :boom:
-- :exclamation: **2 supported ServiceNow services/components** :exclamation:
-- :fire: **8 Auditors** :fire:
+- :boom: **92 Checks** :boom:
+- :exclamation: **3 supported ServiceNow services/components** :exclamation:
+- :fire: **9 Auditors** :fire:
 
 | Auditor File Name | Scanned Resource Name | Auditor Scan Description |
 |---|---|---|
@@ -970,6 +970,12 @@ These are the following services and checks perform by each Auditor, there are c
 | Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: Instance should set a strong security reference policy |
 | Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: Instance should set a strong session activity timeout |
 | Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: If using Remember Me, instance should set a strong rotation timeout |
+| Servicenow_SecurityPlugins_Auditor | Servicenow Plugin | Plugins: Instance should have the Contextual Security: Role Management Plugin intalled and active |
+| Servicenow_SecurityPlugins_Auditor | Servicenow Plugin | Plugins: Instance should have the Explicit Role Plugin intalled and active |
+| Servicenow_SecurityPlugins_Auditor | Servicenow Plugin | Plugins: Instance should have the SAML 2.0 SSO Plugin intalled and active |
+| Servicenow_SecurityPlugins_Auditor | Servicenow Plugin | Plugins: Instance should have the Security Jump Start Plugin intalled and active |
+| Servicenow_SecurityPlugins_Auditor | Servicenow Plugin | Plugins: Instance should have the SNC Access Control Plugin intalled and active |
+| Servicenow_SecurityPlugins_Auditor | Servicenow Plugin | Plugins: Instance should have the Email Filters Plugin intalled and active |
 
 ### SSPM: M365 Checks & Services
 ___
