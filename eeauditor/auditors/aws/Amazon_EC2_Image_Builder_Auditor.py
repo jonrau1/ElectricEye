@@ -78,9 +78,9 @@ def imagebuilder_pipeline_tests_enabled_check(cache: dict, session, awsAccountId
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF ID.AM-2",
-                        "NIST SP 800-53 CM-8",
-                        "NIST SP 800-53 PM-5",
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
                         "AICPA TSC CC3.2",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.1.1",
@@ -134,9 +134,9 @@ def imagebuilder_pipeline_tests_enabled_check(cache: dict, session, awsAccountId
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF ID.AM-2",
-                        "NIST SP 800-53 CM-8",
-                        "NIST SP 800-53 PM-5",
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
                         "AICPA TSC CC3.2",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.1.1",
@@ -206,9 +206,9 @@ def imagebuilder_ebs_encryption_check(cache: dict, session, awsAccountId: str, a
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF ID.AM-2",
-                        "NIST SP 800-53 CM-8",
-                        "NIST SP 800-53 PM-5",
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
                         "AICPA TSC CC3.2",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.1.1",
@@ -262,9 +262,9 @@ def imagebuilder_ebs_encryption_check(cache: dict, session, awsAccountId: str, a
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF ID.AM-2",
-                        "NIST SP 800-53 CM-8",
-                        "NIST SP 800-53 PM-5",
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
                         "AICPA TSC CC3.2",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.1.1",
