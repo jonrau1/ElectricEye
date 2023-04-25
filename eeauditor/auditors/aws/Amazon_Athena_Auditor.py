@@ -94,10 +94,10 @@ def athena_workgroup_encryption_check(cache: dict, session, awsAccountId: str, a
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.DS-1",
-                        "NIST SP 800-53 MP-8",
-                        "NIST SP 800-53 SC-12",
-                        "NIST SP 800-53 SC-28",
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST SP 800-53 Rev. 4 MP-8",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3"
                     ]
@@ -150,10 +150,10 @@ def athena_workgroup_encryption_check(cache: dict, session, awsAccountId: str, a
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.DS-1",
-                        "NIST SP 800-53 MP-8",
-                        "NIST SP 800-53 SC-12",
-                        "NIST SP 800-53 SC-28",
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST SP 800-53 Rev. 4 MP-8",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3"
                     ]
@@ -206,10 +206,10 @@ def athena_workgroup_encryption_check(cache: dict, session, awsAccountId: str, a
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.DS-1",
-                        "NIST SP 800-53 MP-8",
-                        "NIST SP 800-53 SC-12",
-                        "NIST SP 800-53 SC-28",
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST SP 800-53 Rev. 4 MP-8",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3"
                     ]
@@ -290,10 +290,10 @@ def athena_encrypted_workgroup_client_override_check(cache: dict, session, awsAc
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.DS-1",
-                        "NIST SP 800-53 MP-8",
-                        "NIST SP 800-53 SC-12",
-                        "NIST SP 800-53 SC-28",
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST SP 800-53 Rev. 4 MP-8",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3"
                     ]
@@ -346,10 +346,10 @@ def athena_encrypted_workgroup_client_override_check(cache: dict, session, awsAc
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.DS-1",
-                        "NIST SP 800-53 MP-8",
-                        "NIST SP 800-53 SC-12",
-                        "NIST SP 800-53 SC-28",
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST SP 800-53 Rev. 4 MP-8",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3"
                     ]
@@ -402,10 +402,10 @@ def athena_encrypted_workgroup_client_override_check(cache: dict, session, awsAc
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF PR.DS-1",
-                        "NIST SP 800-53 MP-8",
-                        "NIST SP 800-53 SC-12",
-                        "NIST SP 800-53 SC-28",
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST SP 800-53 Rev. 4 MP-8",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "NIST SP 800-53 Rev. 4 SC-28",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.2.3"
                     ]
@@ -477,13 +477,13 @@ def athena_workgroup_metrics_check(cache: dict, session, awsAccountId: str, awsR
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF DE.AE-3",
-                        "NIST SP 800-53 AU-6",
-                        "NIST SP 800-53 CA-7",
-                        "NIST SP 800-53 IR-4",
-                        "NIST SP 800-53 IR-5",
-                        "NIST SP 800-53 IR-8",
-                        "NIST SP 800-53 SI-4",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
                         "ISO 27001:2013 A.16.1.7"
@@ -534,13 +534,13 @@ def athena_workgroup_metrics_check(cache: dict, session, awsAccountId: str, awsR
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF DE.AE-3",
-                        "NIST SP 800-53 AU-6",
-                        "NIST SP 800-53 CA-7",
-                        "NIST SP 800-53 IR-4",
-                        "NIST SP 800-53 IR-5",
-                        "NIST SP 800-53 IR-8",
-                        "NIST SP 800-53 SI-4",
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 SI-4",
                         "AICPA TSC CC7.2",
                         "ISO 27001:2013 A.12.4.1",
                         "ISO 27001:2013 A.16.1.7"
@@ -606,9 +606,9 @@ def athena_workgroup_engine_autoupdate_check(cache: dict, session, awsAccountId:
                 "Compliance": {
                     "Status": "FAILED",
                     "RelatedRequirements": [
-                        "NIST CSF ID.AM-2",
-                        "NIST SP 800-53 CM-8",
-                        "NIST SP 800-53 PM-5",
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
                         "AICPA TSC CC3.2",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.1.1",
@@ -661,9 +661,9 @@ def athena_workgroup_engine_autoupdate_check(cache: dict, session, awsAccountId:
                 "Compliance": {
                     "Status": "PASSED",
                     "RelatedRequirements": [
-                        "NIST CSF ID.AM-2",
-                        "NIST SP 800-53 CM-8",
-                        "NIST SP 800-53 PM-5",
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
                         "AICPA TSC CC3.2",
                         "AICPA TSC CC6.1",
                         "ISO 27001:2013 A.8.1.1",
