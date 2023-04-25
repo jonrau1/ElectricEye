@@ -36,13 +36,13 @@ python3 eeauditor/controller.py -t AWS -o stdout
 - [Supported Services and Checks](#supported-services-and-checks)
   - [AWS Checks & Services](#aws-checks--services)
   - [GCP Checks & Services](#gcp-checks--services)
-  - [Azure Checks & Services](#azure-checks--services)
-  - [SSPM: GitHub Checks & Services](#sspm-github-checks--services)
+  - [Azure Checks & Services (*Coming Soon*)](#azure-checks--services)
+  - [SSPM: GitHub Checks & Services (*Coming Soon*)](#sspm-github-checks--services)
   - [SSPM: ServiceNow Checks & Services](#sspm-servicenow-checks--services)
-  - [SSPM: M365 Checks & Services](#sspm-m365-checks--services)
+  - [SSPM: M365 Checks & Services (*Coming Soon*)](#sspm-m365-checks--services)
 - [Contributing](#contributing)
-- [Developing new Checks](#developer-guide)
-- [Auditor testing](#auditor-testing)
+- [Developer Guide](./docs/new_checks/DEVELOPER_GUIDE.md)
+    - [Auditor testing](./docs/new_checks/DEVELOPER_GUIDE.md#auditor-testing)
 - [License](#license)
 
 ## Quick Run Down :running: :running:
@@ -71,7 +71,7 @@ Since then, ElectricEye has continued to expand into the most comprehensive AWS 
 
 ElectricEye's terminology is as follows: the "entrypoint" into the evaluation logic of the tool is contained within the aptly named **Controller** (seen in [`controller.py`](./eeauditor/controller.py)) where all arguments are parsed and credentials are prepared. Command-line arguments are provided and parsed using [`click`](https://click.palletsprojects.com/en/8.1.x/) which is an alternative to [`argparse`](https://docs.python.org/3/library/argparse.html) to direct the evaluation logic of ElectricEye. The "top-level" concept within ElectricEye is the **Assessment Target** (sometimes referenced as **Target** or **AT** in other documentation & code targets) which corresponds to a single public Cloud Service Provider (CSP) - such as Amazon Web Services (AWS) - or to a single Software-as-a-Service (SaaS) provider - such as ServiceNow or GitHub.
 
-Every Assessment Target has a corresponding set of (aptly named) **Auditors** which are individual Python scripts that encapsulate discrete logic to evaluate the overall posture of a specific Cloud resource or component called a **Check**. In some cases an Auditor can contain Checks for multiple services where it makes sense to do so, such as within the EASM Auditors or within the [Shodan Auditor](./eeauditor/auditors/aws/Shodan_Auditor.py) for AWS. 
+Every Assessment Target has a corresponding set of (aptly named) **Auditors** which are individual Python scripts that encapsulate discrete logic to evaluate the overall posture of a specific Cloud resource or component called a **Check**. In some cases an Auditor can contain Checks for multiple services where it makes sense to do so, such as within the EASM Auditors or within the [Shodan Auditor](./eeauditor/auditors/aws/Amazon_Shodan_Auditor.py) for AWS. 
 
 While ElectricEye is primarily a security posture management (SPM) tool, some Checks align to performance, resilience, and optimization best practices which in turn are aligned to **Compliance Standards** or have some secondary or tertiary benefit. Compliance Standards are a term borrowed from the ASFF that refer to any regulatory, industry, and/or "best practice" frameworks which define **Controls** which in turn define People, Process, and/or Technology configurations or outcomes which must be met to abide by or otherwise comply with a Control. ElectricEye solely deals at the infrastructure layer of CSPs and SaaS and thus only supports Technology-relevant controls in these various standards/frameworks/laws that define these Controls.
 
@@ -785,19 +785,19 @@ These are the following services and checks perform by each Auditor, there are c
 | ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a MongoDB/DocDB service publicly accessible |
 | ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a Rabbit/AmazonMQ service publicly accessible |
 | ElectricEye_AttackSurface_Auditor | Route53 Hosted Zone | Is a SparkUI service publicly accessible |
-| Secrets_Auditor | CodeBuild project | Do CodeBuild projects have secrets in plaintext env vars |
-| Secrets_Auditor | CloudFormation Stack | Do CloudFormation Stacks have secrets in parameters |
-| Secrets_Auditor | ECS Task Definition | Do ECS Task Definitions have secrets in env vars |
-| Secrets_Auditor | EC2 Instance | Do EC2 instances have secrets in User Data |
-| Shodan_Auditor | EC2 Instance | Are EC2 instances w/ public IPs indexed |
-| Shodan_Auditor | ELBv2 (ALB) | Are internet-facing ALBs indexed |
-| Shodan_Auditor | RDS Instance | Are public accessible RDS instances indexed |
-| Shodan_Auditor | OpenSearch domain | Are ES Domains outside a VPC indexed |
-| Shodan_Auditor | ELB (CLB) | Are internet-facing CLBs indexed |
-| Shodan_Auditor | DMS Replication Instance | Are public accessible DMS instances indexed |
-| Shodan_Auditor | Amazon MQ message broker | Are public accessible message brokers indexed |
-| Shodan_Auditor | CloudFront Distribution | Are CloudFront distros indexed |
-| Shodan_Auditor | Global Accelerator Accelerator | Are Global Accelerator Accelerators indexed |
+| Amazon_Secrets_Auditor | CodeBuild project | Do CodeBuild projects have secrets in plaintext env vars |
+| Amazon_Secrets_Auditor | CloudFormation Stack | Do CloudFormation Stacks have secrets in parameters |
+| Amazon_Secrets_Auditor | ECS Task Definition | Do ECS Task Definitions have secrets in env vars |
+| Amazon_Secrets_Auditor | EC2 Instance | Do EC2 instances have secrets in User Data |
+| Amazon_Shodan_Auditor | EC2 Instance | Are EC2 instances w/ public IPs indexed |
+| Amazon_Shodan_Auditor | ELBv2 (ALB) | Are internet-facing ALBs indexed |
+| Amazon_Shodan_Auditor | RDS Instance | Are public accessible RDS instances indexed |
+| Amazon_Shodan_Auditor | OpenSearch domain | Are ES Domains outside a VPC indexed |
+| Amazon_Shodan_Auditor | ELB (CLB) | Are internet-facing CLBs indexed |
+| Amazon_Shodan_Auditor | DMS Replication Instance | Are public accessible DMS instances indexed |
+| Amazon_Shodan_Auditor | Amazon MQ message broker | Are public accessible message brokers indexed |
+| Amazon_Shodan_Auditor | CloudFront Distribution | Are CloudFront distros indexed |
+| Amazon_Shodan_Auditor | Global Accelerator Accelerator | Are Global Accelerator Accelerators indexed |
 
 ### GCP Checks & Services
 ___
@@ -984,7 +984,7 @@ ___
 
 ## Contributing
 
-Refer to the Developer Guide for instructions on how to produce new checks, for new SaaS and CSP support please open an Issue.
+Refer to the [Developer Guide](./docs/new_checks/DEVELOPER_GUIDE.md) for instructions on how to produce new checks, for new SaaS and CSP support please open an Issue.
 
 Feel free to open PRs and Issues where syntax, grammatic, and implementation errors are encountered in the code base.
 

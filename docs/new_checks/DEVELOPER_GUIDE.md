@@ -16,6 +16,16 @@ ElectricEye abides by PEP8 and uses `black` for syntax verification, the followi
 
 **Do not forget** to update the tables within the [**Supported Services and Checks** section of the main docs!](README.md#supported-services-and-checks). You can use [Markdown Tables generator](https://www.tablesgenerator.com/markdown_tables) by copying and pasting the current table into the website's UI (underneath the `File/Paste table data...` dropdown menu) and remove the whitespace / added columns for this task.
 
+## Table of Contents
+
+- [Naming an Auditor](#naming-an-auditor)
+- [Necessary Imports and License file](#necessary-imports-and-license-file)
+- [Creating Caches](#creating-caches)
+- [Registering and Defining Checks](#registering-and-defining-checks)
+- [Formatting Findings](#formatting-findings)
+- [Creating Test](#creating-tests)
+- [Auditor testing](#auditor-testing)
+
 ### Naming an Auditor
 
 To keep naming consistent, the following pattern of `{Provider}_{ServiceName}_Auditor.py` is used such as [`Amazon_APIGW_Auditor.py`](./eeauditor/auditors/aws/Amazon_APIGW_Auditor.py) or [`GCP_CloudSQL_Auditor.py`](./eeauditor/auditors/gcp/GCP_CloudSQL_Auditor.py). Take notice that some Amazon Web Services (AWS) Cloud services take on the AWS moniker such as [`AWS_MemoryDB_Auditor.py`](./eeauditor/auditors/aws/AWS_MemoryDB_Auditor.py) and should reflect that naming convention, refer the official AWS documentation to verify those cases.
@@ -387,7 +397,9 @@ import sys
 from botocore.stub import Stubber, ANY
 ```
 
-## Auditor testing
+### Auditor testing
+
+TODO: EXPAND THIS SHIT...
 
 1. Install dependencies
 
@@ -400,4 +412,5 @@ pip3 install -r requirements-dev.txt
 ```bash
 pytest
 ```
-Tests are located in the [eeauditor tests folder](eeauditor/tests) and individual test can be run by adding the path with the name of the file after pytest.
+
+Existing, (and limited!) tests are located in the [EEAuditor Tests folder](../../eeauditor/tests/) and individual test can be run by adding the path with the name of the file after `pytest`.
