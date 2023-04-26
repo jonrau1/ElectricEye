@@ -192,7 +192,13 @@ def ec2_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
                                     "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/authorizing-access-to-an-instance.html"
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon EC2",
+                                "AssetType": "EC2 Instance"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsEc2Instance",
@@ -261,7 +267,13 @@ def ec2_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
                                     "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/authorizing-access-to-an-instance.html"
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon EC2",
+                                "AssetType": "EC2 Instance"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsEc2Instance",
@@ -377,7 +389,13 @@ def elbv2_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId:
                                     "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-update-security-groups.html#security-group-recommended-rules"
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Networking",
+                                "AssetService": "AWS Elastic Load Balancer V2",
+                                "AssetType": "AWS Application Load Balancer"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsElbv2LoadBalancer",
@@ -446,7 +464,13 @@ def elbv2_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId:
                                     "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-update-security-groups.html#security-group-recommended-rules"
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Networking",
+                                "AssetService": "AWS Elastic Load Balancer V2",
+                                "AssetType": "AWS Application Load Balancer"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsElbv2LoadBalancer",
@@ -564,7 +588,13 @@ def elb_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
                                     "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-update-security-groups.html#security-group-recommended-rules"
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Networking",
+                                "AssetService": "AWS Elastic Load Balancer",
+                                "AssetType": "AWS Classic Load Balancer"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsElbLoadBalancer",
@@ -635,7 +665,13 @@ def elb_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
                                     "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-update-security-groups.html#security-group-recommended-rules"
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Networking",
+                                "AssetService": "AWS Elastic Load Balancer",
+                                "AssetType": "AWS Classic Load Balancer"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsElbLoadBalancer",
@@ -750,7 +786,13 @@ def eip_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
                                 "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/authorizing-access-to-an-instance.html"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Networking",
+                            "AssetService": "Amazon EC2",
+                            "AssetType": "Elastic IP"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsEc2Eip",
@@ -817,7 +859,13 @@ def eip_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
                                 "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/authorizing-access-to-an-instance.html"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Networking",
+                            "AssetService": "Amazon EC2",
+                            "AssetType": "Elastic IP"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsEc2Eip",
@@ -927,7 +975,13 @@ def cloudfront_attack_surface_open_tcp_port_check(cache: dict, session, awsAccou
                                 "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/data-protection-summary.html"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Networking",
+                            "AssetService": "Amazon CloudFront",
+                            "AssetType": "CloudFront Distribution"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsCloudFrontDistribution",
@@ -994,7 +1048,13 @@ def cloudfront_attack_surface_open_tcp_port_check(cache: dict, session, awsAccou
                                 "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/data-protection-summary.html"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Networking",
+                            "AssetService": "Amazon CloudFront",
+                            "AssetType": "CloudFront Distribution"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsCloudFrontDistribution",
@@ -1111,7 +1171,13 @@ def route53_public_hz_attack_surface_open_tcp_port_check(cache: dict, session, a
                                         "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/data-protection-summary.html"
                                     }
                                 },
-                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "ProductFields": {
+                                    "ProductName": "ElectricEye",
+                                    "Provider": "AWS",
+                                    "AssetClass": "Networking",
+                                    "AssetService": "Amazon Route53",
+                                    "AssetType": "Route53 Hosted Zone Resource Record"
+                                },
                                 "Resources": [
                                     {
                                         "Type": "AwsRoute53HostedZoneResourceRecord",
@@ -1181,7 +1247,13 @@ def route53_public_hz_attack_surface_open_tcp_port_check(cache: dict, session, a
                                         "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/data-protection-summary.html"
                                     }
                                 },
-                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "ProductFields": {
+                                    "ProductName": "ElectricEye",
+                                    "Provider": "AWS",
+                                    "AssetClass": "Networking",
+                                    "AssetService": "Amazon Route53",
+                                    "AssetType": "Route53 Hosted Zone Resource Record"
+                                },
                                 "Resources": [
                                     {
                                         "Type": "AwsRoute53HostedZoneResourceRecord",

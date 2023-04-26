@@ -20,9 +20,7 @@
 
 import boto3
 
-
 def create_sechub_insights():
-
     securityhub = boto3.client("securityhub")
 
     try:
@@ -30,7 +28,7 @@ def create_sechub_insights():
             Name="ElectricEye Active Findings",
             Filters={
                 "ProductFields": [
-                    {"Key": "Product Name", "Value": "ElectricEye", "Comparison": "EQUALS"},
+                    {"Key": "ProductName", "Value": "ElectricEye", "Comparison": "EQUALS"},
                 ],
                 "RecordState": [{"Value": "ACTIVE", "Comparison": "EQUALS"},],
             },
@@ -45,7 +43,7 @@ def create_sechub_insights():
             Name="ElectricEye Remediated Findings",
             Filters={
                 "ProductFields": [
-                    {"Key": "Product Name", "Value": "ElectricEye", "Comparison": "EQUALS"},
+                    {"Key": "ProductName", "Value": "ElectricEye", "Comparison": "EQUALS"},
                 ],
                 "RecordState": [{"Value": "ARCHIVED", "Comparison": "EQUALS"},],
             },
@@ -60,7 +58,7 @@ def create_sechub_insights():
             Name="ElectricEye Shodan Findings",
             Filters={
                 "ProductFields": [
-                    {"Key": "Product Name", "Value": "ElectricEye", "Comparison": "EQUALS"},
+                    {"Key": "ProductName", "Value": "ElectricEye", "Comparison": "EQUALS"},
                 ],
                 "ThreatIntelIndicatorSource": [{"Value": "Shodan.io", "Comparison": "EQUALS"}],
                 "RecordState": [{"Value": "ACTIVE", "Comparison": "EQUALS"},],
@@ -68,5 +66,21 @@ def create_sechub_insights():
             GroupByAttribute="ResourceType",
         )
         print(shodanInsight)
+    except Exception as e:
+        print(e)
+
+    try:
+        easmInsight = securityhub.create_insight(
+            Name="ElectricEye EASM",
+            Filters={
+                "ProductFields": [
+                    {"Key": "ProductName", "Value": "ElectricEye", "Comparison": "EQUALS"},
+                ],
+                "Title": [{"Value": "[AttackSurface", "Comparison": "CONTAINS"}],
+                "RecordState": [{"Value": "ACTIVE", "Comparison": "EQUALS"},],
+            },
+            GroupByAttribute="ResourceType",
+        )
+        print(easmInsight)
     except Exception as e:
         print(e)

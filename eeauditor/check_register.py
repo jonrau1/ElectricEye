@@ -17,6 +17,7 @@
 #KIND, either express or implied.  See the License for the
 #specific language governing permissions and limitations
 #under the License.
+
 from functools import wraps
 
 class CheckRegister(object):
@@ -44,7 +45,7 @@ class CheckRegister(object):
 
         return decorator_register
 
-
+# Ancient function used for a few Auditor Caches like AWS CloudFront
 def accumulate_paged_results(page_iterator, key):
     results = {key: []}
     for page in page_iterator:
