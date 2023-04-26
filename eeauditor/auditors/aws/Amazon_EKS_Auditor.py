@@ -70,7 +70,13 @@ def eks_public_endpoint_access_check(cache: dict, session, awsAccountId: str, aw
                             "Url": "https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Containers",
+                        "AssetService": "Amazon Elastic Kubernetes Service (EKS)",
+                        "AssetType": "Managed Kubernetes Cluster"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEksCluster",
@@ -133,7 +139,13 @@ def eks_public_endpoint_access_check(cache: dict, session, awsAccountId: str, aw
                             "Url": "https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Containers",
+                        "AssetService": "Amazon Elastic Kubernetes Service (EKS)",
+                        "AssetType": "Managed Kubernetes Cluster"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEksCluster",
@@ -214,7 +226,13 @@ def eks_latest_k8s_version_check(cache: dict, session, awsAccountId: str, awsReg
                             "Url": "https://docs.aws.amazon.com/eks/latest/userguide/update-cluster.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Containers",
+                        "AssetService": "Amazon Elastic Kubernetes Service (EKS)",
+                        "AssetType": "Managed Kubernetes Cluster"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEksCluster",
@@ -271,7 +289,13 @@ def eks_latest_k8s_version_check(cache: dict, session, awsAccountId: str, awsReg
                             "Url": "https://docs.aws.amazon.com/eks/latest/userguide/update-cluster.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Containers",
+                        "AssetService": "Amazon Elastic Kubernetes Service (EKS)",
+                        "AssetType": "Managed Kubernetes Cluster"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEksCluster",
@@ -353,7 +377,13 @@ def eks_logging_audit_auth_check(cache: dict, session, awsAccountId: str, awsReg
                                     "Url": "https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Containers",
+                                "AssetService": "Amazon Elastic Kubernetes Service (EKS)",
+                                "AssetType": "Managed Kubernetes Cluster"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsEksCluster",
@@ -413,7 +443,13 @@ def eks_logging_audit_auth_check(cache: dict, session, awsAccountId: str, awsReg
                                     "Url": "https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Containers",
+                                "AssetService": "Amazon Elastic Kubernetes Service (EKS)",
+                                "AssetType": "Managed Kubernetes Cluster"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsEksCluster",
@@ -495,7 +531,13 @@ def eks_secrets_envelope_encryption_check(cache: dict, session, awsAccountId: st
                             "Url": "https://docs.aws.amazon.com/eks/latest/userguide/update-cluster.html#enable-kms"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Containers",
+                        "AssetService": "Amazon Elastic Kubernetes Service (EKS)",
+                        "AssetType": "Managed Kubernetes Cluster"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEksCluster",
@@ -552,7 +594,13 @@ def eks_secrets_envelope_encryption_check(cache: dict, session, awsAccountId: st
                             "Url": "https://docs.aws.amazon.com/eks/latest/userguide/update-cluster.html#enable-kms"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Containers",
+                        "AssetService": "Amazon Elastic Kubernetes Service (EKS)",
+                        "AssetType": "Managed Kubernetes Cluster"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEksCluster",

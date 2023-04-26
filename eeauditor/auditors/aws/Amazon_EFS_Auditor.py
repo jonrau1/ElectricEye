@@ -65,7 +65,13 @@ def efs_filesys_encryption_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://docs.aws.amazon.com/efs/latest/ug/encryption.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon Elastic File System (EFS)",
+                    "AssetType": "File System"
+                },
                 "Resources": [
                     {
                         "Type": "AwsElasticFileSystem",
@@ -114,7 +120,13 @@ def efs_filesys_encryption_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://docs.aws.amazon.com/efs/latest/ug/encryption.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon Elastic File System (EFS)",
+                    "AssetType": "File System"
+                },
                 "Resources": [
                     {
                         "Type": "AwsElasticFileSystem",
@@ -174,7 +186,13 @@ def efs_filesys_policy_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/efs/latest/ug/iam-access-control-nfs-efs.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon Elastic File System (EFS)",
+                    "AssetType": "File System"
+                },
                 "Resources": [
                     {
                         "Type": "AwsElasticFileSystem",
@@ -227,7 +245,13 @@ def efs_filesys_policy_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/efs/latest/ug/iam-access-control-nfs-efs.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon Elastic File System (EFS)",
+                    "AssetType": "File System"
+                },
                 "Resources": [
                     {
                         "Type": "AwsElasticFileSystem",

@@ -68,7 +68,13 @@ def ecr_repo_vuln_scan_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Containers",
+                    "AssetService": "Amazon Elastic Container Registry (ECR)",
+                    "AssetType": "Repository"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEcrRepository",
@@ -114,7 +120,13 @@ def ecr_repo_vuln_scan_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Containers",
+                    "AssetService": "Amazon Elastic Container Registry (ECR)",
+                    "AssetType": "Repository"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEcrRepository",
@@ -174,7 +186,13 @@ def ecr_repo_image_lifecycle_policy_check(cache: dict, session, awsAccountId: st
                         "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Containers",
+                    "AssetService": "Amazon Elastic Container Registry (ECR)",
+                    "AssetType": "Repository"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEcrRepository",
@@ -224,7 +242,13 @@ def ecr_repo_image_lifecycle_policy_check(cache: dict, session, awsAccountId: st
                         "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Containers",
+                    "AssetService": "Amazon Elastic Container Registry (ECR)",
+                    "AssetType": "Repository"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEcrRepository",
@@ -288,7 +312,13 @@ def ecr_repo_permission_policy_check(cache: dict, session, awsAccountId: str, aw
                         "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-policies.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Containers",
+                    "AssetService": "Amazon Elastic Container Registry (ECR)",
+                    "AssetType": "Repository"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEcrRepository",
@@ -347,7 +377,13 @@ def ecr_repo_permission_policy_check(cache: dict, session, awsAccountId: str, aw
                         "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-policies.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Containers",
+                    "AssetService": "Amazon Elastic Container Registry (ECR)",
+                    "AssetType": "Repository"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEcrRepository",
@@ -449,7 +485,13 @@ def ecr_latest_image_vuln_check(cache: dict, session, awsAccountId: str, awsRegi
                                 }
                             },
                             "SourceUrl": vulnDeepLink,
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Containers",
+                                "AssetService": "Amazon Elastic Container Registry (ECR)",
+                                "AssetType": "Image"
+                            },
                             "Resources": [
                                 {
                                     "Type": "Container",
@@ -501,7 +543,13 @@ def ecr_latest_image_vuln_check(cache: dict, session, awsAccountId: str, awsRegi
                             "Description": "The latest image in the ECR repository "
                             + repoName
                             + " does not have any vulnerabilities reported.",
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Containers",
+                                "AssetService": "Amazon Elastic Container Registry (ECR)",
+                                "AssetType": "Image"
+                            },
                             "Resources": [
                                 {
                                     "Type": "Container",
@@ -570,7 +618,13 @@ def ecr_registry_policy_check(cache: dict, session, awsAccountId: str, awsRegion
                     "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/registry-permissions.html"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Containers",
+                "AssetService": "Amazon Elastic Container Registry (ECR)",
+                "AssetType": "Registry"
+            },
             "Resources": [
                 {
                     "Type": "AwsEcrRegistry",
@@ -628,7 +682,13 @@ def ecr_registry_policy_check(cache: dict, session, awsAccountId: str, awsRegion
                         "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/registry-permissions.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Containers",
+                    "AssetService": "Amazon Elastic Container Registry (ECR)",
+                    "AssetType": "Registry"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEcrRegistry",
@@ -695,7 +755,13 @@ def ecr_registry_backup_rules_check(cache: dict, session, awsAccountId: str, aws
                     "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/replication.html"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Containers",
+                "AssetService": "Amazon Elastic Container Registry (ECR)",
+                "AssetType": "Registry"
+            },
             "Resources": [
                 {
                     "Type": "AwsEcrRegistry",
@@ -751,7 +817,13 @@ def ecr_registry_backup_rules_check(cache: dict, session, awsAccountId: str, aws
                     "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/replication.html"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Containers",
+                "AssetService": "Amazon Elastic Container Registry (ECR)",
+                "AssetType": "Registry"
+            },
             "Resources": [
                 {
                     "Type": "AwsEcrRegistry",

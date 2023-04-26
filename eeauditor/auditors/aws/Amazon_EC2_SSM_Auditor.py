@@ -89,14 +89,20 @@ def ec2_instance_ssm_managed_check(cache: dict, session, awsAccountId: str, awsR
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
                 "Title": "[EC2-SSM.1] EC2 Instances should be managed by Systems Manager",
-                "Description": f"EC2 Instance {instanceId} is not managed by AWS Systems Manager. Systems Manager enables automated activities such as patching, configuration management, software inventory management and more. Not having instances managed by Systems Manager can degrade the effectiveness of critical security processes. Refer to the remediation instructions if this configuration is not intended.",
+                "Description": f"EC2 Instance {instanceId} is not managed by AWS Systems Manager. Systems Manager enables automated activities such as patching, configuration management, software inventory management and more. Not having instances managed by Systems Manager can degrade the effectiveness of important security processes. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "To learn how to configure Systems Manager and associated instances refer to the Setting Up AWS Systems Manager section of the AWS Systems Manager User Guide",
                         "Url": "https://docs.aws.amazon.com/en_us/systems-manager/latest/userguide/systems-manager-setting-up.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetType": "Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Instance",
@@ -152,7 +158,13 @@ def ec2_instance_ssm_managed_check(cache: dict, session, awsAccountId: str, awsR
                         "Url": "https://docs.aws.amazon.com/en_us/systems-manager/latest/userguide/systems-manager-setting-up.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetType": "Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Instance",
@@ -243,7 +255,13 @@ def ssm_instace_agent_update_check(cache: dict, session, awsAccountId: str, awsR
                                     "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent-automatic-updates.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon EC2",
+                                "AssetType": "Instance"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsEc2Instance",
@@ -299,7 +317,13 @@ def ssm_instace_agent_update_check(cache: dict, session, awsAccountId: str, awsR
                                     "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent-automatic-updates.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon EC2",
+                                "AssetType": "Instance"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsEc2Instance",
@@ -388,7 +412,13 @@ def ssm_instance_association_check(cache: dict, session, awsAccountId: str, awsR
                                 "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-associations.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Compute",
+                            "AssetService": "Amazon EC2",
+                            "AssetType": "Instance"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsEc2Instance",
@@ -444,7 +474,13 @@ def ssm_instance_association_check(cache: dict, session, awsAccountId: str, awsR
                                 "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-associations.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Compute",
+                            "AssetService": "Amazon EC2",
+                            "AssetType": "Instance"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsEc2Instance",
@@ -514,14 +550,20 @@ def ssm_instance_patch_state_state(cache: dict, session, awsAccountId: str, awsR
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
                 "Title": "[EC2-SSM.4] EC2 Instances managed by Systems Manager should have the latest patches installed by Patch Manager",
-                "Description": f"EC2 Instance {instanceId} does not have any patch information recorded and is likely not managed by Patch Manager. Refer to the remediation instructions if this configuration is not intended.",
+                "Description": f"EC2 Instance {instanceId} does not have any patch information recorded and is likely not managed by Patch Manager. Patch Manager automates the installation and application of security, performance, and major version upgrades and KBs onto your instances, reducing exposure to vulnerabilities and other weaknesses. Without automatic patching at scale, vulnerabilities can quickly manifest within a given cloud environment leading to potential avenues of attack for adversaries and other unauthorized actors. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For information on Patch Manager refer to the AWS Systems Manager Patch Manager section of the AWS Systems Manager User Guide",
                         "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-patch.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetType": "Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Instance",
@@ -579,7 +621,13 @@ def ssm_instance_patch_state_state(cache: dict, session, awsAccountId: str, awsR
                         "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-patch.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetType": "Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Instance",
