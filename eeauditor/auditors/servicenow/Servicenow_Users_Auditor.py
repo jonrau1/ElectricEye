@@ -98,7 +98,7 @@ def servicenow_sspm_active_user_mfa_check(cache: dict, awsAccountId: str, awsReg
                     "Provider": "Servicenow",
                     "AssetClass": "Identity & Access Management",
                     "AssetService": "Servicenow Users & Groups",
-                    "AssetType": "Servicenow User"
+                    "AssetType": "User"
                 },
                 "Resources": [
                     {
@@ -177,7 +177,7 @@ def servicenow_sspm_active_user_mfa_check(cache: dict, awsAccountId: str, awsReg
                     "Provider": "Servicenow",
                     "AssetClass": "Identity & Access Management",
                     "AssetService": "Servicenow Users & Groups",
-                    "AssetType": "Servicenow User"
+                    "AssetType": "User"
                 },
                 "Resources": [
                     {
@@ -283,7 +283,7 @@ def servicenow_sspm_active_user_failed_login_audits_check(cache: dict, awsAccoun
                     "Provider": "Servicenow",
                     "AssetClass": "Identity & Access Management",
                     "AssetService": "Servicenow Users & Groups",
-                    "AssetType": "Servicenow User"
+                    "AssetType": "User"
                 },
                 "Resources": [
                     {
@@ -358,7 +358,7 @@ def servicenow_sspm_active_user_failed_login_audits_check(cache: dict, awsAccoun
                     "Provider": "Servicenow",
                     "AssetClass": "Identity & Access Management",
                     "AssetService": "Servicenow Users & Groups",
-                    "AssetType": "Servicenow User"
+                    "AssetType": "User"
                 },
                 "Resources": [
                     {
@@ -455,7 +455,7 @@ def servicenow_sspm_active_user_lockout_audit_check(cache: dict, awsAccountId: s
                     "Provider": "Servicenow",
                     "AssetClass": "Identity & Access Management",
                     "AssetService": "Servicenow Users & Groups",
-                    "AssetType": "Servicenow User"
+                    "AssetType": "User"
                 },
                 "Resources": [
                     {
@@ -530,7 +530,7 @@ def servicenow_sspm_active_user_lockout_audit_check(cache: dict, awsAccountId: s
                     "Provider": "Servicenow",
                     "AssetClass": "Identity & Access Management",
                     "AssetService": "Servicenow Users & Groups",
-                    "AssetType": "Servicenow User"
+                    "AssetType": "User"
                 },
                 "Resources": [
                     {

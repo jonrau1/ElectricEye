@@ -81,7 +81,13 @@ def cognitoidp_cis_password_check(cache: dict, session, awsAccountId: str, awsRe
                         "Url": "https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-policies.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "Amazon Cogntio",
+                    "AssetType": "User Pool"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCognitoUserPool",
@@ -146,7 +152,13 @@ def cognitoidp_cis_password_check(cache: dict, session, awsAccountId: str, awsRe
                         "Url": "https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-policies.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "Amazon Cogntio",
+                    "AssetType": "User Pool"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCognitoUserPool",
@@ -225,7 +237,13 @@ def cognitoidp_temp_password_check(cache: dict, session, awsAccountId: str, awsR
                         "Url": "https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-policies.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "Amazon Cogntio",
+                    "AssetType": "User Pool"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCognitoUserPool",
@@ -292,7 +310,13 @@ def cognitoidp_temp_password_check(cache: dict, session, awsAccountId: str, awsR
                         "Url": "https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-policies.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "Amazon Cogntio",
+                    "AssetType": "User Pool"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCognitoUserPool",
@@ -373,7 +397,13 @@ def cognitoidp_mfa_check(cache: dict, session, awsAccountId: str, awsRegion: str
                         "Url": "https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "Amazon Cogntio",
+                    "AssetType": "User Pool"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCognitoUserPool",
@@ -437,7 +467,13 @@ def cognitoidp_mfa_check(cache: dict, session, awsAccountId: str, awsRegion: str
                         "Url": "https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "Amazon Cogntio",
+                    "AssetType": "User Pool"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCognitoUserPool",
@@ -522,7 +558,13 @@ def cognitoidp_waf_check(cache: dict, session, awsAccountId: str, awsRegion: str
                         "Url": "https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-waf.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "Amazon Cogntio",
+                    "AssetType": "User Pool"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCognitoUserPool",
@@ -575,7 +617,13 @@ def cognitoidp_waf_check(cache: dict, session, awsAccountId: str, awsRegion: str
                         "Url": "https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-waf.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "Amazon Cogntio",
+                    "AssetType": "User Pool"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCognitoUserPool",

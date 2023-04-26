@@ -64,7 +64,13 @@ def autoscaling_scale_in_protection_check(cache: dict, session, awsAccountId: st
                         "Url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-instance-protection.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Compute",
+                    "AssetService": "AWS Auto Scaling",
+                    "AssetType": "Autoscaling Group"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAutoScalingAutoScalingGroup",
@@ -121,7 +127,13 @@ def autoscaling_scale_in_protection_check(cache: dict, session, awsAccountId: st
                         "Url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-instance-protection.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Compute",
+                    "AssetService": "AWS Auto Scaling",
+                    "AssetType": "Autoscaling Group"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAutoScalingAutoScalingGroup",
@@ -192,7 +204,13 @@ def autoscaling_load_balancer_healthcheck_check(cache: dict, session, awsAccount
                         "Url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-add-elb-healthcheck.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Compute",
+                    "AssetService": "AWS Auto Scaling",
+                    "AssetType": "Autoscaling Group"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAutoScalingAutoScalingGroup",
@@ -246,7 +264,13 @@ def autoscaling_load_balancer_healthcheck_check(cache: dict, session, awsAccount
                             "Url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-add-elb-healthcheck.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Compute",
+                        "AssetService": "AWS Auto Scaling",
+                        "AssetType": "Autoscaling Group"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsAutoScalingAutoScalingGroup",
@@ -299,7 +323,13 @@ def autoscaling_load_balancer_healthcheck_check(cache: dict, session, awsAccount
                             "Url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-add-elb-healthcheck.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Compute",
+                        "AssetService": "AWS Auto Scaling",
+                        "AssetType": "Autoscaling Group"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsAutoScalingAutoScalingGroup",
@@ -372,7 +402,13 @@ def autoscaling_high_availability_az_check(cache: dict, session, awsAccountId: s
                         "Url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-add-availability-zone.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Compute",
+                    "AssetService": "AWS Auto Scaling",
+                    "AssetType": "Autoscaling Group"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAutoScalingAutoScalingGroup",
@@ -429,7 +465,13 @@ def autoscaling_high_availability_az_check(cache: dict, session, awsAccountId: s
                         "Url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-add-availability-zone.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Compute",
+                    "AssetService": "AWS Auto Scaling",
+                    "AssetType": "Autoscaling Group"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAutoScalingAutoScalingGroup",

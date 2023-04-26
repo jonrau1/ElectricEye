@@ -61,7 +61,13 @@ def default_internet_access_check(cache: dict, session, awsAccountId: str, awsRe
                             "Url": "https://docs.aws.amazon.com/appstream2/latest/developerguide/internet-access.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "End User Computing",
+                        "AssetService": "AWS AppStream 2.0",
+                        "AssetType": "AppStream 2.0 Fleet"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsAppStreamFleet",
@@ -114,7 +120,13 @@ def default_internet_access_check(cache: dict, session, awsAccountId: str, awsRe
                             "Url": "https://docs.aws.amazon.com/appstream2/latest/developerguide/internet-access.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "End User Computing",
+                        "AssetService": "AWS AppStream 2.0",
+                        "AssetType": "AppStream 2.0 Fleet"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsAppStreamFleet",
@@ -185,7 +197,13 @@ def public_image_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
                         "Url": "https://docs.aws.amazon.com/appstream2/latest/developerguide/administer-images.html#stop-sharing-image-with-all-accounts",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "End User Computing",
+                    "AssetService": "AWS AppStream 2.0",
+                    "AssetType": "AppStream 2.0 Image"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAppStreamImage",
@@ -261,7 +279,13 @@ def compromise_appstream_user_check(cache: dict, session, awsAccountId: str, aws
                             "Url": "https://docs.aws.amazon.com/appstream2/latest/developerguide/user-pool-admin.html#user-pool-admin-disabling",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "End User Computing",
+                        "AssetService": "AWS AppStream 2.0",
+                        "AssetType": "AppStream 2.0 Image"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsAppStreamUser",
@@ -324,7 +348,13 @@ def compromise_appstream_user_check(cache: dict, session, awsAccountId: str, aws
                             "Url": "https://docs.aws.amazon.com/appstream2/latest/developerguide/user-pool-admin.html#user-pool-admin-disabling",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "End User Computing",
+                        "AssetService": "AWS AppStream 2.0",
+                        "AssetType": "AppStream 2.0 Image"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsAppStreamUser",
@@ -406,7 +436,13 @@ def userpool_auth_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                             "Url": "https://docs.aws.amazon.com/appstream2/latest/developerguide/external-identity-providers-setting-up-saml.html#external-identity-providers-create-saml-provider",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Identity & Access Management",
+                        "AssetService": "AWS AppStream 2.0",
+                        "AssetType": "AppStream 2.0 User"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsAppStreamUser",
@@ -465,7 +501,13 @@ def userpool_auth_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                             "Url": "https://docs.aws.amazon.com/appstream2/latest/developerguide/external-identity-providers-setting-up-saml.html#external-identity-providers-create-saml-provider",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Identity & Access Management",
+                        "AssetService": "AWS AppStream 2.0",
+                        "AssetType": "AppStream 2.0 User"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsAppStreamUser",

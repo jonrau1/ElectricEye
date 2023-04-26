@@ -394,7 +394,7 @@ def elbv2_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId:
                                 "Provider": "AWS",
                                 "AssetClass": "Networking",
                                 "AssetService": "AWS Elastic Load Balancer V2",
-                                "AssetType": "AWS Application Load Balancer"
+                                "AssetType": "Application Load Balancer"
                             },
                             "Resources": [
                                 {
@@ -469,7 +469,7 @@ def elbv2_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId:
                                 "Provider": "AWS",
                                 "AssetClass": "Networking",
                                 "AssetService": "AWS Elastic Load Balancer V2",
-                                "AssetType": "AWS Application Load Balancer"
+                                "AssetType": "Application Load Balancer"
                             },
                             "Resources": [
                                 {
@@ -593,7 +593,7 @@ def elb_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
                                 "Provider": "AWS",
                                 "AssetClass": "Networking",
                                 "AssetService": "AWS Elastic Load Balancer",
-                                "AssetType": "AWS Classic Load Balancer"
+                                "AssetType": "Classic Load Balancer"
                             },
                             "Resources": [
                                 {
@@ -670,7 +670,7 @@ def elb_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
                                 "Provider": "AWS",
                                 "AssetClass": "Networking",
                                 "AssetService": "AWS Elastic Load Balancer",
-                                "AssetType": "AWS Classic Load Balancer"
+                                "AssetType": "Classic Load Balancer"
                             },
                             "Resources": [
                                 {
@@ -980,7 +980,7 @@ def cloudfront_attack_surface_open_tcp_port_check(cache: dict, session, awsAccou
                             "Provider": "AWS",
                             "AssetClass": "Networking",
                             "AssetService": "Amazon CloudFront",
-                            "AssetType": "CloudFront Distribution"
+                            "AssetType": "Distribution"
                         },
                         "Resources": [
                             {
@@ -1053,7 +1053,7 @@ def cloudfront_attack_surface_open_tcp_port_check(cache: dict, session, awsAccou
                             "Provider": "AWS",
                             "AssetClass": "Networking",
                             "AssetService": "Amazon CloudFront",
-                            "AssetType": "CloudFront Distribution"
+                            "AssetType": "Distribution"
                         },
                         "Resources": [
                             {

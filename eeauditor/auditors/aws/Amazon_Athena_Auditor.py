@@ -75,7 +75,13 @@ def athena_workgroup_encryption_check(cache: dict, session, awsAccountId: str, a
                         "Url": "https://docs.aws.amazon.com/athena/latest/ug/encrypting-query-results-stored-in-s3.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Athena",
+                    "AssetType": "Workgroup"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAthenaWorkGroup",
@@ -131,7 +137,13 @@ def athena_workgroup_encryption_check(cache: dict, session, awsAccountId: str, a
                         "Url": "https://docs.aws.amazon.com/athena/latest/ug/encrypting-query-results-stored-in-s3.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Athena",
+                    "AssetType": "Workgroup"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAthenaWorkGroup",
@@ -187,7 +199,13 @@ def athena_workgroup_encryption_check(cache: dict, session, awsAccountId: str, a
                         "Url": "https://docs.aws.amazon.com/athena/latest/ug/encrypting-query-results-stored-in-s3.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Athena",
+                    "AssetType": "Workgroup"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAthenaWorkGroup",
@@ -271,7 +289,13 @@ def athena_encrypted_workgroup_client_override_check(cache: dict, session, awsAc
                         "Url": "https://docs.aws.amazon.com/athena/latest/ug/encrypting-query-results-stored-in-s3.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Athena",
+                    "AssetType": "Workgroup"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAthenaWorkGroup",
@@ -327,7 +351,13 @@ def athena_encrypted_workgroup_client_override_check(cache: dict, session, awsAc
                         "Url": "https://docs.aws.amazon.com/athena/latest/ug/workgroups-settings-override.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Athena",
+                    "AssetType": "Workgroup"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAthenaWorkGroup",
@@ -383,7 +413,13 @@ def athena_encrypted_workgroup_client_override_check(cache: dict, session, awsAc
                         "Url": "https://docs.aws.amazon.com/athena/latest/ug/workgroups-settings-override.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Athena",
+                    "AssetType": "Workgroup"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAthenaWorkGroup",
@@ -458,7 +494,13 @@ def athena_workgroup_metrics_check(cache: dict, session, awsAccountId: str, awsR
                         "Url": "https://docs.aws.amazon.com/athena/latest/ug/query-metrics-viewing.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Athena",
+                    "AssetType": "Workgroup"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAthenaWorkGroup",
@@ -515,7 +557,13 @@ def athena_workgroup_metrics_check(cache: dict, session, awsAccountId: str, awsR
                         "Url": "https://docs.aws.amazon.com/athena/latest/ug/query-metrics-viewing.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Athena",
+                    "AssetType": "Workgroup"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAthenaWorkGroup",
@@ -587,7 +635,13 @@ def athena_workgroup_engine_autoupdate_check(cache: dict, session, awsAccountId:
                         "Url": "https://docs.aws.amazon.com/athena/latest/ug/engine-versions-changing.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Athena",
+                    "AssetType": "Workgroup"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAthenaWorkGroup",
@@ -642,7 +696,13 @@ def athena_workgroup_engine_autoupdate_check(cache: dict, session, awsAccountId:
                         "Url": "https://docs.aws.amazon.com/athena/latest/ug/engine-versions-changing.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Athena",
+                    "AssetType": "Workgroup"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAthenaWorkGroup",

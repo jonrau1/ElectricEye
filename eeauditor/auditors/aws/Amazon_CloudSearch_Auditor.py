@@ -62,7 +62,13 @@ def cloudsearch_https_enforcement_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/cloudsearch/latest/developerguide/configuring-domain-endpoint-options.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon CloudSearch",
+                    "AssetType": "Search Domain"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudSearchDomain",
@@ -125,7 +131,13 @@ def cloudsearch_https_enforcement_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/cloudsearch/latest/developerguide/configuring-domain-endpoint-options.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon CloudSearch",
+                    "AssetType": "Search Domain"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudSearchDomain",
@@ -203,7 +215,13 @@ def cloudsearch_tls1dot2_policy_check(cache: dict, session, awsAccountId: str, a
                             "Url": "https://docs.aws.amazon.com/cloudsearch/latest/developerguide/configuring-domain-endpoint-options.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Analytics",
+                        "AssetService": "Amazon CloudSearch",
+                        "AssetType": "Search Domain"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCloudSearchDomain",
@@ -266,7 +284,13 @@ def cloudsearch_tls1dot2_policy_check(cache: dict, session, awsAccountId: str, a
                             "Url": "https://docs.aws.amazon.com/cloudsearch/latest/developerguide/configuring-domain-endpoint-options.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Analytics",
+                        "AssetService": "Amazon CloudSearch",
+                        "AssetType": "Search Domain"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCloudSearchDomain",

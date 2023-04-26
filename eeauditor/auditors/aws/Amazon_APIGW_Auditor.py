@@ -76,7 +76,13 @@ def api_gateway_stage_metrics_enabled_check(cache: dict, session, awsAccountId: 
                             "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/monitoring-cloudwatch.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon API Gateway",
+                        "AssetType": "Stage"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsApiGatewayStage",
@@ -136,7 +142,13 @@ def api_gateway_stage_metrics_enabled_check(cache: dict, session, awsAccountId: 
                             "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/monitoring-cloudwatch.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon API Gateway",
+                        "AssetType": "Stage"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsApiGatewayStage",
@@ -215,7 +227,13 @@ def api_gateway_stage_logging_check(cache: dict, session, awsAccountId: str, aws
                             "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon API Gateway",
+                        "AssetType": "Stage"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsApiGatewayStage",
@@ -274,7 +292,13 @@ def api_gateway_stage_logging_check(cache: dict, session, awsAccountId: str, aws
                             "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon API Gateway",
+                        "AssetType": "Stage"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsApiGatewayStage",
@@ -354,7 +378,13 @@ def api_gateway_stage_cacheing_enabled_check(cache: dict, session, awsAccountId:
                             "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon API Gateway",
+                        "AssetType": "Stage"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsApiGatewayStage",
@@ -416,7 +446,13 @@ def api_gateway_stage_cacheing_enabled_check(cache: dict, session, awsAccountId:
                             "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon API Gateway",
+                        "AssetType": "Stage"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsApiGatewayStage",
@@ -500,7 +536,13 @@ def api_gateway_stage_cache_encryption_check(cache: dict, session, awsAccountId:
                             "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html#override-api-gateway-stage-cache-for-method-cache",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon API Gateway",
+                        "AssetType": "Stage"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsApiGatewayStage",
@@ -560,7 +602,13 @@ def api_gateway_stage_cache_encryption_check(cache: dict, session, awsAccountId:
                             "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html#override-api-gateway-stage-cache-for-method-cache",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon API Gateway",
+                        "AssetType": "Stage"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsApiGatewayStage",
@@ -629,7 +677,13 @@ def api_gateway_stage_xray_tracing_check(cache: dict, session, awsAccountId: str
                             "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-set-up-tracing.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon API Gateway",
+                        "AssetType": "Stage"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsApiGatewayStage",
@@ -685,7 +739,13 @@ def api_gateway_stage_xray_tracing_check(cache: dict, session, awsAccountId: str
                             "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-set-up-tracing.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon API Gateway",
+                        "AssetType": "Stage"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsApiGatewayStage",
@@ -767,7 +827,13 @@ def api_gateway_stage_waf_check_check(cache: dict, session, awsAccountId: str, a
                             "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-setup-waf.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon API Gateway",
+                        "AssetType": "Stage"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsApiGatewayStage",
@@ -833,7 +899,13 @@ def api_gateway_stage_waf_check_check(cache: dict, session, awsAccountId: str, a
                             "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-setup-waf.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon API Gateway",
+                        "AssetType": "Stage"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsApiGatewayStage",
@@ -909,7 +981,13 @@ def api_gateway_rest_api_policy_check(cache: dict, session, awsAccountId: str, a
                         "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-resource-policies.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon API Gateway",
+                    "AssetType": "REST API"
+                },
                 "Resources": [
                     {
                         "Type": "AwsApiGatewayRestApi",
@@ -971,7 +1049,13 @@ def api_gateway_rest_api_policy_check(cache: dict, session, awsAccountId: str, a
                         "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-resource-policies.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon API Gateway",
+                    "AssetType": "REST API"
+                },
                 "Resources": [
                     {
                         "Type": "AwsApiGatewayRestApi",
@@ -1010,7 +1094,7 @@ def api_gateway_rest_api_policy_check(cache: dict, session, awsAccountId: str, a
 
 @registry.register_check("apigateway")
 def api_gateway_rest_api_authorizer_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[APIGateway.8] API Gateway Rest APIs should use an API Gateway Lambda authorizer"""
+    """[APIGateway.8] API Gateway Rest APIs should consider authentication with an API Gateway Lambda authorizer"""
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for restapi in get_rest_apis(cache, session)["items"]:
         apiGwApiId = str(restapi["id"])
@@ -1034,7 +1118,7 @@ def api_gateway_rest_api_authorizer_check(cache: dict, session, awsAccountId: st
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": "[APIGateway.8] API Gateway Rest APIs should use an API Gateway Lambda authorizer",
+                "Title": "[APIGateway.8] API Gateway Rest APIs should consider authentication with an API Gateway Lambda authorizer",
                 "Description": "API Gateway Rest API "
                 + apiGwApiName
                 + " does not have an API Gateway resource policies, a Lambda authorizer is useful if you want to implement a custom authorization scheme that uses a bearer token authentication strategy such as OAuth or SAML, or that uses request parameters to determine the caller's identity.. Refer to the remediation instructions if this configuration is not intended",
@@ -1044,7 +1128,13 @@ def api_gateway_rest_api_authorizer_check(cache: dict, session, awsAccountId: st
                         "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon API Gateway",
+                    "AssetType": "REST API"
+                },
                 "Resources": [
                     {
                         "Type": "AwsApiGatewayRestApi",
@@ -1096,7 +1186,7 @@ def api_gateway_rest_api_authorizer_check(cache: dict, session, awsAccountId: st
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[APIGateway.8] API Gateway Rest APIs should use an API Gateway Lambda authorizer",
+                "Title": "[APIGateway.8] API Gateway Rest APIs should consider authentication with an API Gateway Lambda authorizer",
                 "Description": "API Gateway Rest API "
                 + apiGwApiName
                 + " does not have an API Gateway resource policies, a Lambda authorizer is useful if you want to implement a custom authorization scheme that uses a bearer token authentication strategy such as OAuth or SAML, or that uses request parameters to determine the caller's identity.. Refer to the remediation instructions if this configuration is not intended",
@@ -1106,7 +1196,13 @@ def api_gateway_rest_api_authorizer_check(cache: dict, session, awsAccountId: st
                         "Url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon API Gateway",
+                    "AssetType": "REST API"
+                },
                 "Resources": [
                     {
                         "Type": "AwsApiGatewayRestApi",
