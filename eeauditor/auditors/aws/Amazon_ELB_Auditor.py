@@ -72,7 +72,13 @@ def internet_facing_clb_https_listener_check(cache: dict, session, awsAccountId:
                                 "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-create-https-ssl-load-balancer.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Networking",
+                            "AssetService": "AWS Elastic Load Balancer",
+                            "AssetType": "Classic Load Balancer"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsElbLoadBalancer",
@@ -135,7 +141,13 @@ def internet_facing_clb_https_listener_check(cache: dict, session, awsAccountId:
                                 "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-create-https-ssl-load-balancer.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Networking",
+                            "AssetService": "AWS Elastic Load Balancer",
+                            "AssetType": "Classic Load Balancer"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsElbLoadBalancer",
@@ -219,7 +231,13 @@ def clb_https_listener_tls12_policy_check(cache: dict, session, awsAccountId: st
                             "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-security-policy-table.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Networking",
+                        "AssetService": "AWS Elastic Load Balancer",
+                        "AssetType": "Classic Load Balancer"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsElbLoadBalancer",
@@ -282,7 +300,13 @@ def clb_https_listener_tls12_policy_check(cache: dict, session, awsAccountId: st
                             "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-security-policy-table.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Networking",
+                        "AssetService": "AWS Elastic Load Balancer",
+                        "AssetType": "Classic Load Balancer"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsElbLoadBalancer",
@@ -366,7 +390,13 @@ def clb_cross_zone_balancing_check(cache: dict, session, awsAccountId: str, awsR
                         "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/enable-disable-crosszone-lb.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Networking",
+                    "AssetService": "AWS Elastic Load Balancer",
+                    "AssetType": "Classic Load Balancer"
+                },
                 "Resources": [
                     {
                         "Type": "AwsElbLoadBalancer",
@@ -430,7 +460,13 @@ def clb_cross_zone_balancing_check(cache: dict, session, awsAccountId: str, awsR
                         "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/enable-disable-crosszone-lb.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Networking",
+                    "AssetService": "AWS Elastic Load Balancer",
+                    "AssetType": "Classic Load Balancer"
+                },
                 "Resources": [
                     {
                         "Type": "AwsElbLoadBalancer",
@@ -515,7 +551,13 @@ def clb_connection_draining_check(cache: dict, session, awsAccountId: str, awsRe
                         "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/config-conn-drain.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Networking",
+                    "AssetService": "AWS Elastic Load Balancer",
+                    "AssetType": "Classic Load Balancer"
+                },
                 "Resources": [
                     {
                         "Type": "AwsElbLoadBalancer",
@@ -579,7 +621,13 @@ def clb_connection_draining_check(cache: dict, session, awsAccountId: str, awsRe
                         "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/config-conn-drain.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Networking",
+                    "AssetService": "AWS Elastic Load Balancer",
+                    "AssetType": "Classic Load Balancer"
+                },
                 "Resources": [
                     {
                         "Type": "AwsElbLoadBalancer",
@@ -662,7 +710,13 @@ def clb_access_logging_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/access-log-collection.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Networking",
+                    "AssetService": "AWS Elastic Load Balancer",
+                    "AssetType": "Classic Load Balancer"
+                },
                 "Resources": [
                     {
                         "Type": "AwsElbLoadBalancer",
@@ -724,7 +778,13 @@ def clb_access_logging_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/access-log-collection.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Networking",
+                    "AssetService": "AWS Elastic Load Balancer",
+                    "AssetType": "Classic Load Balancer"
+                },
                 "Resources": [
                     {
                         "Type": "AwsElbLoadBalancer",

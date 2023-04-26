@@ -71,7 +71,13 @@ def elasticbeanstalk_imdsv1_disabled_check(cache: dict, session, awsAccountId: s
                                     "Url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-cfg-ec2-imds.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon Elastic Beanstalk",
+                                "AssetType": "Environment"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsElasticBeanstalkEnvironment",
@@ -143,7 +149,13 @@ def elasticbeanstalk_imdsv1_disabled_check(cache: dict, session, awsAccountId: s
                                     "Url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-cfg-ec2-imds.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon Elastic Beanstalk",
+                                "AssetType": "Environment"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsElasticBeanstalkEnvironment",
@@ -237,7 +249,13 @@ def elasticbeanstalk_platform_auto_update_check(cache: dict, session, awsAccount
                                     "Url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-cfg-ec2-imds.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon Elastic Beanstalk",
+                                "AssetType": "Environment"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsElasticBeanstalkEnvironment",
@@ -301,7 +319,13 @@ def elasticbeanstalk_platform_auto_update_check(cache: dict, session, awsAccount
                                     "Url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-cfg-ec2-imds.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon Elastic Beanstalk",
+                                "AssetType": "Environment"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsElasticBeanstalkEnvironment",
@@ -387,7 +411,13 @@ def elasticbeanstalk_enhanced_health_reporting_check(cache: dict, session, awsAc
                                     "Url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/health-enhanced.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon Elastic Beanstalk",
+                                "AssetType": "Environment"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsElasticBeanstalkEnvironment",
@@ -453,7 +483,13 @@ def elasticbeanstalk_enhanced_health_reporting_check(cache: dict, session, awsAc
                                     "Url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/health-enhanced.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon Elastic Beanstalk",
+                                "AssetType": "Environment"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsElasticBeanstalkEnvironment",
@@ -541,7 +577,13 @@ def elasticbeanstalk_log_streaming_check(cache: dict, session, awsAccountId: str
                                     "Url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/AWSHowTo.cloudwatchlogs.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon Elastic Beanstalk",
+                                "AssetType": "Environment"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsElasticBeanstalkEnvironment",
@@ -607,7 +649,13 @@ def elasticbeanstalk_log_streaming_check(cache: dict, session, awsAccountId: str
                                     "Url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/AWSHowTo.cloudwatchlogs.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon Elastic Beanstalk",
+                                "AssetType": "Environment"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsElasticBeanstalkEnvironment",
@@ -695,7 +743,13 @@ def elasticbeanstalk_xray_tracing_check(cache: dict, session, awsAccountId: str,
                                     "Url": "https://docs.aws.amazon.com/xray/latest/devguide/xray-daemon-beanstalk.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon Elastic Beanstalk",
+                                "AssetType": "Environment"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsElasticBeanstalkEnvironment",
@@ -761,7 +815,13 @@ def elasticbeanstalk_xray_tracing_check(cache: dict, session, awsAccountId: str,
                                     "Url": "https://docs.aws.amazon.com/xray/latest/devguide/xray-daemon-beanstalk.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon Elastic Beanstalk",
+                                "AssetType": "Environment"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsElasticBeanstalkEnvironment",

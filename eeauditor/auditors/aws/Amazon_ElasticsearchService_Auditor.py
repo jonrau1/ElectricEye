@@ -72,7 +72,13 @@ def dedicated_master_check(cache: dict, session, awsAccountId: str, awsRegion: s
                         "Url": "https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-createupdatedomains.html#es-createdomains-configure-cluster",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon OpenSearch Service",
+                    "AssetType": "Search Domain"
+                },
                 "Resources": [
                     {
                         "Type": "AwsOpenSearchServiceDomain",
@@ -132,7 +138,13 @@ def dedicated_master_check(cache: dict, session, awsAccountId: str, awsRegion: s
                         "Url": "https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-createupdatedomains.html#es-createdomains-configure-cluster",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon OpenSearch Service",
+                    "AssetType": "Search Domain"
+                },
                 "Resources": [
                     {
                         "Type": "AwsOpenSearchServiceDomain",
@@ -211,7 +223,13 @@ def cognito_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPa
                         "Url": "https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-cognito-auth.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon OpenSearch Service",
+                    "AssetType": "Search Domain"
+                },
                 "Resources": [
                     {
                         "Type": "AwsOpenSearchServiceDomain",
@@ -276,7 +294,13 @@ def cognito_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPa
                         "Url": "https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-cognito-auth.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon OpenSearch Service",
+                    "AssetType": "Search Domain"
+                },
                 "Resources": [
                     {
                         "Type": "AwsOpenSearchServiceDomain",
@@ -360,7 +384,13 @@ def encryption_at_rest_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/encryption-at-rest.html#enabling-ear",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon OpenSearch Service",
+                    "AssetType": "Search Domain"
+                },
                 "Resources": [
                     {
                         "Type": "AwsOpenSearchServiceDomain",
@@ -418,7 +448,13 @@ def encryption_at_rest_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/encryption-at-rest.html#enabling-ear",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon OpenSearch Service",
+                    "AssetType": "Search Domain"
+                },
                 "Resources": [
                     {
                         "Type": "AwsOpenSearchServiceDomain",
@@ -494,7 +530,13 @@ def node2node_encryption_check(cache: dict, session, awsAccountId: str, awsRegio
                         "Url": "https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/ntn.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon OpenSearch Service",
+                    "AssetType": "Search Domain"
+                },
                 "Resources": [
                     {
                         "Type": "AwsOpenSearchServiceDomain",
@@ -557,7 +599,13 @@ def node2node_encryption_check(cache: dict, session, awsAccountId: str, awsRegio
                         "Url": "https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/ntn.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon OpenSearch Service",
+                    "AssetType": "Search Domain"
+                },
                 "Resources": [
                     {
                         "Type": "AwsOpenSearchServiceDomain",
@@ -638,7 +686,13 @@ def https_enforcement_check(cache: dict, session, awsAccountId: str, awsRegion: 
                         "Url": "https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-managedomains.html#es-managedomains-configuration-changes",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon OpenSearch Service",
+                    "AssetType": "Search Domain"
+                },
                 "Resources": [
                     {
                         "Type": "AwsOpenSearchServiceDomain",
@@ -701,7 +755,13 @@ def https_enforcement_check(cache: dict, session, awsAccountId: str, awsRegion: 
                         "Url": "https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-managedomains.html#es-managedomains-configuration-changes",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon OpenSearch Service",
+                    "AssetType": "Search Domain"
+                },
                 "Resources": [
                     {
                         "Type": "AwsOpenSearchServiceDomain",
@@ -788,7 +848,13 @@ def tls_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                             "Url": "https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-managedomains.html#es-managedomains-configuration-changes",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Analytics",
+                        "AssetService": "Amazon OpenSearch Service",
+                        "AssetType": "Search Domain"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsOpenSearchServiceDomain",
@@ -854,7 +920,13 @@ def tls_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                             "Url": "https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-managedomains.html#es-managedomains-configuration-changes",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Analytics",
+                        "AssetService": "Amazon OpenSearch Service",
+                        "AssetType": "Search Domain"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsOpenSearchServiceDomain",
@@ -938,7 +1010,13 @@ def elastic_update_check(cache: dict, session, awsAccountId: str, awsRegion: str
                         "Url": "https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-managedomains.html#es-service-software",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon OpenSearch Service",
+                    "AssetType": "Search Domain"
+                },
                 "Resources": [
                     {
                         "Type": "AwsOpenSearchServiceDomain",
@@ -997,7 +1075,13 @@ def elastic_update_check(cache: dict, session, awsAccountId: str, awsRegion: str
                         "Url": "https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-managedomains.html#es-service-software",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon OpenSearch Service",
+                    "AssetType": "Search Domain"
+                },
                 "Resources": [
                     {
                         "Type": "AwsOpenSearchServiceDomain",
@@ -1078,7 +1162,13 @@ def elasticsearch_in_vpc_check(cache: dict, session, awsAccountId: str, awsRegio
                         "Url": "https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-vpc.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon OpenSearch Service",
+                    "AssetType": "Search Domain"
+                },
                 "Resources": [
                     {
                         "Type": "AwsOpenSearchServiceDomain",
@@ -1141,7 +1231,13 @@ def elasticsearch_in_vpc_check(cache: dict, session, awsAccountId: str, awsRegio
                         "Url": "https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-vpc.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon OpenSearch Service",
+                    "AssetType": "Search Domain"
+                },
                 "Resources": [
                     {
                         "Type": "AwsOpenSearchServiceDomain",
@@ -1257,7 +1353,13 @@ def elasticsearch_public_access_check(cache: dict, session, awsAccountId: str, a
                         "Url": "https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-ac.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon OpenSearch Service",
+                    "AssetType": "Search Domain"
+                },
                 "Resources": [
                     {
                         "Type": "AwsOpenSearchServiceDomain",
@@ -1320,7 +1422,13 @@ def elasticsearch_public_access_check(cache: dict, session, awsAccountId: str, a
                         "Url": "https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-ac.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon OpenSearch Service",
+                    "AssetType": "Search Domain"
+                },
                 "Resources": [
                     {
                         "Type": "AwsOpenSearchServiceDomain",
