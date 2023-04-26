@@ -86,7 +86,13 @@ def ec2_imdsv2_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                             "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html#instance-metadata-transition-to-version-2",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Compute",
+                        "AssetService": "Amazon EC2",
+                        "AssetType": "Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Instance",
@@ -156,7 +162,13 @@ def ec2_imdsv2_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                             "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html#instance-metadata-transition-to-version-2",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Compute",
+                        "AssetService": "Amazon EC2",
+                        "AssetType": "Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Instance",
@@ -246,7 +258,13 @@ def ec2_secure_enclave_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/enclaves/latest/user/getting-started.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetType": "Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Instance",
@@ -316,7 +334,13 @@ def ec2_secure_enclave_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/enclaves/latest/user/getting-started.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetType": "Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Instance",
@@ -405,7 +429,13 @@ def ec2_public_facing_check(cache: dict, session, awsAccountId: str, awsRegion: 
                         "Url": "https://aws.amazon.com/premiumsupport/knowledge-center/public-load-balancer-private-ec2/"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetType": "Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Instance",
@@ -471,7 +501,13 @@ def ec2_public_facing_check(cache: dict, session, awsAccountId: str, awsRegion: 
                         "Url": "https://aws.amazon.com/premiumsupport/knowledge-center/public-load-balancer-private-ec2/"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetType": "Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Instance",
@@ -554,7 +590,13 @@ def ec2_source_dest_verification_check(cache: dict, session, awsAccountId: str, 
                         "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html#eni-basics"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetType": "Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Instance",
@@ -619,7 +661,13 @@ def ec2_source_dest_verification_check(cache: dict, session, awsAccountId: str, 
                         "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html#eni-basics"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetType": "Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Instance",
@@ -694,7 +742,13 @@ def ec2_serial_console_access_check(cache: dict, session, awsAccountId: str, aws
                     "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-serial-console.html"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Amazon EC2",
+                "AssetType": "Account Serial Port Setting"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
@@ -753,7 +807,13 @@ def ec2_serial_console_access_check(cache: dict, session, awsAccountId: str, aws
                     "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-serial-console.html"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Amazon EC2",
+                "AssetType": "Account Serial Port Setting"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
@@ -831,7 +891,13 @@ def ec2_ami_age_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
                             "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Compute",
+                        "AssetService": "Amazon EC2",
+                        "AssetType": "Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Instance",
@@ -891,7 +957,13 @@ def ec2_ami_age_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
                             "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Compute",
+                        "AssetService": "Amazon EC2",
+                        "AssetType": "Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Instance",
@@ -976,7 +1048,13 @@ def ec2_ami_status_check(cache: dict, session, awsAccountId: str, awsRegion: str
                             "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/deregister-ami.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Compute",
+                        "AssetService": "Amazon EC2",
+                        "AssetType": "Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Instance",
@@ -1036,7 +1114,13 @@ def ec2_ami_status_check(cache: dict, session, awsAccountId: str, awsRegion: str
                             "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/deregister-ami.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Compute",
+                        "AssetService": "Amazon EC2",
+                        "AssetType": "Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Instance",
@@ -1097,7 +1181,13 @@ def ec2_ami_status_check(cache: dict, session, awsAccountId: str, awsRegion: str
                             "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/deregister-ami.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Compute",
+                        "AssetService": "Amazon EC2",
+                        "AssetType": "Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Instance",
@@ -1158,7 +1248,13 @@ def ec2_ami_status_check(cache: dict, session, awsAccountId: str, awsRegion: str
                         "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetType": "Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Instance",
@@ -1244,7 +1340,13 @@ def ec2_concentration_risk(cache: dict, session, awsAccountId: str, awsRegion: s
                     "Url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Management & Governance",
+                "AssetService": "AWS Account",
+                "AssetType": "Account"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
@@ -1296,7 +1398,13 @@ def ec2_concentration_risk(cache: dict, session, awsAccountId: str, awsRegion: s
                     "Url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Management & Governance",
+                "AssetService": "AWS Account",
+                "AssetType": "Account"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
@@ -1348,7 +1456,13 @@ def ec2_concentration_risk(cache: dict, session, awsAccountId: str, awsRegion: s
                     "Url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Management & Governance",
+                "AssetService": "AWS Account",
+                "AssetType": "Account"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",

@@ -99,7 +99,7 @@ def gce_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRe
                     "Provider": "GCP",
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "GCE VM Instance"
+                    "AssetType": "Instance"
                 },
                 "Resources": [
                     {
@@ -169,7 +169,7 @@ def gce_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRe
                     "Provider": "GCP",
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "GCE VM Instance"
+                    "AssetType": "Instance"
                 },
                 "Resources": [
                     {
@@ -256,7 +256,7 @@ def gce_instance_ip_forwarding_check(cache: dict, awsAccountId: str, awsRegion: 
                     "Provider": "GCP",
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "GCE VM Instance"
+                    "AssetType": "Instance"
                 },
                 "Resources": [
                     {
@@ -326,7 +326,7 @@ def gce_instance_ip_forwarding_check(cache: dict, awsAccountId: str, awsRegion: 
                     "Provider": "GCP",
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "GCE VM Instance"
+                    "AssetType": "Instance"
                 },
                 "Resources": [
                     {
@@ -413,7 +413,7 @@ def gce_instance_auto_restart_check(cache: dict, awsAccountId: str, awsRegion: s
                     "Provider": "GCP",
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "GCE VM Instance"
+                    "AssetType": "Instance"
                 },
                 "Resources": [
                     {
@@ -481,7 +481,7 @@ def gce_instance_auto_restart_check(cache: dict, awsAccountId: str, awsRegion: s
                     "Provider": "GCP",
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "GCE VM Instance"
+                    "AssetType": "Instance"
                 },
                 "Resources": [
                     {
@@ -566,7 +566,7 @@ def gce_instance_secure_boot_check(cache: dict, awsAccountId: str, awsRegion: st
                     "Provider": "GCP",
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "GCE VM Instance"
+                    "AssetType": "Instance"
                 },
                 "Resources": [
                     {
@@ -633,7 +633,7 @@ def gce_instance_secure_boot_check(cache: dict, awsAccountId: str, awsRegion: st
                     "Provider": "GCP",
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "GCE VM Instance"
+                    "AssetType": "Instance"
                 },
                 "Resources": [
                     {
@@ -717,7 +717,7 @@ def gce_instance_vtpm_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                     "Provider": "GCP",
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "GCE VM Instance"
+                    "AssetType": "Instance"
                 },
                 "Resources": [
                     {
@@ -784,7 +784,7 @@ def gce_instance_vtpm_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                     "Provider": "GCP",
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "GCE VM Instance"
+                    "AssetType": "Instance"
                 },
                 "Resources": [
                     {
@@ -868,7 +868,7 @@ def gce_instance_integrity_mon_check(cache: dict, awsAccountId: str, awsRegion: 
                     "Provider": "GCP",
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "GCE VM Instance"
+                    "AssetType": "Instance"
                 },
                 "Resources": [
                     {
@@ -935,7 +935,7 @@ def gce_instance_integrity_mon_check(cache: dict, awsAccountId: str, awsRegion: 
                     "Provider": "GCP",
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "GCE VM Instance"
+                    "AssetType": "Instance"
                 },
                 "Resources": [
                     {
@@ -1019,7 +1019,7 @@ def gce_instance_siip_auto_update_check(cache: dict, awsAccountId: str, awsRegio
                     "Provider": "GCP",
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "GCE VM Instance"
+                    "AssetType": "Instance"
                 },
                 "Resources": [
                     {
@@ -1086,7 +1086,7 @@ def gce_instance_siip_auto_update_check(cache: dict, awsAccountId: str, awsRegio
                     "Provider": "GCP",
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "GCE VM Instance"
+                    "AssetType": "Instance"
                 },
                 "Resources": [
                     {
@@ -1170,7 +1170,7 @@ def gce_instance_confidential_compute_update_check(cache: dict, awsAccountId: st
                     "Provider": "GCP",
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "GCE VM Instance"
+                    "AssetType": "Instance"
                 },
                 "Resources": [
                     {
@@ -1244,7 +1244,7 @@ def gce_instance_confidential_compute_update_check(cache: dict, awsAccountId: st
                     "Provider": "GCP",
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "GCE VM Instance"
+                    "AssetType": "Instance"
                 },
                 "Resources": [
                     {
@@ -1349,7 +1349,7 @@ def gce_instance_serial_port_access_check(cache: dict, awsAccountId: str, awsReg
                     "Provider": "GCP",
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "GCE VM Instance"
+                    "AssetType": "Instance"
                 },
                 "Resources": [
                     {
@@ -1419,7 +1419,7 @@ def gce_instance_serial_port_access_check(cache: dict, awsAccountId: str, awsReg
                     "Provider": "GCP",
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "GCE VM Instance"
+                    "AssetType": "Instance"
                 },
                 "Resources": [
                     {
@@ -1891,7 +1891,7 @@ def gce_instance_block_proj_ssh_keys_check(cache: dict, awsAccountId: str, awsRe
                     "Provider": "GCP",
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "GCE VM Instance"
+                    "AssetType": "Instance"
                 },
                 "Resources": [
                     {
@@ -1964,7 +1964,7 @@ def gce_instance_block_proj_ssh_keys_check(cache: dict, awsAccountId: str, awsRe
                     "Provider": "GCP",
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "GCE VM Instance"
+                    "AssetType": "Instance"
                 },
                 "Resources": [
                     {
@@ -2060,7 +2060,7 @@ def gce_instance_public_ip_check(cache: dict, awsAccountId: str, awsRegion: str,
                     "Provider": "GCP",
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "GCE VM Instance"
+                    "AssetType": "Instance"
                 },
                 "Resources": [
                     {
@@ -2130,7 +2130,7 @@ def gce_instance_public_ip_check(cache: dict, awsAccountId: str, awsRegion: str,
                     "Provider": "GCP",
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "GCE VM Instance"
+                    "AssetType": "Instance"
                 },
                 "Resources": [
                     {

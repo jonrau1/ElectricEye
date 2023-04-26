@@ -197,7 +197,7 @@ def ec2_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
                                 "Provider": "AWS",
                                 "AssetClass": "Compute",
                                 "AssetService": "Amazon EC2",
-                                "AssetType": "EC2 Instance"
+                                "AssetType": "Instance"
                             },
                             "Resources": [
                                 {
@@ -272,7 +272,7 @@ def ec2_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
                                 "Provider": "AWS",
                                 "AssetClass": "Compute",
                                 "AssetService": "Amazon EC2",
-                                "AssetType": "EC2 Instance"
+                                "AssetType": "Instance"
                             },
                             "Resources": [
                                 {

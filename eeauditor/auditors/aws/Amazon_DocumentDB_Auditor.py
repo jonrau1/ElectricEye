@@ -92,7 +92,13 @@ def docdb_public_instance_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/documentdb/latest/developerguide/connect-from-outside-a-vpc.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon DocumentDB",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDocumentDbInstance",
@@ -160,7 +166,13 @@ def docdb_public_instance_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/documentdb/latest/developerguide/connect-from-outside-a-vpc.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon DocumentDB",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDocumentDbInstance",
@@ -238,7 +250,13 @@ def docdb_instance_encryption_check(cache: dict, session, awsAccountId: str, aws
                         "Url": "https://docs.aws.amazon.com/documentdb/latest/developerguide/encryption-at-rest.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon DocumentDB",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDocumentDbInstance",
@@ -300,7 +318,13 @@ def docdb_instance_encryption_check(cache: dict, session, awsAccountId: str, aws
                         "Url": "https://docs.aws.amazon.com/documentdb/latest/developerguide/encryption-at-rest.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon DocumentDB",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDocumentDbInstance",
@@ -370,7 +394,13 @@ def docdb_instance_audit_logging_check(cache: dict, session, awsAccountId: str, 
                         "Url": "https://docs.aws.amazon.com/documentdb/latest/developerguide/event-auditing.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon DocumentDB",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDocumentDbInstance",
@@ -433,7 +463,13 @@ def docdb_instance_audit_logging_check(cache: dict, session, awsAccountId: str, 
                         "Url": "https://docs.aws.amazon.com/documentdb/latest/developerguide/event-auditing.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon DocumentDB",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDocumentDbInstance",
@@ -508,7 +544,13 @@ def docdb_cluster_multiaz_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/documentdb/latest/developerguide/db-cluster-fault-tolerance.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon DocumentDB",
+                    "AssetType": "Database Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDocumentDbCluster",
@@ -576,7 +618,13 @@ def docdb_cluster_multiaz_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/documentdb/latest/developerguide/db-cluster-fault-tolerance.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon DocumentDB",
+                    "AssetType": "Database Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDocumentDbCluster",
@@ -652,7 +700,13 @@ def docdb_cluster_deletion_protection_check(cache: dict, session, awsAccountId: 
                         "Url": "https://docs.aws.amazon.com/documentdb/latest/developerguide/db-cluster-delete.html#db-cluster-deletion-protection",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon DocumentDB",
+                    "AssetType": "Database Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDocumentDbCluster",
@@ -718,7 +772,13 @@ def docdb_cluster_deletion_protection_check(cache: dict, session, awsAccountId: 
                         "Url": "https://docs.aws.amazon.com/documentdb/latest/developerguide/db-cluster-delete.html#db-cluster-deletion-protection",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon DocumentDB",
+                    "AssetType": "Database Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDocumentDbCluster",
@@ -801,7 +861,13 @@ def documentdb_parameter_group_audit_log_check(cache: dict, session, awsAccountI
                                     "Url": "https://docs.aws.amazon.com/documentdb/latest/developerguide/event-auditing.html#event-auditing-enabling-auditing",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Database",
+                                "AssetService": "Amazon DocumentDB",
+                                "AssetType": "Database Parameter Group"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsDocumentDbClusterParameterGroup",
@@ -855,7 +921,13 @@ def documentdb_parameter_group_audit_log_check(cache: dict, session, awsAccountI
                                     "Url": "https://docs.aws.amazon.com/documentdb/latest/developerguide/event-auditing.html#event-auditing-enabling-auditing",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Database",
+                                "AssetService": "Amazon DocumentDB",
+                                "AssetType": "Database Parameter Group"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsDocumentDbClusterParameterGroup",
@@ -932,7 +1004,13 @@ def documentdb_parameter_group_tls_enforcement_check(cache: dict, session, awsAc
                                     "Url": "https://docs.aws.amazon.com/documentdb/latest/developerguide/security.encryption.ssl.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Database",
+                                "AssetService": "Amazon DocumentDB",
+                                "AssetType": "Database Parameter Group"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsDocumentDbClusterParameterGroup",
@@ -988,7 +1066,13 @@ def documentdb_parameter_group_tls_enforcement_check(cache: dict, session, awsAc
                                     "Url": "https://docs.aws.amazon.com/documentdb/latest/developerguide/security.encryption.ssl.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Database",
+                                "AssetService": "Amazon DocumentDB",
+                                "AssetType": "Database Parameter Group"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsDocumentDbClusterParameterGroup",
@@ -1065,7 +1149,13 @@ def documentdb_cluster_snapshot_encryption_check(cache: dict, session, awsAccoun
                             "Url": "https://docs.aws.amazon.com/documentdb/latest/developerguide/encryption-at-rest.html#encryption-at-rest-limits",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Storage",
+                        "AssetService": "Amazon DocumentDB",
+                        "AssetType": "Database Cluster Snapshot"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsDocumentDbClusterSnapshot",
@@ -1115,7 +1205,13 @@ def documentdb_cluster_snapshot_encryption_check(cache: dict, session, awsAccoun
                             "Url": "https://docs.aws.amazon.com/documentdb/latest/developerguide/encryption-at-rest.html#encryption-at-rest-limits",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Storage",
+                        "AssetService": "Amazon DocumentDB",
+                        "AssetType": "Database Cluster Snapshot"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsDocumentDbClusterSnapshot",
@@ -1182,7 +1278,13 @@ def documentdb_cluster_snapshot_public_share_check(cache: dict, session, awsAcco
                                     "Url": "https://docs.aws.amazon.com/documentdb/latest/developerguide/backup-restore.db-cluster-snapshot-share.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Storage",
+                                "AssetService": "Amazon DocumentDB",
+                                "AssetType": "Database Cluster Snapshot"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsDocumentDbClusterSnapshot",
@@ -1238,7 +1340,13 @@ def documentdb_cluster_snapshot_public_share_check(cache: dict, session, awsAcco
                                     "Url": "https://docs.aws.amazon.com/documentdb/latest/developerguide/backup-restore.db-cluster-snapshot-share.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Storage",
+                                "AssetService": "Amazon DocumentDB",
+                                "AssetType": "Database Cluster Snapshot"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsDocumentDbClusterSnapshot",

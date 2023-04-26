@@ -131,7 +131,13 @@ def gce_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
                                 "Url": "https://cloud.google.com/compute/docs/access"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "GCP",
+                            "AssetClass": "Compute",
+                            "AssetService": "Google Compute Engine",
+                            "AssetType": "Instance"
+                        },
                         "Resources": [
                             {
                                 "Type": "GcpGceVmInstance",
@@ -204,7 +210,13 @@ def gce_attack_surface_open_tcp_port_check(cache: dict, awsAccountId: str, awsRe
                                 "Url": "https://cloud.google.com/compute/docs/access"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "GCP",
+                            "AssetClass": "Compute",
+                            "AssetService": "Google Compute Engine",
+                            "AssetType": "Instance"
+                        },
                         "Resources": [
                             {
                                 "Type": "GcpGceVmInstance",

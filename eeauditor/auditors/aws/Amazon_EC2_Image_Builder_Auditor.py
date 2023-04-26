@@ -60,7 +60,13 @@ def imagebuilder_pipeline_tests_enabled_check(cache: dict, session, awsAccountId
                         "Url": "https://docs.aws.amazon.com/imagebuilder/latest/userguide/security-best-practices.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS EC2 Image Builder",
+                    "AssetType": "Pipeline"
+                },
                 "Resources": [
                     {
                         "Type": "AwsImageBuilderPipeline",
@@ -116,7 +122,13 @@ def imagebuilder_pipeline_tests_enabled_check(cache: dict, session, awsAccountId
                         "Url": "https://docs.aws.amazon.com/imagebuilder/latest/userguide/security-best-practices.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS EC2 Image Builder",
+                    "AssetType": "Pipeline"
+                },
                 "Resources": [
                     {
                         "Type": "AwsImageBuilderPipeline",
@@ -188,7 +200,13 @@ def imagebuilder_ebs_encryption_check(cache: dict, session, awsAccountId: str, a
                         "Url": "https://docs.aws.amazon.com/imagebuilder/latest/userguide/how-image-builder-works.html#image-builder-components",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS EC2 Image Builder",
+                    "AssetType": "Recipe"
+                },
                 "Resources": [
                     {
                         "Type": "AwsImageBuilderRecipe",
@@ -244,7 +262,13 @@ def imagebuilder_ebs_encryption_check(cache: dict, session, awsAccountId: str, a
                         "Url": "https://docs.aws.amazon.com/imagebuilder/latest/userguide/how-image-builder-works.html#image-builder-components",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS EC2 Image Builder",
+                    "AssetType": "Recipe"
+                },
                 "Resources": [
                     {
                         "Type": "AwsImageBuilderRecipe",

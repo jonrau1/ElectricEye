@@ -72,7 +72,11 @@ def ddb_kms_cmk_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
                         }
                     },
                     "ProductFields": {
-                        "Product Name": "ElectricEye"
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Database",
+                        "AssetService": "Amazon DynamoDB",
+                        "AssetType": "Table"
                     },
                     "Resources": [
                         {
@@ -126,7 +130,11 @@ def ddb_kms_cmk_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
                         }
                     },
                     "ProductFields": {
-                        "Product Name": "ElectricEye"
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Database",
+                        "AssetService": "Amazon DynamoDB",
+                        "AssetType": "Table"
                     },
                     "Resources": [
                         {
@@ -182,7 +190,11 @@ def ddb_kms_cmk_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
                         }
                     },
                     "ProductFields": {
-                        "Product Name": "ElectricEye"
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Database",
+                        "AssetService": "Amazon DynamoDB",
+                        "AssetType": "Table"
                     },
                     "Resources": [
                         {
@@ -249,7 +261,11 @@ def ddb_pitr_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsP
                     }
                 },
                 "ProductFields": {
-                    "Product Name": "ElectricEye"
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon DynamoDB",
+                    "AssetType": "Table"
                 },
                 "Resources": [
                     {
@@ -310,7 +326,11 @@ def ddb_pitr_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsP
                     }
                 },
                 "ProductFields": {
-                    "Product Name": "ElectricEye"
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon DynamoDB",
+                    "AssetType": "Table"
                 },
                 "Resources": [
                     {
@@ -384,7 +404,11 @@ def ddb_ttl_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPa
                     }
                 },
                 "ProductFields": {
-                    "Product Name": "ElectricEye"
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon DynamoDB",
+                    "AssetType": "Table"
                 },
                 "Resources": [
                     {
@@ -445,7 +469,11 @@ def ddb_ttl_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPa
                     }
                 },
                 "ProductFields": {
-                    "Product Name": "ElectricEye"
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon DynamoDB",
+                    "AssetType": "Table"
                 },
                 "Resources": [
                     {

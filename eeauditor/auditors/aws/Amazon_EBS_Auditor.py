@@ -74,7 +74,13 @@ def ebs_volume_attachment_check(cache: dict, session, awsAccountId: str, awsRegi
                             "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-attaching-volume.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Storage",
+                        "AssetService": "Amazon Elastic Block Storage (EBS)",
+                        "AssetType": "Volume"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Volume",
@@ -122,7 +128,13 @@ def ebs_volume_attachment_check(cache: dict, session, awsAccountId: str, awsRegi
                             "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-attaching-volume.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Storage",
+                        "AssetService": "Amazon Elastic Block Storage (EBS)",
+                        "AssetType": "Volume"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Volume",
@@ -184,7 +196,13 @@ def ebs_volume_delete_on_termination_check(cache: dict, session, awsAccountId: s
                             "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/terminating-instances.html#preserving-volumes-on-termination",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Storage",
+                        "AssetService": "Amazon Elastic Block Storage (EBS)",
+                        "AssetType": "Volume"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Volume",
@@ -234,7 +252,13 @@ def ebs_volume_delete_on_termination_check(cache: dict, session, awsAccountId: s
                             "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/terminating-instances.html#preserving-volumes-on-termination",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Storage",
+                        "AssetService": "Amazon Elastic Block Storage (EBS)",
+                        "AssetType": "Volume"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Volume",
@@ -297,7 +321,13 @@ def ebs_volume_encryption_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon Elastic Block Storage (EBS)",
+                    "AssetType": "Volume"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Volume",
@@ -351,7 +381,13 @@ def ebs_volume_encryption_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon Elastic Block Storage (EBS)",
+                    "AssetType": "Volume"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Volume",
@@ -417,7 +453,13 @@ def ebs_snapshot_encryption_check(cache: dict, session, awsAccountId: str, awsRe
                         "Url": "https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/EBSSnapshots.html#encryption-support",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon Elastic Block Storage (EBS)",
+                    "AssetType": "Snapshot"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Snapshot",
@@ -472,7 +514,13 @@ def ebs_snapshot_encryption_check(cache: dict, session, awsAccountId: str, awsRe
                         "Url": "https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/EBSSnapshots.html#encryption-support",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon Elastic Block Storage (EBS)",
+                    "AssetType": "Snapshot"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Snapshot",
@@ -543,7 +591,13 @@ def ebs_snapshot_public_check(cache: dict, session, awsAccountId: str, awsRegion
                         "Url": "https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ebs-modifying-snapshot-permissions.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon Elastic Block Storage (EBS)",
+                    "AssetType": "Snapshot"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Snapshot",
@@ -607,7 +661,13 @@ def ebs_snapshot_public_check(cache: dict, session, awsAccountId: str, awsRegion
                                 "Url": "https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ebs-modifying-snapshot-permissions.html"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Storage",
+                            "AssetService": "Amazon Elastic Block Storage (EBS)",
+                            "AssetType": "Snapshot"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsEc2Snapshot",
@@ -667,7 +727,13 @@ def ebs_snapshot_public_check(cache: dict, session, awsAccountId: str, awsRegion
                                 "Url": "https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ebs-modifying-snapshot-permissions.html"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Storage",
+                            "AssetService": "Amazon Elastic Block Storage (EBS)",
+                            "AssetType": "Snapshot"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsEc2Snapshot",
@@ -733,7 +799,13 @@ def ebs_account_encryption_by_default_check(cache: dict, session, awsAccountId: 
                     "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#encryption-by-default"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Amazon Elastic Block Storage (EBS)",
+                "AssetType": "Account Encryption Setting"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
@@ -779,7 +851,13 @@ def ebs_account_encryption_by_default_check(cache: dict, session, awsAccountId: 
                     "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#encryption-by-default"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Amazon Elastic Block Storage (EBS)",
+                "AssetType": "Account Encryption Setting"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
@@ -841,7 +919,13 @@ def ebs_volume_snapshot_check(cache: dict, session, awsAccountId: str, awsRegion
                         "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSSnapshots.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon Elastic Block Storage (EBS)",
+                    "AssetType": "Volume"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Volume",
@@ -899,7 +983,13 @@ def ebs_volume_snapshot_check(cache: dict, session, awsAccountId: str, awsRegion
                         "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSSnapshots.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon Elastic Block Storage (EBS)",
+                    "AssetType": "Volume"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Volume",

@@ -84,7 +84,13 @@ def security_group_all_open_check(cache: dict, session, awsAccountId: str, awsRe
                                 "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#AddRemoveRules",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Networking",
+                            "AssetService": "Amazon VPC",
+                            "AssetType": "Security Group"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsEc2SecurityGroup",
@@ -143,7 +149,13 @@ def security_group_all_open_check(cache: dict, session, awsAccountId: str, awsRe
                                 "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#AddRemoveRules",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Networking",
+                            "AssetService": "Amazon VPC",
+                            "AssetType": "Security Group"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsEc2SecurityGroup",
@@ -252,7 +264,13 @@ def security_group_master_auditor_check(cache: dict, session, awsAccountId: str,
                                         "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#AddRemoveRules",
                                     }
                                 },
-                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "ProductFields": {
+                                    "ProductName": "ElectricEye",
+                                    "Provider": "AWS",
+                                    "AssetClass": "Networking",
+                                    "AssetService": "Amazon VPC",
+                                    "AssetType": "Security Group"
+                                },
                                 "Resources": [
                                     {
                                         "Type": "AwsEc2SecurityGroup",
@@ -317,7 +335,13 @@ def security_group_master_auditor_check(cache: dict, session, awsAccountId: str,
                                         "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#AddRemoveRules",
                                     }
                                 },
-                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "ProductFields": {
+                                    "ProductName": "ElectricEye",
+                                    "Provider": "AWS",
+                                    "AssetClass": "Networking",
+                                    "AssetService": "Amazon VPC",
+                                    "AssetType": "Security Group"
+                                },
                                 "Resources": [
                                     {
                                         "Type": "AwsEc2SecurityGroup",

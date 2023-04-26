@@ -61,7 +61,13 @@ def dax_encryption_at_rest_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAXEncryptionAtRest.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon DynamoDB Accelerator (DAX)",
+                    "AssetType": "DAX Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDaxCluster",
@@ -122,7 +128,13 @@ def dax_encryption_at_rest_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAXEncryptionAtRest.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon DynamoDB Accelerator (DAX)",
+                    "AssetType": "DAX Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDaxCluster",
@@ -192,7 +204,13 @@ def dax_encryption_in_transit_check(cache: dict, session, awsAccountId: str, aws
                         "Url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAXEncryptionInTransit.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon DynamoDB Accelerator (DAX)",
+                    "AssetType": "DAX Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDaxCluster",
@@ -258,7 +276,13 @@ def dax_encryption_in_transit_check(cache: dict, session, awsAccountId: str, aws
                         "Url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAXEncryptionInTransit.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon DynamoDB Accelerator (DAX)",
+                    "AssetType": "DAX Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDaxCluster",
@@ -338,7 +362,13 @@ def dax_cache_ttl_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                                 "Url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.concepts.html#DAX.concepts.item-cache"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Database",
+                            "AssetService": "Amazon DynamoDB Accelerator (DAX)",
+                            "AssetType": "DAX Cluster"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsDaxCluster",
@@ -405,7 +435,13 @@ def dax_cache_ttl_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                                 "Url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.concepts.html#DAX.concepts.item-cache"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Database",
+                            "AssetService": "Amazon DynamoDB Accelerator (DAX)",
+                            "AssetType": "DAX Cluster"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsDaxCluster",
