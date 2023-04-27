@@ -65,7 +65,13 @@ def dms_replication_instance_public_access_check(cache: dict, session, awsAccoun
                         "Url": "https://aws.amazon.com/premiumsupport/knowledge-center/dms-disable-public-access/",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Migration & Transfer",
+                    "AssetService": "AWS Database Migration Service",
+                    "AssetType": "Replication Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDmsReplicationInstance",
@@ -125,7 +131,13 @@ def dms_replication_instance_public_access_check(cache: dict, session, awsAccoun
                         "Url": "https://aws.amazon.com/premiumsupport/knowledge-center/dms-disable-public-access/",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Migration & Transfer",
+                    "AssetService": "AWS Database Migration Service",
+                    "AssetType": "Replication Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDmsReplicationInstance",
@@ -192,7 +204,13 @@ def dms_replication_instance_multi_az_check(cache: dict, session, awsAccountId: 
                         "Url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_BestPractices.html#CHAP_BestPractices.Performance",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Migration & Transfer",
+                    "AssetService": "AWS Database Migration Service",
+                    "AssetType": "Replication Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDmsReplicationInstance",
@@ -249,7 +267,13 @@ def dms_replication_instance_multi_az_check(cache: dict, session, awsAccountId: 
                         "Url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_BestPractices.html#CHAP_BestPractices.Performance",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Migration & Transfer",
+                    "AssetService": "AWS Database Migration Service",
+                    "AssetType": "Replication Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDmsReplicationInstance",
@@ -316,7 +340,13 @@ def dms_replication_instance_minor_version_update_check(cache: dict, session, aw
                         "Url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_BestPractices.html#CHAP_BestPractices.RIUpgrade",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Migration & Transfer",
+                    "AssetService": "AWS Database Migration Service",
+                    "AssetType": "Replication Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDmsReplicationInstance",
@@ -371,7 +401,13 @@ def dms_replication_instance_minor_version_update_check(cache: dict, session, aw
                         "Url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_BestPractices.html#CHAP_BestPractices.RIUpgrade",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Migration & Transfer",
+                    "AssetService": "AWS Database Migration Service",
+                    "AssetType": "Replication Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDmsReplicationInstance",

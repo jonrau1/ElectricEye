@@ -82,7 +82,13 @@ def kms_key_rotation_check(cache: dict, session, awsAccountId: str, awsRegion: s
                             "Url": "https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Security Services",
+                        "AssetService": "Amazon Key Management Service",
+                        "AssetType": "Key"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsKmsKey",
@@ -150,7 +156,13 @@ def kms_key_rotation_check(cache: dict, session, awsAccountId: str, awsRegion: s
                             "Url": "https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Security Services",
+                        "AssetService": "Amazon Key Management Service",
+                        "AssetType": "Key"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsKmsKey",
@@ -218,7 +230,13 @@ def kms_key_rotation_check(cache: dict, session, awsAccountId: str, awsRegion: s
                             "Url": "https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Security Services",
+                        "AssetService": "Amazon Key Management Service",
+                        "AssetType": "Key"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsKmsKey",
@@ -316,7 +334,13 @@ def kms_key_exposed_check(cache: dict, session, awsAccountId: str, awsRegion: st
                                 "Url": "https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Security Services",
+                            "AssetService": "Amazon Key Management Service",
+                            "AssetType": "Key"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsKmsAlias",
@@ -385,7 +409,13 @@ def kms_key_exposed_check(cache: dict, session, awsAccountId: str, awsRegion: st
                                 "Url": "https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Security Services",
+                            "AssetService": "Amazon Key Management Service",
+                            "AssetType": "Key"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsKmsAlias",

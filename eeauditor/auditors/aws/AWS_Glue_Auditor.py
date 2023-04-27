@@ -77,7 +77,13 @@ def crawler_s3_encryption_check(cache: dict, session, awsAccountId: str, awsRegi
                                 "Url": "https://docs.aws.amazon.com/glue/latest/dg/console-security-configurations.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Analytics",
+                            "AssetService": "AWS Glue",
+                            "AssetType": "Crawler"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsGlueCrawler",
@@ -133,7 +139,13 @@ def crawler_s3_encryption_check(cache: dict, session, awsAccountId: str, awsRegi
                                 "Url": "https://docs.aws.amazon.com/glue/latest/dg/console-security-configurations.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Analytics",
+                            "AssetService": "AWS Glue",
+                            "AssetType": "Crawler"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsGlueCrawler",
@@ -220,7 +232,13 @@ def crawler_cloudwatch_encryption_check(cache: dict, session, awsAccountId: str,
                                 "Url": "https://docs.aws.amazon.com/glue/latest/dg/console-security-configurations.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Analytics",
+                            "AssetService": "AWS Glue",
+                            "AssetType": "Crawler"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsGlueCrawler",
@@ -276,7 +294,13 @@ def crawler_cloudwatch_encryption_check(cache: dict, session, awsAccountId: str,
                                 "Url": "https://docs.aws.amazon.com/glue/latest/dg/console-security-configurations.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Analytics",
+                            "AssetService": "AWS Glue",
+                            "AssetType": "Crawler"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsGlueCrawler",
@@ -363,7 +387,13 @@ def crawler_job_bookmark_encryption_check(cache: dict, session, awsAccountId: st
                                 "Url": "https://docs.aws.amazon.com/glue/latest/dg/console-security-configurations.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Analytics",
+                            "AssetService": "AWS Glue",
+                            "AssetType": "Crawler"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsGlueCrawler",
@@ -419,7 +449,13 @@ def crawler_job_bookmark_encryption_check(cache: dict, session, awsAccountId: st
                                 "Url": "https://docs.aws.amazon.com/glue/latest/dg/console-security-configurations.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Analytics",
+                            "AssetService": "AWS Glue",
+                            "AssetType": "Crawler"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsGlueCrawler",
@@ -499,7 +535,13 @@ def glue_data_catalog_encryption_check(cache: dict, session, awsAccountId: str, 
                         "Url": "https://docs.aws.amazon.com/glue/latest/dg/encrypt-glue-data-catalog.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "AWS Glue",
+                    "AssetType": "Data Catalog"
+                },
                 "Resources": [
                     {
                         "Type": "AwsGlueDataCatalog",
@@ -549,7 +591,13 @@ def glue_data_catalog_encryption_check(cache: dict, session, awsAccountId: str, 
                         "Url": "https://docs.aws.amazon.com/glue/latest/dg/encrypt-glue-data-catalog.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "AWS Glue",
+                    "AssetType": "Data Catalog"
+                },
                 "Resources": [
                     {
                         "Type": "AwsGlueDataCatalog",
@@ -618,7 +666,13 @@ def glue_data_catalog_password_encryption_check(cache: dict, session, awsAccount
                         "Url": "https://docs.aws.amazon.com/glue/latest/dg/encrypt-connection-passwords.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "AWS Glue",
+                    "AssetType": "Data Catalog"
+                },
                 "Resources": [
                     {
                         "Type": "AwsGlueDataCatalog",
@@ -668,7 +722,13 @@ def glue_data_catalog_password_encryption_check(cache: dict, session, awsAccount
                         "Url": "https://docs.aws.amazon.com/glue/latest/dg/encrypt-connection-passwords.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "AWS Glue",
+                    "AssetType": "Data Catalog"
+                },
                 "Resources": [
                     {
                         "Type": "AwsGlueDataCatalog",
@@ -731,7 +791,13 @@ def glue_data_catalog_resource_policy_check(cache: dict, session, awsAccountId: 
                     "Url": "https://docs.aws.amazon.com/glue/latest/dg/glue-resource-policies.html",
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Analytics",
+                "AssetService": "AWS Glue",
+                "AssetType": "Data Catalog"
+            },
             "Resources": [
                 {
                     "Type": "AwsGlueDataCatalog",
@@ -801,7 +867,13 @@ def glue_data_catalog_resource_policy_check(cache: dict, session, awsAccountId: 
                         "Url": "https://docs.aws.amazon.com/glue/latest/dg/glue-resource-policies.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "AWS Glue",
+                    "AssetType": "Data Catalog"
+                },
                 "Resources": [
                     {
                         "Type": "AwsGlueDataCatalog",

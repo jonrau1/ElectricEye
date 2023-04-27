@@ -107,7 +107,13 @@ def unused_function_check(cache: dict, session, awsAccountId: str, awsRegion: st
                             "Url": "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html#function-configuration",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Compute",
+                        "AssetService": "AWS Lambda",
+                        "AssetType": "Function"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsLambdaFunction",
@@ -159,7 +165,13 @@ def unused_function_check(cache: dict, session, awsAccountId: str, awsRegion: st
                             "Url": "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html#function-configuration",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Compute",
+                        "AssetService": "AWS Lambda",
+                        "AssetType": "Function"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsLambdaFunction",
@@ -223,7 +235,13 @@ def function_tracing_check(cache: dict, session, awsAccountId: str, awsRegion: s
                         "Url": "https://docs.aws.amazon.com/lambda/latest/dg/services-xray.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Compute",
+                    "AssetService": "AWS Lambda",
+                    "AssetType": "Function"
+                },
                 "Resources": [
                     {
                         "Type": "AwsLambdaFunction",
@@ -282,7 +300,13 @@ def function_tracing_check(cache: dict, session, awsAccountId: str, awsRegion: s
                         "Url": "https://docs.aws.amazon.com/lambda/latest/dg/services-xray.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Compute",
+                    "AssetService": "AWS Lambda",
+                    "AssetType": "Function"
+                },
                 "Resources": [
                     {
                         "Type": "AwsLambdaFunction",
@@ -350,7 +374,13 @@ def function_code_signer_check(cache: dict, session, awsAccountId: str, awsRegio
                         "Url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-codesigning.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Compute",
+                    "AssetService": "AWS Lambda",
+                    "AssetType": "Function"
+                },
                 "Resources": [
                     {
                         "Type": "AwsLambdaFunction",
@@ -404,7 +434,13 @@ def function_code_signer_check(cache: dict, session, awsAccountId: str, awsRegio
                         "Url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-codesigning.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Compute",
+                    "AssetService": "AWS Lambda",
+                    "AssetType": "Function"
+                },
                 "Resources": [
                     {
                         "Type": "AwsLambdaFunction",
@@ -494,7 +530,13 @@ def public_lambda_layer_check(cache: dict, session, awsAccountId: str, awsRegion
                             "Url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html#configuration-layers-permissions"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Compute",
+                        "AssetService": "AWS Lambda",
+                        "AssetType": "Layer"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsLambdaLayerVersion",
@@ -555,7 +597,13 @@ def public_lambda_layer_check(cache: dict, session, awsAccountId: str, awsRegion
                             "Url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html#configuration-layers-permissions"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Compute",
+                        "AssetService": "AWS Lambda",
+                        "AssetType": "Layer"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsLambdaLayerVersion",
@@ -642,7 +690,13 @@ def public_lambda_function_check(cache: dict, session, awsAccountId: str, awsReg
                                 "Url": "https://docs.aws.amazon.com/lambda/latest/dg/access-control-resource-based.html"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Compute",
+                            "AssetService": "AWS Lambda",
+                            "AssetType": "Function"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsLambdaFunction",
@@ -702,7 +756,13 @@ def public_lambda_function_check(cache: dict, session, awsAccountId: str, awsReg
                                 "Url": "https://docs.aws.amazon.com/lambda/latest/dg/access-control-resource-based.html"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Compute",
+                            "AssetService": "AWS Lambda",
+                            "AssetType": "Function"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsLambdaFunction",
@@ -763,7 +823,13 @@ def public_lambda_function_check(cache: dict, session, awsAccountId: str, awsReg
                             "Url": "https://docs.aws.amazon.com/lambda/latest/dg/access-control-resource-based.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Compute",
+                        "AssetService": "AWS Lambda",
+                        "AssetType": "Function"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsLambdaFunction",
@@ -804,19 +870,22 @@ def lambda_supported_runtimes_check(cache: dict, session, awsAccountId: str, aws
     """[Lambda.6] Lambda functions should use supported runtimes"""
     # Supported Runtimes
     supportedRuntimes = [
+        'nodejs18.x',
+        'nodejs16.x',
         'nodejs14.x',
-        'nodejs12.x',
+        'python3.10',
         'python3.9',
         'python3.8',
         'python3.7',
-        'python3.6',
-        'ruby2.7',
+        'ruby3.2', # doesn't exist...yet
+        'ruby2.7', # deprecates 15 NOV 2023
         'java11',
         'java8',
         'java8.al2',
         'go1.x',
+        'dotnet7',
         'dotnet6',
-        'dotnetcore3.1',
+        'dotnet5.0',
         'provided.al2',
         'provided'
     ]
@@ -848,7 +917,13 @@ def lambda_supported_runtimes_check(cache: dict, session, awsAccountId: str, aws
                         "Url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Compute",
+                    "AssetService": "AWS Lambda",
+                    "AssetType": "Function"
+                },
                 "Resources": [
                     {
                         "Type": "AwsLambdaFunction",
@@ -905,7 +980,13 @@ def lambda_supported_runtimes_check(cache: dict, session, awsAccountId: str, aws
                         "Url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Compute",
+                    "AssetService": "AWS Lambda",
+                    "AssetType": "Function"
+                },
                 "Resources": [
                     {
                         "Type": "AwsLambdaFunction",
@@ -992,7 +1073,13 @@ def lambda_vpc_ha_subnets_check(cache: dict, session, awsAccountId: str, awsRegi
                             "Url": "https://docs.aws.amazon.com/lambda/latest/dg/foundation-networking.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Compute",
+                        "AssetService": "AWS Lambda",
+                        "AssetType": "Function"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsLambdaFunction",
@@ -1049,7 +1136,13 @@ def lambda_vpc_ha_subnets_check(cache: dict, session, awsAccountId: str, awsRegi
                             "Url": "https://docs.aws.amazon.com/lambda/latest/dg/foundation-networking.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Compute",
+                        "AssetService": "AWS Lambda",
+                        "AssetType": "Function"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsLambdaFunction",
@@ -1106,7 +1199,13 @@ def lambda_vpc_ha_subnets_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/lambda/latest/dg/foundation-networking.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Compute",
+                    "AssetService": "AWS Lambda",
+                    "AssetType": "Function"
+                },
                 "Resources": [
                     {
                         "Type": "AwsLambdaFunction",

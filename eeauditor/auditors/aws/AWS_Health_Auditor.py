@@ -61,7 +61,13 @@ def open_health_abuse_events_check(cache: dict, session, awsAccountId: str, awsR
                             "Url": "https://docs.aws.amazon.com/health/latest/ug/getting-started-phd.html#event-log"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Management & Governance",
+                        "AssetService": "AWS Health",
+                        "AssetType": "Event"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsHealthEvent",
@@ -134,7 +140,13 @@ def open_health_risk_events_check(cache: dict, session, awsAccountId: str, awsRe
                             "Url": "https://docs.aws.amazon.com/health/latest/ug/getting-started-phd.html#event-log"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Management & Governance",
+                        "AssetService": "AWS Health",
+                        "AssetType": "Event"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsHealthEvent",
@@ -207,7 +219,13 @@ def open_health_security_events_check(cache: dict, session, awsAccountId: str, a
                             "Url": "https://docs.aws.amazon.com/health/latest/ug/getting-started-phd.html#event-log"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Management & Governance",
+                        "AssetService": "AWS Health",
+                        "AssetType": "Event"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsHealthEvent",

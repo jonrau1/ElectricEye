@@ -77,7 +77,13 @@ def iam_access_key_age_check(cache: dict, session, awsAccountId: str, awsRegion:
                                 "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_RotateAccessKey"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Identity & Access Management",
+                            "AssetService": "AWS IAM",
+                            "AssetType": "Access Key"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsIamAccessKey",
@@ -150,7 +156,13 @@ def iam_access_key_age_check(cache: dict, session, awsAccountId: str, awsRegion:
                                 "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_RotateAccessKey"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Identity & Access Management",
+                            "AssetService": "AWS IAM",
+                            "AssetType": "Access Key"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsIamAccessKey",
@@ -241,7 +253,13 @@ def user_permission_boundary_check(cache: dict, session, awsAccountId: str, awsR
                         "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM",
+                    "AssetType": "User"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamUser",
@@ -302,7 +320,13 @@ def user_permission_boundary_check(cache: dict, session, awsAccountId: str, awsR
                         "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM",
+                    "AssetType": "User"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamUser",
@@ -381,7 +405,13 @@ def user_mfa_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsP
                             "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Identity & Access Management",
+                        "AssetService": "AWS IAM",
+                        "AssetType": "User"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsIamUser",
@@ -450,7 +480,13 @@ def user_mfa_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsP
                             "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Identity & Access Management",
+                        "AssetService": "AWS IAM",
+                        "AssetType": "User"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsIamUser",
@@ -519,7 +555,13 @@ def user_mfa_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsP
                         "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM",
+                    "AssetType": "User"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamUser",
@@ -599,7 +641,13 @@ def user_inline_policy_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM",
+                    "AssetType": "User"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamUser",
@@ -668,7 +716,13 @@ def user_inline_policy_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM",
+                    "AssetType": "User"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamUser",
@@ -748,7 +802,13 @@ def user_direct_attached_policy_check(cache: dict, session, awsAccountId: str, a
                         "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM",
+                    "AssetType": "User"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamUser",
@@ -817,7 +877,13 @@ def user_direct_attached_policy_check(cache: dict, session, awsAccountId: str, a
                         "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM",
+                    "AssetType": "User"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamUser",
@@ -913,7 +979,13 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, session, awsAccoun
                         "Url": "https://d1.awsstatic.com/whitepapers/compliance/AWS_CIS_Foundations_Benchmark.pdf",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM",
+                    "AssetType": "Password Policy"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAccount",
@@ -978,7 +1050,13 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, session, awsAccoun
                         "Url": "https://d1.awsstatic.com/whitepapers/compliance/AWS_CIS_Foundations_Benchmark.pdf",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM",
+                    "AssetType": "Password Policy"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAccount",
@@ -1046,7 +1124,13 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, session, awsAccoun
                         "Url": "https://d1.awsstatic.com/whitepapers/compliance/AWS_CIS_Foundations_Benchmark.pdf",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM",
+                    "AssetType": "Password Policy"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAccount",
@@ -1120,7 +1204,13 @@ def server_certs_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
                     "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_server-certs.html",
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Identity & Access Management",
+                "AssetService": "AWS IAM",
+                "AssetType": "Server Certificate Storage"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
@@ -1186,7 +1276,13 @@ def server_certs_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
                     "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_server-certs.html",
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Identity & Access Management",
+                "AssetService": "AWS IAM",
+                "AssetType": "Server Certificate Storage"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
@@ -1291,7 +1387,13 @@ def iam_created_managed_policy_least_priv_check(cache: dict, session, awsAccount
                             "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_controlling.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Identity & Access Management",
+                        "AssetService": "AWS IAM",
+                        "AssetType": "Policy"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsIamPolicy",
@@ -1347,7 +1449,13 @@ def iam_created_managed_policy_least_priv_check(cache: dict, session, awsAccount
                             "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_controlling.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Identity & Access Management",
+                        "AssetService": "AWS IAM",
+                        "AssetType": "Policy"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsIamPolicy",
@@ -1403,7 +1511,13 @@ def iam_created_managed_policy_least_priv_check(cache: dict, session, awsAccount
                             "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_controlling.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Identity & Access Management",
+                        "AssetService": "AWS IAM",
+                        "AssetType": "Policy"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsIamPolicy",
@@ -1510,7 +1624,13 @@ def iam_user_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                                 "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Identity & Access Management",
+                            "AssetService": "AWS IAM",
+                            "AssetType": "User"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsIamUser",
@@ -1571,7 +1691,13 @@ def iam_user_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                                 "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Identity & Access Management",
+                            "AssetService": "AWS IAM",
+                            "AssetType": "User"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsIamUser",
@@ -1632,7 +1758,13 @@ def iam_user_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                                 "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Identity & Access Management",
+                            "AssetService": "AWS IAM",
+                            "AssetType": "User"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsIamUser",
@@ -1745,7 +1877,13 @@ def iam_group_policy_least_priv_check(cache: dict, session, awsAccountId: str, a
                                 "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Identity & Access Management",
+                            "AssetService": "AWS IAM",
+                            "AssetType": "Group"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsIamGroup",
@@ -1806,7 +1944,13 @@ def iam_group_policy_least_priv_check(cache: dict, session, awsAccountId: str, a
                                 "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Identity & Access Management",
+                            "AssetService": "AWS IAM",
+                            "AssetType": "Group"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsIamGroup",
@@ -1867,7 +2011,13 @@ def iam_group_policy_least_priv_check(cache: dict, session, awsAccountId: str, a
                                 "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Identity & Access Management",
+                            "AssetService": "AWS IAM",
+                            "AssetType": "Group"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsIamGroup",
@@ -1980,7 +2130,13 @@ def iam_role_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                                 "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Identity & Access Management",
+                            "AssetService": "AWS IAM",
+                            "AssetType": "Role"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsIamRole",
@@ -2041,7 +2197,13 @@ def iam_role_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                                 "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Identity & Access Management",
+                            "AssetService": "AWS IAM",
+                            "AssetType": "Role"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsIamRole",
@@ -2102,7 +2264,13 @@ def iam_role_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                                 "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Identity & Access Management",
+                            "AssetService": "AWS IAM",
+                            "AssetType": "Role"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsIamRole",

@@ -71,7 +71,13 @@ def iamra_self_signed_trust_anchor_check(cache: dict, session, awsAccountId: str
                         "Url": "https://docs.aws.amazon.com/rolesanywhere/latest/userguide/getting-started.html#getting-started-step1"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM Roles Anywhere",
+                    "AssetType": "Trust Anchor"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamRolesAnywhereTrustAnchor",
@@ -128,7 +134,13 @@ def iamra_self_signed_trust_anchor_check(cache: dict, session, awsAccountId: str
                         "Url": "https://docs.aws.amazon.com/rolesanywhere/latest/userguide/getting-started.html#getting-started-step1"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM Roles Anywhere",
+                    "AssetType": "Trust Anchor"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamRolesAnywhereTrustAnchor",
@@ -203,7 +215,13 @@ def iamra_trust_anchor_crl_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://docs.aws.amazon.com/rolesanywhere/latest/userguide/trust-model.html#revocation"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM Roles Anywhere",
+                    "AssetType": "Trust Anchor"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamRolesAnywhereTrustAnchor",
@@ -258,7 +276,13 @@ def iamra_trust_anchor_crl_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://docs.aws.amazon.com/rolesanywhere/latest/userguide/trust-model.html#revocation"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM Roles Anywhere",
+                    "AssetType": "Trust Anchor"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamRolesAnywhereTrustAnchor",
@@ -330,7 +354,13 @@ def iamra_profiles_session_policy_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#policies_session"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM Roles Anywhere",
+                    "AssetType": "Profile"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamRolesAnywhereProfile",
@@ -392,7 +422,13 @@ def iamra_profiles_session_policy_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#policies_session"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM Roles Anywhere",
+                    "AssetType": "Profile"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamRolesAnywhereProfile",
@@ -465,7 +501,13 @@ def iamra_profiles_managed_policy_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#policies_session"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM Roles Anywhere",
+                    "AssetType": "Profile"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamRolesAnywhereProfile",
@@ -527,7 +569,13 @@ def iamra_profiles_managed_policy_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#policies_session"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM Roles Anywhere",
+                    "AssetType": "Profile"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamRolesAnywhereProfile",
@@ -611,7 +659,13 @@ def iamra_role_trust_policy_condition_check(cache: dict, session, awsAccountId: 
                                     "Url": "https://docs.aws.amazon.com/rolesanywhere/latest/userguide/workload-identities.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Identity & Access Management",
+                                "AssetService": "AWS IAM",
+                                "AssetType": "Role"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsIamRole",
@@ -671,7 +725,13 @@ def iamra_role_trust_policy_condition_check(cache: dict, session, awsAccountId: 
                                     "Url": "https://docs.aws.amazon.com/rolesanywhere/latest/userguide/workload-identities.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Identity & Access Management",
+                                "AssetService": "AWS IAM",
+                                "AssetType": "Role"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsIamRole",
