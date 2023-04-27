@@ -73,7 +73,13 @@ def license_manager_hard_count_check(cache: dict, session, awsAccountId: str, aw
                                     "Url": "https://docs.aws.amazon.com/license-manager/latest/userguide/config-overview.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Management & Governance",
+                                "AssetService": "AWS License Manager",
+                                "AssetType": "License Configuration"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsLicenseManagerLicenseConfiguration",
@@ -130,7 +136,13 @@ def license_manager_hard_count_check(cache: dict, session, awsAccountId: str, aw
                                     "Url": "https://docs.aws.amazon.com/license-manager/latest/userguide/config-overview.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Management & Governance",
+                                "AssetService": "AWS License Manager",
+                                "AssetType": "License Configuration"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsLicenseManagerLicenseConfiguration",
@@ -217,7 +229,13 @@ def license_manager_disassociation_check(cache: dict, session, awsAccountId: str
                                     "Url": "https://docs.aws.amazon.com/license-manager/latest/userguide/license-rules.html#ami-disassociation",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Management & Governance",
+                                "AssetService": "AWS License Manager",
+                                "AssetType": "License Configuration"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsLicenseManagerLicenseConfiguration",
@@ -274,7 +292,13 @@ def license_manager_disassociation_check(cache: dict, session, awsAccountId: str
                                     "Url": "https://docs.aws.amazon.com/license-manager/latest/userguide/license-rules.html#ami-disassociation",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Management & Governance",
+                                "AssetService": "AWS License Manager",
+                                "AssetType": "License Configuration"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsLicenseManagerLicenseConfiguration",

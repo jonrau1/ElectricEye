@@ -72,7 +72,13 @@ def memorydb_cluster_tls_encryption_check(cache: dict, session, awsAccountId: st
                         "Url": "https://docs.aws.amazon.com/memorydb/latest/devguide/in-transit-encryption.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "AWS MemoryDB for Redis",
+                    "AssetType": "Database Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsMemoryDBCluster",
@@ -137,7 +143,13 @@ def memorydb_cluster_tls_encryption_check(cache: dict, session, awsAccountId: st
                         "Url": "https://docs.aws.amazon.com/memorydb/latest/devguide/in-transit-encryption.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "AWS MemoryDB for Redis",
+                    "AssetType": "Database Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsMemoryDBCluster",
@@ -223,7 +235,13 @@ def memorydb_cluster_kms_cmk_encryption_check(cache: dict, session, awsAccountId
                         "Url": "https://docs.aws.amazon.com/memorydb/latest/devguide/at-rest-encryption.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "AWS MemoryDB for Redis",
+                    "AssetType": "Database Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsMemoryDBCluster",
@@ -284,7 +302,13 @@ def memorydb_cluster_kms_cmk_encryption_check(cache: dict, session, awsAccountId
                         "Url": "https://docs.aws.amazon.com/memorydb/latest/devguide/at-rest-encryption.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "AWS MemoryDB for Redis",
+                    "AssetType": "Database Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsMemoryDBCluster",
@@ -359,7 +383,13 @@ def memorydb_auto_minor_version_update_check(cache: dict, session, awsAccountId:
                         "Url": "https://docs.aws.amazon.com/memorydb/latest/devguide/engine-versions.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "AWS MemoryDB for Redis",
+                    "AssetType": "Database Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsMemoryDBCluster",
@@ -420,7 +450,13 @@ def memorydb_auto_minor_version_update_check(cache: dict, session, awsAccountId:
                         "Url": "https://docs.aws.amazon.com/memorydb/latest/devguide/engine-versions.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "AWS MemoryDB for Redis",
+                    "AssetType": "Database Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsMemoryDBCluster",
@@ -501,7 +537,13 @@ def memorydb_sns_notification_tracking_check(cache: dict, session, awsAccountId:
                         "Url": "https://docs.aws.amazon.com/memorydb/latest/devguide/memorydbsns.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "AWS MemoryDB for Redis",
+                    "AssetType": "Database Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsMemoryDBCluster",
@@ -562,7 +604,13 @@ def memorydb_sns_notification_tracking_check(cache: dict, session, awsAccountId:
                         "Url": "https://docs.aws.amazon.com/memorydb/latest/devguide/memorydbsns.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "AWS MemoryDB for Redis",
+                    "AssetType": "Database Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsMemoryDBCluster",
@@ -650,7 +698,13 @@ def memorydb_user_admin_check(cache: dict, session, awsAccountId: str, awsRegion
                                 "Url": "https://docs.aws.amazon.com/memorydb/latest/devguide/clusters.acls.html#access-string"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Identity & Access Management",
+                            "AssetService": "AWS MemoryDB for Redis",
+                            "AssetType": "User"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsMemoryDBClusterUser",
@@ -729,7 +783,13 @@ def memorydb_user_admin_check(cache: dict, session, awsAccountId: str, awsRegion
                                 "Url": "https://docs.aws.amazon.com/memorydb/latest/devguide/clusters.acls.html#access-string"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Identity & Access Management",
+                            "AssetService": "AWS MemoryDB for Redis",
+                            "AssetType": "User"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsMemoryDBClusterUser",
@@ -833,7 +893,13 @@ def memorydb_user_password_check(cache: dict, session, awsAccountId: str, awsReg
                                 "Url": "https://docs.aws.amazon.com/memorydb/latest/devguide/clusters.acls.html#rbac-using"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Identity & Access Management",
+                            "AssetService": "AWS MemoryDB for Redis",
+                            "AssetType": "User"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsMemoryDBClusterUser",
@@ -912,7 +978,13 @@ def memorydb_user_password_check(cache: dict, session, awsAccountId: str, awsReg
                                 "Url": "https://docs.aws.amazon.com/memorydb/latest/devguide/clusters.acls.html#rbac-using"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Identity & Access Management",
+                            "AssetService": "AWS MemoryDB for Redis",
+                            "AssetType": "User"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsMemoryDBClusterUser",
