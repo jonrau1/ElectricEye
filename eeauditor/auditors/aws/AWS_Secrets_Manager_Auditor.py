@@ -65,7 +65,13 @@ def secret_age_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                         "Url": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS Secrets Manager",
+                    "AssetType": "Secret"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSecretsManagerSecret",
@@ -129,7 +135,13 @@ def secret_age_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                         "Url": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS Secrets Manager",
+                    "AssetType": "Secret"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSecretsManagerSecret",
@@ -205,7 +217,13 @@ def secret_changed_in_last_90_check(cache: dict, session, awsAccountId: str, aws
                         "Url": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS Secrets Manager",
+                    "AssetType": "Secret"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSecretsManagerSecret",
@@ -270,7 +288,13 @@ def secret_changed_in_last_90_check(cache: dict, session, awsAccountId: str, aws
                         "Url": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS Secrets Manager",
+                    "AssetType": "Secret"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSecretsManagerSecret",

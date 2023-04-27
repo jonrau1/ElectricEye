@@ -103,7 +103,13 @@ def ssm_self_owned_document_public_share_check(cache: dict, session, awsAccountI
                         "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-how-to-share.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS Systems Manager",
+                    "AssetType": "Document"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSsmDocument",
@@ -164,7 +170,13 @@ def ssm_self_owned_document_public_share_check(cache: dict, session, awsAccountI
                         "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-how-to-share.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS Systems Manager",
+                    "AssetType": "Document"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSsmDocument",
@@ -228,7 +240,13 @@ def ssm_update_ssm_agent_association_check(cache: dict, session, awsAccountId: s
                     "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-best-practices.html"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Management & Governance",
+                "AssetService": "AWS Systems Manager",
+                "AssetType": "Association"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
@@ -284,7 +302,13 @@ def ssm_update_ssm_agent_association_check(cache: dict, session, awsAccountId: s
                         "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-best-practices.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS Systems Manager",
+                    "AssetType": "Association"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAccount",
@@ -351,7 +375,13 @@ def ssm_update_ssm_agent_association_check(cache: dict, session, awsAccountId: s
                                             "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-best-practices.html"
                                         }
                                     },
-                                    "ProductFields": {"Product Name": "ElectricEye"},
+                                    "ProductFields": {
+                                        "ProductName": "ElectricEye",
+                                        "Provider": "AWS",
+                                        "AssetClass": "Management & Governance",
+                                        "AssetService": "AWS Systems Manager",
+                                        "AssetType": "Association"
+                                    },
                                     "Resources": [
                                         {
                                             "Type": "AwsAccount",
@@ -403,7 +433,13 @@ def ssm_update_ssm_agent_association_check(cache: dict, session, awsAccountId: s
                                             "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-best-practices.html"
                                         }
                                     },
-                                    "ProductFields": {"Product Name": "ElectricEye"},
+                                    "ProductFields": {
+                                        "ProductName": "ElectricEye",
+                                        "Provider": "AWS",
+                                        "AssetClass": "Management & Governance",
+                                        "AssetService": "AWS Systems Manager",
+                                        "AssetType": "Association"
+                                    },
                                     "Resources": [
                                         {
                                             "Type": "AwsAccount",
@@ -461,7 +497,13 @@ def ssm_patch_instances_association_check(cache: dict, session, awsAccountId: st
                     "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-best-practices.html"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Management & Governance",
+                "AssetService": "AWS Systems Manager",
+                "AssetType": "Association"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
@@ -513,7 +555,13 @@ def ssm_patch_instances_association_check(cache: dict, session, awsAccountId: st
                         "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-best-practices.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS Systems Manager",
+                    "AssetType": "Association"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAccount",
@@ -576,7 +624,13 @@ def ssm_patch_instances_association_check(cache: dict, session, awsAccountId: st
                                             "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-best-practices.html"
                                         }
                                     },
-                                    "ProductFields": {"Product Name": "ElectricEye"},
+                                    "ProductFields": {
+                                        "ProductName": "ElectricEye",
+                                        "Provider": "AWS",
+                                        "AssetClass": "Management & Governance",
+                                        "AssetService": "AWS Systems Manager",
+                                        "AssetType": "Association"
+                                    },
                                     "Resources": [
                                         {
                                             "Type": "AwsAccount",
@@ -624,7 +678,13 @@ def ssm_patch_instances_association_check(cache: dict, session, awsAccountId: st
                                             "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-best-practices.html"
                                         }
                                     },
-                                    "ProductFields": {"Product Name": "ElectricEye"},
+                                    "ProductFields": {
+                                        "ProductName": "ElectricEye",
+                                        "Provider": "AWS",
+                                        "AssetClass": "Management & Governance",
+                                        "AssetService": "AWS Systems Manager",
+                                        "AssetType": "Association"
+                                    },
                                     "Resources": [
                                         {
                                             "Type": "AwsAccount",
@@ -678,7 +738,13 @@ def ssm_gather_software_inventory_association_check(cache: dict, session, awsAcc
                     "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-best-practices.html"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Management & Governance",
+                "AssetService": "AWS Systems Manager",
+                "AssetType": "Association"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
@@ -730,7 +796,13 @@ def ssm_gather_software_inventory_association_check(cache: dict, session, awsAcc
                         "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-best-practices.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS Systems Manager",
+                    "AssetType": "Association"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAccount",
@@ -793,7 +865,13 @@ def ssm_gather_software_inventory_association_check(cache: dict, session, awsAcc
                                             "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-best-practices.html"
                                         }
                                     },
-                                    "ProductFields": {"Product Name": "ElectricEye"},
+                                    "ProductFields": {
+                                        "ProductName": "ElectricEye",
+                                        "Provider": "AWS",
+                                        "AssetClass": "Management & Governance",
+                                        "AssetService": "AWS Systems Manager",
+                                        "AssetType": "Association"
+                                    },
                                     "Resources": [
                                         {
                                             "Type": "AwsAccount",
@@ -841,7 +919,13 @@ def ssm_gather_software_inventory_association_check(cache: dict, session, awsAcc
                                             "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-best-practices.html"
                                         }
                                     },
-                                    "ProductFields": {"Product Name": "ElectricEye"},
+                                    "ProductFields": {
+                                        "ProductName": "ElectricEye",
+                                        "Provider": "AWS",
+                                        "AssetClass": "Management & Governance",
+                                        "AssetService": "AWS Systems Manager",
+                                        "AssetType": "Association"
+                                    },
                                     "Resources": [
                                         {
                                             "Type": "AwsAccount",

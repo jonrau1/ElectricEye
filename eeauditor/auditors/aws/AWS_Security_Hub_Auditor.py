@@ -82,7 +82,13 @@ def high_critical_findings(cache: dict, session, awsAccountId: str, awsRegion: s
                     "Url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings.html"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Security Services",
+                "AssetService": "AWS Security Hub",
+                "AssetType": "Findings"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
@@ -131,7 +137,13 @@ def high_critical_findings(cache: dict, session, awsAccountId: str, awsRegion: s
                     "Url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings.html"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Security Services",
+                "AssetService": "AWS Security Hub",
+                "AssetType": "Findings"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",

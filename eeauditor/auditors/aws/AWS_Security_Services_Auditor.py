@@ -57,7 +57,13 @@ def iam_access_analyzer_detector_check(cache: dict, session, awsAccountId: str, 
                     "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-getting-started.html#access-analyzer-enabling",
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Management & Governance",
+                "AssetService": "AWS IAM Access Analyzer",
+                "AssetType": "Account Activation"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
@@ -107,7 +113,13 @@ def iam_access_analyzer_detector_check(cache: dict, session, awsAccountId: str, 
                     "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-getting-started.html#access-analyzer-enabling",
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Management & Governance",
+                "AssetService": "AWS IAM Access Analyzer",
+                "AssetType": "Account Activation"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
@@ -171,7 +183,13 @@ def guard_duty_detector_check(cache: dict, session, awsAccountId: str, awsRegion
                     "Url": "https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_settingup.html",
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Amazon GuardDuty",
+                "AssetType": "Account Activation"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
@@ -221,7 +239,13 @@ def guard_duty_detector_check(cache: dict, session, awsAccountId: str, awsRegion
                     "Url": "https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_settingup.html",
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Management & Governance",
+                "AssetService": "Amazon GuardDuty",
+                "AssetType": "Account Activation"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
@@ -287,7 +311,13 @@ def detective_graph_check(cache: dict, session, awsAccountId: str, awsRegion: st
                         "Url": "https://docs.aws.amazon.com/detective/latest/adminguide/detective-setup.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "Amazon Detective",
+                    "AssetType": "Account Activation"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAccount",
@@ -337,7 +367,13 @@ def detective_graph_check(cache: dict, session, awsAccountId: str, awsRegion: st
                         "Url": "https://docs.aws.amazon.com/detective/latest/adminguide/detective-setup.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "Amazon Detective",
+                    "AssetType": "Account Activation"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAccount",
@@ -407,7 +443,13 @@ def macie_in_use_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
                         "Url": "https://docs.aws.amazon.com/detective/latest/adminguide/detective-setup.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "Amazon Macie",
+                    "AssetType": "Account Activation"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAccount",
@@ -459,7 +501,13 @@ def macie_in_use_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
                         "Url": "https://docs.aws.amazon.com/macie/latest/user/what-is-macie.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "Amazon Macie",
+                    "AssetType": "Account Activation"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAccount",
@@ -499,7 +547,7 @@ def wafv2_regional_in_use_check(cache: dict, session, awsAccountId: str, awsRegi
         # unique ID
         generatorUuid = str(uuid.uuid4())
         # this is a failing check
-        if str(wafv2.list_web_acls(Scope='REGIONAL')["WebACLs"]) == "[]":
+        if not wafv2.list_web_acls(Scope='REGIONAL')["WebACLs"]:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": awsAccountId + awsRegion + "/security-services-wafv2-regional-in-use-check",
@@ -524,7 +572,13 @@ def wafv2_regional_in_use_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/detective/latest/adminguide/detective-setup.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS WAFv2 Regional",
+                    "AssetType": "Account Activation"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAccount",
@@ -576,7 +630,13 @@ def wafv2_regional_in_use_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/detective/latest/adminguide/detective-setup.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS WAFv2 Regional",
+                    "AssetType": "Account Activation"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAccount",
@@ -641,7 +701,13 @@ def wafv2_global_in_use_check(cache: dict, session, awsAccountId: str, awsRegion
                         "Url": "https://docs.aws.amazon.com/detective/latest/adminguide/detective-setup.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS WAFv2 Global",
+                    "AssetType": "Account Activation"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAccount",
@@ -693,7 +759,13 @@ def wafv2_global_in_use_check(cache: dict, session, awsAccountId: str, awsRegion
                         "Url": "https://docs.aws.amazon.com/detective/latest/adminguide/detective-setup.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS WAFv2 Global",
+                    "AssetType": "Account Activation"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAccount",

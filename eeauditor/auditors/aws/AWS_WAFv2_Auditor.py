@@ -75,7 +75,13 @@ def wafv2_web_acl_metrics_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/monitoring-cloudwatch.html#metrics_dimensions"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS WAFv2 Regional",
+                    "AssetType": "Web Access Control List"
+                },
                 "Resources": [
                     {
                         "Type": "AwsWafWebAcl",
@@ -132,7 +138,13 @@ def wafv2_web_acl_metrics_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/monitoring-cloudwatch.html#metrics_dimensions"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS WAFv2 Regional",
+                    "AssetType": "Web Access Control List"
+                },
                 "Resources": [
                     {
                         "Type": "AwsWafWebAcl",
@@ -202,7 +214,13 @@ def wafv2_web_acl_sampling_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/web-acl-testing.html#web-acl-testing-view-sample"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS WAFv2 Regional",
+                    "AssetType": "Web Access Control List"
+                },
                 "Resources": [
                     {
                         "Type": "AwsWafWebAcl",
@@ -259,7 +277,13 @@ def wafv2_web_acl_sampling_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/web-acl-testing.html#web-acl-testing-view-sample"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS WAFv2 Regional",
+                    "AssetType": "Web Access Control List"
+                },
                 "Resources": [
                     {
                         "Type": "AwsWafWebAcl",
@@ -328,7 +352,13 @@ def wafv2_web_acl_logging_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/logging.html#logging-management"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS WAFv2 Regional",
+                    "AssetType": "Web Access Control List"
+                },
                 "Resources": [
                     {
                         "Type": "AwsWafWebAcl",
@@ -387,7 +417,13 @@ def wafv2_web_acl_logging_check(cache: dict, session, awsAccountId: str, awsRegi
                             "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/logging.html#logging-management"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Security Services",
+                        "AssetService": "AWS WAFv2 Regional",
+                        "AssetType": "Web Access Control List"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsWafWebAcl",
@@ -461,7 +497,13 @@ def wafv2_web_acl_global_metrics_check(cache: dict, session, awsAccountId: str, 
                         "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/monitoring-cloudwatch.html#metrics_dimensions"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS WAFv2 Global",
+                    "AssetType": "Web Access Control List"
+                },
                 "Resources": [
                     {
                         "Type": "AwsWafWebAcl",
@@ -518,7 +560,13 @@ def wafv2_web_acl_global_metrics_check(cache: dict, session, awsAccountId: str, 
                         "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/monitoring-cloudwatch.html#metrics_dimensions"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS WAFv2 Global",
+                    "AssetType": "Web Access Control List"
+                },
                 "Resources": [
                     {
                         "Type": "AwsWafWebAcl",
@@ -588,7 +636,13 @@ def wafv2_web_acl_global_sampling_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/web-acl-testing.html#web-acl-testing-view-sample"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS WAFv2 Global",
+                    "AssetType": "Web Access Control List"
+                },
                 "Resources": [
                     {
                         "Type": "AwsWafWebAcl",
@@ -645,7 +699,13 @@ def wafv2_web_acl_global_sampling_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/web-acl-testing.html#web-acl-testing-view-sample"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS WAFv2 Global",
+                    "AssetType": "Web Access Control List"
+                },
                 "Resources": [
                     {
                         "Type": "AwsWafWebAcl",
@@ -714,7 +774,13 @@ def wafv2_web_acl_global_logging_check(cache: dict, session, awsAccountId: str, 
                         "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/logging.html#logging-management"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS WAFv2 Global",
+                    "AssetType": "Web Access Control List"
+                },
                 "Resources": [
                     {
                         "Type": "AwsWafWebAcl",
@@ -773,7 +839,13 @@ def wafv2_web_acl_global_logging_check(cache: dict, session, awsAccountId: str, 
                             "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/logging.html#logging-management"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Security Services",
+                        "AssetService": "AWS WAFv2 Global",
+                        "AssetType": "Web Access Control List"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsWafWebAcl",

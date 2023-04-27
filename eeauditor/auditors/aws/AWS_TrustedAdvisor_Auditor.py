@@ -66,7 +66,13 @@ def trusted_advisor_failing_root_mfa_check(cache: dict, session, awsAccountId: s
                                 "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa.html"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Management & Governance",
+                            "AssetService": "AWS Trusted Advisor",
+                            "AssetType": "Check"
+                        },
                         "SourceUrl": "https://console.aws.amazon.com/trustedadvisor/home?region=us-east-1#/category/security",
                         "Resources": [
                             {
@@ -133,7 +139,13 @@ def trusted_advisor_failing_root_mfa_check(cache: dict, session, awsAccountId: s
                                 "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa.html"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Management & Governance",
+                            "AssetService": "AWS Trusted Advisor",
+                            "AssetType": "Check"
+                        },
                         "SourceUrl": "https://console.aws.amazon.com/trustedadvisor/home?region=us-east-1#/category/security",
                         "Resources": [
                             {
@@ -218,7 +230,13 @@ def trusted_advisor_failing_elb_listener_security_check(cache: dict, session, aw
                                 "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-listener-config.html#elb-listener-protocols"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Management & Governance",
+                            "AssetService": "AWS Trusted Advisor",
+                            "AssetType": "Check"
+                        },
                         "SourceUrl": "https://console.aws.amazon.com/trustedadvisor/home?region=us-east-1#/category/security",
                         "Resources": [
                             {
@@ -272,7 +290,13 @@ def trusted_advisor_failing_elb_listener_security_check(cache: dict, session, aw
                                 "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-listener-config.html#elb-listener-protocols"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Management & Governance",
+                            "AssetService": "AWS Trusted Advisor",
+                            "AssetType": "Check"
+                        },
                         "SourceUrl": "https://console.aws.amazon.com/trustedadvisor/home?region=us-east-1#/category/security",
                         "Resources": [
                             {
@@ -344,7 +368,13 @@ def trusted_advisor_failing_cloudfront_ssl_cert_iam_certificate_store_check(cach
                                 "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https.html"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Management & Governance",
+                            "AssetService": "AWS Trusted Advisor",
+                            "AssetType": "Check"
+                        },
                         "SourceUrl": "https://console.aws.amazon.com/trustedadvisor/home?region=us-east-1#/category/security",
                         "Resources": [
                             {
@@ -398,7 +428,13 @@ def trusted_advisor_failing_cloudfront_ssl_cert_iam_certificate_store_check(cach
                                 "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https.html"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Management & Governance",
+                            "AssetService": "AWS Trusted Advisor",
+                            "AssetType": "Check"
+                        },
                         "SourceUrl": "https://console.aws.amazon.com/trustedadvisor/home?region=us-east-1#/category/security",
                         "Resources": [
                             {
@@ -470,7 +506,13 @@ def trusted_advisor_failing_cloudfront_ssl_cert_on_origin_check(cache: dict, ses
                                 "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https.html"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Management & Governance",
+                            "AssetService": "AWS Trusted Advisor",
+                            "AssetType": "Check"
+                        },
                         "SourceUrl": "https://console.aws.amazon.com/trustedadvisor/home?region=us-east-1#/category/security",
                         "Resources": [
                             {
@@ -524,7 +566,13 @@ def trusted_advisor_failing_cloudfront_ssl_cert_on_origin_check(cache: dict, ses
                                 "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https.html"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Management & Governance",
+                            "AssetService": "AWS Trusted Advisor",
+                            "AssetType": "Check"
+                        },
                         "SourceUrl": "https://console.aws.amazon.com/trustedadvisor/home?region=us-east-1#/category/security",
                         "Resources": [
                             {
@@ -599,7 +647,13 @@ def trusted_advisor_failing_exposed_access_keys_check(cache: dict, session, awsA
                                 "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https.html"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Management & Governance",
+                            "AssetService": "AWS Trusted Advisor",
+                            "AssetType": "Check"
+                        },
                         "SourceUrl": "https://console.aws.amazon.com/trustedadvisor/home?region=us-east-1#/category/security",
                         "Resources": [
                             {
@@ -669,7 +723,13 @@ def trusted_advisor_failing_exposed_access_keys_check(cache: dict, session, awsA
                                 "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https.html"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Management & Governance",
+                            "AssetService": "AWS Trusted Advisor",
+                            "AssetType": "Check"
+                        },
                         "SourceUrl": "https://console.aws.amazon.com/trustedadvisor/home?region=us-east-1#/category/security",
                         "Resources": [
                             {
