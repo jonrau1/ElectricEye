@@ -68,7 +68,13 @@ def directory_service_radius_check(cache: dict, session, awsAccountId: str, awsR
                             "Url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/ms_ad_getting_started_prereqs.html#prereq_mfa_ad",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Identity & Access Management",
+                        "AssetService": "AWS Directory Service",
+                        "AssetType": "Directory"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsDirectoryServiceDirectory",
@@ -127,7 +133,13 @@ def directory_service_radius_check(cache: dict, session, awsAccountId: str, awsR
                             "Url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/ms_ad_getting_started_prereqs.html#prereq_mfa_ad",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Identity & Access Management",
+                        "AssetService": "AWS Directory Service",
+                        "AssetType": "Directory"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsDirectoryServiceDirectory",
@@ -202,7 +214,13 @@ def directory_service_cloudwatch_logs_check(cache: dict, session, awsAccountId: 
                         "Url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/ms_ad_enable_log_forwarding.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS Directory Service",
+                    "AssetType": "Directory"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDirectoryServiceDirectory",
@@ -254,7 +272,13 @@ def directory_service_cloudwatch_logs_check(cache: dict, session, awsAccountId: 
                         "Url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/ms_ad_enable_log_forwarding.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS Directory Service",
+                    "AssetType": "Directory"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDirectoryServiceDirectory",

@@ -73,7 +73,13 @@ def route53_hosted_zone_query_logging_check(cache: dict, session, awsAccountId: 
                         "Url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/query-logs.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Route53",
+                    "AssetType": "Hosted Zone"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRoute53HostedZone",
@@ -130,7 +136,13 @@ def route53_hosted_zone_query_logging_check(cache: dict, session, awsAccountId: 
                         "Url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/query-logs.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Route53",
+                    "AssetType": "Hosted Zone"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRoute53HostedZone",
@@ -202,7 +214,13 @@ def route53_hosted_zone_traffic_policy_check(cache: dict, session, awsAccountId:
                         "Url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/traffic-flow.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Route53",
+                    "AssetType": "Hosted Zone"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRoute53HostedZone",
@@ -259,7 +277,13 @@ def route53_hosted_zone_traffic_policy_check(cache: dict, session, awsAccountId:
                         "Url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/traffic-flow.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Route53",
+                    "AssetType": "Hosted Zone"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRoute53HostedZone",

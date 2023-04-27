@@ -73,7 +73,13 @@ def vpc_route53_query_logging_association_check(cache: dict, session, awsAccount
                         "Url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-query-logging-configurations-managing.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Virtual Private Cloud",
+                    "AssetType": "Virtual Private Cloud"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Vpc",
@@ -127,7 +133,13 @@ def vpc_route53_query_logging_association_check(cache: dict, session, awsAccount
                         "Url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-query-logging-configurations-managing.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Virtual Private Cloud",
+                    "AssetType": "Virtual Private Cloud"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Vpc",
@@ -197,7 +209,13 @@ def vpc_route53_resolver_firewall_association_check(cache: dict, session, awsAcc
                         "Url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-dns-firewall-getting-started.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Virtual Private Cloud",
+                    "AssetType": "Virtual Private Cloud"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Vpc",
@@ -250,7 +268,13 @@ def vpc_route53_resolver_firewall_association_check(cache: dict, session, awsAcc
                         "Url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-dns-firewall-getting-started.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Virtual Private Cloud",
+                    "AssetType": "Virtual Private Cloud"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Vpc",
@@ -322,7 +346,13 @@ def vpc_route53_resolver_dnssec_validation_check(cache: dict, session, awsAccoun
                         "Url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-dnssec-validation.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Virtual Private Cloud",
+                    "AssetType": "Virtual Private Cloud"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Vpc",
@@ -377,7 +407,13 @@ def vpc_route53_resolver_dnssec_validation_check(cache: dict, session, awsAccoun
                         "Url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-dnssec-validation.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Virtual Private Cloud",
+                    "AssetType": "Virtual Private Cloud"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Vpc",
@@ -454,7 +490,13 @@ def vpc_route53_resolver_firewall_fail_open_check(cache: dict, session, awsAccou
                             "Url": "hhttps://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-dns-firewall-vpc-configuration.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon Virtual Private Cloud",
+                        "AssetType": "Virtual Private Cloud"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Vpc",
@@ -508,7 +550,13 @@ def vpc_route53_resolver_firewall_fail_open_check(cache: dict, session, awsAccou
                             "Url": "hhttps://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-dns-firewall-vpc-configuration.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon Virtual Private Cloud",
+                        "AssetType": "Virtual Private Cloud"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Vpc",

@@ -69,7 +69,7 @@ def efs_filesys_encryption_check(cache: dict, session, awsAccountId: str, awsReg
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
                     "AssetClass": "Storage",
-                    "AssetService": "Amazon Elastic File System (EFS)",
+                    "AssetService": "Amazon Elastic File System",
                     "AssetType": "File System"
                 },
                 "Resources": [
@@ -124,7 +124,7 @@ def efs_filesys_encryption_check(cache: dict, session, awsAccountId: str, awsReg
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
                     "AssetClass": "Storage",
-                    "AssetService": "Amazon Elastic File System (EFS)",
+                    "AssetService": "Amazon Elastic File System",
                     "AssetType": "File System"
                 },
                 "Resources": [
@@ -190,7 +190,7 @@ def efs_filesys_policy_check(cache: dict, session, awsAccountId: str, awsRegion:
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
                     "AssetClass": "Storage",
-                    "AssetService": "Amazon Elastic File System (EFS)",
+                    "AssetService": "Amazon Elastic File System",
                     "AssetType": "File System"
                 },
                 "Resources": [
@@ -249,7 +249,7 @@ def efs_filesys_policy_check(cache: dict, session, awsAccountId: str, awsRegion:
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
                     "AssetClass": "Storage",
-                    "AssetService": "Amazon Elastic File System (EFS)",
+                    "AssetService": "Amazon Elastic File System",
                     "AssetType": "File System"
                 },
                 "Resources": [

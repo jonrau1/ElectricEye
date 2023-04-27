@@ -71,7 +71,13 @@ def codebuild_artifact_encryption_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/create-project.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeBuild",
+                    "AssetType": "Project"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeBuildProject",
@@ -123,7 +129,13 @@ def codebuild_artifact_encryption_check(cache: dict, session, awsAccountId: str,
                             "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/create-project.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Developer Tools",
+                        "AssetService": "AWS CodeBuild",
+                        "AssetType": "Project"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCodeBuildProject",
@@ -173,7 +185,13 @@ def codebuild_artifact_encryption_check(cache: dict, session, awsAccountId: str,
                             "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/create-project.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Developer Tools",
+                        "AssetService": "AWS CodeBuild",
+                        "AssetType": "Project"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCodeBuildProject",
@@ -236,7 +254,13 @@ def codebuild_insecure_ssl_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/troubleshooting.html#troubleshooting-self-signed-certificate",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeBuild",
+                    "AssetType": "Project"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeBuildProject",
@@ -293,7 +317,13 @@ def codebuild_insecure_ssl_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/troubleshooting.html#troubleshooting-self-signed-certificate",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeBuild",
+                    "AssetType": "Project"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeBuildProject",
@@ -350,7 +380,13 @@ def codebuild_insecure_ssl_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/troubleshooting.html#troubleshooting-self-signed-certificate",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeBuild",
+                    "AssetType": "Project"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeBuildProject",
@@ -416,7 +452,13 @@ def codebuild_plaintext_env_var_check(cache: dict, session, awsAccountId: str, a
                         "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec-ref-syntax",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeBuild",
+                    "AssetType": "Project"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeBuildProject",
@@ -488,7 +530,13 @@ def codebuild_plaintext_env_var_check(cache: dict, session, awsAccountId: str, a
                                 "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec-ref-syntax",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Developer Tools",
+                            "AssetService": "AWS CodeBuild",
+                            "AssetType": "Project"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsCodeBuildProject",
@@ -557,7 +605,13 @@ def codebuild_plaintext_env_var_check(cache: dict, session, awsAccountId: str, a
                                 "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec-ref-syntax",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Developer Tools",
+                            "AssetService": "AWS CodeBuild",
+                            "AssetType": "Project"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsCodeBuildProject",
@@ -637,7 +691,13 @@ def codebuild_s3_logging_encryption_check(cache: dict, session, awsAccountId: st
                             "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/change-project.html#change-project-console",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Developer Tools",
+                        "AssetService": "AWS CodeBuild",
+                        "AssetType": "Project"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCodeBuildProject",
@@ -691,7 +751,13 @@ def codebuild_s3_logging_encryption_check(cache: dict, session, awsAccountId: st
                                 "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/change-project.html#change-project-console",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Developer Tools",
+                            "AssetService": "AWS CodeBuild",
+                            "AssetType": "Project"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsCodeBuildProject",
@@ -740,7 +806,13 @@ def codebuild_s3_logging_encryption_check(cache: dict, session, awsAccountId: st
                                 "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/change-project.html#change-project-console",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Developer Tools",
+                            "AssetService": "AWS CodeBuild",
+                            "AssetType": "Project"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsCodeBuildProject",
@@ -790,7 +862,13 @@ def codebuild_s3_logging_encryption_check(cache: dict, session, awsAccountId: st
                         "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/change-project.html#change-project-console",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeBuild",
+                    "AssetType": "Project"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeBuildProject",
@@ -852,7 +930,13 @@ def codebuild_cloudwatch_logging_check(cache: dict, session, awsAccountId: str, 
                         "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/change-project.html#change-project-console",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeBuild",
+                    "AssetType": "Project"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeBuildProject",
@@ -904,7 +988,13 @@ def codebuild_cloudwatch_logging_check(cache: dict, session, awsAccountId: str, 
                         "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/change-project.html#change-project-console",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeBuild",
+                    "AssetType": "Project"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeBuildProject",
@@ -968,7 +1058,13 @@ def codebuild_pat_credential_usage(cache: dict, session, awsAccountId: str, awsR
                     "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/access-tokens.html",
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Developer Tools",
+                "AssetService": "AWS CodeBuild",
+                "AssetType": "Source Credential"
+            },
             "Resources": [
                 {
                     "Type": "AWSCodeBuildSourceCredential",
@@ -1044,7 +1140,13 @@ def codebuild_pat_credential_usage(cache: dict, session, awsAccountId: str, awsR
                             "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/access-tokens.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Developer Tools",
+                        "AssetService": "AWS CodeBuild",
+                        "AssetType": "Source Credential"
+                    },
                     "Resources": [
                         {
                             "Type": "AWSCodeBuildSourceCredential",
@@ -1119,7 +1221,13 @@ def codebuild_pat_credential_usage(cache: dict, session, awsAccountId: str, awsR
                             "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/access-tokens.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Developer Tools",
+                        "AssetService": "AWS CodeBuild",
+                        "AssetType": "Source Credential"
+                    },
                     "Resources": [
                         {
                             "Type": "AWSCodeBuildSourceCredential",
@@ -1204,7 +1312,13 @@ def codebuild_public_build_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/public-builds.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeBuild",
+                    "AssetType": "Project"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeBuildProject",
@@ -1265,7 +1379,13 @@ def codebuild_public_build_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/public-builds.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeBuild",
+                    "AssetType": "Project"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeBuildProject",
@@ -1335,7 +1455,13 @@ def codebuild_privileged_envrionment_check(cache: dict, session, awsAccountId: s
                         "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeBuild",
+                    "AssetType": "Project"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeBuildProject",
@@ -1407,7 +1533,13 @@ def codebuild_privileged_envrionment_check(cache: dict, session, awsAccountId: s
                         "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeBuild",
+                    "AssetType": "Project"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeBuildProject",

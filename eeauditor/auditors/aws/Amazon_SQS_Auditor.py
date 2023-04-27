@@ -99,7 +99,13 @@ def sqs_old_message_check(cache: dict, session, awsAccountId: str, awsRegion: st
                             "Url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-quotas.html#quotas-messages",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Application Integration",
+                        "AssetService": "Amazon Simple Queue Service",
+                        "AssetType": "Queue"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsSqsQueue",
@@ -149,7 +155,13 @@ def sqs_old_message_check(cache: dict, session, awsAccountId: str, awsRegion: st
                             "Url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-quotas.html#quotas-messages",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Application Integration",
+                        "AssetService": "Amazon Simple Queue Service",
+                        "AssetType": "Queue"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsSqsQueue",
@@ -216,7 +228,13 @@ def sqs_queue_encryption_check(cache: dict, session, awsAccountId: str, awsRegio
                             "Url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-server-side-encryption.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Application Integration",
+                        "AssetService": "Amazon Simple Queue Service",
+                        "AssetType": "Queue"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsSqsQueue",
@@ -267,7 +285,13 @@ def sqs_queue_encryption_check(cache: dict, session, awsAccountId: str, awsRegio
                             "Url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-server-side-encryption.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Application Integration",
+                        "AssetService": "Amazon Simple Queue Service",
+                        "AssetType": "Queue"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsSqsQueue",
@@ -339,7 +363,13 @@ def sqs_queue_public_accessibility_check(cache: dict, session, awsAccountId: str
                             "Url": "https://docs.amazonaws.cn/en_us/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-authentication-and-access-control.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Application Integration",
+                        "AssetService": "Amazon Simple Queue Service",
+                        "AssetType": "Queue"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsSqsQueue",
@@ -388,7 +418,13 @@ def sqs_queue_public_accessibility_check(cache: dict, session, awsAccountId: str
                             "Url": "https://docs.amazonaws.cn/en_us/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-authentication-and-access-control.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Application Integration",
+                        "AssetService": "Amazon Simple Queue Service",
+                        "AssetType": "Queue"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsSqsQueue",

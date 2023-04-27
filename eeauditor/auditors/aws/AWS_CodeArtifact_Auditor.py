@@ -86,7 +86,13 @@ def codeartifact_repo_policy_check(cache: dict, session, awsAccountId: str, awsR
                         "Url": "https://docs.aws.amazon.com/codeartifact/latest/ug/repo-policies.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeArtifact",
+                    "AssetType": "Repository"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeArtifactRepository",
@@ -144,7 +150,13 @@ def codeartifact_repo_policy_check(cache: dict, session, awsAccountId: str, awsR
                         "Url": "https://docs.aws.amazon.com/codeartifact/latest/ug/repo-policies.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeArtifact",
+                    "AssetType": "Repository"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeArtifactRepository",
@@ -246,7 +258,13 @@ def codeartifact_domain_policy_check(cache: dict, session, awsAccountId: str, aw
                         "Url": "https://docs.aws.amazon.com/codeartifact/latest/ug/domain-policies.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeArtifact",
+                    "AssetType": "Domain"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeArtifactDomain",
@@ -304,7 +322,13 @@ def codeartifact_domain_policy_check(cache: dict, session, awsAccountId: str, aw
                         "Url": "https://docs.aws.amazon.com/codeartifact/latest/ug/domain-policies.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeArtifact",
+                    "AssetType": "Domain"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeArtifactDomain",

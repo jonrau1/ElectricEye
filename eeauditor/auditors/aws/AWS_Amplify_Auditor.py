@@ -64,7 +64,13 @@ def amplify_basic_auth_enabled_check(cache: dict, session, awsAccountId: str, aw
                         "Url": "https://docs.aws.amazon.com/amplify/latest/userguide/access-control.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS Amplify",
+                    "AssetType": "Application"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAmplifyApp",
@@ -115,7 +121,13 @@ def amplify_basic_auth_enabled_check(cache: dict, session, awsAccountId: str, aw
                         "Url": "https://docs.aws.amazon.com/amplify/latest/userguide/access-control.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS Amplify",
+                    "AssetType": "Application"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAmplifyApp",
@@ -176,7 +188,13 @@ def amplify_branch_auto_deletion_enabled_check(cache: dict, session, awsAccountI
                         "Url": "https://docs.aws.amazon.com/amplify/latest/userguide/welcome.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS Amplify",
+                    "AssetType": "Application"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAmplifyApp",
@@ -227,7 +245,13 @@ def amplify_branch_auto_deletion_enabled_check(cache: dict, session, awsAccountI
                         "Url": "https://docs.aws.amazon.com/amplify/latest/userguide/welcome.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS Amplify",
+                    "AssetType": "Application"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAmplifyApp",

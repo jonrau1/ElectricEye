@@ -65,7 +65,13 @@ def datasync_public_agent_check(cache: dict, session, awsAccountId: str, awsRegi
                                     "Url": "https://docs.aws.amazon.com/datasync/latest/userguide/choose-service-endpoint.html#choose-service-endpoint-vpc"
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Migration & Transfer",
+                                "AssetService": "AWS DataSync",
+                                "AssetType": "Agent"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsDataSyncAgent",
@@ -131,7 +137,13 @@ def datasync_public_agent_check(cache: dict, session, awsAccountId: str, awsRegi
                                     "Url": "https://docs.aws.amazon.com/datasync/latest/userguide/choose-service-endpoint.html#choose-service-endpoint-vpc"
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Migration & Transfer",
+                                "AssetService": "AWS DataSync",
+                                "AssetType": "Agent"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsDataSyncAgent",
@@ -216,7 +228,13 @@ def datasync_task_logging_check(cache: dict, session, awsAccountId: str, awsRegi
                                     "Url": "https://docs.aws.amazon.com/datasync/latest/userguide/monitor-datasync.html"
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Migration & Transfer",
+                                "AssetService": "AWS DataSync",
+                                "AssetType": "Task"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsDataSyncTask",
@@ -280,7 +298,13 @@ def datasync_task_logging_check(cache: dict, session, awsAccountId: str, awsRegi
                                     "Url": "https://docs.aws.amazon.com/datasync/latest/userguide/monitor-datasync.html"
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Migration & Transfer",
+                                "AssetService": "AWS DataSync",
+                                "AssetType": "Task"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsDataSyncTask",

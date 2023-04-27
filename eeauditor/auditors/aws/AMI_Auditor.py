@@ -71,7 +71,13 @@ def public_ami_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                         "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/sharingamis-explicit.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon EC2",
+                    "AssetType": "Image"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Image",
@@ -131,7 +137,13 @@ def public_ami_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                         "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/sharingamis-explicit.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon EC2",
+                    "AssetType": "Image"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Image",
@@ -212,7 +224,13 @@ def encrypted_ami_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                             "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIEncryption.html#AMI-encryption-copy",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Storage",
+                        "AssetService": "Amazon EC2",
+                        "AssetType": "Image"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Image",
@@ -266,7 +284,13 @@ def encrypted_ami_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                             "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIEncryption.html#AMI-encryption-copy",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Storage",
+                        "AssetService": "Amazon EC2",
+                        "AssetType": "Image"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Image",

@@ -1176,7 +1176,7 @@ def route53_public_hz_attack_surface_open_tcp_port_check(cache: dict, session, a
                                     "Provider": "AWS",
                                     "AssetClass": "Networking",
                                     "AssetService": "Amazon Route53",
-                                    "AssetType": "Route53 Hosted Zone Resource Record"
+                                    "AssetType": "Hosted Zone Resource Record"
                                 },
                                 "Resources": [
                                     {
@@ -1252,7 +1252,7 @@ def route53_public_hz_attack_surface_open_tcp_port_check(cache: dict, session, a
                                     "Provider": "AWS",
                                     "AssetClass": "Networking",
                                     "AssetService": "Amazon Route53",
-                                    "AssetType": "Route53 Hosted Zone Resource Record"
+                                    "AssetType": "Hosted Zone Resource Record"
                                 },
                                 "Resources": [
                                     {

@@ -71,7 +71,13 @@ def appmesh_mesh_egress_check(cache: dict, session, awsAccountId: str, awsRegion
                             "Url": "https://docs.aws.amazon.com/app-mesh/latest/APIReference/API_EgressFilter.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Networking",
+                        "AssetService": "AWS App Mesh",
+                        "AssetType": "Mesh"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsAppMeshMesh",
@@ -128,7 +134,13 @@ def appmesh_mesh_egress_check(cache: dict, session, awsAccountId: str, awsRegion
                             "Url": "https://docs.aws.amazon.com/app-mesh/latest/APIReference/API_EgressFilter.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Networking",
+                        "AssetService": "AWS App Mesh",
+                        "AssetType": "Mesh"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsAppMeshMesh",
@@ -214,7 +226,13 @@ def appmesh_virt_node_backed_default_tls_policy_check(cache: dict, session, awsA
                                     "Url": "https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual-node-tls.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Networking",
+                                "AssetService": "AWS App Mesh",
+                                "AssetType": "Virtual Node"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsAppMeshVirtualNode",
@@ -283,7 +301,13 @@ def appmesh_virt_node_backed_default_tls_policy_check(cache: dict, session, awsA
                                         "Url": "https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual-node-tls.html",
                                     }
                                 },
-                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "ProductFields": {
+                                    "ProductName": "ElectricEye",
+                                    "Provider": "AWS",
+                                    "AssetClass": "Networking",
+                                    "AssetService": "AWS App Mesh",
+                                    "AssetType": "Virtual Node"
+                                },
                                 "Resources": [
                                     {
                                         "Type": "AwsAppMeshVirtualNode",
@@ -346,7 +370,13 @@ def appmesh_virt_node_backed_default_tls_policy_check(cache: dict, session, awsA
                                         "Url": "https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual-node-tls.html",
                                     }
                                 },
-                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "ProductFields": {
+                                    "ProductName": "ElectricEye",
+                                    "Provider": "AWS",
+                                    "AssetClass": "Networking",
+                                    "AssetService": "AWS App Mesh",
+                                    "AssetType": "Virtual Node"
+                                },
                                 "Resources": [
                                     {
                                         "Type": "AwsAppMeshVirtualNode",
@@ -439,7 +469,13 @@ def appmesh_virt_node_listener_strict_tls_check(cache: dict, session, awsAccount
                                         "Url": "https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual-node-tls.html",
                                     }
                                 },
-                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "ProductFields": {
+                                    "ProductName": "ElectricEye",
+                                    "Provider": "AWS",
+                                    "AssetClass": "Networking",
+                                    "AssetService": "AWS App Mesh",
+                                    "AssetType": "Virtual Node"
+                                },
                                 "Resources": [
                                     {
                                         "Type": "AwsAppMeshVirtualNode",
@@ -503,7 +539,13 @@ def appmesh_virt_node_listener_strict_tls_check(cache: dict, session, awsAccount
                                         "Url": "https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual-node-tls.html",
                                     }
                                 },
-                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "ProductFields": {
+                                    "ProductName": "ElectricEye",
+                                    "Provider": "AWS",
+                                    "AssetClass": "Networking",
+                                    "AssetService": "AWS App Mesh",
+                                    "AssetType": "Virtual Node"
+                                },
                                 "Resources": [
                                     {
                                         "Type": "AwsAppMeshVirtualNode",
@@ -591,7 +633,13 @@ def appmesh_logging_check(cache: dict, session, awsAccountId: str, awsRegion: st
                                 "Url": "https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual_nodes.html#vn-create-virtual-node",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Networking",
+                            "AssetService": "AWS App Mesh",
+                            "AssetType": "Virtual Node"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsAppMeshVirtualNode",
@@ -654,7 +702,13 @@ def appmesh_logging_check(cache: dict, session, awsAccountId: str, awsRegion: st
                                     "Url": "https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual_nodes.html#vn-create-virtual-node",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Networking",
+                                "AssetService": "AWS App Mesh",
+                                "AssetType": "Virtual Node"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsAppMeshVirtualNode",

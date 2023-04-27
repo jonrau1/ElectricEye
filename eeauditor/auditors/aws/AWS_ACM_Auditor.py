@@ -74,7 +74,13 @@ def certificate_revocation_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://aws.amazon.com/certificate-manager/faqs/"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Security Services",
+                    "AssetService": "Amazon Certificate Manager",
+                    "AssetType": "Certificate"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCertificateManagerCertificate",
@@ -139,7 +145,13 @@ def certificate_revocation_check(cache: dict, session, awsAccountId: str, awsReg
                             "Url": "https://aws.amazon.com/certificate-manager/faqs/"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Security Services",
+                        "AssetService": "Amazon Certificate Manager",
+                        "AssetType": "Certificate"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCertificateManagerCertificate",
@@ -217,7 +229,13 @@ def certificate_in_use_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/acm/latest/userguide/acm-services.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Security Services",
+                    "AssetService": "Amazon Certificate Manager",
+                    "AssetType": "Certificate"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCertificateManagerCertificate",
@@ -275,7 +293,13 @@ def certificate_in_use_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/acm/latest/userguide/acm-services.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Security Services",
+                    "AssetService": "Amazon Certificate Manager",
+                    "AssetType": "Certificate"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCertificateManagerCertificate",
@@ -348,7 +372,13 @@ def certificate_transparency_logging_check(cache: dict, session, awsAccountId: s
                         "Url": "https://docs.aws.amazon.com/acm/latest/userguide/acm-services.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Security Services",
+                    "AssetService": "Amazon Certificate Manager",
+                    "AssetType": "Certificate"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCertificateManagerCertificate",
@@ -408,7 +438,13 @@ def certificate_transparency_logging_check(cache: dict, session, awsAccountId: s
                         "Url": "https://docs.aws.amazon.com/acm/latest/userguide/acm-services.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Security Services",
+                    "AssetService": "Amazon Certificate Manager",
+                    "AssetType": "Certificate"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCertificateManagerCertificate",
@@ -486,7 +522,13 @@ def certificate_renewal_status_check(cache: dict, session, awsAccountId: str, aw
                             "Url": "https://docs.aws.amazon.com/acm/latest/userguide/check-certificate-renewal-status.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Security Services",
+                        "AssetService": "Amazon Certificate Manager",
+                        "AssetType": "Certificate"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCertificateManagerCertificate",
@@ -544,7 +586,13 @@ def certificate_renewal_status_check(cache: dict, session, awsAccountId: str, aw
                             "Url": "https://docs.aws.amazon.com/acm/latest/userguide/check-certificate-renewal-status.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Security Services",
+                        "AssetService": "Amazon Certificate Manager",
+                        "AssetType": "Certificate"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCertificateManagerCertificate",
@@ -602,7 +650,13 @@ def certificate_renewal_status_check(cache: dict, session, awsAccountId: str, aw
                             "Url": "https://docs.aws.amazon.com/acm/latest/userguide/check-certificate-renewal-status.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Security Services",
+                        "AssetService": "Amazon Certificate Manager",
+                        "AssetType": "Certificate"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCertificateManagerCertificate",
@@ -679,7 +733,13 @@ def certificate_status_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/acm/latest/userguide/gs.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Security Services",
+                    "AssetService": "Amazon Certificate Manager",
+                    "AssetType": "Certificate"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCertificateManagerCertificate",
@@ -740,7 +800,13 @@ def certificate_status_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/acm/latest/userguide/gs.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Security Services",
+                    "AssetService": "Amazon Certificate Manager",
+                    "AssetType": "Certificate"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCertificateManagerCertificate",

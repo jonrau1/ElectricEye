@@ -64,7 +64,13 @@ def cloud9_ssm_access_check(cache: dict, session, awsAccountId: str, awsRegion: 
                                 "Url": "https://docs.aws.amazon.com/cloud9/latest/user-guide/ec2-ssm.html"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Developer Tools",
+                            "AssetService": "Amazon Cloud9",
+                            "AssetType": "Environment"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsCloud9Environment",
@@ -122,7 +128,13 @@ def cloud9_ssm_access_check(cache: dict, session, awsAccountId: str, awsRegion: 
                                 "Url": "https://docs.aws.amazon.com/cloud9/latest/user-guide/ec2-ssm.html"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Developer Tools",
+                            "AssetService": "Amazon Cloud9",
+                            "AssetType": "Environment"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsCloud9Environment",

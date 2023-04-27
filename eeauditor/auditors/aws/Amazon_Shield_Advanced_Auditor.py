@@ -60,7 +60,13 @@ def shield_advanced_route_53_protection_check(cache: dict, session, awsAccountId
                         "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/configure-new-protection.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Route53",
+                    "AssetType": "Hosted Zone"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRoute53HostedZone",
@@ -121,7 +127,13 @@ def shield_advanced_route_53_protection_check(cache: dict, session, awsAccountId
                             "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/configure-new-protection.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon Route53",
+                        "AssetType": "Hosted Zone"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsRoute53HostedZone",
@@ -192,7 +204,13 @@ def shield_advanced_elb_protection_check(cache: dict, session, awsAccountId: str
                         "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/configure-new-protection.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Elastic Load Balancing",
+                    "AssetType": "Classic Load Balancer"
+                },
                 "Resources": [
                     {
                         "Type": "AwsElbLoadBalancer",
@@ -253,7 +271,13 @@ def shield_advanced_elb_protection_check(cache: dict, session, awsAccountId: str
                             "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/configure-new-protection.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon Elastic Load Balancing",
+                        "AssetType": "Classic Load Balancer"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsElbLoadBalancer",
@@ -301,6 +325,10 @@ def shield_advanced_elb_v2_protection_check(cache: dict, session, awsAccountId: 
         elbv2Arn = str(loadbalancer["LoadBalancerArn"])
         elbv2DnsName = str(loadbalancer["DNSName"])
         elbv2LbType = str(loadbalancer["Type"])
+        if elbv2LbType == "application":
+            eeAssetType = "Application Load Balancer"
+        else:
+            eeAssetType = "Network Load Balancer"
         elbv2Scheme = str(loadbalancer["Scheme"])
         elbv2VpcId = str(loadbalancer["VpcId"])
         elbv2IpAddressType = str(loadbalancer["IpAddressType"])
@@ -331,7 +359,13 @@ def shield_advanced_elb_v2_protection_check(cache: dict, session, awsAccountId: 
                         "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/configure-new-protection.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Networking",
+                    "AssetService": "AWS Elastic Load Balancer V2",
+                    "AssetType": eeAssetType
+                },
                 "Resources": [
                     {
                         "Type": "AwsElbv2LoadBalancer",
@@ -402,7 +436,13 @@ def shield_advanced_elb_v2_protection_check(cache: dict, session, awsAccountId: 
                             "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/configure-new-protection.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Networking",
+                        "AssetService": "AWS Elastic Load Balancer V2",
+                        "AssetType": eeAssetType
+                    },
                     "Resources": [
                         {
                             "Type": "AwsElbv2LoadBalancer",
@@ -481,7 +521,13 @@ def shield_advanced_eip_protection_check(cache: dict, session, awsAccountId: str
                         "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/configure-new-protection.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon EC2",
+                    "AssetType": "Elastic IP"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Eip",
@@ -542,7 +588,13 @@ def shield_advanced_eip_protection_check(cache: dict, session, awsAccountId: str
                             "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/configure-new-protection.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon EC2",
+                        "AssetType": "Elastic IP"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Eip",
@@ -616,7 +668,13 @@ def shield_advanced_cloudfront_protection_check(cache: dict, session, awsAccount
                         "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/configure-new-protection.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon CloudFront",
+                    "AssetType": "Distribution"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudFrontDistribution",
@@ -679,7 +737,13 @@ def shield_advanced_cloudfront_protection_check(cache: dict, session, awsAccount
                             "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/configure-new-protection.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon CloudFront",
+                        "AssetType": "Distribution"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCloudFrontDistribution",
@@ -750,7 +814,13 @@ def shield_advanced_drt_access_check(cache: dict, session, awsAccountId: str, aw
                     "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/authorize-DRT.html",
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Security Services",
+                "AssetService": "Amazon Shield Advanced",
+                "AssetType": "DDOS Response Team Access"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
@@ -808,7 +878,13 @@ def shield_advanced_drt_access_check(cache: dict, session, awsAccountId: str, aw
                     "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/authorize-DRT.html",
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Security Services",
+                "AssetService": "Amazon Shield Advanced",
+                "AssetType": "DDOS Response Team Access"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
@@ -874,7 +950,13 @@ def shield_advanced_drt_s3_bucket_check(cache: dict, session, awsAccountId: str,
                     "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/authorize-DRT.html",
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Security Services",
+                "AssetService": "Amazon Shield Advanced",
+                "AssetType": "DDOS Response Team Access"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
@@ -932,7 +1014,13 @@ def shield_advanced_drt_s3_bucket_check(cache: dict, session, awsAccountId: str,
                     "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/authorize-DRT.html",
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Security Services",
+                "AssetService": "Amazon Shield Advanced",
+                "AssetType": "DDOS Response Team Access"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
@@ -1000,7 +1088,13 @@ def shield_advanced_subscription_autorenew_check(cache: dict, session, awsAccoun
                     "Url": "https://docs.aws.amazon.com/waf/latest/DDOSAPIReference/API_UpdateSubscription.html",
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Security Services",
+                "AssetService": "Amazon Shield Advanced",
+                "AssetType": "Subscription"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
@@ -1049,7 +1143,13 @@ def shield_advanced_subscription_autorenew_check(cache: dict, session, awsAccoun
                     "Url": "https://docs.aws.amazon.com/waf/latest/DDOSAPIReference/API_UpdateSubscription.html",
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Security Services",
+                "AssetService": "Amazon Shield Advanced",
+                "AssetType": "Subscription"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
@@ -1117,7 +1217,13 @@ def shield_advanced_global_accelerator_protection_check(cache: dict, session, aw
                             "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/configure-new-protection.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon Global Accelerator",
+                        "AssetType": "Accelerator"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsGlobalAcceleratorAccelerator",
@@ -1180,7 +1286,13 @@ def shield_advanced_global_accelerator_protection_check(cache: dict, session, aw
                                 "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/configure-new-protection.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Networking",
+                            "AssetService": "Amazon Global Accelerator",
+                            "AssetType": "Accelerator"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsGlobalAcceleratorAccelerator",
@@ -1256,7 +1368,13 @@ def shield_advanced_subscription_latest_attacks(cache: dict, session, awsAccount
                     "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-manage-protected-resources.html"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Security Services",
+                "AssetService": "Amazon Shield Advanced",
+                "AssetType": "Attack"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
@@ -1307,7 +1425,13 @@ def shield_advanced_subscription_latest_attacks(cache: dict, session, awsAccount
                     "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-manage-protected-resources.html",
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Security Services",
+                "AssetService": "Amazon Shield Advanced",
+                "AssetType": "Attack"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",

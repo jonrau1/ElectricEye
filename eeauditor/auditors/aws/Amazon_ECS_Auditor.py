@@ -86,7 +86,7 @@ def ecs_cluster_container_insights_check(cache: dict, session, awsAccountId: str
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
                             "AssetClass": "Containers",
-                            "AssetService": "Amazon Elastic Container Service (ECS)",
+                            "AssetService": "Amazon Elastic Container Service",
                             "AssetType": "Cluster"
                         },
                         "Resources": [
@@ -146,7 +146,7 @@ def ecs_cluster_container_insights_check(cache: dict, session, awsAccountId: str
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
                             "AssetClass": "Containers",
-                            "AssetService": "Amazon Elastic Container Service (ECS)",
+                            "AssetService": "Amazon Elastic Container Service",
                             "AssetType": "Cluster"
                         },
                         "Resources": [
@@ -218,7 +218,7 @@ def ecs_cluster_default_provider_strategy_check(cache: dict, session, awsAccount
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
                         "AssetClass": "Containers",
-                        "AssetService": "Amazon Elastic Container Service (ECS)",
+                        "AssetService": "Amazon Elastic Container Service",
                         "AssetType": "Cluster"
                     },
                     "Resources": [
@@ -274,7 +274,7 @@ def ecs_cluster_default_provider_strategy_check(cache: dict, session, awsAccount
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
                         "AssetClass": "Containers",
-                        "AssetService": "Amazon Elastic Container Service (ECS)",
+                        "AssetService": "Amazon Elastic Container Service",
                         "AssetType": "Cluster"
                     },
                     "Resources": [
@@ -353,7 +353,7 @@ def ecs_task_definition_privileged_container_check(cache: dict, session, awsAcco
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
                         "AssetClass": "Containers",
-                        "AssetService": "Amazon Elastic Container Service (ECS)",
+                        "AssetService": "Amazon Elastic Container Service",
                         "AssetType": "Task Definition"
                     },
                     "Resources": [
@@ -439,7 +439,7 @@ def ecs_task_definition_privileged_container_check(cache: dict, session, awsAcco
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
                         "AssetClass": "Containers",
-                        "AssetService": "Amazon Elastic Container Service (ECS)",
+                        "AssetService": "Amazon Elastic Container Service",
                         "AssetType": "Task Definition"
                     },
                     "Resources": [
@@ -531,7 +531,7 @@ def ecs_task_definition_security_labels_check(cache: dict, session, awsAccountId
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
                     "AssetClass": "Containers",
-                    "AssetService": "Amazon Elastic Container Service (ECS)",
+                    "AssetService": "Amazon Elastic Container Service",
                     "AssetType": "Task Definition"
                 },
                 "Resources": [
@@ -614,7 +614,7 @@ def ecs_task_definition_security_labels_check(cache: dict, session, awsAccountId
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
                             "AssetClass": "Containers",
-                            "AssetService": "Amazon Elastic Container Service (ECS)",
+                            "AssetService": "Amazon Elastic Container Service",
                             "AssetType": "Task Definition"
                         },
                         "Resources": [
@@ -692,7 +692,7 @@ def ecs_task_definition_security_labels_check(cache: dict, session, awsAccountId
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
                             "AssetClass": "Containers",
-                            "AssetService": "Amazon Elastic Container Service (ECS)",
+                            "AssetService": "Amazon Elastic Container Service",
                             "AssetType": "Task Definition"
                         },
                         "Resources": [
@@ -787,7 +787,7 @@ def ecs_task_definition_root_user_check(cache: dict, session, awsAccountId: str,
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
                             "AssetClass": "Containers",
-                            "AssetService": "Amazon Elastic Container Service (ECS)",
+                            "AssetService": "Amazon Elastic Container Service",
                             "AssetType": "Task Definition"
                         },
                         "Resources": [
@@ -869,7 +869,7 @@ def ecs_task_definition_root_user_check(cache: dict, session, awsAccountId: str,
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
                             "AssetClass": "Containers",
-                            "AssetService": "Amazon Elastic Container Service (ECS)",
+                            "AssetService": "Amazon Elastic Container Service",
                             "AssetType": "Task Definition"
                         },
                         "Resources": [
@@ -952,7 +952,7 @@ def ecs_task_definition_root_user_check(cache: dict, session, awsAccountId: str,
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
                         "AssetClass": "Containers",
-                        "AssetService": "Amazon Elastic Container Service (ECS)",
+                        "AssetService": "Amazon Elastic Container Service",
                         "AssetType": "Task Definition"
                     },
                     "Resources": [

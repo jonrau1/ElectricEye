@@ -94,8 +94,13 @@ def secret_scan_codebuild_envvar_check(cache: dict, session, awsAccountId: str, 
                         "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec-ref-syntax",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
-                
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeBuild",
+                    "AssetType": "Project"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeBuildProject",
@@ -165,8 +170,13 @@ def secret_scan_codebuild_envvar_check(cache: dict, session, awsAccountId: str, 
                         "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec-ref-syntax",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
-                
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeBuild",
+                    "AssetType": "Project"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeBuildProject",
@@ -283,8 +293,13 @@ def secret_scan_cloudformation_parameters_check(cache: dict, session, awsAccount
                                 "Url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
-                        
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Management & Governance",
+                            "AssetService": "AWS CloudFormation",
+                            "AssetType": "Stack"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsCloudFormationStack",
@@ -350,8 +365,13 @@ def secret_scan_cloudformation_parameters_check(cache: dict, session, awsAccount
                                 "Url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
-                        
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Management & Governance",
+                            "AssetService": "AWS CloudFormation",
+                            "AssetType": "Stack"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsCloudFormationStack",
@@ -463,8 +483,13 @@ def secret_scan_ecs_task_def_envvar_check(cache: dict, session, awsAccountId: st
                             "Url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/taskdef-envfiles.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
-                    
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Containers",
+                        "AssetService": "Amazon Elastic Container Service (ECS)",
+                        "AssetType": "Task Definition"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEcsTaskDefinition",
@@ -538,8 +563,13 @@ def secret_scan_ecs_task_def_envvar_check(cache: dict, session, awsAccountId: st
                             "Url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/taskdef-envfiles.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
-                    
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Containers",
+                        "AssetService": "Amazon Elastic Container Service (ECS)",
+                        "AssetType": "Task Definition"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEcsTaskDefinition",
@@ -650,7 +680,13 @@ def secret_scan_ec2_userdata_check(cache: dict, session, awsAccountId: str, awsR
                                 "Url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/taskdef-envfiles.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Compute",
+                            "AssetService": "Amazon EC2",
+                            "AssetType": "Instance"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsEc2Instance",
@@ -721,7 +757,13 @@ def secret_scan_ec2_userdata_check(cache: dict, session, awsAccountId: str, awsR
                                 "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instancedata-add-user-data.html"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Compute",
+                            "AssetService": "Amazon EC2",
+                            "AssetType": "Instance"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsEc2Instance",

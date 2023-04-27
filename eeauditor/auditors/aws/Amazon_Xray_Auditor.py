@@ -57,7 +57,13 @@ def xray_kms_encryption_check(cache: dict, session, awsAccountId: str, awsRegion
                     "Url": "https://docs.aws.amazon.com/xray/latest/devguide/xray-console-encryption.html",
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Developer Tools",
+                "AssetService": "AWS XRay",
+                "AssetType": "Encryption Configuration"
+            },
             "Resources": [
                 {
                     "Type": "AwsXrayEncryptionConfig",
@@ -107,7 +113,13 @@ def xray_kms_encryption_check(cache: dict, session, awsAccountId: str, awsRegion
                     "Url": "https://docs.aws.amazon.com/xray/latest/devguide/xray-console-encryption.html",
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Developer Tools",
+                "AssetService": "AWS XRay",
+                "AssetType": "Encryption Configuration"
+            },
             "Resources": [
                 {
                     "Type": "AwsXrayEncryptionConfig",

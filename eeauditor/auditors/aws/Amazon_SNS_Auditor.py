@@ -72,7 +72,13 @@ def sns_topic_encryption_check(cache: dict, session, awsAccountId: str, awsRegio
                         "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-server-side-encryption.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Application Integration",
+                    "AssetService": "Amazon Simple Notification Service",
+                    "AssetType": "Topic"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSnsTopic",
@@ -128,7 +134,13 @@ def sns_topic_encryption_check(cache: dict, session, awsAccountId: str, awsRegio
                         "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-server-side-encryption.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Application Integration",
+                    "AssetService": "Amazon Simple Notification Service",
+                    "AssetType": "Topic"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSnsTopic",
@@ -197,7 +209,13 @@ def sns_http_encryption_check(cache: dict, session, awsAccountId: str, awsRegion
                             "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Application Integration",
+                        "AssetService": "Amazon Simple Notification Service",
+                        "AssetType": "Topic"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsSnsTopic",
@@ -250,7 +268,13 @@ def sns_http_encryption_check(cache: dict, session, awsAccountId: str, awsRegion
                             "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Application Integration",
+                        "AssetService": "Amazon Simple Notification Service",
+                        "AssetType": "Topic"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsSnsTopic",
@@ -332,7 +356,13 @@ def sns_public_access_check(cache: dict, session, awsAccountId: str, awsRegion: 
                         "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#ensure-topics-not-publicly-accessible",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Application Integration",
+                    "AssetService": "Amazon Simple Notification Service",
+                    "AssetType": "Topic"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSnsTopic",
@@ -389,7 +419,13 @@ def sns_public_access_check(cache: dict, session, awsAccountId: str, awsRegion: 
                         "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#ensure-topics-not-publicly-accessible",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Application Integration",
+                    "AssetService": "Amazon Simple Notification Service",
+                    "AssetType": "Topic"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSnsTopic",
@@ -482,7 +518,13 @@ def sns_cross_account_check(cache: dict, session, awsAccountId: str, awsRegion: 
                         "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Application Integration",
+                    "AssetService": "Amazon Simple Notification Service",
+                    "AssetType": "Topic"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSnsTopic",
@@ -537,7 +579,13 @@ def sns_cross_account_check(cache: dict, session, awsAccountId: str, awsRegion: 
                         "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Application Integration",
+                    "AssetService": "Amazon Simple Notification Service",
+                    "AssetType": "Topic"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSnsTopic",

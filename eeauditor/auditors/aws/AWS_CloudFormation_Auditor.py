@@ -61,7 +61,13 @@ def cfn_drift_check(cache: dict, session, awsAccountId: str, awsRegion: str, aws
                         "Url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS CloudFormation",
+                    "AssetType": "Stack"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudFormationStack",
@@ -112,7 +118,13 @@ def cfn_drift_check(cache: dict, session, awsAccountId: str, awsRegion: str, aws
                         "Url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS CloudFormation",
+                    "AssetType": "Stack"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudFormationStack",
@@ -171,7 +183,13 @@ def cfn_monitoring_check(cache: dict, session, awsAccountId: str, awsRegion: str
                         "Url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-rollback-triggers.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS CloudFormation",
+                    "AssetType": "Stack"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudFormationStack",
@@ -222,7 +240,13 @@ def cfn_monitoring_check(cache: dict, session, awsAccountId: str, awsRegion: str
                         "Url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-rollback-triggers.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "AWS CloudFormation",
+                    "AssetType": "Stack"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudFormationStack",

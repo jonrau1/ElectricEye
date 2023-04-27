@@ -77,7 +77,13 @@ def bucket_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: 
                             "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Storage",
+                        "AssetService": "Amazon S3",
+                        "AssetType": "Bucket"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsS3Bucket",
@@ -131,7 +137,13 @@ def bucket_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: 
                             "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Storage",
+                        "AssetService": "Amazon S3",
+                        "AssetType": "Bucket"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsS3Bucket",
@@ -197,7 +209,13 @@ def bucket_lifecycle_check(cache: dict, session, awsAccountId: str, awsRegion: s
                         "Url": "https://docs.aws.amazon.com/AmazonS3/latest/user-guide/create-lifecycle.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon S3",
+                    "AssetType": "Bucket"
+                },
                 "Resources": [
                     {
                         "Type": "AwsS3Bucket",
@@ -256,7 +274,13 @@ def bucket_lifecycle_check(cache: dict, session, awsAccountId: str, awsRegion: s
                             "Url": "https://docs.aws.amazon.com/AmazonS3/latest/user-guide/create-lifecycle.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Storage",
+                        "AssetService": "Amazon S3",
+                        "AssetType": "Bucket"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsS3Bucket",
@@ -329,7 +353,13 @@ def bucket_versioning_check(cache: dict, session, awsAccountId: str, awsRegion: 
                         "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon S3",
+                    "AssetType": "Bucket"
+                },
                 "Resources": [
                     {
                         "Type": "AwsS3Bucket",
@@ -385,7 +415,13 @@ def bucket_versioning_check(cache: dict, session, awsAccountId: str, awsRegion: 
                             "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Storage",
+                        "AssetService": "Amazon S3",
+                        "AssetType": "Bucket"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsS3Bucket",
@@ -461,7 +497,13 @@ def bucket_policy_allows_public_access_check(cache: dict, session, awsAccountId:
                                 "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Storage",
+                            "AssetService": "Amazon S3",
+                            "AssetType": "Bucket"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsS3Bucket",
@@ -517,7 +559,13 @@ def bucket_policy_allows_public_access_check(cache: dict, session, awsAccountId:
                                 "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Storage",
+                            "AssetService": "Amazon S3",
+                            "AssetType": "Bucket"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsS3Bucket",
@@ -593,7 +641,13 @@ def bucket_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                         "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon S3",
+                    "AssetType": "Bucket"
+                },
                 "Resources": [
                     {
                         "Type": "AwsS3Bucket",
@@ -652,7 +706,13 @@ def bucket_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                             "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Storage",
+                        "AssetService": "Amazon S3",
+                        "AssetType": "Bucket"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsS3Bucket",
@@ -724,7 +784,13 @@ def bucket_access_logging_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerLogs.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon S3",
+                    "AssetType": "Bucket"
+                },
                 "Resources": [
                     {
                         "Type": "AwsS3Bucket",
@@ -778,7 +844,13 @@ def bucket_access_logging_check(cache: dict, session, awsAccountId: str, awsRegi
                             "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerLogs.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Storage",
+                        "AssetService": "Amazon S3",
+                        "AssetType": "Bucket"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsS3Bucket",
@@ -856,7 +928,13 @@ def s3_account_level_block(cache: dict, session, awsAccountId: str, awsRegion: s
                         "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "Amazon S3",
+                    "AssetType": "Account Public Access Block Setting"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAccount",
@@ -913,7 +991,13 @@ def s3_account_level_block(cache: dict, session, awsAccountId: str, awsRegion: s
                         "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "Amazon S3",
+                    "AssetType": "Account Public Access Block Setting"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAccount",
@@ -969,7 +1053,13 @@ def s3_account_level_block(cache: dict, session, awsAccountId: str, awsRegion: s
                         "Url": "https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "Amazon S3",
+                    "AssetType": "Account Public Access Block Setting"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAccount",

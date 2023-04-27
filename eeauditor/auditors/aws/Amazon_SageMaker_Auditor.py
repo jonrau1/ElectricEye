@@ -61,7 +61,13 @@ def sagemaker_notebook_encryption_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/sagemaker/latest/dg/encryption-at-rest.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Machine Learning",
+                    "AssetService": "Amazon SageMaker",
+                    "AssetType": "Notebook Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSagemakerNotebookInstance",
@@ -112,7 +118,13 @@ def sagemaker_notebook_encryption_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/sagemaker/latest/dg/encryption-at-rest.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Machine Learning",
+                    "AssetService": "Amazon SageMaker",
+                    "AssetType": "Notebook Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSagemakerNotebookInstance",
@@ -178,7 +190,13 @@ def sagemaker_notebook_direct_internet_access_check(cache: dict, session, awsAcc
                         "Url": "https://docs.aws.amazon.com/sagemaker/latest/dg/appendix-notebook-and-internet-access.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Machine Learning",
+                    "AssetService": "Amazon SageMaker",
+                    "AssetType": "Notebook Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSagemakerNotebookInstance",
@@ -233,7 +251,13 @@ def sagemaker_notebook_direct_internet_access_check(cache: dict, session, awsAcc
                         "Url": "https://docs.aws.amazon.com/sagemaker/latest/dg/appendix-notebook-and-internet-access.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Machine Learning",
+                    "AssetService": "Amazon SageMaker",
+                    "AssetType": "Notebook Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSagemakerNotebookInstance",
@@ -303,7 +327,13 @@ def sagemaker_notebook_in_vpc_check(cache: dict, session, awsAccountId: str, aws
                         "Url": "https://docs.aws.amazon.com/sagemaker/latest/dg/appendix-notebook-and-internet-access.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Machine Learning",
+                    "AssetService": "Amazon SageMaker",
+                    "AssetType": "Notebook Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSagemakerNotebookInstance",
@@ -356,7 +386,13 @@ def sagemaker_notebook_in_vpc_check(cache: dict, session, awsAccountId: str, aws
                         "Url": "https://docs.aws.amazon.com/sagemaker/latest/dg/appendix-notebook-and-internet-access.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Machine Learning",
+                    "AssetService": "Amazon SageMaker",
+                    "AssetType": "Notebook Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSagemakerNotebookInstance",
@@ -424,7 +460,13 @@ def sagemaker_endpoint_encryption_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/sagemaker/latest/dg/encryption-at-rest.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Machine Learning",
+                    "AssetService": "Amazon SageMaker",
+                    "AssetType": "Endpoint"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSagemakerEndpoint",
@@ -475,7 +517,13 @@ def sagemaker_endpoint_encryption_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/sagemaker/latest/dg/encryption-at-rest.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Machine Learning",
+                    "AssetService": "Amazon SageMaker",
+                    "AssetType": "Endpoint"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSagemakerEndpoint",
@@ -540,7 +588,13 @@ def sagemaker_model_network_isolation_check(cache: dict, session, awsAccountId: 
                         "Url": "https://docs.aws.amazon.com/sagemaker/latest/dg/mkt-algo-model-internet-free.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Machine Learning",
+                    "AssetService": "Amazon SageMaker",
+                    "AssetType": "Model"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSagemakerModel",
@@ -593,7 +647,13 @@ def sagemaker_model_network_isolation_check(cache: dict, session, awsAccountId: 
                         "Url": "https://docs.aws.amazon.com/sagemaker/latest/dg/mkt-algo-model-internet-free.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Machine Learning",
+                    "AssetService": "Amazon SageMaker",
+                    "AssetType": "Model"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSagemakerModel",

@@ -171,7 +171,13 @@ def volume_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                         "Url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/create-a-scheduled-backup.html#assign-resources-to-plan",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon EC2",
+                    "AssetType": "Volume"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Volume",
@@ -225,7 +231,13 @@ def volume_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                             "Url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/create-a-scheduled-backup.html#assign-resources-to-plan",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Storage",
+                        "AssetService": "Amazon EC2",
+                        "AssetType": "Volume"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Volume",
@@ -297,7 +309,13 @@ def ec2_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                         "Url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/create-a-scheduled-backup.html#assign-resources-to-plan",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetType": "Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Instance",
@@ -360,7 +378,13 @@ def ec2_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                             "Url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/create-a-scheduled-backup.html#assign-resources-to-plan",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Compute",
+                        "AssetService": "Amazon EC2",
+                        "AssetType": "Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Instance",
@@ -434,7 +458,13 @@ def ddb_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                         "Url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/create-a-scheduled-backup.html#assign-resources-to-plan",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon DynamoDB",
+                    "AssetType": "Table"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDynamoDbTable",
@@ -493,7 +523,13 @@ def ddb_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                             "Url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/create-a-scheduled-backup.html#assign-resources-to-plan",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Database",
+                        "AssetService": "Amazon DynamoDB",
+                        "AssetType": "Table"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsDynamoDbTable",
@@ -565,7 +601,13 @@ def rds_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                         "Url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/create-a-scheduled-backup.html#assign-resources-to-plan",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -628,7 +670,13 @@ def rds_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                             "Url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/create-a-scheduled-backup.html#assign-resources-to-plan",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Database",
+                        "AssetService": "Amazon Relational Database Service",
+                        "AssetType": "Database Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsRdsDbInstance",
@@ -700,7 +748,13 @@ def efs_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                         "Url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/create-a-scheduled-backup.html#assign-resources-to-plan",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon Elastic File System",
+                    "AssetType": "File System"
+                },
                 "Resources": [
                     {
                         "Type": "AwsElasticFileSystem",
@@ -754,7 +808,13 @@ def efs_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                             "Url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/create-a-scheduled-backup.html#assign-resources-to-plan",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Storage",
+                        "AssetService": "Amazon Elastic File System",
+                        "AssetType": "File System"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsElasticFileSystem",
@@ -817,7 +877,13 @@ def neptune_cluster_backup_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/create-a-scheduled-backup.html#assign-resources-to-plan",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Neptune",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsNeptuneDbCluster",
@@ -887,7 +953,13 @@ def neptune_cluster_backup_check(cache: dict, session, awsAccountId: str, awsReg
                             "Url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/create-a-scheduled-backup.html#assign-resources-to-plan",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Database",
+                        "AssetService": "Amazon Neptune",
+                        "AssetType": "Database Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsNeptuneDbCluster",
@@ -966,7 +1038,13 @@ def docdb_cluster_backup_check(cache: dict, session, awsAccountId: str, awsRegio
                         "Url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/create-a-scheduled-backup.html#assign-resources-to-plan",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon DocumentDB",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDocumentDbCluster",
@@ -1033,7 +1111,13 @@ def docdb_cluster_backup_check(cache: dict, session, awsAccountId: str, awsRegio
                             "Url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/create-a-scheduled-backup.html#assign-resources-to-plan",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Database",
+                        "AssetService": "Amazon DocumentDB",
+                        "AssetType": "Database Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsDocumentDbCluster",

@@ -66,7 +66,7 @@ def default_internet_access_check(cache: dict, session, awsAccountId: str, awsRe
                         "Provider": "AWS",
                         "AssetClass": "End User Computing",
                         "AssetService": "AWS AppStream 2.0",
-                        "AssetType": "AppStream 2.0 Fleet"
+                        "AssetType": "Fleet"
                     },
                     "Resources": [
                         {
@@ -125,7 +125,7 @@ def default_internet_access_check(cache: dict, session, awsAccountId: str, awsRe
                         "Provider": "AWS",
                         "AssetClass": "End User Computing",
                         "AssetService": "AWS AppStream 2.0",
-                        "AssetType": "AppStream 2.0 Fleet"
+                        "AssetType": "Fleet"
                     },
                     "Resources": [
                         {
@@ -202,7 +202,7 @@ def public_image_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
                     "Provider": "AWS",
                     "AssetClass": "End User Computing",
                     "AssetService": "AWS AppStream 2.0",
-                    "AssetType": "AppStream 2.0 Image"
+                    "AssetType": "Image"
                 },
                 "Resources": [
                     {
@@ -282,9 +282,9 @@ def compromise_appstream_user_check(cache: dict, session, awsAccountId: str, aws
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
-                        "AssetClass": "End User Computing",
+                        "AssetClass": "Identity & Access Management",
                         "AssetService": "AWS AppStream 2.0",
-                        "AssetType": "AppStream 2.0 Image"
+                        "AssetType": "User"
                     },
                     "Resources": [
                         {
@@ -351,9 +351,9 @@ def compromise_appstream_user_check(cache: dict, session, awsAccountId: str, aws
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
-                        "AssetClass": "End User Computing",
+                        "AssetClass": "Identity & Access Management",
                         "AssetService": "AWS AppStream 2.0",
-                        "AssetType": "AppStream 2.0 Image"
+                        "AssetType": "User"
                     },
                     "Resources": [
                         {
@@ -441,7 +441,7 @@ def userpool_auth_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                         "Provider": "AWS",
                         "AssetClass": "Identity & Access Management",
                         "AssetService": "AWS AppStream 2.0",
-                        "AssetType": "AppStream 2.0 User"
+                        "AssetType": "User"
                     },
                     "Resources": [
                         {
@@ -506,7 +506,7 @@ def userpool_auth_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                         "Provider": "AWS",
                         "AssetClass": "Identity & Access Management",
                         "AssetService": "AWS AppStream 2.0",
-                        "AssetType": "AppStream 2.0 User"
+                        "AssetType": "User"
                     },
                     "Resources": [
                         {

@@ -71,7 +71,13 @@ def workspaces_user_volume_encryption_check(cache: dict, session, awsAccountId: 
                             "Url": "https://docs.aws.amazon.com/workspaces/latest/adminguide/encrypt-workspaces.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "End User Computing",
+                        "AssetService": "AWS WorkSpaces",
+                        "AssetType": "Virtual Desktop"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsWorkspacesWorkspace",
@@ -122,7 +128,13 @@ def workspaces_user_volume_encryption_check(cache: dict, session, awsAccountId: 
                             "Url": "https://docs.aws.amazon.com/workspaces/latest/adminguide/encrypt-workspaces.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "End User Computing",
+                        "AssetService": "AWS WorkSpaces",
+                        "AssetType": "Virtual Desktop"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsWorkspacesWorkspace",
@@ -190,7 +202,13 @@ def workspaces_root_volume_encryption_check(cache: dict, session, awsAccountId: 
                             "Url": "https://docs.aws.amazon.com/workspaces/latest/adminguide/encrypt-workspaces.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "End User Computing",
+                        "AssetService": "AWS WorkSpaces",
+                        "AssetType": "Virtual Desktop"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsWorkspacesWorkspace",
@@ -241,7 +259,13 @@ def workspaces_root_volume_encryption_check(cache: dict, session, awsAccountId: 
                             "Url": "https://docs.aws.amazon.com/workspaces/latest/adminguide/encrypt-workspaces.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "End User Computing",
+                        "AssetService": "AWS WorkSpaces",
+                        "AssetType": "Virtual Desktop"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsWorkspacesWorkspace",
@@ -304,7 +328,13 @@ def workspaces_running_mode_check(cache: dict, session, awsAccountId: str, awsRe
                         "Url": "https://docs.aws.amazon.com/workspaces/latest/adminguide/running-mode.html#stop-start-workspace",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "End User Computing",
+                    "AssetService": "AWS WorkSpaces",
+                    "AssetType": "Virtual Desktop"
+                },
                 "Resources": [
                     {
                         "Type": "AwsWorkspacesWorkspace",
@@ -354,7 +384,13 @@ def workspaces_running_mode_check(cache: dict, session, awsAccountId: str, awsRe
                         "Url": "https://docs.aws.amazon.com/workspaces/latest/adminguide/running-mode.html#stop-start-workspace",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "End User Computing",
+                    "AssetService": "AWS WorkSpaces",
+                    "AssetType": "Virtual Desktop"
+                },
                 "Resources": [
                     {
                         "Type": "AwsWorkspacesWorkspace",
@@ -418,7 +454,13 @@ def workspaces_directory_default_internet_check(cache: dict, session, awsAccount
                         "Url": "https://docs.amazonaws.cn/en_us/workspaces/latest/adminguide/amazon-workspaces-internet-access.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS WorkSpaces",
+                    "AssetType": "Directory"
+                },
                 "Resources": [
                     {
                         "Type": "Other",
@@ -471,7 +513,13 @@ def workspaces_directory_default_internet_check(cache: dict, session, awsAccount
                         "Url": "https://docs.amazonaws.cn/en_us/workspaces/latest/adminguide/amazon-workspaces-internet-access.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS WorkSpaces",
+                    "AssetType": "Directory"
+                },
                 "Resources": [
                     {
                         "Type": "Other",

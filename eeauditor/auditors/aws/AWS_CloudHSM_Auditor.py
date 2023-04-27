@@ -63,7 +63,13 @@ def cloudhsm_cluster_degradation_check(cache: dict, session, awsAccountId: str, 
                         "Url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/manage-clusters.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS CloudHSM",
+                    "AssetType": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudHsmCluster",
@@ -119,7 +125,13 @@ def cloudhsm_cluster_degradation_check(cache: dict, session, awsAccountId: str, 
                         "Url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/manage-clusters.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS CloudHSM",
+                    "AssetType": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudHsmCluster",
@@ -187,7 +199,13 @@ def cloudhsm_hsm_degradation_check(cache: dict, session, awsAccountId: str, awsR
                             "Url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/introduction.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Security Services",
+                        "AssetService": "AWS CloudHSM",
+                        "AssetType": "Hardware Security Module"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCloudHsmHsm",
@@ -243,7 +261,13 @@ def cloudhsm_hsm_degradation_check(cache: dict, session, awsAccountId: str, awsR
                             "Url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/introduction.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Security Services",
+                        "AssetService": "AWS CloudHSM",
+                        "AssetType": "Hardware Security Module"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCloudHsmHsm",
@@ -318,7 +342,13 @@ def cloudhsm_cluster_backup_check(cache: dict, session, awsAccountId: str, awsRe
                         "Url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/backups.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS CloudHSM",
+                    "AssetType": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudHsmCluster",
@@ -374,7 +404,13 @@ def cloudhsm_cluster_backup_check(cache: dict, session, awsAccountId: str, awsRe
                         "Url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/backups.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS CloudHSM",
+                    "AssetType": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudHsmCluster",

@@ -63,7 +63,13 @@ def vpc_default_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
                         "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/default-vpc.html#deleting-default-vpc",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Virtual Private Cloud",
+                    "AssetType": "Virtual Private Cloud"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Vpc",
@@ -113,7 +119,13 @@ def vpc_default_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
                         "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/default-vpc.html#deleting-default-vpc",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Virtual Private Cloud",
+                    "AssetType": "Virtual Private Cloud"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Vpc",
@@ -178,7 +190,13 @@ def vpc_flow_logs_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                         "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Virtual Private Cloud",
+                    "AssetType": "Virtual Private Cloud"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Vpc",
@@ -228,7 +246,13 @@ def vpc_flow_logs_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                         "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Virtual Private Cloud",
+                    "AssetType": "Virtual Private Cloud"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Vpc",
@@ -296,7 +320,13 @@ def subnet_public_ip_check(cache: dict, session, awsAccountId: str, awsRegion: s
                             "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-ip-addressing.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon Virtual Private Cloud",
+                        "AssetType": "Subnet"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Subnet",
@@ -353,7 +383,13 @@ def subnet_public_ip_check(cache: dict, session, awsAccountId: str, awsRegion: s
                             "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-ip-addressing.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon Virtual Private Cloud",
+                        "AssetType": "Subnet"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Subnet",
@@ -426,7 +462,13 @@ def subnet_no_ip_space_check(cache: dict, session, awsAccountId: str, awsRegion:
                             "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-ip-addressing.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon Virtual Private Cloud",
+                        "AssetType": "Subnet"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Subnet",
@@ -485,7 +527,13 @@ def subnet_no_ip_space_check(cache: dict, session, awsAccountId: str, awsRegion:
                             "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-ip-addressing.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon Virtual Private Cloud",
+                        "AssetType": "Subnet"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Subnet",

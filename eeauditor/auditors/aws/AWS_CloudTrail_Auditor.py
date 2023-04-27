@@ -67,7 +67,13 @@ def cloudtrail_multi_region_check(cache: dict, session, awsAccountId: str, awsRe
                             "Url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/receive-cloudtrail-log-files-from-multiple-regions.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Management & Governance",
+                        "AssetService": "AWS CloudTrail",
+                        "AssetType": "Trail"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCloudTrailTrail",
@@ -116,7 +122,13 @@ def cloudtrail_multi_region_check(cache: dict, session, awsAccountId: str, awsRe
                             "Url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/receive-cloudtrail-log-files-from-multiple-regions.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Management & Governance",
+                        "AssetService": "AWS CloudTrail",
+                        "AssetType": "Trail"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCloudTrailTrail",
@@ -182,7 +194,13 @@ def cloudtrail_cloudwatch_logging_check(cache: dict, session, awsAccountId: str,
                             "Url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/monitor-cloudtrail-log-files-with-cloudwatch-logs.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Management & Governance",
+                        "AssetService": "AWS CloudTrail",
+                        "AssetType": "Trail"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCloudTrailTrail",
@@ -234,7 +252,13 @@ def cloudtrail_cloudwatch_logging_check(cache: dict, session, awsAccountId: str,
                                 "Url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/monitor-cloudtrail-log-files-with-cloudwatch-logs.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Management & Governance",
+                            "AssetService": "AWS CloudTrail",
+                            "AssetType": "Trail"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsCloudTrailTrail",
@@ -303,7 +327,13 @@ def cloudtrail_encryption_check(cache: dict, session, awsAccountId: str, awsRegi
                             "Url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/encrypting-cloudtrail-log-files-with-aws-kms.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Management & Governance",
+                        "AssetService": "AWS CloudTrail",
+                        "AssetType": "Trail"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCloudTrailTrail",
@@ -354,7 +384,13 @@ def cloudtrail_encryption_check(cache: dict, session, awsAccountId: str, awsRegi
                                 "Url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/encrypting-cloudtrail-log-files-with-aws-kms.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Management & Governance",
+                            "AssetService": "AWS CloudTrail",
+                            "AssetType": "Trail"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsCloudTrailTrail",
@@ -417,7 +453,13 @@ def cloudtrail_global_services_check(cache: dict, session, awsAccountId: str, aw
                             "Url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-management-events-with-cloudtrail.html#logging-management-events",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Management & Governance",
+                        "AssetService": "AWS CloudTrail",
+                        "AssetType": "Trail"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCloudTrailTrail",
@@ -466,7 +508,13 @@ def cloudtrail_global_services_check(cache: dict, session, awsAccountId: str, aw
                             "Url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-management-events-with-cloudtrail.html#logging-management-events",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Management & Governance",
+                        "AssetService": "AWS CloudTrail",
+                        "AssetType": "Trail"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCloudTrailTrail",
@@ -531,7 +579,13 @@ def cloudtrail_log_file_validation_check(cache: dict, session, awsAccountId: str
                             "Url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-log-file-validation-intro.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Management & Governance",
+                        "AssetService": "AWS CloudTrail",
+                        "AssetType": "Trail"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCloudTrailTrail",
@@ -581,7 +635,13 @@ def cloudtrail_log_file_validation_check(cache: dict, session, awsAccountId: str
                             "Url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-log-file-validation-intro.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Management & Governance",
+                        "AssetService": "AWS CloudTrail",
+                        "AssetType": "Trail"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCloudTrailTrail",
