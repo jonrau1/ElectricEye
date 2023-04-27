@@ -70,7 +70,13 @@ def broker_kms_cmk_check(cache: dict, session, awsAccountId: str, awsRegion: str
                             "Url": "https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-encryption.html#encryption-at-rest",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Application Integration",
+                        "AssetService": "Amazon MQ",
+                        "AssetType": "Broker"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsMqMessageBroker",
@@ -121,7 +127,13 @@ def broker_kms_cmk_check(cache: dict, session, awsAccountId: str, awsRegion: str
                             "Url": "https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-encryption.html#encryption-at-rest",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Application Integration",
+                        "AssetService": "Amazon MQ",
+                        "AssetType": "Broker"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsMqMessageBroker",
@@ -194,7 +206,13 @@ def broker_audit_logging_check(cache: dict, session, awsAccountId: str, awsRegio
                             "Url": "https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-configuring-cloudwatch-logs.html#structure-of-logging-cloudwatch-logs",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Application Integration",
+                        "AssetService": "Amazon MQ",
+                        "AssetType": "Broker"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsMqMessageBroker",
@@ -246,7 +264,13 @@ def broker_audit_logging_check(cache: dict, session, awsAccountId: str, awsRegio
                             "Url": "https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-configuring-cloudwatch-logs.html#structure-of-logging-cloudwatch-logs",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Application Integration",
+                        "AssetService": "Amazon MQ",
+                        "AssetType": "Broker"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsMqMessageBroker",
@@ -319,7 +343,13 @@ def broker_general_logging_check(cache: dict, session, awsAccountId: str, awsReg
                             "Url": "https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-configuring-cloudwatch-logs.html#structure-of-logging-cloudwatch-logs",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Application Integration",
+                        "AssetService": "Amazon MQ",
+                        "AssetType": "Broker"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsMqMessageBroker",
@@ -373,7 +403,13 @@ def broker_general_logging_check(cache: dict, session, awsAccountId: str, awsReg
                             "Url": "https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-configuring-cloudwatch-logs.html#structure-of-logging-cloudwatch-logs",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Application Integration",
+                        "AssetService": "Amazon MQ",
+                        "AssetType": "Broker"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsMqMessageBroker",
@@ -449,7 +485,13 @@ def broker_public_access_check(cache: dict, session, awsAccountId: str, awsRegio
                             "Url": "https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/accessing-web-console-of-broker-without-private-accessibility.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Application Integration",
+                        "AssetService": "Amazon MQ",
+                        "AssetType": "Broker"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsMqMessageBroker",
@@ -508,7 +550,13 @@ def broker_public_access_check(cache: dict, session, awsAccountId: str, awsRegio
                             "Url": "https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/accessing-web-console-of-broker-without-private-accessibility.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Application Integration",
+                        "AssetService": "Amazon MQ",
+                        "AssetType": "Broker"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsMqMessageBroker",
@@ -583,7 +631,13 @@ def broker_minor_version_auto_upgrade_check(cache: dict, session, awsAccountId: 
                             "Url": "https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-editing-broker-preferences.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Application Integration",
+                        "AssetService": "Amazon MQ",
+                        "AssetType": "Broker"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsMqMessageBroker",
@@ -637,7 +691,13 @@ def broker_minor_version_auto_upgrade_check(cache: dict, session, awsAccountId: 
                             "Url": "https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-editing-broker-preferences.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Application Integration",
+                        "AssetService": "Amazon MQ",
+                        "AssetType": "Broker"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsMqMessageBroker",

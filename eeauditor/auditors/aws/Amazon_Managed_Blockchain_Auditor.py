@@ -92,7 +92,13 @@ def amb_fabric_node_chaincode_logging_check(cache: dict, session, awsAccountId: 
                                             "Url": "https://docs.aws.amazon.com/managed-blockchain/latest/managementguide/monitoring-cloudwatch-logs.html#monitoring-enable",
                                         }
                                     },
-                                    "ProductFields": {"Product Name": "ElectricEye"},
+                                    "ProductFields": {
+                                        "ProductName": "ElectricEye",
+                                        "Provider": "AWS",
+                                        "AssetClass": "Blockchain",
+                                        "AssetService": "Amazon Managed Blockchain",
+                                        "AssetType": "Peer Node"
+                                    },
                                     "Resources": [
                                         {
                                             "Type": "AwsManagedBlockchainPeerNode",
@@ -101,9 +107,9 @@ def amb_fabric_node_chaincode_logging_check(cache: dict, session, awsAccountId: 
                                             "Region": awsRegion,
                                             "Details": {
                                                 "Other": {
-                                                    "networkId": fabricNetworkId,
-                                                    "memberId": memberId,
-                                                    "nodeId": peerNodeId,
+                                                    "NetworkId": fabricNetworkId,
+                                                    "MemberId": memberId,
+                                                    "NodeId": peerNodeId,
                                                 }
                                             },
                                         }
@@ -153,7 +159,13 @@ def amb_fabric_node_chaincode_logging_check(cache: dict, session, awsAccountId: 
                                             "Url": "https://docs.aws.amazon.com/managed-blockchain/latest/managementguide/monitoring-cloudwatch-logs.html#monitoring-enable",
                                         }
                                     },
-                                    "ProductFields": {"Product Name": "ElectricEye"},
+                                    "ProductFields": {
+                                        "ProductName": "ElectricEye",
+                                        "Provider": "AWS",
+                                        "AssetClass": "Blockchain",
+                                        "AssetService": "Amazon Managed Blockchain",
+                                        "AssetType": "Peer Node"
+                                    },
                                     "Resources": [
                                         {
                                             "Type": "AwsManagedBlockchainPeerNode",
@@ -162,9 +174,9 @@ def amb_fabric_node_chaincode_logging_check(cache: dict, session, awsAccountId: 
                                             "Region": awsRegion,
                                             "Details": {
                                                 "Other": {
-                                                    "networkId": fabricNetworkId,
-                                                    "memberId": memberId,
-                                                    "nodeId": peerNodeId,
+                                                    "NetworkId": fabricNetworkId,
+                                                    "MemberId": memberId,
+                                                    "NodeId": peerNodeId,
                                                 }
                                             },
                                         }
@@ -256,7 +268,13 @@ def amb_fabric_node_peernode_logging_check(cache: dict, session, awsAccountId: s
                                             "Url": "https://docs.aws.amazon.com/managed-blockchain/latest/managementguide/monitoring-cloudwatch-logs.html#monitoring-enable",
                                         }
                                     },
-                                    "ProductFields": {"Product Name": "ElectricEye"},
+                                    "ProductFields": {
+                                        "ProductName": "ElectricEye",
+                                        "Provider": "AWS",
+                                        "AssetClass": "Blockchain",
+                                        "AssetService": "Amazon Managed Blockchain",
+                                        "AssetType": "Peer Node"
+                                    },
                                     "Resources": [
                                         {
                                             "Type": "AwsManagedBlockchainPeerNode",
@@ -265,9 +283,9 @@ def amb_fabric_node_peernode_logging_check(cache: dict, session, awsAccountId: s
                                             "Region": awsRegion,
                                             "Details": {
                                                 "Other": {
-                                                    "networkId": fabricNetworkId,
-                                                    "memberId": memberId,
-                                                    "nodeId": peerNodeId,
+                                                    "NetworkId": fabricNetworkId,
+                                                    "MemberId": memberId,
+                                                    "NodeId": peerNodeId,
                                                 }
                                             },
                                         }
@@ -317,7 +335,13 @@ def amb_fabric_node_peernode_logging_check(cache: dict, session, awsAccountId: s
                                             "Url": "https://docs.aws.amazon.com/managed-blockchain/latest/managementguide/monitoring-cloudwatch-logs.html#monitoring-enable",
                                         }
                                     },
-                                    "ProductFields": {"Product Name": "ElectricEye"},
+                                    "ProductFields": {
+                                        "ProductName": "ElectricEye",
+                                        "Provider": "AWS",
+                                        "AssetClass": "Blockchain",
+                                        "AssetService": "Amazon Managed Blockchain",
+                                        "AssetType": "Peer Node"
+                                    },
                                     "Resources": [
                                         {
                                             "Type": "AwsManagedBlockchainPeerNode",
@@ -326,9 +350,9 @@ def amb_fabric_node_peernode_logging_check(cache: dict, session, awsAccountId: s
                                             "Region": awsRegion,
                                             "Details": {
                                                 "Other": {
-                                                    "networkId": fabricNetworkId,
-                                                    "memberId": memberId,
-                                                    "nodeId": peerNodeId,
+                                                    "NetworkId": fabricNetworkId,
+                                                    "MemberId": memberId,
+                                                    "NodeId": peerNodeId,
                                                 }
                                             },
                                         }
@@ -411,7 +435,13 @@ def amb_fabric_member_ca_logging_check(cache: dict, session, awsAccountId: str, 
                                     "Url": "https://docs.aws.amazon.com/managed-blockchain/latest/managementguide/monitoring-cloudwatch-logs.html#monitoring-enable",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Blockchain",
+                                "AssetService": "Amazon Managed Blockchain",
+                                "AssetType": "Member"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsManagedBlockchainMember",
@@ -420,8 +450,8 @@ def amb_fabric_member_ca_logging_check(cache: dict, session, awsAccountId: str, 
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {
-                                            "networkId": fabricNetworkId,
-                                            "memberId": memberId,
+                                            "NetworkId": fabricNetworkId,
+                                            "MemberId": memberId,
                                         }
                                     },
                                 }
@@ -470,7 +500,13 @@ def amb_fabric_member_ca_logging_check(cache: dict, session, awsAccountId: str, 
                                     "Url": "https://docs.aws.amazon.com/managed-blockchain/latest/managementguide/monitoring-cloudwatch-logs.html#monitoring-enable",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Blockchain",
+                                "AssetService": "Amazon Managed Blockchain",
+                                "AssetType": "Member"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsManagedBlockchainMember",
@@ -479,8 +515,8 @@ def amb_fabric_member_ca_logging_check(cache: dict, session, awsAccountId: str, 
                                     "Region": awsRegion,
                                     "Details": {
                                         "Other": {
-                                            "networkId": fabricNetworkId,
-                                            "memberId": memberId,
+                                            "NetworkId": fabricNetworkId,
+                                            "MemberId": memberId,
                                         }
                                     },
                                 }

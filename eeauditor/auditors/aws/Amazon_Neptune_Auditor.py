@@ -82,7 +82,13 @@ def neptune_instance_multi_az_check(cache: dict, session, awsAccountId: str, aws
                         "Url": "https://docs.aws.amazon.com/neptune/latest/userguide/feature-overview-availability.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Neptune",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsNeptuneDbInstance",
@@ -148,7 +154,13 @@ def neptune_instance_multi_az_check(cache: dict, session, awsAccountId: str, aws
                         "Url": "https://docs.aws.amazon.com/neptune/latest/userguide/feature-overview-availability.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Neptune",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsNeptuneDbInstance",
@@ -227,7 +239,13 @@ def neptune_instance_storage_encryption_check(cache: dict, session, awsAccountId
                         "Url": "https://docs.aws.amazon.com/neptune/latest/userguide/encrypt.html#encrypt-enable",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Neptune",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsNeptuneDbInstance",
@@ -291,7 +309,13 @@ def neptune_instance_storage_encryption_check(cache: dict, session, awsAccountId
                         "Url": "https://docs.aws.amazon.com/neptune/latest/userguide/encrypt.html#encrypt-enable",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Neptune",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsNeptuneDbInstance",
@@ -365,7 +389,13 @@ def neptune_instance_iam_authentication_check(cache: dict, session, awsAccountId
                         "Url": "https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Neptune",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsNeptuneDbInstance",
@@ -440,7 +470,13 @@ def neptune_instance_iam_authentication_check(cache: dict, session, awsAccountId
                         "Url": "https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Neptune",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsNeptuneDbInstance",
@@ -527,7 +563,13 @@ def neptune_cluster_parameter_ssl_enforcement_check(cache: dict, session, awsAcc
                                 "Url": "https://docs.aws.amazon.com/neptune/latest/userguide/security-ssl.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Database",
+                            "AssetService": "Amazon Neptune",
+                            "AssetType": "Database Parameter Group"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsNeptuneParameterGroup",
@@ -579,7 +621,13 @@ def neptune_cluster_parameter_ssl_enforcement_check(cache: dict, session, awsAcc
                                 "Url": "https://docs.aws.amazon.com/neptune/latest/userguide/security-ssl.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Database",
+                            "AssetService": "Amazon Neptune",
+                            "AssetType": "Database Parameter Group"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsNeptuneParameterGroup",
@@ -769,7 +817,13 @@ def neptune_instance_audit_logging_check(cache: dict, session, awsAccountId: str
                         "Url": "https://docs.aws.amazon.com/neptune/latest/userguide/auditing.html#auditing-enable",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Neptune",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsNeptuneDbInstance",
@@ -834,7 +888,13 @@ def neptune_instance_audit_logging_check(cache: dict, session, awsAccountId: str
                         "Url": "https://docs.aws.amazon.com/neptune/latest/userguide/auditing.html#auditing-enable",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Neptune",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsNeptuneDbInstance",
@@ -909,7 +969,13 @@ def neptune_instance_deletion_protection_check(cache: dict, session, awsAccountI
                         "Url": "https://docs.aws.amazon.com/neptune/latest/userguide/manage-console-instances-delete.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Neptune",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsNeptuneDbInstance",
@@ -976,7 +1042,13 @@ def neptune_instance_deletion_protection_check(cache: dict, session, awsAccountI
                         "Url": "https://docs.aws.amazon.com/neptune/latest/userguide/manage-console-instances-delete.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Neptune",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsNeptuneDbInstance",
@@ -1053,7 +1125,13 @@ def neptune_instance_minor_version_upgrade_check(cache: dict, session, awsAccoun
                         "Url": "https://docs.aws.amazon.com/neptune/latest/userguide/manage-console-maintaining.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Neptune",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsNeptuneDbInstance",
@@ -1118,7 +1196,13 @@ def neptune_instance_minor_version_upgrade_check(cache: dict, session, awsAccoun
                         "Url": "https://docs.aws.amazon.com/neptune/latest/userguide/manage-console-maintaining.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Neptune",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsNeptuneDbInstance",
@@ -1198,7 +1282,13 @@ def neptune_cluster_autoscaling_check(cache: dict, session, awsAccountId: str, a
                                 "Url": "https://docs.aws.amazon.com/neptune/latest/userguide/manage-console-autoscaling.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Database",
+                            "AssetService": "Amazon Neptune",
+                            "AssetType": "Database Cluster"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsNeptuneDbCluster",
@@ -1267,7 +1357,13 @@ def neptune_cluster_autoscaling_check(cache: dict, session, awsAccountId: str, a
                                 "Url": "https://docs.aws.amazon.com/neptune/latest/userguide/manage-console-autoscaling.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Database",
+                            "AssetService": "Amazon Neptune",
+                            "AssetType": "Database Cluster"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsNeptuneDbCluster",
@@ -1354,7 +1450,13 @@ def neptune_cluster_gremlin_query_result_cache_check(cache: dict, session, awsAc
                                 "Url": "https://docs.aws.amazon.com/neptune/latest/userguide/gremlin-results-cache.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Database",
+                            "AssetService": "Amazon Neptune",
+                            "AssetType": "Database Cluster"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsNeptuneDbCluster",
@@ -1423,7 +1525,13 @@ def neptune_cluster_gremlin_query_result_cache_check(cache: dict, session, awsAc
                                 "Url": "https://docs.aws.amazon.com/neptune/latest/userguide/gremlin-results-cache.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Database",
+                            "AssetService": "Amazon Neptune",
+                            "AssetType": "Database Cluster"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsNeptuneDbCluster",

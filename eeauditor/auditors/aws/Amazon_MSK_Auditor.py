@@ -62,7 +62,13 @@ def inter_cluster_encryption_in_transit_check(cache: dict, session, awsAccountId
                         "Url": "https://docs.aws.amazon.com/msk/latest/developerguide/msk-working-with-encryption.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Managed Streaming for Apache Kafka",
+                    "AssetType": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsManagedKafkaCluster",
@@ -115,7 +121,13 @@ def inter_cluster_encryption_in_transit_check(cache: dict, session, awsAccountId
                         "Url": "https://docs.aws.amazon.com/msk/latest/developerguide/msk-working-with-encryption.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Managed Streaming for Apache Kafka",
+                    "AssetType": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsManagedKafkaCluster",
@@ -177,7 +189,13 @@ def client_broker_encryption_in_transit_check(cache: dict, session, awsAccountId
                         "Url": "https://docs.aws.amazon.com/msk/latest/developerguide/msk-working-with-encryption.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Managed Streaming for Apache Kafka",
+                    "AssetType": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsManagedKafkaCluster",
@@ -230,7 +248,13 @@ def client_broker_encryption_in_transit_check(cache: dict, session, awsAccountId
                         "Url": "https://docs.aws.amazon.com/msk/latest/developerguide/msk-working-with-encryption.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Managed Streaming for Apache Kafka",
+                    "AssetType": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsManagedKafkaCluster",
@@ -290,7 +314,13 @@ def client_authentication_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/msk/latest/developerguide/msk-authentication.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Managed Streaming for Apache Kafka",
+                    "AssetType": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsManagedKafkaCluster",
@@ -344,7 +374,13 @@ def client_authentication_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/msk/latest/developerguide/msk-authentication.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Managed Streaming for Apache Kafka",
+                    "AssetType": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsManagedKafkaCluster",
@@ -406,7 +442,13 @@ def cluster_enhanced_monitoring_check(cache: dict, session, awsAccountId: str, a
                         "Url": "https://docs.aws.amazon.com/msk/latest/developerguide/monitoring.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Managed Streaming for Apache Kafka",
+                    "AssetType": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsManagedKafkaCluster",
@@ -456,7 +498,13 @@ def cluster_enhanced_monitoring_check(cache: dict, session, awsAccountId: str, a
                         "Url": "https://docs.aws.amazon.com/msk/latest/developerguide/monitoring.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Managed Streaming for Apache Kafka",
+                    "AssetType": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsManagedKafkaCluster",

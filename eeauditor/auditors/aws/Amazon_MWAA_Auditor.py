@@ -74,7 +74,13 @@ def mwaa_kms_encryption_check(cache: dict, session, awsAccountId: str, awsRegion
                         "Url": "https://docs.aws.amazon.com/mwaa/latest/userguide/custom-keys-certs.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Applicaton Integration",
+                    "AssetService": "Amazon Managed Workflows for Apache Airflow",
+                    "AssetType": "Environment"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAirflowEnvironment",
@@ -130,7 +136,13 @@ def mwaa_kms_encryption_check(cache: dict, session, awsAccountId: str, awsRegion
                         "Url": "https://docs.aws.amazon.com/mwaa/latest/userguide/custom-keys-certs.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Applicaton Integration",
+                    "AssetService": "Amazon Managed Workflows for Apache Airflow",
+                    "AssetType": "Environment"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAirflowEnvironment",
@@ -199,7 +211,13 @@ def mwaa_public_access_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/mwaa/latest/userguide/configuring-networking.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Applicaton Integration",
+                    "AssetService": "Amazon Managed Workflows for Apache Airflow",
+                    "AssetType": "Environment"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAirflowEnvironment",
@@ -261,7 +279,13 @@ def mwaa_public_access_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/mwaa/latest/userguide/configuring-networking.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Applicaton Integration",
+                    "AssetService": "Amazon Managed Workflows for Apache Airflow",
+                    "AssetType": "Environment"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAirflowEnvironment",
@@ -333,7 +357,13 @@ def mwaa_dag_processing_logging_check(cache: dict, session, awsAccountId: str, a
                         "Url": "https://docs.aws.amazon.com/mwaa/latest/userguide/cw-metrics.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Applicaton Integration",
+                    "AssetService": "Amazon Managed Workflows for Apache Airflow",
+                    "AssetType": "Environment"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAirflowEnvironment",
@@ -390,7 +420,13 @@ def mwaa_dag_processing_logging_check(cache: dict, session, awsAccountId: str, a
                         "Url": "https://docs.aws.amazon.com/mwaa/latest/userguide/cw-metrics.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Applicaton Integration",
+                    "AssetService": "Amazon Managed Workflows for Apache Airflow",
+                    "AssetType": "Environment"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAirflowEnvironment",
@@ -460,7 +496,13 @@ def mwaa_scheduler_logging_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://docs.aws.amazon.com/mwaa/latest/userguide/cw-metrics.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Applicaton Integration",
+                    "AssetService": "Amazon Managed Workflows for Apache Airflow",
+                    "AssetType": "Environment"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAirflowEnvironment",
@@ -517,7 +559,13 @@ def mwaa_scheduler_logging_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://docs.aws.amazon.com/mwaa/latest/userguide/cw-metrics.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Applicaton Integration",
+                    "AssetService": "Amazon Managed Workflows for Apache Airflow",
+                    "AssetType": "Environment"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAirflowEnvironment",
@@ -587,7 +635,13 @@ def mwaa_task_logging_check(cache: dict, session, awsAccountId: str, awsRegion: 
                         "Url": "https://docs.aws.amazon.com/mwaa/latest/userguide/cw-metrics.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Applicaton Integration",
+                    "AssetService": "Amazon Managed Workflows for Apache Airflow",
+                    "AssetType": "Environment"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAirflowEnvironment",
@@ -644,7 +698,13 @@ def mwaa_task_logging_check(cache: dict, session, awsAccountId: str, awsRegion: 
                         "Url": "https://docs.aws.amazon.com/mwaa/latest/userguide/cw-metrics.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Applicaton Integration",
+                    "AssetService": "Amazon Managed Workflows for Apache Airflow",
+                    "AssetType": "Environment"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAirflowEnvironment",
@@ -714,7 +774,13 @@ def mwaa_webserver_logging_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://docs.aws.amazon.com/mwaa/latest/userguide/cw-metrics.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Applicaton Integration",
+                    "AssetService": "Amazon Managed Workflows for Apache Airflow",
+                    "AssetType": "Environment"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAirflowEnvironment",
@@ -771,7 +837,13 @@ def mwaa_webserver_logging_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://docs.aws.amazon.com/mwaa/latest/userguide/cw-metrics.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Applicaton Integration",
+                    "AssetService": "Amazon Managed Workflows for Apache Airflow",
+                    "AssetType": "Environment"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAirflowEnvironment",
@@ -841,7 +913,13 @@ def mwaa_worker_logging_check(cache: dict, session, awsAccountId: str, awsRegion
                         "Url": "https://docs.aws.amazon.com/mwaa/latest/userguide/cw-metrics.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Applicaton Integration",
+                    "AssetService": "Amazon Managed Workflows for Apache Airflow",
+                    "AssetType": "Environment"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAirflowEnvironment",
@@ -898,7 +976,13 @@ def mwaa_worker_logging_check(cache: dict, session, awsAccountId: str, awsRegion
                         "Url": "https://docs.aws.amazon.com/mwaa/latest/userguide/cw-metrics.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Applicaton Integration",
+                    "AssetService": "Amazon Managed Workflows for Apache Airflow",
+                    "AssetType": "Environment"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAirflowEnvironment",

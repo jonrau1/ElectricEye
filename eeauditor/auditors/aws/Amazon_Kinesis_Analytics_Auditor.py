@@ -19,7 +19,6 @@
 #under the License.
 
 import datetime
-from dateutil import parser
 import uuid
 from check_register import CheckRegister, accumulate_paged_results
 
@@ -74,7 +73,13 @@ def kda_log_to_cloudwatch_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/kinesisanalytics/latest/java/best-practices.html#how-dev-bp-logging",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Kinesis Data Analytics",
+                    "AssetType": "Application"
+                },
                 "Resources": [
                     {
                         "Type": "AwsKinesisDataAnalyticsApplication",
@@ -127,7 +132,13 @@ def kda_log_to_cloudwatch_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/kinesisanalytics/latest/java/best-practices.html#how-dev-bp-logging",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Kinesis Data Analytics",
+                    "AssetType": "Application"
+                },
                 "Resources": [
                     {
                         "Type": "AwsKinesisDataAnalyticsApplication",

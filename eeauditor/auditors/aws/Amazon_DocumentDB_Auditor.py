@@ -866,7 +866,7 @@ def documentdb_parameter_group_audit_log_check(cache: dict, session, awsAccountI
                                 "Provider": "AWS",
                                 "AssetClass": "Database",
                                 "AssetService": "Amazon DocumentDB",
-                                "AssetType": "Database Parameter Group"
+                                "AssetType": "Database Cluster Parameter Group"
                             },
                             "Resources": [
                                 {
@@ -926,7 +926,7 @@ def documentdb_parameter_group_audit_log_check(cache: dict, session, awsAccountI
                                 "Provider": "AWS",
                                 "AssetClass": "Database",
                                 "AssetService": "Amazon DocumentDB",
-                                "AssetType": "Database Parameter Group"
+                                "AssetType": "Database Cluster Parameter Group"
                             },
                             "Resources": [
                                 {
@@ -1009,7 +1009,7 @@ def documentdb_parameter_group_tls_enforcement_check(cache: dict, session, awsAc
                                 "Provider": "AWS",
                                 "AssetClass": "Database",
                                 "AssetService": "Amazon DocumentDB",
-                                "AssetType": "Database Parameter Group"
+                                "AssetType": "Database Cluster Parameter Group"
                             },
                             "Resources": [
                                 {
@@ -1071,7 +1071,7 @@ def documentdb_parameter_group_tls_enforcement_check(cache: dict, session, awsAc
                                 "Provider": "AWS",
                                 "AssetClass": "Database",
                                 "AssetService": "Amazon DocumentDB",
-                                "AssetType": "Database Parameter Group"
+                                "AssetType": "Database Cluster Parameter Group"
                             },
                             "Resources": [
                                 {

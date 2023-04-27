@@ -68,7 +68,13 @@ def emr_cluster_security_configuration_check(cache: dict, session, awsAccountId:
                         "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-security-configurations.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Elastic MapReduce",
+                    "AssetType": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEmrCluster",
@@ -139,7 +145,13 @@ def emr_cluster_security_configuration_check(cache: dict, session, awsAccountId:
                             "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-security-configurations.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Analytics",
+                        "AssetService": "Amazon Elastic MapReduce",
+                        "AssetType": "Cluster"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEmrCluster",
@@ -235,7 +247,13 @@ def emr_security_config_encryption_in_transit_check(cache: dict, session, awsAcc
                                     "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-data-encryption-options.html#emr-encryption-intransit",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Analytics",
+                                "AssetService": "Amazon Elastic MapReduce",
+                                "AssetType": "Cluster"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsEmrCluster",
@@ -296,7 +314,13 @@ def emr_security_config_encryption_in_transit_check(cache: dict, session, awsAcc
                                     "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-data-encryption-options.html#emr-encryption-intransit",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Analytics",
+                                "AssetService": "Amazon Elastic MapReduce",
+                                "AssetType": "Cluster"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsEmrCluster",
@@ -390,7 +414,13 @@ def emr_security_config_encryption_at_rest_check(cache: dict, session, awsAccoun
                                     "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-data-encryption-options.html#emr-encryption-s3",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Analytics",
+                                "AssetService": "Amazon Elastic MapReduce",
+                                "AssetType": "Cluster"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsEmrCluster",
@@ -446,7 +476,13 @@ def emr_security_config_encryption_at_rest_check(cache: dict, session, awsAccoun
                                     "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-data-encryption-options.html#emr-encryption-s3",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Analytics",
+                                "AssetService": "Amazon Elastic MapReduce",
+                                "AssetType": "Cluster"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsEmrCluster",
@@ -537,7 +573,13 @@ def emr_security_config_config_ebs_encryption_check(cache: dict, session, awsAcc
                                     "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-data-encryption-options.html#emr-encryption-localdisk",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Analytics",
+                                "AssetService": "Amazon Elastic MapReduce",
+                                "AssetType": "Cluster"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsEmrCluster",
@@ -593,7 +635,13 @@ def emr_security_config_config_ebs_encryption_check(cache: dict, session, awsAcc
                                     "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-data-encryption-options.html#emr-encryption-localdisk",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Analytics",
+                                "AssetService": "Amazon Elastic MapReduce",
+                                "AssetType": "Cluster"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsEmrCluster",
@@ -651,7 +699,13 @@ def emr_security_config_config_ebs_encryption_check(cache: dict, session, awsAcc
                                     "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-data-encryption-options.html#emr-encryption-localdisk",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Analytics",
+                                "AssetService": "Amazon Elastic MapReduce",
+                                "AssetType": "Cluster"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsEmrCluster",
@@ -735,7 +789,13 @@ def emr_security_config_kerberos_check(cache: dict, session, awsAccountId: str, 
                                 "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-kerberos.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Analytics",
+                            "AssetService": "Amazon Elastic MapReduce",
+                            "AssetType": "Cluster"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsEmrCluster",
@@ -803,7 +863,13 @@ def emr_security_config_kerberos_check(cache: dict, session, awsAccountId: str, 
                                     "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-kerberos.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Analytics",
+                                "AssetService": "Amazon Elastic MapReduce",
+                                "AssetType": "Cluster"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsEmrCluster",
@@ -893,7 +959,13 @@ def emr_cluster_termination_protection_check(cache: dict, session, awsAccountId:
                             "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/UsingEMR_TerminationProtection.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Analytics",
+                        "AssetService": "Amazon Elastic MapReduce",
+                        "AssetType": "Cluster"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEmrCluster",
@@ -949,7 +1021,13 @@ def emr_cluster_termination_protection_check(cache: dict, session, awsAccountId:
                             "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/UsingEMR_TerminationProtection.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Analytics",
+                        "AssetService": "Amazon Elastic MapReduce",
+                        "AssetType": "Cluster"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEmrCluster",
@@ -1021,7 +1099,13 @@ def emr_cluster_logging_check(cache: dict, session, awsAccountId: str, awsRegion
                         "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-plan-debugging.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Elastic MapReduce",
+                    "AssetType": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEmrCluster",
@@ -1080,7 +1164,13 @@ def emr_cluster_logging_check(cache: dict, session, awsAccountId: str, awsRegion
                             "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-plan-debugging.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Analytics",
+                        "AssetService": "Amazon Elastic MapReduce",
+                        "AssetType": "Cluster"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEmrCluster",
@@ -1149,7 +1239,13 @@ def emr_cluster_block_secgroup_check(cache: dict, session, awsAccountId: str, aw
                         "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-block-public-access.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "Amazon Elastic MapReduce",
+                    "AssetType": "Account Block Public Security Group Rules Setting"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAccount",
@@ -1204,7 +1300,13 @@ def emr_cluster_block_secgroup_check(cache: dict, session, awsAccountId: str, aw
                         "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-block-public-access.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Management & Governance",
+                    "AssetService": "Amazon Elastic MapReduce",
+                    "AssetType": "Account Block Public Security Group Rules Setting"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAccount",

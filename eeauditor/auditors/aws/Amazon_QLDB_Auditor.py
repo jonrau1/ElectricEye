@@ -69,7 +69,13 @@ def qldb_deletion_protection_check(cache: dict, session, awsAccountId: str, awsR
                             "Url": "https://docs.aws.amazon.com/qldb/latest/developerguide/ledger-management.basics.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Blockchain",
+                        "AssetService": "Amazon Quantum Ledger Database",
+                        "AssetType": "Ledger"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsQldbLedger",
@@ -124,7 +130,13 @@ def qldb_deletion_protection_check(cache: dict, session, awsAccountId: str, awsR
                             "Url": "https://docs.aws.amazon.com/qldb/latest/developerguide/ledger-management.basics.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Blockchain",
+                        "AssetService": "Amazon Quantum Ledger Database",
+                        "AssetType": "Ledger"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsQldbLedger",
@@ -199,7 +211,13 @@ def qldb_export_export_encryption_check(cache: dict, session, awsAccountId: str,
                             "Url": "https://docs.aws.amazon.com/qldb/latest/developerguide/export-journal.request.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Blockchain",
+                        "AssetService": "Amazon Quantum Ledger Database",
+                        "AssetType": "Journal Export"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsQldbExport",
@@ -246,7 +264,13 @@ def qldb_export_export_encryption_check(cache: dict, session, awsAccountId: str,
                             "Url": "https://docs.aws.amazon.com/qldb/latest/developerguide/export-journal.request.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Blockchain",
+                        "AssetService": "Amazon Quantum Ledger Database",
+                        "AssetType": "Journal Export"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsQldbExport",

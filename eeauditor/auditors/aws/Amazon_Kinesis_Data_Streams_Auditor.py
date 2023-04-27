@@ -70,7 +70,13 @@ def kinesis_stream_encryption_check(cache: dict, session, awsAccountId: str, aws
                         "Url": "https://docs.aws.amazon.com/streams/latest/dev/getting-started-with-sse.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Kinesis Data Stream",
+                    "AssetType": "Stream"
+                },
                 "Resources": [
                     {
                         "Type": "AwsKinesisStream",
@@ -119,7 +125,13 @@ def kinesis_stream_encryption_check(cache: dict, session, awsAccountId: str, aws
                         "Url": "https://docs.aws.amazon.com/streams/latest/dev/getting-started-with-sse.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Kinesis Data Stream",
+                    "AssetType": "Stream"
+                },
                 "Resources": [
                     {
                         "Type": "AwsKinesisStream",
@@ -184,7 +196,13 @@ def kinesis_enhanced_monitoring_check(cache: dict, session, awsAccountId: str, a
                             "Url": "https://docs.aws.amazon.com/streams/latest/dev/monitoring-with-cloudwatch.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Analytics",
+                        "AssetService": "Amazon Kinesis Data Stream",
+                        "AssetType": "Stream"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsKinesisStream",
@@ -236,7 +254,13 @@ def kinesis_enhanced_monitoring_check(cache: dict, session, awsAccountId: str, a
                             "Url": "https://docs.aws.amazon.com/streams/latest/dev/monitoring-with-cloudwatch.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Analytics",
+                        "AssetService": "Amazon Kinesis Data Stream",
+                        "AssetType": "Stream"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsKinesisStream",

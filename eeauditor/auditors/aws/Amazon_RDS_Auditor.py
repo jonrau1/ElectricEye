@@ -127,7 +127,13 @@ def rds_instance_ha_check(cache: dict, session, awsAccountId: str, awsRegion: st
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -190,7 +196,13 @@ def rds_instance_ha_check(cache: dict, session, awsAccountId: str, awsRegion: st
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -270,7 +282,13 @@ def rds_instance_public_access_check(cache: dict, session, awsAccountId: str, aw
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html#USER_VPC.Hiding",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -336,7 +354,13 @@ def rds_instance_public_access_check(cache: dict, session, awsAccountId: str, aw
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html#USER_VPC.Hiding",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -416,7 +440,13 @@ def rds_instance_storage_encryption_check(cache: dict, session, awsAccountId: st
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html#Overview.Encryption.Enabling"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -474,7 +504,13 @@ def rds_instance_storage_encryption_check(cache: dict, session, awsAccountId: st
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html#Overview.Encryption.Enabling"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -552,7 +588,13 @@ def rds_instance_iam_auth_check(cache: dict, session, awsAccountId: str, awsRegi
                             "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Database",
+                        "AssetService": "Amazon Relational Database Service",
+                        "AssetType": "Database Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsRdsDbInstance",
@@ -620,7 +662,13 @@ def rds_instance_iam_auth_check(cache: dict, session, awsAccountId: str, awsRegi
                             "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Database",
+                        "AssetService": "Amazon Relational Database Service",
+                        "AssetType": "Database Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsRdsDbInstance",
@@ -687,7 +735,13 @@ def rds_instance_iam_auth_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -789,7 +843,13 @@ def rds_instance_domain_join_check(cache: dict, session, awsAccountId: str, awsR
                             "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/kerberos-authentication.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Database",
+                        "AssetService": "Amazon Relational Database Service",
+                        "AssetType": "Database Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsRdsDbInstance",
@@ -857,7 +917,13 @@ def rds_instance_domain_join_check(cache: dict, session, awsAccountId: str, awsR
                             "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/kerberos-authentication.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Database",
+                        "AssetService": "Amazon Relational Database Service",
+                        "AssetType": "Database Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsRdsDbInstance",
@@ -923,7 +989,13 @@ def rds_instance_domain_join_check(cache: dict, session, awsAccountId: str, awsR
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/kerberos-authentication.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -1004,7 +1076,13 @@ def rds_instance_performance_insights_check(cache: dict, session, awsAccountId: 
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -1064,7 +1142,13 @@ def rds_instance_performance_insights_check(cache: dict, session, awsAccountId: 
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -1138,7 +1222,13 @@ def rds_instance_deletion_protection_check(cache: dict, session, awsAccountId: s
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_DeleteInstance.html#USER_DeleteInstance.DeletionProtection",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -1201,7 +1291,13 @@ def rds_instance_deletion_protection_check(cache: dict, session, awsAccountId: s
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_DeleteInstance.html#USER_DeleteInstance.DeletionProtection",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -1281,7 +1377,13 @@ def rds_instance_cloudwatch_logging_check(cache: dict, session, awsAccountId: st
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.html#USER_LogAccess.Procedural.UploadtoCloudWatch",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -1341,7 +1443,13 @@ def rds_instance_cloudwatch_logging_check(cache: dict, session, awsAccountId: st
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.html#USER_LogAccess.Procedural.UploadtoCloudWatch",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -1414,7 +1522,13 @@ def rds_snapshot_encryption_check(cache: dict, session, awsAccountId: str, awsRe
                         "Url": "https://aws.amazon.com/premiumsupport/knowledge-center/encrypt-rds-snapshots/",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetType": "Database Snapshot"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbSnapshot",
@@ -1463,7 +1577,13 @@ def rds_snapshot_encryption_check(cache: dict, session, awsAccountId: str, awsRe
                         "Url": "https://aws.amazon.com/premiumsupport/knowledge-center/encrypt-rds-snapshots/"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetType": "Database Snapshot"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbSnapshot",
@@ -1531,7 +1651,13 @@ def rds_snapshot_public_share_check(cache: dict, session, awsAccountId: str, aws
                                 "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ShareSnapshot.html#USER_ShareSnapshot.Sharing",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Database",
+                            "AssetService": "Amazon Relational Database Service",
+                            "AssetType": "Database Snapshot"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsRdsDbSnapshot",
@@ -1587,7 +1713,13 @@ def rds_snapshot_public_share_check(cache: dict, session, awsAccountId: str, aws
                                 "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ShareSnapshot.html#USER_ShareSnapshot.Sharing",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Database",
+                            "AssetService": "Amazon Relational Database Service",
+                            "AssetType": "Database Snapshot"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsRdsDbSnapshot",
@@ -1660,7 +1792,13 @@ def rds_aurora_cluster_activity_streams_check(cache: dict, session, awsAccountId
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/DBActivityStreams.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetType": "Database Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbCluster",
@@ -1722,7 +1860,13 @@ def rds_aurora_cluster_activity_streams_check(cache: dict, session, awsAccountId
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/DBActivityStreams.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetType": "Database Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbCluster",
@@ -1802,7 +1946,13 @@ def rds_aurora_cluster_encryption_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/DBActivityStreams.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetType": "Database Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbCluster",
@@ -1862,7 +2012,13 @@ def rds_aurora_cluster_encryption_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/DBActivityStreams.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetType": "Database Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbCluster",
@@ -1936,7 +2092,13 @@ def rds_instance_snapshot_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/disaster-recovery-resiliency.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -1998,7 +2160,13 @@ def rds_instance_snapshot_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/disaster-recovery-resiliency.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -2101,7 +2269,13 @@ def rds_instance_secgroup_risk_check(cache: dict, session, awsAccountId: str, aw
                                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.RDSSecurityGroups.html",
                                     }
                                 },
-                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "ProductFields": {
+                                    "ProductName": "ElectricEye",
+                                    "Provider": "AWS",
+                                    "AssetClass": "Database",
+                                    "AssetService": "Amazon Relational Database Service",
+                                    "AssetType": "Database Instance"
+                                },
                                 "Resources": [
                                     {
                                         "Type": "AwsRdsDbInstance",
@@ -2164,7 +2338,13 @@ def rds_instance_secgroup_risk_check(cache: dict, session, awsAccountId: str, aw
                                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.RDSSecurityGroups.html",
                                     }
                                 },
-                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "ProductFields": {
+                                    "ProductName": "ElectricEye",
+                                    "Provider": "AWS",
+                                    "AssetClass": "Database",
+                                    "AssetService": "Amazon Relational Database Service",
+                                    "AssetType": "Database Instance"
+                                },
                                 "Resources": [
                                     {
                                         "Type": "AwsRdsDbInstance",
@@ -2245,7 +2425,13 @@ def rds_instance_instance_alerting_check(cache: dict, session, awsAccountId: str
                                 "Url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html#fsbp-rds-20"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Database",
+                            "AssetService": "Amazon Relational Database Service",
+                            "AssetType": "Event Subscription"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsAccount",
@@ -2294,7 +2480,13 @@ def rds_instance_instance_alerting_check(cache: dict, session, awsAccountId: str
                                 "Url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html#fsbp-rds-20"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Database",
+                            "AssetService": "Amazon Relational Database Service",
+                            "AssetType": "Event Subscription"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsAccount",
@@ -2344,7 +2536,13 @@ def rds_instance_instance_alerting_check(cache: dict, session, awsAccountId: str
                             "Url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html#fsbp-rds-20"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Database",
+                        "AssetService": "Amazon Relational Database Service",
+                        "AssetType": "Event Subscription"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsAccount",
@@ -2394,7 +2592,13 @@ def rds_instance_instance_alerting_check(cache: dict, session, awsAccountId: str
                     "Url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html#fsbp-rds-20"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Database",
+                "AssetService": "Amazon Relational Database Service",
+                "AssetType": "Event Subscription"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
@@ -2462,7 +2666,13 @@ def rds_instance_parameter_group_alerting_check(cache: dict, session, awsAccount
                                 "Url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html#fsbp-rds-21"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Database",
+                            "AssetService": "Amazon Relational Database Service",
+                            "AssetType": "Event Subscription"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsAccount",
@@ -2511,7 +2721,13 @@ def rds_instance_parameter_group_alerting_check(cache: dict, session, awsAccount
                                 "Url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html#fsbp-rds-20"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "AssetClass": "Database",
+                            "AssetService": "Amazon Relational Database Service",
+                            "AssetType": "Event Subscription"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsAccount",
@@ -2561,7 +2777,13 @@ def rds_instance_parameter_group_alerting_check(cache: dict, session, awsAccount
                             "Url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html#fsbp-rds-20"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Database",
+                        "AssetService": "Amazon Relational Database Service",
+                        "AssetType": "Event Subscription"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsAccount",
@@ -2611,7 +2833,13 @@ def rds_instance_parameter_group_alerting_check(cache: dict, session, awsAccount
                     "Url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html#fsbp-rds-20"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "AssetClass": "Database",
+                "AssetService": "Amazon Relational Database Service",
+                "AssetType": "Event Subscription"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
@@ -2735,7 +2963,13 @@ def rds_postgresql_log_fwd_vuln_check(cache: dict, session, awsAccountId: str, a
                             "Url": "https://aws.amazon.com/security/security-bulletins/AWS-2022-004/",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Database",
+                        "AssetService": "Amazon Relational Database Service",
+                        "AssetType": "Database Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsRdsDbInstance",
@@ -2818,7 +3052,13 @@ def rds_postgresql_log_fwd_vuln_check(cache: dict, session, awsAccountId: str, a
                             "Url": "https://aws.amazon.com/security/security-bulletins/AWS-2022-004/",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Database",
+                        "AssetService": "Amazon Relational Database Service",
+                        "AssetType": "Database Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsRdsDbInstance",
@@ -2901,7 +3141,13 @@ def rds_postgresql_log_fwd_vuln_check(cache: dict, session, awsAccountId: str, a
                         "Url": "https://aws.amazon.com/security/security-bulletins/AWS-2022-004/",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -3010,7 +3256,13 @@ def rds_aurora_postgresql_log_fwd_vuln_check(cache: dict, session, awsAccountId:
                             "Url": "https://aws.amazon.com/security/security-bulletins/AWS-2022-004/",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Database",
+                        "AssetService": "Amazon Relational Database Service",
+                        "AssetType": "Database Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsRdsDbInstance",
@@ -3093,7 +3345,13 @@ def rds_aurora_postgresql_log_fwd_vuln_check(cache: dict, session, awsAccountId:
                             "Url": "https://aws.amazon.com/security/security-bulletins/AWS-2022-004/",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "AssetClass": "Database",
+                        "AssetService": "Amazon Relational Database Service",
+                        "AssetType": "Database Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsRdsDbInstance",
@@ -3176,7 +3434,13 @@ def rds_aurora_postgresql_log_fwd_vuln_check(cache: dict, session, awsAccountId:
                         "Url": "https://aws.amazon.com/security/security-bulletins/AWS-2022-004/",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetType": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
