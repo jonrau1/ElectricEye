@@ -21,6 +21,8 @@
 import datetime
 from check_register import CheckRegister
 import googleapiclient.discovery
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -65,6 +67,9 @@ def gce_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRe
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for gce in get_compute_engine_instances(cache, gcpProjectId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(gce,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         id = gce["id"]
         name = gce["name"]
         description = gce["description"]
@@ -97,9 +102,13 @@ def gce_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRe
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "Instance"
+                    "AssetComponent": "Instance"
                 },
                 "Resources": [
                     {
@@ -167,9 +176,13 @@ def gce_instance_deletion_protection_check(cache: dict, awsAccountId: str, awsRe
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "Instance"
+                    "AssetComponent": "Instance"
                 },
                 "Resources": [
                     {
@@ -222,6 +235,9 @@ def gce_instance_ip_forwarding_check(cache: dict, awsAccountId: str, awsRegion: 
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for gce in get_compute_engine_instances(cache, gcpProjectId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(gce,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         id = gce["id"]
         name = gce["name"]
         description = gce["description"]
@@ -254,9 +270,13 @@ def gce_instance_ip_forwarding_check(cache: dict, awsAccountId: str, awsRegion: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "Instance"
+                    "AssetComponent": "Instance"
                 },
                 "Resources": [
                     {
@@ -324,9 +344,13 @@ def gce_instance_ip_forwarding_check(cache: dict, awsAccountId: str, awsRegion: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "Instance"
+                    "AssetComponent": "Instance"
                 },
                 "Resources": [
                     {
@@ -379,6 +403,9 @@ def gce_instance_auto_restart_check(cache: dict, awsAccountId: str, awsRegion: s
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for gce in get_compute_engine_instances(cache, gcpProjectId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(gce,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         id = gce["id"]
         name = gce["name"]
         description = gce["description"]
@@ -411,9 +438,13 @@ def gce_instance_auto_restart_check(cache: dict, awsAccountId: str, awsRegion: s
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "Instance"
+                    "AssetComponent": "Instance"
                 },
                 "Resources": [
                     {
@@ -479,9 +510,13 @@ def gce_instance_auto_restart_check(cache: dict, awsAccountId: str, awsRegion: s
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "Instance"
+                    "AssetComponent": "Instance"
                 },
                 "Resources": [
                     {
@@ -532,6 +567,9 @@ def gce_instance_secure_boot_check(cache: dict, awsAccountId: str, awsRegion: st
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for gce in get_compute_engine_instances(cache, gcpProjectId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(gce,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         id = gce["id"]
         name = gce["name"]
         description = gce["description"]
@@ -564,9 +602,13 @@ def gce_instance_secure_boot_check(cache: dict, awsAccountId: str, awsRegion: st
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "Instance"
+                    "AssetComponent": "Instance"
                 },
                 "Resources": [
                     {
@@ -631,9 +673,13 @@ def gce_instance_secure_boot_check(cache: dict, awsAccountId: str, awsRegion: st
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "Instance"
+                    "AssetComponent": "Instance"
                 },
                 "Resources": [
                     {
@@ -683,6 +729,9 @@ def gce_instance_vtpm_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for gce in get_compute_engine_instances(cache, gcpProjectId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(gce,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         id = gce["id"]
         name = gce["name"]
         description = gce["description"]
@@ -715,9 +764,13 @@ def gce_instance_vtpm_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "Instance"
+                    "AssetComponent": "Instance"
                 },
                 "Resources": [
                     {
@@ -782,9 +835,13 @@ def gce_instance_vtpm_check(cache: dict, awsAccountId: str, awsRegion: str, awsP
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "Instance"
+                    "AssetComponent": "Instance"
                 },
                 "Resources": [
                     {
@@ -834,6 +891,9 @@ def gce_instance_integrity_mon_check(cache: dict, awsAccountId: str, awsRegion: 
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for gce in get_compute_engine_instances(cache, gcpProjectId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(gce,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         id = gce["id"]
         name = gce["name"]
         description = gce["description"]
@@ -866,9 +926,13 @@ def gce_instance_integrity_mon_check(cache: dict, awsAccountId: str, awsRegion: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "Instance"
+                    "AssetComponent": "Instance"
                 },
                 "Resources": [
                     {
@@ -933,9 +997,13 @@ def gce_instance_integrity_mon_check(cache: dict, awsAccountId: str, awsRegion: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "Instance"
+                    "AssetComponent": "Instance"
                 },
                 "Resources": [
                     {
@@ -985,6 +1053,9 @@ def gce_instance_siip_auto_update_check(cache: dict, awsAccountId: str, awsRegio
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for gce in get_compute_engine_instances(cache, gcpProjectId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(gce,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         id = gce["id"]
         name = gce["name"]
         description = gce["description"]
@@ -1017,9 +1088,13 @@ def gce_instance_siip_auto_update_check(cache: dict, awsAccountId: str, awsRegio
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "Instance"
+                    "AssetComponent": "Instance"
                 },
                 "Resources": [
                     {
@@ -1084,9 +1159,13 @@ def gce_instance_siip_auto_update_check(cache: dict, awsAccountId: str, awsRegio
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "Instance"
+                    "AssetComponent": "Instance"
                 },
                 "Resources": [
                     {
@@ -1136,6 +1215,9 @@ def gce_instance_confidential_compute_update_check(cache: dict, awsAccountId: st
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for gce in get_compute_engine_instances(cache, gcpProjectId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(gce,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         id = gce["id"]
         name = gce["name"]
         description = gce["description"]
@@ -1168,9 +1250,13 @@ def gce_instance_confidential_compute_update_check(cache: dict, awsAccountId: st
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "Instance"
+                    "AssetComponent": "Instance"
                 },
                 "Resources": [
                     {
@@ -1242,9 +1328,13 @@ def gce_instance_confidential_compute_update_check(cache: dict, awsAccountId: st
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "Instance"
+                    "AssetComponent": "Instance"
                 },
                 "Resources": [
                     {
@@ -1302,6 +1392,9 @@ def gce_instance_serial_port_access_check(cache: dict, awsAccountId: str, awsReg
     compute = googleapiclient.discovery.build('compute', 'v1')
 
     for gce in get_compute_engine_instances(cache, gcpProjectId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(gce,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         id = gce["id"]
         name = gce["name"]
         description = gce["description"]
@@ -1347,9 +1440,13 @@ def gce_instance_serial_port_access_check(cache: dict, awsAccountId: str, awsReg
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "Instance"
+                    "AssetComponent": "Instance"
                 },
                 "Resources": [
                     {
@@ -1417,9 +1514,13 @@ def gce_instance_serial_port_access_check(cache: dict, awsAccountId: str, awsReg
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "Instance"
+                    "AssetComponent": "Instance"
                 },
                 "Resources": [
                     {
@@ -1473,6 +1574,9 @@ def gce_instance_oslogon_access_check(cache: dict, awsAccountId: str, awsRegion:
     compute = googleapiclient.discovery.build('compute', 'v1')
 
     for gce in get_compute_engine_instances(cache, gcpProjectId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(gce,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         id = gce["id"]
         name = gce["name"]
         description = gce["description"]
@@ -1641,6 +1745,9 @@ def gce_instance_oslogon_2fa_access_check(cache: dict, awsAccountId: str, awsReg
     compute = googleapiclient.discovery.build('compute', 'v1')
 
     for gce in get_compute_engine_instances(cache, gcpProjectId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(gce,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         id = gce["id"]
         name = gce["name"]
         description = gce["description"]
@@ -1846,6 +1953,9 @@ def gce_instance_block_proj_ssh_keys_check(cache: dict, awsAccountId: str, awsRe
     compute = googleapiclient.discovery.build('compute', 'v1')
 
     for gce in get_compute_engine_instances(cache, gcpProjectId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(gce,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         id = gce["id"]
         name = gce["name"]
         description = gce["description"]
@@ -1889,9 +1999,13 @@ def gce_instance_block_proj_ssh_keys_check(cache: dict, awsAccountId: str, awsRe
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "Instance"
+                    "AssetComponent": "Instance"
                 },
                 "Resources": [
                     {
@@ -1962,9 +2076,13 @@ def gce_instance_block_proj_ssh_keys_check(cache: dict, awsAccountId: str, awsRe
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "Instance"
+                    "AssetComponent": "Instance"
                 },
                 "Resources": [
                     {
@@ -2020,6 +2138,9 @@ def gce_instance_public_ip_check(cache: dict, awsAccountId: str, awsRegion: str,
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for gce in get_compute_engine_instances(cache, gcpProjectId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(gce,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         id = gce["id"]
         name = gce["name"]
         description = gce["description"]
@@ -2058,9 +2179,13 @@ def gce_instance_public_ip_check(cache: dict, awsAccountId: str, awsRegion: str,
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "Instance"
+                    "AssetComponent": "Instance"
                 },
                 "Resources": [
                     {
@@ -2128,9 +2253,13 @@ def gce_instance_public_ip_check(cache: dict, awsAccountId: str, awsRegion: str,
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "Google Compute Engine",
-                    "AssetType": "Instance"
+                    "AssetComponent": "Instance"
                 },
                 "Resources": [
                     {
