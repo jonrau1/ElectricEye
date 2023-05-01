@@ -27,6 +27,13 @@ class JsonProvider(object):
 
     def write_findings(self, findings: list, output_file: str, **kwargs):
         print(f"Writing {len(findings)} findings to JSON file")
+
+        # Use another list comprehension to remove `ProductFields.AssetDetails` from non-Asset reporting outputs
+        newFindings = [
+            {**d, "ProductFields": {k: v for k, v in d["ProductFields"].items() if k != "AssetDetails"}} for d in findings
+        ]
+
+        del findings
         
         # create output file based on inputs
         jsonfile = f"{output_file}.json"
@@ -34,7 +41,7 @@ class JsonProvider(object):
         
         with open(jsonfile, "w") as jsonfile:
             json.dump(
-                findings,
+                newFindings,
                 jsonfile,
                 indent=4,
                 default=str

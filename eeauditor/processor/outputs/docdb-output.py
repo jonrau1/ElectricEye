@@ -81,9 +81,13 @@ class JsonProvider(object):
         mycol = eeMongoDb["ElectricEye-Findings"]
 
         # write to mongo in chunks of 40 using `insert_many()` method
-        for i in range(0, len(findings), 40):
+        noDetails = [
+            {**d, "ProductFields": {k: v for k, v in d["ProductFields"].items() if k != "AssetDetails"}} for d in findings
+        ]
+        del findings
+        for i in range(0, len(noDetails), 40):
             # here is where the fun begins
-            chunked = findings[i:i + 40]
+            chunked = noDetails[i:i + 40]
 
             try:
                 mycol.insert_many(chunked)
