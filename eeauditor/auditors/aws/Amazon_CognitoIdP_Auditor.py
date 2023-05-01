@@ -19,6 +19,8 @@
 #under the License.
 import datetime
 from check_register import CheckRegister, accumulate_paged_results
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -43,6 +45,9 @@ def cognitoidp_cis_password_check(cache: dict, session, awsAccountId: str, awsRe
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for userpools in list_user_pools(cache, session)["UserPools"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(userpools,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         userPoolId = str(userpools["Id"])
         response = cognitoidp.describe_user_pool(UserPoolId=userPoolId)
         userPoolArn = str(response["UserPool"]["Arn"])
@@ -84,9 +89,13 @@ def cognitoidp_cis_password_check(cache: dict, session, awsAccountId: str, awsRe
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
                     "AssetService": "Amazon Cogntio",
-                    "AssetType": "User Pool"
+                    "AssetComponent": "User Pool"
                 },
                 "Resources": [
                     {
@@ -155,9 +164,13 @@ def cognitoidp_cis_password_check(cache: dict, session, awsAccountId: str, awsRe
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
                     "AssetService": "Amazon Cogntio",
-                    "AssetType": "User Pool"
+                    "AssetComponent": "User Pool"
                 },
                 "Resources": [
                     {
@@ -209,6 +222,9 @@ def cognitoidp_temp_password_check(cache: dict, session, awsAccountId: str, awsR
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for userpools in list_user_pools(cache, session)["UserPools"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(userpools,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         userPoolId = str(userpools["Id"])
         response = cognitoidp.describe_user_pool(UserPoolId=userPoolId)
         userPoolArn = str(response["UserPool"]["Arn"])
@@ -240,9 +256,13 @@ def cognitoidp_temp_password_check(cache: dict, session, awsAccountId: str, awsR
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
                     "AssetService": "Amazon Cogntio",
-                    "AssetType": "User Pool"
+                    "AssetComponent": "User Pool"
                 },
                 "Resources": [
                     {
@@ -313,9 +333,13 @@ def cognitoidp_temp_password_check(cache: dict, session, awsAccountId: str, awsR
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
                     "AssetService": "Amazon Cogntio",
-                    "AssetType": "User Pool"
+                    "AssetComponent": "User Pool"
                 },
                 "Resources": [
                     {
@@ -369,6 +393,9 @@ def cognitoidp_mfa_check(cache: dict, session, awsAccountId: str, awsRegion: str
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for userpools in list_user_pools(cache, session)["UserPools"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(userpools,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         userPoolId = str(userpools["Id"])
         # Get specific user pool info
         r = cognitoidp.describe_user_pool(UserPoolId=userPoolId)
@@ -400,9 +427,13 @@ def cognitoidp_mfa_check(cache: dict, session, awsAccountId: str, awsRegion: str
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
                     "AssetService": "Amazon Cogntio",
-                    "AssetType": "User Pool"
+                    "AssetComponent": "User Pool"
                 },
                 "Resources": [
                     {
@@ -470,9 +501,13 @@ def cognitoidp_mfa_check(cache: dict, session, awsAccountId: str, awsRegion: str
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
                     "AssetService": "Amazon Cogntio",
-                    "AssetType": "User Pool"
+                    "AssetComponent": "User Pool"
                 },
                 "Resources": [
                     {
@@ -525,6 +560,9 @@ def cognitoidp_waf_check(cache: dict, session, awsAccountId: str, awsRegion: str
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for userpools in list_user_pools(cache, session)["UserPools"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(userpools,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         userPoolId = str(userpools["Id"])
         # Get specific user pool info
         r = cognitoidp.describe_user_pool(UserPoolId=userPoolId)
@@ -561,9 +599,13 @@ def cognitoidp_waf_check(cache: dict, session, awsAccountId: str, awsRegion: str
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
                     "AssetService": "Amazon Cogntio",
-                    "AssetType": "User Pool"
+                    "AssetComponent": "User Pool"
                 },
                 "Resources": [
                     {
@@ -620,9 +662,13 @@ def cognitoidp_waf_check(cache: dict, session, awsAccountId: str, awsRegion: str
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
                     "AssetService": "Amazon Cogntio",
-                    "AssetType": "User Pool"
+                    "AssetComponent": "User Pool"
                 },
                 "Resources": [
                     {
