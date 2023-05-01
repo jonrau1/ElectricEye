@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -33,17 +35,15 @@ def get_redis_cache_clusters(cache, session):
         return response
     
     for cluster in elasticache.describe_cache_clusters(MaxRecords=100)["CacheClusters"]:
-        if cluster["Engine"] != "redis":
-            continue
-        else:
-            redisCacheClusters.append(cluster)
+        if cluster["Engine"] == "redis":
+            redisCacheClusters.append(cluster)            
 
     cache["get_redis_cache_clusters"] = redisCacheClusters
     return cache["get_redis_cache_clusters"]
 
 def get_memcached_cache_clusters(cache, session):
     elasticache = session.client("elasticache")
-    # Write only Redis clusters
+    # Write only Memcached clusters
     memcachedCacheClusters = []
 
     response = cache.get("get_memcached_cache_clusters")
@@ -51,9 +51,7 @@ def get_memcached_cache_clusters(cache, session):
         return response
     
     for cluster in elasticache.describe_cache_clusters(MaxRecords=100)["CacheClusters"]:
-        if cluster["Engine"] != "redis":
-            continue
-        else:
+        if cluster["Engine"] == "memcached":
             memcachedCacheClusters.append(cluster)
 
     cache["get_memcached_cache_clusters"] = memcachedCacheClusters
@@ -65,6 +63,9 @@ def redis_auth_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for clusters in get_redis_cache_clusters(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(clusters,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clusterId = str(clusters["CacheClusterId"])
         engineVersion = str(clusters["EngineVersion"])
         # check for auth token
@@ -99,9 +100,13 @@ def redis_auth_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
-                    "AssetService": "Amazon ElastiCache",
-                    "AssetType": "Cache Cluster"
+                    "AssetService": "Amazon ElastiCache for Redis",
+                    "AssetComponent": "Cache Cluster"
                 },
                 "Resources": [
                     {
@@ -169,9 +174,13 @@ def redis_auth_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
-                    "AssetService": "Amazon ElastiCache",
-                    "AssetType": "Cache Cluster"
+                    "AssetService": "Amazon ElastiCache for Redis",
+                    "AssetComponent": "Cache Cluster"
                 },
                 "Resources": [
                     {
@@ -217,6 +226,9 @@ def encryption_at_rest_check(cache: dict, session, awsAccountId: str, awsRegion:
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for clusters in get_redis_cache_clusters(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(clusters,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clusterId = str(clusters["CacheClusterId"])
         engineVersion = str(clusters["EngineVersion"])
         if str(clusters["AtRestEncryptionEnabled"]) == "False":
@@ -248,9 +260,13 @@ def encryption_at_rest_check(cache: dict, session, awsAccountId: str, awsRegion:
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
-                    "AssetService": "Amazon ElastiCache",
-                    "AssetType": "Cache Cluster"
+                    "AssetService": "Amazon ElastiCache for Redis",
+                    "AssetComponent": "Cache Cluster"
                 },
                 "Resources": [
                     {
@@ -307,9 +323,13 @@ def encryption_at_rest_check(cache: dict, session, awsAccountId: str, awsRegion:
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
-                    "AssetService": "Amazon ElastiCache",
-                    "AssetType": "Cache Cluster"
+                    "AssetService": "Amazon ElastiCache for Redis",
+                    "AssetComponent": "Cache Cluster"
                 },
                 "Resources": [
                     {
@@ -344,6 +364,9 @@ def encryption_in_transit_check(cache: dict, session, awsAccountId: str, awsRegi
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for clusters in get_redis_cache_clusters(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(clusters,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clusterId = str(clusters["CacheClusterId"])
         engineVersion = str(clusters["EngineVersion"])
         # check for encryption in transit
@@ -373,7 +396,17 @@ def encryption_in_transit_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/in-transit-encryption.html#in-transit-encryption-enable",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon ElastiCache for Redis",
+                    "AssetComponent": "Cache Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsElastiCacheCacheCluster",
@@ -431,7 +464,17 @@ def encryption_in_transit_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/in-transit-encryption.html#in-transit-encryption-enable",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon ElastiCache for Redis",
+                    "AssetComponent": "Cache Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsElastiCacheCacheCluster",

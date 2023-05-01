@@ -21,34 +21,44 @@
 import json
 import datetime
 from check_register import CheckRegister
+import base64
 
 registry = CheckRegister()
 
 def list_domain_names(cache, session):
-    elasticsearch = session.client("es")
+    domainDetails = []
+    
     response = cache.get("list_domain_names")
     if response:
         return response
-    cache["list_domain_names"] = elasticsearch.list_domain_names()
+    
+    elasticsearch = session.client("es")
+    for domain in elasticsearch.list_domain_names()["DomainNames"]:
+        domainDetails.append(
+            elasticsearch.describe_elasticsearch_domain(
+                DomainName=domain
+            )
+        )
+
+    cache["list_domain_names"] = domainDetails
     return cache["list_domain_names"]
 
 @registry.register_check("es")
 def dedicated_master_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[OpenSearch.1] OpenSearch/AWS ElasticSearch Service domains should use dedicated master nodes"""
-    elasticsearch = session.client("es")
-    response = list_domain_names(cache, session)
-    myDomainNames = response["DomainNames"]
-    for domains in myDomainNames:
-        esDomainName = str(domains["DomainName"])
-        response = elasticsearch.describe_elasticsearch_domain(DomainName=esDomainName)
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for response in list_domain_names(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        esDomainName = str(response["DomainStatus"]["DomainName"])
         esVersion = str(response["DomainStatus"]["ElasticsearchVersion"])
         domainId = str(response["DomainStatus"]["DomainId"])
         domainArn = str(response["DomainStatus"]["ARN"])
         dedicatedMasterCheck = str(
             response["DomainStatus"]["ElasticsearchClusterConfig"]["DedicatedMasterEnabled"]
         )
-        # ISO Time
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if dedicatedMasterCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -75,6 +85,10 @@ def dedicated_master_check(cache: dict, session, awsAccountId: str, awsRegion: s
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
                     "AssetType": "Search Domain"
@@ -141,6 +155,10 @@ def dedicated_master_check(cache: dict, session, awsAccountId: str, awsRegion: s
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
                     "AssetType": "Search Domain"
@@ -185,12 +203,13 @@ def dedicated_master_check(cache: dict, session, awsAccountId: str, awsRegion: s
 @registry.register_check("es")
 def cognito_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[OpenSearch.2] OpenSearch/AWS ElasticSearch Service domains should use Cognito authentication for Kibana"""
-    elasticsearch = session.client("es")
-    response = list_domain_names(cache, session)
-    myDomainNames = response["DomainNames"]
-    for domains in myDomainNames:
-        esDomainName = str(domains["DomainName"])
-        response = elasticsearch.describe_elasticsearch_domain(DomainName=esDomainName)
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for response in list_domain_names(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        esDomainName = str(response["DomainStatus"]["DomainName"])
         esVersion = str(response["DomainStatus"]["ElasticsearchVersion"])
         domainId = str(response["DomainStatus"]["DomainId"])
         domainArn = str(response["DomainStatus"]["ARN"])
@@ -198,8 +217,6 @@ def cognito_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPa
             cognitoEnabledCheck = str(response["DomainStatus"]["CognitoOptions"]["Enabled"])
         except:
             cognitoEnabledCheck = "False"
-        # ISO Time
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if cognitoEnabledCheck == "False":
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -226,6 +243,10 @@ def cognito_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPa
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
                     "AssetType": "Search Domain"
@@ -297,6 +318,10 @@ def cognito_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPa
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
                     "AssetType": "Search Domain"
@@ -346,12 +371,13 @@ def cognito_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPa
 @registry.register_check("es")
 def encryption_at_rest_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[OpenSearch.3] OpenSearch/AWS ElasticSearch Service domains should be encrypted at rest"""
-    elasticsearch = session.client("es")
-    response = list_domain_names(cache, session)
-    myDomainNames = response["DomainNames"]
-    for domains in myDomainNames:
-        esDomainName = str(domains["DomainName"])
-        response = elasticsearch.describe_elasticsearch_domain(DomainName=esDomainName)
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for response in list_domain_names(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        esDomainName = str(response["DomainStatus"]["DomainName"])
         esVersion = str(response["DomainStatus"]["ElasticsearchVersion"])
         domainId = str(response["DomainStatus"]["DomainId"])
         domainArn = str(response["DomainStatus"]["ARN"])
@@ -387,6 +413,10 @@ def encryption_at_rest_check(cache: dict, session, awsAccountId: str, awsRegion:
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
                     "AssetType": "Search Domain"
@@ -451,6 +481,10 @@ def encryption_at_rest_check(cache: dict, session, awsAccountId: str, awsRegion:
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
                     "AssetType": "Search Domain"
@@ -490,12 +524,13 @@ def encryption_at_rest_check(cache: dict, session, awsAccountId: str, awsRegion:
 @registry.register_check("es")
 def node2node_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[OpenSearch.4] OpenSearch/AWS ElasticSearch Service domains should use node-to-node encryption"""
-    elasticsearch = session.client("es")
-    response = list_domain_names(cache, session)
-    myDomainNames = response["DomainNames"]
-    for domains in myDomainNames:
-        esDomainName = str(domains["DomainName"])
-        response = elasticsearch.describe_elasticsearch_domain(DomainName=esDomainName)
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for response in list_domain_names(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        esDomainName = str(response["DomainStatus"]["DomainName"])
         esVersion = str(response["DomainStatus"]["ElasticsearchVersion"])
         domainId = str(response["DomainStatus"]["DomainId"])
         domainArn = str(response["DomainStatus"]["ARN"])
@@ -533,6 +568,10 @@ def node2node_encryption_check(cache: dict, session, awsAccountId: str, awsRegio
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
                     "AssetType": "Search Domain"
@@ -602,6 +641,10 @@ def node2node_encryption_check(cache: dict, session, awsAccountId: str, awsRegio
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
                     "AssetType": "Search Domain"
@@ -646,12 +689,13 @@ def node2node_encryption_check(cache: dict, session, awsAccountId: str, awsRegio
 @registry.register_check("es")
 def https_enforcement_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[OpenSearch.5] OpenSearch/AWS ElasticSearch Service domains should enforce HTTPS-only communications"""
-    elasticsearch = session.client("es")
-    response = list_domain_names(cache, session)
-    myDomainNames = response["DomainNames"]
-    for domains in myDomainNames:
-        esDomainName = str(domains["DomainName"])
-        response = elasticsearch.describe_elasticsearch_domain(DomainName=esDomainName)
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for response in list_domain_names(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        esDomainName = str(response["DomainStatus"]["DomainName"])
         esVersion = str(response["DomainStatus"]["ElasticsearchVersion"])
         domainId = str(response["DomainStatus"]["DomainId"])
         domainArn = str(response["DomainStatus"]["ARN"])
@@ -689,6 +733,10 @@ def https_enforcement_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
                     "AssetType": "Search Domain"
@@ -758,6 +806,10 @@ def https_enforcement_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
                     "AssetType": "Search Domain"
@@ -802,12 +854,13 @@ def https_enforcement_check(cache: dict, session, awsAccountId: str, awsRegion: 
 @registry.register_check("es")
 def tls_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[OpenSearch.6] OpenSearch/AWS ElasticSearch Service domains that enforce HTTPS-only communications should use a TLS 1.2 security policy"""
-    elasticsearch = session.client("es")
-    response = list_domain_names(cache, session)
-    myDomainNames = response["DomainNames"]
-    for domains in myDomainNames:
-        esDomainName = str(domains["DomainName"])
-        response = elasticsearch.describe_elasticsearch_domain(DomainName=esDomainName)
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for response in list_domain_names(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        esDomainName = str(response["DomainStatus"]["DomainName"])
         esVersion = str(response["DomainStatus"]["ElasticsearchVersion"])
         domainId = str(response["DomainStatus"]["DomainId"])
         domainArn = str(response["DomainStatus"]["ARN"])
@@ -815,10 +868,6 @@ def tls_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
             response["DomainStatus"]["DomainEndpointOptions"]["EnforceHTTPS"]
         )
         if httpsEnforcementCheck == "True":
-            # ISO Time
-            iso8601Time = (
-                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-            )
             tlsPolicyCheck = str(
                 response["DomainStatus"]["DomainEndpointOptions"]["TLSSecurityPolicy"]
             )
@@ -851,6 +900,10 @@ def tls_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Analytics",
                         "AssetService": "Amazon OpenSearch Service",
                         "AssetType": "Search Domain"
@@ -923,6 +976,10 @@ def tls_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Analytics",
                         "AssetService": "Amazon OpenSearch Service",
                         "AssetType": "Search Domain"
@@ -967,24 +1024,23 @@ def tls_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                 }
                 yield finding
         else:
-            pass
+            continue
 
 @registry.register_check("es")
 def elastic_update_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[OpenSearch.7] OpenSearch/AWS ElasticSearch Service domains should be updated to the latest service software version"""
-    elasticsearch = session.client("es")
-    response = list_domain_names(cache, session)
-    myDomainNames = response["DomainNames"]
-    for domains in myDomainNames:
-        esDomainName = str(domains["DomainName"])
-        response = elasticsearch.describe_elasticsearch_domain(DomainName=esDomainName)
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for response in list_domain_names(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        esDomainName = str(response["DomainStatus"]["DomainName"])
         esVersion = str(response["DomainStatus"]["ElasticsearchVersion"])
         domainId = str(response["DomainStatus"]["DomainId"])
         domainArn = str(response["DomainStatus"]["ARN"])
         updateCheck = str(response["DomainStatus"]["ServiceSoftwareOptions"]["UpdateAvailable"])
         updateInformation = str(response["DomainStatus"]["ServiceSoftwareOptions"]["Description"])
-        # ISO Time
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if updateCheck == "True":
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -1013,6 +1069,10 @@ def elastic_update_check(cache: dict, session, awsAccountId: str, awsRegion: str
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
                     "AssetType": "Search Domain"
@@ -1078,6 +1138,10 @@ def elastic_update_check(cache: dict, session, awsAccountId: str, awsRegion: str
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
                     "AssetType": "Search Domain"
@@ -1120,21 +1184,20 @@ def elastic_update_check(cache: dict, session, awsAccountId: str, awsRegion: str
 @registry.register_check("es")
 def elasticsearch_in_vpc_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[OpenSearch.8] OpenSearch/AWS ElasticSearch Service domains should be in a VPC"""
-    elasticsearch = session.client("es")
-    response = list_domain_names(cache, session)
-    myDomainNames = response["DomainNames"]
-    for domains in myDomainNames:
-        esDomainName = str(domains["DomainName"])
-        response = elasticsearch.describe_elasticsearch_domain(DomainName=esDomainName)
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for response in list_domain_names(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        esDomainName = str(response["DomainStatus"]["DomainName"])
         esVersion = str(response["DomainStatus"]["ElasticsearchVersion"])
         domainId = str(response["DomainStatus"]["DomainId"])
         domainArn = str(response["DomainStatus"]["ARN"])
         try:
             vpcId = str(response["VPCOptions"]["VPCId"])
-        except:
+        except KeyError:
             vpcId = "NO_VPC"
-        # ISO Time
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         # This is a failing check
         if vpcId == "NO_VPC":
             finding = {
@@ -1165,6 +1228,10 @@ def elasticsearch_in_vpc_check(cache: dict, session, awsAccountId: str, awsRegio
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
                     "AssetType": "Search Domain"
@@ -1234,6 +1301,10 @@ def elasticsearch_in_vpc_check(cache: dict, session, awsAccountId: str, awsRegio
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
                     "AssetType": "Search Domain"
@@ -1278,24 +1349,25 @@ def elasticsearch_in_vpc_check(cache: dict, session, awsAccountId: str, awsRegio
 @registry.register_check("es")
 def elasticsearch_public_access_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[OpenSearch.9] OpenSearch/AWS ElasticSearch Service domains should not be exposed to the public"""
-    elasticsearch = session.client("es")
-    response = list_domain_names(cache, session)
-    myDomainNames = response["DomainNames"]
-    for domains in myDomainNames:
-        esDomainName = str(domains["DomainName"])
-        response = elasticsearch.describe_elasticsearch_domain(DomainName=esDomainName)
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for response in list_domain_names(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        esDomainName = str(response["DomainStatus"]["DomainName"])
         esVersion = str(response["DomainStatus"]["ElasticsearchVersion"])
         domainId = str(response["DomainStatus"]["DomainId"])
         domainArn = str(response["DomainStatus"]["ARN"])
         # Determine if ES has Cognito Enabled
         try:
             cognitoEnabledCheck = str(response["DomainStatus"]["CognitoOptions"]["Enabled"])
-        except:
+        except KeyError:
             cognitoEnabledCheck = "False"
         # Determine if ES is in a VPC
         try:
             vpcId = str(response["VPCOptions"]["VPCId"])
-        except:
+        except KeyError:
             vpcId = "NO_VPC"
         # Determine if there is a policy and then parse through it. If the "AWS": "*" principal is allowed (anonymous access) without
         # any conditions we can assume there is not anything else to stop them
@@ -1314,7 +1386,7 @@ def elasticsearch_public_access_check(cache: dict, session, awsAccountId: str, a
                     policyAllowAnon = "True"
                 else:
                     policyAllowAnon = "False"
-        except:
+        except KeyError or ValueError:
             policyDoc = ""
             policyJson = "NO_POLICY"
             policyAllowAnon = "NO_POLICY"
@@ -1324,8 +1396,6 @@ def elasticsearch_public_access_check(cache: dict, session, awsAccountId: str, a
             fullPublic = "True"
         else:
             fullPublic = "False"
-        # ISO Time
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         # This is a failing check
         if fullPublic == "True":
             finding = {
@@ -1356,6 +1426,10 @@ def elasticsearch_public_access_check(cache: dict, session, awsAccountId: str, a
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
                     "AssetType": "Search Domain"
@@ -1425,6 +1499,10 @@ def elasticsearch_public_access_check(cache: dict, session, awsAccountId: str, a
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
                     "AssetType": "Search Domain"
