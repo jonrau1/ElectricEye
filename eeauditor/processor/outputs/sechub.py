@@ -30,14 +30,23 @@ class SecHubProvider(object):
         if findings:
             sechub = boto3.client("securityhub")
 
-            # Use a list comprehension to flatten the Description if the length exceeds Security Hub's upper-limit
-            # TODO: [for x["Description"] in findings if len(x["Description"]) > 1024 x["Description"] = x["Description"][:1022]]
+            # Use a list comprehension to flatten the Description if the length exceeds Security Hub's upper-limit of 1024
+            maxDescriptionLength = 1018
+            modifiedDescriptionFindings = [
+                {k: (v[:maxDescriptionLength] + '...' if isinstance(v, str) and len(v) > maxDescriptionLength else v) for k, v in d.items()} for d in findings
+            ]
+            # Use another list comprehension to remove `ProductFields.AssetDetails` from non-Asset reporting outputs
+            newFindings = [
+                {k: v for k, v in d.items() if k != ["ProductFields"]["AssetDetails"]} for d in modifiedDescriptionFindings
+            ]
+
+            del findings
+            del modifiedDescriptionFindings
 
             # Security Hub supports batches of up to 100 findings for the "BIF" API
-            for i in range(0, len(findings), 100):
+            for i in range(0, len(newFindings), 100):
                 sechub.batch_import_findings(
-                    Findings=findings[i : i + 100]
+                    Findings=newFindings[i : i + 100]
                 )
-        
         
         return True
