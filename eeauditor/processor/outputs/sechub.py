@@ -37,7 +37,7 @@ class SecHubProvider(object):
             ]
             # Use another list comprehension to remove `ProductFields.AssetDetails` from non-Asset reporting outputs
             newFindings = [
-                {k: v for k, v in d.items() if k != ["ProductFields"]["AssetDetails"]} for d in modifiedDescriptionFindings
+                {k: v for k, v in d.items() if k != v["ProductFields"]["AssetDetails"]} for d in modifiedDescriptionFindings
             ]
 
             del findings
