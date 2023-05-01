@@ -91,7 +91,7 @@ def dedicated_master_check(cache: dict, session, awsAccountId: str, awsRegion: s
                     "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
-                    "AssetType": "Search Domain"
+                    "AssetComponent": "Search Domain"
                 },
                 "Resources": [
                     {
@@ -161,7 +161,7 @@ def dedicated_master_check(cache: dict, session, awsAccountId: str, awsRegion: s
                     "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
-                    "AssetType": "Search Domain"
+                    "AssetComponent": "Search Domain"
                 },
                 "Resources": [
                     {
@@ -249,7 +249,7 @@ def cognito_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPa
                     "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
-                    "AssetType": "Search Domain"
+                    "AssetComponent": "Search Domain"
                 },
                 "Resources": [
                     {
@@ -324,7 +324,7 @@ def cognito_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPa
                     "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
-                    "AssetType": "Search Domain"
+                    "AssetComponent": "Search Domain"
                 },
                 "Resources": [
                     {
@@ -419,7 +419,7 @@ def encryption_at_rest_check(cache: dict, session, awsAccountId: str, awsRegion:
                     "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
-                    "AssetType": "Search Domain"
+                    "AssetComponent": "Search Domain"
                 },
                 "Resources": [
                     {
@@ -487,7 +487,7 @@ def encryption_at_rest_check(cache: dict, session, awsAccountId: str, awsRegion:
                     "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
-                    "AssetType": "Search Domain"
+                    "AssetComponent": "Search Domain"
                 },
                 "Resources": [
                     {
@@ -574,7 +574,7 @@ def node2node_encryption_check(cache: dict, session, awsAccountId: str, awsRegio
                     "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
-                    "AssetType": "Search Domain"
+                    "AssetComponent": "Search Domain"
                 },
                 "Resources": [
                     {
@@ -647,7 +647,7 @@ def node2node_encryption_check(cache: dict, session, awsAccountId: str, awsRegio
                     "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
-                    "AssetType": "Search Domain"
+                    "AssetComponent": "Search Domain"
                 },
                 "Resources": [
                     {
@@ -739,7 +739,7 @@ def https_enforcement_check(cache: dict, session, awsAccountId: str, awsRegion: 
                     "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
-                    "AssetType": "Search Domain"
+                    "AssetComponent": "Search Domain"
                 },
                 "Resources": [
                     {
@@ -812,7 +812,7 @@ def https_enforcement_check(cache: dict, session, awsAccountId: str, awsRegion: 
                     "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
-                    "AssetType": "Search Domain"
+                    "AssetComponent": "Search Domain"
                 },
                 "Resources": [
                     {
@@ -906,7 +906,7 @@ def tls_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                         "AssetDetails": assetB64,
                         "AssetClass": "Analytics",
                         "AssetService": "Amazon OpenSearch Service",
-                        "AssetType": "Search Domain"
+                        "AssetComponent": "Search Domain"
                     },
                     "Resources": [
                         {
@@ -982,7 +982,7 @@ def tls_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                         "AssetDetails": assetB64,
                         "AssetClass": "Analytics",
                         "AssetService": "Amazon OpenSearch Service",
-                        "AssetType": "Search Domain"
+                        "AssetComponent": "Search Domain"
                     },
                     "Resources": [
                         {
@@ -1075,7 +1075,7 @@ def elastic_update_check(cache: dict, session, awsAccountId: str, awsRegion: str
                     "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
-                    "AssetType": "Search Domain"
+                    "AssetComponent": "Search Domain"
                 },
                 "Resources": [
                     {
@@ -1144,7 +1144,7 @@ def elastic_update_check(cache: dict, session, awsAccountId: str, awsRegion: str
                     "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
-                    "AssetType": "Search Domain"
+                    "AssetComponent": "Search Domain"
                 },
                 "Resources": [
                     {
@@ -1234,7 +1234,7 @@ def elasticsearch_in_vpc_check(cache: dict, session, awsAccountId: str, awsRegio
                     "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
-                    "AssetType": "Search Domain"
+                    "AssetComponent": "Search Domain"
                 },
                 "Resources": [
                     {
@@ -1307,7 +1307,7 @@ def elasticsearch_in_vpc_check(cache: dict, session, awsAccountId: str, awsRegio
                     "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
-                    "AssetType": "Search Domain"
+                    "AssetComponent": "Search Domain"
                 },
                 "Resources": [
                     {
@@ -1432,7 +1432,7 @@ def elasticsearch_public_access_check(cache: dict, session, awsAccountId: str, a
                     "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
-                    "AssetType": "Search Domain"
+                    "AssetComponent": "Search Domain"
                 },
                 "Resources": [
                     {
@@ -1505,7 +1505,7 @@ def elasticsearch_public_access_check(cache: dict, session, awsAccountId: str, a
                     "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon OpenSearch Service",
-                    "AssetType": "Search Domain"
+                    "AssetComponent": "Search Domain"
                 },
                 "Resources": [
                     {
