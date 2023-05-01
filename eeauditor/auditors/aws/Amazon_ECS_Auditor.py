@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -53,6 +55,9 @@ def ecs_cluster_container_insights_check(cache: dict, session, awsAccountId: str
         clusterArn = str(clusters)
         response = ecs.describe_clusters(clusters=[clusterArn])
         for clusterinfo in response["clusters"]:
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(clusterinfo,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             clusterName = str(clusterinfo["clusterName"])
             ecsClusterArn = str(clusterinfo["clusterArn"])
             for settings in clusterinfo["settings"]:
@@ -85,9 +90,13 @@ def ecs_cluster_container_insights_check(cache: dict, session, awsAccountId: str
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Containers",
                             "AssetService": "Amazon Elastic Container Service",
-                            "AssetType": "Cluster"
+                            "AssetComponent": "Cluster"
                         },
                         "Resources": [
                             {
@@ -145,9 +154,13 @@ def ecs_cluster_container_insights_check(cache: dict, session, awsAccountId: str
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Containers",
                             "AssetService": "Amazon Elastic Container Service",
-                            "AssetType": "Cluster"
+                            "AssetComponent": "Cluster"
                         },
                         "Resources": [
                             {
@@ -188,6 +201,9 @@ def ecs_cluster_default_provider_strategy_check(cache: dict, session, awsAccount
         clusterArn = str(clusters)
         response = ecs.describe_clusters(clusters=[clusterArn])
         for clusterinfo in response["clusters"]:
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(clusterinfo,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             clusterName = str(clusterinfo["clusterName"])
             ecsClusterArn = str(clusterinfo["clusterArn"])
             defaultProviderStratCheck = str(clusterinfo["defaultCapacityProviderStrategy"])
@@ -217,9 +233,13 @@ def ecs_cluster_default_provider_strategy_check(cache: dict, session, awsAccount
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Containers",
                         "AssetService": "Amazon Elastic Container Service",
-                        "AssetType": "Cluster"
+                        "AssetComponent": "Cluster"
                     },
                     "Resources": [
                         {
@@ -273,9 +293,13 @@ def ecs_cluster_default_provider_strategy_check(cache: dict, session, awsAccount
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Containers",
                         "AssetService": "Amazon Elastic Container Service",
-                        "AssetType": "Cluster"
+                        "AssetComponent": "Cluster"
                     },
                     "Resources": [
                         {
@@ -310,6 +334,9 @@ def ecs_task_definition_privileged_container_check(cache: dict, session, awsAcco
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for taskdef in list_active_task_definitions(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(taskdef,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         taskDefinitionArn = str(taskdef['taskDefinitionArn'])
         tdefFamily = str(taskdef["family"])
         # Loop container definitions
@@ -352,9 +379,13 @@ def ecs_task_definition_privileged_container_check(cache: dict, session, awsAcco
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Containers",
                         "AssetService": "Amazon Elastic Container Service",
-                        "AssetType": "Task Definition"
+                        "AssetComponent": "Task Definition"
                     },
                     "Resources": [
                         {
@@ -438,9 +469,13 @@ def ecs_task_definition_privileged_container_check(cache: dict, session, awsAcco
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Containers",
                         "AssetService": "Amazon Elastic Container Service",
-                        "AssetType": "Task Definition"
+                        "AssetComponent": "Task Definition"
                     },
                     "Resources": [
                         {
@@ -500,6 +535,9 @@ def ecs_task_definition_security_labels_check(cache: dict, session, awsAccountId
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for taskdef in list_active_task_definitions(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(taskdef,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         taskDefinitionArn = str(taskdef['taskDefinitionArn'])
         tdefFamily = str(taskdef["family"])
         # If there is a network mode of "awsvpc" it is likely a Fargate task - even though EC2 compute can run with that...
@@ -530,9 +568,13 @@ def ecs_task_definition_security_labels_check(cache: dict, session, awsAccountId
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Containers",
                     "AssetService": "Amazon Elastic Container Service",
-                    "AssetType": "Task Definition"
+                    "AssetComponent": "Task Definition"
                 },
                 "Resources": [
                     {
@@ -613,9 +655,13 @@ def ecs_task_definition_security_labels_check(cache: dict, session, awsAccountId
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Containers",
                             "AssetService": "Amazon Elastic Container Service",
-                            "AssetType": "Task Definition"
+                            "AssetComponent": "Task Definition"
                         },
                         "Resources": [
                             {
@@ -691,9 +737,13 @@ def ecs_task_definition_security_labels_check(cache: dict, session, awsAccountId
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Containers",
                             "AssetService": "Amazon Elastic Container Service",
-                            "AssetType": "Task Definition"
+                            "AssetComponent": "Task Definition"
                         },
                         "Resources": [
                             {
@@ -751,6 +801,9 @@ def ecs_task_definition_root_user_check(cache: dict, session, awsAccountId: str,
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for taskdef in list_active_task_definitions(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(taskdef,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         taskDefinitionArn = str(taskdef['taskDefinitionArn'])
         tdefFamily = str(taskdef["family"])
         # Loop container definitions 
@@ -786,9 +839,13 @@ def ecs_task_definition_root_user_check(cache: dict, session, awsAccountId: str,
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Containers",
                             "AssetService": "Amazon Elastic Container Service",
-                            "AssetType": "Task Definition"
+                            "AssetComponent": "Task Definition"
                         },
                         "Resources": [
                             {
@@ -868,9 +925,13 @@ def ecs_task_definition_root_user_check(cache: dict, session, awsAccountId: str,
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Containers",
                             "AssetService": "Amazon Elastic Container Service",
-                            "AssetType": "Task Definition"
+                            "AssetComponent": "Task Definition"
                         },
                         "Resources": [
                             {
@@ -951,9 +1012,13 @@ def ecs_task_definition_root_user_check(cache: dict, session, awsAccountId: str,
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Containers",
                         "AssetService": "Amazon Elastic Container Service",
-                        "AssetType": "Task Definition"
+                        "AssetComponent": "Task Definition"
                     },
                     "Resources": [
                         {
