@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -40,6 +42,9 @@ def athena_workgroup_encryption_check(cache: dict, session, awsAccountId: str, a
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # loop work groups from cache
     for wgroup in list_work_groups(cache, session)["WorkGroups"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(wgroup,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         workgroupName = wgroup["Name"]
         workgroupArn = f"arn:{awsPartition}:athena:{awsRegion}:{awsAccountId}:workgroup/{workgroupName}"
         # get specific details from workgroup
@@ -78,6 +83,10 @@ def athena_workgroup_encryption_check(cache: dict, session, awsAccountId: str, a
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon Athena",
                     "AssetType": "Workgroup"
@@ -140,6 +149,10 @@ def athena_workgroup_encryption_check(cache: dict, session, awsAccountId: str, a
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon Athena",
                     "AssetType": "Workgroup"
@@ -202,6 +215,10 @@ def athena_workgroup_encryption_check(cache: dict, session, awsAccountId: str, a
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon Athena",
                     "AssetType": "Workgroup"
@@ -249,6 +266,9 @@ def athena_encrypted_workgroup_client_override_check(cache: dict, session, awsAc
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # loop work groups from cache
     for wgroup in list_work_groups(cache, session)["WorkGroups"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(wgroup,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         workgroupName = wgroup["Name"]
         workgroupArn = f"arn:{awsPartition}:athena:{awsRegion}:{awsAccountId}:workgroup/{workgroupName}"
         # get specific details from workgroup
@@ -292,6 +312,10 @@ def athena_encrypted_workgroup_client_override_check(cache: dict, session, awsAc
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon Athena",
                     "AssetType": "Workgroup"
@@ -354,6 +378,10 @@ def athena_encrypted_workgroup_client_override_check(cache: dict, session, awsAc
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon Athena",
                     "AssetType": "Workgroup"
@@ -416,6 +444,10 @@ def athena_encrypted_workgroup_client_override_check(cache: dict, session, awsAc
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon Athena",
                     "AssetType": "Workgroup"
@@ -463,6 +495,9 @@ def athena_workgroup_metrics_check(cache: dict, session, awsAccountId: str, awsR
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # loop work groups from cache
     for wgroup in list_work_groups(cache, session)["WorkGroups"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(wgroup,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         workgroupName = wgroup["Name"]
         workgroupArn = f"arn:{awsPartition}:athena:{awsRegion}:{awsAccountId}:workgroup/{workgroupName}"
         # get specific details from workgroup
@@ -497,6 +532,10 @@ def athena_workgroup_metrics_check(cache: dict, session, awsAccountId: str, awsR
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon Athena",
                     "AssetType": "Workgroup"
@@ -560,6 +599,10 @@ def athena_workgroup_metrics_check(cache: dict, session, awsAccountId: str, awsR
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon Athena",
                     "AssetType": "Workgroup"
@@ -607,6 +650,9 @@ def athena_workgroup_engine_autoupdate_check(cache: dict, session, awsAccountId:
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # loop work groups from cache
     for wgroup in list_work_groups(cache, session)["WorkGroups"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(wgroup,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         workgroupName = wgroup["Name"]
         workgroupArn = f"arn:{awsPartition}:athena:{awsRegion}:{awsAccountId}:workgroup/{workgroupName}"
         # get specific details from workgroup
@@ -638,6 +684,10 @@ def athena_workgroup_engine_autoupdate_check(cache: dict, session, awsAccountId:
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon Athena",
                     "AssetType": "Workgroup"
@@ -699,6 +749,10 @@ def athena_workgroup_engine_autoupdate_check(cache: dict, session, awsAccountId:
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon Athena",
                     "AssetType": "Workgroup"
