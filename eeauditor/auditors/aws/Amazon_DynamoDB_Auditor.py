@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -46,9 +48,12 @@ def ddb_kms_cmk_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
     for table in list_tables(cache, session):
         tableName = str(table)
         try:
-            response = dynamodb.describe_table(TableName=tableName)
-            tableArn = response["Table"]["TableArn"]
-            kmsCheck = response["Table"]["SSEDescription"]["SSEType"]
+            tableDetails = dynamodb.describe_table(TableName=tableName)
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(tableDetails["Table"],default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
+            tableArn = tableDetails["Table"]["TableArn"]
+            kmsCheck = tableDetails["Table"]["SSEDescription"]["SSEType"]
             # this is a failing check
             if kmsCheck != "KMS":
                 finding={
@@ -74,9 +79,13 @@ def ddb_kms_cmk_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Database",
                         "AssetService": "Amazon DynamoDB",
-                        "AssetType": "Table"
+                        "AssetComponent": "Table"
                     },
                     "Resources": [
                         {
@@ -132,15 +141,18 @@ def ddb_kms_cmk_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Database",
                         "AssetService": "Amazon DynamoDB",
-                        "AssetType": "Table"
+                        "AssetComponent": "Table"
                     },
                     "Resources": [
                         {
                             "Type": "AwsDynamoDbTable",
-                            "Id": tableArn,
-                            
+                            "Id": tableArn, 
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
@@ -192,15 +204,18 @@ def ddb_kms_cmk_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Database",
                         "AssetService": "Amazon DynamoDB",
-                        "AssetType": "Table"
+                        "AssetComponent": "Table"
                     },
                     "Resources": [
                         {
                             "Type": "AwsDynamoDbTable",
                             "Id": tableArn,
-                            
                             "Partition": awsPartition,
                             "Region": awsRegion,
                             "Details": {
@@ -236,7 +251,11 @@ def ddb_pitr_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsP
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for table in list_tables(cache, session):
         tableName = str(table)
-        tableArn = dynamodb.describe_table(TableName=tableName)["Table"]["TableArn"]
+        tableDetails = dynamodb.describe_table(TableName=tableName)
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(tableDetails["Table"],default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        tableArn = tableDetails["Table"]["TableArn"]
         response = dynamodb.describe_continuous_backups(TableName=tableName)
         pitrCheck = str(response["ContinuousBackupsDescription"]["PointInTimeRecoveryDescription"]["PointInTimeRecoveryStatus"])
         if pitrCheck == "DISABLED":
@@ -263,15 +282,18 @@ def ddb_pitr_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsP
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon DynamoDB",
-                    "AssetType": "Table"
+                    "AssetComponent": "Table"
                 },
                 "Resources": [
                     {
                         "Type": "AwsDynamoDbTable",
                         "Id": tableArn,
-                        
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {
@@ -328,9 +350,13 @@ def ddb_pitr_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsP
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon DynamoDB",
-                    "AssetType": "Table"
+                    "AssetComponent": "Table"
                 },
                 "Resources": [
                     {
@@ -406,9 +432,13 @@ def ddb_ttl_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPa
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon DynamoDB",
-                    "AssetType": "Table"
+                    "AssetComponent": "Table"
                 },
                 "Resources": [
                     {
@@ -471,9 +501,13 @@ def ddb_ttl_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPa
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon DynamoDB",
-                    "AssetType": "Table"
+                    "AssetComponent": "Table"
                 },
                 "Resources": [
                     {
