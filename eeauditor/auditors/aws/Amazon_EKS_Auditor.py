@@ -25,10 +25,10 @@ import json
 
 registry = CheckRegister()
 
-# This constant should only contain non-deprecated/fully-supported AWS EKS K8s versions.
+# This constant should only contain the THREE LATEST AWS EKS K8s versions.
 # DO NOT enter mainline K8s or older versions that have since been deprecated
 # check https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html
-CURRENT_EKS_K8_VERSIONS = ["1.26", "1.25", "1.24", "1.23", "1.22"]
+CURRENT_EKS_K8_VERSIONS = ["1.26", "1.25", "1.24"]
 # This constant should only contain DEPRECATED AWS EKS K8s versions, it is possible to still
 # have EKS clusters running old versions which should be updated
 # check https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html#kubernetes-release-calendar
@@ -97,6 +97,10 @@ def eks_public_endpoint_access_check(cache: dict, session, awsAccountId: str, aw
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Containers",
                     "AssetService": "Amazon Elastic Kubernetes Service",
                     "AssetComponent": "Cluster"
@@ -166,6 +170,10 @@ def eks_public_endpoint_access_check(cache: dict, session, awsAccountId: str, aw
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Containers",
                     "AssetService": "Amazon Elastic Kubernetes Service",
                     "AssetComponent": "Cluster"
@@ -243,6 +251,10 @@ def eks_latest_k8s_version_check(cache: dict, session, awsAccountId: str, awsReg
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Containers",
                     "AssetService": "Amazon Elastic Kubernetes Service",
                     "AssetComponent": "Cluster"
@@ -303,6 +315,10 @@ def eks_latest_k8s_version_check(cache: dict, session, awsAccountId: str, awsReg
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Containers",
                     "AssetService": "Amazon Elastic Kubernetes Service",
                     "AssetComponent": "Cluster"
@@ -385,6 +401,10 @@ def eks_logging_audit_auth_check(cache: dict, session, awsAccountId: str, awsReg
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Containers",
                             "AssetService": "Amazon Elastic Kubernetes Service",
                             "AssetComponent": "Cluster"
@@ -451,6 +471,10 @@ def eks_logging_audit_auth_check(cache: dict, session, awsAccountId: str, awsReg
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Containers",
                             "AssetService": "Amazon Elastic Kubernetes Service",
                             "AssetComponent": "Cluster"
@@ -534,6 +558,10 @@ def eks_secrets_envelope_encryption_check(cache: dict, session, awsAccountId: st
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Containers",
                     "AssetService": "Amazon Elastic Kubernetes Service",
                     "AssetComponent": "Cluster"
@@ -597,6 +625,10 @@ def eks_secrets_envelope_encryption_check(cache: dict, session, awsAccountId: st
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Containers",
                     "AssetService": "Amazon Elastic Kubernetes Service",
                     "AssetComponent": "Cluster"
@@ -631,3 +663,146 @@ def eks_secrets_envelope_encryption_check(cache: dict, session, awsAccountId: st
                 "RecordState": "ACTIVE",
             }
             yield finding
+
+@registry.register_check("eks")
+def eks_latest_k8s_version_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
+    """[EKS.5] Elastic Kubernetes Service (EKS) clusters should not use deprecated Kubernetes version"""
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for cluster in get_eks_clusters(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(cluster,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        clusterName = str(cluster["cluster"]["name"])
+        clusterArn = str(cluster["cluster"]["arn"])
+        k8sVersion = str(cluster["cluster"]["version"])
+        if k8sVersion in DEPRECATED_EKS_K8_VERSIONS:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{clusterArn}/eks-deprecated-k8s-version-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": clusterName,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices",],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "HIGH"},
+                "Confidence": 99,
+                "Title": f"[EKS.5] Elastic Kubernetes Service (EKS) clusters should not use deprecated Kubernetes version",
+                "Description": f"Elastic Kubernetes Service (EKS) cluster {clusterName} is using a deprecated Kubernetes version. Unless your application requires a specific version of Kubernetes, AWS recommends you choose the latest available Kubernetes version supported by Amazon EKS for your clusters. Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For upgrade information refer to the Updating an Amazon EKS Cluster Kubernetes Version section of the EKS user guide",
+                        "Url": "https://docs.aws.amazon.com/eks/latest/userguide/update-cluster.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Containers",
+                    "AssetService": "Amazon Elastic Kubernetes Service",
+                    "AssetComponent": "Cluster"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEksCluster",
+                        "Id": clusterArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsEksCluster": {
+                                "Name": clusterName,
+                                "Arn": clusterArn,
+                                "Version": k8sVersion
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{clusterArn}/eks-deprecated-k8s-version-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": clusterName,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices",],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": f"[EKS.5] Elastic Kubernetes Service (EKS) clusters should not use deprecated Kubernetes version",
+                "Description": f"Elastic Kubernetes Service (EKS) cluster {clusterName} is not using a deprecated Kubernetes version.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For upgrade information refer to the Updating an Amazon EKS Cluster Kubernetes Version section of the EKS user guide",
+                        "Url": "https://docs.aws.amazon.com/eks/latest/userguide/update-cluster.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Containers",
+                    "AssetService": "Amazon Elastic Kubernetes Service",
+                    "AssetComponent": "Cluster"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsEksCluster",
+                        "Id": clusterArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsEksCluster": {
+                                "Name": clusterName,
+                                "Arn": clusterArn,
+                                "Version": k8sVersion
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+
+## END??
