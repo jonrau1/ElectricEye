@@ -22,6 +22,8 @@ import datetime
 import pysnow
 import os
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -60,6 +62,9 @@ def servicenow_sspm_active_user_mfa_check(cache: dict, awsAccountId: str, awsReg
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for user in get_servicenow_users(cache):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(user,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         userId = str(user["sys_id"])
         userName = str(user["user_name"])
         roles = str(user["roles"])
@@ -95,10 +100,14 @@ def servicenow_sspm_active_user_mfa_check(cache: dict, awsAccountId: str, awsReg
                 },
                 "ProductFields": {
                     "ProductName": "ElectricEye",
-                    "Provider": "Servicenow",
+                    "Provider": "ServiceNow",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": SNOW_INSTANCE_NAME,
+                    "AssetRegion": "",
+                    "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Servicenow Users & Groups",
-                    "AssetType": "User"
+                    "AssetService": "Users & Groups",
+                    "AssetComponent": "User"
                 },
                 "Resources": [
                     {
@@ -174,10 +183,10 @@ def servicenow_sspm_active_user_mfa_check(cache: dict, awsAccountId: str, awsReg
                 },
                 "ProductFields": {
                     "ProductName": "ElectricEye",
-                    "Provider": "Servicenow",
+                    "Provider": "ServiceNow",
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Servicenow Users & Groups",
-                    "AssetType": "User"
+                    "AssetService": "Users & Groups",
+                    "AssetComponent": "User"
                 },
                 "Resources": [
                     {
@@ -239,6 +248,9 @@ def servicenow_sspm_active_user_failed_login_audits_check(cache: dict, awsAccoun
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for user in get_servicenow_users(cache):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(user,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         userId = str(user["sys_id"])
         userName = str(user["user_name"])
         roles = str(user["roles"])
@@ -280,10 +292,10 @@ def servicenow_sspm_active_user_failed_login_audits_check(cache: dict, awsAccoun
                 },
                 "ProductFields": {
                     "ProductName": "ElectricEye",
-                    "Provider": "Servicenow",
+                    "Provider": "ServiceNow",
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Servicenow Users & Groups",
-                    "AssetType": "User"
+                    "AssetService": "Users & Groups",
+                    "AssetComponent": "User"
                 },
                 "Resources": [
                     {
@@ -355,10 +367,10 @@ def servicenow_sspm_active_user_failed_login_audits_check(cache: dict, awsAccoun
                 },
                 "ProductFields": {
                     "ProductName": "ElectricEye",
-                    "Provider": "Servicenow",
+                    "Provider": "ServiceNow",
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Servicenow Users & Groups",
-                    "AssetType": "User"
+                    "AssetService": "Users & Groups",
+                    "AssetComponent": "User"
                 },
                 "Resources": [
                     {
@@ -416,6 +428,9 @@ def servicenow_sspm_active_user_lockout_audit_check(cache: dict, awsAccountId: s
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for user in get_servicenow_users(cache):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(user,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         userId = str(user["sys_id"])
         userName = str(user["user_name"])
         roles = str(user["roles"])
@@ -452,10 +467,10 @@ def servicenow_sspm_active_user_lockout_audit_check(cache: dict, awsAccountId: s
                 },
                 "ProductFields": {
                     "ProductName": "ElectricEye",
-                    "Provider": "Servicenow",
+                    "Provider": "ServiceNow",
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Servicenow Users & Groups",
-                    "AssetType": "User"
+                    "AssetService": "Users & Groups",
+                    "AssetComponent": "User"
                 },
                 "Resources": [
                     {
@@ -527,10 +542,10 @@ def servicenow_sspm_active_user_lockout_audit_check(cache: dict, awsAccountId: s
                 },
                 "ProductFields": {
                     "ProductName": "ElectricEye",
-                    "Provider": "Servicenow",
+                    "Provider": "ServiceNow",
                     "AssetClass": "Identity & Access Management",
-                    "AssetService": "Servicenow Users & Groups",
-                    "AssetType": "User"
+                    "AssetService": "Users & Groups",
+                    "AssetComponent": "User"
                 },
                 "Resources": [
                     {
