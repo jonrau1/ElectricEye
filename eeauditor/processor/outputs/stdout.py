@@ -39,7 +39,7 @@ class StdoutProvider(object):
         """
 
         decodedFindings = [
-            {**d, "ProductFields": {**d["ProductFields"], "AssetDetails": json.loads(base64.b64decode(d["ProductFields"]["AssetDetails"]).decode("utf-8"))}}
+            {**d, "ProductFields": {**d["ProductFields"], "AssetDetails": base64.b64decode(d["ProductFields"]["AssetDetails"]).decode("utf-8")}}
             if "AssetDetails" in d["ProductFields"]
             else d
             for d in findings
