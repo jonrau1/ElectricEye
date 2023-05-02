@@ -44,160 +44,147 @@ def crawler_s3_encryption_check(cache: dict, session, awsAccountId: str, awsRegi
         crawlerArn = f"arn:{awsPartition}:glue:{awsRegion}:{awsAccountId}:crawler/{crawlerName}"
         # ISO Time
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        response = glue.get_crawler(Name=crawlerName)
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         try:
-            response = glue.get_crawler(Name=crawlerName)
-            # B64 encode all of the details for the Asset
-            assetJson = json.dumps(response,default=str).encode("utf-8")
-            assetB64 = base64.b64encode(assetJson)
-            crawlerSecConfig = str(response["Crawler"]["CrawlerSecurityConfiguration"])
-            try:
-                response = glue.get_security_configuration(Name=crawlerSecConfig)
-                try:
-                    s3EncryptionCheck = str(response["SecurityConfiguration"]["EncryptionConfiguration"]["S3Encryption"][0]["S3EncryptionMode"])
-                except KeyError:
-                    s3EncryptionCheck = "DISABLED"
-                if s3EncryptionCheck == "DISABLED":
-                    finding = {
-                        "SchemaVersion": "2018-10-08",
-                        "Id": crawlerArn + "/glue-crawler-s3-encryption-check",
-                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": crawlerArn,
-                        "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices",
-                            "Effects/Data Exposure",
-                        ],
-                        "FirstObservedAt": iso8601Time,
-                        "CreatedAt": iso8601Time,
-                        "UpdatedAt": iso8601Time,
-                        "Severity": {"Label": "HIGH"},
-                        "Confidence": 99,
-                        "Title": "[Glue.1] AWS Glue crawler security configurations should enable Amazon S3 encryption",
-                        "Description": "AWS Glue crawler "
-                        + crawlerName
-                        + " does not have a security configuration that enables S3 encryption. When you are writing Amazon S3 data, you use either server-side encryption with Amazon S3 managed keys (SSE-S3) or server-side encryption with AWS KMS managed keys (SSE-KMS). Refer to the remediation instructions if this configuration is not intended",
-                        "Remediation": {
-                            "Recommendation": {
-                                "Text": "For more information on encryption and AWS Glue security configurations refer to the Working with Security Configurations on the AWS Glue Console section of the AWS Glue Developer Guide",
-                                "Url": "https://docs.aws.amazon.com/glue/latest/dg/console-security-configurations.html",
-                            }
-                        },
-                        "ProductFields": {
-                            "ProductName": "ElectricEye",
-                            "Provider": "AWS",
-                            "ProviderType": "CSP",
-                            "ProviderAccountId": awsAccountId,
-                            "AssetRegion": awsRegion,
-                            "AssetDetails": assetB64,
-                            "AssetClass": "Analytics",
-                            "AssetService": "AWS Glue",
-                            "AssetComponent": "Crawler"
-                        },
-                        "Resources": [
-                            {
-                                "Type": "AwsGlueCrawler",
-                                "Id": crawlerArn,
-                                "Partition": awsPartition,
-                                "Region": awsRegion,
-                                "Details": {
-                                    "Other": {
-                                        "crawlerName": crawlerName,
-                                        "securityConfigurationId": crawlerSecConfig,
-                                    }
-                                },
-                            }
-                        ],
-                        "Compliance": {
-                            "Status": "FAILED",
-                            "RelatedRequirements": [
-                                "NIST CSF V1.1 PR.DS-1",
-                                "NIST SP 800-53 Rev. 4 MP-8",
-                                "NIST SP 800-53 Rev. 4 SC-12",
-                                "NIST SP 800-53 Rev. 4 SC-28",
-                                "AICPA TSC CC6.1",
-                                "ISO 27001:2013 A.8.2.3",
-                            ],
-                        },
-                        "Workflow": {"Status": "NEW"},
-                        "RecordState": "ACTIVE",
+            sec = glue.get_security_configuration(Name=response["Crawler"]["CrawlerSecurityConfiguration"])
+            s3EncryptionCheck = str(sec["SecurityConfiguration"]["EncryptionConfiguration"]["S3Encryption"][0]["S3EncryptionMode"])
+        except KeyError:
+            s3EncryptionCheck = "DISABLED"
+        if s3EncryptionCheck == "DISABLED":
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": crawlerArn + "/glue-crawler-s3-encryption-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": crawlerArn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure",
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "HIGH"},
+                "Confidence": 99,
+                "Title": "[Glue.1] AWS Glue crawler security configurations should enable Amazon S3 encryption",
+                "Description": "AWS Glue crawler "
+                + crawlerName
+                + " does not have a security configuration that enables S3 encryption. When you are writing Amazon S3 data, you use either server-side encryption with Amazon S3 managed keys (SSE-S3) or server-side encryption with AWS KMS managed keys (SSE-KMS). Refer to the remediation instructions if this configuration is not intended",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on encryption and AWS Glue security configurations refer to the Working with Security Configurations on the AWS Glue Console section of the AWS Glue Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/glue/latest/dg/console-security-configurations.html",
                     }
-                    yield finding
-                else:
-                    finding = {
-                        "SchemaVersion": "2018-10-08",
-                        "Id": crawlerArn + "/glue-crawler-s3-encryption-check",
-                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": crawlerArn,
-                        "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices",
-                            "Effects/Data Exposure",
-                        ],
-                        "FirstObservedAt": iso8601Time,
-                        "CreatedAt": iso8601Time,
-                        "UpdatedAt": iso8601Time,
-                        "Severity": {"Label": "INFORMATIONAL"},
-                        "Confidence": 99,
-                        "Title": "[Glue.1] AWS Glue crawler security configurations should enable Amazon S3 encryption",
-                        "Description": "AWS Glue crawler "
-                        + crawlerName
-                        + " has a security configuration that enables S3 encryption.",
-                        "Remediation": {
-                            "Recommendation": {
-                                "Text": "For more information on encryption and AWS Glue security configurations refer to the Working with Security Configurations on the AWS Glue Console section of the AWS Glue Developer Guide",
-                                "Url": "https://docs.aws.amazon.com/glue/latest/dg/console-security-configurations.html",
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "AWS Glue",
+                    "AssetComponent": "Crawler"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsGlueCrawler",
+                        "Id": crawlerArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "CrawlerName": crawlerName,
+                                
                             }
                         },
-                        "ProductFields": {
-                            "ProductName": "ElectricEye",
-                            "Provider": "AWS",
-                            "ProviderType": "CSP",
-                            "ProviderAccountId": awsAccountId,
-                            "AssetRegion": awsRegion,
-                            "AssetDetails": assetB64,
-                            "AssetClass": "Analytics",
-                            "AssetService": "AWS Glue",
-                            "AssetComponent": "Crawler"
-                        },
-                        "Resources": [
-                            {
-                                "Type": "AwsGlueCrawler",
-                                "Id": crawlerArn,
-                                "Partition": awsPartition,
-                                "Region": awsRegion,
-                                "Details": {
-                                    "Other": {
-                                        "crawlerName": crawlerName,
-                                        "securityConfigurationId": crawlerSecConfig,
-                                    }
-                                },
-                            }
-                        ],
-                        "Compliance": {
-                            "Status": "PASSED",
-                            "RelatedRequirements": [
-                                "NIST CSF V1.1 PR.DS-1",
-                                "NIST SP 800-53 Rev. 4 MP-8",
-                                "NIST SP 800-53 Rev. 4 SC-12",
-                                "NIST SP 800-53 Rev. 4 SC-28",
-                                "AICPA TSC CC6.1",
-                                "ISO 27001:2013 A.8.2.3",
-                            ],
-                        },
-                        "Workflow": {"Status": "RESOLVED"},
-                        "RecordState": "ARCHIVED",
                     }
-                    yield finding
-            except Exception as e:
-                if str(e) == '"CrawlerSecurityConfiguration"':
-                    continue
-                else:
-                    print(e)
-        except Exception as e:
-            if str(e) == '"CrawlerSecurityConfiguration"':
-                continue
-            else:
-                print(e)
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST SP 800-53 Rev. 4 MP-8",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "NIST SP 800-53 Rev. 4 SC-28",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                    ],
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE",
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": crawlerArn + "/glue-crawler-s3-encryption-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": crawlerArn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure",
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Glue.1] AWS Glue crawler security configurations should enable Amazon S3 encryption",
+                "Description": "AWS Glue crawler "
+                + crawlerName
+                + " has a security configuration that enables S3 encryption.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on encryption and AWS Glue security configurations refer to the Working with Security Configurations on the AWS Glue Console section of the AWS Glue Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/glue/latest/dg/console-security-configurations.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "AWS Glue",
+                    "AssetComponent": "Crawler"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsGlueCrawler",
+                        "Id": crawlerArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "CrawlerName": crawlerName,
+                                
+                            }
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST SP 800-53 Rev. 4 MP-8",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "NIST SP 800-53 Rev. 4 SC-28",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                    ],
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED",
+            }
+            yield finding
 
 @registry.register_check("glue")
 def crawler_cloudwatch_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -210,160 +197,147 @@ def crawler_cloudwatch_encryption_check(cache: dict, session, awsAccountId: str,
         crawlerArn = f"arn:{awsPartition}:glue:{awsRegion}:{awsAccountId}:crawler/{crawlerName}"
         # ISO Time
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        response = glue.get_crawler(Name=crawlerName)
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         try:
-            response = glue.get_crawler(Name=crawlerName)
-            # B64 encode all of the details for the Asset
-            assetJson = json.dumps(response,default=str).encode("utf-8")
-            assetB64 = base64.b64encode(assetJson)
-            crawlerSecConfig = str(response["Crawler"]["CrawlerSecurityConfiguration"])
-            try:
-                response = glue.get_security_configuration(Name=crawlerSecConfig)
-                try:
-                    cwEncryptionCheck = str(response["SecurityConfiguration"]["EncryptionConfiguration"]["CloudWatchEncryption"]["CloudWatchEncryptionMode"])
-                except:
-                    cwEncryptionCheck = "DISABLED"
-                if cwEncryptionCheck == "DISABLED":
-                    finding = {
-                        "SchemaVersion": "2018-10-08",
-                        "Id": crawlerArn + "/glue-crawler-cloudwatch-encryption-check",
-                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": crawlerArn,
-                        "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices",
-                            "Effects/Data Exposure",
-                        ],
-                        "FirstObservedAt": iso8601Time,
-                        "CreatedAt": iso8601Time,
-                        "UpdatedAt": iso8601Time,
-                        "Severity": {"Label": "HIGH"},
-                        "Confidence": 99,
-                        "Title": "[Glue.2] AWS Glue crawler security configurations should enable Amazon CloudWatch Logs encryption",
-                        "Description": "AWS Glue crawler "
-                        + crawlerName
-                        + " does not have a security configuration that enables CloudWatch Logs encryption. Server-side (SSE-KMS) encryption is used to encrypt CloudWatch Logs. Refer to the remediation instructions if this configuration is not intended",
-                        "Remediation": {
-                            "Recommendation": {
-                                "Text": "For more information on encryption and AWS Glue security configurations refer to the Working with Security Configurations on the AWS Glue Console section of the AWS Glue Developer Guide",
-                                "Url": "https://docs.aws.amazon.com/glue/latest/dg/console-security-configurations.html",
-                            }
-                        },
-                        "ProductFields": {
-                            "ProductName": "ElectricEye",
-                            "Provider": "AWS",
-                            "ProviderType": "CSP",
-                            "ProviderAccountId": awsAccountId,
-                            "AssetRegion": awsRegion,
-                            "AssetDetails": assetB64,
-                            "AssetClass": "Analytics",
-                            "AssetService": "AWS Glue",
-                            "AssetComponent": "Crawler"
-                        },
-                        "Resources": [
-                            {
-                                "Type": "AwsGlueCrawler",
-                                "Id": crawlerArn,
-                                "Partition": awsPartition,
-                                "Region": awsRegion,
-                                "Details": {
-                                    "Other": {
-                                        "crawlerName": crawlerName,
-                                        "securityConfigurationId": crawlerSecConfig,
-                                    }
-                                },
-                            }
-                        ],
-                        "Compliance": {
-                            "Status": "FAILED",
-                            "RelatedRequirements": [
-                                "NIST CSF V1.1 PR.DS-1",
-                                "NIST SP 800-53 Rev. 4 MP-8",
-                                "NIST SP 800-53 Rev. 4 SC-12",
-                                "NIST SP 800-53 Rev. 4 SC-28",
-                                "AICPA TSC CC6.1",
-                                "ISO 27001:2013 A.8.2.3",
-                            ],
-                        },
-                        "Workflow": {"Status": "NEW"},
-                        "RecordState": "ACTIVE",
+            sec = glue.get_security_configuration(Name=response["Crawler"]["CrawlerSecurityConfiguration"])
+            cwEncryptionCheck = str(sec["SecurityConfiguration"]["EncryptionConfiguration"]["CloudWatchEncryption"]["CloudWatchEncryptionMode"])
+        except:
+            cwEncryptionCheck = "DISABLED"
+        if cwEncryptionCheck == "DISABLED":
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": crawlerArn + "/glue-crawler-cloudwatch-encryption-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": crawlerArn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure",
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "HIGH"},
+                "Confidence": 99,
+                "Title": "[Glue.2] AWS Glue crawler security configurations should enable Amazon CloudWatch Logs encryption",
+                "Description": "AWS Glue crawler "
+                + crawlerName
+                + " does not have a security configuration that enables CloudWatch Logs encryption. Server-side (SSE-KMS) encryption is used to encrypt CloudWatch Logs. Refer to the remediation instructions if this configuration is not intended",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on encryption and AWS Glue security configurations refer to the Working with Security Configurations on the AWS Glue Console section of the AWS Glue Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/glue/latest/dg/console-security-configurations.html",
                     }
-                    yield finding
-                else:
-                    finding = {
-                        "SchemaVersion": "2018-10-08",
-                        "Id": crawlerArn + "/glue-crawler-cloudwatch-encryption-check",
-                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": crawlerArn,
-                        "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices",
-                            "Effects/Data Exposure",
-                        ],
-                        "FirstObservedAt": iso8601Time,
-                        "CreatedAt": iso8601Time,
-                        "UpdatedAt": iso8601Time,
-                        "Severity": {"Label": "INFORMATIONAL"},
-                        "Confidence": 99,
-                        "Title": "[Glue.2] AWS Glue crawler security configurations should enable Amazon CloudWatch Logs encryption",
-                        "Description": "AWS Glue crawler "
-                        + crawlerName
-                        + " has a security configuration that enables CloudWatch Logs encryption.",
-                        "Remediation": {
-                            "Recommendation": {
-                                "Text": "For more information on encryption and AWS Glue security configurations refer to the Working with Security Configurations on the AWS Glue Console section of the AWS Glue Developer Guide",
-                                "Url": "https://docs.aws.amazon.com/glue/latest/dg/console-security-configurations.html",
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "AWS Glue",
+                    "AssetComponent": "Crawler"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsGlueCrawler",
+                        "Id": crawlerArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "CrawlerName": crawlerName,
+                                
                             }
                         },
-                        "ProductFields": {
-                            "ProductName": "ElectricEye",
-                            "Provider": "AWS",
-                            "ProviderType": "CSP",
-                            "ProviderAccountId": awsAccountId,
-                            "AssetRegion": awsRegion,
-                            "AssetDetails": assetB64,
-                            "AssetClass": "Analytics",
-                            "AssetService": "AWS Glue",
-                            "AssetComponent": "Crawler"
-                        },
-                        "Resources": [
-                            {
-                                "Type": "AwsGlueCrawler",
-                                "Id": crawlerArn,
-                                "Partition": awsPartition,
-                                "Region": awsRegion,
-                                "Details": {
-                                    "Other": {
-                                        "crawlerName": crawlerName,
-                                        "securityConfigurationId": crawlerSecConfig,
-                                    }
-                                },
-                            }
-                        ],
-                        "Compliance": {
-                            "Status": "PASSED",
-                            "RelatedRequirements": [
-                                "NIST CSF V1.1 PR.DS-1",
-                                "NIST SP 800-53 Rev. 4 MP-8",
-                                "NIST SP 800-53 Rev. 4 SC-12",
-                                "NIST SP 800-53 Rev. 4 SC-28",
-                                "AICPA TSC CC6.1",
-                                "ISO 27001:2013 A.8.2.3",
-                            ],
-                        },
-                        "Workflow": {"Status": "RESOLVED"},
-                        "RecordState": "ARCHIVED",
                     }
-                    yield finding
-            except Exception as e:
-                if str(e) == '"CrawlerSecurityConfiguration"':
-                    pass
-                else:
-                    print(e)
-        except Exception as e:
-            if str(e) == '"CrawlerSecurityConfiguration"':
-                pass
-            else:
-                print(e)
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST SP 800-53 Rev. 4 MP-8",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "NIST SP 800-53 Rev. 4 SC-28",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                    ],
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE",
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": crawlerArn + "/glue-crawler-cloudwatch-encryption-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": crawlerArn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure",
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Glue.2] AWS Glue crawler security configurations should enable Amazon CloudWatch Logs encryption",
+                "Description": "AWS Glue crawler "
+                + crawlerName
+                + " has a security configuration that enables CloudWatch Logs encryption.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on encryption and AWS Glue security configurations refer to the Working with Security Configurations on the AWS Glue Console section of the AWS Glue Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/glue/latest/dg/console-security-configurations.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "AWS Glue",
+                    "AssetComponent": "Crawler"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsGlueCrawler",
+                        "Id": crawlerArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "CrawlerName": crawlerName,
+                                
+                            }
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST SP 800-53 Rev. 4 MP-8",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "NIST SP 800-53 Rev. 4 SC-28",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                    ],
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED",
+            }
+            yield finding
 
 @registry.register_check("glue")
 def crawler_job_bookmark_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -376,160 +350,147 @@ def crawler_job_bookmark_encryption_check(cache: dict, session, awsAccountId: st
         crawlerArn = f"arn:{awsPartition}:glue:{awsRegion}:{awsAccountId}:crawler/{crawlerName}"
         # ISO Time
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        response = glue.get_crawler(Name=crawlerName)
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         try:
-            response = glue.get_crawler(Name=crawlerName)
-            # B64 encode all of the details for the Asset
-            assetJson = json.dumps(response,default=str).encode("utf-8")
-            assetB64 = base64.b64encode(assetJson)
-            crawlerSecConfig = str(response["Crawler"]["CrawlerSecurityConfiguration"])
-            try:
-                response = glue.get_security_configuration(Name=crawlerSecConfig)
-                try:
-                    jobBookmarkEncryptionCheck = str(response["SecurityConfiguration"]["EncryptionConfiguration"]["JobBookmarksEncryption"]["JobBookmarksEncryptionMode"])
-                except:
-                    jobBookmarkEncryptionCheck = "DISABLED"
-                if jobBookmarkEncryptionCheck == "DISABLED":
-                    finding = {
-                        "SchemaVersion": "2018-10-08",
-                        "Id": crawlerArn + "/glue-crawler-job-bookmark-encryption-check",
-                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": crawlerArn,
-                        "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices",
-                            "Effects/Data Exposure",
-                        ],
-                        "FirstObservedAt": iso8601Time,
-                        "CreatedAt": iso8601Time,
-                        "UpdatedAt": iso8601Time,
-                        "Severity": {"Label": "HIGH"},
-                        "Confidence": 99,
-                        "Title": "[Glue.3] AWS Glue crawler security configurations should enable job bookmark encryption",
-                        "Description": "AWS Glue crawler "
-                        + crawlerName
-                        + " does not have a security configuration that enables job bookmark encryption. Client-side (CSE-KMS) encryption is used to encrypt job bookmarks, bookmark data is encrypted before it is sent to Amazon S3 for storage. Refer to the remediation instructions if this configuration is not intended",
-                        "Remediation": {
-                            "Recommendation": {
-                                "Text": "For more information on encryption and AWS Glue security configurations refer to the Working with Security Configurations on the AWS Glue Console section of the AWS Glue Developer Guide",
-                                "Url": "https://docs.aws.amazon.com/glue/latest/dg/console-security-configurations.html",
-                            }
-                        },
-                        "ProductFields": {
-                            "ProductName": "ElectricEye",
-                            "Provider": "AWS",
-                            "ProviderType": "CSP",
-                            "ProviderAccountId": awsAccountId,
-                            "AssetRegion": awsRegion,
-                            "AssetDetails": assetB64,
-                            "AssetClass": "Analytics",
-                            "AssetService": "AWS Glue",
-                            "AssetComponent": "Crawler"
-                        },
-                        "Resources": [
-                            {
-                                "Type": "AwsGlueCrawler",
-                                "Id": crawlerArn,
-                                "Partition": awsPartition,
-                                "Region": awsRegion,
-                                "Details": {
-                                    "Other": {
-                                        "crawlerName": crawlerName,
-                                        "securityConfigurationId": crawlerSecConfig,
-                                    }
-                                },
-                            }
-                        ],
-                        "Compliance": {
-                            "Status": "FAILED",
-                            "RelatedRequirements": [
-                                "NIST CSF V1.1 PR.DS-1",
-                                "NIST SP 800-53 Rev. 4 MP-8",
-                                "NIST SP 800-53 Rev. 4 SC-12",
-                                "NIST SP 800-53 Rev. 4 SC-28",
-                                "AICPA TSC CC6.1",
-                                "ISO 27001:2013 A.8.2.3",
-                            ],
-                        },
-                        "Workflow": {"Status": "NEW"},
-                        "RecordState": "ACTIVE",
+            sec = glue.get_security_configuration(Name=response["Crawler"]["CrawlerSecurityConfiguration"])
+            jobBookmarkEncryptionCheck = str(sec["SecurityConfiguration"]["EncryptionConfiguration"]["JobBookmarksEncryption"]["JobBookmarksEncryptionMode"])
+        except:
+            jobBookmarkEncryptionCheck = "DISABLED"
+        if jobBookmarkEncryptionCheck == "DISABLED":
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": crawlerArn + "/glue-crawler-job-bookmark-encryption-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": crawlerArn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure",
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "HIGH"},
+                "Confidence": 99,
+                "Title": "[Glue.3] AWS Glue crawler security configurations should enable job bookmark encryption",
+                "Description": "AWS Glue crawler "
+                + crawlerName
+                + " does not have a security configuration that enables job bookmark encryption. Client-side (CSE-KMS) encryption is used to encrypt job bookmarks, bookmark data is encrypted before it is sent to Amazon S3 for storage. Refer to the remediation instructions if this configuration is not intended",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on encryption and AWS Glue security configurations refer to the Working with Security Configurations on the AWS Glue Console section of the AWS Glue Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/glue/latest/dg/console-security-configurations.html",
                     }
-                    yield finding
-                else:
-                    finding = {
-                        "SchemaVersion": "2018-10-08",
-                        "Id": crawlerArn + "/glue-crawler-job-bookmark-encryption-check",
-                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": crawlerArn,
-                        "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices",
-                            "Effects/Data Exposure",
-                        ],
-                        "FirstObservedAt": iso8601Time,
-                        "CreatedAt": iso8601Time,
-                        "UpdatedAt": iso8601Time,
-                        "Severity": {"Label": "INFORMATIONAL"},
-                        "Confidence": 99,
-                        "Title": "[Glue.3] AWS Glue crawler security configurations should enable job bookmark encryption",
-                        "Description": "AWS Glue crawler "
-                        + crawlerName
-                        + " has a security configuration that enables job bookmark encryption.",
-                        "Remediation": {
-                            "Recommendation": {
-                                "Text": "For more information on encryption and AWS Glue security configurations refer to the Working with Security Configurations on the AWS Glue Console section of the AWS Glue Developer Guide",
-                                "Url": "https://docs.aws.amazon.com/glue/latest/dg/console-security-configurations.html",
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "AWS Glue",
+                    "AssetComponent": "Crawler"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsGlueCrawler",
+                        "Id": crawlerArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "CrawlerName": crawlerName,
+                                
                             }
                         },
-                        "ProductFields": {
-                            "ProductName": "ElectricEye",
-                            "Provider": "AWS",
-                            "ProviderType": "CSP",
-                            "ProviderAccountId": awsAccountId,
-                            "AssetRegion": awsRegion,
-                            "AssetDetails": assetB64,
-                            "AssetClass": "Analytics",
-                            "AssetService": "AWS Glue",
-                            "AssetComponent": "Crawler"
-                        },
-                        "Resources": [
-                            {
-                                "Type": "AwsGlueCrawler",
-                                "Id": crawlerArn,
-                                "Partition": awsPartition,
-                                "Region": awsRegion,
-                                "Details": {
-                                    "Other": {
-                                        "crawlerName": crawlerName,
-                                        "securityConfigurationId": crawlerSecConfig,
-                                    }
-                                },
-                            }
-                        ],
-                        "Compliance": {
-                            "Status": "PASSED",
-                            "RelatedRequirements": [
-                                "NIST CSF V1.1 PR.DS-1",
-                                "NIST SP 800-53 Rev. 4 MP-8",
-                                "NIST SP 800-53 Rev. 4 SC-12",
-                                "NIST SP 800-53 Rev. 4 SC-28",
-                                "AICPA TSC CC6.1",
-                                "ISO 27001:2013 A.8.2.3",
-                            ],
-                        },
-                        "Workflow": {"Status": "RESOLVED"},
-                        "RecordState": "ARCHIVED",
                     }
-                    yield finding
-            except Exception as e:
-                if str(e) == '"CrawlerSecurityConfiguration"':
-                    pass
-                else:
-                    print(e)
-        except Exception as e:
-            if str(e) == '"CrawlerSecurityConfiguration"':
-                pass
-            else:
-                print(e)
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST SP 800-53 Rev. 4 MP-8",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "NIST SP 800-53 Rev. 4 SC-28",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                    ],
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE",
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": crawlerArn + "/glue-crawler-job-bookmark-encryption-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": crawlerArn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure",
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Glue.3] AWS Glue crawler security configurations should enable job bookmark encryption",
+                "Description": "AWS Glue crawler "
+                + crawlerName
+                + " has a security configuration that enables job bookmark encryption.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on encryption and AWS Glue security configurations refer to the Working with Security Configurations on the AWS Glue Console section of the AWS Glue Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/glue/latest/dg/console-security-configurations.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "AWS Glue",
+                    "AssetComponent": "Crawler"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsGlueCrawler",
+                        "Id": crawlerArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "Other": {
+                                "CrawlerName": crawlerName,
+                                
+                            }
+                        },
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.DS-1",
+                        "NIST SP 800-53 Rev. 4 MP-8",
+                        "NIST SP 800-53 Rev. 4 SC-12",
+                        "NIST SP 800-53 Rev. 4 SC-28",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.2.3",
+                    ],
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED",
+            }
+            yield finding
 
 @registry.register_check("glue")
 def glue_data_catalog_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:

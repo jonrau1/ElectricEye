@@ -241,7 +241,7 @@ def efs_filesys_policy_check(cache: dict, session, awsAccountId: str, awsRegion:
             }
             yield finding
         # this is a failing check
-        except efs.exceptions.FileSystemNotFound:
+        except Exception:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{fileSysArn}/efs-policy-check",

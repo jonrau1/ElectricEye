@@ -46,9 +46,8 @@ def get_eks_clusters(cache, session):
         return response
     
     eks = session.client("eks")
-    paginator = eks.get_paginator('list_clusters')
-    for page in paginator["clusters"]:
-        for cluster in page:
+    for page in eks.get_paginator('list_clusters').paginate():
+        for cluster in page["clusters"]:
             eksClusters.append(
                 eks.describe_cluster(
                 name=cluster

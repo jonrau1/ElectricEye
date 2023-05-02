@@ -50,7 +50,7 @@ def ddb_kms_cmk_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
         try:
             tableDetails = dynamodb.describe_table(TableName=tableName)
             # B64 encode all of the details for the Asset
-            assetJson = json.dumps(tableDetails["Table"],default=str).encode("utf-8")
+            assetJson = json.dumps(tableDetails,default=str).encode("utf-8")
             assetB64 = base64.b64encode(assetJson)
             tableArn = tableDetails["Table"]["TableArn"]
             kmsCheck = tableDetails["Table"]["SSEDescription"]["SSEType"]
@@ -253,7 +253,7 @@ def ddb_pitr_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsP
         tableName = str(table)
         tableDetails = dynamodb.describe_table(TableName=tableName)
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(tableDetails["Table"],default=str).encode("utf-8")
+        assetJson = json.dumps(tableDetails,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         tableArn = tableDetails["Table"]["TableArn"]
         response = dynamodb.describe_continuous_backups(TableName=tableName)
