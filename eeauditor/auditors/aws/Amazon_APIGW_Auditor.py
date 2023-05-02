@@ -90,7 +90,7 @@ def api_gateway_stage_metrics_enabled_check(cache: dict, session, awsAccountId: 
                         "AssetDetails": assetB64,
                         "AssetClass": "Networking",
                         "AssetService": "Amazon API Gateway",
-                        "AssetType": "Stage"
+                        "AssetComponent": "Stage"
                     },
                     "Resources": [
                         {
@@ -160,7 +160,7 @@ def api_gateway_stage_metrics_enabled_check(cache: dict, session, awsAccountId: 
                         "AssetDetails": assetB64,
                         "AssetClass": "Networking",
                         "AssetService": "Amazon API Gateway",
-                        "AssetType": "Stage"
+                        "AssetComponent": "Stage"
                     },
                     "Resources": [
                         {
@@ -252,7 +252,7 @@ def api_gateway_stage_logging_check(cache: dict, session, awsAccountId: str, aws
                         "AssetDetails": assetB64,
                         "AssetClass": "Networking",
                         "AssetService": "Amazon API Gateway",
-                        "AssetType": "Stage"
+                        "AssetComponent": "Stage"
                     },
                     "Resources": [
                         {
@@ -321,7 +321,7 @@ def api_gateway_stage_logging_check(cache: dict, session, awsAccountId: str, aws
                         "AssetDetails": assetB64,
                         "AssetClass": "Networking",
                         "AssetService": "Amazon API Gateway",
-                        "AssetType": "Stage"
+                        "AssetComponent": "Stage"
                     },
                     "Resources": [
                         {
@@ -414,7 +414,7 @@ def api_gateway_stage_cacheing_enabled_check(cache: dict, session, awsAccountId:
                         "AssetDetails": assetB64,
                         "AssetClass": "Networking",
                         "AssetService": "Amazon API Gateway",
-                        "AssetType": "Stage"
+                        "AssetComponent": "Stage"
                     },
                     "Resources": [
                         {
@@ -486,7 +486,7 @@ def api_gateway_stage_cacheing_enabled_check(cache: dict, session, awsAccountId:
                         "AssetDetails": assetB64,
                         "AssetClass": "Networking",
                         "AssetService": "Amazon API Gateway",
-                        "AssetType": "Stage"
+                        "AssetComponent": "Stage"
                     },
                     "Resources": [
                         {
@@ -583,7 +583,7 @@ def api_gateway_stage_cache_encryption_check(cache: dict, session, awsAccountId:
                         "AssetDetails": assetB64,
                         "AssetClass": "Networking",
                         "AssetService": "Amazon API Gateway",
-                        "AssetType": "Stage"
+                        "AssetComponent": "Stage"
                     },
                     "Resources": [
                         {
@@ -653,7 +653,7 @@ def api_gateway_stage_cache_encryption_check(cache: dict, session, awsAccountId:
                         "AssetDetails": assetB64,
                         "AssetClass": "Networking",
                         "AssetService": "Amazon API Gateway",
-                        "AssetType": "Stage"
+                        "AssetComponent": "Stage"
                     },
                     "Resources": [
                         {
@@ -735,7 +735,7 @@ def api_gateway_stage_xray_tracing_check(cache: dict, session, awsAccountId: str
                         "AssetDetails": assetB64,
                         "AssetClass": "Networking",
                         "AssetService": "Amazon API Gateway",
-                        "AssetType": "Stage"
+                        "AssetComponent": "Stage"
                     },
                     "Resources": [
                         {
@@ -801,7 +801,7 @@ def api_gateway_stage_xray_tracing_check(cache: dict, session, awsAccountId: str
                         "AssetDetails": assetB64,
                         "AssetClass": "Networking",
                         "AssetService": "Amazon API Gateway",
-                        "AssetType": "Stage"
+                        "AssetComponent": "Stage"
                     },
                     "Resources": [
                         {
@@ -896,7 +896,7 @@ def api_gateway_stage_waf_check_check(cache: dict, session, awsAccountId: str, a
                         "AssetDetails": assetB64,
                         "AssetClass": "Networking",
                         "AssetService": "Amazon API Gateway",
-                        "AssetType": "Stage"
+                        "AssetComponent": "Stage"
                     },
                     "Resources": [
                         {
@@ -972,7 +972,7 @@ def api_gateway_stage_waf_check_check(cache: dict, session, awsAccountId: str, a
                         "AssetDetails": assetB64,
                         "AssetClass": "Networking",
                         "AssetService": "Amazon API Gateway",
-                        "AssetType": "Stage"
+                        "AssetComponent": "Stage"
                     },
                     "Resources": [
                         {
@@ -1061,7 +1061,7 @@ def api_gateway_rest_api_policy_check(cache: dict, session, awsAccountId: str, a
                     "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon API Gateway",
-                    "AssetType": "REST API"
+                    "AssetComponent": "REST API"
                 },
                 "Resources": [
                     {
@@ -1133,7 +1133,7 @@ def api_gateway_rest_api_policy_check(cache: dict, session, awsAccountId: str, a
                     "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon API Gateway",
-                    "AssetType": "REST API"
+                    "AssetComponent": "REST API"
                 },
                 "Resources": [
                     {
@@ -1219,7 +1219,7 @@ def api_gateway_rest_api_authorizer_check(cache: dict, session, awsAccountId: st
                     "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon API Gateway",
-                    "AssetType": "REST API"
+                    "AssetComponent": "REST API"
                 },
                 "Resources": [
                     {
@@ -1291,7 +1291,7 @@ def api_gateway_rest_api_authorizer_check(cache: dict, session, awsAccountId: st
                     "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon API Gateway",
-                    "AssetType": "REST API"
+                    "AssetComponent": "REST API"
                 },
                 "Resources": [
                     {

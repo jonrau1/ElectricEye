@@ -89,7 +89,7 @@ def athena_workgroup_encryption_check(cache: dict, session, awsAccountId: str, a
                     "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon Athena",
-                    "AssetType": "Workgroup"
+                    "AssetComponent": "Workgroup"
                 },
                 "Resources": [
                     {
@@ -155,7 +155,7 @@ def athena_workgroup_encryption_check(cache: dict, session, awsAccountId: str, a
                     "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon Athena",
-                    "AssetType": "Workgroup"
+                    "AssetComponent": "Workgroup"
                 },
                 "Resources": [
                     {
@@ -221,7 +221,7 @@ def athena_workgroup_encryption_check(cache: dict, session, awsAccountId: str, a
                     "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon Athena",
-                    "AssetType": "Workgroup"
+                    "AssetComponent": "Workgroup"
                 },
                 "Resources": [
                     {
@@ -318,7 +318,7 @@ def athena_encrypted_workgroup_client_override_check(cache: dict, session, awsAc
                     "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon Athena",
-                    "AssetType": "Workgroup"
+                    "AssetComponent": "Workgroup"
                 },
                 "Resources": [
                     {
@@ -384,7 +384,7 @@ def athena_encrypted_workgroup_client_override_check(cache: dict, session, awsAc
                     "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon Athena",
-                    "AssetType": "Workgroup"
+                    "AssetComponent": "Workgroup"
                 },
                 "Resources": [
                     {
@@ -450,7 +450,7 @@ def athena_encrypted_workgroup_client_override_check(cache: dict, session, awsAc
                     "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon Athena",
-                    "AssetType": "Workgroup"
+                    "AssetComponent": "Workgroup"
                 },
                 "Resources": [
                     {
@@ -538,7 +538,7 @@ def athena_workgroup_metrics_check(cache: dict, session, awsAccountId: str, awsR
                     "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon Athena",
-                    "AssetType": "Workgroup"
+                    "AssetComponent": "Workgroup"
                 },
                 "Resources": [
                     {
@@ -605,7 +605,7 @@ def athena_workgroup_metrics_check(cache: dict, session, awsAccountId: str, awsR
                     "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon Athena",
-                    "AssetType": "Workgroup"
+                    "AssetComponent": "Workgroup"
                 },
                 "Resources": [
                     {
@@ -690,7 +690,7 @@ def athena_workgroup_engine_autoupdate_check(cache: dict, session, awsAccountId:
                     "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon Athena",
-                    "AssetType": "Workgroup"
+                    "AssetComponent": "Workgroup"
                 },
                 "Resources": [
                     {
@@ -755,7 +755,7 @@ def athena_workgroup_engine_autoupdate_check(cache: dict, session, awsAccountId:
                     "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon Athena",
-                    "AssetType": "Workgroup"
+                    "AssetComponent": "Workgroup"
                 },
                 "Resources": [
                     {

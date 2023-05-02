@@ -38,6 +38,11 @@ class StdoutProvider(object):
         for finding in noDetails:
         """
 
+        """
+        This list comprhension will base64 decode and convert a string to JSON for all instances of `ProductFields.AssetDetails`
+        except where it is a None type (this is done for placeholders in Checks where the Asset doesn't exist) and it will also
+        skip over areas in the event that `ProductFields` is missing any Cloud Asset Management required fields
+        """
         decodedFindings = [
             {**d, "ProductFields": {**d["ProductFields"],
                 "AssetDetails": json.loads(base64.b64decode(d["ProductFields"]["AssetDetails"]).decode("utf-8"))
@@ -48,8 +53,11 @@ class StdoutProvider(object):
             for d in findings
         ]
 
+        del findings
+
         for finding in decodedFindings:
             parsedFinding = json.loads(json.dumps(finding, default=str))
+            # This is used to ignore duplicate Finding IDs
             if parsedFinding["Id"] not in checkedIds:
                 checkedIds.append(parsedFinding["Id"])
                 print(json.dumps(finding))
