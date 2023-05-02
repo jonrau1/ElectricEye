@@ -20,6 +20,9 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
+
 
 registry = CheckRegister()
 
@@ -39,13 +42,16 @@ def mwaa_kms_encryption_check(cache: dict, session, awsAccountId: str, awsRegion
     # Retrieve MWAA Envs from Cache
     for env in list_environments(cache, session)["Environments"]:
         response = mwaa.get_environment(Name=env)["Environment"]
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         envArn = str(response["Arn"])
         envClass = str(response["EnvironmentClass"])
         envName = str(response["Name"])
         # KmsKeyId is not provided in the response if it is not there - MWAA uses SSE-S3 style encryption by default
         try:
             envKmsId = str(response["KmsKey"])
-        except:
+        except KeyError:
             envKmsId = "NO_KMS_CMK"
         # This is a failing check
         if envKmsId == "NO_KMS_CMK":
@@ -62,7 +68,7 @@ def mwaa_kms_encryption_check(cache: dict, session, awsAccountId: str, awsRegion
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "HIGH"},
+                "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
                 "Title": "[MWAA.1] Managed Apache Airflow Environments should be encrypted with a KMS CMK",
                 "Description": "Managed Apache Airflow Environment " 
@@ -77,9 +83,13 @@ def mwaa_kms_encryption_check(cache: dict, session, awsAccountId: str, awsRegion
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Applicaton Integration",
                     "AssetService": "Amazon Managed Workflows for Apache Airflow",
-                    "AssetType": "Environment"
+                    "AssetComponent": "Environment"
                 },
                 "Resources": [
                     {
@@ -139,9 +149,13 @@ def mwaa_kms_encryption_check(cache: dict, session, awsAccountId: str, awsRegion
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Applicaton Integration",
                     "AssetService": "Amazon Managed Workflows for Apache Airflow",
-                    "AssetType": "Environment"
+                    "AssetComponent": "Environment"
                 },
                 "Resources": [
                     {
@@ -181,6 +195,9 @@ def mwaa_public_access_check(cache: dict, session, awsAccountId: str, awsRegion:
     # Retrieve MWAA Envs from Cache
     for env in list_environments(cache, session)["Environments"]:
         response = mwaa.get_environment(Name=env)["Environment"]
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         envArn = str(response["Arn"])
         envClass = str(response["EnvironmentClass"])
         envName = str(response["Name"])
@@ -214,9 +231,13 @@ def mwaa_public_access_check(cache: dict, session, awsAccountId: str, awsRegion:
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Applicaton Integration",
                     "AssetService": "Amazon Managed Workflows for Apache Airflow",
-                    "AssetType": "Environment"
+                    "AssetComponent": "Environment"
                 },
                 "Resources": [
                     {
@@ -282,9 +303,13 @@ def mwaa_public_access_check(cache: dict, session, awsAccountId: str, awsRegion:
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Applicaton Integration",
                     "AssetService": "Amazon Managed Workflows for Apache Airflow",
-                    "AssetType": "Environment"
+                    "AssetComponent": "Environment"
                 },
                 "Resources": [
                     {
@@ -330,6 +355,9 @@ def mwaa_dag_processing_logging_check(cache: dict, session, awsAccountId: str, a
     # Retrieve MWAA Envs from Cache
     for env in list_environments(cache, session)["Environments"]:
         response = mwaa.get_environment(Name=env)["Environment"]
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         envArn = str(response["Arn"])
         envClass = str(response["EnvironmentClass"])
         envName = str(response["Name"])
@@ -360,9 +388,13 @@ def mwaa_dag_processing_logging_check(cache: dict, session, awsAccountId: str, a
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Applicaton Integration",
                     "AssetService": "Amazon Managed Workflows for Apache Airflow",
-                    "AssetType": "Environment"
+                    "AssetComponent": "Environment"
                 },
                 "Resources": [
                     {
@@ -423,9 +455,13 @@ def mwaa_dag_processing_logging_check(cache: dict, session, awsAccountId: str, a
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Applicaton Integration",
                     "AssetService": "Amazon Managed Workflows for Apache Airflow",
-                    "AssetType": "Environment"
+                    "AssetComponent": "Environment"
                 },
                 "Resources": [
                     {
@@ -469,6 +505,9 @@ def mwaa_scheduler_logging_check(cache: dict, session, awsAccountId: str, awsReg
     # Retrieve MWAA Envs from Cache
     for env in list_environments(cache, session)["Environments"]:
         response = mwaa.get_environment(Name=env)["Environment"]
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         envArn = str(response["Arn"])
         envClass = str(response["EnvironmentClass"])
         envName = str(response["Name"])
@@ -499,9 +538,13 @@ def mwaa_scheduler_logging_check(cache: dict, session, awsAccountId: str, awsReg
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Applicaton Integration",
                     "AssetService": "Amazon Managed Workflows for Apache Airflow",
-                    "AssetType": "Environment"
+                    "AssetComponent": "Environment"
                 },
                 "Resources": [
                     {
@@ -562,9 +605,13 @@ def mwaa_scheduler_logging_check(cache: dict, session, awsAccountId: str, awsReg
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Applicaton Integration",
                     "AssetService": "Amazon Managed Workflows for Apache Airflow",
-                    "AssetType": "Environment"
+                    "AssetComponent": "Environment"
                 },
                 "Resources": [
                     {
@@ -608,6 +655,9 @@ def mwaa_task_logging_check(cache: dict, session, awsAccountId: str, awsRegion: 
     # Retrieve MWAA Envs from Cache
     for env in list_environments(cache, session)["Environments"]:
         response = mwaa.get_environment(Name=env)["Environment"]
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         envArn = str(response["Arn"])
         envClass = str(response["EnvironmentClass"])
         envName = str(response["Name"])
@@ -638,9 +688,13 @@ def mwaa_task_logging_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Applicaton Integration",
                     "AssetService": "Amazon Managed Workflows for Apache Airflow",
-                    "AssetType": "Environment"
+                    "AssetComponent": "Environment"
                 },
                 "Resources": [
                     {
@@ -701,9 +755,13 @@ def mwaa_task_logging_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Applicaton Integration",
                     "AssetService": "Amazon Managed Workflows for Apache Airflow",
-                    "AssetType": "Environment"
+                    "AssetComponent": "Environment"
                 },
                 "Resources": [
                     {
@@ -747,6 +805,9 @@ def mwaa_webserver_logging_check(cache: dict, session, awsAccountId: str, awsReg
     # Retrieve MWAA Envs from Cache
     for env in list_environments(cache, session)["Environments"]:
         response = mwaa.get_environment(Name=env)["Environment"]
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         envArn = str(response["Arn"])
         envClass = str(response["EnvironmentClass"])
         envName = str(response["Name"])
@@ -777,9 +838,13 @@ def mwaa_webserver_logging_check(cache: dict, session, awsAccountId: str, awsReg
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Applicaton Integration",
                     "AssetService": "Amazon Managed Workflows for Apache Airflow",
-                    "AssetType": "Environment"
+                    "AssetComponent": "Environment"
                 },
                 "Resources": [
                     {
@@ -840,9 +905,13 @@ def mwaa_webserver_logging_check(cache: dict, session, awsAccountId: str, awsReg
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Applicaton Integration",
                     "AssetService": "Amazon Managed Workflows for Apache Airflow",
-                    "AssetType": "Environment"
+                    "AssetComponent": "Environment"
                 },
                 "Resources": [
                     {
@@ -886,6 +955,9 @@ def mwaa_worker_logging_check(cache: dict, session, awsAccountId: str, awsRegion
     # Retrieve MWAA Envs from Cache
     for env in list_environments(cache, session)["Environments"]:
         response = mwaa.get_environment(Name=env)["Environment"]
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         envArn = str(response["Arn"])
         envClass = str(response["EnvironmentClass"])
         envName = str(response["Name"])
@@ -916,9 +988,13 @@ def mwaa_worker_logging_check(cache: dict, session, awsAccountId: str, awsRegion
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Applicaton Integration",
                     "AssetService": "Amazon Managed Workflows for Apache Airflow",
-                    "AssetType": "Environment"
+                    "AssetComponent": "Environment"
                 },
                 "Resources": [
                     {
@@ -979,9 +1055,13 @@ def mwaa_worker_logging_check(cache: dict, session, awsAccountId: str, awsRegion
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Applicaton Integration",
                     "AssetService": "Amazon Managed Workflows for Apache Airflow",
-                    "AssetType": "Environment"
+                    "AssetComponent": "Environment"
                 },
                 "Resources": [
                     {
