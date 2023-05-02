@@ -39,8 +39,11 @@ class StdoutProvider(object):
         """
 
         decodedFindings = [
-            {**d, "ProductFields": {**d["ProductFields"], "AssetDetails": json.loads(base64.b64decode(d["ProductFields"]["AssetDetails"]).decode("utf-8"))}}
-            if "AssetDetails" in d["ProductFields"]
+            {**d, "ProductFields": {**d["ProductFields"],
+                "AssetDetails": json.loads(base64.b64decode(d["ProductFields"]["AssetDetails"]).decode("utf-8"))
+                    if d["ProductFields"]["AssetDetails"] is not None
+                    else None
+            }} if "AssetDetails" in d["ProductFields"]
             else d
             for d in findings
         ]
