@@ -30,7 +30,7 @@ This key contains information about the specific asset's (what the Check is eval
 
 #### `AssetDetails`
 
-This key contains the JSON payload returned by the CSP or SaaS provider's API relative to the specific Asset being evaluated by an ElectricEye Check. The entire schema is captured in `AssetDetails` and will only appear in `json`, `json-normalized`, `stdout`, and `cam-json` ElectricEye Outputs.
+This key contains the JSON payload returned by the CSP or SaaS provider's API relative to the specific Asset being evaluated by an ElectricEye Check. The entire schema is captured in `AssetDetails` and will only appear in `json`, `stdout`, and `cam_json` ElectricEye Outputs.
 
 #### `AssetClass`
 
