@@ -19,8 +19,9 @@
 #under the License.
 
 import datetime
-import json
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -43,8 +44,11 @@ def sqs_old_message_check(cache: dict, session, awsAccountId: str, awsRegion: st
         for queueUrl in response["QueueUrls"]:
             queueName = queueUrl.rsplit("/", 1)[-1]
             attributes = sqs.get_queue_attributes(
-                QueueUrl=queueUrl, AttributeNames=["MessageRetentionPeriod", "QueueArn"]
+                QueueUrl=queueUrl, AttributeNames=["All"]
             )
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(attributes,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             messageRetention = attributes["Attributes"]["MessageRetentionPeriod"]
             queueArn = attributes["Attributes"]["QueueArn"]
             metricResponse = cloudwatch.get_metric_data(
@@ -102,9 +106,13 @@ def sqs_old_message_check(cache: dict, session, awsAccountId: str, awsRegion: st
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Application Integration",
                         "AssetService": "Amazon Simple Queue Service",
-                        "AssetType": "Queue"
+                        "AssetComponent": "Queue"
                     },
                     "Resources": [
                         {
@@ -158,9 +166,13 @@ def sqs_old_message_check(cache: dict, session, awsAccountId: str, awsRegion: st
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Application Integration",
                         "AssetService": "Amazon Simple Queue Service",
-                        "AssetType": "Queue"
+                        "AssetComponent": "Queue"
                     },
                     "Resources": [
                         {
@@ -188,9 +200,6 @@ def sqs_old_message_check(cache: dict, session, awsAccountId: str, awsRegion: st
                     "RecordState": "ACTIVE",
                 }
                 yield finding
-    else: 
-        # No queues listed
-        pass
 
 @registry.register_check("sqs")
 def sqs_queue_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -202,8 +211,11 @@ def sqs_queue_encryption_check(cache: dict, session, awsAccountId: str, awsRegio
         for queueUrl in response["QueueUrls"]:
             queueName = queueUrl.rsplit("/", 1)[-1]
             attributes = sqs.get_queue_attributes(
-                QueueUrl=queueUrl, AttributeNames=["QueueArn", "KmsMasterKeyId"]
+                QueueUrl=queueUrl, AttributeNames=["All"]
             )
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(attributes,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             queueArn=attributes["Attributes"]["QueueArn"]
             queueEncryption=attributes["Attributes"].get('KmsMasterKeyId')
 
@@ -231,9 +243,13 @@ def sqs_queue_encryption_check(cache: dict, session, awsAccountId: str, awsRegio
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Application Integration",
                         "AssetService": "Amazon Simple Queue Service",
-                        "AssetType": "Queue"
+                        "AssetComponent": "Queue"
                     },
                     "Resources": [
                         {
@@ -288,9 +304,13 @@ def sqs_queue_encryption_check(cache: dict, session, awsAccountId: str, awsRegio
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Application Integration",
                         "AssetService": "Amazon Simple Queue Service",
-                        "AssetType": "Queue"
+                        "AssetComponent": "Queue"
                     },
                     "Resources": [
                         {
@@ -329,8 +349,11 @@ def sqs_queue_public_accessibility_check(cache: dict, session, awsAccountId: str
         for queueUrl in response["QueueUrls"]:
             queueName = queueUrl.rsplit("/", 1)[-1]
             attributes = sqs.get_queue_attributes(
-                QueueUrl=queueUrl, AttributeNames=["QueueArn", "Policy"]
+                QueueUrl=queueUrl, AttributeNames=["All"]
             )
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(attributes,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             queueArn=attributes["Attributes"]["QueueArn"]
             queuePolicy=json.loads(attributes["Attributes"]["Policy"])
 
@@ -366,9 +389,13 @@ def sqs_queue_public_accessibility_check(cache: dict, session, awsAccountId: str
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Application Integration",
                         "AssetService": "Amazon Simple Queue Service",
-                        "AssetType": "Queue"
+                        "AssetComponent": "Queue"
                     },
                     "Resources": [
                         {
@@ -421,9 +448,13 @@ def sqs_queue_public_accessibility_check(cache: dict, session, awsAccountId: str
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Application Integration",
                         "AssetService": "Amazon Simple Queue Service",
-                        "AssetType": "Queue"
+                        "AssetComponent": "Queue"
                     },
                     "Resources": [
                         {

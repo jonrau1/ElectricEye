@@ -17,6 +17,7 @@
 #KIND, either express or implied.  See the License for the
 #specific language governing permissions and limitations
 #under the License.
+
 import datetime
 from check_register import CheckRegister, accumulate_paged_results
 import base64
