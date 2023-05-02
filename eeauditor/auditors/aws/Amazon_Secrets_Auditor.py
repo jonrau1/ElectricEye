@@ -70,7 +70,7 @@ def secret_scan_codebuild_envvar_check(cache: dict, session, awsAccountId: str, 
         with open(resultsFile, 'r') as readjson:
             data = json.load(readjson)
         # if results is an empty dict then there are no secrets found!
-        if str(data["results"]) == "{}":
+        if not data["results"]:
             # this is a passing check
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -149,7 +149,8 @@ def secret_scan_codebuild_envvar_check(cache: dict, session, awsAccountId: str, 
             # this is a failing check - we won't actually parse the full payload of potential secrets
             # otherwise we would break the mutability of a finding...so we will sample the first one
             # and note that in the finding itself
-            secretType = str(data["results"]["codebuild-data-sample.json"][0]["type"])
+            findingFile = list(data["results"].keys())[0]
+            secretType = str(data["results"][findingFile][0]["type"])
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": cbArn + "/codebuild-env-var-secrets-check",
@@ -280,7 +281,7 @@ def secret_scan_cloudformation_parameters_check(cache: dict, session, awsAccount
                 with open(resultsFile, 'r') as readjson:
                     data = json.load(readjson)
                 # if results is an empty dict then there are no secrets found!
-                if str(data["results"]) == "{}":
+                if not data["results"]:
                     # this is a passing check
                     finding = {
                         "SchemaVersion": "2018-10-08",
@@ -355,7 +356,8 @@ def secret_scan_cloudformation_parameters_check(cache: dict, session, awsAccount
                     # this is a failing check - we won't actually parse the full payload of potential secrets
                     # otherwise we would break the mutability of a finding...so we will sample the first one
                     # and note that in the finding itself
-                    secretType = str(data["results"]["cloudformation-data-sample.json"][0]["type"])
+                    findingFile = list(data["results"].keys())[0]
+                    secretType = str(data["results"][findingFile][0]["type"])
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": stackArn + "/cloudformation-params-secrets-check",
@@ -479,7 +481,7 @@ def secret_scan_ecs_task_def_envvar_check(cache: dict, session, awsAccountId: st
             with open(resultsFile, 'r') as readjson:
                 data = json.load(readjson)
             # if results is an empty dict then there are no secrets found!
-            if str(data["results"]) == "{}":
+            if not data["results"]:
                 # this is a passing check
                 finding = {
                     "SchemaVersion": "2018-10-08",
@@ -562,7 +564,8 @@ def secret_scan_ecs_task_def_envvar_check(cache: dict, session, awsAccountId: st
                 # this is a failing check - we won't actually parse the full payload of potential secrets
                 # otherwise we would break the mutability of a finding...so we will sample the first one
                 # and note that in the finding itself
-                secretType = str(data["results"]["ecs-data-sample.json"][0]["type"])
+                findingFile = list(data["results"].keys())[0]
+                secretType = str(data["results"][findingFile][0]["type"])
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": t + cdefName + "/ecs-envvar-secrets-check",
@@ -689,7 +692,7 @@ def secret_scan_ec2_userdata_check(cache: dict, session, awsAccountId: str, awsR
                 with open(resultsFile, 'r') as readjson:
                     data = json.load(readjson)
                 # if results is an empty dict then there are no secrets found!
-                if str(data["results"]) == "{}":
+                if not data["results"]:
                     # this is a passing check
                     finding = {
                         "SchemaVersion": "2018-10-08",
@@ -769,7 +772,8 @@ def secret_scan_ec2_userdata_check(cache: dict, session, awsAccountId: str, awsR
                     # this is a failing check - we won't actually parse the full payload of potential secrets
                     # otherwise we would break the mutability of a finding...so we will sample the first one
                     # and note that in the finding itself
-                    secretType = str(data["results"]["ec2-data-sample.json"][0]["type"])
+                    findingFile = list(data["results"].keys())[0]
+                    secretType = str(data["results"][findingFile][0]["type"])
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": instanceArn + "/ec2-userdata-secrets-check",

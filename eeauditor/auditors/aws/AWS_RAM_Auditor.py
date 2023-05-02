@@ -30,9 +30,7 @@ def get_resource_shares(cache, session):
     response = cache.get("get_resource_shares")
     if response:
         return response
-    paginator = ram.get_paginator("get_resource_shares")
-    filters = [{"Name": "status", "Values": ["ACTIVE"]}]
-    for page in paginator.paginate(filters=filters):
+    for page in ram.get_paginator("get_resource_shares").paginate():
         results = page["resourceShares"] 
 
     cache["get_resource_shares"] = results
