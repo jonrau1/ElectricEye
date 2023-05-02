@@ -21,6 +21,7 @@
 import datetime
 import json
 from check_register import CheckRegister
+import base64
 
 registry = CheckRegister()
 
@@ -36,11 +37,11 @@ def list_topics(cache, session):
 def sns_topic_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SNS.1] SNS topics should be encrypted"""
     sns = session.client("sns")
-    # loop through SNS topics
-    response = list_topics(cache, session)
-    mySnsTopics = response["Topics"]
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for topic in mySnsTopics:
+    for topic in list_topics(cache, session)["Topics"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(topic,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         topicarn = str(topic["TopicArn"])
         topicName = topicarn.replace(
             f"arn:{awsPartition}:sns:{awsRegion}:{awsAccountId}:", ""
@@ -75,9 +76,13 @@ def sns_topic_encryption_check(cache: dict, session, awsAccountId: str, awsRegio
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Application Integration",
                     "AssetService": "Amazon Simple Notification Service",
-                    "AssetType": "Topic"
+                    "AssetComponent": "Topic"
                 },
                 "Resources": [
                     {
@@ -137,9 +142,13 @@ def sns_topic_encryption_check(cache: dict, session, awsAccountId: str, awsRegio
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Application Integration",
                     "AssetService": "Amazon Simple Notification Service",
-                    "AssetType": "Topic"
+                    "AssetComponent": "Topic"
                 },
                 "Resources": [
                     {
@@ -170,11 +179,11 @@ def sns_topic_encryption_check(cache: dict, session, awsAccountId: str, awsRegio
 def sns_http_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SNS.2] SNS topics should not use HTTP subscriptions"""
     sns = session.client("sns")
-    # loop through SNS topics
-    response = list_topics(cache, session)
-    mySnsTopics = response["Topics"]
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for topic in mySnsTopics:
+    for topic in list_topics(cache, session)["Topics"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(topic,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         topicarn = str(topic["TopicArn"])
         topicName = topicarn.replace(
             f"arn:{awsPartition}:sns:{awsRegion}:{awsAccountId}:", ""
@@ -212,9 +221,13 @@ def sns_http_encryption_check(cache: dict, session, awsAccountId: str, awsRegion
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Application Integration",
                         "AssetService": "Amazon Simple Notification Service",
-                        "AssetType": "Topic"
+                        "AssetComponent": "Topic"
                     },
                     "Resources": [
                         {
@@ -271,9 +284,13 @@ def sns_http_encryption_check(cache: dict, session, awsAccountId: str, awsRegion
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Application Integration",
                         "AssetService": "Amazon Simple Notification Service",
-                        "AssetType": "Topic"
+                        "AssetComponent": "Topic"
                     },
                     "Resources": [
                         {
@@ -304,13 +321,13 @@ def sns_http_encryption_check(cache: dict, session, awsAccountId: str, awsRegion
 
 @registry.register_check("sns")
 def sns_public_access_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[SNS.3] SNS topics should not have public access"""
+    """[SNS.3] SNS topics should not allow public or unauthenticated access"""
     sns = session.client("sns")
-    # loop through SNS topics
-    response = list_topics(cache, session)
-    mySnsTopics = response["Topics"]
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for topic in mySnsTopics:
+    for topic in list_topics(cache, session)["Topics"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(topic,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         topicarn = str(topic["TopicArn"])
         topicName = topicarn.replace(
             f"arn:{awsPartition}:sns:{awsRegion}:{awsAccountId}:", ""
@@ -346,7 +363,7 @@ def sns_public_access_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 75,  # The Condition may not effectively limit access
-                "Title": "[SNS.3] SNS topics should not have public access",
+                "Title": "[SNS.3] SNS topics should not allow public or unauthenticated access",
                 "Description": "SNS topic "
                 + topicName
                 + " does not have public access or limited by a Condition. Refer to the remediation instructions to review sns access policy",
@@ -359,9 +376,13 @@ def sns_public_access_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Application Integration",
                     "AssetService": "Amazon Simple Notification Service",
-                    "AssetType": "Topic"
+                    "AssetComponent": "Topic"
                 },
                 "Resources": [
                     {
@@ -409,7 +430,7 @@ def sns_public_access_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
-                "Title": "[SNS.3] SNS topics should not have public access",
+                "Title": "[SNS.3] SNS topics should not allow public or unauthenticated access",
                 "Description": "SNS topic "
                 + topicName
                 + " has public access. Refer to the remediation instructions to remediate this behavior",
@@ -422,9 +443,13 @@ def sns_public_access_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Application Integration",
                     "AssetService": "Amazon Simple Notification Service",
-                    "AssetType": "Topic"
+                    "AssetComponent": "Topic"
                 },
                 "Resources": [
                     {
@@ -461,11 +486,11 @@ def sns_public_access_check(cache: dict, session, awsAccountId: str, awsRegion: 
 def sns_cross_account_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SNS.4] SNS topics should not allow cross-account access"""
     sns = session.client("sns")
-    # loop through SNS topics
-    response = list_topics(cache, session)
-    mySnsTopics = response["Topics"]
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for topic in mySnsTopics:
+    for topic in list_topics(cache, session)["Topics"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(topic,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         topicarn = str(topic["TopicArn"])
         topicName = topicarn.replace(
             f"arn:{awsPartition}:sns:{awsRegion}:{awsAccountId}:", ""
@@ -521,9 +546,13 @@ def sns_cross_account_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Application Integration",
                     "AssetService": "Amazon Simple Notification Service",
-                    "AssetType": "Topic"
+                    "AssetComponent": "Topic"
                 },
                 "Resources": [
                     {
@@ -582,9 +611,13 @@ def sns_cross_account_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Application Integration",
                     "AssetService": "Amazon Simple Notification Service",
-                    "AssetType": "Topic"
+                    "AssetComponent": "Topic"
                 },
                 "Resources": [
                     {
