@@ -27,10 +27,14 @@ class StdoutProvider(object):
     def write_findings(self, findings: list, output_file: str, **kwargs):
         checkedIds = []
 
-        """noDetails = [
+        """
+        noDetails = [
             {**d, "ProductFields": {k: v for k, v in d["ProductFields"].items() if k != "AssetDetails"}} for d in findings
-        ]"""
+        ]
         del findings
+
+        for finding in noDetails:
+        """
 
         for finding in findings:
             parsedFinding = json.loads(json.dumps(finding, default=str))
