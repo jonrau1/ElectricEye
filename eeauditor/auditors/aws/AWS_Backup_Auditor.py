@@ -22,6 +22,8 @@ import datetime
 import botocore.exceptions
 from dateutil.parser import parse
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -146,6 +148,9 @@ def volume_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str,
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for volumes in describe_volumes(cache, session)["Volumes"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(volumes,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         volumeId = str(volumes["VolumeId"])
         volumeArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:volume/{volumeId}"
         # this is a passing check
@@ -174,9 +179,13 @@ def volume_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Storage",
                     "AssetService": "Amazon EC2",
-                    "AssetType": "Volume"
+                    "AssetComponent": "Volume"
                 },
                 "Resources": [
                     {
@@ -234,9 +243,13 @@ def volume_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Storage",
                         "AssetService": "Amazon EC2",
-                        "AssetType": "Volume"
+                        "AssetComponent": "Volume"
                     },
                     "Resources": [
                         {
@@ -275,6 +288,9 @@ def ec2_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for i in describe_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(i,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         instanceId = str(i["InstanceId"])
         instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
         instanceType = str(i["InstanceType"])
@@ -312,9 +328,13 @@ def ec2_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "Amazon EC2",
-                    "AssetType": "Instance"
+                    "AssetComponent": "Instance"
                 },
                 "Resources": [
                     {
@@ -381,9 +401,13 @@ def ec2_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Compute",
                         "AssetService": "Amazon EC2",
-                        "AssetType": "Instance"
+                        "AssetComponent": "Instance"
                     },
                     "Resources": [
                         {
@@ -432,6 +456,9 @@ def ddb_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for table in list_tables(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(table,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         response = dynamodb.describe_table(TableName=table)
         tableArn = str(response["Table"]["TableArn"])
         tableName = str(response["Table"]["TableName"])
@@ -461,9 +488,13 @@ def ddb_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon DynamoDB",
-                    "AssetType": "Table"
+                    "AssetComponent": "Table"
                 },
                 "Resources": [
                     {
@@ -526,9 +557,13 @@ def ddb_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Database",
                         "AssetService": "Amazon DynamoDB",
-                        "AssetType": "Table"
+                        "AssetComponent": "Table"
                     },
                     "Resources": [
                         {
@@ -572,6 +607,9 @@ def rds_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for dbinstances in describe_db_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dbinstances,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -604,9 +642,13 @@ def rds_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Relational Database Service",
-                    "AssetType": "Database Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -673,9 +715,13 @@ def rds_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Database",
                         "AssetService": "Amazon Relational Database Service",
-                        "AssetType": "Database Instance"
+                        "AssetComponent": "Database Instance"
                     },
                     "Resources": [
                         {
@@ -723,6 +769,9 @@ def efs_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for filesys in describe_file_systems(cache, session)["FileSystems"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(filesys,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         fileSysId = str(filesys["FileSystemId"])
         fileSysArn = f"arn:{awsPartition}:elasticfilesystem:{awsRegion}:{awsAccountId}:file-system/{fileSysId}"
         # this is a passing check
@@ -751,9 +800,13 @@ def efs_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Storage",
                     "AssetService": "Amazon Elastic File System",
-                    "AssetType": "File System"
+                    "AssetComponent": "File System"
                 },
                 "Resources": [
                     {
@@ -811,9 +864,13 @@ def efs_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Storage",
                         "AssetService": "Amazon Elastic File System",
-                        "AssetType": "File System"
+                        "AssetComponent": "File System"
                     },
                     "Resources": [
                         {
@@ -852,6 +909,9 @@ def neptune_cluster_backup_check(cache: dict, session, awsAccountId: str, awsReg
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for cluster in describe_neptune_db_clusters(cache, session)["DBClusters"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(cluster,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clusterArn = cluster["DBClusterArn"]
         clusterId = cluster["DBClusterIdentifier"]
         clusterParameterGroupName = cluster["DBClusterParameterGroup"]
@@ -880,9 +940,13 @@ def neptune_cluster_backup_check(cache: dict, session, awsAccountId: str, awsReg
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Neptune",
-                    "AssetType": "Database Instance"
+                    "AssetComponent": "Database Cluster"
                 },
                 "Resources": [
                     {
@@ -956,9 +1020,13 @@ def neptune_cluster_backup_check(cache: dict, session, awsAccountId: str, awsReg
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Database",
                         "AssetService": "Amazon Neptune",
-                        "AssetType": "Database Instance"
+                        "AssetComponent": "Database Cluster"
                     },
                     "Resources": [
                         {
@@ -1014,6 +1082,9 @@ def docdb_cluster_backup_check(cache: dict, session, awsAccountId: str, awsRegio
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for docdbcluster in describe_doc_db_clusters(cache, session)["DBClusters"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(docdbcluster,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         docdbclusterId = str(docdbcluster["DBClusterIdentifier"])
         docdbClusterArn = str(docdbcluster["DBClusterArn"])
         try:
@@ -1041,9 +1112,13 @@ def docdb_cluster_backup_check(cache: dict, session, awsAccountId: str, awsRegio
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon DocumentDB",
-                    "AssetType": "Database Instance"
+                    "AssetComponent": "Database Cluster"
                 },
                 "Resources": [
                     {
@@ -1114,9 +1189,13 @@ def docdb_cluster_backup_check(cache: dict, session, awsAccountId: str, awsRegio
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Database",
                         "AssetService": "Amazon DocumentDB",
-                        "AssetType": "Database Instance"
+                        "AssetComponent": "Database Cluster"
                     },
                     "Resources": [
                         {
