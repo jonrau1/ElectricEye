@@ -873,7 +873,7 @@ def ebs_account_encryption_by_default_check(cache: dict, session, awsAccountId: 
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "Amazon Elastic Block Storage",
-                "AssetComponent": "Account"
+                "AssetComponent": "Account Configuration"
             },
             "Resources": [
                 {
@@ -929,7 +929,7 @@ def ebs_account_encryption_by_default_check(cache: dict, session, awsAccountId: 
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "Amazon Elastic Block Storage",
-                "AssetComponent": "Account"
+                "AssetComponent": "Account Configuration"
             },
             "Resources": [
                 {

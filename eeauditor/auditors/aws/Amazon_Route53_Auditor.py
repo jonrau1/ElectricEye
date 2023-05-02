@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -44,6 +46,9 @@ def route53_hosted_zone_query_logging_check(cache: dict, session, awsAccountId: 
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for zone in get_hosted_zones(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(zone,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         hzId = zone["Id"]
         hzName = zone["Name"]
         hzArn = f"arn:aws:route53:::hostedzone/{hzName}"
@@ -76,9 +81,13 @@ def route53_hosted_zone_query_logging_check(cache: dict, session, awsAccountId: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon Route53",
-                    "AssetType": "Hosted Zone"
+                    "AssetComponent": "Hosted Zone"
                 },
                 "Resources": [
                     {
@@ -139,9 +148,13 @@ def route53_hosted_zone_query_logging_check(cache: dict, session, awsAccountId: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon Route53",
-                    "AssetType": "Hosted Zone"
+                    "AssetComponent": "Hosted Zone"
                 },
                 "Resources": [
                     {
@@ -185,6 +198,9 @@ def route53_hosted_zone_traffic_policy_check(cache: dict, session, awsAccountId:
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for zone in get_hosted_zones(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(zone,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         hzId = zone["Id"]
         hzName = zone["Name"]
         hzArn = f"arn:aws:route53:::hostedzone/{hzName}"
@@ -217,9 +233,13 @@ def route53_hosted_zone_traffic_policy_check(cache: dict, session, awsAccountId:
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon Route53",
-                    "AssetType": "Hosted Zone"
+                    "AssetComponent": "Hosted Zone"
                 },
                 "Resources": [
                     {
@@ -280,9 +300,13 @@ def route53_hosted_zone_traffic_policy_check(cache: dict, session, awsAccountId:
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon Route53",
-                    "AssetType": "Hosted Zone"
+                    "AssetComponent": "Hosted Zone"
                 },
                 "Resources": [
                     {

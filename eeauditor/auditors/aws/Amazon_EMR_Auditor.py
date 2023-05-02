@@ -1332,7 +1332,7 @@ def emr_cluster_block_secgroup_check(cache: dict, session, awsAccountId: str, aw
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "Amazon Elastic MapReduce",
-                "AssetComponent": "Account"
+                "AssetComponent": "Account Configuration"
             },
             "Resources": [
                 {
@@ -1397,7 +1397,7 @@ def emr_cluster_block_secgroup_check(cache: dict, session, awsAccountId: str, aw
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "Amazon Elastic MapReduce",
-                "AssetComponent": "Account"
+                "AssetComponent": "Account Configuration"
             },
             "Resources": [
                 {

@@ -801,7 +801,7 @@ def ec2_serial_console_access_check(cache: dict, session, awsAccountId: str, aws
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "Amazon EC2",
-                "AssetComponent": "Account"
+                "AssetComponent": "Account Configuration"
             },
             "Resources": [
                 {
@@ -870,7 +870,7 @@ def ec2_serial_console_access_check(cache: dict, session, awsAccountId: str, aws
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "Amazon EC2",
-                "AssetComponent": "Account"
+                "AssetComponent": "Account Configuration"
             },
             "Resources": [
                 {
@@ -1440,7 +1440,7 @@ def ec2_concentration_risk(cache: dict, session, awsAccountId: str, awsRegion: s
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "AWS Account",
-                "AssetComponent": "Account"
+                "AssetComponent": "Account Configuration"
             },
             "Resources": [
                 {
@@ -1502,7 +1502,7 @@ def ec2_concentration_risk(cache: dict, session, awsAccountId: str, awsRegion: s
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "AWS Account",
-                "AssetComponent": "Account"
+                "AssetComponent": "Account Configuration"
             },
             "Resources": [
                 {
@@ -1564,7 +1564,7 @@ def ec2_concentration_risk(cache: dict, session, awsAccountId: str, awsRegion: s
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "AWS Account",
-                "AssetComponent": "Account"
+                "AssetComponent": "Account Configuration"
             },
             "Resources": [
                 {
