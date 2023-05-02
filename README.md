@@ -222,12 +222,16 @@ aws ssm put-parameter \
 
 ## Supported Services and Checks
 
-In total there are...
+In total there are:
 
 > - **2** Supported Public CSPs
+
 > - **1** Supported SaaS Provider
-> - **695** Security & Resilience Best Practice Checks supported across all Public CSPs & SaaS Providers
+
+> - **693** Security & Resilience Best Practice Checks supported across all Public CSPs & SaaS Providers
+
 > - **105** Supported CSP & SaaS Resources / Asset Types
+
 > - **89** Auditor Plugins
 
 ### AWS Checks & Services
@@ -235,13 +239,13 @@ ___
 
 These are the following services and checks perform by each Auditor, there are currently...
 
-- :boom: **550 Checks** :boom:
+- :boom: **548 Checks** :boom:
 - :exclamation: **100 supported AWS services/components** :exclamation:
 - :fire: **77 Auditors** :fire:
 
 **Regarding AWS ElasticSearch Service/OpenSearch Service:** AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
 
-**Regarding AWS Shield Advanced:** You must be actively subscribed to Shield Advance with at least one Protection assigned to assess this Service.
+**Regarding AWS Shield Advanced:** You must be actively subscribed to Shield Advanced with at least one Protection assigned to assess this Service.
 
 **Regarding AWS Trusted Advisor:** You must be on AWS Business or Enterprise Support to interact with the `support` API for Trusted Advisor.
 
@@ -622,8 +626,8 @@ These are the following services and checks perform by each Auditor, there are c
 | AWS_Security_Services_Auditor | GuardDuty (Account) | Is GuardDuty enabled |
 | AWS_Security_Services_Auditor | Detective (Account) | Is Detective enabled |
 | AWS_Security_Services_Auditor | Macie2 | Is Macie enabled |
-| AWS_Security_Services_Auditor | AWS WAFv2 (Regional) | Are Regional Web ACLs configured |
-| AWS_Security_Services_Auditor | AWS WAFv2 (Global) | Are Global Web ACLs (for CloudFront) configured |
+| ~~AWS_Security_Services_Auditor~~ | ~~AWS WAFv2 (Regional)~~ | ~~Are Regional Web ACLs configured~~ **THIS FINDING HAS BEEN RETIRED** |
+| ~~AWS_Security_Services_Auditor~~ | ~~AWS WAFv2 (Global)~~ | ~~Are Global Web ACLs (for CloudFront) configured~~ **THIS FINDING HAS BEEN RETIRED** |
 | AWS_Systems_Manager_Auditor | SSM Document | Are self owned SSM Documents publicly shared |
 | AWS_Systems_Manager_Auditor | SSM Association | Does an SSM Association that targets all Instances conduct SSM Agent updates |
 | AWS_Systems_Manager_Auditor | SSM Association | Does an SSM Association that targets all Instances conduct patching |
