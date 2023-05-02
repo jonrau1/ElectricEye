@@ -21,10 +21,11 @@
 import datetime
 import botocore
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
-# loop through WAFs
 def describe_trusted_advisor_checks(cache, session):
     support = session.client("support", region_name="us-east-1")
     response = cache.get("describe_trusted_advisor_checks")
@@ -42,11 +43,17 @@ def trusted_advisor_failing_root_mfa_check(cache: dict, session, awsAccountId: s
         for t in describe_trusted_advisor_checks(cache, session)["checks"]:
             if str(t["name"]) == "MFA on Root Account":
                 checkId = str(t["id"])
+                category = str(t["category"])
+                checkArn = f"arn:{awsPartition}:trustedadvisor:{awsRegion}:{awsAccountId}/{category}/{checkId}"
+                # B64 encode all of the details for the Asset
+                checkDetail = support.describe_trusted_advisor_check_result(checkId=checkId)
+                assetJson = json.dumps(checkDetail,default=str).encode("utf-8")
+                assetB64 = base64.b64encode(assetJson)
                 # this is a failing check
-                if int(support.describe_trusted_advisor_check_result(checkId=checkId)["result"]["resourcesSummary"]["resourcesFlagged"]) >= 1:
+                if int(checkDetail["result"]["resourcesSummary"]["resourcesFlagged"]) >= 1:
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": awsAccountId + checkId + "/trusted-advisor-failing-root-mfa-check",
+                        "Id": f"{checkArn}/trusted-advisor-failing-root-mfa-check",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": awsAccountId + checkId,
                         "AwsAccountId": awsAccountId,
@@ -69,15 +76,19 @@ def trusted_advisor_failing_root_mfa_check(cache: dict, session, awsAccountId: s
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Management & Governance",
                             "AssetService": "AWS Trusted Advisor",
-                            "AssetType": "Check"
+                            "AssetComponent": "Check"
                         },
                         "SourceUrl": "https://console.aws.amazon.com/trustedadvisor/home?region=us-east-1#/category/security",
                         "Resources": [
                             {
                                 "Type": "AwsTrustedAdvisorCheck",
-                                "Id": checkId,
+                                "Id": checkArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion
                             }
@@ -119,7 +130,7 @@ def trusted_advisor_failing_root_mfa_check(cache: dict, session, awsAccountId: s
                 else:
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": awsAccountId + checkId + "/trusted-advisor-failing-root-mfa-check",
+                        "Id": f"{checkArn}/trusted-advisor-failing-root-mfa-check",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": awsAccountId + checkId,
                         "AwsAccountId": awsAccountId,
@@ -142,15 +153,19 @@ def trusted_advisor_failing_root_mfa_check(cache: dict, session, awsAccountId: s
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Management & Governance",
                             "AssetService": "AWS Trusted Advisor",
-                            "AssetType": "Check"
+                            "AssetComponent": "Check"
                         },
                         "SourceUrl": "https://console.aws.amazon.com/trustedadvisor/home?region=us-east-1#/category/security",
                         "Resources": [
                             {
                                 "Type": "AwsTrustedAdvisorCheck",
-                                "Id": checkId,
+                                "Id": checkArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion
                             }
@@ -206,11 +221,17 @@ def trusted_advisor_failing_elb_listener_security_check(cache: dict, session, aw
         for t in describe_trusted_advisor_checks(cache, session)["checks"]:
             if str(t["name"]) == "ELB Listener Security":
                 checkId = str(t["id"])
+                category = str(t["category"])
+                checkArn = f"arn:{awsPartition}:trustedadvisor:{awsRegion}:{awsAccountId}/{category}/{checkId}"
+                # B64 encode all of the details for the Asset
+                checkDetail = support.describe_trusted_advisor_check_result(checkId=checkId)
+                assetJson = json.dumps(checkDetail,default=str).encode("utf-8")
+                assetB64 = base64.b64encode(assetJson)
                 # this is a failing check
-                if int(support.describe_trusted_advisor_check_result(checkId=checkId)["result"]["resourcesSummary"]["resourcesFlagged"]) >= 1:
+                if int(checkDetail["result"]["resourcesSummary"]["resourcesFlagged"]) >= 1:
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": awsAccountId + checkId + "/trusted-advisor-failing-elb-listener-security-check",
+                        "Id": f"{checkArn}/trusted-advisor-failing-elb-listener-security-check",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": awsAccountId + checkId,
                         "AwsAccountId": awsAccountId,
@@ -233,15 +254,19 @@ def trusted_advisor_failing_elb_listener_security_check(cache: dict, session, aw
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Management & Governance",
                             "AssetService": "AWS Trusted Advisor",
-                            "AssetType": "Check"
+                            "AssetComponent": "Check"
                         },
                         "SourceUrl": "https://console.aws.amazon.com/trustedadvisor/home?region=us-east-1#/category/security",
                         "Resources": [
                             {
                                 "Type": "AwsTrustedAdvisorCheck",
-                                "Id": checkId,
+                                "Id": checkArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion
                             }
@@ -270,7 +295,7 @@ def trusted_advisor_failing_elb_listener_security_check(cache: dict, session, aw
                 else:
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": awsAccountId + checkId + "/trusted-advisor-failing-elb-listener-security-check",
+                        "Id": f"{checkArn}/trusted-advisor-failing-elb-listener-security-check",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": awsAccountId + checkId,
                         "AwsAccountId": awsAccountId,
@@ -293,15 +318,19 @@ def trusted_advisor_failing_elb_listener_security_check(cache: dict, session, aw
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Management & Governance",
                             "AssetService": "AWS Trusted Advisor",
-                            "AssetType": "Check"
+                            "AssetComponent": "Check"
                         },
                         "SourceUrl": "https://console.aws.amazon.com/trustedadvisor/home?region=us-east-1#/category/security",
                         "Resources": [
                             {
                                 "Type": "AwsTrustedAdvisorCheck",
-                                "Id": checkId,
+                                "Id": checkArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion
                             }
@@ -344,11 +373,17 @@ def trusted_advisor_failing_cloudfront_ssl_cert_iam_certificate_store_check(cach
         for t in describe_trusted_advisor_checks(cache, session)["checks"]:
             if str(t["name"]) == "CloudFront Custom SSL Certificates in the IAM Certificate Store":
                 checkId = str(t["id"])
+                category = str(t["category"])
+                checkArn = f"arn:{awsPartition}:trustedadvisor:{awsRegion}:{awsAccountId}/{category}/{checkId}"
+                # B64 encode all of the details for the Asset
+                checkDetail = support.describe_trusted_advisor_check_result(checkId=checkId)
+                assetJson = json.dumps(checkDetail,default=str).encode("utf-8")
+                assetB64 = base64.b64encode(assetJson)
                 # this is a failing check
-                if int(support.describe_trusted_advisor_check_result(checkId=checkId)["result"]["resourcesSummary"]["resourcesFlagged"]) >= 1:
+                if int(checkDetail["result"]["resourcesSummary"]["resourcesFlagged"]) >= 1:
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": awsAccountId + checkId + "/trusted-advisor-failing-cloudfront-ssl-cert-iam-cert-store-check",
+                        "Id": f"{checkArn}/trusted-advisor-failing-cloudfront-ssl-cert-iam-cert-store-check",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": awsAccountId + checkId,
                         "AwsAccountId": awsAccountId,
@@ -371,15 +406,19 @@ def trusted_advisor_failing_cloudfront_ssl_cert_iam_certificate_store_check(cach
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Management & Governance",
                             "AssetService": "AWS Trusted Advisor",
-                            "AssetType": "Check"
+                            "AssetComponent": "Check"
                         },
                         "SourceUrl": "https://console.aws.amazon.com/trustedadvisor/home?region=us-east-1#/category/security",
                         "Resources": [
                             {
                                 "Type": "AwsTrustedAdvisorCheck",
-                                "Id": checkId,
+                                "Id": checkArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion
                             }
@@ -408,7 +447,7 @@ def trusted_advisor_failing_cloudfront_ssl_cert_iam_certificate_store_check(cach
                 else:
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": awsAccountId + checkId + "/trusted-advisor-failing-cloudfront-ssl-cert-iam-cert-store-check",
+                        "Id": f"{checkArn}/trusted-advisor-failing-cloudfront-ssl-cert-iam-cert-store-check",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": awsAccountId + checkId,
                         "AwsAccountId": awsAccountId,
@@ -431,15 +470,19 @@ def trusted_advisor_failing_cloudfront_ssl_cert_iam_certificate_store_check(cach
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Management & Governance",
                             "AssetService": "AWS Trusted Advisor",
-                            "AssetType": "Check"
+                            "AssetComponent": "Check"
                         },
                         "SourceUrl": "https://console.aws.amazon.com/trustedadvisor/home?region=us-east-1#/category/security",
                         "Resources": [
                             {
                                 "Type": "AwsTrustedAdvisorCheck",
-                                "Id": checkId,
+                                "Id": checkArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion
                             }
@@ -482,11 +525,17 @@ def trusted_advisor_failing_cloudfront_ssl_cert_on_origin_check(cache: dict, ses
         for t in describe_trusted_advisor_checks(cache, session)["checks"]:
             if str(t["name"]) == "CloudFront SSL Certificate on the Origin Server":
                 checkId = str(t["id"])
+                category = str(t["category"])
+                checkArn = f"arn:{awsPartition}:trustedadvisor:{awsRegion}:{awsAccountId}/{category}/{checkId}"
+                # B64 encode all of the details for the Asset
+                checkDetail = support.describe_trusted_advisor_check_result(checkId=checkId)
+                assetJson = json.dumps(checkDetail,default=str).encode("utf-8")
+                assetB64 = base64.b64encode(assetJson)
                 # this is a failing check
-                if int(support.describe_trusted_advisor_check_result(checkId=checkId)["result"]["resourcesSummary"]["resourcesFlagged"]) >= 1:
+                if int(checkDetail["result"]["resourcesSummary"]["resourcesFlagged"]) >= 1:
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": awsAccountId + checkId + "/trusted-advisor-failing-cloudfront-ssl-origin-check",
+                        "Id": f"{checkArn}/trusted-advisor-failing-cloudfront-ssl-origin-check",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": awsAccountId + checkId,
                         "AwsAccountId": awsAccountId,
@@ -509,15 +558,19 @@ def trusted_advisor_failing_cloudfront_ssl_cert_on_origin_check(cache: dict, ses
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Management & Governance",
                             "AssetService": "AWS Trusted Advisor",
-                            "AssetType": "Check"
+                            "AssetComponent": "Check"
                         },
                         "SourceUrl": "https://console.aws.amazon.com/trustedadvisor/home?region=us-east-1#/category/security",
                         "Resources": [
                             {
                                 "Type": "AwsTrustedAdvisorCheck",
-                                "Id": checkId,
+                                "Id": checkArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion
                             }
@@ -546,7 +599,7 @@ def trusted_advisor_failing_cloudfront_ssl_cert_on_origin_check(cache: dict, ses
                 else:
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": awsAccountId + checkId + "/trusted-advisor-failing-cloudfront-ssl-origin-check",
+                        "Id": f"{checkArn}/trusted-advisor-failing-cloudfront-ssl-origin-check",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": awsAccountId + checkId,
                         "AwsAccountId": awsAccountId,
@@ -569,15 +622,19 @@ def trusted_advisor_failing_cloudfront_ssl_cert_on_origin_check(cache: dict, ses
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Management & Governance",
                             "AssetService": "AWS Trusted Advisor",
-                            "AssetType": "Check"
+                            "AssetComponent": "Check"
                         },
                         "SourceUrl": "https://console.aws.amazon.com/trustedadvisor/home?region=us-east-1#/category/security",
                         "Resources": [
                             {
                                 "Type": "AwsTrustedAdvisorCheck",
-                                "Id": checkId,
+                                "Id": checkArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion
                             }
@@ -620,11 +677,17 @@ def trusted_advisor_failing_exposed_access_keys_check(cache: dict, session, awsA
         for t in describe_trusted_advisor_checks(cache, session)["checks"]:
             if str(t["name"]) == "Exposed Access Keys":
                 checkId = str(t["id"])
+                category = str(t["category"])
+                checkArn = f"arn:{awsPartition}:trustedadvisor:{awsRegion}:{awsAccountId}/{category}/{checkId}"
+                # B64 encode all of the details for the Asset
+                checkDetail = support.describe_trusted_advisor_check_result(checkId=checkId)
+                assetJson = json.dumps(checkDetail,default=str).encode("utf-8")
+                assetB64 = base64.b64encode(assetJson)
                 # this is a failing check
-                if int(support.describe_trusted_advisor_check_result(checkId=checkId)["result"]["resourcesSummary"]["resourcesFlagged"]) >= 1:
+                if int(checkDetail["result"]["resourcesSummary"]["resourcesFlagged"]) >= 1:
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": awsAccountId + checkId + "/trusted-advisor-expose-iam-keys-check",
+                        "Id": f"{checkArn}/trusted-advisor-expose-iam-keys-check",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": awsAccountId + checkId,
                         "AwsAccountId": awsAccountId,
@@ -650,15 +713,19 @@ def trusted_advisor_failing_exposed_access_keys_check(cache: dict, session, awsA
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Management & Governance",
                             "AssetService": "AWS Trusted Advisor",
-                            "AssetType": "Check"
+                            "AssetComponent": "Check"
                         },
                         "SourceUrl": "https://console.aws.amazon.com/trustedadvisor/home?region=us-east-1#/category/security",
                         "Resources": [
                             {
                                 "Type": "AwsTrustedAdvisorCheck",
-                                "Id": checkId,
+                                "Id": checkArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion
                             }
@@ -700,7 +767,7 @@ def trusted_advisor_failing_exposed_access_keys_check(cache: dict, session, awsA
                 else:
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": awsAccountId + checkId + "/trusted-advisor-expose-iam-keys-check",
+                        "Id": f"{checkArn}/trusted-advisor-expose-iam-keys-check",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": awsAccountId + checkId,
                         "AwsAccountId": awsAccountId,
@@ -726,15 +793,19 @@ def trusted_advisor_failing_exposed_access_keys_check(cache: dict, session, awsA
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Management & Governance",
                             "AssetService": "AWS Trusted Advisor",
-                            "AssetType": "Check"
+                            "AssetComponent": "Check"
                         },
                         "SourceUrl": "https://console.aws.amazon.com/trustedadvisor/home?region=us-east-1#/category/security",
                         "Resources": [
                             {
                                 "Type": "AwsTrustedAdvisorCheck",
-                                "Id": checkId,
+                                "Id": checkArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion
                             }
