@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -44,12 +46,15 @@ def crawler_s3_encryption_check(cache: dict, session, awsAccountId: str, awsRegi
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
             response = glue.get_crawler(Name=crawlerName)
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(response,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             crawlerSecConfig = str(response["Crawler"]["CrawlerSecurityConfiguration"])
             try:
                 response = glue.get_security_configuration(Name=crawlerSecConfig)
                 try:
                     s3EncryptionCheck = str(response["SecurityConfiguration"]["EncryptionConfiguration"]["S3Encryption"][0]["S3EncryptionMode"])
-                except:
+                except KeyError:
                     s3EncryptionCheck = "DISABLED"
                 if s3EncryptionCheck == "DISABLED":
                     finding = {
@@ -80,9 +85,13 @@ def crawler_s3_encryption_check(cache: dict, session, awsAccountId: str, awsRegi
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Analytics",
                             "AssetService": "AWS Glue",
-                            "AssetType": "Crawler"
+                            "AssetComponent": "Crawler"
                         },
                         "Resources": [
                             {
@@ -142,9 +151,13 @@ def crawler_s3_encryption_check(cache: dict, session, awsAccountId: str, awsRegi
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Analytics",
                             "AssetService": "AWS Glue",
-                            "AssetType": "Crawler"
+                            "AssetComponent": "Crawler"
                         },
                         "Resources": [
                             {
@@ -177,12 +190,12 @@ def crawler_s3_encryption_check(cache: dict, session, awsAccountId: str, awsRegi
                     yield finding
             except Exception as e:
                 if str(e) == '"CrawlerSecurityConfiguration"':
-                    pass
+                    continue
                 else:
                     print(e)
         except Exception as e:
             if str(e) == '"CrawlerSecurityConfiguration"':
-                pass
+                continue
             else:
                 print(e)
 
@@ -199,6 +212,9 @@ def crawler_cloudwatch_encryption_check(cache: dict, session, awsAccountId: str,
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
             response = glue.get_crawler(Name=crawlerName)
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(response,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             crawlerSecConfig = str(response["Crawler"]["CrawlerSecurityConfiguration"])
             try:
                 response = glue.get_security_configuration(Name=crawlerSecConfig)
@@ -235,9 +251,13 @@ def crawler_cloudwatch_encryption_check(cache: dict, session, awsAccountId: str,
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Analytics",
                             "AssetService": "AWS Glue",
-                            "AssetType": "Crawler"
+                            "AssetComponent": "Crawler"
                         },
                         "Resources": [
                             {
@@ -297,9 +317,13 @@ def crawler_cloudwatch_encryption_check(cache: dict, session, awsAccountId: str,
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Analytics",
                             "AssetService": "AWS Glue",
-                            "AssetType": "Crawler"
+                            "AssetComponent": "Crawler"
                         },
                         "Resources": [
                             {
@@ -354,6 +378,9 @@ def crawler_job_bookmark_encryption_check(cache: dict, session, awsAccountId: st
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
             response = glue.get_crawler(Name=crawlerName)
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(response,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             crawlerSecConfig = str(response["Crawler"]["CrawlerSecurityConfiguration"])
             try:
                 response = glue.get_security_configuration(Name=crawlerSecConfig)
@@ -390,9 +417,13 @@ def crawler_job_bookmark_encryption_check(cache: dict, session, awsAccountId: st
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Analytics",
                             "AssetService": "AWS Glue",
-                            "AssetType": "Crawler"
+                            "AssetComponent": "Crawler"
                         },
                         "Resources": [
                             {
@@ -452,9 +483,13 @@ def crawler_job_bookmark_encryption_check(cache: dict, session, awsAccountId: st
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Analytics",
                             "AssetService": "AWS Glue",
-                            "AssetType": "Crawler"
+                            "AssetComponent": "Crawler"
                         },
                         "Resources": [
                             {
@@ -505,9 +540,12 @@ def glue_data_catalog_encryption_check(cache: dict, session, awsAccountId: str, 
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
         response = glue.get_data_catalog_encryption_settings()
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         try:
             catalogEncryptionCheck = str(response["DataCatalogEncryptionSettings"]["EncryptionAtRest"]["CatalogEncryptionMode"])
-        except:
+        except KeyError:
             catalogEncryptionCheck = "DISABLED"
         if catalogEncryptionCheck == "DISABLED":
             finding = {
@@ -538,9 +576,13 @@ def glue_data_catalog_encryption_check(cache: dict, session, awsAccountId: str, 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "AWS Glue",
-                    "AssetType": "Data Catalog"
+                    "AssetComponent": "Data Catalog"
                 },
                 "Resources": [
                     {
@@ -594,9 +636,13 @@ def glue_data_catalog_encryption_check(cache: dict, session, awsAccountId: str, 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "AWS Glue",
-                    "AssetType": "Data Catalog"
+                    "AssetComponent": "Data Catalog"
                 },
                 "Resources": [
                     {
@@ -636,6 +682,9 @@ def glue_data_catalog_password_encryption_check(cache: dict, session, awsAccount
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
         response = glue.get_data_catalog_encryption_settings()
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         try:
             passwordEncryptionCheck = str(response["DataCatalogEncryptionSettings"]["ConnectionPasswordEncryption"]["ReturnConnectionPasswordEncrypted"])
         except:
@@ -669,9 +718,13 @@ def glue_data_catalog_password_encryption_check(cache: dict, session, awsAccount
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "AWS Glue",
-                    "AssetType": "Data Catalog"
+                    "AssetComponent": "Data Catalog"
                 },
                 "Resources": [
                     {
@@ -725,9 +778,13 @@ def glue_data_catalog_password_encryption_check(cache: dict, session, awsAccount
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "AWS Glue",
-                    "AssetType": "Data Catalog"
+                    "AssetComponent": "Data Catalog"
                 },
                 "Resources": [
                     {
@@ -767,6 +824,8 @@ def glue_data_catalog_resource_policy_check(cache: dict, session, awsAccountId: 
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
         response = glue.get_resource_policy()
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         policyHash = str(response["PolicyHash"])
         # this is a passing check
         finding = {
@@ -794,9 +853,13 @@ def glue_data_catalog_resource_policy_check(cache: dict, session, awsAccountId: 
             "ProductFields": {
                 "ProductName": "ElectricEye",
                 "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
                 "AssetClass": "Analytics",
                 "AssetService": "AWS Glue",
-                "AssetType": "Data Catalog"
+                "AssetComponent": "Data Catalog"
             },
             "Resources": [
                 {
@@ -845,6 +908,7 @@ def glue_data_catalog_resource_policy_check(cache: dict, session, awsAccountId: 
             str(e)
             == "An error occurred (EntityNotFoundException) when calling the GetResourcePolicy operation: Policy not found"
         ):
+            assetB64 = base64.b64encode("None".encode("utf-8"))
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": catalogArn + "/glue-data-catalog-resource-policy-check",
@@ -870,9 +934,13 @@ def glue_data_catalog_resource_policy_check(cache: dict, session, awsAccountId: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "AWS Glue",
-                    "AssetType": "Data Catalog"
+                    "AssetComponent": "Data Catalog"
                 },
                 "Resources": [
                     {

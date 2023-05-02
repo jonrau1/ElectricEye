@@ -21,6 +21,8 @@
 import datetime
 import botocore
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -35,6 +37,9 @@ def open_health_abuse_events_check(cache: dict, session, awsAccountId: str, awsR
         if response["events"]:
             # this is a failing check
             for event in response["events"]:
+                # B64 encode all of the details for the Asset
+                assetJson = json.dumps(event,default=str).encode("utf-8")
+                assetB64 = base64.b64encode(assetJson)
                 eventArn = str(event["arn"])
                 eventRegion = str(event["region"])
                 finding = {
@@ -64,9 +69,13 @@ def open_health_abuse_events_check(cache: dict, session, awsAccountId: str, awsR
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Management & Governance",
                         "AssetService": "AWS Health",
-                        "AssetType": "Event"
+                        "AssetComponent": "Event"
                     },
                     "Resources": [
                         {
@@ -114,6 +123,9 @@ def open_health_risk_events_check(cache: dict, session, awsAccountId: str, awsRe
         if response["events"]:
             # this is a failing check
             for event in response["events"]:
+                # B64 encode all of the details for the Asset
+                assetJson = json.dumps(event,default=str).encode("utf-8")
+                assetB64 = base64.b64encode(assetJson)
                 eventArn = str(event["arn"])
                 eventRegion = str(event["region"])
                 finding = {
@@ -143,9 +155,13 @@ def open_health_risk_events_check(cache: dict, session, awsAccountId: str, awsRe
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Management & Governance",
                         "AssetService": "AWS Health",
-                        "AssetType": "Event"
+                        "AssetComponent": "Event"
                     },
                     "Resources": [
                         {
@@ -193,6 +209,9 @@ def open_health_security_events_check(cache: dict, session, awsAccountId: str, a
         if response["events"]:
             # this is a failing check
             for event in response["events"]:
+                # B64 encode all of the details for the Asset
+                assetJson = json.dumps(event,default=str).encode("utf-8")
+                assetB64 = base64.b64encode(assetJson)
                 eventArn = str(event["arn"])
                 eventRegion = str(event["region"])
                 finding = {
@@ -222,9 +241,13 @@ def open_health_security_events_check(cache: dict, session, awsAccountId: str, a
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Management & Governance",
                         "AssetService": "AWS Health",
-                        "AssetType": "Event"
+                        "AssetComponent": "Event"
                     },
                     "Resources": [
                         {
