@@ -20,9 +20,10 @@
 
 import datetime
 from dateutil import parser
-import json
 import botocore
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -61,6 +62,9 @@ def unused_function_check(cache: dict, session, awsAccountId: str, awsRegion: st
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for function in get_lambda_functions(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(function,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         functionName = str(function["FunctionName"])
         lambdaArn = str(function["FunctionArn"])
         metricResponse = cloudwatch.get_metric_data(
@@ -110,9 +114,13 @@ def unused_function_check(cache: dict, session, awsAccountId: str, awsRegion: st
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Compute",
                         "AssetService": "AWS Lambda",
-                        "AssetType": "Function"
+                        "AssetComponent": "Function"
                     },
                     "Resources": [
                         {
@@ -168,9 +176,13 @@ def unused_function_check(cache: dict, session, awsAccountId: str, awsRegion: st
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Compute",
                         "AssetService": "AWS Lambda",
-                        "AssetType": "Function"
+                        "AssetComponent": "Function"
                     },
                     "Resources": [
                         {
@@ -209,6 +221,9 @@ def function_tracing_check(cache: dict, session, awsAccountId: str, awsRegion: s
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for function in get_lambda_functions(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(function,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         functionName = str(function["FunctionName"])
         lambdaArn = str(function["FunctionArn"])
         # This is a passing check
@@ -238,9 +253,13 @@ def function_tracing_check(cache: dict, session, awsAccountId: str, awsRegion: s
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "AWS Lambda",
-                    "AssetType": "Function"
+                    "AssetComponent": "Function"
                 },
                 "Resources": [
                     {
@@ -303,9 +322,13 @@ def function_tracing_check(cache: dict, session, awsAccountId: str, awsRegion: s
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "AWS Lambda",
-                    "AssetType": "Function"
+                    "AssetComponent": "Function"
                 },
                 "Resources": [
                     {
@@ -349,6 +372,9 @@ def function_code_signer_check(cache: dict, session, awsAccountId: str, awsRegio
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for function in get_lambda_functions(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(function,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         functionName = str(function["FunctionName"])
         lambdaArn = str(function["FunctionArn"])
         # This is a passing check
@@ -377,9 +403,13 @@ def function_code_signer_check(cache: dict, session, awsAccountId: str, awsRegio
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "AWS Lambda",
-                    "AssetType": "Function"
+                    "AssetComponent": "Function"
                 },
                 "Resources": [
                     {
@@ -437,9 +467,13 @@ def function_code_signer_check(cache: dict, session, awsAccountId: str, awsRegio
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "AWS Lambda",
-                    "AssetType": "Function"
+                    "AssetComponent": "Function"
                 },
                 "Resources": [
                     {
@@ -481,6 +515,9 @@ def public_lambda_layer_check(cache: dict, session, awsAccountId: str, awsRegion
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for layer in get_lambda_layers(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(layer,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         layerName = str(layer["LayerName"])
         layerArn = str(layer["LatestMatchingVersion"]["LayerVersionArn"])
         try:
@@ -533,9 +570,13 @@ def public_lambda_layer_check(cache: dict, session, awsAccountId: str, awsRegion
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Compute",
                         "AssetService": "AWS Lambda",
-                        "AssetType": "Layer"
+                        "AssetComponent": "Layer"
                     },
                     "Resources": [
                         {
@@ -600,9 +641,13 @@ def public_lambda_layer_check(cache: dict, session, awsAccountId: str, awsRegion
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Compute",
                         "AssetService": "AWS Lambda",
-                        "AssetType": "Layer"
+                        "AssetComponent": "Layer"
                     },
                     "Resources": [
                         {
@@ -648,6 +693,9 @@ def public_lambda_function_check(cache: dict, session, awsAccountId: str, awsReg
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for function in get_lambda_functions(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(function,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         functionName = str(function["FunctionName"])
         lambdaArn = str(function["FunctionArn"])
         # Get function policy
@@ -693,9 +741,13 @@ def public_lambda_function_check(cache: dict, session, awsAccountId: str, awsReg
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Compute",
                             "AssetService": "AWS Lambda",
-                            "AssetType": "Function"
+                            "AssetComponent": "Function"
                         },
                         "Resources": [
                             {
@@ -759,9 +811,13 @@ def public_lambda_function_check(cache: dict, session, awsAccountId: str, awsReg
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Compute",
                             "AssetService": "AWS Lambda",
-                            "AssetType": "Function"
+                            "AssetComponent": "Function"
                         },
                         "Resources": [
                             {
@@ -826,9 +882,13 @@ def public_lambda_function_check(cache: dict, session, awsAccountId: str, awsReg
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Compute",
                         "AssetService": "AWS Lambda",
-                        "AssetType": "Function"
+                        "AssetComponent": "Function"
                     },
                     "Resources": [
                         {
@@ -892,6 +952,9 @@ def lambda_supported_runtimes_check(cache: dict, session, awsAccountId: str, aws
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for function in get_lambda_functions(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(function,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         functionName = str(function["FunctionName"])
         lambdaArn = str(function["FunctionArn"])
         lambdaRuntime = str(function["Runtime"])
@@ -920,9 +983,13 @@ def lambda_supported_runtimes_check(cache: dict, session, awsAccountId: str, aws
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "AWS Lambda",
-                    "AssetType": "Function"
+                    "AssetComponent": "Function"
                 },
                 "Resources": [
                     {
@@ -983,9 +1050,13 @@ def lambda_supported_runtimes_check(cache: dict, session, awsAccountId: str, aws
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "AWS Lambda",
-                    "AssetType": "Function"
+                    "AssetComponent": "Function"
                 },
                 "Resources": [
                     {
@@ -1033,6 +1104,9 @@ def lambda_vpc_ha_subnets_check(cache: dict, session, awsAccountId: str, awsRegi
     # ISO Time
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for function in get_lambda_functions(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(function,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         functionName = str(function["FunctionName"])
         lambdaArn = str(function["FunctionArn"])
         # check specific metadata
@@ -1076,9 +1150,13 @@ def lambda_vpc_ha_subnets_check(cache: dict, session, awsAccountId: str, awsRegi
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Compute",
                         "AssetService": "AWS Lambda",
-                        "AssetType": "Function"
+                        "AssetComponent": "Function"
                     },
                     "Resources": [
                         {
@@ -1139,9 +1217,13 @@ def lambda_vpc_ha_subnets_check(cache: dict, session, awsAccountId: str, awsRegi
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Compute",
                         "AssetService": "AWS Lambda",
-                        "AssetType": "Function"
+                        "AssetComponent": "Function"
                     },
                     "Resources": [
                         {
@@ -1202,9 +1284,13 @@ def lambda_vpc_ha_subnets_check(cache: dict, session, awsAccountId: str, awsRegi
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "AWS Lambda",
-                    "AssetType": "Function"
+                    "AssetComponent": "Function"
                 },
                 "Resources": [
                     {

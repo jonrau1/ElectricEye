@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -36,6 +38,9 @@ def memorydb_cluster_tls_encryption_check(cache: dict, session, awsAccountId: st
     """[MemoryDB.1] MemoryDB Clusters should configured to use encryption in transit"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for c in describe_clusters(cache, session)["Clusters"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(c,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         # Gather basic information
         memDbArn = str(c["ARN"])
         memDbName = str(c["Name"])
@@ -75,9 +80,13 @@ def memorydb_cluster_tls_encryption_check(cache: dict, session, awsAccountId: st
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "AWS MemoryDB for Redis",
-                    "AssetType": "Database Cluster"
+                    "AssetComponent": "Database Cluster"
                 },
                 "Resources": [
                     {
@@ -146,9 +155,13 @@ def memorydb_cluster_tls_encryption_check(cache: dict, session, awsAccountId: st
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "AWS MemoryDB for Redis",
-                    "AssetType": "Database Cluster"
+                    "AssetComponent": "Database Cluster"
                 },
                 "Resources": [
                     {
@@ -194,6 +207,9 @@ def memorydb_cluster_kms_cmk_encryption_check(cache: dict, session, awsAccountId
     """[MemoryDB.2] MemoryDB Clusters should used KMS CMKs for encryption at rest"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for c in describe_clusters(cache, session)["Clusters"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(c,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         # Gather basic information
         memDbArn = str(c["ARN"])
         memDbName = str(c["Name"])
@@ -238,9 +254,13 @@ def memorydb_cluster_kms_cmk_encryption_check(cache: dict, session, awsAccountId
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "AWS MemoryDB for Redis",
-                    "AssetType": "Database Cluster"
+                    "AssetComponent": "Database Cluster"
                 },
                 "Resources": [
                     {
@@ -305,9 +325,13 @@ def memorydb_cluster_kms_cmk_encryption_check(cache: dict, session, awsAccountId
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "AWS MemoryDB for Redis",
-                    "AssetType": "Database Cluster"
+                    "AssetComponent": "Database Cluster"
                 },
                 "Resources": [
                     {
@@ -349,6 +373,9 @@ def memorydb_auto_minor_version_update_check(cache: dict, session, awsAccountId:
     """[MemoryDB.3] MemoryDB Clusters should be configured to conduct automatic minor version updates"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for c in describe_clusters(cache, session)["Clusters"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(c,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         # Gather basic information
         memDbArn = str(c["ARN"])
         memDbName = str(c["Name"])
@@ -386,9 +413,13 @@ def memorydb_auto_minor_version_update_check(cache: dict, session, awsAccountId:
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "AWS MemoryDB for Redis",
-                    "AssetType": "Database Cluster"
+                    "AssetComponent": "Database Cluster"
                 },
                 "Resources": [
                     {
@@ -453,9 +484,13 @@ def memorydb_auto_minor_version_update_check(cache: dict, session, awsAccountId:
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "AWS MemoryDB for Redis",
-                    "AssetType": "Database Cluster"
+                    "AssetComponent": "Database Cluster"
                 },
                 "Resources": [
                     {
@@ -500,6 +535,9 @@ def memorydb_sns_notification_tracking_check(cache: dict, session, awsAccountId:
     """[MemoryDB.4] MemoryDB Clusters should be actively monitored with SNS"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for c in describe_clusters(cache, session)["Clusters"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(c,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         # Gather basic information
         memDbArn = str(c["ARN"])
         memDbName = str(c["Name"])
@@ -540,9 +578,13 @@ def memorydb_sns_notification_tracking_check(cache: dict, session, awsAccountId:
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "AWS MemoryDB for Redis",
-                    "AssetType": "Database Cluster"
+                    "AssetComponent": "Database Cluster"
                 },
                 "Resources": [
                     {
@@ -607,9 +649,13 @@ def memorydb_sns_notification_tracking_check(cache: dict, session, awsAccountId:
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "AWS MemoryDB for Redis",
-                    "AssetType": "Database Cluster"
+                    "AssetComponent": "Database Cluster"
                 },
                 "Resources": [
                     {
@@ -655,6 +701,9 @@ def memorydb_user_admin_check(cache: dict, session, awsAccountId: str, awsRegion
     memorydb = session.client("memorydb")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for c in describe_clusters(cache, session)["Clusters"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(c,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         # Gather basic information
         memDbArn = str(c["ARN"])
         memDbName = str(c["Name"])
@@ -701,9 +750,13 @@ def memorydb_user_admin_check(cache: dict, session, awsAccountId: str, awsRegion
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Identity & Access Management",
                             "AssetService": "AWS MemoryDB for Redis",
-                            "AssetType": "User"
+                            "AssetComponent": "User"
                         },
                         "Resources": [
                             {
@@ -786,9 +839,13 @@ def memorydb_user_admin_check(cache: dict, session, awsAccountId: str, awsRegion
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Identity & Access Management",
                             "AssetService": "AWS MemoryDB for Redis",
-                            "AssetType": "User"
+                            "AssetComponent": "User"
                         },
                         "Resources": [
                             {
@@ -850,6 +907,9 @@ def memorydb_user_password_check(cache: dict, session, awsAccountId: str, awsReg
     memorydb = session.client("memorydb")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for c in describe_clusters(cache, session)["Clusters"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(c,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         # Gather basic information
         memDbArn = str(c["ARN"])
         memDbName = str(c["Name"])
@@ -896,9 +956,13 @@ def memorydb_user_password_check(cache: dict, session, awsAccountId: str, awsReg
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Identity & Access Management",
                             "AssetService": "AWS MemoryDB for Redis",
-                            "AssetType": "User"
+                            "AssetComponent": "User"
                         },
                         "Resources": [
                             {
@@ -981,9 +1045,13 @@ def memorydb_user_password_check(cache: dict, session, awsAccountId: str, awsReg
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Identity & Access Management",
                             "AssetService": "AWS MemoryDB for Redis",
-                            "AssetType": "User"
+                            "AssetComponent": "User"
                         },
                         "Resources": [
                             {
