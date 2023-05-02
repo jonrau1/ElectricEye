@@ -38,9 +38,14 @@ class StdoutProvider(object):
         for finding in noDetails:
         """
 
-        newPackage = [{**d, "AssetDetails": json.loads(base64.b64decode(d["AssetDetails"]).decode("utf-8"))} for d in findings]
+        decodedFindings = [
+            {**d, "ProductFields": {**d["ProductFields"], "AssetDetails": json.loads(base64.b64decode(d["ProductFields"]["AssetDetails"]).decode("utf-8"))}}
+            if "AssetDetails" in d["ProductFields"]
+            else d
+            for d in findings
+        ]
 
-        for finding in newPackage:
+        for finding in decodedFindings:
             parsedFinding = json.loads(json.dumps(finding, default=str))
             if parsedFinding["Id"] not in checkedIds:
                 checkedIds.append(parsedFinding["Id"])
