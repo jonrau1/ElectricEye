@@ -46,6 +46,10 @@ This key contains the information about what the actual Asset is, this can also 
 
 In some cases the `AssetComponent` doesn't refer to a "thing" but it may refer to a shared fact or attribute about a `Provider` itself such as different "Account-level" or "Project-level" settings within the Public CSPs. An example of this includes AWS EC2 Serial Port Console Access, Google Cloud Project Instance Connection Settings, or AWS X-Ray Encryption Configurations. It can also show up for ElectricEye Checks that are assessing the overall posture of multiple services such as checking if Subnets within AWS have remaining capacity or if Instances have Systems Manager State Manager Associations associated with them to apply patches or collect software assets.
 
+### CAM Reporting
+
+
+
 ### Asset Class Mapping
 
 For the purpose of ElectricEye CAM, the [AWS Product Categories](https://aws.amazon.com/products/?nc2=h_ql_prod&aws-products-all.sort-by=item.additionalFields.productNameLowercase&aws-products-all.sort-order=asc&awsf.re%3AInvent=*all&awsf.Free%20Tier%20Type=*all&awsf.tech-category=*all) which are shown below are the guidepost for the `AssetClass` entry.

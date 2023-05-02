@@ -28,6 +28,8 @@ class CamJsonProvider(object):
 
     def write_findings(self, findings: list, output_file: str, **kwargs):
         camOutput = CamJsonProvider.process_findings(findings)
+
+        del findings
     
         # create output file based on inputs
         jsonfile = f"ElectricEyeCAM_{output_file}.json"
@@ -52,6 +54,8 @@ class CamJsonProvider(object):
         cloudAssetManagementFindings = []
         # Create a new list from raw findings that base64 decodes `AssetDetails` where it is not None, if it is, just
         # use None and bring forward `ProductFields` where it is missing `AssetDetails`...which shouldn't happen
+        print(f"Base64 decoding AssetDetails for {len(findings)} ElectricEye findings.")
+
         data = [
             {**d, "ProductFields": {**d["ProductFields"],
                 "AssetDetails": json.loads(base64.b64decode(d["ProductFields"]["AssetDetails"]).decode("utf-8"))
@@ -61,11 +65,16 @@ class CamJsonProvider(object):
             else d
             for d in findings
         ]
+
+        print(f"Completed base64 decoding for {len(data)} ElectricEye findings.")
+
         # This list will contain unique identifiers from `Resources.[*].Id`
-        uniqueIds = set(item["Id"] for item in data)
+        uniqueIds = set(item["Resources"][0]["Id"] for item in data)
+
+        print(f"Processing Asset and Finding Summary data for {len(uniqueIds)} unique Assets.")
 
         for uid in uniqueIds:
-            subData = [item for item in data if item["Id"] == uid]
+            subData = [item for item in data if item["Resources"][0]["Id"] == uid]
             productFields = subData[0]["ProductFields"]
             infoSevFindings = lowSevFindings = medSevFindings = highSevFindings = critSevFindings = 0
             
