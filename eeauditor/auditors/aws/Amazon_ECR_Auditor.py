@@ -468,9 +468,12 @@ def ecr_latest_image_vuln_check(cache: dict, session, awsAccountId: str, awsRegi
                     imageDigest = str(images["imageDigest"])
                     # use the first tag only as we need it to create the canonical ID for the Resource.Id in the ASFF for the Container Resource.Type
                     imageTag = str(images["imageTags"][0])
-                    imageVulnCheck = str(
-                        images["imageScanFindingsSummary"]["findingSeverityCounts"]
-                    )
+                    try:
+                        imageVulnCheck = str(
+                            images["imageScanFindingsSummary"]["findingSeverityCounts"]
+                        )
+                    except:
+                        imageVulnCheck = "{}"
                     # ISO Time
                     iso8601Time = (
                         datetime.datetime.utcnow()

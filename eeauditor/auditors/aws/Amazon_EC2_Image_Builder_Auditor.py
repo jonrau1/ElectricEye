@@ -29,7 +29,7 @@ registry = CheckRegister()
 def imagebuilder_pipeline_tests_enabled_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ImageBuilder.1] Image pipeline tests should be enabled"""
     imagebuilder = session.client("imagebuilder")
-    pipelines = imagebuilder.list_imagePipelines()
+    pipelines = imagebuilder.list_image_pipelines()
     pipelineList = pipelines["imagePipelineList"]
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for arn in pipelineList:

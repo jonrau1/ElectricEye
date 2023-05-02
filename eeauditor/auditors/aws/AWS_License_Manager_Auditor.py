@@ -33,11 +33,12 @@ def get_license_manager_configurations(cache, session):
     if response:
         return response
     
+    licensemanager = session.client("license-manager")
+
     # Check if LM even has results
     if not licensemanager.list_license_configurations()["LicenseConfigurations"]:
         return {}
     
-    licensemanager = session.client("license-manager")
     for license in licensemanager.list_license_configurations()["LicenseConfigurations"]:
         licenseManagerConfigs.append(
             licensemanager.get_license_configuration(
