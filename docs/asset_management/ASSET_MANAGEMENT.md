@@ -56,7 +56,32 @@ The following mapping is used, where the entry for "ElectricEye CAM `AssetClass`
 
 | AWS Product Category Name | ElectricEye CAM `AssetClass` | Extra Notes |
 |---|---|---|
-| Amazon_APIGW_Auditor | API Gateway Stage | Are stage metrics enabled |
+| Analytics | Analytics | Mapped 1:1 |
+| Application Integration | Application Integration | Mapped 1:1 for all messaging, queuing, and brokerage services |
+| Blockchain | Blockchain | Mapped 1:1 |
+| Business Applications | **NOT_MAPPED** | Not currently used |
+| Cloud Financial Management | **NOT_MAPPED** | Not currently used |
+| Compute | Compute | Mapped 1:1 |
+| Contact Center | **NOT_MAPPED** | Not currently used |
+| Containers | Containers | Will be prioritized over `Compute`, `Networking`, and `Developer Tools` for container/Docker/Kubernetes-related offerings such as Amazon ECR, Google Container Registry, and AWS AppMesh |
+| Database | Database | Mapped 1:1 |
+| Developer Tools | Developer Tools | Some services are recategorized to `Developer Tools` such as Amazon EC2 Image Builder and AWS Amplify |
+| End User Computing | End User Computing | Mapped 1:1 |
+| Front-End Web & Mobile | **NOT_MAPPED** | Front-End Web & Mobile is not used to differentiate across the offerings, only the "base" service is used, for instance Amazon API Gateway is mapped to `Networking` and AWS Amplify is mapped to `Developer Tools` |
+| Games | **NOT_MAPPED** | Not currently used |
+| Internet of Things | **NOT_MAPPED** | Not currently used |
+| Machine Learning | Machine Learning | Mapped 1:1 |
+| Management & Governance | Management & Governance | Management, IT Operations, and GRC tools (such as AWS Audit Manager) which map here - this also includes security ***configurations*** and other "account-wide" or "project-wide" settings, plugins, and properties |
+| Media Services | **NOT_MAPPED** | Not currently used |
+| Migration & Transfer | Migration & Transfer | Mapped 1:1 |
+| Networking & Content Delivery | Networking | "Content Delivery" is removed from this `AssetClass` but CDNs such as Amazon CloudFront and Google Cloud Armor will map to `Networking` as will API-related services such as AWS AppSync or Google Apigee |
+| Quantum Technologies | **NOT_MAPPED** | Not currently used |
+| Robotics | **NOT_MAPPED** | Not currently used |
+| Satellite | **NOT_MAPPED** | Not currently used |
+| Security, Identity, & Compliance | Security Services | The `Security Services` is used as `AssetClass` for generic security offerings and not for configurations - for instance, Azure WAF, AWS WAFv2, Amazon GuardDuty, AWS Trusted Advisor, etc. |
+| Security, Identity, & Compliance | Identity & Access Management | Any cloud identity or identity service such as AWS Directory Services or Amazon Cognito maps into `Identity & Access Management` |
+| Serverless | **NOT_MAPPED** | Serverless is not used to differentiate across the offerings, for instance GCP Cloud Functions and AWS Lambda map to `Compute` and Amazon DynamoDB and GCP AlloyDB map to `Database`. |
+| Storage | Storage | In some cases, `Storage` is used in lieu of `Compute` such as with Disks and AMIs |
 
 ### Example Output
 
