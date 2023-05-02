@@ -239,7 +239,7 @@ def ssm_update_ssm_agent_association_check(cache: dict, session, awsAccountId: s
         assocDocNames = [x["Name"] for x in list_associations(cache, session)]
         if "AWS-UpdateSSMAgent" not in assocDocNames:
             # B64 encode all of the details for the Asset
-            assetB64 = base64.b64encode("None".encode("utf-8"))
+            assetB64 = None
             # this is a failing check - a State Mgr Association for the "AWS-UpdateSSMAgent" Doc doesn't exist
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -458,7 +458,7 @@ def ssm_patch_instances_association_check(cache: dict, session, awsAccountId: st
         assocDocNames = [x["Name"] for x in list_associations(cache, session)]
         # B64 encode all of the details for the Asset
         if "AWS-RunPatchBaseline" not in assocDocNames:
-            assetB64 = base64.b64encode("None".encode("utf-8"))
+            assetB64 = None
             # this is a failing check - a State Mgr Association for the "AWS-RunPatchBaseline" Doc doesn't exist
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -664,7 +664,7 @@ def ssm_gather_software_inventory_association_check(cache: dict, session, awsAcc
         # if we do not find a match we will fail this check
         assocDocNames = [x["Name"] for x in list_associations(cache, session)]
         if "AWS-GatherSoftwareInventory" not in assocDocNames:
-            assetB64 = base64.b64encode("None".encode("utf-8"))
+            assetB64 = None
             # this is a failing check - a State Mgr Association for the "AWS-GatherSoftwareInventory" Doc doesn't exist
             finding = {
                 "SchemaVersion": "2018-10-08",

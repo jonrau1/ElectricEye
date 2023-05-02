@@ -1108,7 +1108,7 @@ def s3_account_level_block(cache: dict, session, awsAccountId: str, awsRegion: s
             yield finding
     except Exception as e:
         if str(e) == "An error occurred (NoSuchPublicAccessBlockConfiguration) when calling the GetPublicAccessBlock operation: The public access block configuration was not found":
-            assetB64 = base64.b64encode("None".encode("utf-8"))
+            assetB64 = None
             # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",

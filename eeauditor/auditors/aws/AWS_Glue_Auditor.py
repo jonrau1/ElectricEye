@@ -908,7 +908,7 @@ def glue_data_catalog_resource_policy_check(cache: dict, session, awsAccountId: 
             str(e)
             == "An error occurred (EntityNotFoundException) when calling the GetResourcePolicy operation: Policy not found"
         ):
-            assetB64 = base64.b64encode("None".encode("utf-8"))
+            assetB64 = None
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": catalogArn + "/glue-data-catalog-resource-policy-check",

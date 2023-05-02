@@ -1175,7 +1175,7 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, session, awsAccoun
         # Handle "NoSuchEntity" exception which means the PW policy does not exist
         if error.response['Error']['Code'] == 'NoSuchEntity':
             # B64 encode all of the details for the Asset
-            assetB64 = base64.b64encode("None".encode("utf-8"))
+            assetB64 = None
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": awsAccountId + "/cis-aws-foundations-benchmark-pw-policy-check",
@@ -1340,7 +1340,7 @@ def server_certs_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
     # this is a passing check
     else:
         # B64 encode all of the details for the Asset
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": awsAccountId + "/server-x509-certs-check",

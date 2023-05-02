@@ -770,7 +770,7 @@ def ecr_registry_backup_rules_check(cache: dict, session, awsAccountId: str, aws
     registryArn = f"arn:{awsPartition}:ecr:{awsRegion}:{awsAccountId}:registry"
     if not registryDetail["replicationConfiguration"]["rules"]:
         # B64 encode all of the details for the Asset
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
         # This is a failing check
         finding = {
             "SchemaVersion": "2018-10-08",

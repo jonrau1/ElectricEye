@@ -2753,7 +2753,7 @@ def rds_instance_instance_alerting_check(cache: dict, session, awsAccountId: str
                 yield finding
     # this is a failing check due to missing alerting events
     else:
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": f"{awsAccountId}:{awsRegion}/rds-instance-event-sub-check",
@@ -3017,7 +3017,7 @@ def rds_instance_parameter_group_alerting_check(cache: dict, session, awsAccount
                 yield finding
     # this is a failing check due to missing alerting events
     else:
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": f"{awsAccountId}:{awsRegion}/rds-pg-event-sub-check",
