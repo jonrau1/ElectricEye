@@ -20,10 +20,11 @@
 
 import datetime
 import uuid
-from check_register import CheckRegister, accumulate_paged_results
+from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
-
 
 @registry.register_check("qldb")
 def qldb_deletion_protection_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -43,6 +44,9 @@ def qldb_deletion_protection_check(cache: dict, session, awsAccountId: str, awsR
         for ledger in ledgers["Ledgers"]:
             ledgerName = ledger["Name"]
             ledgerDescription = qldb.describe_ledger(Name=ledgerName)
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(ledgerDescription,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             deletionProtection = ledgerDescription["DeletionProtection"]
             ledgerArn = ledgerDescription["Arn"]
             generatorUuid = str(uuid.uuid4())
@@ -72,9 +76,13 @@ def qldb_deletion_protection_check(cache: dict, session, awsAccountId: str, awsR
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Blockchain",
                         "AssetService": "Amazon Quantum Ledger Database",
-                        "AssetType": "Ledger"
+                        "AssetComponent": "Ledger"
                     },
                     "Resources": [
                         {
@@ -133,9 +141,13 @@ def qldb_deletion_protection_check(cache: dict, session, awsAccountId: str, awsR
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Blockchain",
                         "AssetService": "Amazon Quantum Ledger Database",
-                        "AssetType": "Ledger"
+                        "AssetComponent": "Ledger"
                     },
                     "Resources": [
                         {
@@ -183,6 +195,9 @@ def qldb_export_export_encryption_check(cache: dict, session, awsAccountId: str,
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for exports in exportList:
         for export in exports["JournalS3Exports"]:
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(export,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             exportId = export["ExportId"]
             encryption = export["S3ExportConfiguration"]["EncryptionConfiguration"][
                 "ObjectEncryptionType"
@@ -214,13 +229,17 @@ def qldb_export_export_encryption_check(cache: dict, session, awsAccountId: str,
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Blockchain",
                         "AssetService": "Amazon Quantum Ledger Database",
-                        "AssetType": "Journal Export"
+                        "AssetComponent": "Journal Export"
                     },
                     "Resources": [
                         {
-                            "Type": "AwsQldbExport",
+                            "Type": "AwsQldbJournalExport",
                             "Id": f"arn:{awsPartition}:qldb:{awsRegion}:{awsAccountId}:export:{exportId}",
                             "Partition": awsPartition,
                             "Region": awsRegion,
@@ -267,13 +286,17 @@ def qldb_export_export_encryption_check(cache: dict, session, awsAccountId: str,
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Blockchain",
                         "AssetService": "Amazon Quantum Ledger Database",
-                        "AssetType": "Journal Export"
+                        "AssetComponent": "Journal Export"
                     },
                     "Resources": [
                         {
-                            "Type": "AwsQldbExport",
+                            "Type": "AwsQldbJournalExport",
                             "Id": f"arn:{awsPartition}:qldb:{awsRegion}:{awsAccountId}:export:{exportId}",
                             "Partition": awsPartition,
                             "Region": awsRegion,
