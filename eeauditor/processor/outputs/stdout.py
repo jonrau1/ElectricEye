@@ -17,8 +17,10 @@
 #KIND, either express or implied.  See the License for the
 #specific language governing permissions and limitations
 #under the License.
-import json
+
 from processor.outputs.output_base import ElectricEyeOutput
+import base64
+import json
 
 @ElectricEyeOutput
 class StdoutProvider(object):
@@ -36,7 +38,9 @@ class StdoutProvider(object):
         for finding in noDetails:
         """
 
-        for finding in findings:
+        newPackage = [{**d, "AssetDetails": json.loads(base64.b64decode(d["AssetDetails"]).decode("utf-8"))} for d in findings]
+
+        for finding in newPackage:
             parsedFinding = json.loads(json.dumps(finding, default=str))
             if parsedFinding["Id"] not in checkedIds:
                 checkedIds.append(parsedFinding["Id"])
