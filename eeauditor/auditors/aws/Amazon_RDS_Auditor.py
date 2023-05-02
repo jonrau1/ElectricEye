@@ -2605,7 +2605,7 @@ def rds_instance_instance_alerting_check(cache: dict, session, awsAccountId: str
                         "Resources": [
                             {
                                 "Type": "AwsAccount",
-                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/RDS_Instances_Event_Monitoring",
+                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/RDS_Instances_Event_Monitoring",
                                 "Partition": awsPartition,
                                 "Region": awsRegion
                             }
@@ -2653,10 +2653,10 @@ def rds_instance_instance_alerting_check(cache: dict, session, awsAccountId: str
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Database",
                             "AssetService": "Amazon Relational Database Service",
                             "AssetComponent": "Event Subscription"
@@ -2664,7 +2664,7 @@ def rds_instance_instance_alerting_check(cache: dict, session, awsAccountId: str
                         "Resources": [
                             {
                                 "Type": "AwsAccount",
-                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/RDS_Instances_Event_Monitoring",
+                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/RDS_Instances_Event_Monitoring",
                                 "Partition": awsPartition,
                                 "Region": awsRegion
                             }
@@ -2727,7 +2727,7 @@ def rds_instance_instance_alerting_check(cache: dict, session, awsAccountId: str
                     "Resources": [
                         {
                             "Type": "AwsAccount",
-                            "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/RDS_Instances_Event_Monitoring",
+                            "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/RDS_Instances_Event_Monitoring",
                             "Partition": awsPartition,
                             "Region": awsRegion
                         }
@@ -2788,7 +2788,7 @@ def rds_instance_instance_alerting_check(cache: dict, session, awsAccountId: str
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/RDS_Instances_Event_Monitoring",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/RDS_Instances_Event_Monitoring",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }
@@ -2869,7 +2869,7 @@ def rds_instance_parameter_group_alerting_check(cache: dict, session, awsAccount
                         "Resources": [
                             {
                                 "Type": "AwsAccount",
-                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/RDS_Parameter_Group_Event_Monitoring",
+                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/RDS_Parameter_Group_Event_Monitoring",
                                 "Partition": awsPartition,
                                 "Region": awsRegion
                             }
@@ -2928,7 +2928,7 @@ def rds_instance_parameter_group_alerting_check(cache: dict, session, awsAccount
                         "Resources": [
                             {
                                 "Type": "AwsAccount",
-                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/RDS_Parameter_Group_Event_Monitoring",
+                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/RDS_Parameter_Group_Event_Monitoring",
                                 "Partition": awsPartition,
                                 "Region": awsRegion
                             }
@@ -2991,7 +2991,7 @@ def rds_instance_parameter_group_alerting_check(cache: dict, session, awsAccount
                     "Resources": [
                         {
                             "Type": "AwsAccount",
-                            "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/RDS_Parameter_Group_Event_Monitoring",
+                            "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/RDS_Parameter_Group_Event_Monitoring",
                             "Partition": awsPartition,
                             "Region": awsRegion
                         }
@@ -3052,7 +3052,7 @@ def rds_instance_parameter_group_alerting_check(cache: dict, session, awsAccount
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/RDS_Parameter_Group_Event_Monitoring",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/RDS_Parameter_Group_Event_Monitoring",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }

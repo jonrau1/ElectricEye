@@ -1337,7 +1337,7 @@ def emr_cluster_block_secgroup_check(cache: dict, session, awsAccountId: str, aw
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/EMR_Block_Public_Access_Configuration",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/EMR_Block_Public_Access_Configuration",
                     "Partition": awsPartition,
                     "Region": awsRegion,
                 }
@@ -1402,7 +1402,7 @@ def emr_cluster_block_secgroup_check(cache: dict, session, awsAccountId: str, aw
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/EMR_Block_Public_Access_Configuration",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/EMR_Block_Public_Access_Configuration",
                     "Partition": awsPartition,
                     "Region": awsRegion,
                 }

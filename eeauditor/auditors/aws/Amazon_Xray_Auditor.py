@@ -76,7 +76,7 @@ def xray_kms_encryption_check(cache: dict, session, awsAccountId: str, awsRegion
             "Resources": [
                 {
                     "Type": "AwsXrayEncryptionConfig",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/AWS_XRay_Encryption_Configuration",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/AWS_XRay_Encryption_Configuration",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }
@@ -136,7 +136,7 @@ def xray_kms_encryption_check(cache: dict, session, awsAccountId: str, awsRegion
             "Resources": [
                 {
                     "Type": "AwsXrayEncryptionConfig",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/AWS_XRay_Encryption_Configuration",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/AWS_XRay_Encryption_Configuration",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }

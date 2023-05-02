@@ -878,7 +878,7 @@ def ebs_account_encryption_by_default_check(cache: dict, session, awsAccountId: 
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/EBS_Account_Level_Encryption_Setting",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/EBS_Account_Level_Encryption_Setting",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }
@@ -934,7 +934,7 @@ def ebs_account_encryption_by_default_check(cache: dict, session, awsAccountId: 
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/EBS_Account_Level_Encryption_Setting",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/EBS_Account_Level_Encryption_Setting",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }

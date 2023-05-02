@@ -806,7 +806,7 @@ def ec2_serial_console_access_check(cache: dict, session, awsAccountId: str, aws
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/EC2_Serial_Port_Access_Setting",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/EC2_Serial_Port_Access_Setting",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }
@@ -875,7 +875,7 @@ def ec2_serial_console_access_check(cache: dict, session, awsAccountId: str, aws
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/EC2_Serial_Port_Access_Setting",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/EC2_Serial_Port_Access_Setting",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }
@@ -1335,10 +1335,10 @@ def ec2_ami_status_check(cache: dict, session, awsAccountId: str, awsRegion: str
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "Amazon EC2",
                     "AssetComponent": "Instance"
@@ -1445,7 +1445,7 @@ def ec2_concentration_risk(cache: dict, session, awsAccountId: str, awsRegion: s
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/EC2_Concentration_Risk",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/EC2_Concentration_Risk",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }
@@ -1507,7 +1507,7 @@ def ec2_concentration_risk(cache: dict, session, awsAccountId: str, awsRegion: s
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/EC2_Concentration_Risk",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/EC2_Concentration_Risk",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }
@@ -1569,7 +1569,7 @@ def ec2_concentration_risk(cache: dict, session, awsAccountId: str, awsRegion: s
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/EC2_Concentration_Risk",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/EC2_Concentration_Risk",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }

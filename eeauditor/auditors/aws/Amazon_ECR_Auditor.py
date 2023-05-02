@@ -620,6 +620,7 @@ def ecr_registry_policy_check(cache: dict, session, awsAccountId: str, awsRegion
     """[ECR.5] ECR Registires should be have a registry policy configured to allow for cross-account recovery"""
     ecr = session.client("ecr")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    registryArn = f"arn:{awsPartition}:ecr:{awsRegion}:{awsAccountId}:registry"
     try:
         policy = ecr.get_registry_policy()
         # B64 encode all of the details for the Asset
@@ -628,7 +629,7 @@ def ecr_registry_policy_check(cache: dict, session, awsAccountId: str, awsRegion
         # This is a passing check
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": awsAccountId + awsRegion + "/ecr-registry-access-policy-check",
+            "Id": f"{registryArn}/ecr-registry-access-policy-check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
             "GeneratorId": awsAccountId + awsRegion,
             "AwsAccountId": awsAccountId,
@@ -664,7 +665,7 @@ def ecr_registry_policy_check(cache: dict, session, awsAccountId: str, awsRegion
             "Resources": [
                 {
                     "Type": "AwsEcrRegistry",
-                    "Id": f"Registry/{awsAccountId}",
+                    "Id": registryArn,
                     "Partition": awsPartition,
                     "Region": awsRegion,
                     "Details": {"Other": {"RegistryId": awsAccountId}},
@@ -696,7 +697,7 @@ def ecr_registry_policy_check(cache: dict, session, awsAccountId: str, awsRegion
             # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": awsAccountId + awsRegion + "/ecr-registry-access-policy-check",
+                "Id": f"{registryArn}/ecr-registry-access-policy-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": awsAccountId + awsRegion,
                 "AwsAccountId": awsAccountId,
@@ -728,7 +729,7 @@ def ecr_registry_policy_check(cache: dict, session, awsAccountId: str, awsRegion
                 "Resources": [
                     {
                         "Type": "AwsEcrRegistry",
-                        "Id": f"Registry/{awsAccountId}",
+                        "Id": registryArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"RegistryId": awsAccountId}},
@@ -766,13 +767,14 @@ def ecr_registry_backup_rules_check(cache: dict, session, awsAccountId: str, aws
     ecr = session.client("ecr")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     registryDetail = ecr.describe_registry()
+    registryArn = f"arn:{awsPartition}:ecr:{awsRegion}:{awsAccountId}:registry"
     if not registryDetail["replicationConfiguration"]["rules"]:
         # B64 encode all of the details for the Asset
         assetB64 = base64.b64encode("None".encode("utf-8"))
         # This is a failing check
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": awsAccountId + awsRegion + "/ecr-registry-image-replication-check",
+            "Id": f"{registryArn}/ecr-registry-image-replication-check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
             "GeneratorId": awsAccountId + awsRegion,
             "AwsAccountId": awsAccountId,
@@ -808,7 +810,7 @@ def ecr_registry_backup_rules_check(cache: dict, session, awsAccountId: str, aws
             "Resources": [
                 {
                     "Type": "AwsEcrRegistry",
-                    "Id": f"Registry/{awsAccountId}",
+                    "Id": registryArn,
                     "Partition": awsPartition,
                     "Region": awsRegion,
                     "Details": {"Other": {"RegistryId": awsAccountId}},
@@ -841,7 +843,7 @@ def ecr_registry_backup_rules_check(cache: dict, session, awsAccountId: str, aws
         assetB64 = base64.b64encode(assetJson)
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": awsAccountId + awsRegion + "/ecr-registry-image-replication-check",
+            "Id": f"{registryArn}/ecr-registry-image-replication-check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
             "GeneratorId": awsAccountId,
             "AwsAccountId": awsAccountId,
@@ -877,7 +879,7 @@ def ecr_registry_backup_rules_check(cache: dict, session, awsAccountId: str, aws
             "Resources": [
                 {
                     "Type": "AwsEcrRegistry",
-                    "Id": f"Registry/{awsAccountId}",
+                    "Id": registryArn,
                     "Partition": awsPartition,
                     "Region": awsRegion,
                     "Details": {"Other": {"RegistryId": awsAccountId}},
