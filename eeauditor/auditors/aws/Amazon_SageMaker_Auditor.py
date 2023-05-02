@@ -90,7 +90,7 @@ def sagemaker_notebook_encryption_check(cache: dict, session, awsAccountId: str,
                     "AssetDetails": assetB64,
                     "AssetClass": "Machine Learning",
                     "AssetService": "Amazon SageMaker",
-                    "AssetType": "Notebook Instance"
+                    "AssetComponent": "Notebook Instance"
                 },
                 "Resources": [
                     {
@@ -151,7 +151,7 @@ def sagemaker_notebook_encryption_check(cache: dict, session, awsAccountId: str,
                     "AssetDetails": assetB64,
                     "AssetClass": "Machine Learning",
                     "AssetService": "Amazon SageMaker",
-                    "AssetType": "Notebook Instance"
+                    "AssetComponent": "Notebook Instance"
                 },
                 "Resources": [
                     {
@@ -224,7 +224,7 @@ def sagemaker_notebook_direct_internet_access_check(cache: dict, session, awsAcc
                     "AssetDetails": assetB64,
                     "AssetClass": "Machine Learning",
                     "AssetService": "Amazon SageMaker",
-                    "AssetType": "Notebook Instance"
+                    "AssetComponent": "Notebook Instance"
                 },
                 "Resources": [
                     {
@@ -289,7 +289,7 @@ def sagemaker_notebook_direct_internet_access_check(cache: dict, session, awsAcc
                     "AssetDetails": assetB64,
                     "AssetClass": "Machine Learning",
                     "AssetService": "Amazon SageMaker",
-                    "AssetType": "Notebook Instance"
+                    "AssetComponent": "Notebook Instance"
                 },
                 "Resources": [
                     {
@@ -367,7 +367,7 @@ def sagemaker_notebook_in_vpc_check(cache: dict, session, awsAccountId: str, aws
                     "AssetDetails": assetB64,
                     "AssetClass": "Machine Learning",
                     "AssetService": "Amazon SageMaker",
-                    "AssetType": "Notebook Instance"
+                    "AssetComponent": "Notebook Instance"
                 },
                 "Resources": [
                     {
@@ -430,7 +430,7 @@ def sagemaker_notebook_in_vpc_check(cache: dict, session, awsAccountId: str, aws
                     "AssetDetails": assetB64,
                     "AssetClass": "Machine Learning",
                     "AssetService": "Amazon SageMaker",
-                    "AssetType": "Notebook Instance"
+                    "AssetComponent": "Notebook Instance"
                 },
                 "Resources": [
                     {
@@ -511,7 +511,7 @@ def sagemaker_endpoint_encryption_check(cache: dict, session, awsAccountId: str,
                     "AssetDetails": assetB64,
                     "AssetClass": "Machine Learning",
                     "AssetService": "Amazon SageMaker",
-                    "AssetType": "Endpoint"
+                    "AssetComponent": "Endpoint"
                 },
                 "Resources": [
                     {
@@ -572,7 +572,7 @@ def sagemaker_endpoint_encryption_check(cache: dict, session, awsAccountId: str,
                     "AssetDetails": assetB64,
                     "AssetClass": "Machine Learning",
                     "AssetService": "Amazon SageMaker",
-                    "AssetType": "Endpoint"
+                    "AssetComponent": "Endpoint"
                 },
                 "Resources": [
                     {
@@ -650,7 +650,7 @@ def sagemaker_model_network_isolation_check(cache: dict, session, awsAccountId: 
                     "AssetDetails": assetB64,
                     "AssetClass": "Machine Learning",
                     "AssetService": "Amazon SageMaker",
-                    "AssetType": "Model"
+                    "AssetComponent": "Model"
                 },
                 "Resources": [
                     {
@@ -713,7 +713,7 @@ def sagemaker_model_network_isolation_check(cache: dict, session, awsAccountId: 
                     "AssetDetails": assetB64,
                     "AssetClass": "Machine Learning",
                     "AssetService": "Amazon SageMaker",
-                    "AssetType": "Model"
+                    "AssetComponent": "Model"
                 },
                 "Resources": [
                     {
