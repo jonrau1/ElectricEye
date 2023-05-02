@@ -27,6 +27,10 @@ class JsonProvider(object):
     __provider__ = "json"
 
     def write_findings(self, findings: list, output_file: str, **kwargs):
+        if len(findings) == 0:
+            print("There are not any findings to write to file!")
+            exit(0)
+
         print(f"Writing {len(findings)} findings to JSON file")
 
         """# Use another list comprehension to remove `ProductFields.AssetDetails` from non-Asset reporting outputs

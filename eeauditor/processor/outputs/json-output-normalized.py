@@ -25,6 +25,9 @@ class JsonProvider(object):
     __provider__ = "json_normalized"
 
     def write_findings(self, findings: list, output_file: str, **kwargs):
+        if len(findings) == 0:
+            print("There are not any findings to write to file!")
+            exit(0)
         # create a new empty list to store flattened findings
         newFindings = []
         # create another list to hold Finding IDs, this is to prevent duplicates by looking up values later on

@@ -27,6 +27,10 @@ class CamJsonProvider(object):
     __provider__ = "cam_json"
 
     def write_findings(self, findings: list, output_file: str, **kwargs):
+        if len(findings) == 0:
+            print("There are not any findings to write to file!")
+            exit(0)
+
         camOutput = CamJsonProvider.process_findings(findings)
 
         del findings
