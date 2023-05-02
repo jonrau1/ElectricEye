@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -36,16 +38,16 @@ def describe_images(cache, session, awsAccountId):
 @registry.register_check("ec2")
 def public_ami_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AMI.1] Self-managed Amazon Machine Images (AMIs) should not be public"""
-    amis = describe_images(cache, session, awsAccountId)
-    myAmis = amis["Images"]
-    for ami in myAmis:
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for ami in describe_images(cache, session, awsAccountId)["Images"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(ami,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         imageId = str(ami["ImageId"])
         amiArn = f"arn:{awsPartition}:ec2:{awsRegion}::image/{imageId}"
         imageName = str(ami["Name"])
-        imageCreatedDate = str(ami["CreationDate"])
-        publicCheck = str(ami["Public"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        if publicCheck == "True":
+        imageCreatedDate = str(ami["CreationDate"])        
+        if ami["Public"] == True:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": amiArn + "/public-ami",
@@ -74,9 +76,13 @@ def public_ami_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Storage",
                     "AssetService": "Amazon EC2",
-                    "AssetType": "Image"
+                    "AssetComponent": "Image"
                 },
                 "Resources": [
                     {
@@ -140,9 +146,13 @@ def public_ami_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Storage",
                     "AssetService": "Amazon EC2",
-                    "AssetType": "Image"
+                    "AssetComponent": "Image"
                 },
                 "Resources": [
                     {
@@ -185,15 +195,15 @@ def encrypted_ami_check(cache: dict, session, awsAccountId: str, awsRegion: str,
     """[AMI.2] Self-managed Amazon Machine Images (AMIs) should be encrypted"""
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    amis = describe_images(cache, session, awsAccountId)
-    myAmis = amis["Images"]
-    for ami in myAmis:
+    for ami in describe_images(cache, session, awsAccountId)["Images"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(ami,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         imageId = str(ami["ImageId"])
         amiArn = f"arn:{awsPartition}:ec2:{awsRegion}::image/{imageId}"
         imageName = str(ami["Name"])
         imageCreatedDate = str(ami["CreationDate"])
-        BlockDevices = ami["BlockDeviceMappings"]
-        for ebsmapping in BlockDevices:
+        for ebsmapping in ami["BlockDeviceMappings"]:
             try:
                 encryptionCheck = str(ebsmapping["Ebs"]["Encrypted"])
             except KeyError:
@@ -227,9 +237,13 @@ def encrypted_ami_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Storage",
                         "AssetService": "Amazon EC2",
-                        "AssetType": "Image"
+                        "AssetComponent": "Image"
                     },
                     "Resources": [
                         {
@@ -287,9 +301,13 @@ def encrypted_ami_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Storage",
                         "AssetService": "Amazon EC2",
-                        "AssetType": "Image"
+                        "AssetComponent": "Image"
                     },
                     "Resources": [
                         {
