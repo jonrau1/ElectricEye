@@ -19,234 +19,37 @@
 #under the License.
 
 import sys
-import boto3
 import click
-import tomli
-import json
-import os
 from insights import create_sechub_insights
 from eeauditor import EEAuditor
 from processor.main import get_providers, process_findings
 
-here = os.path.abspath(os.path.dirname(__file__))
+def print_checks(assessmentTarget, auditor_name=None):
+    app = EEAuditor(assessmentTarget)
 
-def read_toml():
-    with open(f"{here}/external_providers.toml", "rb") as f:
-        data = tomli.load(f)
-
-    return data
-
-def setup_aws_credentials(assume_role_account=None, assume_role_name=None, region_override=None):
-    """
-    For AWS-specific provider
-    """
-
-    if not region_override:
-        region_override = boto3.Session().region_name
-
-    if assume_role_account and assume_role_name:
-        sts = boto3.client("sts")
-        crossAccountRoleArn = f"arn:aws:iam::{assume_role_account}:role/{assume_role_name}"
-        memberAcct = sts.assume_role(
-            RoleArn=crossAccountRoleArn,
-            RoleSessionName="ElectricEye"
-        )
-
-        session = boto3.Session(
-            aws_access_key_id=memberAcct["Credentials"]["AccessKeyId"],
-            aws_secret_access_key=memberAcct["Credentials"]["SecretAccessKey"],
-            aws_session_token=memberAcct["Credentials"]["SessionToken"],
-            region_name=region_override
-        )
-    else:
-        session = boto3.Session()
-
-    return session, region_override
-
-def setup_azure_credentials():
-    """
-    For Azure...TODO: Implement
-    """
-
-    return {}
-
-def setup_gcp_credentials():
-    """
-    Google Cloud Platform's (GCP's) simplest identity primitive is a Service Account (SA). SA's are given roles for a specific Project (or Folder/Org) and can
-    save the credentials into a JSON file where it is picked up by gcloud. The entire JSON payload can be stored in AWS SSM Parameter Store as a SecureString and loaded
-    into memory dynamically within a container so it's safer.
-
-    In external_providers.toml specify the name of the SSM SecureString Parameter in `gcp_service_account_json_payload_parameter_name = ""` under [gcp]
-    """
-
-    ssm = boto3.client("ssm")
-
-    # GCP only needs the JSON Document
-    gcpCredLocation = read_toml()["gcp"]["gcp_service_account_json_payload_parameter_name"]
-
-    if gcpCredLocation == (None or ""):
-        print("GCP Credential SSM Parameter not provided!")
-        sys.exit(2)
-
-    try:
-        gcpCreds = ssm.get_parameter(
-            Name=gcpCredLocation,
-            WithDecryption=True
-        )["Parameter"]["Value"]
-    except Exception as e:
-        raise e
-
-    # Write the creds locally
-    with open("./gcp_cred.json", 'w') as jsonfile:
-        json.dump(json.loads(gcpCreds), jsonfile, indent=2)
-
-    # Set Cred global path
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./gcp_cred.json"
-
-    return True
-
-def setup_github_credentials():
-    """
-    TODO: Implement
-    """
-
-    return {}
-
-def setup_servicenow_credentials():
-    """
-    Servicenow SSPM checks use Basic Auth, e.g., a regular User with Password & Role to access specific tables (/table/users, /system_properties, etc.)
-    TOML file stores the Instance Name, Username, and a SSM Parameter for the Password which will be retrieved. All 3 of these are set as env vars
-    via os.environ to reduce the amount of variables handed over to the EEAuditor functions
-    """
-
-    ssm = boto3.client("ssm")
-
-    snowValues = read_toml()["servicenow"]
-
-    try:
-        snowPw = ssm.get_parameter(
-            Name=snowValues["snow_sspm_password_parameter_name"],
-            WithDecryption=True
-        )["Parameter"]["Value"]
-    except Exception as e:
-        raise e
-
-    # Set SNOW creds
-    os.environ["SNOW_INSTANCE_NAME"] = snowValues["snow_instance_name"]
-    os.environ["SNOW_SSPM_USERNAME"] = snowValues["snow_sspm_username"]
-    os.environ["SNOW_SSPM_PASSWORD"] = snowPw
-    os.environ["SNOW_FAILED_LOGIN_BREACHING_RATE"] = snowValues["snow_failed_login_breaching_rate"]
-
-    return True
-
-def print_checks(gcp_project_id=None, target_provider=None, assume_role_account=None, assume_role_name=None, region_override=None):
-    if target_provider == "AWS":
-        awsCreds = setup_aws_credentials(assume_role_account, assume_role_name, region_override)
-
-        app = EEAuditor(target_provider, awsCreds[0], awsCreds[1], gcp_project_id=None)
-
-        app.load_plugins()
+    app.load_plugins(plugin_name=auditor_name)
         
-        app.print_checks_md()
-    elif target_provider == "GitHub":
-        github_creds = setup_github_credentials()
+    app.print_checks_md()
 
-        # TODO: EXPAND TO INCLUDE THE VALUES
-        app = EEAuditor(target_provider, session=None, region=None)
-
-        app.load_plugins()
-        
-        app.print_checks_md()
-    elif target_provider == "GCP":
-        # Save these locally
-        setup_gcp_credentials()
-
-        app = EEAuditor(target_provider, session=None, region=None, gcp_project_id=gcp_project_id)
-
-        app.load_plugins()
-        
-        app.print_checks_md()
-    elif target_provider == "Servicenow":
-        setup_servicenow_credentials()
-
-        app = EEAuditor(target_provider, session=None, region=None, gcp_project_id=None)
-
-        app.load_plugins()
-        
-        app.print_checks_md()
-
-def run_auditor(gcp_project_id, target_provider, assume_role_account=None, assume_role_name=None, region_override=None, auditor_name=None, check_name=None, delay=0, outputs=None, output_file=""):
+def run_auditor(assessmentTarget, auditor_name=None, check_name=None, delay=0, outputs=None, output_file=""):
     if not outputs:
         # default to AWS SecHub even if somehow Click destination is stripped
         outputs = ["sechub"]
     
-    # CSPM :: AWS
-    if target_provider == "AWS":
-        awsCreds = setup_aws_credentials(assume_role_account, assume_role_name, region_override)
-
-        app = EEAuditor(target_provider=target_provider, session=awsCreds[0], region=awsCreds[1], gcp_project_id=None)
-
-        app.load_plugins(plugin_name=auditor_name)
-
+    app = EEAuditor(assessmentTarget)
+    app.load_plugins(plugin_name=auditor_name)
+    if assessmentTarget == "AWS":
         findings = list(app.run_aws_checks(requested_check_name=check_name, delay=delay))
-
-        # This function writes the findings to Security Hub, or otherwise
-        process_findings(findings=findings, outputs=outputs, output_file=output_file)
-    # CSPM :: GCP
-    elif target_provider == "GCP":
-        if gcp_project_id == (None or ""):
-            print("GCP assessment target requires a GCP Project ID")
-            sys.exit(2)
-
-        setup_gcp_credentials()
-
-        app = EEAuditor(target_provider=target_provider, session=None, region=None, gcp_project_id=gcp_project_id)
-
-        app.load_plugins(plugin_name=auditor_name)
-
+    elif assessmentTarget == "GCP":
         findings = list(app.run_gcp_checks(requested_check_name=check_name, delay=delay))
-
-        # This function writes the findings to Security Hub, or otherwise
-        process_findings(findings=findings, outputs=outputs, output_file=output_file)
-    # SSPM :: Servicenow
-    elif target_provider == "Servicenow":
-        setup_servicenow_credentials()
-
-        # Check if the SNOW values are provided - for listing checks it's fine
-        try:
-            snowInstance = os.environ["SNOW_INSTANCE_NAME"]
-            snowUser = os.environ["SNOW_SSPM_USERNAME"]
-            snowPw = os.environ["SNOW_SSPM_PASSWORD"]
-
-            if (
-                snowInstance or
-                snowUser or
-                snowPw
-            ) == "" or None:
-                print(f"One or more Servicenow values missing from TOML")
-                sys.exit(2)
-        except KeyError as ke:
-            print(f"Servicenow environment variables are not set")
-            raise ke
-
-        app = EEAuditor(target_provider=target_provider, session=None, region=None, gcp_project_id=None)
-
-        app.load_plugins(plugin_name=auditor_name)
-
+    else:
         findings = list(app.run_non_aws_checks(requested_check_name=check_name, delay=delay))
 
-        # This function writes the findings to Security Hub, or otherwise
-        process_findings(findings=findings, outputs=outputs, output_file=output_file)
-
-    print("Done running Checks")
+    # This function writes the findings to Security Hub, or otherwise
+    print(f"Done running Checks for {assessmentTarget}")
+    process_findings(findings=findings, outputs=outputs, output_file=output_file)    
 
 @click.command()
-# GCP Project
-@click.option(
-    "--gcp-project-id",
-    default="",
-    help="GCP Project ID for when --target-provider is set to GCP. Must match the Service Account JSON stored in SSM Parameter Store mentioned in external_providers.toml"
-)
 # Assessment Target
 @click.option(
     "-t",
@@ -262,30 +65,6 @@ def run_auditor(gcp_project_id, target_provider, assume_role_account=None, assum
         case_sensitive=True
     ),
     help="CSP or SaaS Vendor to perform assessments against and load specific plugins, ensure that any -a or -c arg maps to your target provider e.g., -t AWS -a Amazon_APGIW_Auditor"
-)
-# Remote Account Options
-@click.option(
-    "--assume-role-account",
-    default="",
-    help="AWS Account ID of an Account to attempt to assume the role supplied by --assume-role-name"
-)
-@click.option(
-    "--assume-role-name",
-    default="",
-    help="Name of an AWS IAM Role in another Account supplied by --assume-role-account that trusts the current Account "
-)
-# Region Override
-@click.option(
-    "--region-override",
-    default="",
-    help="To use ElectricEye in other Regions provide a region name (e.g., eu-central-1) - this can be used with --session-override"
-)
-# AWSCLI Profile
-@click.option(
-    "-p",
-    "--profile-name",
-    default="",
-    help="User profile to use if set using AWS CLI. Defaults to no specification"
 )
 # Run Specific Auditor
 @click.option(
@@ -343,12 +122,7 @@ def run_auditor(gcp_project_id, target_provider, assume_role_account=None, assum
 )
 
 def main(
-    gcp_project_id,
     target_provider,
-    assume_role_account,
-    assume_role_name,
-    region_override,
-    profile_name,
     auditor_name,
     check_name,
     delay,
@@ -360,31 +134,20 @@ def main(
 ):
     if list_options:
         print(get_providers())
-        sys.exit(2)
+        sys.exit(0)
 
     if list_checks:
         print_checks(
-            gcp_project_id,
-            target_provider,
-            assume_role_account=assume_role_account,
-            assume_role_name=assume_role_name,
-            region_override=region_override
+            assessmentTarget=target_provider
         )
-        sys.exit(2)
-
-    if profile_name:
-        boto3.setup_default_session(profile_name=profile_name)
+        sys.exit(0)
 
     if create_insights:
         create_sechub_insights()
-        sys.exit(2)
+        sys.exit(0)
 
     run_auditor(
-        gcp_project_id=gcp_project_id,
-        target_provider=target_provider,
-        assume_role_account=assume_role_account,
-        assume_role_name=assume_role_name,
-        region_override=region_override,
+        assessmentTarget=target_provider,
         auditor_name=auditor_name,
         check_name=check_name,
         delay=delay,
