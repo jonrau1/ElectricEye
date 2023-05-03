@@ -26,7 +26,7 @@ credentials_location = "AWS_SSM" # VALID CHOICES: AWS_SSM | AWS_SECRETS_MANAGER 
     
     # If left blank, the *current AWS Region* is used. You can provide a list of AWS Regions or simply "All"
     
-    aws_regions_selection = [] # VALID CHOICES | ["All"], or AWS Regions such as ["us-east-1", "us-east-2"]
+    aws_regions_selection = [] # VALID CHOICES: [] | ["All"] | list of regions e.g., ["us-east-1", "us-east-2"]
 
     # The NAME of the AWS IAM Role deployed to aws_account_targets - must be the same for all Accounts
     # including your current Account
