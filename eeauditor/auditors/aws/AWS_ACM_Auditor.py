@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -39,6 +41,9 @@ def certificate_revocation_check(cache: dict, session, awsAccountId: str, awsReg
     for carn in list_certificates(cache, session):
         # Get ACM Cert Details
         cert = acm.describe_certificate(CertificateArn=carn)["Certificate"]
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(cert,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         cDomainName = str(cert['DomainName'])
         cIssuer = str(cert['Issuer'])
         cSerial = str(cert['Serial'])
@@ -74,7 +79,17 @@ def certificate_revocation_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://aws.amazon.com/certificate-manager/faqs/"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Security Services",
+                    "AssetService": "Amazon Certificate Manager",
+                    "AssetComponent": "Certificate"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCertificateManagerCertificate",
@@ -139,7 +154,17 @@ def certificate_revocation_check(cache: dict, session, awsAccountId: str, awsReg
                             "Url": "https://aws.amazon.com/certificate-manager/faqs/"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Security Services",
+                        "AssetService": "Amazon Certificate Manager",
+                        "AssetComponent": "Certificate"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCertificateManagerCertificate",
@@ -187,6 +212,9 @@ def certificate_in_use_check(cache: dict, session, awsAccountId: str, awsRegion:
     for carn in list_certificates(cache, session):
         # Get ACM Cert Details
         cert = acm.describe_certificate(CertificateArn=carn)["Certificate"]
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(cert,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         cDomainName = str(cert['DomainName'])
         cIssuer = str(cert['Issuer'])
         cSerial = str(cert['Serial'])
@@ -217,7 +245,17 @@ def certificate_in_use_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/acm/latest/userguide/acm-services.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Security Services",
+                    "AssetService": "Amazon Certificate Manager",
+                    "AssetComponent": "Certificate"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCertificateManagerCertificate",
@@ -275,7 +313,17 @@ def certificate_in_use_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/acm/latest/userguide/acm-services.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Security Services",
+                    "AssetService": "Amazon Certificate Manager",
+                    "AssetComponent": "Certificate"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCertificateManagerCertificate",
@@ -319,6 +367,9 @@ def certificate_transparency_logging_check(cache: dict, session, awsAccountId: s
     for carn in list_certificates(cache, session):
         # Get ACM Cert Details
         cert = acm.describe_certificate(CertificateArn=carn)["Certificate"]
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(cert,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         cDomainName = str(cert['DomainName'])
         cIssuer = str(cert['Issuer'])
         cSerial = str(cert['Serial'])
@@ -348,7 +399,17 @@ def certificate_transparency_logging_check(cache: dict, session, awsAccountId: s
                         "Url": "https://docs.aws.amazon.com/acm/latest/userguide/acm-services.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Security Services",
+                    "AssetService": "Amazon Certificate Manager",
+                    "AssetComponent": "Certificate"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCertificateManagerCertificate",
@@ -408,7 +469,17 @@ def certificate_transparency_logging_check(cache: dict, session, awsAccountId: s
                         "Url": "https://docs.aws.amazon.com/acm/latest/userguide/acm-services.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Security Services",
+                    "AssetService": "Amazon Certificate Manager",
+                    "AssetComponent": "Certificate"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCertificateManagerCertificate",
@@ -457,6 +528,9 @@ def certificate_renewal_status_check(cache: dict, session, awsAccountId: str, aw
         for carn in acm_certs:
             # Get ACM Cert Details
             cert = acm.describe_certificate(CertificateArn=carn)["Certificate"]
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(cert,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             cDomainName = str(cert['DomainName'])
             cIssuer = str(cert['Issuer'])
             cSerial = str(cert['Serial'])
@@ -486,7 +560,17 @@ def certificate_renewal_status_check(cache: dict, session, awsAccountId: str, aw
                             "Url": "https://docs.aws.amazon.com/acm/latest/userguide/check-certificate-renewal-status.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Security Services",
+                        "AssetService": "Amazon Certificate Manager",
+                        "AssetComponent": "Certificate"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCertificateManagerCertificate",
@@ -544,7 +628,17 @@ def certificate_renewal_status_check(cache: dict, session, awsAccountId: str, aw
                             "Url": "https://docs.aws.amazon.com/acm/latest/userguide/check-certificate-renewal-status.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Security Services",
+                        "AssetService": "Amazon Certificate Manager",
+                        "AssetComponent": "Certificate"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCertificateManagerCertificate",
@@ -602,7 +696,17 @@ def certificate_renewal_status_check(cache: dict, session, awsAccountId: str, aw
                             "Url": "https://docs.aws.amazon.com/acm/latest/userguide/check-certificate-renewal-status.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Security Services",
+                        "AssetService": "Amazon Certificate Manager",
+                        "AssetComponent": "Certificate"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCertificateManagerCertificate",
@@ -652,6 +756,9 @@ def certificate_status_check(cache: dict, session, awsAccountId: str, awsRegion:
     for carn in acm_certs:
         # Get ACM Cert Details
         cert = acm.describe_certificate(CertificateArn=carn)["Certificate"]
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(cert,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         cDomainName = str(cert['DomainName'])
         cIssuer = str(cert['Issuer'])
         cSerial = str(cert['Serial'])
@@ -679,7 +786,17 @@ def certificate_status_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/acm/latest/userguide/gs.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Security Services",
+                    "AssetService": "Amazon Certificate Manager",
+                    "AssetComponent": "Certificate"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCertificateManagerCertificate",
@@ -740,7 +857,17 @@ def certificate_status_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/acm/latest/userguide/gs.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Security Services",
+                    "AssetService": "Amazon Certificate Manager",
+                    "AssetComponent": "Certificate"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCertificateManagerCertificate",

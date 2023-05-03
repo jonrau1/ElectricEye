@@ -20,8 +20,9 @@
 
 import botocore.exceptions
 import datetime
-import json
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -45,8 +46,12 @@ def iam_access_key_age_check(cache: dict, session, awsAccountId: str, awsRegion:
         # Get keys per User
         response = iam.list_access_keys(UserName=userName)
         for keys in response["AccessKeyMetadata"]:
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(keys,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             keyUserName = str(keys["UserName"])
             keyId = str(keys["AccessKeyId"])
+            keyArn = f"arn:{awsPartition}:iam::{awsAccountId}:user/{keyUserName}/access-key/{keyId}"
             keyStatus = str(keys["Status"])
             # If there is an active key, see if it has been rotated in the last 90
             if keyStatus == "Active":
@@ -57,7 +62,7 @@ def iam_access_key_age_check(cache: dict, session, awsAccountId: str, awsRegion:
                     # this is a passing check
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": f"{keyUserName}{keyId}/iam-access-key-age-check",
+                        "Id": f"{keyArn}/iam-access-key-age-check",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": userArn + keyId,
                         "AwsAccountId": awsAccountId,
@@ -77,11 +82,21 @@ def iam_access_key_age_check(cache: dict, session, awsAccountId: str, awsRegion:
                                 "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_RotateAccessKey"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Identity & Access Management",
+                            "AssetService": "AWS IAM",
+                            "AssetComponent": "Access Key"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsIamAccessKey",
-                                "Id": userArn,
+                                "Id": keyArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
@@ -132,7 +147,7 @@ def iam_access_key_age_check(cache: dict, session, awsAccountId: str, awsRegion:
                     # this is a failing check
                     finding = {
                         "SchemaVersion": "2018-10-08",
-                        "Id": f"{keyUserName}{keyId}/iam-access-key-age-check",
+                        "Id": f"{keyArn}/iam-access-key-age-check",
                         "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                         "GeneratorId": userArn + keyId,
                         "AwsAccountId": awsAccountId,
@@ -150,11 +165,21 @@ def iam_access_key_age_check(cache: dict, session, awsAccountId: str, awsRegion:
                                 "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_RotateAccessKey"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Identity & Access Management",
+                            "AssetService": "AWS IAM",
+                            "AssetComponent": "Access Key"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsIamAccessKey",
-                                "Id": userArn,
+                                "Id": keyArn,
                                 "Partition": awsPartition,
                                 "Region": awsRegion,
                                 "Details": {
@@ -211,6 +236,9 @@ def user_permission_boundary_check(cache: dict, session, awsAccountId: str, awsR
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for users in list_users(cache, session)["Users"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(users,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         userName = str(users["UserName"])
         userArn = str(users["Arn"])
         try:
@@ -241,7 +269,17 @@ def user_permission_boundary_check(cache: dict, session, awsAccountId: str, awsR
                         "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM",
+                    "AssetComponent": "User"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamUser",
@@ -302,7 +340,17 @@ def user_permission_boundary_check(cache: dict, session, awsAccountId: str, awsR
                         "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM",
+                    "AssetComponent": "User"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamUser",
@@ -349,6 +397,9 @@ def user_mfa_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsP
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for users in list_users(cache, session)["Users"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(users,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         userName = str(users["UserName"])
         userArn = str(users["Arn"])
         # check if the user has a password
@@ -381,7 +432,17 @@ def user_mfa_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsP
                             "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Identity & Access Management",
+                        "AssetService": "AWS IAM",
+                        "AssetComponent": "User"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsIamUser",
@@ -450,7 +511,17 @@ def user_mfa_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsP
                             "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Identity & Access Management",
+                        "AssetService": "AWS IAM",
+                        "AssetComponent": "User"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsIamUser",
@@ -519,7 +590,17 @@ def user_mfa_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsP
                         "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM",
+                    "AssetComponent": "User"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamUser",
@@ -574,6 +655,9 @@ def user_inline_policy_check(cache: dict, session, awsAccountId: str, awsRegion:
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for users in list_users(cache, session)["Users"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(users,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         userName = str(users["UserName"])
         userArn = str(users["Arn"])
         # use a list comprehension to check if there are any inline policies
@@ -599,7 +683,17 @@ def user_inline_policy_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM",
+                    "AssetComponent": "User"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamUser",
@@ -668,7 +762,17 @@ def user_inline_policy_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM",
+                    "AssetComponent": "User"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamUser",
@@ -723,6 +827,9 @@ def user_direct_attached_policy_check(cache: dict, session, awsAccountId: str, a
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for users in list_users(cache, session)["Users"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(users,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         userName = str(users["UserName"])
         userArn = str(users["Arn"])
         # use a list comprehension to check if there are any attached managed policies
@@ -748,7 +855,17 @@ def user_direct_attached_policy_check(cache: dict, session, awsAccountId: str, a
                         "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM",
+                    "AssetComponent": "User"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamUser",
@@ -817,7 +934,17 @@ def user_direct_attached_policy_check(cache: dict, session, awsAccountId: str, a
                         "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM",
+                    "AssetComponent": "User"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamUser",
@@ -873,6 +1000,9 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, session, awsAccoun
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
         response = iam.get_account_password_policy()
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         pwPolicy = response["PasswordPolicy"]
         minPwLength = int(pwPolicy["MinimumPasswordLength"])
         symbolReq = str(pwPolicy["RequireSymbols"])
@@ -913,7 +1043,17 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, session, awsAccoun
                         "Url": "https://d1.awsstatic.com/whitepapers/compliance/AWS_CIS_Foundations_Benchmark.pdf",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM",
+                    "AssetComponent": "Password Policy"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAccount",
@@ -978,7 +1118,17 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, session, awsAccoun
                         "Url": "https://d1.awsstatic.com/whitepapers/compliance/AWS_CIS_Foundations_Benchmark.pdf",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM",
+                    "AssetComponent": "Password Policy"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAccount",
@@ -1024,6 +1174,8 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, session, awsAccoun
     except botocore.exceptions.ClientError as error:
         # Handle "NoSuchEntity" exception which means the PW policy does not exist
         if error.response['Error']['Code'] == 'NoSuchEntity':
+            # B64 encode all of the details for the Asset
+            assetB64 = None
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": awsAccountId + "/cis-aws-foundations-benchmark-pw-policy-check",
@@ -1046,7 +1198,17 @@ def cis_aws_foundation_benchmark_pw_policy_check(cache: dict, session, awsAccoun
                         "Url": "https://d1.awsstatic.com/whitepapers/compliance/AWS_CIS_Foundations_Benchmark.pdf",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM",
+                    "AssetComponent": "Password Policy"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAccount",
@@ -1098,6 +1260,9 @@ def server_certs_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
     # use a list comprehension to find any server certs in IAM
     # this is a failing check
     if iam.list_server_certificates()["ServerCertificateMetadataList"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(iam.list_server_certificates(),default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": awsAccountId + "/server-x509-certs-check",
@@ -1120,7 +1285,17 @@ def server_certs_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
                     "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_server-certs.html",
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Identity & Access Management",
+                "AssetService": "AWS IAM",
+                "AssetComponent": "Server Certificate Storage"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
@@ -1164,6 +1339,8 @@ def server_certs_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
         yield finding
     # this is a passing check
     else:
+        # B64 encode all of the details for the Asset
+        assetB64 = None
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": awsAccountId + "/server-x509-certs-check",
@@ -1186,7 +1363,17 @@ def server_certs_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
                     "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_server-certs.html",
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Identity & Access Management",
+                "AssetService": "AWS IAM",
+                "AssetComponent": "Server Certificate Storage"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
@@ -1237,6 +1424,9 @@ def iam_created_managed_policy_least_priv_check(cache: dict, session, awsAccount
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
         for mpolicy in iam.list_policies(Scope='Local')['Policies']:
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(mpolicy,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             policyArn = mpolicy['Arn']
             versionId = mpolicy['DefaultVersionId']
             policyDocument = iam.get_policy_version(
@@ -1291,7 +1481,17 @@ def iam_created_managed_policy_least_priv_check(cache: dict, session, awsAccount
                             "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_controlling.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Identity & Access Management",
+                        "AssetService": "AWS IAM",
+                        "AssetComponent": "Policy"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsIamPolicy",
@@ -1347,7 +1547,17 @@ def iam_created_managed_policy_least_priv_check(cache: dict, session, awsAccount
                             "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_controlling.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Identity & Access Management",
+                        "AssetService": "AWS IAM",
+                        "AssetComponent": "Policy"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsIamPolicy",
@@ -1403,7 +1613,17 @@ def iam_created_managed_policy_least_priv_check(cache: dict, session, awsAccount
                             "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_controlling.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Identity & Access Management",
+                        "AssetService": "AWS IAM",
+                        "AssetComponent": "Policy"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsIamPolicy",
@@ -1448,6 +1668,9 @@ def iam_user_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
     iam = session.client("iam")
     try:
         for users in list_users(cache, session)["Users"]:
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(users,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             userArn = users['Arn']
             userName = users['UserName']
 
@@ -1510,7 +1733,17 @@ def iam_user_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                                 "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Identity & Access Management",
+                            "AssetService": "AWS IAM",
+                            "AssetComponent": "User"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsIamUser",
@@ -1571,7 +1804,17 @@ def iam_user_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                                 "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Identity & Access Management",
+                            "AssetService": "AWS IAM",
+                            "AssetComponent": "User"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsIamUser",
@@ -1632,7 +1875,17 @@ def iam_user_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                                 "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Identity & Access Management",
+                            "AssetService": "AWS IAM",
+                            "AssetComponent": "User"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsIamUser",
@@ -1683,6 +1936,9 @@ def iam_group_policy_least_priv_check(cache: dict, session, awsAccountId: str, a
     try:
         Groups = iam.list_groups()
         for group in Groups['Groups']:
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(group,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             groupArn = group['Arn']
             groupName = group['GroupName']
 
@@ -1745,7 +2001,17 @@ def iam_group_policy_least_priv_check(cache: dict, session, awsAccountId: str, a
                                 "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Identity & Access Management",
+                            "AssetService": "AWS IAM",
+                            "AssetComponent": "Group"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsIamGroup",
@@ -1806,7 +2072,17 @@ def iam_group_policy_least_priv_check(cache: dict, session, awsAccountId: str, a
                                 "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Identity & Access Management",
+                            "AssetService": "AWS IAM",
+                            "AssetComponent": "Group"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsIamGroup",
@@ -1867,7 +2143,17 @@ def iam_group_policy_least_priv_check(cache: dict, session, awsAccountId: str, a
                                 "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Identity & Access Management",
+                            "AssetService": "AWS IAM",
+                            "AssetComponent": "Group"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsIamGroup",
@@ -1919,6 +2205,9 @@ def iam_role_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
     try:
         Roles = iam.list_roles()
         for role in Roles['Roles']:
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(role,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             roleArn = role['Arn']
             roleName = role['RoleName']
 
@@ -1980,7 +2269,17 @@ def iam_role_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                                 "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Identity & Access Management",
+                            "AssetService": "AWS IAM",
+                            "AssetComponent": "Role"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsIamRole",
@@ -2041,7 +2340,17 @@ def iam_role_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                                 "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Identity & Access Management",
+                            "AssetService": "AWS IAM",
+                            "AssetComponent": "Role"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsIamRole",
@@ -2102,7 +2411,17 @@ def iam_role_policy_least_priv_check(cache: dict, session, awsAccountId: str, aw
                                 "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Identity & Access Management",
+                            "AssetService": "AWS IAM",
+                            "AssetComponent": "Role"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsIamRole",

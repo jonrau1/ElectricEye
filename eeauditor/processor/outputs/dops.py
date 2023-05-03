@@ -56,7 +56,13 @@ class DopsProvider(object):
     def write_findings(self, findings: list, **kwargs):
         print(f"Writing {len(findings)} results to DisruptOps")
         if self.client_id and self.api_key and self.url:
-            for finding in findings:
+            # Use another list comprehension to remove `ProductFields.AssetDetails` from non-Asset reporting outputs
+            noDetails = [
+                {**d, "ProductFields": {k: v for k, v in d["ProductFields"].items() if k != "AssetDetails"}} for d in findings
+            ]
+            del findings
+            
+            for finding in noDetails:
                 requests.post(
                     self.url, 
                     data=json.dumps(finding),

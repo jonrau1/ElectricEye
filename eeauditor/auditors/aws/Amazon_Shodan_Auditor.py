@@ -24,6 +24,8 @@ import requests
 import socket
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -43,7 +45,7 @@ except KeyError:
 # Shodan information for Requests
 shodanUrl = "https://api.shodan.io/shodan/host/"
 
-@registry.register_check("shodan")
+@registry.register_check("aws.shodan")
 def public_ec2_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.EC2.1] EC2 instances with public IP addresses should be monitored for being indexed by Shodan"""
     ec2 = session.client("ec2")
@@ -52,6 +54,9 @@ def public_ec2_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
     response = ec2.describe_instances(DryRun=False, MaxResults=500)
     for res in response["Reservations"]:
         for inst in res["Instances"]:
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(inst,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             ec2Type = str(inst["InstanceType"])
             ec2AmiId = str(inst["ImageId"])
             ec2Id = str(inst["InstanceId"])
@@ -80,7 +85,17 @@ def public_ec2_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
                     "Description": "EC2 instance "
                     + ec2Id
                     + " has not been indexed by Shodan.",
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Compute",
+                        "AssetService": "Amazon EC2",
+                        "AssetComponent": "Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Instance",
@@ -146,7 +161,17 @@ def public_ec2_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
                     + ec2PublicIp
                     + ". review the Shodan.io host information in the SourceUrl or ThreatIntelIndicators.SourceUrl fields for information about what ports and services are exposed and then take action to reduce exposure and harden your host.",
                     "SourceUrl": "https://www.shodan.io/host/" + ec2PublicIp,
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Compute",
+                        "AssetService": "Amazon EC2",
+                        "AssetComponent": "Instance"
+                    },
                     "ThreatIntelIndicators": [
                         {
                             "Type": "IPV4_ADDRESS",
@@ -205,7 +230,7 @@ def public_ec2_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 }
                 yield finding
 
-@registry.register_check("shodan")
+@registry.register_check("aws.shodan")
 def public_alb_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.ELBv2.1] Internet-facing Application Load Balancers should be monitored for being indexed by Shodan"""
     elbv2 = session.client("elbv2")
@@ -213,6 +238,9 @@ def public_alb_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     response = elbv2.describe_load_balancers()
     for lbs in response["LoadBalancers"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(lbs,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         elbv2Scheme = str(lbs["Scheme"])
         elbv2Type = str(lbs["Type"])
         elbv2Name = str(lbs["LoadBalancerName"])
@@ -240,7 +268,17 @@ def public_alb_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Title": "[Shodan.ELBv2.1] Internet-facing Application Load Balancers should be monitored for being indexed by Shodan",
                     "Description": "ALB " + elbv2Name + " has not been indexed by Shodan.",
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon Elastic Load Balancing V2",
+                        "AssetComponent": "Application Load Balancer"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsElbv2LoadBalancer",
@@ -307,7 +345,17 @@ def public_alb_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
                     + elbv2Dns
                     + ". review the Shodan.io host information in the SourceUrl or ThreatIntelIndicators.SourceUrl fields for information about what ports and services are exposed and then take action to reduce exposure and harden your load balancer.",
                     "SourceUrl": "https://www.shodan.io/host/" + elbv2Ip,
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon Elastic Load Balancing V2",
+                        "AssetComponent": "Application Load Balancer"
+                    },
                     "ThreatIntelIndicators": [
                         {
                             "Type": "IPV4_ADDRESS",
@@ -367,7 +415,7 @@ def public_alb_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
         else:
             continue
 
-@registry.register_check("shodan")
+@registry.register_check("aws.shodan")
 def public_rds_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.RDS.1] Public accessible RDS instances should be monitored for being indexed by Shodan"""
     rds = session.client("rds")
@@ -375,6 +423,9 @@ def public_rds_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     response = rds.describe_db_instances()
     for rdsdb in response["DBInstances"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(rdsdb,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         rdsInstanceId = str(rdsdb["DBInstanceIdentifier"])
         rdsInstanceArn = str(rdsdb["DBInstanceArn"])
         rdsInstanceClass = str(rdsdb["DBInstanceClass"])
@@ -382,8 +433,7 @@ def public_rds_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
         rdsEngine = str(rdsdb["Engine"])
         rdsEngineVersion = str(rdsdb["EngineVersion"])
         rdsDns = str(rdsdb["Endpoint"]["Address"])
-        publicCheck = str(rdsdb["PubliclyAccessible"])
-        if publicCheck == "True":
+        if rdsdb["PubliclyAccessible"] == True:
             # use Socket to do a DNS lookup and retrieve the IP address
             rdsIp = socket.gethostbyname(rdsDns)
             # use requests Library to check the Shodan index for your host
@@ -406,7 +456,17 @@ def public_rds_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
                     "Description": "RDS instance "
                     + rdsInstanceId
                     + " has not been indexed by Shodan.",
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Database",
+                        "AssetService": "Amazon Relational Database Service",
+                        "AssetComponent": "Database Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsRdsDbInstance",
@@ -474,7 +534,17 @@ def public_rds_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
                     + rdsDns
                     + ". review the Shodan.io host information in the SourceUrl or ThreatIntelIndicators.SourceUrl fields for information about what ports and services are exposed and then take action to reduce exposure and harden your database.",
                     "SourceUrl": "https://www.shodan.io/host/" + rdsIp,
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Database",
+                        "AssetService": "Amazon Relational Database Service",
+                        "AssetComponent": "Database Instance"
+                    },
                     "ThreatIntelIndicators": [
                         {
                             "Type": "IPV4_ADDRESS",
@@ -535,7 +605,7 @@ def public_rds_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
         else:
             continue
 
-@registry.register_check("shodan")
+@registry.register_check("aws.shodan")
 def public_es_domain_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.Elasticsearch.1] OpenSearch/ElasticSearch Service domains outside of a VPC should be monitored for being indexed by Shodan"""
     elasticsearch = session.client("elasticsearch")
@@ -543,6 +613,9 @@ def public_es_domain_shodan_check(cache: dict, session, awsAccountId: str, awsRe
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     response = elasticsearch.list_domain_names()
     for domain in response["DomainNames"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(domain,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         esDomain = str(domain["DomainName"])
         response = elasticsearch.describe_elasticsearch_domain(DomainName=esDomain)
         esDomainId = str(response["DomainStatus"]["DomainId"])
@@ -551,167 +624,184 @@ def public_es_domain_shodan_check(cache: dict, session, awsAccountId: str, awsRe
         esVersion = str(response["DomainStatus"]["ElasticsearchVersion"])
         esDomainEndpoint = str(response["DomainStatus"]["Endpoint"])
         try:
-            esVpcOptions = str(response["DomainStatus"]["VPCOptions"])
-            print(esDomainId + " is in a VPC, skipping")
-            pass
-        except Exception as e:
-            if str(e) == "'VPCOptions'":
-                # use Socket to do a DNS lookup and retrieve the IP address
-                esDomainIp = socket.gethostbyname(esDomainEndpoint)
-                # use requests Library to check the Shodan index for your host
-                r = requests.get(url=shodanUrl + esDomainIp + "?key=" + shodanApiKey)
-                data = r.json()
-                shodanOutput = str(data)
-                if shodanOutput == "{'error': 'No information available for that IP.'}":
-                    # this is a passing check
-                    finding = {
-                        "SchemaVersion": "2018-10-08",
-                        "Id": esDomainArn
-                        + "/"
-                        + esDomainEndpoint
-                        + "/elasticsearch-shodan-index-check",
-                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": esDomainArn,
-                        "AwsAccountId": awsAccountId,
-                        "Types": ["Effects/Data Exposure"],
-                        "CreatedAt": iso8601time,
-                        "UpdatedAt": iso8601time,
-                        "Severity": {"Label": "INFORMATIONAL"},
-                        "Title": "[Shodan.Elasticsearch.1] OpenSearch/ElasticSearch Service domains outside of a VPC should be monitored for being indexed by Shodan",
-                        "Description": "ElasticSearch Service domain "
-                        + esDomainName
-                        + " has not been indexed by Shodan.",
-                        "ProductFields": {"Product Name": "ElectricEye"},
-                        "Resources": [
-                            {
-                                "Type": "AwsElasticsearchDomain",
-                                "Id": esDomainArn,
-                                "Partition": awsPartition,
-                                "Region": awsRegion,
-                                "Details": {
-                                    "AwsElasticsearchDomain": {
-                                        "DomainId": esDomainId,
-                                        "DomainName": esDomainName,
-                                        "ElasticsearchVersion": esVersion,
-                                        "Endpoint": esDomainEndpoint,
-                                    }
-                                },
-                            }
-                        ],
-                        "Compliance": {
-                            "Status": "PASSED",
-                            "RelatedRequirements": [
-                                "NIST CSF V1.1 ID.RA-2",
-                                "NIST CSF V1.1 DE.AE-2",
-                                "NIST SP 800-53 Rev. 4 AU-6",
-                                "NIST SP 800-53 Rev. 4 CA-7",
-                                "NIST SP 800-53 Rev. 4 IR-4",
-                                "NIST SP 800-53 Rev. 4 PM-15",
-                                "NIST SP 800-53 Rev. 4 PM-16",
-                                "NIST SP 800-53 Rev. 4 SI-4",
-                                "NIST SP 800-53 Rev. 4 SI-5",
-                                "AIPCA TSC CC3.2",
-                                "AIPCA TSC CC7.2",
-                                "ISO 27001:2013 A.6.1.4",
-                                "ISO 27001:2013 A.12.4.1",
-                                "ISO 27001:2013 A.16.1.1",
-                                "ISO 27001:2013 A.16.1.4",
-                                "MITRE ATT&CK T1040",
-                                "MITRE ATT&CK T1046",
-                                "MITRE ATT&CK T1580",
-                                "MITRE ATT&CK T1590",
-                                "MITRE ATT&CK T1592",
-                                "MITRE ATT&CK T1595"
-                            ]
-                        },
-                        "Workflow": {"Status": "RESOLVED"},
-                        "RecordState": "ARCHIVED"
-                    }
-                    yield finding
-                else:
-                    finding = {
-                        "SchemaVersion": "2018-10-08",
-                        "Id": esDomainArn
-                        + "/"
-                        + esDomainEndpoint
-                        + "/elasticsearch-shodan-index-check",
-                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": esDomainArn,
-                        "AwsAccountId": awsAccountId,
-                        "Types": ["Effects/Data Exposure"],
-                        "CreatedAt": iso8601time,
-                        "UpdatedAt": iso8601time,
-                        "Severity": {"Label": "MEDIUM"},
-                        "Title": "[Shodan.Elasticsearch.1] OpenSearch/ElasticSearch Service domains outside of a VPC should be monitored for being indexed by Shodan",
-                        "Description": "ElasticSearch Service domain "
-                        + esDomainName
-                        + " has been indexed by Shodan on IP address "
-                        + esDomainIp
-                        + " from endpoint DNS name "
-                        + esDomainEndpoint
-                        + ". review the Shodan.io host information in the SourceUrl or ThreatIntelIndicators.SourceUrl fields for information about what ports and services are exposed and then take action to reduce exposure and harden your ES domain.",
-                        "SourceUrl": "https://www.shodan.io/host/" + esDomainIp,
-                        "ProductFields": {"Product Name": "ElectricEye"},
-                        "ThreatIntelIndicators": [
-                            {
-                                "Type": "IPV4_ADDRESS",
-                                "Category": "EXPLOIT_SITE",
-                                "Value": esDomainIp,
-                                "LastObservedAt": iso8601time,
-                                "Source": "Shodan.io",
-                                "SourceUrl": "https://www.shodan.io/host/" + esDomainIp,
+            response["DomainStatus"]["VPCOptions"]
+            print(f"{esDomainId} is in a VPC, skipping for Shodan check")
+            continue
+        except KeyError:
+            # use Socket to do a DNS lookup and retrieve the IP address
+            esDomainIp = socket.gethostbyname(esDomainEndpoint)
+            # use requests Library to check the Shodan index for your host
+            r = requests.get(url=shodanUrl + esDomainIp + "?key=" + shodanApiKey)
+            data = r.json()
+            shodanOutput = str(data)
+            if shodanOutput == "{'error': 'No information available for that IP.'}":
+                # this is a passing check
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": esDomainArn
+                    + "/"
+                    + esDomainEndpoint
+                    + "/elasticsearch-shodan-index-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": esDomainArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Effects/Data Exposure"],
+                    "CreatedAt": iso8601time,
+                    "UpdatedAt": iso8601time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Title": "[Shodan.OpenSearch.1] OpenSearch/ElasticSearch Service domains outside of a VPC should be monitored for being indexed by Shodan",
+                    "Description": "OpenSearch/ElasticSearch Service domain "
+                    + esDomainName
+                    + " has not been indexed by Shodan.",
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Analytics",
+                        "AssetService": "Amazon OpenSearch Service",
+                        "AssetComponent": "Search Domain"
+                    },
+                    "Resources": [
+                        {
+                            "Type": "AwsOpenSearchDomain",
+                            "Id": esDomainArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsOpenSearchDomain": {
+                                    "DomainId": esDomainId,
+                                    "DomainName": esDomainName,
+                                    "ElasticsearchVersion": esVersion,
+                                    "Endpoint": esDomainEndpoint,
+                                }
                             },
-                        ],
-                        "Resources": [
-                            {
-                                "Type": "AwsElasticsearchDomain",
-                                "Id": esDomainArn,
-                                "Partition": awsPartition,
-                                "Region": awsRegion,
-                                "Details": {
-                                    "AwsElasticsearchDomain": {
-                                        "DomainId": esDomainId,
-                                        "DomainName": esDomainName,
-                                        "ElasticsearchVersion": esVersion,
-                                        "Endpoint": esDomainEndpoint,
-                                    }
-                                },
-                            }
-                        ],
-                        "Compliance": {
-                            "Status": "FAILED",
-                            "RelatedRequirements": [
-                                "NIST CSF V1.1 ID.RA-2",
-                                "NIST CSF V1.1 DE.AE-2",
-                                "NIST SP 800-53 Rev. 4 AU-6",
-                                "NIST SP 800-53 Rev. 4 CA-7",
-                                "NIST SP 800-53 Rev. 4 IR-4",
-                                "NIST SP 800-53 Rev. 4 PM-15",
-                                "NIST SP 800-53 Rev. 4 PM-16",
-                                "NIST SP 800-53 Rev. 4 SI-4",
-                                "NIST SP 800-53 Rev. 4 SI-5",
-                                "AIPCA TSC CC3.2",
-                                "AIPCA TSC CC7.2",
-                                "ISO 27001:2013 A.6.1.4",
-                                "ISO 27001:2013 A.12.4.1",
-                                "ISO 27001:2013 A.16.1.1",
-                                "ISO 27001:2013 A.16.1.4",
-                                "MITRE ATT&CK T1040",
-                                "MITRE ATT&CK T1046",
-                                "MITRE ATT&CK T1580",
-                                "MITRE ATT&CK T1590",
-                                "MITRE ATT&CK T1592",
-                                "MITRE ATT&CK T1595"
-                            ]
-                        },
-                        "Workflow": {"Status": "NEW"},
-                        "RecordState": "ACTIVE"
-                    }
-                    yield finding
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF V1.1 ID.RA-2",
+                            "NIST CSF V1.1 DE.AE-2",
+                            "NIST SP 800-53 Rev. 4 AU-6",
+                            "NIST SP 800-53 Rev. 4 CA-7",
+                            "NIST SP 800-53 Rev. 4 IR-4",
+                            "NIST SP 800-53 Rev. 4 PM-15",
+                            "NIST SP 800-53 Rev. 4 PM-16",
+                            "NIST SP 800-53 Rev. 4 SI-4",
+                            "NIST SP 800-53 Rev. 4 SI-5",
+                            "AIPCA TSC CC3.2",
+                            "AIPCA TSC CC7.2",
+                            "ISO 27001:2013 A.6.1.4",
+                            "ISO 27001:2013 A.12.4.1",
+                            "ISO 27001:2013 A.16.1.1",
+                            "ISO 27001:2013 A.16.1.4",
+                            "MITRE ATT&CK T1040",
+                            "MITRE ATT&CK T1046",
+                            "MITRE ATT&CK T1580",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1592",
+                            "MITRE ATT&CK T1595"
+                        ]
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED"
+                }
+                yield finding
             else:
-                continue
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": esDomainArn
+                    + "/"
+                    + esDomainEndpoint
+                    + "/elasticsearch-shodan-index-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": esDomainArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Effects/Data Exposure"],
+                    "CreatedAt": iso8601time,
+                    "UpdatedAt": iso8601time,
+                    "Severity": {"Label": "MEDIUM"},
+                    "Title": "[Shodan.Elasticsearch.1] OpenSearch/ElasticSearch Service domains outside of a VPC should be monitored for being indexed by Shodan",
+                    "Description": "ElasticSearch Service domain "
+                    + esDomainName
+                    + " has been indexed by Shodan on IP address "
+                    + esDomainIp
+                    + " from endpoint DNS name "
+                    + esDomainEndpoint
+                    + ". review the Shodan.io host information in the SourceUrl or ThreatIntelIndicators.SourceUrl fields for information about what ports and services are exposed and then take action to reduce exposure and harden your ES domain.",
+                    "SourceUrl": "https://www.shodan.io/host/" + esDomainIp,
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Analytics",
+                        "AssetService": "Amazon OpenSearch Service",
+                        "AssetComponent": "Search Domain"
+                    },
+                    "ThreatIntelIndicators": [
+                        {
+                            "Type": "IPV4_ADDRESS",
+                            "Category": "EXPLOIT_SITE",
+                            "Value": esDomainIp,
+                            "LastObservedAt": iso8601time,
+                            "Source": "Shodan.io",
+                            "SourceUrl": "https://www.shodan.io/host/" + esDomainIp,
+                        },
+                    ],
+                    "Resources": [
+                        {
+                            "Type": "AwsElasticsearchDomain",
+                            "Id": esDomainArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "AwsElasticsearchDomain": {
+                                    "DomainId": esDomainId,
+                                    "DomainName": esDomainName,
+                                    "ElasticsearchVersion": esVersion,
+                                    "Endpoint": esDomainEndpoint,
+                                }
+                            },
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF V1.1 ID.RA-2",
+                            "NIST CSF V1.1 DE.AE-2",
+                            "NIST SP 800-53 Rev. 4 AU-6",
+                            "NIST SP 800-53 Rev. 4 CA-7",
+                            "NIST SP 800-53 Rev. 4 IR-4",
+                            "NIST SP 800-53 Rev. 4 PM-15",
+                            "NIST SP 800-53 Rev. 4 PM-16",
+                            "NIST SP 800-53 Rev. 4 SI-4",
+                            "NIST SP 800-53 Rev. 4 SI-5",
+                            "AIPCA TSC CC3.2",
+                            "AIPCA TSC CC7.2",
+                            "ISO 27001:2013 A.6.1.4",
+                            "ISO 27001:2013 A.12.4.1",
+                            "ISO 27001:2013 A.16.1.1",
+                            "ISO 27001:2013 A.16.1.4",
+                            "MITRE ATT&CK T1040",
+                            "MITRE ATT&CK T1046",
+                            "MITRE ATT&CK T1580",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1592",
+                            "MITRE ATT&CK T1595"
+                        ]
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE"
+                }
+                yield finding
 
-@registry.register_check("shodan")
+@registry.register_check("aws.shodan")
 def public_clb_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.ELB.1] Internet-facing Classic Load Balancers should be monitored for being indexed by Shodan"""
     elb = session.client("elb")
@@ -719,6 +809,9 @@ def public_clb_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     response = elb.describe_load_balancers()
     for clbs in response["LoadBalancerDescriptions"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(clbs,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clbName = str(clbs["LoadBalancerName"])
         clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
         clbDnsName = str(clbs["DNSName"])
@@ -749,7 +842,17 @@ def public_clb_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
                     "Description": "ElasticSearch Service domain "
                     + clbName
                     + " has not been indexed by Shodan.",
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Networking",
+                        "AssetService": "AWS Elastic Load Balancer",
+                        "AssetComponent": "Classic Load Balancer"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsElbLoadBalancer",
@@ -812,7 +915,17 @@ def public_clb_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
                     + clbDnsName
                     + ". Review the Shodan.io host information in the SourceUrl or ThreatIntelIndicators.SourceUrl fields for information about what ports and services are exposed and then take action to reduce exposure and harden your load balancer.",
                     "SourceUrl": "https://www.shodan.io/host/" + clbIp,
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Networking",
+                        "AssetService": "AWS Elastic Load Balancer",
+                        "AssetComponent": "Classic Load Balancer"
+                    },
                     "ThreatIntelIndicators": [
                         {
                             "Type": "IPV4_ADDRESS",
@@ -862,10 +975,8 @@ def public_clb_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
                     "RecordState": "ACTIVE"
                 }
                 yield finding
-        else:
-            continue
 
-@registry.register_check("shodan")
+@registry.register_check("aws.shodan")
 def public_dms_replication_instance_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.DMS.1] Publicly accessible Database Migration Service (DMS) Replication Instances should be monitored for being indexed by Shodan"""
     dms = session.client("dms")
@@ -873,10 +984,12 @@ def public_dms_replication_instance_shodan_check(cache: dict, session, awsAccoun
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     response = dms.describe_replication_instances()
     for repinstances in response["ReplicationInstances"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(repinstances,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         dmsInstanceId = str(repinstances["ReplicationInstanceIdentifier"])
         dmsInstanceArn = str(repinstances["ReplicationInstanceArn"])
-        publicAccessCheck = str(repinstances["PubliclyAccessible"])
-        if publicAccessCheck == "True":
+        if repinstances["PubliclyAccessible"] == True:
             dmsPublicIp = str(repinstances["ReplicationInstancePublicIpAddress"])
             # use requests Library to check the Shodan index for your host
             r = requests.get(url=shodanUrl + dmsPublicIp + "?key=" + shodanApiKey)
@@ -901,7 +1014,17 @@ def public_dms_replication_instance_shodan_check(cache: dict, session, awsAccoun
                     "Description": "DMS Replication Instance "
                     + dmsInstanceId
                     + " has not been indexed by Shodan.",
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Migration & Transfer",
+                        "AssetService": "AWS Database Migration Service",
+                        "AssetComponent": "Replication Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsDmsReplicationInstance",
@@ -962,7 +1085,17 @@ def public_dms_replication_instance_shodan_check(cache: dict, session, awsAccoun
                     + dmsInstanceId
                     + " . Review the Shodan.io host information in the SourceUrl or ThreatIntelIndicators.SourceUrl fields for information about what ports and services are exposed and then take action to reduce exposure and harden your replication instance.",
                     "SourceUrl": "https://www.shodan.io/host/" + dmsPublicIp,
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Migration & Transfer",
+                        "AssetService": "AWS Database Migration Service",
+                        "AssetComponent": "Replication Instance"
+                    },
                     "ThreatIntelIndicators": [
                         {
                             "Type": "IPV4_ADDRESS",
@@ -1015,32 +1148,27 @@ def public_dms_replication_instance_shodan_check(cache: dict, session, awsAccoun
         else:
             continue
 
-@registry.register_check("shodan")
+@registry.register_check("aws.shodan")
 def public_amazon_mq_broker_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.AmazonMQ.1] Publicly accessible Amazon MQ message brokers should be monitored for being indexed by Shodan"""
     amzmq = session.client("mq")
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    response = amzmq.list_brokers(MaxResults=100)
-    myBrokers = response["BrokerSummaries"]
-    for brokers in myBrokers:
+    for brokers in amzmq.list_brokers(MaxResults=100)["BrokerSummaries"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(brokers,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         brokerName = str(brokers["BrokerName"])
         response = amzmq.describe_broker(BrokerId=brokerName)
         brokerArn = str(response["BrokerArn"])
         brokerId = str(response["BrokerId"])
-        publicAccessCheck = str(response["PubliclyAccessible"])
-        if publicAccessCheck == "True":
+        if response["PubliclyAccessible"] == True:
             mqInstances = response["BrokerInstances"]
             for instance in mqInstances:
                 mqBrokerIpv4 = str(instance["IpAddress"])
                 r = requests.get(url=shodanUrl + mqBrokerIpv4 + "?key=" + shodanApiKey)
                 data = r.json()
                 shodanOutput = str(data)
-                iso8601time = (
-                    datetime.datetime.utcnow()
-                    .replace(tzinfo=datetime.timezone.utc)
-                    .isoformat()
-                )
                 if shodanOutput == "{'error': 'No information available for that IP.'}":
                     # this is a passing check
                     finding = {
@@ -1060,7 +1188,17 @@ def public_amazon_mq_broker_shodan_check(cache: dict, session, awsAccountId: str
                         "Description": "Amazon MQ message brokers "
                         + brokerName
                         + " has not been indexed by Shodan.",
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Application Integration",
+                            "AssetService": "Amazon MQ",
+                            "AssetComponent": "Broker"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsMqMessageBroker",
@@ -1125,7 +1263,17 @@ def public_amazon_mq_broker_shodan_check(cache: dict, session, awsAccountId: str
                         + " has been indexed by Shodan on IP address "
                         + mqBrokerIpv4
                         + ".",
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Application Integration",
+                            "AssetService": "Amazon MQ",
+                            "AssetComponent": "Broker"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsMqMessageBroker",
@@ -1170,10 +1318,8 @@ def public_amazon_mq_broker_shodan_check(cache: dict, session, awsAccountId: str
                         "RecordState": "ACTIVE"
                     }
                     yield finding
-        else:
-            continue
 
-@registry.register_check("shodan")
+@registry.register_check("aws.shodan")
 def cloudfront_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.CloudFront.1] CloudFront Distributions should be monitored for being indexed by Shodan"""
     cloudfront = session.client("cloudfront")
@@ -1183,6 +1329,9 @@ def cloudfront_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
     iterator = paginator.paginate()
     for page in iterator:
         for cfront in page["DistributionList"]["Items"]:
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(cfront,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             domainName = str(cfront["DomainName"])
             cfArn = str(cfront["ARN"])
             cfId = str(cfront["Id"])
@@ -1207,7 +1356,17 @@ def cloudfront_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
                     "Description": "CloudFront Distribution "
                     + cfId
                     + " has not been indexed by Shodan.",
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon CloudFront",
+                        "AssetComponent": "Distribution"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCloudFrontDistribution",
@@ -1269,7 +1428,17 @@ def cloudfront_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
                     + cfDomainIp
                     + ". review the Shodan.io host information in the SourceUrl or ThreatIntelIndicators.SourceUrl fields for information about what ports and services are exposed and then take action to reduce exposure and harden your host.",
                     "SourceUrl": "https://www.shodan.io/host/" + cfDomainIp,
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon CloudFront",
+                        "AssetComponent": "Distribution"
+                    },
                     "ThreatIntelIndicators": [
                         {
                             "Type": "IPV4_ADDRESS",
@@ -1324,9 +1493,9 @@ def cloudfront_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 }
                 yield finding
 
-@registry.register_check("shodan")
+@registry.register_check("aws.shodan")
 def global_accelerator_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Shodan.CloudFront.1] CloudFront Distributions should be monitored for being indexed by Shodan"""
+    """[Shodan.GlobalAccelerator.1] Accelerators should be monitored for being indexed by Shodan"""
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # Create a Session is us-west-2 - which is where the Global Accelerator API is in
@@ -1336,6 +1505,9 @@ def global_accelerator_shodan_check(cache: dict, session, awsAccountId: str, aws
     iterator = paginator.paginate()
     for page in iterator:
         for ga in page["Accelerators"]:
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(ga,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             gaxArn = str(ga["AcceleratorArn"])
             gaxName = str(ga["Name"])
             gaxDns = str(ga["DnsName"])
@@ -1360,7 +1532,17 @@ def global_accelerator_shodan_check(cache: dict, session, awsAccountId: str, aws
                     "Description": "Accelerator "
                     + gaxName
                     + " has not been indexed by Shodan.",
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon Global Accelerator",
+                        "AssetComponent": "Accelerator"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsGlobalAcceleratorAccelerator",
@@ -1423,7 +1605,17 @@ def global_accelerator_shodan_check(cache: dict, session, awsAccountId: str, aws
                     + gaxDomainIp
                     + ". review the Shodan.io host information in the SourceUrl or ThreatIntelIndicators.SourceUrl fields for information about what ports and services are exposed and then take action to reduce exposure and harden your host.",
                     "SourceUrl": "https://www.shodan.io/host/" + gaxDomainIp,
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon Global Accelerator",
+                        "AssetComponent": "Accelerator"
+                    },
                     "ThreatIntelIndicators": [
                         {
                             "Type": "IPV4_ADDRESS",

@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -96,6 +98,9 @@ def rds_instance_ha_check(cache: dict, session, awsAccountId: str, awsRegion: st
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for dbinstances in describe_db_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dbinstances,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -127,7 +132,17 @@ def rds_instance_ha_check(cache: dict, session, awsAccountId: str, awsRegion: st
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetComponent": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -190,7 +205,17 @@ def rds_instance_ha_check(cache: dict, session, awsAccountId: str, awsRegion: st
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetComponent": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -236,6 +261,9 @@ def rds_instance_public_access_check(cache: dict, session, awsAccountId: str, aw
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for dbinstances in describe_db_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dbinstances,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -270,7 +298,17 @@ def rds_instance_public_access_check(cache: dict, session, awsAccountId: str, aw
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html#USER_VPC.Hiding",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetComponent": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -336,7 +374,17 @@ def rds_instance_public_access_check(cache: dict, session, awsAccountId: str, aw
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html#USER_VPC.Hiding",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetComponent": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -383,6 +431,9 @@ def rds_instance_storage_encryption_check(cache: dict, session, awsAccountId: st
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for dbinstances in describe_db_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dbinstances,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -416,7 +467,17 @@ def rds_instance_storage_encryption_check(cache: dict, session, awsAccountId: st
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html#Overview.Encryption.Enabling"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetComponent": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -474,7 +535,17 @@ def rds_instance_storage_encryption_check(cache: dict, session, awsAccountId: st
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html#Overview.Encryption.Enabling"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetComponent": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -520,6 +591,9 @@ def rds_instance_iam_auth_check(cache: dict, session, awsAccountId: str, awsRegi
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for dbinstances in describe_db_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dbinstances,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -552,7 +626,17 @@ def rds_instance_iam_auth_check(cache: dict, session, awsAccountId: str, awsRegi
                             "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Database",
+                        "AssetService": "Amazon Relational Database Service",
+                        "AssetComponent": "Database Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsRdsDbInstance",
@@ -620,7 +704,17 @@ def rds_instance_iam_auth_check(cache: dict, session, awsAccountId: str, awsRegi
                             "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Database",
+                        "AssetService": "Amazon Relational Database Service",
+                        "AssetComponent": "Database Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsRdsDbInstance",
@@ -687,7 +781,17 @@ def rds_instance_iam_auth_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetComponent": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -756,6 +860,9 @@ def rds_instance_domain_join_check(cache: dict, session, awsAccountId: str, awsR
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for dbinstances in describe_db_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dbinstances,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -789,7 +896,17 @@ def rds_instance_domain_join_check(cache: dict, session, awsAccountId: str, awsR
                             "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/kerberos-authentication.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Database",
+                        "AssetService": "Amazon Relational Database Service",
+                        "AssetComponent": "Database Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsRdsDbInstance",
@@ -857,7 +974,17 @@ def rds_instance_domain_join_check(cache: dict, session, awsAccountId: str, awsR
                             "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/kerberos-authentication.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Database",
+                        "AssetService": "Amazon Relational Database Service",
+                        "AssetComponent": "Database Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsRdsDbInstance",
@@ -923,7 +1050,17 @@ def rds_instance_domain_join_check(cache: dict, session, awsAccountId: str, awsR
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/kerberos-authentication.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetComponent": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -974,6 +1111,9 @@ def rds_instance_performance_insights_check(cache: dict, session, awsAccountId: 
      # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for dbinstances in describe_db_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dbinstances,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -1004,7 +1144,17 @@ def rds_instance_performance_insights_check(cache: dict, session, awsAccountId: 
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetComponent": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -1064,7 +1214,17 @@ def rds_instance_performance_insights_check(cache: dict, session, awsAccountId: 
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetComponent": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -1108,6 +1268,9 @@ def rds_instance_deletion_protection_check(cache: dict, session, awsAccountId: s
      # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for dbinstances in describe_db_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dbinstances,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -1138,7 +1301,17 @@ def rds_instance_deletion_protection_check(cache: dict, session, awsAccountId: s
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_DeleteInstance.html#USER_DeleteInstance.DeletionProtection",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetComponent": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -1201,7 +1374,17 @@ def rds_instance_deletion_protection_check(cache: dict, session, awsAccountId: s
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_DeleteInstance.html#USER_DeleteInstance.DeletionProtection",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetComponent": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -1248,6 +1431,9 @@ def rds_instance_cloudwatch_logging_check(cache: dict, session, awsAccountId: st
      # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for dbinstances in describe_db_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dbinstances,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -1281,7 +1467,17 @@ def rds_instance_cloudwatch_logging_check(cache: dict, session, awsAccountId: st
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.html#USER_LogAccess.Procedural.UploadtoCloudWatch",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetComponent": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -1341,7 +1537,17 @@ def rds_instance_cloudwatch_logging_check(cache: dict, session, awsAccountId: st
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.html#USER_LogAccess.Procedural.UploadtoCloudWatch",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetComponent": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -1385,6 +1591,9 @@ def rds_snapshot_encryption_check(cache: dict, session, awsAccountId: str, awsRe
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for snapshot in describe_db_snapshots(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(snapshot,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         snapshotId = str(snapshot["DBSnapshotIdentifier"])
         snapshotArn = str(snapshot["DBSnapshotArn"])
         snapshotEncryptionCheck = str(snapshot["Encrypted"])
@@ -1414,7 +1623,17 @@ def rds_snapshot_encryption_check(cache: dict, session, awsAccountId: str, awsRe
                         "Url": "https://aws.amazon.com/premiumsupport/knowledge-center/encrypt-rds-snapshots/",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetComponent": "Snapshot"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbSnapshot",
@@ -1463,7 +1682,17 @@ def rds_snapshot_encryption_check(cache: dict, session, awsAccountId: str, awsRe
                         "Url": "https://aws.amazon.com/premiumsupport/knowledge-center/encrypt-rds-snapshots/"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetComponent": "Snapshot"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbSnapshot",
@@ -1496,6 +1725,9 @@ def rds_snapshot_public_share_check(cache: dict, session, awsAccountId: str, aws
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for snapshot in describe_db_snapshots(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(snapshot,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         snapshotId = str(snapshot["DBSnapshotIdentifier"])
         snapshotArn = str(snapshot["DBSnapshotArn"])
         response = rds.describe_db_snapshot_attributes(DBSnapshotIdentifier=snapshotId)
@@ -1531,7 +1763,17 @@ def rds_snapshot_public_share_check(cache: dict, session, awsAccountId: str, aws
                                 "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ShareSnapshot.html#USER_ShareSnapshot.Sharing",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                            "AssetClass": "Database",
+                            "AssetService": "Amazon Relational Database Service",
+                            "AssetComponent": "Snapshot"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsRdsDbSnapshot",
@@ -1587,7 +1829,17 @@ def rds_snapshot_public_share_check(cache: dict, session, awsAccountId: str, aws
                                 "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ShareSnapshot.html#USER_ShareSnapshot.Sharing",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                            "AssetClass": "Database",
+                            "AssetService": "Amazon Relational Database Service",
+                            "AssetComponent": "Snapshot"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsRdsDbSnapshot",
@@ -1627,6 +1879,9 @@ def rds_aurora_cluster_activity_streams_check(cache: dict, session, awsAccountId
     """[RDS.11] RDS Aurora Clusters should use Database Activity Streams"""
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for dbc in describe_db_clusters(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dbc,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         ddcArn = str(dbc["DBClusterArn"])
         dbcId = str(dbc["DBClusterIdentifier"])
         allocStorage = int(dbc["AllocatedStorage"])
@@ -1660,7 +1915,17 @@ def rds_aurora_cluster_activity_streams_check(cache: dict, session, awsAccountId
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/DBActivityStreams.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetComponent": "Database Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbCluster",
@@ -1722,7 +1987,17 @@ def rds_aurora_cluster_activity_streams_check(cache: dict, session, awsAccountId
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/DBActivityStreams.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetComponent": "Database Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbCluster",
@@ -1767,6 +2042,9 @@ def rds_aurora_cluster_encryption_check(cache: dict, session, awsAccountId: str,
     """[RDS.12] RDS Aurora Clusters should be encrypted"""
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for dbc in describe_db_clusters(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dbc,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         ddcArn = str(dbc["DBClusterArn"])
         dbcId = str(dbc["DBClusterIdentifier"])
         allocStorage = int(dbc["AllocatedStorage"])
@@ -1802,7 +2080,17 @@ def rds_aurora_cluster_encryption_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/DBActivityStreams.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetComponent": "Database Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbCluster",
@@ -1862,7 +2150,17 @@ def rds_aurora_cluster_encryption_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/DBActivityStreams.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetComponent": "Database Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbCluster",
@@ -1899,11 +2197,14 @@ def rds_aurora_cluster_encryption_check(cache: dict, session, awsAccountId: str,
 
 @registry.register_check("rds")
 def rds_instance_snapshot_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[RDS.13] RDS instances should be have snapshots"""
+    """[RDS.13] RDS instances should have at least one backup to promote resilience"""
     rds = session.client("rds")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for dbinstances in describe_db_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dbinstances,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -1926,7 +2227,7 @@ def rds_instance_snapshot_check(cache: dict, session, awsAccountId: str, awsRegi
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[RDS.13] RDS instances should be have snapshots",
+                "Title": "[RDS.13] RDS instances should have at least one backup to promote resilience",
                 "Description": "RDS DB instance "
                 + instanceId
                 + " has at least one snapshot.",
@@ -1936,7 +2237,17 @@ def rds_instance_snapshot_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/disaster-recovery-resiliency.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetComponent": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -1988,7 +2299,7 @@ def rds_instance_snapshot_check(cache: dict, session, awsAccountId: str, awsRegi
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[RDS.13] RDS instances should be have snapshots",
+                "Title": "[RDS.13] RDS instances should have at least one backup to promote resilience",
                 "Description": "RDS DB instance "
                 + instanceId
                 + " does not have a snapshot which can reduce cyber resilience due to a lack of a viable backup. Refer to the remediation instructions if this configuration is not intended.",
@@ -1998,7 +2309,17 @@ def rds_instance_snapshot_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/disaster-recovery-resiliency.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetComponent": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -2044,7 +2365,10 @@ def rds_instance_secgroup_risk_check(cache: dict, session, awsAccountId: str, aw
     ec2 = session.client("ec2")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for dbinstances in describe_db_snapshots(cache, session):
+    for dbinstances in describe_db_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dbinstances,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -2101,7 +2425,17 @@ def rds_instance_secgroup_risk_check(cache: dict, session, awsAccountId: str, aw
                                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.RDSSecurityGroups.html",
                                     }
                                 },
-                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "ProductFields": {
+                                    "ProductName": "ElectricEye",
+                                    "Provider": "AWS",
+                                    "ProviderType": "CSP",
+                                    "ProviderAccountId": awsAccountId,
+                                    "AssetRegion": awsRegion,
+                                    "AssetDetails": assetB64,
+                                    "AssetClass": "Database",
+                                    "AssetService": "Amazon Relational Database Service",
+                                    "AssetComponent": "Database Instance"
+                                },
                                 "Resources": [
                                     {
                                         "Type": "AwsRdsDbInstance",
@@ -2164,7 +2498,17 @@ def rds_instance_secgroup_risk_check(cache: dict, session, awsAccountId: str, aw
                                         "Url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.RDSSecurityGroups.html",
                                     }
                                 },
-                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "ProductFields": {
+                                    "ProductName": "ElectricEye",
+                                    "Provider": "AWS",
+                                    "ProviderType": "CSP",
+                                    "ProviderAccountId": awsAccountId,
+                                    "AssetRegion": awsRegion,
+                                    "AssetDetails": assetB64,
+                                    "AssetClass": "Database",
+                                    "AssetService": "Amazon Relational Database Service",
+                                    "AssetComponent": "Database Instance"
+                                },
                                 "Resources": [
                                     {
                                         "Type": "AwsRdsDbInstance",
@@ -2223,6 +2567,8 @@ def rds_instance_instance_alerting_check(cache: dict, session, awsAccountId: str
             try:
                 # attempt to find matches within the Event Category List
                 eventList = events["EventCategoriesList"]
+                assetJson = json.dumps(eventList,default=str).encode("utf-8")
+                assetB64 = base64.b64encode(assetJson)
                 # all 3 Event types within list of strings must be in `eventList` variable - returns true, so this is a passing check
                 if all(x in ["maintenance", "configuration change", "failure"] for x in eventList):
                     finding = {
@@ -2245,11 +2591,21 @@ def rds_instance_instance_alerting_check(cache: dict, session, awsAccountId: str
                                 "Url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html#fsbp-rds-20"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Database",
+                            "AssetService": "Amazon Relational Database Service",
+                            "AssetComponent": "Event Subscription"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsAccount",
-                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/RDS_Instances_Event_Monitoring",
                                 "Partition": awsPartition,
                                 "Region": awsRegion
                             }
@@ -2294,11 +2650,21 @@ def rds_instance_instance_alerting_check(cache: dict, session, awsAccountId: str
                                 "Url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html#fsbp-rds-20"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Database",
+                            "AssetService": "Amazon Relational Database Service",
+                            "AssetComponent": "Event Subscription"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsAccount",
-                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/RDS_Instances_Event_Monitoring",
                                 "Partition": awsPartition,
                                 "Region": awsRegion
                             }
@@ -2324,6 +2690,9 @@ def rds_instance_instance_alerting_check(cache: dict, session, awsAccountId: str
                     yield finding
             # this is a passing check - if the value doesn't exist it means all possible checks are supported
             except KeyError:
+                a = rds.describe_event_subscriptions()["EventSubscriptionsList"]
+                assetJson = json.dumps(a,default=str).encode("utf-8")
+                assetB64 = base64.b64encode(assetJson)
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": f"{awsAccountId}:{awsRegion}/rds-instance-event-sub-check",
@@ -2344,11 +2713,21 @@ def rds_instance_instance_alerting_check(cache: dict, session, awsAccountId: str
                             "Url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html#fsbp-rds-20"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Database",
+                        "AssetService": "Amazon Relational Database Service",
+                        "AssetComponent": "Event Subscription"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsAccount",
-                            "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                            "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/RDS_Instances_Event_Monitoring",
                             "Partition": awsPartition,
                             "Region": awsRegion
                         }
@@ -2374,6 +2753,7 @@ def rds_instance_instance_alerting_check(cache: dict, session, awsAccountId: str
                 yield finding
     # this is a failing check due to missing alerting events
     else:
+        assetB64 = None
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": f"{awsAccountId}:{awsRegion}/rds-instance-event-sub-check",
@@ -2394,11 +2774,21 @@ def rds_instance_instance_alerting_check(cache: dict, session, awsAccountId: str
                     "Url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html#fsbp-rds-20"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Database",
+                "AssetService": "Amazon Relational Database Service",
+                "AssetComponent": "Event Subscription"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/RDS_Instances_Event_Monitoring",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }
@@ -2440,6 +2830,9 @@ def rds_instance_parameter_group_alerting_check(cache: dict, session, awsAccount
             try:
                 # attempt to find matches within the Event Category List
                 eventList = events["EventCategoriesList"]
+                assetJson = json.dumps(eventList,default=str).encode("utf-8")
+                assetB64 = base64.b64encode(assetJson)
+                eventList = events["EventCategoriesList"]
                 # all 3 Event types within list of strings must be in `eventList` variable - returns true, so this is a passing check
                 if all(x in ["maintenance", "configuration change", "failure"] for x in eventList):
                     finding = {
@@ -2462,11 +2855,21 @@ def rds_instance_parameter_group_alerting_check(cache: dict, session, awsAccount
                                 "Url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html#fsbp-rds-21"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                            "AssetClass": "Database",
+                            "AssetService": "Amazon Relational Database Service",
+                            "AssetComponent": "Event Subscription"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsAccount",
-                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/RDS_Parameter_Group_Event_Monitoring",
                                 "Partition": awsPartition,
                                 "Region": awsRegion
                             }
@@ -2511,11 +2914,21 @@ def rds_instance_parameter_group_alerting_check(cache: dict, session, awsAccount
                                 "Url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html#fsbp-rds-20"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                            "AssetClass": "Database",
+                            "AssetService": "Amazon Relational Database Service",
+                            "AssetComponent": "Event Subscription"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsAccount",
-                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                                "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/RDS_Parameter_Group_Event_Monitoring",
                                 "Partition": awsPartition,
                                 "Region": awsRegion
                             }
@@ -2541,6 +2954,9 @@ def rds_instance_parameter_group_alerting_check(cache: dict, session, awsAccount
                     yield finding
             # this is a passing check - if the value doesn't exist it means all possible checks are supported
             except KeyError:
+                a = rds.describe_event_subscriptions()["EventSubscriptionsList"]
+                assetJson = json.dumps(a,default=str).encode("utf-8")
+                assetB64 = base64.b64encode(assetJson)
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": f"{awsAccountId}:{awsRegion}/rds-pg-event-sub-check",
@@ -2561,11 +2977,21 @@ def rds_instance_parameter_group_alerting_check(cache: dict, session, awsAccount
                             "Url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html#fsbp-rds-20"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Database",
+                        "AssetService": "Amazon Relational Database Service",
+                        "AssetComponent": "Event Subscription"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsAccount",
-                            "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                            "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/RDS_Parameter_Group_Event_Monitoring",
                             "Partition": awsPartition,
                             "Region": awsRegion
                         }
@@ -2591,6 +3017,7 @@ def rds_instance_parameter_group_alerting_check(cache: dict, session, awsAccount
                 yield finding
     # this is a failing check due to missing alerting events
     else:
+        assetB64 = None
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": f"{awsAccountId}:{awsRegion}/rds-pg-event-sub-check",
@@ -2611,11 +3038,21 @@ def rds_instance_parameter_group_alerting_check(cache: dict, session, awsAccount
                     "Url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html#fsbp-rds-20"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                "AssetClass": "Database",
+                "AssetService": "Amazon Relational Database Service",
+                "AssetComponent": "Event Subscription"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/RDS_Parameter_Group_Event_Monitoring",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }
@@ -2703,6 +3140,9 @@ def rds_postgresql_log_fwd_vuln_check(cache: dict, session, awsAccountId: str, a
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for dbinstances in describe_db_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dbinstances,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -2735,7 +3175,17 @@ def rds_postgresql_log_fwd_vuln_check(cache: dict, session, awsAccountId: str, a
                             "Url": "https://aws.amazon.com/security/security-bulletins/AWS-2022-004/",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Database",
+                        "AssetService": "Amazon Relational Database Service",
+                        "AssetComponent": "Database Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsRdsDbInstance",
@@ -2818,7 +3268,17 @@ def rds_postgresql_log_fwd_vuln_check(cache: dict, session, awsAccountId: str, a
                             "Url": "https://aws.amazon.com/security/security-bulletins/AWS-2022-004/",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Database",
+                        "AssetService": "Amazon Relational Database Service",
+                        "AssetComponent": "Database Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsRdsDbInstance",
@@ -2901,7 +3361,17 @@ def rds_postgresql_log_fwd_vuln_check(cache: dict, session, awsAccountId: str, a
                         "Url": "https://aws.amazon.com/security/security-bulletins/AWS-2022-004/",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetComponent": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",
@@ -2978,6 +3448,9 @@ def rds_aurora_postgresql_log_fwd_vuln_check(cache: dict, session, awsAccountId:
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for dbinstances in describe_db_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dbinstances,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         instanceArn = str(dbinstances["DBInstanceArn"])
         instanceId = str(dbinstances["DBInstanceIdentifier"])
         instanceClass = str(dbinstances["DBInstanceClass"])
@@ -3010,7 +3483,17 @@ def rds_aurora_postgresql_log_fwd_vuln_check(cache: dict, session, awsAccountId:
                             "Url": "https://aws.amazon.com/security/security-bulletins/AWS-2022-004/",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Database",
+                        "AssetService": "Amazon Relational Database Service",
+                        "AssetComponent": "Database Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsRdsDbInstance",
@@ -3093,7 +3576,17 @@ def rds_aurora_postgresql_log_fwd_vuln_check(cache: dict, session, awsAccountId:
                             "Url": "https://aws.amazon.com/security/security-bulletins/AWS-2022-004/",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Database",
+                        "AssetService": "Amazon Relational Database Service",
+                        "AssetComponent": "Database Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsRdsDbInstance",
@@ -3176,7 +3669,17 @@ def rds_aurora_postgresql_log_fwd_vuln_check(cache: dict, session, awsAccountId:
                         "Url": "https://aws.amazon.com/security/security-bulletins/AWS-2022-004/",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Relational Database Service",
+                    "AssetComponent": "Database Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRdsDbInstance",

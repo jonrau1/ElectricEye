@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -34,13 +36,14 @@ def describe_vpcs(cache, session):
 @registry.register_check("ec2")
 def vpc_default_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[VPC.1] Consider deleting the Default VPC if unused"""
-    vpc = describe_vpcs(cache, session)
-    for vpcs in vpc["Vpcs"]:
+    for vpcs in describe_vpcs(cache, session)["Vpcs"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(vpcs,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         vpcId = str(vpcs["VpcId"])
         vpcArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}vpc/{vpcId}"
-        defaultVpcCheck = str(vpcs["IsDefault"])
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        if defaultVpcCheck == "True":
+        if vpcs["IsDefault"] == True:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": vpcArn + "/vpc-is-default-check",
@@ -63,7 +66,17 @@ def vpc_default_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
                         "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/default-vpc.html#deleting-default-vpc",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Virtual Private Cloud",
+                    "AssetComponent": "Virtual Private Cloud"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Vpc",
@@ -113,7 +126,17 @@ def vpc_default_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
                         "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/default-vpc.html#deleting-default-vpc",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Virtual Private Cloud",
+                    "AssetComponent": "Virtual Private Cloud"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Vpc",
@@ -147,15 +170,17 @@ def vpc_default_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
 def vpc_flow_logs_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[VPC.2] Flow Logs should be enabled for all VPCs"""
     ec2 = session.client("ec2")
-    vpc = describe_vpcs(cache, session)
-    for vpcs in vpc["Vpcs"]:
+    for vpcs in describe_vpcs(cache, session)["Vpcs"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(vpcs,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         vpcId = str(vpcs["VpcId"])
         vpcArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}vpc/{vpcId}"
         response = ec2.describe_flow_logs(
             DryRun=False, Filters=[{"Name": "resource-id", "Values": [vpcId]}]
         )
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        if str(response["FlowLogs"]) == "[]":
+        if not response["FlowLogs"]:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": vpcArn + "/vpc-flow-log-check",
@@ -178,7 +203,17 @@ def vpc_flow_logs_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                         "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Virtual Private Cloud",
+                    "AssetComponent": "Virtual Private Cloud"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Vpc",
@@ -228,7 +263,17 @@ def vpc_flow_logs_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                         "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Virtual Private Cloud",
+                    "AssetComponent": "Virtual Private Cloud"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Vpc",
@@ -263,16 +308,19 @@ def subnet_public_ip_check(cache: dict, session, awsAccountId: str, awsRegion: s
     """[VPC.3] Subnets should not automatically map Public IP addresses on launch"""
     ec2 = session.client("ec2")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    vpc = describe_vpcs(cache, session)
-    myVpcs = vpc["Vpcs"]
-    for vpcs in myVpcs:
+    for vpcs in describe_vpcs(cache, session)["Vpcs"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(vpcs,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         vpcId = str(vpcs["VpcId"])
         # Get subnets for the VPC
         for snet in ec2.describe_subnets(Filters=[{'Name': 'vpc-id','Values': [vpcId]}])["Subnets"]:
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(snet,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             snetArn = str(snet["SubnetArn"])
             snetId = str(snet["SubnetId"])
-        
-            if str(snet["MapPublicIpOnLaunch"]) == "True":
+            if snet["MapPublicIpOnLaunch"] == True:
                 # This is a failing check
                 finding = {
                     "SchemaVersion": "2018-10-08",
@@ -296,7 +344,17 @@ def subnet_public_ip_check(cache: dict, session, awsAccountId: str, awsRegion: s
                             "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-ip-addressing.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon Virtual Private Cloud",
+                        "AssetComponent": "Subnet"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Subnet",
@@ -353,7 +411,17 @@ def subnet_public_ip_check(cache: dict, session, awsAccountId: str, awsRegion: s
                             "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-ip-addressing.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon Virtual Private Cloud",
+                        "AssetComponent": "Subnet"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Subnet",
@@ -393,15 +461,15 @@ def subnet_no_ip_space_check(cache: dict, session, awsAccountId: str, awsRegion:
     """[VPC.4] Subnets should be monitored for available IP address space"""
     ec2 = session.client("ec2")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    vpc = describe_vpcs(cache, session)
-    myVpcs = vpc["Vpcs"]
-    for vpcs in myVpcs:
+    for vpcs in describe_vpcs(cache, session)["Vpcs"]:
         vpcId = str(vpcs["VpcId"])
         # Get subnets for the VPC
         for snet in ec2.describe_subnets(Filters=[{'Name': 'vpc-id','Values': [vpcId]}])["Subnets"]:
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(snet,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             snetArn = str(snet["SubnetArn"])
-            snetId = str(snet["SubnetId"])
-        
+            snetId = str(snet["SubnetId"])   
             if int(snet["AvailableIpAddressCount"]) <= 1:
                 # This is a failing check
                 finding = {
@@ -426,7 +494,17 @@ def subnet_no_ip_space_check(cache: dict, session, awsAccountId: str, awsRegion:
                             "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-ip-addressing.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon Virtual Private Cloud",
+                        "AssetComponent": "Subnet"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Subnet",
@@ -485,7 +563,17 @@ def subnet_no_ip_space_check(cache: dict, session, awsAccountId: str, awsRegion:
                             "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-ip-addressing.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon Virtual Private Cloud",
+                        "AssetComponent": "Subnet"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Subnet",

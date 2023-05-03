@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -45,6 +47,9 @@ def ebs_volume_attachment_check(cache: dict, session, awsAccountId: str, awsRegi
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for volumes in describe_volumes(cache, session)["Volumes"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(volumes,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         volumeId = str(volumes["VolumeId"])
         volumeArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:volume/{volumeId}"
         ebsAttachments = volumes["Attachments"]
@@ -74,7 +79,17 @@ def ebs_volume_attachment_check(cache: dict, session, awsAccountId: str, awsRegi
                             "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-attaching-volume.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Storage",
+                        "AssetService": "Amazon Elastic Block Storage",
+                        "AssetComponent": "Volume"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Volume",
@@ -122,7 +137,17 @@ def ebs_volume_attachment_check(cache: dict, session, awsAccountId: str, awsRegi
                             "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-attaching-volume.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Storage",
+                        "AssetService": "Amazon Elastic Block Storage",
+                        "AssetComponent": "Volume"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Volume",
@@ -155,6 +180,9 @@ def ebs_volume_delete_on_termination_check(cache: dict, session, awsAccountId: s
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for volumes in describe_volumes(cache, session)["Volumes"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(volumes,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         volumeId = str(volumes["VolumeId"])
         volumeArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:volume/{volumeId}"
         ebsAttachments = volumes["Attachments"]
@@ -184,7 +212,17 @@ def ebs_volume_delete_on_termination_check(cache: dict, session, awsAccountId: s
                             "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/terminating-instances.html#preserving-volumes-on-termination",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Storage",
+                        "AssetService": "Amazon Elastic Block Storage",
+                        "AssetComponent": "Volume"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Volume",
@@ -234,7 +272,17 @@ def ebs_volume_delete_on_termination_check(cache: dict, session, awsAccountId: s
                             "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/terminating-instances.html#preserving-volumes-on-termination",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Storage",
+                        "AssetService": "Amazon Elastic Block Storage",
+                        "AssetComponent": "Volume"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Volume",
@@ -267,6 +315,9 @@ def ebs_volume_encryption_check(cache: dict, session, awsAccountId: str, awsRegi
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for volumes in describe_volumes(cache, session)["Volumes"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(volumes,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         volumeId = str(volumes["VolumeId"])
         volumeArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:volume/{volumeId}"
         ebsEncryptionCheck = volumes["Encrypted"]
@@ -297,7 +348,17 @@ def ebs_volume_encryption_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon Elastic Block Storage",
+                    "AssetComponent": "Volume"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Volume",
@@ -351,7 +412,17 @@ def ebs_volume_encryption_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon Elastic Block Storage",
+                    "AssetComponent": "Volume"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Volume",
@@ -387,6 +458,9 @@ def ebs_snapshot_encryption_check(cache: dict, session, awsAccountId: str, awsRe
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for snapshots in describe_snapshots(cache, session, awsAccountId)["Snapshots"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(snapshots,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         snapshotId = str(snapshots["SnapshotId"])
         snapshotArn = f"arn:{awsPartition}:ec2:{awsRegion}::snapshot/{snapshotId}"
         snapshotEncryptionCheck = snapshots["Encrypted"]
@@ -417,7 +491,17 @@ def ebs_snapshot_encryption_check(cache: dict, session, awsAccountId: str, awsRe
                         "Url": "https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/EBSSnapshots.html#encryption-support",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon Elastic Block Storage",
+                    "AssetComponent": "Snapshot"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Snapshot",
@@ -472,7 +556,17 @@ def ebs_snapshot_encryption_check(cache: dict, session, awsAccountId: str, awsRe
                         "Url": "https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/EBSSnapshots.html#encryption-support",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon Elastic Block Storage",
+                    "AssetComponent": "Snapshot"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Snapshot",
@@ -510,6 +604,9 @@ def ebs_snapshot_public_check(cache: dict, session, awsAccountId: str, awsRegion
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for snapshots in describe_snapshots(cache, session, awsAccountId)["Snapshots"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(snapshots,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         snapshotId = str(snapshots["SnapshotId"])
         snapshotArn = f"arn:{awsPartition}:ec2:{awsRegion}::snapshot/{snapshotId}"
         # determine if there are any permissions to share the snapshot
@@ -543,7 +640,17 @@ def ebs_snapshot_public_check(cache: dict, session, awsAccountId: str, awsRegion
                         "Url": "https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ebs-modifying-snapshot-permissions.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon Elastic Block Storage",
+                    "AssetComponent": "Snapshot"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Snapshot",
@@ -607,7 +714,17 @@ def ebs_snapshot_public_check(cache: dict, session, awsAccountId: str, awsRegion
                                 "Url": "https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ebs-modifying-snapshot-permissions.html"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Storage",
+                            "AssetService": "Amazon Elastic Block Storage",
+                            "AssetComponent": "Snapshot"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsEc2Snapshot",
@@ -667,7 +784,17 @@ def ebs_snapshot_public_check(cache: dict, session, awsAccountId: str, awsRegion
                                 "Url": "https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ebs-modifying-snapshot-permissions.html"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Storage",
+                            "AssetService": "Amazon Elastic Block Storage",
+                            "AssetComponent": "Snapshot"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsEc2Snapshot",
@@ -712,7 +839,11 @@ def ebs_account_encryption_by_default_check(cache: dict, session, awsAccountId: 
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # this is a failing check
-    if ec2.get_ebs_encryption_by_default(DryRun=False)["EbsEncryptionByDefault"] == False:
+    encrDetails = ec2.get_ebs_encryption_by_default(DryRun=False)
+    # B64 encode all of the details for the Asset
+    assetJson = json.dumps(encrDetails,default=str).encode("utf-8")
+    assetB64 = base64.b64encode(assetJson)
+    if encrDetails["EbsEncryptionByDefault"] == False:
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": f"{awsAccountId}{awsRegion}/ebs-account-encryption-check",
@@ -733,11 +864,21 @@ def ebs_account_encryption_by_default_check(cache: dict, session, awsAccountId: 
                     "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#encryption-by-default"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Management & Governance",
+                "AssetService": "Amazon Elastic Block Storage",
+                "AssetComponent": "Account Configuration"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/EBS_Account_Level_Encryption_Setting",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }
@@ -779,11 +920,21 @@ def ebs_account_encryption_by_default_check(cache: dict, session, awsAccountId: 
                     "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#encryption-by-default"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Management & Governance",
+                "AssetService": "Amazon Elastic Block Storage",
+                "AssetComponent": "Account Configuration"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/EBS_Account_Level_Encryption_Setting",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }
@@ -810,6 +961,9 @@ def ebs_volume_snapshot_check(cache: dict, session, awsAccountId: str, awsRegion
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for volumes in describe_volumes(cache, session)["Volumes"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(volumes,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         volumeId = str(volumes["VolumeId"])
         volumeArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:volume/{volumeId}"
         # Check if there is a volume
@@ -841,7 +995,17 @@ def ebs_volume_snapshot_check(cache: dict, session, awsAccountId: str, awsRegion
                         "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSSnapshots.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon Elastic Block Storage",
+                    "AssetComponent": "Volume"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Volume",
@@ -899,7 +1063,17 @@ def ebs_volume_snapshot_check(cache: dict, session, awsAccountId: str, awsRegion
                         "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSSnapshots.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Storage",
+                    "AssetService": "Amazon Elastic Block Storage",
+                    "AssetComponent": "Volume"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Volume",

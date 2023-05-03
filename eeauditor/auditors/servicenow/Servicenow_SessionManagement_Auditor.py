@@ -22,6 +22,8 @@ import datetime
 import pysnow
 import os
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -82,6 +84,7 @@ def servicenow_sspm_absolute_session_timeout_check(cache: dict, awsAccountId: st
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
+        assetB64 = base64.b64encode("None".encode("utf-8"))
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -90,7 +93,10 @@ def servicenow_sspm_absolute_session_timeout_check(cache: dict, awsAccountId: st
         propCreatedBy = str(propFinder["sys_created_by"])
         propUpdatedOn = str(propFinder["sys_updated_on"])
         propUpdatedBy = str(propFinder["sys_updated_by"])
-        propScope = str(propFinder["sys_scope"]["value"])        
+        propScope = str(propFinder["sys_scope"]["value"])
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(propFinder,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
     # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
     # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
     # are not a simple Boolean expression
@@ -124,10 +130,14 @@ def servicenow_sspm_absolute_session_timeout_check(cache: dict, awsAccountId: st
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Properties",
-                "AssetType": "Servicenow Instance"
+                "AssetService": "System Properties",
+                "AssetComponent": "System Property"
             },
             "Resources": [
                 {
@@ -196,10 +206,14 @@ def servicenow_sspm_absolute_session_timeout_check(cache: dict, awsAccountId: st
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Properties",
-                "AssetType": "Servicenow Instance"
+                "AssetService": "System Properties",
+                "AssetComponent": "System Property"
             },
             "Resources": [
                 {
@@ -273,6 +287,7 @@ def servicenow_sspm_anti_csrf_token_check(cache: dict, awsAccountId: str, awsReg
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
+        assetB64 = base64.b64encode("None".encode("utf-8"))
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -281,7 +296,10 @@ def servicenow_sspm_anti_csrf_token_check(cache: dict, awsAccountId: str, awsReg
         propCreatedBy = str(propFinder["sys_created_by"])
         propUpdatedOn = str(propFinder["sys_updated_on"])
         propUpdatedBy = str(propFinder["sys_updated_by"])
-        propScope = str(propFinder["sys_scope"]["value"])        
+        propScope = str(propFinder["sys_scope"]["value"])
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(propFinder,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
     # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
     # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
     # are not a simple Boolean expression
@@ -308,10 +326,14 @@ def servicenow_sspm_anti_csrf_token_check(cache: dict, awsAccountId: str, awsReg
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Properties",
-                "AssetType": "Servicenow Instance"
+                "AssetService": "System Properties",
+                "AssetComponent": "System Property"
             },
             "Resources": [
                 {
@@ -380,10 +402,14 @@ def servicenow_sspm_anti_csrf_token_check(cache: dict, awsAccountId: str, awsReg
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Properties",
-                "AssetType": "Servicenow Instance"
+                "AssetService": "System Properties",
+                "AssetComponent": "System Property"
             },
             "Resources": [
                 {
@@ -457,6 +483,7 @@ def servicenow_sspm_cookies_http_only_check(cache: dict, awsAccountId: str, awsR
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
+        assetB64 = base64.b64encode("None".encode("utf-8"))
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -465,7 +492,10 @@ def servicenow_sspm_cookies_http_only_check(cache: dict, awsAccountId: str, awsR
         propCreatedBy = str(propFinder["sys_created_by"])
         propUpdatedOn = str(propFinder["sys_updated_on"])
         propUpdatedBy = str(propFinder["sys_updated_by"])
-        propScope = str(propFinder["sys_scope"]["value"])        
+        propScope = str(propFinder["sys_scope"]["value"])
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(propFinder,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
     # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
     # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
     # are not a simple Boolean expression
@@ -492,10 +522,14 @@ def servicenow_sspm_cookies_http_only_check(cache: dict, awsAccountId: str, awsR
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Properties",
-                "AssetType": "Servicenow Instance"
+                "AssetService": "System Properties",
+                "AssetComponent": "System Property"
             },
             "Resources": [
                 {
@@ -564,10 +598,14 @@ def servicenow_sspm_cookies_http_only_check(cache: dict, awsAccountId: str, awsR
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Properties",
-                "AssetType": "Servicenow Instance"
+                "AssetService": "System Properties",
+                "AssetComponent": "System Property"
             },
             "Resources": [
                 {
@@ -641,6 +679,7 @@ def servicenow_sspm_csrf_strict_validation_check(cache: dict, awsAccountId: str,
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
+        assetB64 = base64.b64encode("None".encode("utf-8"))
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -649,7 +688,10 @@ def servicenow_sspm_csrf_strict_validation_check(cache: dict, awsAccountId: str,
         propCreatedBy = str(propFinder["sys_created_by"])
         propUpdatedOn = str(propFinder["sys_updated_on"])
         propUpdatedBy = str(propFinder["sys_updated_by"])
-        propScope = str(propFinder["sys_scope"]["value"])        
+        propScope = str(propFinder["sys_scope"]["value"])
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(propFinder,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
     # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
     # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
     # are not a simple Boolean expression
@@ -676,10 +718,14 @@ def servicenow_sspm_csrf_strict_validation_check(cache: dict, awsAccountId: str,
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Properties",
-                "AssetType": "Servicenow Instance"
+                "AssetService": "System Properties",
+                "AssetComponent": "System Property"
             },
             "Resources": [
                 {
@@ -748,10 +794,14 @@ def servicenow_sspm_csrf_strict_validation_check(cache: dict, awsAccountId: str,
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Properties",
-                "AssetType": "Servicenow Instance"
+                "AssetService": "System Properties",
+                "AssetComponent": "System Property"
             },
             "Resources": [
                 {
@@ -825,6 +875,7 @@ def servicenow_sspm_disable_passwordless_authentication_check(cache: dict, awsAc
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
+        assetB64 = base64.b64encode("None".encode("utf-8"))
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -833,7 +884,10 @@ def servicenow_sspm_disable_passwordless_authentication_check(cache: dict, awsAc
         propCreatedBy = str(propFinder["sys_created_by"])
         propUpdatedOn = str(propFinder["sys_updated_on"])
         propUpdatedBy = str(propFinder["sys_updated_by"])
-        propScope = str(propFinder["sys_scope"]["value"])        
+        propScope = str(propFinder["sys_scope"]["value"])
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(propFinder,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
     # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
     # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
     # are not a simple Boolean expression
@@ -860,10 +914,14 @@ def servicenow_sspm_disable_passwordless_authentication_check(cache: dict, awsAc
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Properties",
-                "AssetType": "Servicenow Instance"
+                "AssetService": "System Properties",
+                "AssetComponent": "System Property"
             },
             "Resources": [
                 {
@@ -932,10 +990,14 @@ def servicenow_sspm_disable_passwordless_authentication_check(cache: dict, awsAc
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Properties",
-                "AssetType": "Servicenow Instance"
+                "AssetService": "System Properties",
+                "AssetComponent": "System Property"
             },
             "Resources": [
                 {
@@ -1009,6 +1071,7 @@ def servicenow_sspm_enable_mfa_check(cache: dict, awsAccountId: str, awsRegion: 
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
+        assetB64 = base64.b64encode("None".encode("utf-8"))
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -1017,7 +1080,10 @@ def servicenow_sspm_enable_mfa_check(cache: dict, awsAccountId: str, awsRegion: 
         propCreatedBy = str(propFinder["sys_created_by"])
         propUpdatedOn = str(propFinder["sys_updated_on"])
         propUpdatedBy = str(propFinder["sys_updated_by"])
-        propScope = str(propFinder["sys_scope"]["value"])        
+        propScope = str(propFinder["sys_scope"]["value"])
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(propFinder,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
     # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
     # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
     # are not a simple Boolean expression
@@ -1044,10 +1110,14 @@ def servicenow_sspm_enable_mfa_check(cache: dict, awsAccountId: str, awsRegion: 
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Properties",
-                "AssetType": "Servicenow Instance"
+                "AssetService": "System Properties",
+                "AssetComponent": "System Property"
             },
             "Resources": [
                 {
@@ -1116,10 +1186,14 @@ def servicenow_sspm_enable_mfa_check(cache: dict, awsAccountId: str, awsRegion: 
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Properties",
-                "AssetType": "Servicenow Instance"
+                "AssetService": "System Properties",
+                "AssetComponent": "System Property"
             },
             "Resources": [
                 {
@@ -1193,6 +1267,7 @@ def servicenow_sspm_enable_password_policy_check(cache: dict, awsAccountId: str,
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
+        assetB64 = base64.b64encode("None".encode("utf-8"))
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -1201,7 +1276,10 @@ def servicenow_sspm_enable_password_policy_check(cache: dict, awsAccountId: str,
         propCreatedBy = str(propFinder["sys_created_by"])
         propUpdatedOn = str(propFinder["sys_updated_on"])
         propUpdatedBy = str(propFinder["sys_updated_by"])
-        propScope = str(propFinder["sys_scope"]["value"])        
+        propScope = str(propFinder["sys_scope"]["value"])
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(propFinder,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
     # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
     # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
     # are not a simple Boolean expression
@@ -1228,10 +1306,14 @@ def servicenow_sspm_enable_password_policy_check(cache: dict, awsAccountId: str,
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Properties",
-                "AssetType": "Servicenow Instance"
+                "AssetService": "System Properties",
+                "AssetComponent": "System Property"
             },
             "Resources": [
                 {
@@ -1300,10 +1382,14 @@ def servicenow_sspm_enable_password_policy_check(cache: dict, awsAccountId: str,
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Properties",
-                "AssetType": "Servicenow Instance"
+                "AssetService": "System Properties",
+                "AssetComponent": "System Property"
             },
             "Resources": [
                 {
@@ -1377,6 +1463,7 @@ def servicenow_sspm_disable_password_autocomplete_check(cache: dict, awsAccountI
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
+        assetB64 = base64.b64encode("None".encode("utf-8"))
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -1385,7 +1472,10 @@ def servicenow_sspm_disable_password_autocomplete_check(cache: dict, awsAccountI
         propCreatedBy = str(propFinder["sys_created_by"])
         propUpdatedOn = str(propFinder["sys_updated_on"])
         propUpdatedBy = str(propFinder["sys_updated_by"])
-        propScope = str(propFinder["sys_scope"]["value"])        
+        propScope = str(propFinder["sys_scope"]["value"])
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(propFinder,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
     # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
     # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
     # are not a simple Boolean expression
@@ -1412,10 +1502,14 @@ def servicenow_sspm_disable_password_autocomplete_check(cache: dict, awsAccountI
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Properties",
-                "AssetType": "Servicenow Instance"
+                "AssetService": "System Properties",
+                "AssetComponent": "System Property"
             },
             "Resources": [
                 {
@@ -1484,10 +1578,14 @@ def servicenow_sspm_disable_password_autocomplete_check(cache: dict, awsAccountI
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Properties",
-                "AssetType": "Servicenow Instance"
+                "AssetService": "System Properties",
+                "AssetComponent": "System Property"
             },
             "Resources": [
                 {
@@ -1561,6 +1659,7 @@ def servicenow_sspm_remove_rememberme_check(cache: dict, awsAccountId: str, awsR
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
+        assetB64 = base64.b64encode("None".encode("utf-8"))
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -1569,7 +1668,10 @@ def servicenow_sspm_remove_rememberme_check(cache: dict, awsAccountId: str, awsR
         propCreatedBy = str(propFinder["sys_created_by"])
         propUpdatedOn = str(propFinder["sys_updated_on"])
         propUpdatedBy = str(propFinder["sys_updated_by"])
-        propScope = str(propFinder["sys_scope"]["value"])        
+        propScope = str(propFinder["sys_scope"]["value"])
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(propFinder,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
     # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
     # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
     # are not a simple Boolean expression
@@ -1596,10 +1698,14 @@ def servicenow_sspm_remove_rememberme_check(cache: dict, awsAccountId: str, awsR
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Properties",
-                "AssetType": "Servicenow Instance"
+                "AssetService": "System Properties",
+                "AssetComponent": "System Property"
             },
             "Resources": [
                 {
@@ -1668,10 +1774,14 @@ def servicenow_sspm_remove_rememberme_check(cache: dict, awsAccountId: str, awsR
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Properties",
-                "AssetType": "Servicenow Instance"
+                "AssetService": "System Properties",
+                "AssetComponent": "System Property"
             },
             "Resources": [
                 {
@@ -1745,6 +1855,7 @@ def servicenow_sspm_rotate_http_session_ids_check(cache: dict, awsAccountId: str
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
+        assetB64 = base64.b64encode("None".encode("utf-8"))
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -1753,7 +1864,10 @@ def servicenow_sspm_rotate_http_session_ids_check(cache: dict, awsAccountId: str
         propCreatedBy = str(propFinder["sys_created_by"])
         propUpdatedOn = str(propFinder["sys_updated_on"])
         propUpdatedBy = str(propFinder["sys_updated_by"])
-        propScope = str(propFinder["sys_scope"]["value"])        
+        propScope = str(propFinder["sys_scope"]["value"])
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(propFinder,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
     # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
     # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
     # are not a simple Boolean expression
@@ -1780,10 +1894,14 @@ def servicenow_sspm_rotate_http_session_ids_check(cache: dict, awsAccountId: str
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Properties",
-                "AssetType": "Servicenow Instance"
+                "AssetService": "System Properties",
+                "AssetComponent": "System Property"
             },
             "Resources": [
                 {
@@ -1852,10 +1970,14 @@ def servicenow_sspm_rotate_http_session_ids_check(cache: dict, awsAccountId: str
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Properties",
-                "AssetType": "Servicenow Instance"
+                "AssetService": "System Properties",
+                "AssetComponent": "System Property"
             },
             "Resources": [
                 {
@@ -1929,6 +2051,7 @@ def servicenow_sspm_secure_session_cookies_check(cache: dict, awsAccountId: str,
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
+        assetB64 = base64.b64encode("None".encode("utf-8"))
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -1937,7 +2060,10 @@ def servicenow_sspm_secure_session_cookies_check(cache: dict, awsAccountId: str,
         propCreatedBy = str(propFinder["sys_created_by"])
         propUpdatedOn = str(propFinder["sys_updated_on"])
         propUpdatedBy = str(propFinder["sys_updated_by"])
-        propScope = str(propFinder["sys_scope"]["value"])        
+        propScope = str(propFinder["sys_scope"]["value"])
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(propFinder,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
     # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
     # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
     # are not a simple Boolean expression
@@ -1964,10 +2090,14 @@ def servicenow_sspm_secure_session_cookies_check(cache: dict, awsAccountId: str,
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Properties",
-                "AssetType": "Servicenow Instance"
+                "AssetService": "System Properties",
+                "AssetComponent": "System Property"
             },
             "Resources": [
                 {
@@ -2036,10 +2166,14 @@ def servicenow_sspm_secure_session_cookies_check(cache: dict, awsAccountId: str,
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Properties",
-                "AssetType": "Servicenow Instance"
+                "AssetService": "System Properties",
+                "AssetComponent": "System Property"
             },
             "Resources": [
                 {
@@ -2121,6 +2255,7 @@ def servicenow_sspm_security_referral_policy_check(cache: dict, awsAccountId: st
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
+        assetB64 = base64.b64encode("None".encode("utf-8"))
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -2129,7 +2264,10 @@ def servicenow_sspm_security_referral_policy_check(cache: dict, awsAccountId: st
         propCreatedBy = str(propFinder["sys_created_by"])
         propUpdatedOn = str(propFinder["sys_updated_on"])
         propUpdatedBy = str(propFinder["sys_updated_by"])
-        propScope = str(propFinder["sys_scope"]["value"])        
+        propScope = str(propFinder["sys_scope"]["value"])
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(propFinder,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
     # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
     # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
     # are not a simple Boolean expression
@@ -2156,10 +2294,14 @@ def servicenow_sspm_security_referral_policy_check(cache: dict, awsAccountId: st
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Properties",
-                "AssetType": "Servicenow Instance"
+                "AssetService": "System Properties",
+                "AssetComponent": "System Property"
             },
             "Resources": [
                 {
@@ -2228,10 +2370,14 @@ def servicenow_sspm_security_referral_policy_check(cache: dict, awsAccountId: st
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Properties",
-                "AssetType": "Servicenow Instance"
+                "AssetService": "System Properties",
+                "AssetComponent": "System Property"
             },
             "Resources": [
                 {
@@ -2305,6 +2451,7 @@ def servicenow_sspm_session_activity_timeout_check(cache: dict, awsAccountId: st
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
+        assetB64 = base64.b64encode("None".encode("utf-8"))
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -2313,7 +2460,10 @@ def servicenow_sspm_session_activity_timeout_check(cache: dict, awsAccountId: st
         propCreatedBy = str(propFinder["sys_created_by"])
         propUpdatedOn = str(propFinder["sys_updated_on"])
         propUpdatedBy = str(propFinder["sys_updated_by"])
-        propScope = str(propFinder["sys_scope"]["value"])        
+        propScope = str(propFinder["sys_scope"]["value"])
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(propFinder,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
     # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
     # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
     # are not a simple Boolean expression
@@ -2349,10 +2499,14 @@ def servicenow_sspm_session_activity_timeout_check(cache: dict, awsAccountId: st
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Properties",
-                "AssetType": "Servicenow Instance"
+                "AssetService": "System Properties",
+                "AssetComponent": "System Property"
             },
             "Resources": [
                 {
@@ -2421,10 +2575,14 @@ def servicenow_sspm_session_activity_timeout_check(cache: dict, awsAccountId: st
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Properties",
-                "AssetType": "Servicenow Instance"
+                "AssetService": "System Properties",
+                "AssetComponent": "System Property"
             },
             "Resources": [
                 {
@@ -2498,6 +2656,7 @@ def servicenow_sspm_session_window_timeout_check(cache: dict, awsAccountId: str,
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
+        assetB64 = base64.b64encode("None".encode("utf-8"))
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -2506,7 +2665,10 @@ def servicenow_sspm_session_window_timeout_check(cache: dict, awsAccountId: str,
         propCreatedBy = str(propFinder["sys_created_by"])
         propUpdatedOn = str(propFinder["sys_updated_on"])
         propUpdatedBy = str(propFinder["sys_updated_by"])
-        propScope = str(propFinder["sys_scope"]["value"])        
+        propScope = str(propFinder["sys_scope"]["value"])
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(propFinder,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
     # NOTE: This is where the check evaluation happens - in SNOW these may be Bools or Numbers but will come back as Strings
     # always evaluate a failing condition first which should be the OPPOSITE of the SNOW reccomendation as sometimes the values
     # are not a simple Boolean expression
@@ -2542,10 +2704,14 @@ def servicenow_sspm_session_window_timeout_check(cache: dict, awsAccountId: str,
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Properties",
-                "AssetType": "Servicenow Instance"
+                "AssetService": "System Properties",
+                "AssetComponent": "System Property"
             },
             "Resources": [
                 {
@@ -2614,10 +2780,14 @@ def servicenow_sspm_session_window_timeout_check(cache: dict, awsAccountId: str,
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Properties",
-                "AssetType": "Servicenow Instance"
+                "AssetService": "System Properties",
+                "AssetComponent": "System Property"
             },
             "Resources": [
                 {

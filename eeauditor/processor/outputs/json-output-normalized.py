@@ -25,6 +25,9 @@ class JsonProvider(object):
     __provider__ = "json_normalized"
 
     def write_findings(self, findings: list, output_file: str, **kwargs):
+        if len(findings) == 0:
+            print("There are not any findings to write to file!")
+            exit(0)
         # create a new empty list to store flattened findings
         newFindings = []
         # create another list to hold Finding IDs, this is to prevent duplicates by looking up values later on
@@ -36,14 +39,21 @@ class JsonProvider(object):
         jsonfile = f"{output_file}_normalized.json"
         print(f"Output file named: {jsonfile}")
 
+        # Use another list comprehension to remove `ProductFields.AssetDetails` from non-Asset reporting outputs
+        noDetails = [
+            {**d, "ProductFields": {k: v for k, v in d["ProductFields"].items() if k != "AssetDetails"}} for d in findings
+        ]
+
+        del findings
+
         # loop the findings and create a flatter structure - better for indexing without the nested lists
-        for fi in findings:
+        for fi in noDetails:
             findingId = str(fi["Id"])
             # some values may not always be present (Details, etc.) - write in fake values to handle this
             try:
                 resourceDetails = str(fi["Resources"][0]["Details"])
             except KeyError:
-                resourceDetails = "{}"
+                resourceDetails = {}
 
             try:
                 # create the new dict which will receive parsed values
@@ -63,7 +73,7 @@ class JsonProvider(object):
                     "Description": str(fi["Description"]),
                     "RecommendationText": str(fi["Remediation"]["Recommendation"]["Text"]),
                     "RecommendationUrl": str(fi["Remediation"]["Recommendation"]["Url"]),
-                    "ProductName": "ElectricEye",
+                    "ProductFields": fi["ProductFields"],
                     "ResourceType": str(fi["Resources"][0]["Type"]),
                     "ResourceId": str(fi["Resources"][0]["Id"]),
                     "ResourcePartition": str(fi["Resources"][0]["Partition"]),
@@ -83,7 +93,7 @@ class JsonProvider(object):
             except KeyError as e:
                 print(f"Issue with Finding ID {findingId} due to missing value {e}")
         # once complete with parsing findings - write to file and purge findings from memory
-        del findings
+        del noDetails
 
         print(f"Wrote {len(allIds)} findings to Normalized JSON file")
 

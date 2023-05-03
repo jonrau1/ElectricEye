@@ -20,30 +20,38 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
 # loop through kinesis streams
 def list_streams(cache, session):
-    kinesis = session.client("kinesis")
+    kinesisStreamDetails = []
+
     response = cache.get("list_streams")
     if response:
         return response
-    cache["list_streams"] = kinesis.list_streams(Limit=100)
+    
+    kinesis = session.client("kinesis")
+    for streams in kinesis.list_streams(Limit=100)["StreamNames"]:
+        kinesisStreamDetails.append(kinesis.describe_stream(StreamName=streams))
+
+    cache["list_streams"] = kinesisStreamDetails
     return cache["list_streams"]
 
 @registry.register_check("kinesis")
 def kinesis_stream_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Kinesis.1] Kinesis Data Streams should be encrypted"""
-    kinesis = session.client("kinesis")
-    response = list_streams(cache, session)
-    myKinesisStreams = response["StreamNames"]
-    for streams in myKinesisStreams:
-        response = kinesis.describe_stream(StreamName=streams)
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for response in list_streams(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         streamArn = str(response["StreamDescription"]["StreamARN"])
         streamName = str(response["StreamDescription"]["StreamName"])
         streamEncryptionCheck = str(response["StreamDescription"]["EncryptionType"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if streamEncryptionCheck == "NONE":
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -70,7 +78,17 @@ def kinesis_stream_encryption_check(cache: dict, session, awsAccountId: str, aws
                         "Url": "https://docs.aws.amazon.com/streams/latest/dev/getting-started-with-sse.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Kinesis Data Streams",
+                    "AssetComponent": "Stream"
+                },
                 "Resources": [
                     {
                         "Type": "AwsKinesisStream",
@@ -119,7 +137,17 @@ def kinesis_stream_encryption_check(cache: dict, session, awsAccountId: str, aws
                         "Url": "https://docs.aws.amazon.com/streams/latest/dev/getting-started-with-sse.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Kinesis Data Streams",
+                    "AssetComponent": "Stream"
+                },
                 "Resources": [
                     {
                         "Type": "AwsKinesisStream",
@@ -148,120 +176,134 @@ def kinesis_stream_encryption_check(cache: dict, session, awsAccountId: str, aws
 @registry.register_check("kinesis")
 def kinesis_enhanced_monitoring_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Kinesis.2] Business-critical Kinesis Data Streams should have detailed monitoring configured"""
-    kinesis = session.client("kinesis")
-    response = list_streams(cache, session)
-    myKinesisStreams = response["StreamNames"]
-    for streams in myKinesisStreams:
-        response = kinesis.describe_stream(StreamName=streams)
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for response in list_streams(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         streamArn = str(response["StreamDescription"]["StreamARN"])
         streamName = str(response["StreamDescription"]["StreamName"])
-        streamEnhancedMonitoring = response["StreamDescription"]["EnhancedMonitoring"]
-        for enhancedmonitors in streamEnhancedMonitoring:
-            shardLevelMetricCheck = str(enhancedmonitors["ShardLevelMetrics"])
-            iso8601Time = (
-                datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-            )
-            if shardLevelMetricCheck == "[]":
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": streamArn + "/kinesis-streams-enhanced-monitoring-check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": streamArn,
-                    "AwsAccountId": awsAccountId,
-                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                    "FirstObservedAt": iso8601Time,
-                    "CreatedAt": iso8601Time,
-                    "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "LOW"},
-                    "Confidence": 99,
-                    "Title": "[Kinesis.2] Business-critical Kinesis Data Streams should have detailed monitoring configured",
-                    "Description": "Kinesis data stream "
-                    + streamName
-                    + " does not have detailed monitoring configured, detailed monitoring allows shard-level metrics to be delivered every minute at additional cost. Business-critical streams should be considered for this configuration. Refer to the remediation instructions for information on this configuration",
-                    "Remediation": {
-                        "Recommendation": {
-                            "Text": "For more information on Kinesis Data Stream enhanced monitoring refer to the Monitoring the Amazon Kinesis Data Streams Service with Amazon CloudWatch section of the Amazon Kinesis Data Streams Developer Guide",
-                            "Url": "https://docs.aws.amazon.com/streams/latest/dev/monitoring-with-cloudwatch.html",
-                        }
-                    },
-                    "ProductFields": {"Product Name": "ElectricEye"},
-                    "Resources": [
-                        {
-                            "Type": "AwsKinesisStream",
-                            "Id": streamArn,
-                            "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {"Other": {"StreamName": streamName}},
-                        }
+        if not response["StreamDescription"]["EnhancedMonitoring"]:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": streamArn + "/kinesis-streams-enhanced-monitoring-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": streamArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[Kinesis.2] Business-critical Kinesis Data Streams should have detailed monitoring configured",
+                "Description": "Kinesis data stream "
+                + streamName
+                + " does not have detailed monitoring configured, detailed monitoring allows shard-level metrics to be delivered every minute at additional cost. Business-critical streams should be considered for this configuration. Refer to the remediation instructions for information on this configuration",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Kinesis Data Stream enhanced monitoring refer to the Monitoring the Amazon Kinesis Data Streams Service with Amazon CloudWatch section of the Amazon Kinesis Data Streams Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/streams/latest/dev/monitoring-with-cloudwatch.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Kinesis Data Streams",
+                    "AssetComponent": "Stream"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsKinesisStream",
+                        "Id": streamArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {"Other": {"StreamName": streamName}},
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.7",
                     ],
-                    "Compliance": {
-                        "Status": "FAILED",
-                        "RelatedRequirements": [
-                            "NIST CSF V1.1 DE.AE-3",
-                            "NIST SP 800-53 Rev. 4 AU-6",
-                            "NIST SP 800-53 Rev. 4 CA-7",
-                            "NIST SP 800-53 Rev. 4 IR-4",
-                            "NIST SP 800-53 Rev. 4 IR-5",
-                            "NIST SP 800-53 Rev. 4 IR-8",
-                            "NIST SP 800-53 Rev. 4 SI-4",
-                            "AICPA TSC CC7.2",
-                            "ISO 27001:2013 A.12.4.1",
-                            "ISO 27001:2013 A.16.1.7",
-                        ],
-                    },
-                    "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
-                }
-                yield finding
-            else:
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": streamArn + "/kinesis-streams-enhanced-monitoring-check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": streamArn,
-                    "AwsAccountId": awsAccountId,
-                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                    "FirstObservedAt": iso8601Time,
-                    "CreatedAt": iso8601Time,
-                    "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "INFORMATIONAL"},
-                    "Confidence": 99,
-                    "Title": "[Kinesis.2] Business-critical Kinesis Data Streams should have detailed monitoring configured",
-                    "Description": "Kinesis data stream "
-                    + streamName
-                    + " has detailed monitoring configured.",
-                    "Remediation": {
-                        "Recommendation": {
-                            "Text": "For more information on Kinesis Data Stream enhanced monitoring refer to the Monitoring the Amazon Kinesis Data Streams Service with Amazon CloudWatch section of the Amazon Kinesis Data Streams Developer Guide",
-                            "Url": "https://docs.aws.amazon.com/streams/latest/dev/monitoring-with-cloudwatch.html",
-                        }
-                    },
-                    "ProductFields": {"Product Name": "ElectricEye"},
-                    "Resources": [
-                        {
-                            "Type": "AwsKinesisStream",
-                            "Id": streamArn,
-                            "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {"Other": {"StreamName": streamName}},
-                        }
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE",
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": streamArn + "/kinesis-streams-enhanced-monitoring-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": streamArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[Kinesis.2] Business-critical Kinesis Data Streams should have detailed monitoring configured",
+                "Description": "Kinesis data stream "
+                + streamName
+                + " has detailed monitoring configured.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on Kinesis Data Stream enhanced monitoring refer to the Monitoring the Amazon Kinesis Data Streams Service with Amazon CloudWatch section of the Amazon Kinesis Data Streams Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/streams/latest/dev/monitoring-with-cloudwatch.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Kinesis Data Streams",
+                    "AssetComponent": "Stream"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsKinesisStream",
+                        "Id": streamArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {"Other": {"StreamName": streamName}},
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 DE.AE-3",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 IR-5",
+                        "NIST SP 800-53 Rev. 4 IR-8",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "AICPA TSC CC7.2",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.7",
                     ],
-                    "Compliance": {
-                        "Status": "PASSED",
-                        "RelatedRequirements": [
-                            "NIST CSF V1.1 DE.AE-3",
-                            "NIST SP 800-53 Rev. 4 AU-6",
-                            "NIST SP 800-53 Rev. 4 CA-7",
-                            "NIST SP 800-53 Rev. 4 IR-4",
-                            "NIST SP 800-53 Rev. 4 IR-5",
-                            "NIST SP 800-53 Rev. 4 IR-8",
-                            "NIST SP 800-53 Rev. 4 SI-4",
-                            "AICPA TSC CC7.2",
-                            "ISO 27001:2013 A.12.4.1",
-                            "ISO 27001:2013 A.16.1.7",
-                        ],
-                    },
-                    "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED",
-                }
-                yield finding
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED",
+            }
+            yield finding

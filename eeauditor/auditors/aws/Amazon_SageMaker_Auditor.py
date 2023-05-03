@@ -20,23 +20,43 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
+
+# loop through kinesis streams
+def get_sagemaker_notebooks(cache, session):
+    sagemakerNotebooks = []
+
+    response = cache.get("get_sagemaker_notebooks")
+    if response:
+        return response
+    
+    sagemaker = session.client("sagemaker")
+    for notebooks in sagemaker.list_notebook_instances()["NotebookInstances"]:
+        sagemakerNotebooks.append(
+            sagemaker.describe_notebook_instance(
+                NotebookInstanceName=notebooks["NotebookInstanceName"]
+            )
+        )
+
+    cache["get_sagemaker_notebooks"] = sagemakerNotebooks
+    return cache["get_sagemaker_notebooks"]
 
 @registry.register_check("sagemaker")
 def sagemaker_notebook_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SageMaker.1] SageMaker notebook instance storage volumes should be encrypted"""
-    sagemaker = session.client("sagemaker")
-    # loop through sagemaker notebooks
-    response = sagemaker.list_notebook_instances()
-    mySageMakerNotebooks = response["NotebookInstances"]
-    for notebooks in mySageMakerNotebooks:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for notebooks in get_sagemaker_notebooks(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(notebooks,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         notebookName = str(notebooks["NotebookInstanceName"])
-        response = sagemaker.describe_notebook_instance(NotebookInstanceName=notebookName)
-        notebookArn = str(response["NotebookInstanceArn"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        notebookArn = str(notebooks["NotebookInstanceArn"])
         try:
-            notebookEncryptionCheck = str(response["KmsKeyId"])
+            notebookEncryptionCheck = str(notebooks["KmsKeyId"])
             print(notebookEncryptionCheck)
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -61,7 +81,17 @@ def sagemaker_notebook_encryption_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/sagemaker/latest/dg/encryption-at-rest.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Machine Learning",
+                    "AssetService": "Amazon SageMaker",
+                    "AssetComponent": "Notebook Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSagemakerNotebookInstance",
@@ -86,7 +116,7 @@ def sagemaker_notebook_encryption_check(cache: dict, session, awsAccountId: str,
                 "RecordState": "ARCHIVED",
             }
             yield finding
-        except:
+        except KeyError:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": notebookArn + "/sagemaker-notebook-encryption-check",
@@ -112,7 +142,17 @@ def sagemaker_notebook_encryption_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/sagemaker/latest/dg/encryption-at-rest.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Machine Learning",
+                    "AssetService": "Amazon SageMaker",
+                    "AssetComponent": "Notebook Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSagemakerNotebookInstance",
@@ -141,18 +181,15 @@ def sagemaker_notebook_encryption_check(cache: dict, session, awsAccountId: str,
 @registry.register_check("sagemaker")
 def sagemaker_notebook_direct_internet_access_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SageMaker.2] SageMaker notebook instances should not have direct internet access configured"""
-    sagemaker = session.client("sagemaker")
-
-    # loop through sagemaker notebooks
-    response = sagemaker.list_notebook_instances()
-    mySageMakerNotebooks = response["NotebookInstances"]
-    for notebooks in mySageMakerNotebooks:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for notebooks in get_sagemaker_notebooks(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(notebooks,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         notebookName = str(notebooks["NotebookInstanceName"])
-        response = sagemaker.describe_notebook_instance(NotebookInstanceName=notebookName)
-        notebookArn = str(response["NotebookInstanceArn"])
-        directInternetCheck = str(response["DirectInternetAccess"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        if directInternetCheck == "Enabled":
+        notebookArn = str(notebooks["NotebookInstanceArn"])
+        if notebooks["DirectInternetAccess"] == "Enabled":
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": notebookArn + "/sagemaker-notebook-direct-internet-access-check",
@@ -178,7 +215,17 @@ def sagemaker_notebook_direct_internet_access_check(cache: dict, session, awsAcc
                         "Url": "https://docs.aws.amazon.com/sagemaker/latest/dg/appendix-notebook-and-internet-access.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Machine Learning",
+                    "AssetService": "Amazon SageMaker",
+                    "AssetComponent": "Notebook Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSagemakerNotebookInstance",
@@ -233,7 +280,17 @@ def sagemaker_notebook_direct_internet_access_check(cache: dict, session, awsAcc
                         "Url": "https://docs.aws.amazon.com/sagemaker/latest/dg/appendix-notebook-and-internet-access.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Machine Learning",
+                    "AssetService": "Amazon SageMaker",
+                    "AssetComponent": "Notebook Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSagemakerNotebookInstance",
@@ -266,18 +323,16 @@ def sagemaker_notebook_direct_internet_access_check(cache: dict, session, awsAcc
 @registry.register_check("sagemaker")
 def sagemaker_notebook_in_vpc_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SageMaker.3] SageMaker notebook instances should be placed in a VPC"""
-    sagemaker = session.client("sagemaker")
-    # loop through sagemaker notebooks
-    response = sagemaker.list_notebook_instances()
-    mySageMakerNotebooks = response["NotebookInstances"]
-    for notebooks in mySageMakerNotebooks:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for notebooks in get_sagemaker_notebooks(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(notebooks,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         notebookName = str(notebooks["NotebookInstanceName"])
-        response = sagemaker.describe_notebook_instance(NotebookInstanceName=notebookName)
-        notebookArn = str(response["NotebookInstanceArn"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        notebookArn = str(notebooks["NotebookInstanceArn"])
         try:
-            inVpcCheck = str(response["SubnetId"])
-            print(inVpcCheck)
+            notebooks["SubnetId"]
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": notebookArn + "/sagemaker-notebook-in-vpc-check",
@@ -303,7 +358,17 @@ def sagemaker_notebook_in_vpc_check(cache: dict, session, awsAccountId: str, aws
                         "Url": "https://docs.aws.amazon.com/sagemaker/latest/dg/appendix-notebook-and-internet-access.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Machine Learning",
+                    "AssetService": "Amazon SageMaker",
+                    "AssetComponent": "Notebook Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSagemakerNotebookInstance",
@@ -332,7 +397,7 @@ def sagemaker_notebook_in_vpc_check(cache: dict, session, awsAccountId: str, aws
                 "RecordState": "ACTIVE",
             }
             yield finding
-        except:
+        except KeyError:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": notebookArn + "/sagemaker-notebook-in-vpc-check",
@@ -356,7 +421,17 @@ def sagemaker_notebook_in_vpc_check(cache: dict, session, awsAccountId: str, aws
                         "Url": "https://docs.aws.amazon.com/sagemaker/latest/dg/appendix-notebook-and-internet-access.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Machine Learning",
+                    "AssetService": "Amazon SageMaker",
+                    "AssetComponent": "Notebook Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSagemakerNotebookInstance",
@@ -396,6 +471,9 @@ def sagemaker_endpoint_encryption_check(cache: dict, session, awsAccountId: str,
     for endpoints in mySageMakerEndpoints:
         endpointName = str(endpoints["EndpointName"])
         response = sagemaker.describe_endpoint(EndpointName=endpointName)
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         endpointArn = str(response["EndpointArn"])
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
@@ -424,7 +502,17 @@ def sagemaker_endpoint_encryption_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/sagemaker/latest/dg/encryption-at-rest.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Machine Learning",
+                    "AssetService": "Amazon SageMaker",
+                    "AssetComponent": "Endpoint"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSagemakerEndpoint",
@@ -475,7 +563,17 @@ def sagemaker_endpoint_encryption_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/sagemaker/latest/dg/encryption-at-rest.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Machine Learning",
+                    "AssetService": "Amazon SageMaker",
+                    "AssetComponent": "Endpoint"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSagemakerEndpoint",
@@ -512,6 +610,9 @@ def sagemaker_model_network_isolation_check(cache: dict, session, awsAccountId: 
         modelName = str(models["ModelName"])
         modelArn = str(models["ModelArn"])
         response = sagemaker.describe_model(ModelName=modelName)
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         networkIsolationCheck = str(response["EnableNetworkIsolation"])
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if networkIsolationCheck == "False":
@@ -540,7 +641,17 @@ def sagemaker_model_network_isolation_check(cache: dict, session, awsAccountId: 
                         "Url": "https://docs.aws.amazon.com/sagemaker/latest/dg/mkt-algo-model-internet-free.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Machine Learning",
+                    "AssetService": "Amazon SageMaker",
+                    "AssetComponent": "Model"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSagemakerModel",
@@ -593,7 +704,17 @@ def sagemaker_model_network_isolation_check(cache: dict, session, awsAccountId: 
                         "Url": "https://docs.aws.amazon.com/sagemaker/latest/dg/mkt-algo-model-internet-free.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Machine Learning",
+                    "AssetService": "Amazon SageMaker",
+                    "AssetComponent": "Model"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSagemakerModel",

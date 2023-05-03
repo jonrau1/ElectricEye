@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -31,6 +33,9 @@ def xray_kms_encryption_check(cache: dict, session, awsAccountId: str, awsRegion
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     response = xray.get_encryption_config()['EncryptionConfig']
+    # B64 encode all of the details for the Asset
+    assetJson = json.dumps(response,default=str).encode("utf-8")
+    assetB64 = base64.b64encode(assetJson)
     if str(response['Type']) == 'NONE':
         # This is a failing finding
         finding = {
@@ -57,11 +62,21 @@ def xray_kms_encryption_check(cache: dict, session, awsAccountId: str, awsRegion
                     "Url": "https://docs.aws.amazon.com/xray/latest/devguide/xray-console-encryption.html",
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Developer Tools",
+                "AssetService": "AWS XRay",
+                "AssetType": "Encryption Configuration"
+            },
             "Resources": [
                 {
                     "Type": "AwsXrayEncryptionConfig",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/AWS_XRay_Encryption_Configuration",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }
@@ -107,11 +122,21 @@ def xray_kms_encryption_check(cache: dict, session, awsAccountId: str, awsRegion
                     "Url": "https://docs.aws.amazon.com/xray/latest/devguide/xray-console-encryption.html",
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Developer Tools",
+                "AssetService": "AWS XRay",
+                "AssetType": "Encryption Configuration"
+            },
             "Resources": [
                 {
                     "Type": "AwsXrayEncryptionConfig",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/AWS_XRay_Encryption_Configuration",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }

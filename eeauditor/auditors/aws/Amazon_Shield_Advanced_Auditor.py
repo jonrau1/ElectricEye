@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -32,6 +34,9 @@ def shield_advanced_route_53_protection_check(cache: dict, session, awsAccountId
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     response = route53.list_hosted_zones()
     for hostedzone in response["HostedZones"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(hostedzone,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         rawHzId = str(hostedzone["Id"])
         hostedZoneId = rawHzId.replace("/hostedzone/", "")
         hostedZoneArn = f"arn:{awsPartition}:route53:::hostedzone/{hostedZoneId}"
@@ -60,7 +65,17 @@ def shield_advanced_route_53_protection_check(cache: dict, session, awsAccountId
                         "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/configure-new-protection.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Route53",
+                    "AssetComponent": "Hosted Zone"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRoute53HostedZone",
@@ -121,7 +136,17 @@ def shield_advanced_route_53_protection_check(cache: dict, session, awsAccountId
                             "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/configure-new-protection.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon Route53",
+                        "AssetComponent": "Hosted Zone"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsRoute53HostedZone",
@@ -163,8 +188,10 @@ def shield_advanced_elb_protection_check(cache: dict, session, awsAccountId: str
     elbclassic = session.client("elb")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    response = elbclassic.describe_load_balancers()
-    for classicbalancer in response["LoadBalancerDescriptions"]:
+    for classicbalancer in elbclassic.describe_load_balancers()["LoadBalancerDescriptions"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(classicbalancer,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clbName = str(classicbalancer["LoadBalancerName"])
         clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
         try:
@@ -192,7 +219,17 @@ def shield_advanced_elb_protection_check(cache: dict, session, awsAccountId: str
                         "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/configure-new-protection.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Elastic Load Balancing",
+                    "AssetComponent": "Classic Load Balancer"
+                },
                 "Resources": [
                     {
                         "Type": "AwsElbLoadBalancer",
@@ -253,7 +290,17 @@ def shield_advanced_elb_protection_check(cache: dict, session, awsAccountId: str
                             "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/configure-new-protection.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon Elastic Load Balancing",
+                        "AssetComponent": "Classic Load Balancer"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsElbLoadBalancer",
@@ -295,12 +342,18 @@ def shield_advanced_elb_v2_protection_check(cache: dict, session, awsAccountId: 
     elbv2 = session.client("elbv2")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    response = elbv2.describe_load_balancers()
-    for loadbalancer in response["LoadBalancers"]:
+    for loadbalancer in elbv2.describe_load_balancers()["LoadBalancers"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(loadbalancer,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         elbv2Name = str(loadbalancer["LoadBalancerName"])
         elbv2Arn = str(loadbalancer["LoadBalancerArn"])
         elbv2DnsName = str(loadbalancer["DNSName"])
         elbv2LbType = str(loadbalancer["Type"])
+        if elbv2LbType == "application":
+            eeAssetType = "Application Load Balancer"
+        else:
+            eeAssetType = "Network Load Balancer"
         elbv2Scheme = str(loadbalancer["Scheme"])
         elbv2VpcId = str(loadbalancer["VpcId"])
         elbv2IpAddressType = str(loadbalancer["IpAddressType"])
@@ -331,7 +384,17 @@ def shield_advanced_elb_v2_protection_check(cache: dict, session, awsAccountId: 
                         "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/configure-new-protection.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "AWS Elastic Load Balancer V2",
+                    "AssetComponent": eeAssetType
+                },
                 "Resources": [
                     {
                         "Type": "AwsElbv2LoadBalancer",
@@ -402,7 +465,17 @@ def shield_advanced_elb_v2_protection_check(cache: dict, session, awsAccountId: 
                             "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/configure-new-protection.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Networking",
+                        "AssetService": "AWS Elastic Load Balancer V2",
+                        "AssetComponent": eeAssetType
+                    },
                     "Resources": [
                         {
                             "Type": "AwsElbv2LoadBalancer",
@@ -452,8 +525,10 @@ def shield_advanced_eip_protection_check(cache: dict, session, awsAccountId: str
     ec2 = session.client("ec2")
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    response = ec2.describe_addresses()
-    for elasticip in response["Addresses"]:
+    for elasticip in ec2.describe_addresses()["Addresses"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(elasticip,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         allocationId = str(elasticip["AllocationId"])
         eipAllocationArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:eip-allocation/{allocationId}"
         try:
@@ -481,7 +556,17 @@ def shield_advanced_eip_protection_check(cache: dict, session, awsAccountId: str
                         "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/configure-new-protection.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon EC2",
+                    "AssetComponent": "Elastic IP"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Eip",
@@ -542,7 +627,17 @@ def shield_advanced_eip_protection_check(cache: dict, session, awsAccountId: str
                             "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/configure-new-protection.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon EC2",
+                        "AssetComponent": "Elastic IP"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Eip",
@@ -588,6 +683,9 @@ def shield_advanced_cloudfront_protection_check(cache: dict, session, awsAccount
     # TODO: Should handle case no results returned
     cfDistros = response["DistributionList"].get("Items", [])
     for distro in cfDistros:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(distro,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         distroId = str(distro["Id"])
         distroArn = str(distro["ARN"])
         distroDomainName = str(distro["DomainName"])
@@ -616,7 +714,17 @@ def shield_advanced_cloudfront_protection_check(cache: dict, session, awsAccount
                         "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/configure-new-protection.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon CloudFront",
+                    "AssetComponent": "Distribution"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudFrontDistribution",
@@ -679,7 +787,17 @@ def shield_advanced_cloudfront_protection_check(cache: dict, session, awsAccount
                             "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/configure-new-protection.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon CloudFront",
+                        "AssetComponent": "Distribution"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCloudFrontDistribution",
@@ -723,6 +841,9 @@ def shield_advanced_drt_access_check(cache: dict, session, awsAccountId: str, aw
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     response = shield.describe_drt_access()
+    # B64 encode all of the details for the Asset
+    assetJson = json.dumps(response,default=str).encode("utf-8")
+    assetB64 = base64.b64encode(assetJson)
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
         # this is a passing check
@@ -750,11 +871,21 @@ def shield_advanced_drt_access_check(cache: dict, session, awsAccountId: str, aw
                     "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/authorize-DRT.html",
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Security Services",
+                "AssetService": "Amazon Shield Advanced",
+                "AssetComponent": "Account Configuration"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/AWS_Shield_Advanced_DRT_Account_Access",
                     "Partition": awsPartition,
                     "Region": awsRegion,
                 }
@@ -808,11 +939,21 @@ def shield_advanced_drt_access_check(cache: dict, session, awsAccountId: str, aw
                     "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/authorize-DRT.html",
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Security Services",
+                "AssetService": "Amazon Shield Advanced",
+                "AssetComponent": "Account Configuration"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/AWS_Shield_Advanced_DRT_Account_Access",
                     "Partition": awsPartition,
                     "Region": awsRegion,
                 }
@@ -849,6 +990,9 @@ def shield_advanced_drt_s3_bucket_check(cache: dict, session, awsAccountId: str,
     """[ShieldAdvanced.7] The DDoS Response Team (DRT) should be authorized to view your AWS Web Application Firewall (WAF) logging buckets"""
     shield = session.client("shield", region_name="us-east-1")
     response = shield.describe_drt_access()
+    # B64 encode all of the details for the Asset
+    assetJson = json.dumps(response,default=str).encode("utf-8")
+    assetB64 = base64.b64encode(assetJson)
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     try:
         logBucketList = str(response["LogBucketList"])
@@ -874,11 +1018,21 @@ def shield_advanced_drt_s3_bucket_check(cache: dict, session, awsAccountId: str,
                     "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/authorize-DRT.html",
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Security Services",
+                "AssetService": "Amazon Shield Advanced",
+                "AssetComponent": "Account Configuration"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/AWS_Shield_Advanced_DRT_WAF_Log_Access",
                     "Partition": awsPartition,
                     "Region": awsRegion,
                 }
@@ -932,11 +1086,21 @@ def shield_advanced_drt_s3_bucket_check(cache: dict, session, awsAccountId: str,
                     "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/authorize-DRT.html",
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Security Services",
+                "AssetService": "Amazon Shield Advanced",
+                "AssetComponent": "Account Configuration"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/AWS_Shield_Advanced_DRT_WAF_Log_Access",
                     "Partition": awsPartition,
                     "Region": awsRegion,
                 }
@@ -975,6 +1139,9 @@ def shield_advanced_subscription_autorenew_check(cache: dict, session, awsAccoun
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     response = shield.describe_subscription()
+    # B64 encode all of the details for the Asset
+    assetJson = json.dumps(response,default=str).encode("utf-8")
+    assetB64 = base64.b64encode(assetJson)
     renewCheck = str(response["Subscription"]["AutoRenew"])
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     if renewCheck != "ENABLED":
@@ -1000,11 +1167,21 @@ def shield_advanced_subscription_autorenew_check(cache: dict, session, awsAccoun
                     "Url": "https://docs.aws.amazon.com/waf/latest/DDOSAPIReference/API_UpdateSubscription.html",
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Security Services",
+                "AssetService": "Amazon Shield Advanced",
+                "AssetComponent": "Subscription"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/AWS_Shield_Advanced_Subscription",
                     "Partition": awsPartition,
                     "Region": awsRegion,
                 }
@@ -1049,11 +1226,21 @@ def shield_advanced_subscription_autorenew_check(cache: dict, session, awsAccoun
                     "Url": "https://docs.aws.amazon.com/waf/latest/DDOSAPIReference/API_UpdateSubscription.html",
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Security Services",
+                "AssetService": "Amazon Shield Advanced",
+                "AssetComponent": "Subscription"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/AWS_Shield_Advanced_Subscription",
                     "Partition": awsPartition,
                     "Region": awsRegion,
                 }
@@ -1088,6 +1275,9 @@ def shield_advanced_global_accelerator_protection_check(cache: dict, session, aw
     iterator = paginator.paginate()
     for page in iterator:
         for ga in page["Accelerators"]:
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(ga,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             gaxArn = str(ga["AcceleratorArn"])
             gaxName = str(ga["Name"])
             gaxDns = str(ga["DnsName"])
@@ -1117,7 +1307,17 @@ def shield_advanced_global_accelerator_protection_check(cache: dict, session, aw
                             "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/configure-new-protection.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Networking",
+                        "AssetService": "Amazon Global Accelerator",
+                        "AssetComponent": "Accelerator"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsGlobalAcceleratorAccelerator",
@@ -1180,7 +1380,17 @@ def shield_advanced_global_accelerator_protection_check(cache: dict, session, aw
                                 "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/configure-new-protection.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Networking",
+                            "AssetService": "Amazon Global Accelerator",
+                            "AssetComponent": "Accelerator"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsGlobalAcceleratorAccelerator",
@@ -1234,6 +1444,9 @@ def shield_advanced_subscription_latest_attacks(cache: dict, session, awsAccount
             'ToExclusive': datetime.datetime.utcnow()
         }
     )
+    # B64 encode all of the details for the Asset
+    assetJson = json.dumps(response,default=str).encode("utf-8")
+    assetB64 = base64.b64encode(assetJson)
     # this is a passing check
     if not response['AttackSummaries']:
         finding = {
@@ -1256,11 +1469,21 @@ def shield_advanced_subscription_latest_attacks(cache: dict, session, awsAccount
                     "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-manage-protected-resources.html"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Security Services",
+                "AssetService": "Amazon Shield Advanced",
+                "AssetComponent": "Attack"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/AWS_Shield_Advanced_Attacks",
                     "Partition": awsPartition,
                     "Region": awsRegion,
                 }
@@ -1307,7 +1530,17 @@ def shield_advanced_subscription_latest_attacks(cache: dict, session, awsAccount
                     "Url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-manage-protected-resources.html",
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Security Services",
+                "AssetService": "Amazon Shield Advanced",
+                "AssetComponent": "Attack"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",

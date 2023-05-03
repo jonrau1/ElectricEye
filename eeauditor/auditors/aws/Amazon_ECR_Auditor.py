@@ -21,6 +21,8 @@
 import datetime
 import botocore
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -37,15 +39,15 @@ def describe_repositories(cache, session):
 @registry.register_check("ecr")
 def ecr_repo_vuln_scan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ECR.1] ECR repositories should be configured to scan images on push"""
-    response = describe_repositories(cache, session)
-    myRepos = response["repositories"]
-    for repo in myRepos:
+    for repo in describe_repositories(cache, session)["repositories"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(repo,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         repoArn = str(repo["repositoryArn"])
         repoName = str(repo["repositoryName"])
-        scanningConfig = str(repo["imageScanningConfiguration"]["scanOnPush"])
         # ISO Time
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        if scanningConfig == "False":
+        if repo["imageScanningConfiguration"]["scanOnPush"] == False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": repoArn + "/ecr-no-scan",
@@ -68,7 +70,17 @@ def ecr_repo_vuln_scan_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Containers",
+                    "AssetService": "Amazon Elastic Container Registry",
+                    "AssetComponent": "Repository"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEcrRepository",
@@ -114,7 +126,17 @@ def ecr_repo_vuln_scan_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Containers",
+                    "AssetService": "Amazon Elastic Container Registry",
+                    "AssetComponent": "Repository"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEcrRepository",
@@ -142,9 +164,10 @@ def ecr_repo_vuln_scan_check(cache: dict, session, awsAccountId: str, awsRegion:
 def ecr_repo_image_lifecycle_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ECR.2] ECR repositories should be have an image lifecycle policy configured"""
     ecr = session.client("ecr")
-    response = describe_repositories(cache, session)
-    myRepos = response["repositories"]
-    for repo in myRepos:
+    for repo in describe_repositories(cache, session)["repositories"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(repo,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         repoArn = str(repo["repositoryArn"])
         repoName = str(repo["repositoryName"])
         # ISO Time
@@ -174,7 +197,17 @@ def ecr_repo_image_lifecycle_policy_check(cache: dict, session, awsAccountId: st
                         "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Containers",
+                    "AssetService": "Amazon Elastic Container Registry",
+                    "AssetComponent": "Repository"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEcrRepository",
@@ -224,7 +257,17 @@ def ecr_repo_image_lifecycle_policy_check(cache: dict, session, awsAccountId: st
                         "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Containers",
+                    "AssetService": "Amazon Elastic Container Registry",
+                    "AssetComponent": "Repository"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEcrRepository",
@@ -256,9 +299,10 @@ def ecr_repo_image_lifecycle_policy_check(cache: dict, session, awsAccountId: st
 def ecr_repo_permission_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ECR.3] ECR repositories should be have a repository policy configured"""
     ecr = session.client("ecr")
-    response = describe_repositories(cache, session)
-    myRepos = response["repositories"]
-    for repo in myRepos:
+    for repo in describe_repositories(cache, session)["repositories"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(repo,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         repoArn = str(repo["repositoryArn"])
         repoName = str(repo["repositoryName"])
         # ISO Time
@@ -288,7 +332,17 @@ def ecr_repo_permission_policy_check(cache: dict, session, awsAccountId: str, aw
                         "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-policies.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Containers",
+                    "AssetService": "Amazon Elastic Container Registry",
+                    "AssetComponent": "Repository"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEcrRepository",
@@ -347,7 +401,17 @@ def ecr_repo_permission_policy_check(cache: dict, session, awsAccountId: str, aw
                         "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-policies.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Containers",
+                    "AssetService": "Amazon Elastic Container Registry",
+                    "AssetComponent": "Repository"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEcrRepository",
@@ -388,9 +452,10 @@ def ecr_repo_permission_policy_check(cache: dict, session, awsAccountId: str, aw
 def ecr_latest_image_vuln_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ECR.4] The latest image in an ECR Repository should not have any vulnerabilities"""
     ecr = session.client("ecr")
-    response = describe_repositories(cache, session)
-    myRepos = response["repositories"]
-    for repo in myRepos:
+    for repo in describe_repositories(cache, session)["repositories"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(repo,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         repoArn = str(repo["repositoryArn"])
         repoName = str(repo["repositoryName"])
         scanningConfig = str(repo["imageScanningConfiguration"]["scanOnPush"])
@@ -403,9 +468,12 @@ def ecr_latest_image_vuln_check(cache: dict, session, awsAccountId: str, awsRegi
                     imageDigest = str(images["imageDigest"])
                     # use the first tag only as we need it to create the canonical ID for the Resource.Id in the ASFF for the Container Resource.Type
                     imageTag = str(images["imageTags"][0])
-                    imageVulnCheck = str(
-                        images["imageScanFindingsSummary"]["findingSeverityCounts"]
-                    )
+                    try:
+                        imageVulnCheck = str(
+                            images["imageScanFindingsSummary"]["findingSeverityCounts"]
+                        )
+                    except:
+                        imageVulnCheck = "{}"
                     # ISO Time
                     iso8601Time = (
                         datetime.datetime.utcnow()
@@ -449,7 +517,13 @@ def ecr_latest_image_vuln_check(cache: dict, session, awsAccountId: str, awsRegi
                                 }
                             },
                             "SourceUrl": vulnDeepLink,
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Containers",
+                                "AssetService": "Amazon Elastic Container Registry",
+                                "AssetComponent": "Image"
+                            },
                             "Resources": [
                                 {
                                     "Type": "Container",
@@ -501,7 +575,13 @@ def ecr_latest_image_vuln_check(cache: dict, session, awsAccountId: str, awsRegi
                             "Description": "The latest image in the ECR repository "
                             + repoName
                             + " does not have any vulnerabilities reported.",
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "AssetClass": "Containers",
+                                "AssetService": "Amazon Elastic Container Registry",
+                                "AssetComponent": "Image"
+                            },
                             "Resources": [
                                 {
                                     "Type": "Container",
@@ -543,12 +623,16 @@ def ecr_registry_policy_check(cache: dict, session, awsAccountId: str, awsRegion
     """[ECR.5] ECR Registires should be have a registry policy configured to allow for cross-account recovery"""
     ecr = session.client("ecr")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    registryArn = f"arn:{awsPartition}:ecr:{awsRegion}:{awsAccountId}:registry"
     try:
-        ecr.get_registry_policy()
+        policy = ecr.get_registry_policy()
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(policy,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         # This is a passing check
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": awsAccountId + awsRegion + "/ecr-registry-access-policy-check",
+            "Id": f"{registryArn}/ecr-registry-access-policy-check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
             "GeneratorId": awsAccountId + awsRegion,
             "AwsAccountId": awsAccountId,
@@ -570,11 +654,21 @@ def ecr_registry_policy_check(cache: dict, session, awsAccountId: str, awsRegion
                     "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/registry-permissions.html"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Containers",
+                "AssetService": "Amazon Elastic Container Registry",
+                "AssetComponent": "Registry"
+            },
             "Resources": [
                 {
                     "Type": "AwsEcrRegistry",
-                    "Id": awsAccountId,
+                    "Id": registryArn,
                     "Partition": awsPartition,
                     "Region": awsRegion,
                     "Details": {"Other": {"RegistryId": awsAccountId}},
@@ -606,7 +700,7 @@ def ecr_registry_policy_check(cache: dict, session, awsAccountId: str, awsRegion
             # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": awsAccountId + awsRegion + "/ecr-registry-access-policy-check",
+                "Id": f"{registryArn}/ecr-registry-access-policy-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": awsAccountId + awsRegion,
                 "AwsAccountId": awsAccountId,
@@ -628,11 +722,17 @@ def ecr_registry_policy_check(cache: dict, session, awsAccountId: str, awsRegion
                         "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/registry-permissions.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "AssetClass": "Containers",
+                    "AssetService": "Amazon Elastic Container Registry",
+                    "AssetComponent": "Registry"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEcrRegistry",
-                        "Id": awsAccountId,
+                        "Id": registryArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                         "Details": {"Other": {"RegistryId": awsAccountId}},
@@ -669,11 +769,15 @@ def ecr_registry_backup_rules_check(cache: dict, session, awsAccountId: str, aws
     """[ECR.6] ECR Registires should use image replication to promote disaster recovery readiness"""
     ecr = session.client("ecr")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    if str(ecr.describe_registry()["replicationConfiguration"]["rules"]) == "[]":
+    registryDetail = ecr.describe_registry()
+    registryArn = f"arn:{awsPartition}:ecr:{awsRegion}:{awsAccountId}:registry"
+    if not registryDetail["replicationConfiguration"]["rules"]:
+        # B64 encode all of the details for the Asset
+        assetB64 = None
         # This is a failing check
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": awsAccountId + awsRegion + "/ecr-registry-image-replication-check",
+            "Id": f"{registryArn}/ecr-registry-image-replication-check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
             "GeneratorId": awsAccountId + awsRegion,
             "AwsAccountId": awsAccountId,
@@ -695,11 +799,21 @@ def ecr_registry_backup_rules_check(cache: dict, session, awsAccountId: str, aws
                     "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/replication.html"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Containers",
+                "AssetService": "Amazon Elastic Container Registry",
+                "AssetComponent": "Registry"
+            },
             "Resources": [
                 {
                     "Type": "AwsEcrRegistry",
-                    "Id": awsAccountId,
+                    "Id": registryArn,
                     "Partition": awsPartition,
                     "Region": awsRegion,
                     "Details": {"Other": {"RegistryId": awsAccountId}},
@@ -727,9 +841,12 @@ def ecr_registry_backup_rules_check(cache: dict, session, awsAccountId: str, aws
         }
         yield finding
     else:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(registryDetail,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         finding = {
             "SchemaVersion": "2018-10-08",
-            "Id": awsAccountId + awsRegion + "/ecr-registry-image-replication-check",
+            "Id": f"{registryArn}/ecr-registry-image-replication-check",
             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
             "GeneratorId": awsAccountId,
             "AwsAccountId": awsAccountId,
@@ -751,11 +868,21 @@ def ecr_registry_backup_rules_check(cache: dict, session, awsAccountId: str, aws
                     "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/replication.html"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Containers",
+                "AssetService": "Amazon Elastic Container Registry",
+                "AssetComponent": "Registry"
+            },
             "Resources": [
                 {
                     "Type": "AwsEcrRegistry",
-                    "Id": awsAccountId,
+                    "Id": registryArn,
                     "Partition": awsPartition,
                     "Region": awsRegion,
                     "Details": {"Other": {"RegistryId": awsAccountId}},

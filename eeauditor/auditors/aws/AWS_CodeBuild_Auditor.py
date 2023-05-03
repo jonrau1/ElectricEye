@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -42,6 +44,9 @@ def codebuild_artifact_encryption_check(cache: dict, session, awsAccountId: str,
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for projects in get_code_build_projects(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(projects,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
         # check if this project supports artifacts
@@ -71,7 +76,17 @@ def codebuild_artifact_encryption_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/create-project.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeBuild",
+                    "AssetComponent": "Project"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeBuildProject",
@@ -123,7 +138,17 @@ def codebuild_artifact_encryption_check(cache: dict, session, awsAccountId: str,
                             "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/create-project.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Developer Tools",
+                        "AssetService": "AWS CodeBuild",
+                        "AssetComponent": "Project"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCodeBuildProject",
@@ -173,7 +198,17 @@ def codebuild_artifact_encryption_check(cache: dict, session, awsAccountId: str,
                             "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/create-project.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Developer Tools",
+                        "AssetService": "AWS CodeBuild",
+                        "AssetComponent": "Project"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCodeBuildProject",
@@ -205,6 +240,9 @@ def codebuild_insecure_ssl_check(cache: dict, session, awsAccountId: str, awsReg
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for projects in get_code_build_projects(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(projects,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
         # check if Insecure SSL is enabled for your Source - if KeyError is thrown it means your Source
@@ -236,7 +274,17 @@ def codebuild_insecure_ssl_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/troubleshooting.html#troubleshooting-self-signed-certificate",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeBuild",
+                    "AssetComponent": "Project"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeBuildProject",
@@ -293,7 +341,17 @@ def codebuild_insecure_ssl_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/troubleshooting.html#troubleshooting-self-signed-certificate",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeBuild",
+                    "AssetComponent": "Project"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeBuildProject",
@@ -350,7 +408,17 @@ def codebuild_insecure_ssl_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/troubleshooting.html#troubleshooting-self-signed-certificate",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeBuild",
+                    "AssetComponent": "Project"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeBuildProject",
@@ -387,6 +455,9 @@ def codebuild_plaintext_env_var_check(cache: dict, session, awsAccountId: str, a
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for projects in get_code_build_projects(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(projects,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
         # check if this project has any env vars
@@ -416,7 +487,17 @@ def codebuild_plaintext_env_var_check(cache: dict, session, awsAccountId: str, a
                         "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec-ref-syntax",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeBuild",
+                    "AssetComponent": "Project"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeBuildProject",
@@ -488,7 +569,17 @@ def codebuild_plaintext_env_var_check(cache: dict, session, awsAccountId: str, a
                                 "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec-ref-syntax",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Developer Tools",
+                            "AssetService": "AWS CodeBuild",
+                            "AssetComponent": "Project"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsCodeBuildProject",
@@ -557,7 +648,17 @@ def codebuild_plaintext_env_var_check(cache: dict, session, awsAccountId: str, a
                                 "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec-ref-syntax",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Developer Tools",
+                            "AssetService": "AWS CodeBuild",
+                            "AssetComponent": "Project"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsCodeBuildProject",
@@ -608,6 +709,9 @@ def codebuild_s3_logging_encryption_check(cache: dict, session, awsAccountId: st
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for projects in get_code_build_projects(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(projects,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
         # check if this project logs to S3 to begin with
@@ -637,7 +741,17 @@ def codebuild_s3_logging_encryption_check(cache: dict, session, awsAccountId: st
                             "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/change-project.html#change-project-console",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Developer Tools",
+                        "AssetService": "AWS CodeBuild",
+                        "AssetComponent": "Project"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCodeBuildProject",
@@ -691,7 +805,17 @@ def codebuild_s3_logging_encryption_check(cache: dict, session, awsAccountId: st
                                 "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/change-project.html#change-project-console",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Developer Tools",
+                            "AssetService": "AWS CodeBuild",
+                            "AssetComponent": "Project"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsCodeBuildProject",
@@ -740,7 +864,17 @@ def codebuild_s3_logging_encryption_check(cache: dict, session, awsAccountId: st
                                 "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/change-project.html#change-project-console",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Developer Tools",
+                            "AssetService": "AWS CodeBuild",
+                            "AssetComponent": "Project"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsCodeBuildProject",
@@ -790,7 +924,17 @@ def codebuild_s3_logging_encryption_check(cache: dict, session, awsAccountId: st
                         "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/change-project.html#change-project-console",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeBuild",
+                    "AssetComponent": "Project"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeBuildProject",
@@ -822,6 +966,9 @@ def codebuild_cloudwatch_logging_check(cache: dict, session, awsAccountId: str, 
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for projects in get_code_build_projects(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(projects,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
         # check if this project logs to cloudwatch
@@ -852,7 +999,17 @@ def codebuild_cloudwatch_logging_check(cache: dict, session, awsAccountId: str, 
                         "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/change-project.html#change-project-console",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeBuild",
+                    "AssetComponent": "Project"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeBuildProject",
@@ -904,7 +1061,17 @@ def codebuild_cloudwatch_logging_check(cache: dict, session, awsAccountId: str, 
                         "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/change-project.html#change-project-console",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeBuild",
+                    "AssetComponent": "Project"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeBuildProject",
@@ -940,9 +1107,12 @@ def codebuild_pat_credential_usage(cache: dict, session, awsAccountId: str, awsR
     codebuild = session.client("codebuild")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    srcCreds = codebuild.list_source_credentials()["sourceCredentialsInfos"]
-    if not srcCreds:
-        credArn = 'no_creds'
+    srcCreds = codebuild.list_source_credentials()
+    # B64 encode all of the details for the Asset
+    assetJson = json.dumps(srcCreds,default=str).encode("utf-8")
+    assetB64 = base64.b64encode(assetJson)
+    if not srcCreds["sourceCredentialsInfos"]:
+        credArn = f"arn:{awsPartition}:codebuild:{awsRegion}:{awsAccountId}:source-credential/NONE:NONE"
         # this is a passing check
         finding = {
             "SchemaVersion": "2018-10-08",
@@ -968,7 +1138,17 @@ def codebuild_pat_credential_usage(cache: dict, session, awsAccountId: str, awsR
                     "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/access-tokens.html",
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Developer Tools",
+                "AssetService": "AWS CodeBuild",
+                "AssetComponent": "Source Credential"
+            },
             "Resources": [
                 {
                     "Type": "AWSCodeBuildSourceCredential",
@@ -1044,7 +1224,17 @@ def codebuild_pat_credential_usage(cache: dict, session, awsAccountId: str, awsR
                             "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/access-tokens.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Developer Tools",
+                        "AssetService": "AWS CodeBuild",
+                        "AssetComponent": "Source Credential"
+                    },
                     "Resources": [
                         {
                             "Type": "AWSCodeBuildSourceCredential",
@@ -1119,7 +1309,17 @@ def codebuild_pat_credential_usage(cache: dict, session, awsAccountId: str, awsR
                             "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/access-tokens.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Developer Tools",
+                        "AssetService": "AWS CodeBuild",
+                        "AssetComponent": "Source Credential"
+                    },
                     "Resources": [
                         {
                             "Type": "AWSCodeBuildSourceCredential",
@@ -1175,6 +1375,9 @@ def codebuild_public_build_check(cache: dict, session, awsAccountId: str, awsReg
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for projects in get_code_build_projects(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(projects,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
         # check if the build is public
@@ -1204,7 +1407,17 @@ def codebuild_public_build_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/public-builds.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeBuild",
+                    "AssetComponent": "Project"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeBuildProject",
@@ -1265,7 +1478,17 @@ def codebuild_public_build_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/public-builds.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeBuild",
+                    "AssetComponent": "Project"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeBuildProject",
@@ -1307,6 +1530,9 @@ def codebuild_privileged_envrionment_check(cache: dict, session, awsAccountId: s
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for projects in get_code_build_projects(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(projects,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         buildProjectName = str(projects["name"])
         buildProjectArn = str(projects["arn"])
         # Check for priv access
@@ -1335,7 +1561,17 @@ def codebuild_privileged_envrionment_check(cache: dict, session, awsAccountId: s
                         "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeBuild",
+                    "AssetComponent": "Project"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeBuildProject",
@@ -1407,7 +1643,17 @@ def codebuild_privileged_envrionment_check(cache: dict, session, awsAccountId: s
                         "Url": "https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Developer Tools",
+                    "AssetService": "AWS CodeBuild",
+                    "AssetComponent": "Project"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCodeBuildProject",

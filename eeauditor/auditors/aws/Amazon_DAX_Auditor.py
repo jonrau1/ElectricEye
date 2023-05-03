@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -37,6 +39,9 @@ def dax_encryption_at_rest_check(cache: dict, session, awsAccountId: str, awsReg
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for cluster in describe_clusters(cache, session)["Clusters"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(cluster,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clusterName = cluster["ClusterName"]
         clusterArn = cluster["ClusterArn"]
         # this is a failing check
@@ -61,7 +66,17 @@ def dax_encryption_at_rest_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAXEncryptionAtRest.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon DynamoDB Accelerator (DAX)",
+                    "AssetComponent": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDaxCluster",
@@ -122,7 +137,17 @@ def dax_encryption_at_rest_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAXEncryptionAtRest.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon DynamoDB Accelerator (DAX)",
+                    "AssetComponent": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDaxCluster",
@@ -168,6 +193,9 @@ def dax_encryption_in_transit_check(cache: dict, session, awsAccountId: str, aws
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for cluster in describe_clusters(cache, session)["Clusters"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(cluster,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clusterName = cluster["ClusterName"]
         clusterArn = cluster["ClusterArn"]
         # this is a failing check
@@ -192,7 +220,17 @@ def dax_encryption_in_transit_check(cache: dict, session, awsAccountId: str, aws
                         "Url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAXEncryptionInTransit.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon DynamoDB Accelerator (DAX)",
+                    "AssetComponent": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDaxCluster",
@@ -258,7 +296,17 @@ def dax_encryption_in_transit_check(cache: dict, session, awsAccountId: str, aws
                         "Url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAXEncryptionInTransit.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon DynamoDB Accelerator (DAX)",
+                    "AssetComponent": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDaxCluster",
@@ -310,6 +358,9 @@ def dax_cache_ttl_check(cache: dict, session, awsAccountId: str, awsRegion: str,
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for cluster in describe_clusters(cache, session)["Clusters"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(cluster,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clusterName = cluster["ClusterName"]
         clusterArn = cluster["ClusterArn"]
         pgName = cluster["ParameterGroup"]["ParameterGroupName"]
@@ -338,7 +389,17 @@ def dax_cache_ttl_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                                 "Url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.concepts.html#DAX.concepts.item-cache"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                            "AssetClass": "Database",
+                            "AssetService": "Amazon DynamoDB Accelerator (DAX)",
+                            "AssetComponent": "Cluster"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsDaxCluster",
@@ -405,7 +466,17 @@ def dax_cache_ttl_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                                 "Url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.concepts.html#DAX.concepts.item-cache"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Database",
+                            "AssetService": "Amazon DynamoDB Accelerator (DAX)",
+                            "AssetComponent": "Cluster"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsDaxCluster",

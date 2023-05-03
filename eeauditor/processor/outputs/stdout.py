@@ -17,8 +17,10 @@
 #KIND, either express or implied.  See the License for the
 #specific language governing permissions and limitations
 #under the License.
-import json
+
 from processor.outputs.output_base import ElectricEyeOutput
+import base64
+import json
 
 @ElectricEyeOutput
 class StdoutProvider(object):
@@ -27,11 +29,38 @@ class StdoutProvider(object):
     def write_findings(self, findings: list, output_file: str, **kwargs):
         checkedIds = []
 
-        for finding in findings:
+        """
+        noDetails = [
+            {**d, "ProductFields": {k: v for k, v in d["ProductFields"].items() if k != "AssetDetails"}} for d in findings
+        ]
+        del findings
+
+        for finding in noDetails:
+        """
+
+        """
+        This list comprhension will base64 decode and convert a string to JSON for all instances of `ProductFields.AssetDetails`
+        except where it is a None type (this is done for placeholders in Checks where the Asset doesn't exist) and it will also
+        skip over areas in the event that `ProductFields` is missing any Cloud Asset Management required fields
+        """
+        decodedFindings = [
+            {**d, "ProductFields": {**d["ProductFields"],
+                "AssetDetails": json.loads(base64.b64decode(d["ProductFields"]["AssetDetails"]).decode("utf-8"))
+                    if d["ProductFields"]["AssetDetails"] is not None
+                    else None
+            }} if "AssetDetails" in d["ProductFields"]
+            else d
+            for d in findings
+        ]
+
+        del findings
+
+        for finding in decodedFindings:
             parsedFinding = json.loads(json.dumps(finding, default=str))
+            # This is used to ignore duplicate Finding IDs
             if parsedFinding["Id"] not in checkedIds:
                 checkedIds.append(parsedFinding["Id"])
-                print(json.dumps(finding, default=str))
+                print(json.dumps(finding))
             else:
                 del parsedFinding
                 continue

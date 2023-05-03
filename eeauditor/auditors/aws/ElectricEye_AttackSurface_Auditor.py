@@ -22,6 +22,8 @@ import nmap3
 import datetime
 from check_register import CheckRegister
 from dateutil.parser import parse
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -122,6 +124,9 @@ def ec2_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # Paginate the iterator object from Cache
     for i in ec2_paginate(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(i,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         instanceId = str(i["InstanceId"])
         instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
         instanceType = str(i["InstanceType"])
@@ -192,7 +197,17 @@ def ec2_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
                                     "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/authorizing-access-to-an-instance.html"
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon EC2",
+                                "AssetComponent": "Instance"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsEc2Instance",
@@ -261,7 +276,17 @@ def ec2_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
                                     "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/authorizing-access-to-an-instance.html"
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon EC2",
+                                "AssetComponent": "Instance"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsEc2Instance",
@@ -314,6 +339,9 @@ def elbv2_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId:
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # Loop ELBs and select the public ALBs
     for lb in describe_load_balancers(cache, session)["LoadBalancers"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(lb,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         elbv2Arn = str(lb["LoadBalancerArn"])
         elbv2Name = str(lb["LoadBalancerName"])
         elbv2DnsName = str(lb["DNSName"])
@@ -377,7 +405,17 @@ def elbv2_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId:
                                     "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-update-security-groups.html#security-group-recommended-rules"
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Networking",
+                                "AssetService": "AWS Elastic Load Balancer V2",
+                                "AssetComponent": "Application Load Balancer"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsElbv2LoadBalancer",
@@ -446,7 +484,17 @@ def elbv2_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId:
                                     "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-update-security-groups.html#security-group-recommended-rules"
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Networking",
+                                "AssetService": "AWS Elastic Load Balancer V2",
+                                "AssetComponent": "Application Load Balancer"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsElbv2LoadBalancer",
@@ -500,6 +548,9 @@ def elb_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for lb in describe_clbs(cache, session)["LoadBalancerDescriptions"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(lb,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clbName = str(lb["LoadBalancerName"])
         clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
         dnsName = str(lb["DNSName"])
@@ -564,7 +615,17 @@ def elb_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
                                     "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-update-security-groups.html#security-group-recommended-rules"
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Networking",
+                                "AssetService": "AWS Elastic Load Balancer",
+                                "AssetComponent": "Classic Load Balancer"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsElbLoadBalancer",
@@ -635,7 +696,17 @@ def elb_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
                                     "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-update-security-groups.html#security-group-recommended-rules"
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Networking",
+                                "AssetService": "AWS Elastic Load Balancer",
+                                "AssetComponent": "Classic Load Balancer"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsElbLoadBalancer",
@@ -693,6 +764,9 @@ def eip_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
     # Gather all EIPs
     ec2 = session.client("ec2")
     for x in ec2.describe_addresses()["Addresses"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(x,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         publicIp = x["PublicIp"]
         allocationId = x["AllocationId"]
         eipArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:eip-allocation/{allocationId}"
@@ -750,7 +824,17 @@ def eip_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
                                 "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/authorizing-access-to-an-instance.html"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Networking",
+                            "AssetService": "Amazon EC2",
+                            "AssetComponent": "Elastic IP"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsEc2Eip",
@@ -817,7 +901,17 @@ def eip_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
                                 "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/authorizing-access-to-an-instance.html"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Networking",
+                            "AssetService": "Amazon EC2",
+                            "AssetComponent": "Elastic IP"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsEc2Eip",
@@ -867,6 +961,9 @@ def cloudfront_attack_surface_open_tcp_port_check(cache: dict, session, awsAccou
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for dist in cloudfront_paginate(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dist,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]
@@ -927,7 +1024,17 @@ def cloudfront_attack_surface_open_tcp_port_check(cache: dict, session, awsAccou
                                 "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/data-protection-summary.html"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Networking",
+                            "AssetService": "Amazon CloudFront",
+                            "AssetComponent": "Distribution"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsCloudFrontDistribution",
@@ -994,7 +1101,17 @@ def cloudfront_attack_surface_open_tcp_port_check(cache: dict, session, awsAccou
                                 "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/data-protection-summary.html"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Networking",
+                            "AssetService": "Amazon CloudFront",
+                            "AssetComponent": "Distribution"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsCloudFrontDistribution",
@@ -1045,6 +1162,9 @@ def route53_public_hz_attack_surface_open_tcp_port_check(cache: dict, session, a
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for zone in get_public_hosted_zones(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(zone,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         hzId = zone["Id"]
         hzName = zone["Name"]
         hzArn = f"arn:aws:route53:::hostedzone/{hzName}"
@@ -1111,7 +1231,17 @@ def route53_public_hz_attack_surface_open_tcp_port_check(cache: dict, session, a
                                         "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/data-protection-summary.html"
                                     }
                                 },
-                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "ProductFields": {
+                                    "ProductName": "ElectricEye",
+                                    "Provider": "AWS",
+                                    "ProviderType": "CSP",
+                                    "ProviderAccountId": awsAccountId,
+                                    "AssetRegion": awsRegion,
+                                    "AssetDetails": assetB64,
+                                    "AssetClass": "Networking",
+                                    "AssetService": "Amazon Route53",
+                                    "AssetComponent": "Hosted Zone Resource Record"
+                                },
                                 "Resources": [
                                     {
                                         "Type": "AwsRoute53HostedZoneResourceRecord",
@@ -1181,7 +1311,17 @@ def route53_public_hz_attack_surface_open_tcp_port_check(cache: dict, session, a
                                         "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/data-protection-summary.html"
                                     }
                                 },
-                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "ProductFields": {
+                                    "ProductName": "ElectricEye",
+                                    "Provider": "AWS",
+                                    "ProviderType": "CSP",
+                                    "ProviderAccountId": awsAccountId,
+                                    "AssetRegion": awsRegion,
+                                    "AssetDetails": assetB64,
+                                    "AssetClass": "Networking",
+                                    "AssetService": "Amazon Route53",
+                                    "AssetComponent": "Hosted Zone Resource Record"
+                                },
                                 "Resources": [
                                     {
                                         "Type": "AwsRoute53HostedZoneResourceRecord",

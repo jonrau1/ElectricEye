@@ -30,6 +30,9 @@ class JsonProvider(object):
     __provider__ = "docdb"
 
     def write_findings(self, findings: list, output_file: str, **kwargs):
+        if len(findings) == 0:
+            print("There are not any findings to write to file!")
+            exit(0)
         # Ensure that the required variables are present
         try:
             mongoUname = os.environ["MONGODB_USERNAME"]
@@ -81,9 +84,13 @@ class JsonProvider(object):
         mycol = eeMongoDb["ElectricEye-Findings"]
 
         # write to mongo in chunks of 40 using `insert_many()` method
-        for i in range(0, len(findings), 40):
+        noDetails = [
+            {**d, "ProductFields": {k: v for k, v in d["ProductFields"].items() if k != "AssetDetails"}} for d in findings
+        ]
+        del findings
+        for i in range(0, len(noDetails), 40):
             # here is where the fun begins
-            chunked = findings[i:i + 40]
+            chunked = noDetails[i:i + 40]
 
             try:
                 mycol.insert_many(chunked)

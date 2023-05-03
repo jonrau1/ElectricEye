@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -34,15 +36,17 @@ def list_secrets(cache, session):
 @registry.register_check("secretsmanager")
 def secret_age_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SecretsManager.1] Secrets over 90 days old should be rotated"""
-    secret = list_secrets(cache, session)
-    for secrets in secret["SecretList"]:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for secrets in list_secrets(cache, session)["SecretList"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(secrets,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         secretArn = str(secrets["ARN"])
         secretName = str(secrets["Name"])
         lastChangedDate = secrets["LastChangedDate"]
         todaysDatetime = datetime.datetime.now(datetime.timezone.utc)
         secretAgeFinder = todaysDatetime - lastChangedDate
-        # ISO Time
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if secretAgeFinder >= datetime.timedelta(days=90):
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -65,7 +69,17 @@ def secret_age_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                         "Url": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS Secrets Manager",
+                    "AssetComponent": "Secret"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSecretsManagerSecret",
@@ -129,7 +143,17 @@ def secret_age_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                         "Url": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS Secrets Manager",
+                    "AssetComponent": "Secret"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSecretsManagerSecret",
@@ -176,15 +200,16 @@ def secret_age_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
 @registry.register_check("secretsmanager")
 def secret_changed_in_last_90_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SecretsManager.2] Secrets should have automatic rotation configured"""
-    secret = list_secrets(cache, session)
-    for secrets in secret["SecretList"]:
+    # ISO Time
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for secrets in list_secrets(cache, session)["SecretList"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(secrets,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         secretArn = str(secrets["ARN"])
         secretName = str(secrets["Name"])
-        # ISO Time
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
-            rotationCheck = str(secrets["RotationEnabled"])
-            print(rotationCheck)
+            secrets["RotationEnabled"]
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": secretArn + "/secrets-manager-rotation-check",
@@ -205,7 +230,17 @@ def secret_changed_in_last_90_check(cache: dict, session, awsAccountId: str, aws
                         "Url": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS Secrets Manager",
+                    "AssetComponent": "Secret"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSecretsManagerSecret",
@@ -248,7 +283,7 @@ def secret_changed_in_last_90_check(cache: dict, session, awsAccountId: str, aws
                 "RecordState": "ARCHIVED",
             }
             yield finding
-        except:
+        except KeyError:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": secretArn + "/secrets-manager-rotation-check",
@@ -270,7 +305,17 @@ def secret_changed_in_last_90_check(cache: dict, session, awsAccountId: str, aws
                         "Url": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS Secrets Manager",
+                    "AssetComponent": "Secret"
+                },
                 "Resources": [
                     {
                         "Type": "AwsSecretsManagerSecret",

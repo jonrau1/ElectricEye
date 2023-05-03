@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -39,6 +41,9 @@ def elasticbeanstalk_imdsv1_disabled_check(cache: dict, session, awsAccountId: s
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for envs in describe_environments(cache, session)["Environments"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(envs,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         envArn = envs["EnvironmentArn"]
         envName = envs["EnvironmentName"]
         appName = envs["ApplicationName"]
@@ -61,7 +66,7 @@ def elasticbeanstalk_imdsv1_disabled_check(cache: dict, session, awsAccountId: s
                             "FirstObservedAt": iso8601Time,
                             "CreatedAt": iso8601Time,
                             "UpdatedAt": iso8601Time,
-                            "Severity": {"Label": "MEDIUM"},
+                            "Severity": {"Label": "HIGH"},
                             "Confidence": 99,
                             "Title": "[ElasticBeanstalk.1] Elastic Beanstalk environments should disable IMDSv1",
                             "Description": f"Elastic Beanstalk environment {envName} does not disable Instance Metadata Service Version 1 (IMDSv1). IMDSv2 uses session-oriented requests and mitigates several types of vulnerabilities that could be used to try to access the IMDS. For information about these two methods, see Configuring the instance metadata service in the Amazon EC2 User Guide for Linux Instances. Refer to the remediation instructions if this configuration is not intended.",
@@ -71,7 +76,17 @@ def elasticbeanstalk_imdsv1_disabled_check(cache: dict, session, awsAccountId: s
                                     "Url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-cfg-ec2-imds.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon Elastic Beanstalk",
+                                "AssetComponent": "Environment"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsElasticBeanstalkEnvironment",
@@ -143,7 +158,17 @@ def elasticbeanstalk_imdsv1_disabled_check(cache: dict, session, awsAccountId: s
                                     "Url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-cfg-ec2-imds.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon Elastic Beanstalk",
+                                "AssetComponent": "Environment"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsElasticBeanstalkEnvironment",
@@ -205,6 +230,9 @@ def elasticbeanstalk_platform_auto_update_check(cache: dict, session, awsAccount
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for envs in describe_environments(cache, session)["Environments"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(envs,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         envArn = envs["EnvironmentArn"]
         envName = envs["EnvironmentName"]
         appName = envs["ApplicationName"]
@@ -237,7 +265,17 @@ def elasticbeanstalk_platform_auto_update_check(cache: dict, session, awsAccount
                                     "Url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-cfg-ec2-imds.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon Elastic Beanstalk",
+                                "AssetComponent": "Environment"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsElasticBeanstalkEnvironment",
@@ -301,7 +339,17 @@ def elasticbeanstalk_platform_auto_update_check(cache: dict, session, awsAccount
                                     "Url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-cfg-ec2-imds.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon Elastic Beanstalk",
+                                "AssetComponent": "Environment"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsElasticBeanstalkEnvironment",
@@ -355,6 +403,9 @@ def elasticbeanstalk_enhanced_health_reporting_check(cache: dict, session, awsAc
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for envs in describe_environments(cache, session)["Environments"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(envs,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         envArn = envs["EnvironmentArn"]
         envName = envs["EnvironmentName"]
         appName = envs["ApplicationName"]
@@ -387,7 +438,17 @@ def elasticbeanstalk_enhanced_health_reporting_check(cache: dict, session, awsAc
                                     "Url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/health-enhanced.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon Elastic Beanstalk",
+                                "AssetComponent": "Environment"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsElasticBeanstalkEnvironment",
@@ -453,7 +514,17 @@ def elasticbeanstalk_enhanced_health_reporting_check(cache: dict, session, awsAc
                                     "Url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/health-enhanced.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon Elastic Beanstalk",
+                                "AssetComponent": "Environment"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsElasticBeanstalkEnvironment",
@@ -509,6 +580,9 @@ def elasticbeanstalk_log_streaming_check(cache: dict, session, awsAccountId: str
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for envs in describe_environments(cache, session)["Environments"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(envs,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         envArn = envs["EnvironmentArn"]
         envName = envs["EnvironmentName"]
         appName = envs["ApplicationName"]
@@ -541,7 +615,17 @@ def elasticbeanstalk_log_streaming_check(cache: dict, session, awsAccountId: str
                                     "Url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/AWSHowTo.cloudwatchlogs.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon Elastic Beanstalk",
+                                "AssetComponent": "Environment"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsElasticBeanstalkEnvironment",
@@ -607,7 +691,17 @@ def elasticbeanstalk_log_streaming_check(cache: dict, session, awsAccountId: str
                                     "Url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/AWSHowTo.cloudwatchlogs.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon Elastic Beanstalk",
+                                "AssetComponent": "Environment"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsElasticBeanstalkEnvironment",
@@ -663,6 +757,9 @@ def elasticbeanstalk_xray_tracing_check(cache: dict, session, awsAccountId: str,
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for envs in describe_environments(cache, session)["Environments"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(envs,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         envArn = envs["EnvironmentArn"]
         envName = envs["EnvironmentName"]
         appName = envs["ApplicationName"]
@@ -695,7 +792,17 @@ def elasticbeanstalk_xray_tracing_check(cache: dict, session, awsAccountId: str,
                                     "Url": "https://docs.aws.amazon.com/xray/latest/devguide/xray-daemon-beanstalk.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon Elastic Beanstalk",
+                                "AssetComponent": "Environment"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsElasticBeanstalkEnvironment",
@@ -761,7 +868,17 @@ def elasticbeanstalk_xray_tracing_check(cache: dict, session, awsAccountId: str,
                                     "Url": "https://docs.aws.amazon.com/xray/latest/devguide/xray-daemon-beanstalk.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon Elastic Beanstalk",
+                                "AssetComponent": "Environment"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsElasticBeanstalkEnvironment",

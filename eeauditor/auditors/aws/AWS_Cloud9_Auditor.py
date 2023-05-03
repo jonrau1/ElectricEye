@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -33,6 +35,9 @@ def cloud9_ssm_access_check(cache: dict, session, awsAccountId: str, awsRegion: 
     for page in iterator:
         for e in page["environmentIds"]:
             for env in cloud9.describe_environments(environmentIds=[e])["environments"]:
+                # B64 encode all of the details for the Asset
+                assetJson = json.dumps(env,default=str).encode("utf-8")
+                assetB64 = base64.b64encode(assetJson)
                 c9Arn = str(env["arn"])
                 c9Name = str(env["name"])
                 # This is a failing check - SSM gives you private connection
@@ -64,7 +69,17 @@ def cloud9_ssm_access_check(cache: dict, session, awsAccountId: str, awsRegion: 
                                 "Url": "https://docs.aws.amazon.com/cloud9/latest/user-guide/ec2-ssm.html"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Developer Tools",
+                            "AssetService": "Amazon Cloud9",
+                            "AssetComponent": "Environment"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsCloud9Environment",
@@ -122,7 +137,17 @@ def cloud9_ssm_access_check(cache: dict, session, awsAccountId: str, awsRegion: 
                                 "Url": "https://docs.aws.amazon.com/cloud9/latest/user-guide/ec2-ssm.html"
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Developer Tools",
+                            "AssetService": "Amazon Cloud9",
+                            "AssetComponent": "Environment"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsCloud9Environment",

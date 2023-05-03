@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -36,6 +38,9 @@ def inter_cluster_encryption_in_transit_check(cache: dict, session, awsAccountId
     """[MSK.1] Managed Kafka Stream clusters should have inter-cluster encryption in transit enabled"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for clusters in list_clusters(cache, session)["ClusterInfoList"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(clusters,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clusterArn = str(clusters["ClusterArn"])
         clusterName = str(clusters["ClusterName"])
         interClusterEITCheck = str(clusters["EncryptionInfo"]["EncryptionInTransit"]["InCluster"])
@@ -62,7 +67,17 @@ def inter_cluster_encryption_in_transit_check(cache: dict, session, awsAccountId
                         "Url": "https://docs.aws.amazon.com/msk/latest/developerguide/msk-working-with-encryption.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Managed Streaming for Apache Kafka",
+                    "AssetType": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsManagedKafkaCluster",
@@ -115,7 +130,17 @@ def inter_cluster_encryption_in_transit_check(cache: dict, session, awsAccountId
                         "Url": "https://docs.aws.amazon.com/msk/latest/developerguide/msk-working-with-encryption.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Managed Streaming for Apache Kafka",
+                    "AssetType": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsManagedKafkaCluster",
@@ -151,6 +176,9 @@ def client_broker_encryption_in_transit_check(cache: dict, session, awsAccountId
     """[MSK.2] Managed Kafka Stream clusters should enforce TLS-only communications between clients and brokers"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for clusters in list_clusters(cache, session)["ClusterInfoList"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(clusters,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clusterArn = str(clusters["ClusterArn"])
         clusterName = str(clusters["ClusterName"])
         clientBrokerTlsCheck = str(clusters["EncryptionInfo"]["EncryptionInTransit"]["ClientBroker"])
@@ -177,7 +205,17 @@ def client_broker_encryption_in_transit_check(cache: dict, session, awsAccountId
                         "Url": "https://docs.aws.amazon.com/msk/latest/developerguide/msk-working-with-encryption.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Managed Streaming for Apache Kafka",
+                    "AssetType": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsManagedKafkaCluster",
@@ -230,7 +268,17 @@ def client_broker_encryption_in_transit_check(cache: dict, session, awsAccountId
                         "Url": "https://docs.aws.amazon.com/msk/latest/developerguide/msk-working-with-encryption.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Managed Streaming for Apache Kafka",
+                    "AssetType": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsManagedKafkaCluster",
@@ -266,6 +314,9 @@ def client_authentication_check(cache: dict, session, awsAccountId: str, awsRegi
     """[MSK.3] Managed Kafka Stream clusters should use TLS for client authentication"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for clusters in list_clusters(cache, session)["ClusterInfoList"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(clusters,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clusterArn = str(clusters["ClusterArn"])
         clusterName = str(clusters["ClusterName"])
         try:
@@ -290,7 +341,17 @@ def client_authentication_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/msk/latest/developerguide/msk-authentication.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Managed Streaming for Apache Kafka",
+                    "AssetType": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsManagedKafkaCluster",
@@ -344,7 +405,17 @@ def client_authentication_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/msk/latest/developerguide/msk-authentication.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Managed Streaming for Apache Kafka",
+                    "AssetType": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsManagedKafkaCluster",
@@ -380,6 +451,9 @@ def cluster_enhanced_monitoring_check(cache: dict, session, awsAccountId: str, a
     """[MSK.4] Managed Kafka Stream clusters should use enhanced monitoring"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for clusters in list_clusters(cache, session)["ClusterInfoList"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(clusters,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clusterArn = str(clusters["ClusterArn"])
         clusterName = str(clusters["ClusterName"])
         enhancedMonitoringCheck = str(clusters["EnhancedMonitoring"])
@@ -406,7 +480,17 @@ def cluster_enhanced_monitoring_check(cache: dict, session, awsAccountId: str, a
                         "Url": "https://docs.aws.amazon.com/msk/latest/developerguide/monitoring.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Managed Streaming for Apache Kafka",
+                    "AssetType": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsManagedKafkaCluster",
@@ -456,7 +540,17 @@ def cluster_enhanced_monitoring_check(cache: dict, session, awsAccountId: str, a
                         "Url": "https://docs.aws.amazon.com/msk/latest/developerguide/monitoring.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Managed Streaming for Apache Kafka",
+                    "AssetType": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsManagedKafkaCluster",

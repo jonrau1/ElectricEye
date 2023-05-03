@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -48,6 +50,9 @@ def cloudfront_active_trusted_signers_check(cache: dict, session, awsAccountId: 
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for dist in paginate(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dist,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]
@@ -78,7 +83,17 @@ def cloudfront_active_trusted_signers_check(cache: dict, session, awsAccountId: 
                                 "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html#private-content-creating-cloudfront-key-pairs",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Networking",
+                            "AssetService": "Amazon CloudFront",
+                            "AssetComponent": "Distribution"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsCloudFrontDistribution",
@@ -133,7 +148,17 @@ def cloudfront_active_trusted_signers_check(cache: dict, session, awsAccountId: 
                                 "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html#private-content-creating-cloudfront-key-pairs",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Networking",
+                            "AssetService": "Amazon CloudFront",
+                            "AssetComponent": "Distribution"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsCloudFrontDistribution",
@@ -188,7 +213,17 @@ def cloudfront_active_trusted_signers_check(cache: dict, session, awsAccountId: 
                         "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html#private-content-creating-cloudfront-key-pairs",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon CloudFront",
+                    "AssetComponent": "Distribution"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudFrontDistribution",
@@ -228,6 +263,9 @@ def cloudfront_origin_shield_check(cache: dict, session, awsAccountId: str, awsR
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for dist in paginate(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dist,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]
@@ -261,7 +299,17 @@ def cloudfront_origin_shield_check(cache: dict, session, awsAccountId: str, awsR
                                 "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/origin-shield.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Networking",
+                            "AssetService": "Amazon CloudFront",
+                            "AssetComponent": "Distribution"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsCloudFrontDistribution",
@@ -326,7 +374,17 @@ def cloudfront_origin_shield_check(cache: dict, session, awsAccountId: str, awsR
                                 "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/origin-shield.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Networking",
+                            "AssetService": "Amazon CloudFront",
+                            "AssetComponent": "Distribution"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsCloudFrontDistribution",
@@ -377,6 +435,9 @@ def cloudfront_default_viewer_cert_check(cache: dict, session, awsAccountId: str
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for dist in paginate(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dist,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]
@@ -405,7 +466,17 @@ def cloudfront_default_viewer_cert_check(cache: dict, session, awsAccountId: str
                         "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https-viewers-to-cloudfront.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon CloudFront",
+                    "AssetComponent": "Distribution"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudFrontDistribution",
@@ -462,7 +533,17 @@ def cloudfront_default_viewer_cert_check(cache: dict, session, awsAccountId: str
                         "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https-viewers-to-cloudfront.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon CloudFront",
+                    "AssetComponent": "Distribution"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudFrontDistribution",
@@ -505,6 +586,9 @@ def cloudfront_georestriction_check(cache: dict, session, awsAccountId: str, aws
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for dist in paginate(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dist,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]
@@ -534,7 +618,17 @@ def cloudfront_georestriction_check(cache: dict, session, awsAccountId: str, aws
                         "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/georestrictions.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon CloudFront",
+                    "AssetComponent": "Distribution"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudFrontDistribution",
@@ -592,7 +686,17 @@ def cloudfront_georestriction_check(cache: dict, session, awsAccountId: str, aws
                         "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/georestrictions.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon CloudFront",
+                    "AssetComponent": "Distribution"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudFrontDistribution",
@@ -635,6 +739,9 @@ def cloudfront_field_level_encryption_check(cache: dict, session, awsAccountId: 
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for dist in paginate(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dist,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]
@@ -663,7 +770,17 @@ def cloudfront_field_level_encryption_check(cache: dict, session, awsAccountId: 
                         "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/field-level-encryption.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon CloudFront",
+                    "AssetComponent": "Distribution"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudFrontDistribution",
@@ -715,7 +832,17 @@ def cloudfront_field_level_encryption_check(cache: dict, session, awsAccountId: 
                         "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/field-level-encryption.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon CloudFront",
+                    "AssetComponent": "Distribution"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudFrontDistribution",
@@ -753,6 +880,9 @@ def cloudfront_waf_enabled_check(cache: dict, session, awsAccountId: str, awsReg
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for dist in paginate(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dist,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]
@@ -781,7 +911,17 @@ def cloudfront_waf_enabled_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-awswaf.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon CloudFront",
+                    "AssetComponent": "Distribution"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudFrontDistribution",
@@ -839,7 +979,17 @@ def cloudfront_waf_enabled_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-awswaf.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon CloudFront",
+                    "AssetComponent": "Distribution"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudFrontDistribution",
@@ -889,6 +1039,9 @@ def cloudfront_default_viewer_tls12_check(cache: dict, session, awsAccountId: st
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for dist in paginate(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dist,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]
@@ -917,7 +1070,17 @@ def cloudfront_default_viewer_tls12_check(cache: dict, session, awsAccountId: st
                         "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/secure-connections-supported-viewer-protocols-ciphers.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon CloudFront",
+                    "AssetComponent": "Distribution"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudFrontDistribution",
@@ -974,7 +1137,17 @@ def cloudfront_default_viewer_tls12_check(cache: dict, session, awsAccountId: st
                         "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/secure-connections-supported-viewer-protocols-ciphers.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon CloudFront",
+                    "AssetComponent": "Distribution"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudFrontDistribution",
@@ -1024,6 +1197,9 @@ def cloudfront_custom_origin_tls12_check(cache: dict, session, awsAccountId: str
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for dist in paginate(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dist,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]
@@ -1059,7 +1235,17 @@ def cloudfront_custom_origin_tls12_check(cache: dict, session, awsAccountId: str
                                     "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesOriginSSLProtocols",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Networking",
+                                "AssetService": "Amazon CloudFront",
+                                "AssetComponent": "Distribution"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsCloudFrontDistribution",
@@ -1123,7 +1309,17 @@ def cloudfront_custom_origin_tls12_check(cache: dict, session, awsAccountId: str
                                     "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesOriginSSLProtocols",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Networking",
+                                "AssetService": "Amazon CloudFront",
+                                "AssetComponent": "Distribution"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsCloudFrontDistribution",
@@ -1188,7 +1384,17 @@ def cloudfront_custom_origin_tls12_check(cache: dict, session, awsAccountId: str
                                 "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesOriginSSLProtocols",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Networking",
+                            "AssetService": "Amazon CloudFront",
+                            "AssetComponent": "Distribution"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsCloudFrontDistribution",
@@ -1238,6 +1444,9 @@ def cloudfront_custom_origin_https_only_protcol_check(cache: dict, session, awsA
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for dist in paginate(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dist,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]
@@ -1272,7 +1481,17 @@ def cloudfront_custom_origin_https_only_protcol_check(cache: dict, session, awsA
                                     "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https-cloudfront-to-custom-origin.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Networking",
+                                "AssetService": "Amazon CloudFront",
+                                "AssetComponent": "Distribution"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsCloudFrontDistribution",
@@ -1336,7 +1555,17 @@ def cloudfront_custom_origin_https_only_protcol_check(cache: dict, session, awsA
                                     "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https-cloudfront-to-custom-origin.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Networking",
+                                "AssetService": "Amazon CloudFront",
+                                "AssetComponent": "Distribution"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsCloudFrontDistribution",
@@ -1401,7 +1630,17 @@ def cloudfront_custom_origin_https_only_protcol_check(cache: dict, session, awsA
                                 "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https-cloudfront-to-custom-origin.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Networking",
+                            "AssetService": "Amazon CloudFront",
+                            "AssetComponent": "Distribution"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsCloudFrontDistribution",
@@ -1451,6 +1690,9 @@ def cloudfront_default_viewer_https_sni_check(cache: dict, session, awsAccountId
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for dist in paginate(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dist,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]
@@ -1479,7 +1721,17 @@ def cloudfront_default_viewer_https_sni_check(cache: dict, session, awsAccountId
                         "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cnames-https-dedicated-ip-or-sni.html#cnames-https-sni",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon CloudFront",
+                    "AssetComponent": "Distribution"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudFrontDistribution",
@@ -1536,7 +1788,17 @@ def cloudfront_default_viewer_https_sni_check(cache: dict, session, awsAccountId
                         "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cnames-https-dedicated-ip-or-sni.html#cnames-https-sni",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon CloudFront",
+                    "AssetComponent": "Distribution"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudFrontDistribution",
@@ -1579,6 +1841,9 @@ def cloudfront_distro_logging_check(cache: dict, session, awsAccountId: str, aws
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for dist in paginate(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dist,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]
@@ -1607,7 +1872,17 @@ def cloudfront_distro_logging_check(cache: dict, session, awsAccountId: str, aws
                         "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/logging.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon CloudFront",
+                    "AssetComponent": "Distribution"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudFrontDistribution",
@@ -1663,7 +1938,17 @@ def cloudfront_distro_logging_check(cache: dict, session, awsAccountId: str, aws
                         "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/logging.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon CloudFront",
+                    "AssetComponent": "Distribution"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudFrontDistribution",
@@ -1705,6 +1990,9 @@ def cloudfront_distro_default_root_object_check(cache: dict, session, awsAccount
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for dist in paginate(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dist,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]
@@ -1737,7 +2025,17 @@ def cloudfront_distro_default_root_object_check(cache: dict, session, awsAccount
                         "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DefaultRootObject.html#DefaultRootObjectHowToDefine",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon CloudFront",
+                    "AssetComponent": "Distribution"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudFrontDistribution",
@@ -1799,7 +2097,17 @@ def cloudfront_distro_default_root_object_check(cache: dict, session, awsAccount
                         "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DefaultRootObject.html#DefaultRootObjectHowToDefine",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon CloudFront",
+                    "AssetComponent": "Distribution"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudFrontDistribution",
@@ -1843,6 +2151,9 @@ def cloudfront_default_viewer_https_only_protcol_check(cache: dict, session, aws
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for dist in paginate(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dist,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]
@@ -1871,7 +2182,17 @@ def cloudfront_default_viewer_https_only_protcol_check(cache: dict, session, aws
                         "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https-viewers-to-cloudfront.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon CloudFront",
+                    "AssetComponent": "Distribution"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudFrontDistribution",
@@ -1928,7 +2249,17 @@ def cloudfront_default_viewer_https_only_protcol_check(cache: dict, session, aws
                         "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https-viewers-to-cloudfront.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon CloudFront",
+                    "AssetComponent": "Distribution"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudFrontDistribution",
@@ -1971,6 +2302,9 @@ def cloudfront_s3_origin_oai_check(cache: dict, session, awsAccountId: str, awsR
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for dist in paginate(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(dist,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         distributionId = dist["Id"]
         distributionArn = dist["ARN"]
         domainName = dist["DomainName"]
@@ -2009,7 +2343,17 @@ def cloudfront_s3_origin_oai_check(cache: dict, session, awsAccountId: str, awsR
                                     "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html#private-content-creating-oai",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Networking",
+                                "AssetService": "Amazon CloudFront",
+                                "AssetComponent": "Distribution"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsCloudFrontDistribution",
@@ -2078,7 +2422,17 @@ def cloudfront_s3_origin_oai_check(cache: dict, session, awsAccountId: str, awsR
                                     "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html#private-content-creating-oai",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Networking",
+                                "AssetService": "Amazon CloudFront",
+                                "AssetComponent": "Distribution"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsCloudFrontDistribution",
@@ -2147,7 +2501,17 @@ def cloudfront_s3_origin_oai_check(cache: dict, session, awsAccountId: str, awsR
                                 "Url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html#private-content-creating-oai",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Networking",
+                            "AssetService": "Amazon CloudFront",
+                            "AssetComponent": "Distribution"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsCloudFrontDistribution",

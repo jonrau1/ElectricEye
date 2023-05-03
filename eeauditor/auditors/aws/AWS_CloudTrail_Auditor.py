@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -35,16 +37,16 @@ def list_trails(cache, session):
 def cloudtrail_multi_region_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudTrail.1] CloudTrail trails should be multi-region"""
     cloudtrail = session.client("cloudtrail")
-    trail = list_trails(cache, session)
-    myCloudTrails = trail["Trails"]
-    for trails in myCloudTrails:
+    for trails in list_trails(cache, session)["Trails"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(trails,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         trailArn = str(trails["TrailARN"])
         trailName = str(trails["Name"])
         response = cloudtrail.describe_trails(trailNameList=[trailArn], includeShadowTrails=False)
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         for details in response["trailList"]:
-            multiRegionCheck = str(details["IsMultiRegionTrail"])
-            if multiRegionCheck == "False":
+            if details["IsMultiRegionTrail"] == False:
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": trailArn + "/cloudtrail-multi-region-check",
@@ -67,7 +69,17 @@ def cloudtrail_multi_region_check(cache: dict, session, awsAccountId: str, awsRe
                             "Url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/receive-cloudtrail-log-files-from-multiple-regions.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Management & Governance",
+                        "AssetService": "AWS CloudTrail",
+                        "AssetComponent": "Trail"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCloudTrailTrail",
@@ -116,7 +128,17 @@ def cloudtrail_multi_region_check(cache: dict, session, awsAccountId: str, awsRe
                             "Url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/receive-cloudtrail-log-files-from-multiple-regions.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Management & Governance",
+                        "AssetService": "AWS CloudTrail",
+                        "AssetComponent": "Trail"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCloudTrailTrail",
@@ -149,9 +171,10 @@ def cloudtrail_multi_region_check(cache: dict, session, awsAccountId: str, awsRe
 def cloudtrail_cloudwatch_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudTrail.2] CloudTrail trails should have CloudWatch logging configured"""
     cloudtrail = session.client("cloudtrail")
-    trail = list_trails(cache, session)
-    myCloudTrails = trail["Trails"]
-    for trails in myCloudTrails:
+    for trails in list_trails(cache, session)["Trails"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(trails,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         trailArn = str(trails["TrailARN"])
         trailName = str(trails["Name"])
         response = cloudtrail.describe_trails(trailNameList=[trailArn], includeShadowTrails=False)
@@ -159,7 +182,7 @@ def cloudtrail_cloudwatch_logging_check(cache: dict, session, awsAccountId: str,
         for details in response["trailList"]:
             try:
                 # this is a passing check
-                cloudwatchLogCheck = str(details["CloudWatchLogsLogGroupArn"])
+                details["CloudWatchLogsLogGroupArn"]
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": trailArn + "/cloudtrail-cloudwatch-logging-check",
@@ -182,7 +205,17 @@ def cloudtrail_cloudwatch_logging_check(cache: dict, session, awsAccountId: str,
                             "Url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/monitor-cloudtrail-log-files-with-cloudwatch-logs.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Management & Governance",
+                        "AssetService": "AWS CloudTrail",
+                        "AssetComponent": "Trail"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCloudTrailTrail",
@@ -210,68 +243,76 @@ def cloudtrail_cloudwatch_logging_check(cache: dict, session, awsAccountId: str,
                     "RecordState": "ARCHIVED",
                 }
                 yield finding
-            except Exception as e:
-                if str(e) == "'CloudWatchLogsLogGroupArn'":
-                    finding = {
-                        "SchemaVersion": "2018-10-08",
-                        "Id": trailArn + "/cloudtrail-cloudwatch-logging-check",
-                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": trailArn,
-                        "AwsAccountId": awsAccountId,
-                        "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                        "FirstObservedAt": iso8601Time,
-                        "CreatedAt": iso8601Time,
-                        "UpdatedAt": iso8601Time,
-                        "Severity": {"Label": "MEDIUM"},
-                        "Confidence": 99,
-                        "Title": "[CloudTrail.2] CloudTrail trails should have CloudWatch logging configured",
-                        "Description": "CloudTrail trail "
-                        + trailName
-                        + " does not have CloudWatch Logging configured. Refer to the remediation instructions if this configuration is not intended",
-                        "Remediation": {
-                            "Recommendation": {
-                                "Text": "If your trail should send logs to CloudWatch refer to the Monitoring CloudTrail Log Files with Amazon CloudWatch Logs section of the AWS CloudTrail User Guide",
-                                "Url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/monitor-cloudtrail-log-files-with-cloudwatch-logs.html",
-                            }
-                        },
-                        "ProductFields": {"Product Name": "ElectricEye"},
-                        "Resources": [
-                            {
-                                "Type": "AwsCloudTrailTrail",
-                                "Id": trailArn,
-                                "Partition": awsPartition,
-                                "Region": awsRegion,
-                            }
+            except KeyError:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": trailArn + "/cloudtrail-cloudwatch-logging-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": trailArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "MEDIUM"},
+                    "Confidence": 99,
+                    "Title": "[CloudTrail.2] CloudTrail trails should have CloudWatch logging configured",
+                    "Description": "CloudTrail trail "
+                    + trailName
+                    + " does not have CloudWatch Logging configured. Refer to the remediation instructions if this configuration is not intended",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "If your trail should send logs to CloudWatch refer to the Monitoring CloudTrail Log Files with Amazon CloudWatch Logs section of the AWS CloudTrail User Guide",
+                            "Url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/monitor-cloudtrail-log-files-with-cloudwatch-logs.html",
+                        }
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Management & Governance",
+                        "AssetService": "AWS CloudTrail",
+                        "AssetComponent": "Trail"
+                    },
+                    "Resources": [
+                        {
+                            "Type": "AwsCloudTrailTrail",
+                            "Id": trailArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF V1.1 DE.AE-3",
+                            "NIST SP 800-53 Rev. 4 AU-6",
+                            "NIST SP 800-53 Rev. 4 CA-7",
+                            "NIST SP 800-53 Rev. 4 IR-4",
+                            "NIST SP 800-53 Rev. 4 IR-5",
+                            "NIST SP 800-53 Rev. 4 IR-8",
+                            "NIST SP 800-53 Rev. 4 SI-4",
+                            "AICPA TSC CC7.2",
+                            "ISO 27001:2013 A.12.4.1",
+                            "ISO 27001:2013 A.16.1.7",
                         ],
-                        "Compliance": {
-                            "Status": "FAILED",
-                            "RelatedRequirements": [
-                                "NIST CSF V1.1 DE.AE-3",
-                                "NIST SP 800-53 Rev. 4 AU-6",
-                                "NIST SP 800-53 Rev. 4 CA-7",
-                                "NIST SP 800-53 Rev. 4 IR-4",
-                                "NIST SP 800-53 Rev. 4 IR-5",
-                                "NIST SP 800-53 Rev. 4 IR-8",
-                                "NIST SP 800-53 Rev. 4 SI-4",
-                                "AICPA TSC CC7.2",
-                                "ISO 27001:2013 A.12.4.1",
-                                "ISO 27001:2013 A.16.1.7",
-                            ],
-                        },
-                        "Workflow": {"Status": "NEW"},
-                        "RecordState": "ACTIVE",
-                    }
-                    yield finding
-                else:
-                    print(e)
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE",
+                }
+                yield finding
 
 @registry.register_check("cloudtrail")
 def cloudtrail_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudTrail.3] CloudTrail trails should be encrypted by KMS"""
     cloudtrail = session.client("cloudtrail")
-    trail = list_trails(cache, session)
-    myCloudTrails = trail["Trails"]
-    for trails in myCloudTrails:
+    for trails in list_trails(cache, session)["Trails"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(trails,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         trailArn = str(trails["TrailARN"])
         trailName = str(trails["Name"])
         response = cloudtrail.describe_trails(trailNameList=[trailArn], includeShadowTrails=False)
@@ -279,7 +320,7 @@ def cloudtrail_encryption_check(cache: dict, session, awsAccountId: str, awsRegi
         for details in response["trailList"]:
             try:
                 # this is a passing check
-                encryptionCheck = str(details["KmsKeyId"])
+                details["KmsKeyId"]
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": trailArn + "/cloudtrail-kms-encryption-check",
@@ -303,7 +344,17 @@ def cloudtrail_encryption_check(cache: dict, session, awsAccountId: str, awsRegi
                             "Url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/encrypting-cloudtrail-log-files-with-aws-kms.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Management & Governance",
+                        "AssetService": "AWS CloudTrail",
+                        "AssetComponent": "Trail"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCloudTrailTrail",
@@ -327,74 +378,81 @@ def cloudtrail_encryption_check(cache: dict, session, awsAccountId: str, awsRegi
                     "RecordState": "ARCHIVED",
                 }
                 yield finding
-            except Exception as e:
-                if str(e) == "'KmsKeyId'":
-                    finding = {
-                        "SchemaVersion": "2018-10-08",
-                        "Id": trailArn + "/cloudtrail-kms-encryption-check",
-                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": trailArn,
-                        "AwsAccountId": awsAccountId,
-                        "Types": [
-                            "Software and Configuration Checks/AWS Security Best Practices",
-                            "Effects/Data Exposure",
+            except KeyError:
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": trailArn + "/cloudtrail-kms-encryption-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": trailArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": [
+                        "Software and Configuration Checks/AWS Security Best Practices",
+                        "Effects/Data Exposure",
+                    ],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "HIGH"},
+                    "Confidence": 99,
+                    "Title": "[CloudTrail.3] CloudTrail trails should be encrypted by KMS",
+                    "Description": "CloudTrail trail "
+                    + trailName
+                    + " is not encrypted by KMS. Refer to the remediation instructions if this configuration is not intended",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "If your trail should be encrypted with SSE-KMS refer to the Encrypting CloudTrail Log Files with AWS KMS–Managed Keys (SSE-KMS) section of the AWS CloudTrail User Guide",
+                            "Url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/encrypting-cloudtrail-log-files-with-aws-kms.html",
+                        }
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Management & Governance",
+                        "AssetService": "AWS CloudTrail",
+                        "AssetComponent": "Trail"
+                    },
+                    "Resources": [
+                        {
+                            "Type": "AwsCloudTrailTrail",
+                            "Id": trailArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF V1.1 PR.DS-1",
+                            "NIST SP 800-53 Rev. 4 MP-8",
+                            "NIST SP 800-53 Rev. 4 SC-12",
+                            "NIST SP 800-53 Rev. 4 SC-28",
+                            "AICPA TSC CC6.1",
+                            "ISO 27001:2013 A.8.2.3",
                         ],
-                        "FirstObservedAt": iso8601Time,
-                        "CreatedAt": iso8601Time,
-                        "UpdatedAt": iso8601Time,
-                        "Severity": {"Label": "HIGH"},
-                        "Confidence": 99,
-                        "Title": "[CloudTrail.3] CloudTrail trails should be encrypted by KMS",
-                        "Description": "CloudTrail trail "
-                        + trailName
-                        + " is not encrypted by KMS. Refer to the remediation instructions if this configuration is not intended",
-                        "Remediation": {
-                            "Recommendation": {
-                                "Text": "If your trail should be encrypted with SSE-KMS refer to the Encrypting CloudTrail Log Files with AWS KMS–Managed Keys (SSE-KMS) section of the AWS CloudTrail User Guide",
-                                "Url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/encrypting-cloudtrail-log-files-with-aws-kms.html",
-                            }
-                        },
-                        "ProductFields": {"Product Name": "ElectricEye"},
-                        "Resources": [
-                            {
-                                "Type": "AwsCloudTrailTrail",
-                                "Id": trailArn,
-                                "Partition": awsPartition,
-                                "Region": awsRegion,
-                            }
-                        ],
-                        "Compliance": {
-                            "Status": "FAILED",
-                            "RelatedRequirements": [
-                                "NIST CSF V1.1 PR.DS-1",
-                                "NIST SP 800-53 Rev. 4 MP-8",
-                                "NIST SP 800-53 Rev. 4 SC-12",
-                                "NIST SP 800-53 Rev. 4 SC-28",
-                                "AICPA TSC CC6.1",
-                                "ISO 27001:2013 A.8.2.3",
-                            ],
-                        },
-                        "Workflow": {"Status": "NEW"},
-                        "RecordState": "ACTIVE",
-                    }
-                    yield finding
-                else:
-                    print(e)
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE",
+                }
+                yield finding
 
 @registry.register_check("cloudtrail")
 def cloudtrail_global_services_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudTrail.4] CloudTrail trails should log management events"""
     cloudtrail = session.client("cloudtrail")
-    trail = list_trails(cache, session)
-    myCloudTrails = trail["Trails"]
-    for trails in myCloudTrails:
+    for trails in list_trails(cache, session)["Trails"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(trails,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         trailArn = str(trails["TrailARN"])
         trailName = str(trails["Name"])
         response = cloudtrail.describe_trails(trailNameList=[trailArn], includeShadowTrails=False)
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         for details in response["trailList"]:
-            globalServiceEventCheck = str(details["IncludeGlobalServiceEvents"])
-            if globalServiceEventCheck == "False":
+            if details["IncludeGlobalServiceEvents"] == False:
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": trailArn + "/cloudtrail-global-services-logging-check",
@@ -417,7 +475,17 @@ def cloudtrail_global_services_check(cache: dict, session, awsAccountId: str, aw
                             "Url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-management-events-with-cloudtrail.html#logging-management-events",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Management & Governance",
+                        "AssetService": "AWS CloudTrail",
+                        "AssetComponent": "Trail"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCloudTrailTrail",
@@ -466,7 +534,17 @@ def cloudtrail_global_services_check(cache: dict, session, awsAccountId: str, aw
                             "Url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-management-events-with-cloudtrail.html#logging-management-events",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Management & Governance",
+                        "AssetService": "AWS CloudTrail",
+                        "AssetComponent": "Trail"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCloudTrailTrail",
@@ -499,16 +577,16 @@ def cloudtrail_global_services_check(cache: dict, session, awsAccountId: str, aw
 def cloudtrail_log_file_validation_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudTrail.5] CloudTrail log file validation should be enabled"""
     cloudtrail = session.client("cloudtrail")
-    trail = list_trails(cache, session)
-    myCloudTrails = trail["Trails"]
-    for trails in myCloudTrails:
+    for trails in list_trails(cache, session)["Trails"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(trails,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         trailArn = str(trails["TrailARN"])
         trailName = str(trails["Name"])
         response = cloudtrail.describe_trails(trailNameList=[trailArn], includeShadowTrails=False)
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         for details in response["trailList"]:
-            fileValidationCheck = str(details["LogFileValidationEnabled"])
-            if fileValidationCheck == "False":
+            if details["LogFileValidationEnabled"] == False:
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": trailArn + "/cloudtrail-log-file-validation-check",
@@ -531,7 +609,17 @@ def cloudtrail_log_file_validation_check(cache: dict, session, awsAccountId: str
                             "Url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-log-file-validation-intro.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Management & Governance",
+                        "AssetService": "AWS CloudTrail",
+                        "AssetComponent": "Trail"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCloudTrailTrail",
@@ -581,7 +669,17 @@ def cloudtrail_log_file_validation_check(cache: dict, session, awsAccountId: str
                             "Url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-log-file-validation-intro.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Management & Governance",
+                        "AssetService": "AWS CloudTrail",
+                        "AssetComponent": "Trail"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCloudTrailTrail",

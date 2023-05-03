@@ -2,7 +2,7 @@
 
 ![Logo](./screenshots/logo.svg)
 
-ElectricEye is a Cloud Security Configuration CLI for AWS, GCP, Azure, and SaaS Security Posture Management with support for 100s of services and evaluations to harden your *entire* cloud footprint.
+ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Cloud Asset Management (CAM), Cloud Security Posture Management (CSPM), SaaS Security Posture Management (SSPM), and External Attack Surface Management (EASM) supporting 100s of services and evaluations to harden your public cloud & SaaS environments.
 
 ***Up here in space***<br/>
 ***I'm looking down on you***<br/>
@@ -32,6 +32,10 @@ python3 eeauditor/controller.py -t AWS -o stdout
   - [For Microsoft M365 (E5) (*Coming Soon*)](./docs//Setup_M365.md)
   - [For Workday ERP (*Coming Soon*)](./docs/setup/Setup_WorkDay.md)
   - [For GitHub (*Coming Soon*)](./docs/setup/Setup_GitHub.md)
+- [Cloud Asset Management](./docs/asset_management/ASSET_MANAGEMENT.md)
+  - [CAM Concept of Operations](./docs/asset_management/ASSET_MANAGEMENT.md#cam-concept-of-operations-conops)
+  - [CAM Reporting](./docs/asset_management/ASSET_MANAGEMENT.md#cloud-asset-management-cam-reporting)
+  - [Asset Class Mapping](./docs/asset_management/ASSET_MANAGEMENT.md#asset-class-mapping)
 - [Custom Outputs](#custom-outputs)
 - [Supported Services and Checks](#supported-services-and-checks)
   - [AWS Checks & Services](#aws-checks--services)
@@ -47,19 +51,19 @@ python3 eeauditor/controller.py -t AWS -o stdout
 
 ## Quick Run Down :running: :running:
 
-- ElectricEye is a Python 3 Command Line Interace (CLI) that supports multi-Cloud and multi-Software-as-a-Service (multi-SaaS) Security Posture Management (CSPM, SSPM) and External Attack Surface Management (EASM) capabilities across AWS, GCP, and ServiceNow with dozens more Public Cloud Service Providers (CSPs) and SaaS Providers planned.
+- ElectricEye is a Python (`>=3.6`) Command Line Interace (CLI) tool that supports *true multi-Cloud* (public CSP & Software-as-a-Service) Cloud Asset Management (CAM), Cloud Security Posture Management (CSPM), SaaS Security Posture Management (SSPM) & External Attack Surface Management (EASM) capabilities across AWS, GCP, and ServiceNow with dozens more Public Cloud Service Providers (CSPs) and SaaS Providers planned.
 
 - AWS assessments are done per-Account, per-Region. GCP assessments are done multi-Region, per Project. ServiceNow assessments are done at the Instance level.
 
 - For AWS, ElectricEye supports all 5 Parititions Commercial (`aws`), AWS GovCloud (`aws-gov`), AWS China (`aws-cn`), AWS Secret Region (`aws-iso-b`) and AWS Top Secret Region (`aws-iso`). For all other CSP and SaaS provider, only the commerical/non-US Government partitions/instances/tenants are supported.
 
-- For AWS, ElectricEye is the most comprhensive CSPM & EASM tool supporting over **500 Checks** for Security, Reliaiblity, Monitoring, and Exposure across **100 CSP Services** including atypical services not supported by AWS Config or mainstream CSPM & Cloud Native Application Protection Platform (CNAPP) tools such as AWS Managed Blockchain, AWS Managed Workflows for Apache AirFlow, Amazon MemoryDB, AWS Amplify, Amazon MQ, and more!
+- For AWS, ElectricEye is the most comprhensive CAM, CSPM & EASM tool supporting over **500 Checks** for Security, Reliaiblity, Monitoring, and Exposure across **100 CSP Services** including atypical services not supported by AWS Config or mainstream CSPM & Cloud Native Application Protection Platform (CNAPP) tools such as AWS Managed Blockchain, AWS Managed Workflows for Apache AirFlow, Amazon MemoryDB, AWS Amplify, Amazon MQ, and more!
 
-- All checks are currently mapped to [NIST Cybersecurity Framework V1.1](https://doi.org/10.6028/NIST.CSWP.04162018), [NIST Special Publication 800-53 Revision 4](https://csrc.nist.gov/publications/detail/sp/800-53/rev-4/archive/2015-01-22), [American Institute of Certified Public Accountants (AICPA) Trust Service Criteria (TSCs)](https://us.aicpa.org/content/dam/aicpa/interestareas/frc/assuranceadvisoryservices/downloadabledocuments/trust-services-criteria-2020.pdf) which can be used for SOC2 Type I and SOC2 Type II, and [ISO 27001:2013](https://www.iso.org/standard/27001) ISMS controls for Audit Readiness and internal GRC requirements.
+- All checks are currently mapped to [**NIST Cybersecurity Framework V1.1**](https://doi.org/10.6028/NIST.CSWP.04162018), [**NIST Special Publication 800-53 Revision 4**](https://csrc.nist.gov/publications/detail/sp/800-53/rev-4/archive/2015-01-22), [**American Institute of Certified Public Accountants (AICPA) Trust Service Criteria (TSCs)**](https://us.aicpa.org/content/dam/aicpa/interestareas/frc/assuranceadvisoryservices/downloadabledocuments/trust-services-criteria-2020.pdf) which can be used for SOC2 Type I and SOC2 Type II, and [**ISO 27001:2013**](https://www.iso.org/standard/27001) ISMS controls for Audit Readiness and internal GRC requirements.
 
 - Configurable EASM module uses NMAP for service discovery and reachability assessment of over 20 highly-dangerous ports and protocols (e.g., SMB, MongoDB, VMWARE ESXi, and more) for nearly every public-facing capable AWS service. GCP EASM is supported for GCE.
 
-- Outputs to AWS Security Hub, JSON, CSV, MongoDB, PostgreSQL, and [DisruptOps by Firemon](https://www.firemon.com/introducing-disruptops/).
+- Outputs to AWS Security Hub, AWS DocumentDB, JSON files, CSV files, MongoDB, PostgreSQL, and [**FireMon Cloud Defense**](https://www.firemon.com/introducing-disruptops/).
 
 ## Tell Me More :round_pushpin: :round_pushpin:
 
@@ -69,18 +73,23 @@ ElectricEye was created in early 2019 as an extension to [AWS Security Hub](http
 
 Since then, ElectricEye has continued to expand into the most comprehensive AWS CSPM tool from a service support and check support perspective, adding additional functionality such as Secrets Management (powered by Yelp's **Detect-Secrets**), External Attack Surface Management (powered by **NMAP** and **Shodan.io**) and integration into multiple downstream data formats, databases, as well as AWS Security Hub itself. All findings are mapped to the [AWS Security Finding Format (ASFF)](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html) for portability into [Amazon Security Lake](https://aws.amazon.com/security-lake/) and AWS Security Hub, and can be further parsed by supported outputs.
 
+A majority of evaluations performed by ElectricEye against public cloud and SaaS providers are aligned to security best practices such as ensuring secure configurations, encryption, logging & monitoring, and resilience. However, ElectricEye also supports use cases such as operational monitoring, high availability, patching, software asset management, sustainability, and performance configurations to broaden the appeal to users. ElectricEye can be used for cloud inventory management via its Cloud Asset Management (CAM) reporting outputs (`cam-json`) which records every unique asset scanned in an environment together with a service hierarchy for ingestion into other IT and security use cases.
+
 ElectricEye's terminology is as follows: the "entrypoint" into the evaluation logic of the tool is contained within the aptly named **Controller** (seen in [`controller.py`](./eeauditor/controller.py)) where all arguments are parsed and credentials are prepared. Command-line arguments are provided and parsed using [`click`](https://click.palletsprojects.com/en/8.1.x/) which is an alternative to [`argparse`](https://docs.python.org/3/library/argparse.html) to direct the evaluation logic of ElectricEye. The "top-level" concept within ElectricEye is the **Assessment Target** (sometimes referenced as **Target** or **AT** in other documentation & code targets) which corresponds to a single public Cloud Service Provider (CSP) - such as Amazon Web Services (AWS) - or to a single Software-as-a-Service (SaaS) provider - such as ServiceNow or GitHub.
 
 Every Assessment Target has a corresponding set of (aptly named) **Auditors** which are individual Python scripts that encapsulate discrete logic to evaluate the overall posture of a specific Cloud resource or component called a **Check**. In some cases an Auditor can contain Checks for multiple services where it makes sense to do so, such as within the EASM Auditors or within the [Shodan Auditor](./eeauditor/auditors/aws/Amazon_Shodan_Auditor.py) for AWS. 
 
 While ElectricEye is primarily a security posture management (SPM) tool, some Checks align to performance, resilience, and optimization best practices which in turn are aligned to **Compliance Standards** or have some secondary or tertiary benefit. Compliance Standards are a term borrowed from the ASFF that refer to any regulatory, industry, and/or "best practice" frameworks which define **Controls** which in turn define People, Process, and/or Technology configurations or outcomes which must be met to abide by or otherwise comply with a Control. ElectricEye solely deals at the infrastructure layer of CSPs and SaaS and thus only supports Technology-relevant controls in these various standards/frameworks/laws that define these Controls.
 
-As to the rest of ElectricEye's control flow, besides the arguments from the Controller (via `click`), it also uses a [Tom's Obvious Markup Language (TOML)](https://toml.io/en/) file (a `.toml`) - named [`external_providers.toml`](./eeauditor/external_providers.toml). This `.toml` specifies non-AWS CSPs and SaaS Provider information such as GCP Project IDs, ServiceNow Instance URLs, and takes references for API Keys, Passwords, and other sensitive information as SSM Parameters - in the future this may change to support local vaulting & Privileged Access Management (PAM)/Privileged Identity Management (PIM) tools for non-AWS versions of ElectricEye. The `click` and `.toml` arguments and values are passed off the "brain" of ElectricEye which is contained in [`eeauditor.py`](./eeauditor/eeauditor.py) - this Python file will load all Auditors using [`pluginbase`](http://pluginbase.pocoo.org/) and [Decorators](https://znasibov.info/posts/2017/01/22/the_ultimate_guide_to_python_decorators.html), will run the Auditors (or specific Checks) and `yield` back the results to be sent to Security Hub or other locations instrumented by the **Outputs Processor** (defined, partially, in [`processor/main.py`](./eeauditor/processor/main.py)).
+As to the rest of ElectricEye's control flow, besides the arguments from the Controller (via `click`), it also uses a [Tom's Obvious Markup Language (TOML)](https://toml.io/en/) file (a `.toml`) - named [`external_providers.toml`](./eeauditor/external_providers.toml). This `.toml` specifies non-AWS CSPs and SaaS Provider information such as GCP Project IDs, ServiceNow Instance URLs, and takes references for API Keys, Passwords, and other sensitive information as SSM Parameters - in the future this may change to support local vaulting & Privileged Access Management (PAM)/Privileged Identity Management (PIM) tools for non-AWS versions of ElectricEye. 
 
-As of April 2023 ElectricEye supports the following CSPM, EASM, and SSPM capabilities. More SaaS Providers and CSPs - as well as expanded service & capability coverage - is under active development.
+The `click` and `.toml` arguments and values are passed off the "brain" of ElectricEye which is contained in [`eeauditor.py`](./eeauditor/eeauditor.py) - this Python file will load all Auditors using [`pluginbase`](http://pluginbase.pocoo.org/) and [Decorators](https://znasibov.info/posts/2017/01/22/the_ultimate_guide_to_python_decorators.html), will run the Auditors (or specific Checks) and `yield` back the results to be sent to Security Hub or other locations instrumented by the **Outputs Processor** (defined, partially, in [`processor/main.py`](./eeauditor/processor/main.py)).
 
+As of April 2023 ElectricEye supports the following CAM, CSPM, EASM, and SSPM capabilities. More SaaS Providers and CSPs - as well as expanded service & capability coverage - is under active development.
+
+- **CAM**: AWS, GCP, ServiceNow
 - **CSPM**: AWS, GCP
-- **SSPM**: Servicenow
+- **SSPM**: ServiceNow
 - **EASM**: AWS, GCP
 
 ## How do I use this :thinking: :thinking: ??
@@ -100,6 +109,18 @@ Refer to sub-headings for per-CSP or per-SaaS setup instructions.
 - [For Microsoft M365 (E5) (*Coming Soon*)](./docs//Setup_M365.md)
 - [For Workday ERP (*Coming Soon*)](./docs/setup/Setup_WorkDay.md)
 - [For GitHub (*Coming Soon*)](./docs/setup/Setup_GitHub.md)
+
+## Cloud Asset Management (CAM)
+
+For more information on ElectricEye's CAM concept of operations and output, refer to [the Asset Management documentation](./docs/asset_management/ASSET_MANAGEMENT.md)
+
+Individual information is located at:
+
+- [CAM Concept of Operations](./docs/asset_management/ASSET_MANAGEMENT.md#cam-concept-of-operations-conops)
+
+- [CAM Reporting](./docs/asset_management/ASSET_MANAGEMENT.md#cloud-asset-management-cam-reporting)
+
+- [Asset Class Mapping](./docs/asset_management/ASSET_MANAGEMENT.md#asset-class-mapping)
 
 ## Custom Outputs
 
@@ -219,12 +240,16 @@ aws ssm put-parameter \
 
 ## Supported Services and Checks
 
-In total there are...
+In total there are:
 
 > - **2** Supported Public CSPs
+
 > - **1** Supported SaaS Provider
-> - **695** Security & Resilience Best Practice Checks supported across all Public CSPs & SaaS Providers
+
+> - **693** Security & Resilience Best Practice Checks supported across all Public CSPs & SaaS Providers
+
 > - **105** Supported CSP & SaaS Resources / Asset Types
+
 > - **89** Auditor Plugins
 
 ### AWS Checks & Services
@@ -232,13 +257,13 @@ ___
 
 These are the following services and checks perform by each Auditor, there are currently...
 
-- :boom: **550 Checks** :boom:
+- :boom: **548 Checks** :boom:
 - :exclamation: **100 supported AWS services/components** :exclamation:
 - :fire: **77 Auditors** :fire:
 
 **Regarding AWS ElasticSearch Service/OpenSearch Service:** AWS has stopped supporting Elastic after Version 7.10 and released a new service named OpenSearch. The APIs/SDKs/CLI are interchangable. Only ASFF metadata has changed to reflect this, the Auditor Names, Check Names, and ASFF ID's have stayed the same.
 
-**Regarding AWS Shield Advanced:** You must be actively subscribed to Shield Advance with at least one Protection assigned to assess this Service.
+**Regarding AWS Shield Advanced:** You must be actively subscribed to Shield Advanced with at least one Protection assigned to assess this Service.
 
 **Regarding AWS Trusted Advisor:** You must be on AWS Business or Enterprise Support to interact with the `support` API for Trusted Advisor.
 
@@ -297,7 +322,7 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_DocumentDB_Auditor | DocDB Snapshot | Are docdb cluster snapshots public |
 | Amazon_DynamoDB_Auditor | DynamoDB Table | Do tables use KMS CMK for encryption |
 | Amazon_DynamoDB_Auditor | DynamoDB Table | Do tables have PITR enabled |
-| Amazon_DynamoDB_Auditor | DynamoDB Table | Do tables have TTL enabled |
+| ~~Amazon_DynamoDB_Auditor~~ | ~~DynamoDB Table~~ | ~~Do tables have TTL enabled~~ **THIS FINDING HAS BEEN RETIRED** |
 | Amazon_DAX_Auditor | DAX Cluster | Do clusters encrypt data at rest |
 | Amazon_DAX_Auditor | DAX Cluster | Do clusters encrypt data in transit |
 | Amazon_DAX_Auditor | DAX Cluster | Do clusters have cache item TTL defined |
@@ -368,9 +393,10 @@ These are the following services and checks perform by each Auditor, there are c
 | Amazon_EFS_Auditor | EFS File System | Are file systems encrypted |
 | Amazon_EFS_Auditor | EFS File System | Does the File system have a custom policy attached |
 | Amazon_EKS_Auditor | EKS Cluster | Is the API Server publicly accessible |
-| Amazon_EKS_Auditor | EKS Cluster | Is the latest K8s version used |
+| Amazon_EKS_Auditor | EKS Cluster | Are one of the *three* latest K8s version used |
 | Amazon_EKS_Auditor | EKS Cluster | Are auth or audit logs enabled |
 | Amazon_EKS_Auditor | EKS Cluster | Is K8s Secrets envelope encryption used |
+| Amazon_EKS_Auditor | EKS Cluster | Is a deprecated K8s version used |
 | Amazon_Elasticache_Redis_Auditor | Elasticache Redis Cluster | Is an AUTH Token used |
 | Amazon_Elasticache_Redis_Auditor | Elasticache Redis Cluster | Is the cluster encrypted at rest |
 | Amazon_Elasticache_Redis_Auditor | Elasticache Redis Cluster | Does the cluster encrypt in transit |
@@ -618,8 +644,8 @@ These are the following services and checks perform by each Auditor, there are c
 | AWS_Security_Services_Auditor | GuardDuty (Account) | Is GuardDuty enabled |
 | AWS_Security_Services_Auditor | Detective (Account) | Is Detective enabled |
 | AWS_Security_Services_Auditor | Macie2 | Is Macie enabled |
-| AWS_Security_Services_Auditor | AWS WAFv2 (Regional) | Are Regional Web ACLs configured |
-| AWS_Security_Services_Auditor | AWS WAFv2 (Global) | Are Global Web ACLs (for CloudFront) configured |
+| ~~AWS_Security_Services_Auditor~~ | ~~AWS WAFv2 (Regional)~~ | ~~Are Regional Web ACLs configured~~ **THIS FINDING HAS BEEN RETIRED** |
+| ~~AWS_Security_Services_Auditor~~ | ~~AWS WAFv2 (Global)~~ | ~~Are Global Web ACLs (for CloudFront) configured~~ **THIS FINDING HAS BEEN RETIRED** |
 | AWS_Systems_Manager_Auditor | SSM Document | Are self owned SSM Documents publicly shared |
 | AWS_Systems_Manager_Auditor | SSM Association | Does an SSM Association that targets all Instances conduct SSM Agent updates |
 | AWS_Systems_Manager_Auditor | SSM Association | Does an SSM Association that targets all Instances conduct patching |
@@ -887,95 +913,95 @@ These are the following services and checks perform by each Auditor, there are c
 | Servicenow_Users_Auditor | Servicenow User | Do active users have MFA enabled |
 | Servicenow_Users_Auditor | Servicenow User | Audit active users for {X} failed login attempts |
 | Servicenow_Users_Auditor | Servicenow User | Audit active users that are locked out |
-| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance block unsanitized messages |
-| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance specify a script execution role |
-| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for JSONv2 API |
-| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for SOAP API |
-| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does instance block delegated developer grant roles |
-| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for CSV API |
-| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enforce default deny |
-| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance double-check inbound form transactions |
-| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance control live profile details |
-| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for GlideAjax API |
-| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for Excel API |
-| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for the import API |
-| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for PDF API |
-| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance protect performance monitoring for unauthorized access |
-| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance restrict performance monitoring to specific IP |
-| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enable privacy control for client-callable scripts |
-| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance restrict Favorites access |
-| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance have an IP Allowlist |
-| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for RSS API |
-| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for Script Requests API |
-| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance perform validation for SOAP requests |
-| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance restrict ServiceNow employee access
-| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for Unload API |
-| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for WSDL API |
-| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for XML API |
-| Servicenow_AccessControl_Auditor | Servicenow Instance | Access Control: Does the instance enforce basic AuthN for XSD API |
-| Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Does the instance restrict files from being rendered in the browser |
-| Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instance should restrict questionable file attachments |
-| Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instance should configure file download restrictions |
-| Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instance should enable access control for profile pictures |
-| Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instance should enforce downloading of attachments |
-| Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instance should define file type allowlist for uploads |
-| Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instance should prevent unauthorized access to attachments |
-| Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instance should prevent specific file extensions upload |
-| Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instance should prevent specific file type upload |
-| Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instance should prevent specific file type download |
-| Servicenow_Attachments_Auditor | Servicenow Instance | Attachments: Instance should enable MIME type validation |
-| Servicenow_EmailSecurity_Auditor | Servicenow Instance | Email Security: Instance should restrict email HTML bodies from rendering |
-| Servicenow_EmailSecurity_Auditor | Servicenow Instance | Email Security: Instance should restrict acccess to emails with empty target tables |
-| Servicenow_EmailSecurity_Auditor | Servicenow Instance | Email Security: Instance should specify trusted domain allowlists |
-| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instance should disallow embedded HTML code |
-| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instance should disallow JavaScript in embedded HTML |
-| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instance should check unsanitized HTML |
-| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instance should enable script sandboxing |
-| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instance should disable AJAXEvaluate |
-| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instance should escape Excel formula injection |
-| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instance should escape HTML |
-| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instance should escape JavaScript |
-| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instance should escape Jelly |
-| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instance should escape XML |
-| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instance should sanitize HTML |
-| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instance should prevent JavaScript injection with Jelly interpolation |
-| Servicenow_InputValidation_Auditor | Servicenow Instance | Input Validation: Instance should enable SOAP request strict security |
-| Servicenow_SecureCommunications_Auditor | Servicenow Instance | Secure Communications: Instance should enable certficate validation on outbound connections |
-| Servicenow_SecureCommunications_Auditor | Servicenow Instance | Secure Communications: Instance should disable SSLv2 & SSLv3 |
-| Servicenow_SecureCommunications_Auditor | Servicenow Instance | Secure Communications: Instance should verify HTTP client hostnames |
-| Servicenow_SecureCommunications_Auditor | Servicenow Instance | Secure Communications: Instance should check revoked certificate status |
-| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Instance should enable URL allow list for cross-origin iframe communication |
-| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Instance should enforce relative links |
-| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Instance should specify URL allow list for cross-origin iframe communication |
-| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Instance should specify URL allow list for logout redirects |
-| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Instance should set virtual agent embedded client content security policy |
-| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Instance should set virtual agent embedded client X-Frame-Options |
-| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Instance should set X-Frame-Options: SAMEORIGIN |
-| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Instance should set XXE entity expansion threshold |
-| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Instance should set XMLdoc/XMLUtil entity validation allow list |
-| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Instance should disable XXE entity expansion |
-| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Instance should set XMLdoc2 entity validation allow list |
-| Servicenow_SecurityInclusionListing_Auditor | Servicenow Instance | Security Inclusion Listing: Instance should enable XML external entity processing allow lists |
-| Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: Instance should set absolute session timeouts |
-| Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: Instance should set an Anti-CSRF token |
-| Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: Instance should set the HTTPOnly property for sensitive cookies |
-| Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: Instance should enable Anti-CSRF token strict validation |
-| Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: Instance should disable passwordless authentication |
-| Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: Instance should globally enable MFA |
-| Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: Instance should enforce password change validation |
-| Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: Instance should disable password autocompletes |
-| Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: Instance should disable Remember Me checkboxes |
-| Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: Instance should rotate HTTP SessionIDs |
-| Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: Instance should validate session cookies |
-| Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: Instance should set a strong security reference policy |
-| Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: Instance should set a strong session activity timeout |
-| Servicenow_SessionManagement_Auditor | Servicenow Instance | Session Management: If using Remember Me, instance should set a strong rotation timeout |
-| Servicenow_SecurityPlugins_Auditor | Servicenow Plugin | Plugins: Instance should have the Contextual Security: Role Management Plugin intalled and active |
-| Servicenow_SecurityPlugins_Auditor | Servicenow Plugin | Plugins: Instance should have the Explicit Role Plugin intalled and active |
-| Servicenow_SecurityPlugins_Auditor | Servicenow Plugin | Plugins: Instance should have the SAML 2.0 SSO Plugin intalled and active |
-| Servicenow_SecurityPlugins_Auditor | Servicenow Plugin | Plugins: Instance should have the Security Jump Start Plugin intalled and active |
-| Servicenow_SecurityPlugins_Auditor | Servicenow Plugin | Plugins: Instance should have the SNC Access Control Plugin intalled and active |
-| Servicenow_SecurityPlugins_Auditor | Servicenow Plugin | Plugins: Instance should have the Email Filters Plugin intalled and active |
+| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance block unsanitized messages |
+| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance specify a script execution role |
+| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enforce basic AuthN for JSONv2 API |
+| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enforce basic AuthN for SOAP API |
+| Servicenow_AccessControl_Auditor | System Property | Access Control: Does instance block delegated developer grant roles |
+| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enforce basic AuthN for CSV API |
+| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enforce default deny |
+| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance double-check inbound form transactions |
+| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance control live profile details |
+| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enforce basic AuthN for GlideAjax API |
+| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enforce basic AuthN for Excel API |
+| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enforce basic AuthN for the import API |
+| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enforce basic AuthN for PDF API |
+| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance protect performance monitoring for unauthorized access |
+| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance restrict performance monitoring to specific IP |
+| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enable privacy control for client-callable scripts |
+| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance restrict Favorites access |
+| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance have an IP Allowlist |
+| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enforce basic AuthN for RSS API |
+| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enforce basic AuthN for Script Requests API |
+| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance perform validation for SOAP requests |
+| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance restrict ServiceNow employee access
+| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enforce basic AuthN for Unload API |
+| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enforce basic AuthN for WSDL API |
+| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enforce basic AuthN for XML API |
+| Servicenow_AccessControl_Auditor | System Property | Access Control: Does the instance enforce basic AuthN for XSD API |
+| Servicenow_Attachments_Auditor | System Property | Attachments: Does the instance restrict files from being rendered in the browser |
+| Servicenow_Attachments_Auditor | System Property | Attachments: Instance should restrict questionable file attachments |
+| Servicenow_Attachments_Auditor | System Property | Attachments: Instance should configure file download restrictions |
+| Servicenow_Attachments_Auditor | System Property | Attachments: Instance should enable access control for profile pictures |
+| Servicenow_Attachments_Auditor | System Property | Attachments: Instance should enforce downloading of attachments |
+| Servicenow_Attachments_Auditor | System Property | Attachments: Instance should define file type allowlist for uploads |
+| Servicenow_Attachments_Auditor | System Property | Attachments: Instance should prevent unauthorized access to attachments |
+| Servicenow_Attachments_Auditor | System Property | Attachments: Instance should prevent specific file extensions upload |
+| Servicenow_Attachments_Auditor | System Property | Attachments: Instance should prevent specific file type upload |
+| Servicenow_Attachments_Auditor | System Property | Attachments: Instance should prevent specific file type download |
+| Servicenow_Attachments_Auditor | System Property | Attachments: Instance should enable MIME type validation |
+| Servicenow_EmailSecurity_Auditor | System Property | Email Security: Instance should restrict email HTML bodies from rendering |
+| Servicenow_EmailSecurity_Auditor | System Property | Email Security: Instance should restrict acccess to emails with empty target tables |
+| Servicenow_EmailSecurity_Auditor | System Property | Email Security: Instance should specify trusted domain allowlists |
+| Servicenow_InputValidation_Auditor | System Property | Input Validation: Instance should disallow embedded HTML code |
+| Servicenow_InputValidation_Auditor | System Property | Input Validation: Instance should disallow JavaScript in embedded HTML |
+| Servicenow_InputValidation_Auditor | System Property | Input Validation: Instance should check unsanitized HTML |
+| Servicenow_InputValidation_Auditor | System Property | Input Validation: Instance should enable script sandboxing |
+| Servicenow_InputValidation_Auditor | System Property | Input Validation: Instance should disable AJAXEvaluate |
+| Servicenow_InputValidation_Auditor | System Property | Input Validation: Instance should escape Excel formula injection |
+| Servicenow_InputValidation_Auditor | System Property | Input Validation: Instance should escape HTML |
+| Servicenow_InputValidation_Auditor | System Property | Input Validation: Instance should escape JavaScript |
+| Servicenow_InputValidation_Auditor | System Property | Input Validation: Instance should escape Jelly |
+| Servicenow_InputValidation_Auditor | System Property | Input Validation: Instance should escape XML |
+| Servicenow_InputValidation_Auditor | System Property | Input Validation: Instance should sanitize HTML |
+| Servicenow_InputValidation_Auditor | System Property | Input Validation: Instance should prevent JavaScript injection with Jelly interpolation |
+| Servicenow_InputValidation_Auditor | System Property | Input Validation: Instance should enable SOAP request strict security |
+| Servicenow_SecureCommunications_Auditor | System Property | Secure Communications: Instance should enable certficate validation on outbound connections |
+| Servicenow_SecureCommunications_Auditor | System Property | Secure Communications: Instance should disable SSLv2 & SSLv3 |
+| Servicenow_SecureCommunications_Auditor | System Property | Secure Communications: Instance should verify HTTP client hostnames |
+| Servicenow_SecureCommunications_Auditor | System Property | Secure Communications: Instance should check revoked certificate status |
+| Servicenow_SecurityInclusionListing_Auditor | System Property | Security Inclusion Listing: Instance should enable URL allow list for cross-origin iframe communication |
+| Servicenow_SecurityInclusionListing_Auditor | System Property | Security Inclusion Listing: Instance should enforce relative links |
+| Servicenow_SecurityInclusionListing_Auditor | System Property | Security Inclusion Listing: Instance should specify URL allow list for cross-origin iframe communication |
+| Servicenow_SecurityInclusionListing_Auditor | System Property | Security Inclusion Listing: Instance should specify URL allow list for logout redirects |
+| Servicenow_SecurityInclusionListing_Auditor | System Property | Security Inclusion Listing: Instance should set virtual agent embedded client content security policy |
+| Servicenow_SecurityInclusionListing_Auditor | System Property | Security Inclusion Listing: Instance should set virtual agent embedded client X-Frame-Options |
+| Servicenow_SecurityInclusionListing_Auditor | System Property | Security Inclusion Listing: Instance should set X-Frame-Options: SAMEORIGIN |
+| Servicenow_SecurityInclusionListing_Auditor | System Property | Security Inclusion Listing: Instance should set XXE entity expansion threshold |
+| Servicenow_SecurityInclusionListing_Auditor | System Property | Security Inclusion Listing: Instance should set XMLdoc/XMLUtil entity validation allow list |
+| Servicenow_SecurityInclusionListing_Auditor | System Property | Security Inclusion Listing: Instance should disable XXE entity expansion |
+| Servicenow_SecurityInclusionListing_Auditor | System Property | Security Inclusion Listing: Instance should set XMLdoc2 entity validation allow list |
+| Servicenow_SecurityInclusionListing_Auditor | System Property | Security Inclusion Listing: Instance should enable XML external entity processing allow lists |
+| Servicenow_SessionManagement_Auditor | System Property | Session Management: Instance should set absolute session timeouts |
+| Servicenow_SessionManagement_Auditor | System Property | Session Management: Instance should set an Anti-CSRF token |
+| Servicenow_SessionManagement_Auditor | System Property | Session Management: Instance should set the HTTPOnly property for sensitive cookies |
+| Servicenow_SessionManagement_Auditor | System Property | Session Management: Instance should enable Anti-CSRF token strict validation |
+| Servicenow_SessionManagement_Auditor | System Property | Session Management: Instance should disable passwordless authentication |
+| Servicenow_SessionManagement_Auditor | System Property | Session Management: Instance should globally enable MFA |
+| Servicenow_SessionManagement_Auditor | System Property | Session Management: Instance should enforce password change validation |
+| Servicenow_SessionManagement_Auditor | System Property | Session Management: Instance should disable password autocompletes |
+| Servicenow_SessionManagement_Auditor | System Property | Session Management: Instance should disable Remember Me checkboxes |
+| Servicenow_SessionManagement_Auditor | System Property | Session Management: Instance should rotate HTTP SessionIDs |
+| Servicenow_SessionManagement_Auditor | System Property | Session Management: Instance should validate session cookies |
+| Servicenow_SessionManagement_Auditor | System Property | Session Management: Instance should set a strong security reference policy |
+| Servicenow_SessionManagement_Auditor | System Property | Session Management: Instance should set a strong session activity timeout |
+| Servicenow_SessionManagement_Auditor | System Property | Session Management: If using Remember Me, instance should set a strong rotation timeout |
+| Servicenow_SecurityPlugins_Auditor | Plugin | Plugins: Instance should have the Contextual Security: Role Management Plugin intalled and active |
+| Servicenow_SecurityPlugins_Auditor | Plugin | Plugins: Instance should have the Explicit Role Plugin intalled and active |
+| Servicenow_SecurityPlugins_Auditor | Plugin | Plugins: Instance should have the SAML 2.0 SSO Plugin intalled and active |
+| Servicenow_SecurityPlugins_Auditor | Plugin | Plugins: Instance should have the Security Jump Start Plugin intalled and active |
+| Servicenow_SecurityPlugins_Auditor | Plugin | Plugins: Instance should have the SNC Access Control Plugin intalled and active |
+| Servicenow_SecurityPlugins_Auditor | Plugin | Plugins: Instance should have the Email Filters Plugin intalled and active |
 
 ### SSPM: M365 Checks & Services
 ___
@@ -988,7 +1014,7 @@ Refer to the [Developer Guide](./docs/new_checks/DEVELOPER_GUIDE.md) for instruc
 
 Feel free to open PRs and Issues where syntax, grammatic, and implementation errors are encountered in the code base.
 
-ElectricEye is for sale: contact the maintainer for more imformation!
+**ElectricEye is for sale**: contact the maintainer for more imformation!
 
 ### Early Contributors
 

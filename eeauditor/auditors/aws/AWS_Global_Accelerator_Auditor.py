@@ -21,13 +21,15 @@
 import datetime
 import uuid
 from check_register import CheckRegister, accumulate_paged_results
+import base64
+import json
 
 registry = CheckRegister()
 
 @registry.register_check("globalaccelerator")
 def unhealthy_endpoint_group_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[GlobalAccelerator.1] Endpoint should not be unhealthy"""
-    globalaccelerator = session.client("globalaccelerator", region_name="us-east-2")
+    globalaccelerator = session.client("globalaccelerator", region_name="us-west-2")
     paginator = globalaccelerator.get_paginator("list_accelerators")
     response_iterator = paginator.paginate()
     accelerators = accumulate_paged_results(
@@ -50,6 +52,9 @@ def unhealthy_endpoint_group_check(cache: dict, session, awsAccountId: str, awsR
                 page_iterator=response_iterator, key="EndpointGroups"
             )
             for endpointGroup in endpointGroups["EndpointGroups"]:
+                # B64 encode all of the details for the Asset
+                assetJson = json.dumps(endpointGroup,default=str).encode("utf-8")
+                assetB64 = base64.b64encode(assetJson)
                 endpointGroupArn = endpointGroup["EndpointGroupArn"]
                 for description in endpointGroup["EndpointDescriptions"]:
                     endpointId = description["EndpointId"]
@@ -80,7 +85,17 @@ def unhealthy_endpoint_group_check(cache: dict, session, awsAccountId: str, awsR
                                     "Url": "https://docs.aws.amazon.com/global-accelerator/latest/dg/about-endpoints.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Networking",
+                                "AssetService": "Amazon Global Accelerator",
+                                "AssetComponent": "Endpoint"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsGlobalAcceleratorEndpoint",
@@ -131,7 +146,17 @@ def unhealthy_endpoint_group_check(cache: dict, session, awsAccountId: str, awsR
                                     "Url": "https://docs.aws.amazon.com/global-accelerator/latest/dg/about-endpoints.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Networking",
+                                "AssetService": "Amazon Global Accelerator",
+                                "AssetComponent": "Endpoint"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsGlobalAcceleratorEndpoint",
@@ -161,7 +186,7 @@ def unhealthy_endpoint_group_check(cache: dict, session, awsAccountId: str, awsR
 @registry.register_check("globalaccelerator")
 def flow_logs_enabled_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[GlobalAccelerator.2] Accelerator should have flow logs enabled"""
-    globalaccelerator = session.client("globalaccelerator", region_name="us-east-2")
+    globalaccelerator = session.client("globalaccelerator", region_name="us-west-2")
 
     paginator = globalaccelerator.get_paginator("list_accelerators")
     response_iterator = paginator.paginate()
@@ -170,6 +195,9 @@ def flow_logs_enabled_check(cache: dict, session, awsAccountId: str, awsRegion: 
     )
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for accelerator in accelerators["Accelerators"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(accelerator,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         acceleratorArn = accelerator["AcceleratorArn"]
         acceleratorAttributes = globalaccelerator.describe_accelerator_attributes(
             AcceleratorArn=acceleratorArn
@@ -204,7 +232,17 @@ def flow_logs_enabled_check(cache: dict, session, awsAccountId: str, awsRegion: 
                         "Url": "https://docs.aws.amazon.com/global-accelerator/latest/dg/monitoring-global-accelerator.flow-logs.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Global Accelerator",
+                    "AssetComponent": "Accelerator"
+                },
                 "Resources": [
                     {
                         "Type": "AwsGlobalAcceleratorAccelerator",
@@ -257,7 +295,17 @@ def flow_logs_enabled_check(cache: dict, session, awsAccountId: str, awsRegion: 
                         "Url": "https://docs.aws.amazon.com/global-accelerator/latest/dg/monitoring-global-accelerator.flow-logs.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon Global Accelerator",
+                    "AssetComponent": "Accelerator"
+                },
                 "Resources": [
                     {
                         "Type": "AwsGlobalAcceleratorAccelerator",

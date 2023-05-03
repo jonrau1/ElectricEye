@@ -21,6 +21,8 @@
 import datetime
 from dateutil.parser import parse
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -45,6 +47,9 @@ def ec2_imdsv2_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for i in describe_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(i,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         instanceId = str(i["InstanceId"])
         instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
         instanceType = str(i["InstanceType"])
@@ -86,7 +91,17 @@ def ec2_imdsv2_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                             "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html#instance-metadata-transition-to-version-2",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Compute",
+                        "AssetService": "Amazon EC2",
+                        "AssetComponent": "Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Instance",
@@ -156,7 +171,17 @@ def ec2_imdsv2_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                             "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html#instance-metadata-transition-to-version-2",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Compute",
+                        "AssetService": "Amazon EC2",
+                        "AssetComponent": "Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Instance",
@@ -208,6 +233,9 @@ def ec2_secure_enclave_check(cache: dict, session, awsAccountId: str, awsRegion:
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for i in describe_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(i,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         instanceId = str(i["InstanceId"])
         instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
         instanceType = str(i["InstanceType"])
@@ -246,7 +274,17 @@ def ec2_secure_enclave_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/enclaves/latest/user/getting-started.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetComponent": "Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Instance",
@@ -316,7 +354,17 @@ def ec2_secure_enclave_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/enclaves/latest/user/getting-started.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetComponent": "Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Instance",
@@ -366,6 +414,9 @@ def ec2_public_facing_check(cache: dict, session, awsAccountId: str, awsRegion: 
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for i in describe_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(i,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         instanceId = str(i["InstanceId"])
         instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
         instanceType = str(i["InstanceType"])
@@ -405,7 +456,17 @@ def ec2_public_facing_check(cache: dict, session, awsAccountId: str, awsRegion: 
                         "Url": "https://aws.amazon.com/premiumsupport/knowledge-center/public-load-balancer-private-ec2/"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetComponent": "Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Instance",
@@ -471,7 +532,17 @@ def ec2_public_facing_check(cache: dict, session, awsAccountId: str, awsRegion: 
                         "Url": "https://aws.amazon.com/premiumsupport/knowledge-center/public-load-balancer-private-ec2/"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetComponent": "Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Instance",
@@ -517,6 +588,9 @@ def ec2_source_dest_verification_check(cache: dict, session, awsAccountId: str, 
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for i in describe_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(i,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         instanceId = str(i["InstanceId"])
         instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
         instanceType = str(i["InstanceType"])
@@ -554,7 +628,17 @@ def ec2_source_dest_verification_check(cache: dict, session, awsAccountId: str, 
                         "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html#eni-basics"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetComponent": "Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Instance",
@@ -619,7 +703,17 @@ def ec2_source_dest_verification_check(cache: dict, session, awsAccountId: str, 
                         "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html#eni-basics"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetComponent": "Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Instance",
@@ -665,8 +759,12 @@ def ec2_serial_console_access_check(cache: dict, session, awsAccountId: str, aws
     ec2 = session.client("ec2")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+    serialDetail = ec2.get_serial_console_access_status()
+    # B64 encode all of the details for the Asset
+    assetJson = json.dumps(serialDetail,default=str).encode("utf-8")
+    assetB64 = base64.b64encode(assetJson)
     # This is a failing check
-    if str(ec2.get_serial_console_access_status()["SerialConsoleAccessEnabled"]) == "True":
+    if serialDetail["SerialConsoleAccessEnabled"] == True:
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": awsAccountId + awsRegion + "/ec2-serial-port-access-check",
@@ -694,11 +792,21 @@ def ec2_serial_console_access_check(cache: dict, session, awsAccountId: str, aws
                     "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-serial-console.html"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Management & Governance",
+                "AssetService": "Amazon EC2",
+                "AssetComponent": "Account Configuration"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/EC2_Serial_Port_Access_Setting",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }
@@ -753,11 +861,21 @@ def ec2_serial_console_access_check(cache: dict, session, awsAccountId: str, aws
                     "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-serial-console.html"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Management & Governance",
+                "AssetService": "Amazon EC2",
+                "AssetComponent": "Account Configuration"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/EC2_Serial_Port_Access_Setting",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }
@@ -791,6 +909,9 @@ def ec2_ami_age_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for i in describe_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(i,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         instanceId = str(i["InstanceId"])
         instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
         instanceType = str(i["InstanceType"])
@@ -831,7 +952,17 @@ def ec2_ami_age_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
                             "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Compute",
+                        "AssetService": "Amazon EC2",
+                        "AssetComponent": "Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Instance",
@@ -891,7 +1022,17 @@ def ec2_ami_age_check(cache: dict, session, awsAccountId: str, awsRegion: str, a
                             "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Compute",
+                        "AssetService": "Amazon EC2",
+                        "AssetComponent": "Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Instance",
@@ -938,6 +1079,9 @@ def ec2_ami_status_check(cache: dict, session, awsAccountId: str, awsRegion: str
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for i in describe_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(i,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         instanceId = str(i["InstanceId"])
         instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
         instanceType = str(i["InstanceType"])
@@ -976,7 +1120,17 @@ def ec2_ami_status_check(cache: dict, session, awsAccountId: str, awsRegion: str
                             "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/deregister-ami.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Compute",
+                        "AssetService": "Amazon EC2",
+                        "AssetComponent": "Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Instance",
@@ -1036,7 +1190,17 @@ def ec2_ami_status_check(cache: dict, session, awsAccountId: str, awsRegion: str
                             "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/deregister-ami.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Compute",
+                        "AssetService": "Amazon EC2",
+                        "AssetComponent": "Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Instance",
@@ -1097,7 +1261,17 @@ def ec2_ami_status_check(cache: dict, session, awsAccountId: str, awsRegion: str
                             "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/deregister-ami.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Compute",
+                        "AssetService": "Amazon EC2",
+                        "AssetComponent": "Instance"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsEc2Instance",
@@ -1158,7 +1332,17 @@ def ec2_ami_status_check(cache: dict, session, awsAccountId: str, awsRegion: str
                         "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetComponent": "Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Instance",
@@ -1208,6 +1392,9 @@ def ec2_concentration_risk(cache: dict, session, awsAccountId: str, awsRegion: s
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # Evaluation time - grab all unique subnets per EC2 instance in Region
     for i in describe_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(i,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         subnetId = str(i["SubnetId"])
         # write subnets to list if it"s not there
         if subnetId not in uSubnets:
@@ -1244,11 +1431,21 @@ def ec2_concentration_risk(cache: dict, session, awsAccountId: str, awsRegion: s
                     "Url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Management & Governance",
+                "AssetService": "AWS Account",
+                "AssetComponent": "Account Configuration"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/EC2_Concentration_Risk",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }
@@ -1296,11 +1493,21 @@ def ec2_concentration_risk(cache: dict, session, awsAccountId: str, awsRegion: s
                     "Url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Management & Governance",
+                "AssetService": "AWS Account",
+                "AssetComponent": "Account Configuration"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/EC2_Concentration_Risk",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }
@@ -1348,11 +1555,21 @@ def ec2_concentration_risk(cache: dict, session, awsAccountId: str, awsRegion: s
                     "Url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html"
                 }
             },
-            "ProductFields": {"Product Name": "ElectricEye"},
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Management & Governance",
+                "AssetService": "AWS Account",
+                "AssetComponent": "Account Configuration"
+            },
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/EC2_Concentration_Risk",
                     "Partition": awsPartition,
                     "Region": awsRegion
                 }

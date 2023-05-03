@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -31,148 +33,161 @@ def list_meshes(cache, session):
     cache["list_meshes"] = appmesh.list_meshes()
     return cache["list_meshes"]
 
-
 @registry.register_check("appmesh")
 def appmesh_mesh_egress_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AppMesh.1] App Mesh meshes should have the egress filter configured to DROP_ALL"""
     appmesh = session.client("appmesh")
-    mesh = list_meshes(cache, session)
-    myMesh = mesh["meshes"]
-    for meshes in myMesh:
+    for meshes in list_meshes(cache, session)["meshes"]:
         meshName = str(meshes["meshName"])
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        try:
-            response = appmesh.describe_mesh(meshName=meshName)
-            meshArn = str(response["mesh"]["metadata"]["arn"])
-            egressSpecCheck = str(response["mesh"]["spec"]["egressFilter"]["type"])
-            if egressSpecCheck != "DROP_ALL":
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": meshArn + "/appmesh-mesh-egress-filter-check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": meshArn,
-                    "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices",
-                        "Effects/Data Exposure"
+        response = appmesh.describe_mesh(meshName=meshName)["mesh"]
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        meshArn = str(response["metadata"]["arn"])
+        if str(response["spec"]["egressFilter"]["type"]) != "DROP_ALL":
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": meshArn + "/appmesh-mesh-egress-filter-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": meshArn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure"
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[AppMesh.1] App Mesh meshes should have the egress filter configured to DROP_ALL",
+                "Description": "App Mesh mesh "
+                + meshName
+                + " egress filter is not configured to DROP_ALL. Configuring the filter to DROP_ALL only allows egress to other resources in the mesh and to AWS SPNs for API Calls. Refer to the remediation instructions if this configuration is not intended",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on egress filters refer to the EgressFilter Data Type section of the AWS App Mesh API Reference",
+                        "Url": "https://docs.aws.amazon.com/app-mesh/latest/APIReference/API_EgressFilter.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "AWS App Mesh",
+                    "AssetComponent": "Mesh"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsAppMeshMesh",
+                        "Id": meshArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {"Other": {"MeshName": meshName}},
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
                     ],
-                    "FirstObservedAt": iso8601Time,
-                    "CreatedAt": iso8601Time,
-                    "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "MEDIUM"},
-                    "Confidence": 99,
-                    "Title": "[AppMesh.1] App Mesh meshes should have the egress filter configured to DROP_ALL",
-                    "Description": "App Mesh mesh "
-                    + meshName
-                    + " egress filter is not configured to DROP_ALL. Configuring the filter to DROP_ALL only allows egress to other resources in the mesh and to AWS SPNs for API Calls. Refer to the remediation instructions if this configuration is not intended",
-                    "Remediation": {
-                        "Recommendation": {
-                            "Text": "For more information on egress filters refer to the EgressFilter Data Type section of the AWS App Mesh API Reference",
-                            "Url": "https://docs.aws.amazon.com/app-mesh/latest/APIReference/API_EgressFilter.html",
-                        }
-                    },
-                    "ProductFields": {"Product Name": "ElectricEye"},
-                    "Resources": [
-                        {
-                            "Type": "AwsAppMeshMesh",
-                            "Id": meshArn,
-                            "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {"Other": {"MeshName": meshName}},
-                        }
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE",
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": meshArn + "/appmesh-mesh-egress-filter-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": meshArn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure"
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[AppMesh.1] App Mesh meshes should have the egress filter configured to DROP_ALL",
+                "Description": "App Mesh mesh "
+                + meshName
+                + " egress filter is configured to DROP_ALL.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on egress filters refer to the EgressFilter Data Type section of the AWS App Mesh API Reference",
+                        "Url": "https://docs.aws.amazon.com/app-mesh/latest/APIReference/API_EgressFilter.html",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "AWS App Mesh",
+                    "AssetComponent": "Mesh"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsAppMeshMesh",
+                        "Id": meshArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {"Other": {"MeshName": meshName}},
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1",
                     ],
-                    "Compliance": {
-                        "Status": "FAILED",
-                        "RelatedRequirements": [
-                            "NIST CSF V1.1 PR.AC-3",
-                            "NIST SP 800-53 Rev. 4 AC-1",
-                            "NIST SP 800-53 Rev. 4 AC-17",
-                            "NIST SP 800-53 Rev. 4 AC-19",
-                            "NIST SP 800-53 Rev. 4 AC-20",
-                            "NIST SP 800-53 Rev. 4 SC-15",
-                            "AICPA TSC CC6.6",
-                            "ISO 27001:2013 A.6.2.1",
-                            "ISO 27001:2013 A.6.2.2",
-                            "ISO 27001:2013 A.11.2.6",
-                            "ISO 27001:2013 A.13.1.1",
-                            "ISO 27001:2013 A.13.2.1",
-                        ],
-                    },
-                    "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
-                }
-                yield finding
-            else:
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": meshArn + "/appmesh-mesh-egress-filter-check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": meshArn,
-                    "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices",
-                        "Effects/Data Exposure"
-                    ],
-                    "FirstObservedAt": iso8601Time,
-                    "CreatedAt": iso8601Time,
-                    "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "INFORMATIONAL"},
-                    "Confidence": 99,
-                    "Title": "[AppMesh.1] App Mesh meshes should have the egress filter configured to DROP_ALL",
-                    "Description": "App Mesh mesh "
-                    + meshName
-                    + " egress filter is configured to DROP_ALL.",
-                    "Remediation": {
-                        "Recommendation": {
-                            "Text": "For more information on egress filters refer to the EgressFilter Data Type section of the AWS App Mesh API Reference",
-                            "Url": "https://docs.aws.amazon.com/app-mesh/latest/APIReference/API_EgressFilter.html",
-                        }
-                    },
-                    "ProductFields": {"Product Name": "ElectricEye"},
-                    "Resources": [
-                        {
-                            "Type": "AwsAppMeshMesh",
-                            "Id": meshArn,
-                            "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {"Other": {"MeshName": meshName}},
-                        }
-                    ],
-                    "Compliance": {
-                        "Status": "PASSED",
-                        "RelatedRequirements": [
-                            "NIST CSF V1.1 PR.AC-3",
-                            "NIST SP 800-53 Rev. 4 AC-1",
-                            "NIST SP 800-53 Rev. 4 AC-17",
-                            "NIST SP 800-53 Rev. 4 AC-19",
-                            "NIST SP 800-53 Rev. 4 AC-20",
-                            "NIST SP 800-53 Rev. 4 SC-15",
-                            "AICPA TSC CC6.6",
-                            "ISO 27001:2013 A.6.2.1",
-                            "ISO 27001:2013 A.6.2.2",
-                            "ISO 27001:2013 A.11.2.6",
-                            "ISO 27001:2013 A.13.1.1",
-                            "ISO 27001:2013 A.13.2.1",
-                        ],
-                    },
-                    "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED",
-                }
-                yield finding
-        except Exception as e:
-            print(e)
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED",
+            }
+            yield finding
 
 @registry.register_check("appmesh")
 def appmesh_virt_node_backed_default_tls_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AppMesh.2] App Mesh virtual nodes should enforce TLS by default for all backends"""
     appmesh = session.client("appmesh")
-    mesh = list_meshes(cache, session)
-    myMesh = mesh["meshes"]
-    for meshes in myMesh:
+    for meshes in list_meshes(cache, session)["meshes"]:
         meshName = str(meshes["meshName"])
         try:
-            response = appmesh.list_virtual_nodes(meshName=meshName)
-            for nodes in response["virtualNodes"]:
+            for nodes in appmesh.list_virtual_nodes(meshName=meshName)["virtualNodes"]:
                 nodeName = str(nodes["virtualNodeName"])
                 iso8601Time = (
                     datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -181,6 +196,9 @@ def appmesh_virt_node_backed_default_tls_policy_check(cache: dict, session, awsA
                     response = appmesh.describe_virtual_node(
                         meshName=meshName, virtualNodeName=nodeName
                     )
+                    # B64 encode all of the details for the Asset
+                    assetJson = json.dumps(response,default=str).encode("utf-8")
+                    assetB64 = base64.b64encode(assetJson)
                     nodeArn = str(response["virtualNode"]["metadata"]["arn"])
                     backendDefaultsCheck = str(
                         response["virtualNode"]["spec"]["backendDefaults"]["clientPolicy"]
@@ -214,7 +232,17 @@ def appmesh_virt_node_backed_default_tls_policy_check(cache: dict, session, awsA
                                     "Url": "https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual-node-tls.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Networking",
+                                "AssetService": "AWS App Mesh",
+                                "AssetComponent": "Virtual Node"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsAppMeshVirtualNode",
@@ -283,7 +311,17 @@ def appmesh_virt_node_backed_default_tls_policy_check(cache: dict, session, awsA
                                         "Url": "https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual-node-tls.html",
                                     }
                                 },
-                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "ProductFields": {
+                                    "ProductName": "ElectricEye",
+                                    "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                    "AssetClass": "Networking",
+                                    "AssetService": "AWS App Mesh",
+                                    "AssetComponent": "Virtual Node"
+                                },
                                 "Resources": [
                                     {
                                         "Type": "AwsAppMeshVirtualNode",
@@ -346,7 +384,17 @@ def appmesh_virt_node_backed_default_tls_policy_check(cache: dict, session, awsA
                                         "Url": "https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual-node-tls.html",
                                     }
                                 },
-                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "ProductFields": {
+                                    "ProductName": "ElectricEye",
+                                    "Provider": "AWS",
+                                    "ProviderType": "CSP",
+                                    "ProviderAccountId": awsAccountId,
+                                    "AssetRegion": awsRegion,
+                                    "AssetDetails": assetB64,
+                                    "AssetClass": "Networking",
+                                    "AssetService": "AWS App Mesh",
+                                    "AssetComponent": "Virtual Node"
+                                },
                                 "Resources": [
                                     {
                                         "Type": "AwsAppMeshVirtualNode",
@@ -390,18 +438,18 @@ def appmesh_virt_node_backed_default_tls_policy_check(cache: dict, session, awsA
 def appmesh_virt_node_listener_strict_tls_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AppMesh.3] App Mesh virtual node listeners should only accept connections with TLS enabled"""
     appmesh = session.client("appmesh")
-    mesh = list_meshes(cache, session)
-    myMesh = mesh["meshes"]
-    for meshes in myMesh:
+    for meshes in list_meshes(cache, session)["meshes"]:
         meshName = str(meshes["meshName"])
         try:
-            response = appmesh.list_virtual_nodes(meshName=meshName)
-            for nodes in response["virtualNodes"]:
+            for nodes in appmesh.list_virtual_nodes(meshName=meshName)["virtualNodes"]:
                 nodeName = str(nodes["virtualNodeName"])
                 try:
                     response = appmesh.describe_virtual_node(
                         meshName=meshName, virtualNodeName=nodeName
                     )
+                    # B64 encode all of the details for the Asset
+                    assetJson = json.dumps(response,default=str).encode("utf-8")
+                    assetB64 = base64.b64encode(assetJson)
                     nodeArn = str(response["virtualNode"]["metadata"]["arn"])
                     for listeners in response["virtualNode"]["spec"]["listeners"]:
                         tlsStrictCheck = str(listeners["tls"]["mode"])
@@ -439,7 +487,17 @@ def appmesh_virt_node_listener_strict_tls_check(cache: dict, session, awsAccount
                                         "Url": "https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual-node-tls.html",
                                     }
                                 },
-                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "ProductFields": {
+                                    "ProductName": "ElectricEye",
+                                    "Provider": "AWS",
+                                    "ProviderType": "CSP",
+                                    "ProviderAccountId": awsAccountId,
+                                    "AssetRegion": awsRegion,
+                                    "AssetDetails": assetB64,
+                                    "AssetClass": "Networking",
+                                    "AssetService": "AWS App Mesh",
+                                    "AssetComponent": "Virtual Node"
+                                },
                                 "Resources": [
                                     {
                                         "Type": "AwsAppMeshVirtualNode",
@@ -503,7 +561,17 @@ def appmesh_virt_node_listener_strict_tls_check(cache: dict, session, awsAccount
                                         "Url": "https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual-node-tls.html",
                                     }
                                 },
-                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "ProductFields": {
+                                    "ProductName": "ElectricEye",
+                                    "Provider": "AWS",
+                                    "ProviderType": "CSP",
+                                    "ProviderAccountId": awsAccountId,
+                                    "AssetRegion": awsRegion,
+                                    "AssetDetails": assetB64,
+                                    "AssetClass": "Networking",
+                                    "AssetService": "AWS App Mesh",
+                                    "AssetComponent": "Virtual Node"
+                                },
                                 "Resources": [
                                     {
                                         "Type": "AwsAppMeshVirtualNode",
@@ -538,11 +606,8 @@ def appmesh_virt_node_listener_strict_tls_check(cache: dict, session, awsAccount
                                 "RecordState": "ARCHIVED",
                             }
                             yield finding
-                except Exception as e:
-                    if str(e) == "'tls'":
-                        pass
-                    else:
-                        print(e)
+                except KeyError:
+                    continue
         except Exception as e:
             print(e)
 
@@ -550,13 +615,10 @@ def appmesh_virt_node_listener_strict_tls_check(cache: dict, session, awsAccount
 def appmesh_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AppMesh.4] App Mesh virtual nodes should define an HTTP access log path to enable log exports for Envoy proxies"""
     appmesh = session.client("appmesh")
-    mesh = list_meshes(cache, session)
-    myMesh = mesh["meshes"]
-    for meshes in myMesh:
+    for meshes in list_meshes(cache, session)["meshes"]:
         meshName = str(meshes["meshName"])
         try:
-            response = appmesh.list_virtual_nodes(meshName=meshName)
-            for nodes in response["virtualNodes"]:
+            for nodes in appmesh.list_virtual_nodes(meshName=meshName)["virtualNodes"]:
                 nodeName = str(nodes["virtualNodeName"])
                 iso8601Time = (
                     datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -565,6 +627,9 @@ def appmesh_logging_check(cache: dict, session, awsAccountId: str, awsRegion: st
                     response = appmesh.describe_virtual_node(
                         meshName=meshName, virtualNodeName=nodeName
                     )
+                    # B64 encode all of the details for the Asset
+                    assetJson = json.dumps(response,default=str).encode("utf-8")
+                    assetB64 = base64.b64encode(assetJson)
                     nodeArn = str(response["virtualNode"]["metadata"]["arn"])
                     loggingCheck = str(response["virtualNode"]["spec"]["logging"])
                     finding = {
@@ -591,7 +656,17 @@ def appmesh_logging_check(cache: dict, session, awsAccountId: str, awsRegion: st
                                 "Url": "https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual_nodes.html#vn-create-virtual-node",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Networking",
+                            "AssetService": "AWS App Mesh",
+                            "AssetComponent": "Virtual Node"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsAppMeshVirtualNode",
@@ -654,7 +729,17 @@ def appmesh_logging_check(cache: dict, session, awsAccountId: str, awsRegion: st
                                     "Url": "https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual_nodes.html#vn-create-virtual-node",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Networking",
+                                "AssetService": "AWS App Mesh",
+                                "AssetComponent": "Virtual Node"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsAppMeshVirtualNode",

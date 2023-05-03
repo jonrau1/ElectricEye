@@ -22,6 +22,8 @@ import json
 import os
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -41,9 +43,10 @@ def describe_security_groups(cache, session):
 @registry.register_check("ec2")
 def security_group_all_open_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SecurityGroup.1] Security groups should not allow unrestricted access to all ports and protocols"""
-    response = describe_security_groups(cache, session)
-    mySgs = response["SecurityGroups"]
-    for secgroup in mySgs:
+    for secgroup in describe_security_groups(cache, session)["SecurityGroups"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(secgroup,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         sgName = str(secgroup["GroupName"])
         sgId = str(secgroup["GroupId"])
         sgArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:security-group/{sgId}"
@@ -84,7 +87,17 @@ def security_group_all_open_check(cache: dict, session, awsAccountId: str, awsRe
                                 "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#AddRemoveRules",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Networking",
+                            "AssetService": "Amazon VPC",
+                            "AssetComponent": "Security Group"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsEc2SecurityGroup",
@@ -143,7 +156,17 @@ def security_group_all_open_check(cache: dict, session, awsAccountId: str, awsRe
                                 "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#AddRemoveRules",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Networking",
+                            "AssetService": "Amazon VPC",
+                            "AssetComponent": "Security Group"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsEc2SecurityGroup",
@@ -196,10 +219,10 @@ def security_group_master_auditor_check(cache: dict, session, awsAccountId: str,
 
             print(f"Auditing all Security Groups for unrestricted {checkDescription} access")
 
-            # Parse security groups from Cache
-            response = describe_security_groups(cache, session)
-            mySgs = response["SecurityGroups"]
-            for secgroup in mySgs:
+            for secgroup in describe_security_groups(cache, session)["SecurityGroups"]:
+                # B64 encode all of the details for the Asset
+                assetJson = json.dumps(secgroup,default=str).encode("utf-8")
+                assetB64 = base64.b64encode(assetJson)
                 sgName = str(secgroup["GroupName"])
                 sgId = str(secgroup["GroupId"])
                 sgArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:security-group/{sgId}"
@@ -252,7 +275,17 @@ def security_group_master_auditor_check(cache: dict, session, awsAccountId: str,
                                         "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#AddRemoveRules",
                                     }
                                 },
-                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "ProductFields": {
+                                    "ProductName": "ElectricEye",
+                                    "Provider": "AWS",
+                                    "ProviderType": "CSP",
+                                    "ProviderAccountId": awsAccountId,
+                                    "AssetRegion": awsRegion,
+                                    "AssetDetails": assetB64,
+                                    "AssetClass": "Networking",
+                                    "AssetService": "Amazon VPC",
+                                    "AssetComponent": "Security Group"
+                                },
                                 "Resources": [
                                     {
                                         "Type": "AwsEc2SecurityGroup",
@@ -317,7 +350,17 @@ def security_group_master_auditor_check(cache: dict, session, awsAccountId: str,
                                         "Url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#AddRemoveRules",
                                     }
                                 },
-                                "ProductFields": {"Product Name": "ElectricEye"},
+                                "ProductFields": {
+                                    "ProductName": "ElectricEye",
+                                    "Provider": "AWS",
+                                    "ProviderType": "CSP",
+                                    "ProviderAccountId": awsAccountId,
+                                    "AssetRegion": awsRegion,
+                                    "AssetDetails": assetB64,
+                                    "AssetClass": "Networking",
+                                    "AssetService": "Amazon VPC",
+                                    "AssetComponent": "Security Group"
+                                },
                                 "Resources": [
                                     {
                                         "Type": "AwsEc2SecurityGroup",

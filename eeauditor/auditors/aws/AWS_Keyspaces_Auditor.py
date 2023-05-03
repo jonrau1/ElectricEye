@@ -20,11 +20,16 @@
 
 from check_register import CheckRegister
 import datetime
+import base64
+import json
 
 registry = CheckRegister()
 
-def gather_table(cache, session):
+def gather_keyspaces_tables(cache, session):
     keyspaces = session.client("keyspaces")
+    response = cache.get("gather_keyspaces_tables")
+    if response:
+        return response
     awsKeyspaceInfo = []
     # AWS-managed Keyspaces - we need to ignore these
     defaultKeyspaceNames = [
@@ -62,7 +67,8 @@ def gather_table(cache, session):
     del table_iterator
     del table_paginator
 
-    return awsKeyspaceInfo
+    cache["gather_keyspaces_tables"] = awsKeyspaceInfo
+    return cache["gather_keyspaces_tables"]
 
 @registry.register_check("keyspaces")
 def keyspaces_customer_managed_encryption(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -71,7 +77,7 @@ def keyspaces_customer_managed_encryption(cache: dict, session, awsAccountId: st
     # ISO8061 Timestamp
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # Grab table information from saved dict in script
-    for x in gather_table(cache, session):
+    for x in gather_keyspaces_tables(cache, session):
         keyspaceName = x["KeyspaceName"]
         tableName = x["TableName"]
         # Retrieve information from `get_table()` API
@@ -79,6 +85,9 @@ def keyspaces_customer_managed_encryption(cache: dict, session, awsAccountId: st
             keyspaceName=keyspaceName,
             tableName=tableName
         )
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(t,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         # Parse details
         resourceArn = t["resourceArn"]
 
@@ -107,10 +116,20 @@ def keyspaces_customer_managed_encryption(cache: dict, session, awsAccountId: st
                         "Url": "https://docs.aws.amazon.com/keyspaces/latest/devguide/EncryptionAtRest.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Keyspaces",
+                    "AssetComponent": "Table"
+                },
                 "Resources": [
                     {
-                        "Type": "AwsCassandraTable",
+                        "Type": "AwsKeyspacesTable",
                         "Id": resourceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
@@ -161,10 +180,20 @@ def keyspaces_customer_managed_encryption(cache: dict, session, awsAccountId: st
                         "Url": "https://docs.aws.amazon.com/keyspaces/latest/devguide/EncryptionAtRest.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Keyspaces",
+                    "AssetComponent": "Table"
+                },
                 "Resources": [
                     {
-                        "Type": "AwsCassandraTable",
+                        "Type": "AwsKeyspacesTable",
                         "Id": resourceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
@@ -199,7 +228,7 @@ def keyspaces_inaccessible_status_check(cache: dict, session, awsAccountId: str,
     # ISO8061 Timestamp
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # Grab table information from saved dict in script
-    for x in gather_table(cache, session):
+    for x in gather_keyspaces_tables(cache, session):
         keyspaceName = x["KeyspaceName"]
         tableName = x["TableName"]
         # Retrieve information from `get_table()` API
@@ -207,6 +236,9 @@ def keyspaces_inaccessible_status_check(cache: dict, session, awsAccountId: str,
             keyspaceName=keyspaceName,
             tableName=tableName
         )
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(t,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         # Parse details
         resourceArn = t["resourceArn"]
 
@@ -235,10 +267,20 @@ def keyspaces_inaccessible_status_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/keyspaces/latest/devguide/security_iam_troubleshoot.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Keyspaces",
+                    "AssetComponent": "Table"
+                },
                 "Resources": [
                     {
-                        "Type": "AwsCassandraTable",
+                        "Type": "AwsKeyspacesTable",
                         "Id": resourceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
@@ -297,10 +339,20 @@ def keyspaces_inaccessible_status_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/keyspaces/latest/devguide/security_iam_troubleshoot.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Keyspaces",
+                    "AssetComponent": "Table"
+                },
                 "Resources": [
                     {
-                        "Type": "AwsCassandraTable",
+                        "Type": "AwsKeyspacesTable",
                         "Id": resourceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
@@ -343,7 +395,7 @@ def keyspaces_pitr_check(cache: dict, session, awsAccountId: str, awsRegion: str
     # ISO8061 Timestamp
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # Grab table information from saved dict in script
-    for x in gather_table(cache, session):
+    for x in gather_keyspaces_tables(cache, session):
         keyspaceName = x["KeyspaceName"]
         tableName = x["TableName"]
         # Retrieve information from `get_table()` API
@@ -351,6 +403,9 @@ def keyspaces_pitr_check(cache: dict, session, awsAccountId: str, awsRegion: str
             keyspaceName=keyspaceName,
             tableName=tableName
         )
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(t,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         # Parse details
         resourceArn = t["resourceArn"]
 
@@ -376,10 +431,20 @@ def keyspaces_pitr_check(cache: dict, session, awsAccountId: str, awsRegion: str
                         "Url": "https://docs.aws.amazon.com/keyspaces/latest/devguide/PointInTimeRecovery.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Keyspaces",
+                    "AssetComponent": "Table"
+                },
                 "Resources": [
                     {
-                        "Type": "AwsCassandraTable",
+                        "Type": "AwsKeyspacesTable",
                         "Id": resourceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
@@ -433,10 +498,20 @@ def keyspaces_pitr_check(cache: dict, session, awsAccountId: str, awsRegion: str
                         "Url": "https://docs.aws.amazon.com/keyspaces/latest/devguide/PointInTimeRecovery.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Database",
+                    "AssetService": "Amazon Keyspaces",
+                    "AssetComponent": "Table"
+                },
                 "Resources": [
                     {
-                        "Type": "AwsCassandraTable",
+                        "Type": "AwsKeyspacesTable",
                         "Id": resourceArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,

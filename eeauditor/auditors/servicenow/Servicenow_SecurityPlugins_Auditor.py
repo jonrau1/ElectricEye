@@ -22,6 +22,8 @@ import datetime
 import pysnow
 import os
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -63,10 +65,10 @@ def servicenow_sspm_contextual_security_role_mgmt_plugin_check(cache: dict, awsA
 
     # Name of the property to evaluate against
     pluginId = "com.glide.role_management"
-    # Get cached props
+    # Get cached plugins
     pluginsCache = get_servicenow_plugins(cache)
 
-    # There should not ever be a duplicate system property, use next() and a list comprehension to check if the
+    # There should not ever be a duplicate plugin, use next() and a list comprehension to check if the
     # property we're evaluating is in the list of properties we get from the cache. If it is NOT then set the
     # value as `False` and we can fill in fake values. Not having a property for security hardening is the same
     # as a failed finding with a lot less fan fair
@@ -84,6 +86,7 @@ def servicenow_sspm_contextual_security_role_mgmt_plugin_check(cache: dict, awsA
         pluginUpdatedBy = ""
         pluginLicenseModel = ""
         pluginScope = ""
+        assetB64 = base64.b64encode("None".encode("utf-8"))
     else:
         pluginActivityStatus = str(pluginFinder["active"])
         pluginState = str(pluginFinder["state"])
@@ -95,7 +98,10 @@ def servicenow_sspm_contextual_security_role_mgmt_plugin_check(cache: dict, awsA
         pluginUpdatedOn = str(pluginFinder["sys_updated_on"])
         pluginUpdatedBy = str(pluginFinder["sys_updated_by"])
         pluginLicenseModel = str(pluginFinder["license_model"])
-        pluginScope = str(pluginFinder["scope"])        
+        pluginScope = str(pluginFinder["scope"])
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(pluginFinder,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)   
     # NOTE: This is where the check evaluation happens - for Plugins if they are not present at all they will not show up in the v_plugin table
     # so we need to set some fake "uninstalled" values for the state and manually set the activity status to "inative" - obviously this would not
     # appear if the plugin wasn't there...so the logic checks it is "published" (default value for installed) and that it is "active" as well
@@ -122,10 +128,14 @@ def servicenow_sspm_contextual_security_role_mgmt_plugin_check(cache: dict, awsA
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Plugins",
-                "AssetType": "Servicenow Plugin"
+                "AssetService": "System Plugins",
+                "AssetComponent": "Plugin"
             },
             "Resources": [
                 {
@@ -197,10 +207,14 @@ def servicenow_sspm_contextual_security_role_mgmt_plugin_check(cache: dict, awsA
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Plugins",
-                "AssetType": "Servicenow Plugin"
+                "AssetService": "System Plugins",
+                "AssetComponent": "Plugin"
             },
             "Resources": [
                 {
@@ -259,10 +273,10 @@ def servicenow_sspm_explicit_role_plugin_check(cache: dict, awsAccountId: str, a
 
     # Name of the property to evaluate against
     pluginId = "com.glide.explicit_roles"
-    # Get cached props
+    # Get cached plugins
     pluginsCache = get_servicenow_plugins(cache)
 
-    # There should not ever be a duplicate system property, use next() and a list comprehension to check if the
+    # There should not ever be a duplicate plugin, use next() and a list comprehension to check if the
     # property we're evaluating is in the list of properties we get from the cache. If it is NOT then set the
     # value as `False` and we can fill in fake values. Not having a property for security hardening is the same
     # as a failed finding with a lot less fan fair
@@ -280,6 +294,7 @@ def servicenow_sspm_explicit_role_plugin_check(cache: dict, awsAccountId: str, a
         pluginUpdatedBy = ""
         pluginLicenseModel = ""
         pluginScope = ""
+        assetB64 = base64.b64encode("None".encode("utf-8"))
     else:
         pluginActivityStatus = str(pluginFinder["active"])
         pluginState = str(pluginFinder["state"])
@@ -291,7 +306,10 @@ def servicenow_sspm_explicit_role_plugin_check(cache: dict, awsAccountId: str, a
         pluginUpdatedOn = str(pluginFinder["sys_updated_on"])
         pluginUpdatedBy = str(pluginFinder["sys_updated_by"])
         pluginLicenseModel = str(pluginFinder["license_model"])
-        pluginScope = str(pluginFinder["scope"])        
+        pluginScope = str(pluginFinder["scope"])
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(pluginFinder,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)           
     # NOTE: This is where the check evaluation happens - for Plugins if they are not present at all they will not show up in the v_plugin table
     # so we need to set some fake "uninstalled" values for the state and manually set the activity status to "inative" - obviously this would not
     # appear if the plugin wasn't there...so the logic checks it is "published" (default value for installed) and that it is "active" as well
@@ -318,10 +336,14 @@ def servicenow_sspm_explicit_role_plugin_check(cache: dict, awsAccountId: str, a
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Plugins",
-                "AssetType": "Servicenow Plugin"
+                "AssetService": "System Plugins",
+                "AssetComponent": "Plugin"
             },
             "Resources": [
                 {
@@ -393,10 +415,14 @@ def servicenow_sspm_explicit_role_plugin_check(cache: dict, awsAccountId: str, a
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Plugins",
-                "AssetType": "Servicenow Plugin"
+                "AssetService": "System Plugins",
+                "AssetComponent": "Plugin"
             },
             "Resources": [
                 {
@@ -455,10 +481,10 @@ def servicenow_sspm_saml20_web_browser_sso_profile_plugin_check(cache: dict, aws
 
     # Name of the property to evaluate against
     pluginId = "com.snc.integration.sso.saml20.update1"
-    # Get cached props
+    # Get cached plugins
     pluginsCache = get_servicenow_plugins(cache)
 
-    # There should not ever be a duplicate system property, use next() and a list comprehension to check if the
+    # There should not ever be a duplicate plugin, use next() and a list comprehension to check if the
     # property we're evaluating is in the list of properties we get from the cache. If it is NOT then set the
     # value as `False` and we can fill in fake values. Not having a property for security hardening is the same
     # as a failed finding with a lot less fan fair
@@ -476,6 +502,7 @@ def servicenow_sspm_saml20_web_browser_sso_profile_plugin_check(cache: dict, aws
         pluginUpdatedBy = ""
         pluginLicenseModel = ""
         pluginScope = ""
+        assetB64 = base64.b64encode("None".encode("utf-8"))
     else:
         pluginActivityStatus = str(pluginFinder["active"])
         pluginState = str(pluginFinder["state"])
@@ -487,7 +514,10 @@ def servicenow_sspm_saml20_web_browser_sso_profile_plugin_check(cache: dict, aws
         pluginUpdatedOn = str(pluginFinder["sys_updated_on"])
         pluginUpdatedBy = str(pluginFinder["sys_updated_by"])
         pluginLicenseModel = str(pluginFinder["license_model"])
-        pluginScope = str(pluginFinder["scope"])        
+        pluginScope = str(pluginFinder["scope"])
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(pluginFinder,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)           
     # NOTE: This is where the check evaluation happens - for Plugins if they are not present at all they will not show up in the v_plugin table
     # so we need to set some fake "uninstalled" values for the state and manually set the activity status to "inative" - obviously this would not
     # appear if the plugin wasn't there...so the logic checks it is "published" (default value for installed) and that it is "active" as well
@@ -514,10 +544,14 @@ def servicenow_sspm_saml20_web_browser_sso_profile_plugin_check(cache: dict, aws
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Plugins",
-                "AssetType": "Servicenow Plugin"
+                "AssetService": "System Plugins",
+                "AssetComponent": "Plugin"
             },
             "Resources": [
                 {
@@ -589,10 +623,14 @@ def servicenow_sspm_saml20_web_browser_sso_profile_plugin_check(cache: dict, aws
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Plugins",
-                "AssetType": "Servicenow Plugin"
+                "AssetService": "System Plugins",
+                "AssetComponent": "Plugin"
             },
             "Resources": [
                 {
@@ -651,10 +689,10 @@ def servicenow_sspm_security_jumpstart_plugin_check(cache: dict, awsAccountId: s
 
     # Name of the property to evaluate against
     pluginId = "com.snc.system_security"
-    # Get cached props
+    # Get cached plugins
     pluginsCache = get_servicenow_plugins(cache)
 
-    # There should not ever be a duplicate system property, use next() and a list comprehension to check if the
+    # There should not ever be a duplicate plugin, use next() and a list comprehension to check if the
     # property we're evaluating is in the list of properties we get from the cache. If it is NOT then set the
     # value as `False` and we can fill in fake values. Not having a property for security hardening is the same
     # as a failed finding with a lot less fan fair
@@ -672,6 +710,7 @@ def servicenow_sspm_security_jumpstart_plugin_check(cache: dict, awsAccountId: s
         pluginUpdatedBy = ""
         pluginLicenseModel = ""
         pluginScope = ""
+        assetB64 = base64.b64encode("None".encode("utf-8"))
     else:
         pluginActivityStatus = str(pluginFinder["active"])
         pluginState = str(pluginFinder["state"])
@@ -683,7 +722,10 @@ def servicenow_sspm_security_jumpstart_plugin_check(cache: dict, awsAccountId: s
         pluginUpdatedOn = str(pluginFinder["sys_updated_on"])
         pluginUpdatedBy = str(pluginFinder["sys_updated_by"])
         pluginLicenseModel = str(pluginFinder["license_model"])
-        pluginScope = str(pluginFinder["scope"])        
+        pluginScope = str(pluginFinder["scope"])
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(pluginFinder,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)           
     # NOTE: This is where the check evaluation happens - for Plugins if they are not present at all they will not show up in the v_plugin table
     # so we need to set some fake "uninstalled" values for the state and manually set the activity status to "inative" - obviously this would not
     # appear if the plugin wasn't there...so the logic checks it is "published" (default value for installed) and that it is "active" as well
@@ -710,10 +752,14 @@ def servicenow_sspm_security_jumpstart_plugin_check(cache: dict, awsAccountId: s
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Plugins",
-                "AssetType": "Servicenow Plugin"
+                "AssetService": "System Plugins",
+                "AssetComponent": "Plugin"
             },
             "Resources": [
                 {
@@ -785,10 +831,14 @@ def servicenow_sspm_security_jumpstart_plugin_check(cache: dict, awsAccountId: s
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Plugins",
-                "AssetType": "Servicenow Plugin"
+                "AssetService": "System Plugins",
+                "AssetComponent": "Plugin"
             },
             "Resources": [
                 {
@@ -847,10 +897,10 @@ def servicenow_sspm_snc_access_control_plugin_check(cache: dict, awsAccountId: s
 
     # Name of the property to evaluate against
     pluginId = "com.snc.snc_access_control"
-    # Get cached props
+    # Get cached plugins
     pluginsCache = get_servicenow_plugins(cache)
 
-    # There should not ever be a duplicate system property, use next() and a list comprehension to check if the
+    # There should not ever be a duplicate plugin, use next() and a list comprehension to check if the
     # property we're evaluating is in the list of properties we get from the cache. If it is NOT then set the
     # value as `False` and we can fill in fake values. Not having a property for security hardening is the same
     # as a failed finding with a lot less fan fair
@@ -868,6 +918,7 @@ def servicenow_sspm_snc_access_control_plugin_check(cache: dict, awsAccountId: s
         pluginUpdatedBy = ""
         pluginLicenseModel = ""
         pluginScope = ""
+        assetB64 = base64.b64encode("None".encode("utf-8"))
     else:
         pluginActivityStatus = str(pluginFinder["active"])
         pluginState = str(pluginFinder["state"])
@@ -879,7 +930,10 @@ def servicenow_sspm_snc_access_control_plugin_check(cache: dict, awsAccountId: s
         pluginUpdatedOn = str(pluginFinder["sys_updated_on"])
         pluginUpdatedBy = str(pluginFinder["sys_updated_by"])
         pluginLicenseModel = str(pluginFinder["license_model"])
-        pluginScope = str(pluginFinder["scope"])        
+        pluginScope = str(pluginFinder["scope"])
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(pluginFinder,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)           
     # NOTE: This is where the check evaluation happens - for Plugins if they are not present at all they will not show up in the v_plugin table
     # so we need to set some fake "uninstalled" values for the state and manually set the activity status to "inative" - obviously this would not
     # appear if the plugin wasn't there...so the logic checks it is "published" (default value for installed) and that it is "active" as well
@@ -906,10 +960,14 @@ def servicenow_sspm_snc_access_control_plugin_check(cache: dict, awsAccountId: s
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Plugins",
-                "AssetType": "Servicenow Plugin"
+                "AssetService": "System Plugins",
+                "AssetComponent": "Plugin"
             },
             "Resources": [
                 {
@@ -981,10 +1039,14 @@ def servicenow_sspm_snc_access_control_plugin_check(cache: dict, awsAccountId: s
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Plugins",
-                "AssetType": "Servicenow Plugin"
+                "AssetService": "System Plugins",
+                "AssetComponent": "Plugin"
             },
             "Resources": [
                 {
@@ -1043,10 +1105,10 @@ def servicenow_sspm_email_spam_scoring_filtering_plugin_check(cache: dict, awsAc
 
     # Name of the property to evaluate against
     pluginId = "com.glide.email_filter"
-    # Get cached props
+    # Get cached plugins
     pluginsCache = get_servicenow_plugins(cache)
 
-    # There should not ever be a duplicate system property, use next() and a list comprehension to check if the
+    # There should not ever be a duplicate plugin, use next() and a list comprehension to check if the
     # property we're evaluating is in the list of properties we get from the cache. If it is NOT then set the
     # value as `False` and we can fill in fake values. Not having a property for security hardening is the same
     # as a failed finding with a lot less fan fair
@@ -1064,6 +1126,7 @@ def servicenow_sspm_email_spam_scoring_filtering_plugin_check(cache: dict, awsAc
         pluginUpdatedBy = ""
         pluginLicenseModel = ""
         pluginScope = ""
+        assetB64 = base64.b64encode("None".encode("utf-8"))
     else:
         pluginActivityStatus = str(pluginFinder["active"])
         pluginState = str(pluginFinder["state"])
@@ -1075,7 +1138,10 @@ def servicenow_sspm_email_spam_scoring_filtering_plugin_check(cache: dict, awsAc
         pluginUpdatedOn = str(pluginFinder["sys_updated_on"])
         pluginUpdatedBy = str(pluginFinder["sys_updated_by"])
         pluginLicenseModel = str(pluginFinder["license_model"])
-        pluginScope = str(pluginFinder["scope"])        
+        pluginScope = str(pluginFinder["scope"])
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(pluginFinder,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)           
     # NOTE: This is where the check evaluation happens - for Plugins if they are not present at all they will not show up in the v_plugin table
     # so we need to set some fake "uninstalled" values for the state and manually set the activity status to "inative" - obviously this would not
     # appear if the plugin wasn't there...so the logic checks it is "published" (default value for installed) and that it is "active" as well
@@ -1102,10 +1168,14 @@ def servicenow_sspm_email_spam_scoring_filtering_plugin_check(cache: dict, awsAc
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Plugins",
-                "AssetType": "Servicenow Plugin"
+                "AssetService": "System Plugins",
+                "AssetComponent": "Plugin"
             },
             "Resources": [
                 {
@@ -1177,10 +1247,14 @@ def servicenow_sspm_email_spam_scoring_filtering_plugin_check(cache: dict, awsAc
             },
             "ProductFields": {
                 "ProductName": "ElectricEye",
-                "Provider": "Servicenow",
+                "Provider": "ServiceNow",
+                "ProviderType": "SaaS",
+                "ProviderAccountId": SNOW_INSTANCE_NAME,
+                "AssetRegion": "",
+                "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
-                "AssetService": "Servicenow System Plugins",
-                "AssetType": "Servicenow Plugin"
+                "AssetService": "System Plugins",
+                "AssetComponent": "Plugin"
             },
             "Resources": [
                 {

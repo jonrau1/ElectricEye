@@ -21,6 +21,8 @@
 import datetime
 from check_register import CheckRegister
 import googleapiclient.discovery
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -48,6 +50,9 @@ def cloudsql_instance_public_check(cache: dict, awsAccountId: str, awsRegion: st
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for csql in get_cloudsql_dbs(cache, gcpProjectId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(csql,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         name = csql["name"]
         zone = csql["gceZone"]
         databaseVersion = csql["databaseVersion"]
@@ -80,9 +85,13 @@ def cloudsql_instance_public_check(cache: dict, awsAccountId: str, awsRegion: st
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Google CloudSQL",
-                    "AssetType": "CloudSQL Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -149,9 +158,13 @@ def cloudsql_instance_public_check(cache: dict, awsAccountId: str, awsRegion: st
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Google CloudSQL",
-                    "AssetType": "CloudSQL Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -203,6 +216,9 @@ def cloudsql_instance_standard_backup_check(cache: dict, awsAccountId: str, awsR
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for csql in get_cloudsql_dbs(cache, gcpProjectId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(csql,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         name = csql["name"]
         zone = csql["gceZone"]
         databaseVersion = csql["databaseVersion"]
@@ -235,9 +251,13 @@ def cloudsql_instance_standard_backup_check(cache: dict, awsAccountId: str, awsR
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Google CloudSQL",
-                    "AssetType": "CloudSQL Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -304,9 +324,13 @@ def cloudsql_instance_standard_backup_check(cache: dict, awsAccountId: str, awsR
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Google CloudSQL",
-                    "AssetType": "CloudSQL Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -358,6 +382,9 @@ def cloudsql_instance_mysql_pitr_backup_check(cache: dict, awsAccountId: str, aw
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for csql in get_cloudsql_dbs(cache, gcpProjectId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(csql,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         name = csql["name"]
         zone = csql["gceZone"]
         databaseVersion = csql["databaseVersion"]
@@ -395,9 +422,13 @@ def cloudsql_instance_mysql_pitr_backup_check(cache: dict, awsAccountId: str, aw
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Google CloudSQL",
-                    "AssetType": "CloudSQL Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -464,9 +495,13 @@ def cloudsql_instance_mysql_pitr_backup_check(cache: dict, awsAccountId: str, aw
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Google CloudSQL",
-                    "AssetType": "CloudSQL Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -518,6 +553,9 @@ def cloudsql_instance_psql_pitr_backup_check(cache: dict, awsAccountId: str, aws
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for csql in get_cloudsql_dbs(cache, gcpProjectId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(csql,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         name = csql["name"]
         zone = csql["gceZone"]
         databaseVersion = csql["databaseVersion"]
@@ -555,9 +593,13 @@ def cloudsql_instance_psql_pitr_backup_check(cache: dict, awsAccountId: str, aws
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Google CloudSQL",
-                    "AssetType": "CloudSQL Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -624,9 +666,13 @@ def cloudsql_instance_psql_pitr_backup_check(cache: dict, awsAccountId: str, aws
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Google CloudSQL",
-                    "AssetType": "CloudSQL Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -678,6 +724,9 @@ def cloudsql_instance_private_network_check(cache: dict, awsAccountId: str, awsR
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for csql in get_cloudsql_dbs(cache, gcpProjectId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(csql,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         name = csql["name"]
         zone = csql["gceZone"]
         databaseVersion = csql["databaseVersion"]
@@ -710,9 +759,13 @@ def cloudsql_instance_private_network_check(cache: dict, awsAccountId: str, awsR
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Google CloudSQL",
-                    "AssetType": "CloudSQL Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -779,9 +832,13 @@ def cloudsql_instance_private_network_check(cache: dict, awsAccountId: str, awsR
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Google CloudSQL",
-                    "AssetType": "CloudSQL Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -833,6 +890,9 @@ def cloudsql_instance_private_gcp_services_connection_check(cache: dict, awsAcco
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for csql in get_cloudsql_dbs(cache, gcpProjectId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(csql,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         name = csql["name"]
         zone = csql["gceZone"]
         databaseVersion = csql["databaseVersion"]
@@ -865,9 +925,13 @@ def cloudsql_instance_private_gcp_services_connection_check(cache: dict, awsAcco
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                         "AssetClass": "Database",
                         "AssetService": "Google CloudSQL",
-                        "AssetType": "CloudSQL Instance"
+                        "AssetComponent": "Database Instance"
                     },
                     "Resources": [
                         {
@@ -932,9 +996,13 @@ def cloudsql_instance_private_gcp_services_connection_check(cache: dict, awsAcco
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                         "AssetClass": "Database",
                         "AssetService": "Google CloudSQL",
-                        "AssetType": "CloudSQL Instance"
+                        "AssetComponent": "Database Instance"
                     },
                     "Resources": [
                         {
@@ -984,6 +1052,9 @@ def cloudsql_instance_password_policy_check(cache: dict, awsAccountId: str, awsR
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for csql in get_cloudsql_dbs(cache, gcpProjectId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(csql,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         name = csql["name"]
         zone = csql["gceZone"]
         databaseVersion = csql["databaseVersion"]
@@ -1015,9 +1086,13 @@ def cloudsql_instance_password_policy_check(cache: dict, awsAccountId: str, awsR
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Google CloudSQL",
-                    "AssetType": "CloudSQL Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -1096,9 +1171,13 @@ def cloudsql_instance_password_policy_check(cache: dict, awsAccountId: str, awsR
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Google CloudSQL",
-                    "AssetType": "CloudSQL Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -1162,6 +1241,9 @@ def cloudsql_instance_password_min_length_check(cache: dict, awsAccountId: str, 
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for csql in get_cloudsql_dbs(cache, gcpProjectId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(csql,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         name = csql["name"]
         zone = csql["gceZone"]
         databaseVersion = csql["databaseVersion"]
@@ -1194,9 +1276,13 @@ def cloudsql_instance_password_min_length_check(cache: dict, awsAccountId: str, 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Google CloudSQL",
-                    "AssetType": "CloudSQL Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -1275,9 +1361,13 @@ def cloudsql_instance_password_min_length_check(cache: dict, awsAccountId: str, 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Google CloudSQL",
-                    "AssetType": "CloudSQL Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -1341,6 +1431,9 @@ def cloudsql_instance_password_reuse_check(cache: dict, awsAccountId: str, awsRe
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for csql in get_cloudsql_dbs(cache, gcpProjectId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(csql,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         name = csql["name"]
         zone = csql["gceZone"]
         databaseVersion = csql["databaseVersion"]
@@ -1373,9 +1466,13 @@ def cloudsql_instance_password_reuse_check(cache: dict, awsAccountId: str, awsRe
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Google CloudSQL",
-                    "AssetType": "CloudSQL Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -1454,9 +1551,13 @@ def cloudsql_instance_password_reuse_check(cache: dict, awsAccountId: str, awsRe
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Google CloudSQL",
-                    "AssetType": "CloudSQL Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -1520,6 +1621,9 @@ def cloudsql_instance_password_username_block_check(cache: dict, awsAccountId: s
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for csql in get_cloudsql_dbs(cache, gcpProjectId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(csql,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         name = csql["name"]
         zone = csql["gceZone"]
         databaseVersion = csql["databaseVersion"]
@@ -1551,9 +1655,13 @@ def cloudsql_instance_password_username_block_check(cache: dict, awsAccountId: s
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Google CloudSQL",
-                    "AssetType": "CloudSQL Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -1632,9 +1740,13 @@ def cloudsql_instance_password_username_block_check(cache: dict, awsAccountId: s
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Google CloudSQL",
-                    "AssetType": "CloudSQL Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -1698,6 +1810,9 @@ def cloudsql_instance_password_change_interval_check(cache: dict, awsAccountId: 
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for csql in get_cloudsql_dbs(cache, gcpProjectId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(csql,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         name = csql["name"]
         zone = csql["gceZone"]
         databaseVersion = csql["databaseVersion"]
@@ -1730,9 +1845,13 @@ def cloudsql_instance_password_change_interval_check(cache: dict, awsAccountId: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Google CloudSQL",
-                    "AssetType": "CloudSQL Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -1811,9 +1930,13 @@ def cloudsql_instance_password_change_interval_check(cache: dict, awsAccountId: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Google CloudSQL",
-                    "AssetType": "CloudSQL Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -1877,6 +2000,9 @@ def cloudsql_instance_storage_autoresize_check(cache: dict, awsAccountId: str, a
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for csql in get_cloudsql_dbs(cache, gcpProjectId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(csql,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         name = csql["name"]
         zone = csql["gceZone"]
         databaseVersion = csql["databaseVersion"]
@@ -1908,9 +2034,13 @@ def cloudsql_instance_storage_autoresize_check(cache: dict, awsAccountId: str, a
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Google CloudSQL",
-                    "AssetType": "CloudSQL Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -1977,9 +2107,13 @@ def cloudsql_instance_storage_autoresize_check(cache: dict, awsAccountId: str, a
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Google CloudSQL",
-                    "AssetType": "CloudSQL Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -2031,6 +2165,9 @@ def cloudsql_instance_deletion_protection_check(cache: dict, awsAccountId: str, 
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for csql in get_cloudsql_dbs(cache, gcpProjectId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(csql,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         name = csql["name"]
         zone = csql["gceZone"]
         databaseVersion = csql["databaseVersion"]
@@ -2062,9 +2199,13 @@ def cloudsql_instance_deletion_protection_check(cache: dict, awsAccountId: str, 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Google CloudSQL",
-                    "AssetType": "CloudSQL Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -2131,9 +2272,13 @@ def cloudsql_instance_deletion_protection_check(cache: dict, awsAccountId: str, 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Google CloudSQL",
-                    "AssetType": "CloudSQL Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -2185,6 +2330,9 @@ def cloudsql_instance_query_insights_check(cache: dict, awsAccountId: str, awsRe
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for csql in get_cloudsql_dbs(cache, gcpProjectId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(csql,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         name = csql["name"]
         zone = csql["gceZone"]
         databaseVersion = csql["databaseVersion"]
@@ -2225,9 +2373,13 @@ def cloudsql_instance_query_insights_check(cache: dict, awsAccountId: str, awsRe
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Google CloudSQL",
-                    "AssetType": "CloudSQL Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -2292,9 +2444,13 @@ def cloudsql_instance_query_insights_check(cache: dict, awsAccountId: str, awsRe
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Google CloudSQL",
-                    "AssetType": "CloudSQL Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -2344,6 +2500,9 @@ def cloudsql_instance_tls_enforcement_check(cache: dict, awsAccountId: str, awsR
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     for csql in get_cloudsql_dbs(cache, gcpProjectId):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(csql,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         name = csql["name"]
         zone = csql["gceZone"]
         databaseVersion = csql["databaseVersion"]
@@ -2384,9 +2543,13 @@ def cloudsql_instance_tls_enforcement_check(cache: dict, awsAccountId: str, awsR
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Google CloudSQL",
-                    "AssetType": "CloudSQL Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -2452,9 +2615,13 @@ def cloudsql_instance_tls_enforcement_check(cache: dict, awsAccountId: str, awsR
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "GCP",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": gcpProjectId,
+                    "AssetRegion": zone,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Google CloudSQL",
-                    "AssetType": "CloudSQL Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {

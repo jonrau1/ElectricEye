@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -43,6 +45,9 @@ def redshift_cluster_public_access_check(cache: dict, session, awsAccountId: str
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for cluster in describe_redshift_clusters(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(cluster,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clusterId = cluster["ClusterIdentifier"]
         clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"  
         clusterAz = cluster["AvailabilityZone"]
@@ -79,7 +84,17 @@ def redshift_cluster_public_access_check(cache: dict, session, awsAccountId: str
                         "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/managing-clusters-console.html#modify-cluster",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Redshift",
+                    "AssetComponent": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRedshiftCluster",
@@ -154,7 +169,17 @@ def redshift_cluster_public_access_check(cache: dict, session, awsAccountId: str
                         "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/managing-clusters-console.html#modify-cluster",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Redshift",
+                    "AssetComponent": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRedshiftCluster",
@@ -211,6 +236,9 @@ def redshift_cluster_encryption_check(cache: dict, session, awsAccountId: str, a
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for cluster in describe_redshift_clusters(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(cluster,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clusterId = cluster["ClusterIdentifier"]
         clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"  
         clusterAz = cluster["AvailabilityZone"]
@@ -247,7 +275,17 @@ def redshift_cluster_encryption_check(cache: dict, session, awsAccountId: str, a
                         "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-db-encryption.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Redshift",
+                    "AssetComponent": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRedshiftCluster",
@@ -316,7 +354,17 @@ def redshift_cluster_encryption_check(cache: dict, session, awsAccountId: str, a
                         "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-db-encryption.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Redshift",
+                    "AssetComponent": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRedshiftCluster",
@@ -367,6 +415,9 @@ def redshift_cluster_enhanced_vpc_routing_check(cache: dict, session, awsAccount
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for cluster in describe_redshift_clusters(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(cluster,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clusterId = cluster["ClusterIdentifier"]
         clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"  
         clusterAz = cluster["AvailabilityZone"]
@@ -400,7 +451,17 @@ def redshift_cluster_enhanced_vpc_routing_check(cache: dict, session, awsAccount
                         "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/enhanced-vpc-routing.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Redshift",
+                    "AssetComponent": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRedshiftCluster",
@@ -470,7 +531,17 @@ def redshift_cluster_enhanced_vpc_routing_check(cache: dict, session, awsAccount
                         "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/enhanced-vpc-routing.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Redshift",
+                    "AssetComponent": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRedshiftCluster",
@@ -526,6 +597,9 @@ def redshift_cluster_logging_check(cache: dict, session, awsAccountId: str, awsR
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for cluster in describe_redshift_clusters(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(cluster,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clusterId = cluster["ClusterIdentifier"]
         clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"  
         clusterAz = cluster["AvailabilityZone"]
@@ -560,7 +634,17 @@ def redshift_cluster_logging_check(cache: dict, session, awsAccountId: str, awsR
                         "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/db-auditing.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Redshift",
+                    "AssetComponent": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRedshiftCluster",
@@ -630,7 +714,17 @@ def redshift_cluster_logging_check(cache: dict, session, awsAccountId: str, awsR
                         "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/db-auditing.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Redshift",
+                    "AssetComponent": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRedshiftCluster",
@@ -685,6 +779,9 @@ def redshift_cluster_default_username_check(cache: dict, session, awsAccountId: 
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for cluster in describe_redshift_clusters(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(cluster,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clusterId = cluster["ClusterIdentifier"]
         clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"  
         clusterAz = cluster["AvailabilityZone"]
@@ -718,7 +815,17 @@ def redshift_cluster_default_username_check(cache: dict, session, awsAccountId: 
                         "Url": "https://docs.aws.amazon.com/redshift/latest/gsg/getting-started.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Redshift",
+                    "AssetComponent": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRedshiftCluster",
@@ -803,7 +910,17 @@ def redshift_cluster_default_username_check(cache: dict, session, awsAccountId: 
                         "Url": "https://docs.aws.amazon.com/redshift/latest/gsg/getting-started.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Redshift",
+                    "AssetComponent": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRedshiftCluster",
@@ -874,6 +991,9 @@ def redshift_cluster_user_activity_logging_check(cache: dict, session, awsAccoun
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for cluster in describe_redshift_clusters(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(cluster,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clusterId = cluster["ClusterIdentifier"]
         clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"  
         clusterAz = cluster["AvailabilityZone"]
@@ -913,7 +1033,17 @@ def redshift_cluster_user_activity_logging_check(cache: dict, session, awsAccoun
                                 "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/db-auditing.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Analytics",
+                            "AssetService": "Amazon Redshift",
+                            "AssetComponent": "Cluster"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsRedshiftCluster",
@@ -983,7 +1113,17 @@ def redshift_cluster_user_activity_logging_check(cache: dict, session, awsAccoun
                                 "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/db-auditing.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Analytics",
+                            "AssetService": "Amazon Redshift",
+                            "AssetComponent": "Cluster"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsRedshiftCluster",
@@ -1039,6 +1179,9 @@ def redshift_cluster_ssl_connections_only_check(cache: dict, session, awsAccount
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for cluster in describe_redshift_clusters(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(cluster,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clusterId = cluster["ClusterIdentifier"]
         clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"  
         clusterAz = cluster["AvailabilityZone"]
@@ -1078,7 +1221,17 @@ def redshift_cluster_ssl_connections_only_check(cache: dict, session, awsAccount
                                 "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/security-encryption-in-transit.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Analytics",
+                            "AssetService": "Amazon Redshift",
+                            "AssetComponent": "Cluster"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsRedshiftCluster",
@@ -1149,7 +1302,17 @@ def redshift_cluster_ssl_connections_only_check(cache: dict, session, awsAccount
                                 "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/security-encryption-in-transit.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Analytics",
+                            "AssetService": "Amazon Redshift",
+                            "AssetComponent": "Cluster"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsRedshiftCluster",
@@ -1205,6 +1368,9 @@ def redshift_cluster_auto_snapshot_check(cache: dict, session, awsAccountId: str
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for cluster in describe_redshift_clusters(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(cluster,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clusterId = cluster["ClusterIdentifier"]
         clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"  
         clusterAz = cluster["AvailabilityZone"]
@@ -1238,7 +1404,17 @@ def redshift_cluster_auto_snapshot_check(cache: dict, session, awsAccountId: str
                         "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-snapshots.html#about-automated-snapshots",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Redshift",
+                    "AssetComponent": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRedshiftCluster",
@@ -1310,7 +1486,17 @@ def redshift_cluster_auto_snapshot_check(cache: dict, session, awsAccountId: str
                         "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-snapshots.html#about-automated-snapshots",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Redshift",
+                    "AssetComponent": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRedshiftCluster",
@@ -1367,6 +1553,9 @@ def redshift_cluster_auto_version_upgrade_check(cache: dict, session, awsAccount
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for cluster in describe_redshift_clusters(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(cluster,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clusterId = cluster["ClusterIdentifier"]
         clusterArn = f"arn:{awsPartition}:redshift:{awsRegion}:{awsAccountId}:cluster:{clusterId}"  
         clusterAz = cluster["AvailabilityZone"]
@@ -1400,7 +1589,17 @@ def redshift_cluster_auto_version_upgrade_check(cache: dict, session, awsAccount
                         "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-clusters.html#rs-maintenance-windows",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Redshift",
+                    "AssetComponent": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRedshiftCluster",
@@ -1470,7 +1669,17 @@ def redshift_cluster_auto_version_upgrade_check(cache: dict, session, awsAccount
                         "Url": "https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-clusters.html#rs-maintenance-windows",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Redshift",
+                    "AssetComponent": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsRedshiftCluster",

@@ -22,6 +22,8 @@ import datetime
 from check_register import CheckRegister
 from dateutil.parser import parse
 from botocore.config import Config
+import base64
+import json
 # Adding backoff and retries for SSM - this API gets throttled a lot
 config = Config(
    retries = {
@@ -50,13 +52,16 @@ def paginate(cache, session):
 
 @registry.register_check("ec2")
 def ec2_instance_ssm_managed_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EC2-SSM.1] EC2 Instances should be managed by Systems Manager"""
+    """[EC2.SystemsManager.1] Running EC2 instances should be managed by Systems Manager"""
     ssm = session.client("ssm",config=config)
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for i in paginate(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(i,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         instanceId = str(i["InstanceId"])
-        instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
+        instanceArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}"
         instanceType = str(i["InstanceType"])
         instanceImage = str(i["ImageId"])
         subnetId = str(i["SubnetId"])
@@ -88,15 +93,25 @@ def ec2_instance_ssm_managed_check(cache: dict, session, awsAccountId: str, awsR
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[EC2-SSM.1] EC2 Instances should be managed by Systems Manager",
-                "Description": f"EC2 Instance {instanceId} is not managed by AWS Systems Manager. Systems Manager enables automated activities such as patching, configuration management, software inventory management and more. Not having instances managed by Systems Manager can degrade the effectiveness of critical security processes. Refer to the remediation instructions if this configuration is not intended.",
+                "Title": "[EC2.SystemsManager.1] Running EC2 instances should be managed by Systems Manager",
+                "Description": f"EC2 Instance {instanceId} is not managed by AWS Systems Manager. Systems Manager enables automated activities such as patching, configuration management, software inventory management and more. Not having instances managed by Systems Manager can degrade the effectiveness of important security processes. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "To learn how to configure Systems Manager and associated instances refer to the Setting Up AWS Systems Manager section of the AWS Systems Manager User Guide",
                         "Url": "https://docs.aws.amazon.com/en_us/systems-manager/latest/userguide/systems-manager-setting-up.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetComponent": "Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Instance",
@@ -144,7 +159,7 @@ def ec2_instance_ssm_managed_check(cache: dict, session, awsAccountId: str, awsR
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[EC2-SSM.1] EC2 Instances should be managed by Systems Manager",
+                "Title": "[EC2.SystemsManager.1] Running EC2 instances should be managed by Systems Manager",
                 "Description": f"EC2 Instance {instanceId} is managed by AWS Systems Manager.",
                 "Remediation": {
                     "Recommendation": {
@@ -152,7 +167,17 @@ def ec2_instance_ssm_managed_check(cache: dict, session, awsAccountId: str, awsR
                         "Url": "https://docs.aws.amazon.com/en_us/systems-manager/latest/userguide/systems-manager-setting-up.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetComponent": "Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Instance",
@@ -190,13 +215,16 @@ def ec2_instance_ssm_managed_check(cache: dict, session, awsAccountId: str, awsR
 
 @registry.register_check("ec2")
 def ssm_instace_agent_update_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EC2-SSM.2] EC2 Linux Instances managed by Systems Manager should have the latest SSM Agent installed"""
+    """[EC2.SystemsManager.2] EC2 Linux Instances managed by Systems Manager should have the latest SSM Agent installed"""
     ssm = session.client("ssm",config=config)
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for i in paginate(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(i,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         instanceId = str(i["InstanceId"])
-        instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
+        instanceArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}"
         instanceType = str(i["InstanceType"])
         instanceImage = str(i["ImageId"])
         subnetId = str(i["SubnetId"])
@@ -235,7 +263,7 @@ def ssm_instace_agent_update_check(cache: dict, session, awsAccountId: str, awsR
                             "UpdatedAt": iso8601Time,
                             "Severity": {"Label": "LOW"},
                             "Confidence": 99,
-                            "Title": "[EC2-SSM.2] EC2 Linux Instances managed by Systems Manager should have the latest SSM Agent installed",
+                            "Title": "[EC2.SystemsManager.2] EC2 Linux Instances managed by Systems Manager should have the latest SSM Agent installed",
                             "Description": f"EC2 Instance {instanceId} is a Linux-based platform which does not have the latest SSM Agent installed. Not having the latest SSM Agent can lead to issues with patching, configuration management, inventory management, and/or vulnerability management activities. Refer to the remediation instructions if this configuration is not intended.",
                             "Remediation": {
                                 "Recommendation": {
@@ -243,7 +271,17 @@ def ssm_instace_agent_update_check(cache: dict, session, awsAccountId: str, awsR
                                     "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent-automatic-updates.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon EC2",
+                                "AssetComponent": "Instance"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsEc2Instance",
@@ -291,7 +329,7 @@ def ssm_instace_agent_update_check(cache: dict, session, awsAccountId: str, awsR
                             "UpdatedAt": iso8601Time,
                             "Severity": {"Label": "INFORMATIONAL"},
                             "Confidence": 99,
-                            "Title": "[EC2-SSM.2] EC2 Linux Instances managed by Systems Manager should have the latest SSM Agent installed",
+                            "Title": "[EC2.SystemsManager.2] EC2 Linux Instances managed by Systems Manager should have the latest SSM Agent installed",
                             "Description": f"EC2 Instance {instanceId} is a Linux-based platform and has the latest SSM Agent installed.",
                             "Remediation": {
                                 "Recommendation": {
@@ -299,7 +337,17 @@ def ssm_instace_agent_update_check(cache: dict, session, awsAccountId: str, awsR
                                     "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent-automatic-updates.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
+                                "AssetClass": "Compute",
+                                "AssetService": "Amazon EC2",
+                                "AssetComponent": "Instance"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsEc2Instance",
@@ -337,13 +385,16 @@ def ssm_instace_agent_update_check(cache: dict, session, awsAccountId: str, awsR
 
 @registry.register_check("ec2")
 def ssm_instance_association_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EC2-SSM.3] EC2 Instances managed by Systems Manager should have a successful Association status"""
+    """[EC2.SystemsManager.3] Running EC2 instances managed by Systems Manager should have a successful Association status"""
     ssm = session.client("ssm",config=config)
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for i in paginate(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(i,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         instanceId = str(i["InstanceId"])
-        instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
+        instanceArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}"
         instanceType = str(i["InstanceType"])
         instanceImage = str(i["ImageId"])
         subnetId = str(i["SubnetId"])
@@ -380,7 +431,7 @@ def ssm_instance_association_check(cache: dict, session, awsAccountId: str, awsR
                         "UpdatedAt": iso8601Time,
                         "Severity": {"Label": "LOW"},
                         "Confidence": 99,
-                        "Title": "[EC2-SSM.3] EC2 Instances managed by Systems Manager should have a successful Association status",
+                        "Title": "[EC2.SystemsManager.3] Running EC2 instances managed by Systems Manager should have a successful Association status",
                         "Description": f"EC2 Instance {instanceId} has failed its last Systems Manager State Manager Association. Associations are State Manager automation constructs which encapsulate execution of SSM Documents such as Patching, software configuration, and SSM Agent updates onto an instance. A failed Association can represent the failure of a critical process and should be reviewed. Refer to the remediation instructions for more information on working with State Manager Associations.",
                         "Remediation": {
                             "Recommendation": {
@@ -388,7 +439,17 @@ def ssm_instance_association_check(cache: dict, session, awsAccountId: str, awsR
                                 "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-associations.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Compute",
+                            "AssetService": "Amazon EC2",
+                            "AssetComponent": "Instance"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsEc2Instance",
@@ -436,7 +497,7 @@ def ssm_instance_association_check(cache: dict, session, awsAccountId: str, awsR
                         "UpdatedAt": iso8601Time,
                         "Severity": {"Label": "INFORMATIONAL"},
                         "Confidence": 99,
-                        "Title": "[EC2-SSM.3] EC2 Instances managed by Systems Manager should have a successful Association status",
+                        "Title": "[EC2.SystemsManager.3] Running EC2 instances managed by Systems Manager should have a successful Association status",
                         "Description": f"EC2 Instance {instanceId} has passed its last Systems Manager State Manager Association.",
                         "Remediation": {
                             "Recommendation": {
@@ -444,7 +505,17 @@ def ssm_instance_association_check(cache: dict, session, awsAccountId: str, awsR
                                 "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-associations.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Compute",
+                            "AssetService": "Amazon EC2",
+                            "AssetComponent": "Instance"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsEc2Instance",
@@ -482,13 +553,16 @@ def ssm_instance_association_check(cache: dict, session, awsAccountId: str, awsR
 
 @registry.register_check("ec2")
 def ssm_instance_patch_state_state(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[EC2-SSM.4] EC2 Instances managed by Systems Manager should have the latest patches installed by Patch Manager"""
+    """[EC2.SystemsManager.4] Running EC2 instances managed by Systems Manager should have the latest patches installed by Patch Manager"""
     ssm = session.client("ssm",config=config)
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for i in paginate(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(i,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         instanceId = str(i["InstanceId"])
-        instanceArn = (f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
+        instanceArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}"
         instanceType = str(i["InstanceType"])
         instanceImage = str(i["ImageId"])
         subnetId = str(i["SubnetId"])
@@ -513,15 +587,25 @@ def ssm_instance_patch_state_state(cache: dict, session, awsAccountId: str, awsR
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": "[EC2-SSM.4] EC2 Instances managed by Systems Manager should have the latest patches installed by Patch Manager",
-                "Description": f"EC2 Instance {instanceId} does not have any patch information recorded and is likely not managed by Patch Manager. Refer to the remediation instructions if this configuration is not intended.",
+                "Title": "[EC2.SystemsManager.4] Running EC2 instances managed by Systems Manager should have the latest patches installed by Patch Manager",
+                "Description": f"EC2 Instance {instanceId} does not have any patch information recorded and is likely not managed by Patch Manager. Patch Manager automates the installation and application of security, performance, and major version upgrades and KBs onto your instances, reducing exposure to vulnerabilities and other weaknesses. Without automatic patching at scale, vulnerabilities can quickly manifest within a given cloud environment leading to potential avenues of attack for adversaries and other unauthorized actors. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For information on Patch Manager refer to the AWS Systems Manager Patch Manager section of the AWS Systems Manager User Guide",
                         "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-patch.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetComponent": "Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Instance",
@@ -571,7 +655,7 @@ def ssm_instance_patch_state_state(cache: dict, session, awsAccountId: str, awsR
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[EC2-SSM.4] EC2 Instances managed by Systems Manager should have the latest patches installed by Patch Manager",
+                "Title": "[EC2.SystemsManager.4] Running EC2 instances managed by Systems Manager should have the latest patches installed by Patch Manager",
                 "Description": f"EC2 Instance {instanceId} has patches applied by AWS Systems Manager Patch Manager. You should still review Patch Compliance information to ensure that all required patches were successfully applied.",
                 "Remediation": {
                     "Recommendation": {
@@ -579,7 +663,17 @@ def ssm_instance_patch_state_state(cache: dict, session, awsAccountId: str, awsR
                         "Url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-patch.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "Amazon EC2",
+                    "AssetComponent": "Instance"
+                },
                 "Resources": [
                     {
                         "Type": "AwsEc2Instance",

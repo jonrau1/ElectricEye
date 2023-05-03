@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -38,6 +40,9 @@ def internet_facing_clb_https_listener_check(cache: dict, session, awsAccountId:
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for lb in describe_clbs(cache, session)["LoadBalancerDescriptions"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(lb,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clbName = str(lb["LoadBalancerName"])
         clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
         dnsName = str(lb["DNSName"])
@@ -72,7 +77,17 @@ def internet_facing_clb_https_listener_check(cache: dict, session, awsAccountId:
                                 "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-create-https-ssl-load-balancer.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Networking",
+                            "AssetService": "AWS Elastic Load Balancer",
+                            "AssetComponent": "Classic Load Balancer"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsElbLoadBalancer",
@@ -135,7 +150,17 @@ def internet_facing_clb_https_listener_check(cache: dict, session, awsAccountId:
                                 "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-create-https-ssl-load-balancer.html",
                             }
                         },
-                        "ProductFields": {"Product Name": "ElectricEye"},
+                        "ProductFields": {
+                            "ProductName": "ElectricEye",
+                            "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
+                            "AssetClass": "Networking",
+                            "AssetService": "AWS Elastic Load Balancer",
+                            "AssetComponent": "Classic Load Balancer"
+                        },
                         "Resources": [
                             {
                                 "Type": "AwsElbLoadBalancer",
@@ -184,6 +209,9 @@ def clb_https_listener_tls12_policy_check(cache: dict, session, awsAccountId: st
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for lb in describe_clbs(cache, session)["LoadBalancerDescriptions"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(lb,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clbName = str(lb["LoadBalancerName"])
         clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
         dnsName = str(lb["DNSName"])
@@ -219,7 +247,17 @@ def clb_https_listener_tls12_policy_check(cache: dict, session, awsAccountId: st
                             "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-security-policy-table.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Networking",
+                        "AssetService": "AWS Elastic Load Balancer",
+                        "AssetComponent": "Classic Load Balancer"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsElbLoadBalancer",
@@ -282,7 +320,17 @@ def clb_https_listener_tls12_policy_check(cache: dict, session, awsAccountId: st
                             "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-security-policy-table.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Networking",
+                        "AssetService": "AWS Elastic Load Balancer",
+                        "AssetComponent": "Classic Load Balancer"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsElbLoadBalancer",
@@ -330,6 +378,9 @@ def clb_cross_zone_balancing_check(cache: dict, session, awsAccountId: str, awsR
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for lb in describe_clbs(cache, session)["LoadBalancerDescriptions"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(lb,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clbName = str(lb["LoadBalancerName"])
         clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
         dnsName = str(lb["DNSName"])
@@ -366,7 +417,17 @@ def clb_cross_zone_balancing_check(cache: dict, session, awsAccountId: str, awsR
                         "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/enable-disable-crosszone-lb.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "AWS Elastic Load Balancer",
+                    "AssetComponent": "Classic Load Balancer"
+                },
                 "Resources": [
                     {
                         "Type": "AwsElbLoadBalancer",
@@ -430,7 +491,17 @@ def clb_cross_zone_balancing_check(cache: dict, session, awsAccountId: str, awsR
                         "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/enable-disable-crosszone-lb.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "AWS Elastic Load Balancer",
+                    "AssetComponent": "Classic Load Balancer"
+                },
                 "Resources": [
                     {
                         "Type": "AwsElbLoadBalancer",
@@ -479,6 +550,9 @@ def clb_connection_draining_check(cache: dict, session, awsAccountId: str, awsRe
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for lb in describe_clbs(cache, session)["LoadBalancerDescriptions"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(lb,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clbName = str(lb["LoadBalancerName"])
         clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
         dnsName = str(lb["DNSName"])
@@ -515,7 +589,17 @@ def clb_connection_draining_check(cache: dict, session, awsAccountId: str, awsRe
                         "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/config-conn-drain.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "AWS Elastic Load Balancer",
+                    "AssetComponent": "Classic Load Balancer"
+                },
                 "Resources": [
                     {
                         "Type": "AwsElbLoadBalancer",
@@ -579,7 +663,17 @@ def clb_connection_draining_check(cache: dict, session, awsAccountId: str, awsRe
                         "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/config-conn-drain.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "AWS Elastic Load Balancer",
+                    "AssetComponent": "Classic Load Balancer"
+                },
                 "Resources": [
                     {
                         "Type": "AwsElbLoadBalancer",
@@ -628,6 +722,9 @@ def clb_access_logging_check(cache: dict, session, awsAccountId: str, awsRegion:
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for lb in describe_clbs(cache, session)["LoadBalancerDescriptions"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(lb,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clbName = str(lb["LoadBalancerName"])
         clbArn = f"arn:{awsPartition}:elasticloadbalancing:{awsRegion}:{awsAccountId}:loadbalancer/{clbName}"
         dnsName = str(lb["DNSName"])
@@ -662,7 +759,17 @@ def clb_access_logging_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/access-log-collection.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "AWS Elastic Load Balancer",
+                    "AssetComponent": "Classic Load Balancer"
+                },
                 "Resources": [
                     {
                         "Type": "AwsElbLoadBalancer",
@@ -724,7 +831,17 @@ def clb_access_logging_check(cache: dict, session, awsAccountId: str, awsRegion:
                         "Url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/access-log-collection.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "AWS Elastic Load Balancer",
+                    "AssetComponent": "Classic Load Balancer"
+                },
                 "Resources": [
                     {
                         "Type": "AwsElbLoadBalancer",

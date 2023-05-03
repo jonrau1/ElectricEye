@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -37,6 +39,9 @@ def autoscaling_scale_in_protection_check(cache: dict, session, awsAccountId: st
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for asg in describe_auto_scaling_groups(cache, session)["AutoScalingGroups"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(asg,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         asgArn = asg["AutoScalingGroupARN"]
         asgName = asg["AutoScalingGroupName"]
         healthCheckType = asg["HealthCheckType"]
@@ -64,7 +69,17 @@ def autoscaling_scale_in_protection_check(cache: dict, session, awsAccountId: st
                         "Url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-instance-protection.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "AWS Auto Scaling",
+                    "AssetComponent": "Autoscaling Group"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAutoScalingAutoScalingGroup",
@@ -121,7 +136,17 @@ def autoscaling_scale_in_protection_check(cache: dict, session, awsAccountId: st
                         "Url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-instance-protection.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "AWS Auto Scaling",
+                    "AssetComponent": "Autoscaling Group"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAutoScalingAutoScalingGroup",
@@ -163,6 +188,9 @@ def autoscaling_load_balancer_healthcheck_check(cache: dict, session, awsAccount
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for asg in describe_auto_scaling_groups(cache, session)["AutoScalingGroups"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(asg,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         asgArn = asg["AutoScalingGroupARN"]
         asgName = asg["AutoScalingGroupName"]
         healthCheckType = asg["HealthCheckType"]
@@ -192,7 +220,17 @@ def autoscaling_load_balancer_healthcheck_check(cache: dict, session, awsAccount
                         "Url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-add-elb-healthcheck.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "AWS Auto Scaling",
+                    "AssetComponent": "Autoscaling Group"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAutoScalingAutoScalingGroup",
@@ -246,7 +284,17 @@ def autoscaling_load_balancer_healthcheck_check(cache: dict, session, awsAccount
                             "Url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-add-elb-healthcheck.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Compute",
+                        "AssetService": "AWS Auto Scaling",
+                        "AssetComponent": "Autoscaling Group"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsAutoScalingAutoScalingGroup",
@@ -299,7 +347,17 @@ def autoscaling_load_balancer_healthcheck_check(cache: dict, session, awsAccount
                             "Url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-add-elb-healthcheck.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Compute",
+                        "AssetService": "AWS Auto Scaling",
+                        "AssetComponent": "Autoscaling Group"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsAutoScalingAutoScalingGroup",
@@ -345,6 +403,9 @@ def autoscaling_high_availability_az_check(cache: dict, session, awsAccountId: s
                 regionalAzs.append(az["ZoneName"])
     availableAzCount = len(regionalAzs)
     for asg in describe_auto_scaling_groups(cache, session)["AutoScalingGroups"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(asg,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         asgArn = asg["AutoScalingGroupARN"]
         asgName = asg["AutoScalingGroupName"]
         healthCheckType = asg["HealthCheckType"]
@@ -372,7 +433,17 @@ def autoscaling_high_availability_az_check(cache: dict, session, awsAccountId: s
                         "Url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-add-availability-zone.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "AWS Auto Scaling",
+                    "AssetComponent": "Autoscaling Group"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAutoScalingAutoScalingGroup",
@@ -429,7 +500,17 @@ def autoscaling_high_availability_az_check(cache: dict, session, awsAccountId: s
                         "Url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-add-availability-zone.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "AWS Auto Scaling",
+                    "AssetComponent": "Autoscaling Group"
+                },
                 "Resources": [
                     {
                         "Type": "AwsAutoScalingAutoScalingGroup",

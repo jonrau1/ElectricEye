@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -31,21 +33,22 @@ def describe_clusters(cache, session):
     cache["describe_clusters"] = cloudhsm.describe_clusters()
     return cache["describe_clusters"]
 
-
 @registry.register_check("cloudhsm")
 def cloudhsm_cluster_degradation_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudHsm.1] CloudHsm clusters should not be degraded"""
-    hsm_clusters = describe_clusters(cache, session)
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for clstr in hsm_clusters["Clusters"]:
-        ClusterId = clstr["ClusterId"]
+    for clstr in describe_clusters(cache, session)["Clusters"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(clstr,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        clusterId = clstr["ClusterId"]
         if clstr["State"] != "DEGRADED":
             #Passing Check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": ClusterId + "/cloudhsm-cluster-degradation-check",
+                "Id": clusterId + "/cloudhsm-cluster-degradation-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": ClusterId,
+                "GeneratorId": clusterId,
                 "AwsAccountId": awsAccountId,
                 "Types": [
                     "Software and Configuration Checks/AWS Security Best Practices",
@@ -56,21 +59,31 @@ def cloudhsm_cluster_degradation_check(cache: dict, session, awsAccountId: str, 
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[CloudHsm.1] CloudHsm clusters should not be in a degraded state",
-                "Description": f"CloudHSM cluster {ClusterId} is not in a degraded state",
+                "Description": f"CloudHSM cluster {clusterId} is not in a degraded state",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on HSM Clusters refer to the AWS CloudHsm User Guide on managing cloudhsm clusters",
                         "Url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/manage-clusters.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS CloudHSM",
+                    "AssetComponent": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudHsmCluster",
-                        "Id": ClusterId,
+                        "Id": clusterId,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"AwsCloudHsmCluster": {"ClusterId": ClusterId}},
+                        "Details": {"AwsCloudHsmCluster": {"ClusterId": clusterId}},
                     }
                 ],
                 "Compliance": {
@@ -99,9 +112,9 @@ def cloudhsm_cluster_degradation_check(cache: dict, session, awsAccountId: str, 
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": ClusterId + "/cloudhsm-cluster-degradation-check",
+                "Id": clusterId + "/cloudhsm-cluster-degradation-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": ClusterId,
+                "GeneratorId": clusterId,
                 "AwsAccountId": awsAccountId,
                 "Types": [
                     "Software and Configuration Checks/AWS Security Best Practices",
@@ -112,21 +125,31 @@ def cloudhsm_cluster_degradation_check(cache: dict, session, awsAccountId: str, 
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
                 "Title": "[CloudHsm.1] CloudHsm clusters should not be in a degraded state",
-                "Description": f"CloudHSM cluster {ClusterId} is in a degraded state",
+                "Description": f"CloudHSM cluster {clusterId} is in a degraded state",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on HSM Clusters refer to the AWS CloudHsm User Guide on managing cloudhsm clusters",
                         "Url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/manage-clusters.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS CloudHSM",
+                    "AssetComponent": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudHsmCluster",
-                        "Id": ClusterId,
+                        "Id": clusterId,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"AwsCloudHsmCluster": {"ClusterId": ClusterId}},
+                        "Details": {"AwsCloudHsmCluster": {"ClusterId": clusterId}},
                     }
                 ],
                 "Compliance": {
@@ -153,14 +176,15 @@ def cloudhsm_cluster_degradation_check(cache: dict, session, awsAccountId: str, 
             }
             yield finding
 
-
 @registry.register_check("cloudhsm")
 def cloudhsm_hsm_degradation_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudHsm.2] CloudHsm HSMs should not be degraded"""
-    hsm_clusters = describe_clusters(cache, session)
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for clstr in hsm_clusters["Clusters"]:
-        ClusterId = clstr["ClusterId"]
+    for clstr in describe_clusters(cache, session)["Clusters"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(clstr,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        clusterId = clstr["ClusterId"]
         for hsm in clstr['Hsms']:
             HsmId = hsm['HsmId']
             if hsm["State"] != "DEGRADED":
@@ -187,7 +211,17 @@ def cloudhsm_hsm_degradation_check(cache: dict, session, awsAccountId: str, awsR
                             "Url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/introduction.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Security Services",
+                        "AssetService": "AWS CloudHSM",
+                        "AssetComponent": "Hardware Security Module"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCloudHsmHsm",
@@ -243,7 +277,17 @@ def cloudhsm_hsm_degradation_check(cache: dict, session, awsAccountId: str, awsR
                             "Url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/introduction.html",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Security Services",
+                        "AssetService": "AWS CloudHSM",
+                        "AssetComponent": "Hardware Security Module"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCloudHsmHsm",
@@ -277,20 +321,20 @@ def cloudhsm_hsm_degradation_check(cache: dict, session, awsAccountId: str, awsR
                 }
                 yield finding
 
-
-
 @registry.register_check("cloudhsm")
 def cloudhsm_cluster_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudHsm.3] CloudHsm clusters should have at least 1 backup in a READY state"""
     cloudhsm = session.client("cloudhsmv2")
-    hsm_clusters = describe_clusters(cache, session)
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for clstr in hsm_clusters["Clusters"]:
-        ClusterId = clstr["ClusterId"]
+    for clstr in describe_clusters(cache, session)["Clusters"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(clstr,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        clusterId = clstr["ClusterId"]
         
         backups = cloudhsm.describe_backups(
             Filters = {
-                'clusterIds': [ClusterId]
+                'clusterIds': [clusterId]
             }
         )
         activeBackups = [x for x in backups['Backups'] if x['BackupState'] == 'READY']
@@ -298,9 +342,9 @@ def cloudhsm_cluster_backup_check(cache: dict, session, awsAccountId: str, awsRe
             #Passing Check
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": ClusterId + "/cloudhsm-cluster-backup-check",
+                "Id": clusterId + "/cloudhsm-cluster-backup-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": ClusterId,
+                "GeneratorId": clusterId,
                 "AwsAccountId": awsAccountId,
                 "Types": [
                     "Software and Configuration Checks/AWS Security Best Practices",
@@ -311,21 +355,31 @@ def cloudhsm_cluster_backup_check(cache: dict, session, awsAccountId: str, awsRe
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[CloudHsm.3] CloudHsm clusters should have at least 1 backup in a READY state",
-                "Description": f"CloudHSM cluster {ClusterId} has at least 1 backup in a READY state",
+                "Description": f"CloudHSM cluster {clusterId} has at least 1 backup in a READY state",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on HSM Clusters refer to the AWS CloudHsm User Guide on managing Backups",
                         "Url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/backups.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS CloudHSM",
+                    "AssetComponent": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudHsmCluster",
-                        "Id": ClusterId,
+                        "Id": clusterId,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"AwsCloudHsmCluster": {"ClusterId": ClusterId}},
+                        "Details": {"AwsCloudHsmCluster": {"ClusterId": clusterId}},
                     }
                 ],
                 "Compliance": {
@@ -354,9 +408,9 @@ def cloudhsm_cluster_backup_check(cache: dict, session, awsAccountId: str, awsRe
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": ClusterId + "/cloudhsm-cluster-backup-check",
+                "Id": clusterId + "/cloudhsm-cluster-backup-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": ClusterId,
+                "GeneratorId": clusterId,
                 "AwsAccountId": awsAccountId,
                 "Types": [
                     "Software and Configuration Checks/AWS Security Best Practices",
@@ -367,21 +421,31 @@ def cloudhsm_cluster_backup_check(cache: dict, session, awsAccountId: str, awsRe
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
                 "Title": "[CloudHsm.3] CloudHsm clusters should have at least 1 backup in a READY state",
-                "Description": f"CloudHSM cluster {ClusterId} does not have at least 1 backup in a READY state",
+                "Description": f"CloudHSM cluster {clusterId} does not have at least 1 backup in a READY state",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on HSM Clusters refer to the AWS CloudHsm User Guide on managing Backups",
                         "Url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/backups.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS CloudHSM",
+                    "AssetComponent": "Cluster"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudHsmCluster",
-                        "Id": ClusterId,
+                        "Id": clusterId,
                         "Partition": awsPartition,
                         "Region": awsRegion,
-                        "Details": {"AwsCloudHsmCluster": {"ClusterId": ClusterId}},
+                        "Details": {"AwsCloudHsmCluster": {"ClusterId": clusterId}},
                     }
                 ],
                 "Compliance": {

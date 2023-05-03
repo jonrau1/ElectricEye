@@ -19,9 +19,10 @@
 #under the License.
 
 import datetime
-from dateutil import parser
 import uuid
 from check_register import CheckRegister, accumulate_paged_results
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -44,6 +45,9 @@ def kda_log_to_cloudwatch_check(cache: dict, session, awsAccountId: str, awsRegi
         applicationDescription = kinesisanalyticsv2.describe_application(
             ApplicationName=applicationName
         )
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(applicationDescription,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         cwDescription = applicationDescription["ApplicationDetail"][
             "CloudWatchLoggingOptionDescriptions"
         ]
@@ -74,7 +78,17 @@ def kda_log_to_cloudwatch_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/kinesisanalytics/latest/java/best-practices.html#how-dev-bp-logging",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Kinesis Data Analytics",
+                    "AssetComponent": "Application"
+                },
                 "Resources": [
                     {
                         "Type": "AwsKinesisDataAnalyticsApplication",
@@ -127,7 +141,17 @@ def kda_log_to_cloudwatch_check(cache: dict, session, awsAccountId: str, awsRegi
                         "Url": "https://docs.aws.amazon.com/kinesisanalytics/latest/java/best-practices.html#how-dev-bp-logging",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon Kinesis Data Analytics",
+                    "AssetComponent": "Application"
+                },
                 "Resources": [
                     {
                         "Type": "AwsKinesisDataAnalyticsApplication",

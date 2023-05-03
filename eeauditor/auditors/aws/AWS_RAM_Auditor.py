@@ -19,8 +19,9 @@
 #under the License.
 
 import datetime
-import uuid
-from check_register import CheckRegister, accumulate_paged_results
+from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -29,153 +30,163 @@ def get_resource_shares(cache, session):
     response = cache.get("get_resource_shares")
     if response:
         return response
-    paginator = ram.get_paginator("get_resource_shares")
-    response_iterator = paginator.paginate(resourceOwner="SELF")
-    results = accumulate_paged_results(
-        page_iterator=response_iterator, key="resourceShares"
-    )
+    for page in ram.get_paginator("get_resource_shares").paginate():
+        results = page["resourceShares"] 
+
     cache["get_resource_shares"] = results
     return cache["get_resource_shares"]
-
 
 @registry.register_check("ram")
 def ram_resource_shares_status_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RAM.1] Resource share should not have a failed status"""
-    ram = session.client("ram")
-    responses = []
-    responses.append(get_resource_shares(cache, session))
-    paginator = ram.get_paginator("get_resource_shares")
-    response_iterator = paginator.paginate(resourceOwner="OTHER-ACCOUNTS")
-    responses.append(
-        accumulate_paged_results(page_iterator=response_iterator, key="resourceShares")
-    )
-    for response in responses:
-        resourceShares = response["resourceShares"]
-        iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-        for resourceShare in resourceShares:
-            resourceshareArn = resourceShare["resourceShareArn"]
-            status = resourceShare["status"]
-            shareName = resourceShare["name"]
-            generatorUuid = str(uuid.uuid4())
-            if status != "FAILED":
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": resourceshareArn + "/ram-resource-shares-status-check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": generatorUuid,
-                    "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
+    iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for resourceShare in get_resource_shares(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(resourceShare,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        status = resourceShare["status"]
+        shareName = resourceShare["name"]
+        resourceShareArn = f"arn:{awsPartition}:ram:{awsRegion}:{awsAccountId}:resource-share/{shareName}"
+        if status != "FAILED":
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{resourceShareArn}/ram-resource-shares-status-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{resourceShareArn}/ram-resource-shares-status-check",
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices"
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[RAM.1] Resource share should not have a failed status",
+                "Description": "Resource share "
+                + shareName
+                + " does not have a failed status.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on resource share statuses refer to the Viewing Resource Shares section of the AWS Resource Access Manager User Guide",
+                        "Url": "https://docs.aws.amazon.com/ram/latest/userguide/working-with-shared.html#working-with-shared-view-rs",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS Resource Access Manager",
+                    "AssetComponent": "Resource Share"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsResourceAccessManagerShare",
+                        "Id": resourceShareArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1",
                     ],
-                    "FirstObservedAt": iso8601Time,
-                    "CreatedAt": iso8601Time,
-                    "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "INFORMATIONAL"},
-                    "Confidence": 99,
-                    "Title": "[RAM.1] Resource share should not have a failed status",
-                    "Description": "Resource share "
-                    + shareName
-                    + " does not have a failed status.",
-                    "Remediation": {
-                        "Recommendation": {
-                            "Text": "For more information on resource share statuses refer to the Viewing Resource Shares section of the AWS Resource Access Manager User Guide",
-                            "Url": "https://docs.aws.amazon.com/ram/latest/userguide/working-with-shared.html#working-with-shared-view-rs",
-                        }
-                    },
-                    "ProductFields": {"Product Name": "ElectricEye"},
-                    "Resources": [
-                        {
-                            "Type": "AwsResourceAccessManagerShare",
-                            "Id": resourceshareArn,
-                            "Partition": awsPartition,
-                            "Region": awsRegion,
-                        }
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED",
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{resourceShareArn}/ram-resource-shares-status-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": f"{resourceShareArn}/ram-resource-shares-status-check",
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices"
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "MEDIUM"},
+                "Confidence": 99,
+                "Title": "[RAM.1] Resource share should not have a failed status",
+                "Description": "Resource share "
+                + shareName
+                + " has a failed status.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on resource share statuses refer to the Viewing Resource Shares section of the AWS Resource Access Manager User Guide",
+                        "Url": "https://docs.aws.amazon.com/ram/latest/userguide/working-with-shared.html#working-with-shared-view-rs",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS Resource Access Manager",
+                    "AssetComponent": "Resource Share"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsResourceAccessManagerShare",
+                        "Id": resourceShareArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1",
                     ],
-                    "Compliance": {
-                        "Status": "PASSED",
-                        "RelatedRequirements": [
-                            "NIST CSF V1.1 ID.AM-2",
-                            "NIST SP 800-53 Rev. 4 CM-8",
-                            "NIST SP 800-53 Rev. 4 PM-5",
-                            "AICPA TSC CC3.2",
-                            "AICPA TSC CC6.1",
-                            "ISO 27001:2013 A.8.1.1",
-                            "ISO 27001:2013 A.8.1.2",
-                            "ISO 27001:2013 A.12.5.1",
-                        ],
-                    },
-                    "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED",
-                }
-                yield finding
-            else:
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": resourceshareArn + "/ram-resource-shares-status-check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": generatorUuid,
-                    "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices"
-                    ],
-                    "FirstObservedAt": iso8601Time,
-                    "CreatedAt": iso8601Time,
-                    "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "MEDIUM"},
-                    "Confidence": 99,
-                    "Title": "[RAM.1] Resource share should not have a failed status",
-                    "Description": "Resource share "
-                    + shareName
-                    + " has a failed status.",
-                    "Remediation": {
-                        "Recommendation": {
-                            "Text": "For more information on resource share statuses refer to the Viewing Resource Shares section of the AWS Resource Access Manager User Guide",
-                            "Url": "https://docs.aws.amazon.com/ram/latest/userguide/working-with-shared.html#working-with-shared-view-rs",
-                        }
-                    },
-                    "ProductFields": {"Product Name": "ElectricEye"},
-                    "Resources": [
-                        {
-                            "Type": "AwsResourceAccessManagerShare",
-                            "Id": resourceshareArn,
-                            "Partition": awsPartition,
-                            "Region": awsRegion,
-                        }
-                    ],
-                    "Compliance": {
-                        "Status": "FAILED",
-                        "RelatedRequirements": [
-                            "NIST CSF V1.1 ID.AM-2",
-                            "NIST SP 800-53 Rev. 4 CM-8",
-                            "NIST SP 800-53 Rev. 4 PM-5",
-                            "AICPA TSC CC3.2",
-                            "AICPA TSC CC6.1",
-                            "ISO 27001:2013 A.8.1.1",
-                            "ISO 27001:2013 A.8.1.2",
-                            "ISO 27001:2013 A.12.5.1",
-                        ],
-                    },
-                    "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
-                }
-                yield finding
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE",
+            }
+            yield finding
 
 @registry.register_check("ram")
 def ram_allow_external_principals_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[RAM.2] Resource share should not allow external principals"""
-    response = get_resource_shares(cache, session)
-    resourceShares = response["resourceShares"]
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for resourceShare in resourceShares:
-        allowExternalPrincipals = resourceShare["allowExternalPrincipals"]
+    for resourceShare in get_resource_shares(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(resourceShare,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         shareName = resourceShare["name"]
-        generatorUuid = str(uuid.uuid4())
+        resourceShareArn = f"arn:{awsPartition}:ram:{awsRegion}:{awsAccountId}:resource-share/{shareName}"
+        allowExternalPrincipals = resourceShare["allowExternalPrincipals"]
         if not allowExternalPrincipals:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": awsAccountId + "/ram-allow-external-principals-check",
+                "Id": f"{resourceShareArn}/ram-allow-external-principals-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": generatorUuid,
+                "GeneratorId": f"{resourceShareArn}/ram-allow-external-principals-check",
                 "AwsAccountId": awsAccountId,
                 "Types": [
                     "Software and Configuration Checks/AWS Security Best Practices"
@@ -195,11 +206,21 @@ def ram_allow_external_principals_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/ram/latest/userguide/iam-policies.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS Resource Access Manager",
+                    "AssetComponent": "Resource Share"
+                },
                 "Resources": [
                     {
                         "Type": "AwsResourceAccessManagerShare",
-                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                        "Id": resourceShareArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }
@@ -228,9 +249,9 @@ def ram_allow_external_principals_check(cache: dict, session, awsAccountId: str,
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": awsAccountId + "/ram-allow-external-principals-check",
+                "Id": f"{resourceShareArn}/ram-allow-external-principals-check",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": generatorUuid,
+                "GeneratorId": f"{resourceShareArn}/ram-allow-external-principals-check",
                 "AwsAccountId": awsAccountId,
                 "Types": [
                     "Software and Configuration Checks/AWS Security Best Practices"
@@ -250,11 +271,21 @@ def ram_allow_external_principals_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/ram/latest/userguide/iam-policies.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Security Services",
+                    "AssetService": "AWS Resource Access Manager",
+                    "AssetComponent": "Resource Share"
+                },
                 "Resources": [
                     {
                         "Type": "AwsResourceAccessManagerShare",
-                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                        "Id": resourceShareArn,
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }

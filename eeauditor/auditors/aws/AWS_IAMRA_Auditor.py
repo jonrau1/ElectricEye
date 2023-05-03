@@ -19,8 +19,9 @@
 #under the License.
 
 import datetime
-import json
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -46,6 +47,9 @@ def iamra_self_signed_trust_anchor_check(cache: dict, session, awsAccountId: str
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     for ta in list_trust_anchors(cache, session)["trustAnchors"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(ta,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         taArn = ta["trustAnchorArn"]
         taId = ta["trustAnchorId"]
         taCertSourceType = ta["source"]["sourceType"]
@@ -71,7 +75,17 @@ def iamra_self_signed_trust_anchor_check(cache: dict, session, awsAccountId: str
                         "Url": "https://docs.aws.amazon.com/rolesanywhere/latest/userguide/getting-started.html#getting-started-step1"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM Roles Anywhere",
+                    "AssetComponent": "Trust Anchor"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamRolesAnywhereTrustAnchor",
@@ -128,7 +142,17 @@ def iamra_self_signed_trust_anchor_check(cache: dict, session, awsAccountId: str
                         "Url": "https://docs.aws.amazon.com/rolesanywhere/latest/userguide/getting-started.html#getting-started-step1"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM Roles Anywhere",
+                    "AssetComponent": "Trust Anchor"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamRolesAnywhereTrustAnchor",
@@ -179,6 +203,9 @@ def iamra_trust_anchor_crl_check(cache: dict, session, awsAccountId: str, awsReg
             iamraCrlTaArnList.append(crlTaArn)
     # Assess if the TA ARNs are associated with CRLs
     for ta in list_trust_anchors(cache, session)["trustAnchors"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(ta,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         taArn = ta["trustAnchorArn"]
         taId = ta["trustAnchorId"]
         # this is a failing check
@@ -203,7 +230,17 @@ def iamra_trust_anchor_crl_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://docs.aws.amazon.com/rolesanywhere/latest/userguide/trust-model.html#revocation"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM Roles Anywhere",
+                    "AssetComponent": "Trust Anchor"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamRolesAnywhereTrustAnchor",
@@ -258,7 +295,17 @@ def iamra_trust_anchor_crl_check(cache: dict, session, awsAccountId: str, awsReg
                         "Url": "https://docs.aws.amazon.com/rolesanywhere/latest/userguide/trust-model.html#revocation"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM Roles Anywhere",
+                    "AssetComponent": "Trust Anchor"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamRolesAnywhereTrustAnchor",
@@ -298,6 +345,9 @@ def iamra_profiles_session_policy_check(cache: dict, session, awsAccountId: str,
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for profile in list_profiles(cache, session)["profiles"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(profile,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         profileArn = profile["profileArn"]
         profileName = profile["name"]
         profileId = profile["profileId"]
@@ -330,7 +380,17 @@ def iamra_profiles_session_policy_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#policies_session"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM Roles Anywhere",
+                    "AssetComponent": "Profile"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamRolesAnywhereProfile",
@@ -392,7 +452,17 @@ def iamra_profiles_session_policy_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#policies_session"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM Roles Anywhere",
+                    "AssetComponent": "Profile"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamRolesAnywhereProfile",
@@ -439,6 +509,9 @@ def iamra_profiles_managed_policy_check(cache: dict, session, awsAccountId: str,
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for profile in list_profiles(cache, session)["profiles"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(profile,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         profileArn = profile["profileArn"]
         profileName = profile["name"]
         profileId = profile["profileId"]
@@ -465,7 +538,17 @@ def iamra_profiles_managed_policy_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#policies_session"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM Roles Anywhere",
+                    "AssetComponent": "Profile"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamRolesAnywhereProfile",
@@ -527,7 +610,17 @@ def iamra_profiles_managed_policy_check(cache: dict, session, awsAccountId: str,
                         "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#policies_session"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS IAM Roles Anywhere",
+                    "AssetComponent": "Profile"
+                },
                 "Resources": [
                     {
                         "Type": "AwsIamRolesAnywhereProfile",
@@ -577,6 +670,9 @@ def iamra_role_trust_policy_condition_check(cache: dict, session, awsAccountId: 
     # Create an empty list to add the Role Arns already evaluated as to avoid duplicative runs
     seenRoles = []
     for profile in list_profiles(cache, session)["profiles"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(profile,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         profileName = profile["name"]
         # loop through IAM Roles
         for role in profile["roleArns"]:
@@ -611,7 +707,17 @@ def iamra_role_trust_policy_condition_check(cache: dict, session, awsAccountId: 
                                     "Url": "https://docs.aws.amazon.com/rolesanywhere/latest/userguide/workload-identities.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                                "AssetClass": "Identity & Access Management",
+                                "AssetService": "AWS IAM",
+                                "AssetComponent": "Role"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsIamRole",
@@ -671,7 +777,17 @@ def iamra_role_trust_policy_condition_check(cache: dict, session, awsAccountId: 
                                     "Url": "https://docs.aws.amazon.com/rolesanywhere/latest/userguide/workload-identities.html",
                                 }
                             },
-                            "ProductFields": {"Product Name": "ElectricEye"},
+                            "ProductFields": {
+                                "ProductName": "ElectricEye",
+                                "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                                "AssetClass": "Identity & Access Management",
+                                "AssetService": "AWS IAM",
+                                "AssetComponent": "Role"
+                            },
                             "Resources": [
                                 {
                                     "Type": "AwsIamRole",
@@ -711,4 +827,4 @@ def iamra_role_trust_policy_condition_check(cache: dict, session, awsAccountId: 
                         yield finding
             else:
                 # ignore Roles we have already evaluated - regardless how many profiles they're associated with
-                continue           
+                continue    

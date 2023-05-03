@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -34,18 +36,19 @@ def describe_directories(cache, session):
 @registry.register_check("ds")
 def directory_service_radius_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DirectoryService.1] Supported directories should have RADIUS enabled for multi-factor authentication (MFA)"""
-    directories = describe_directories(cache, session)
-    myDirectories = directories["DirectoryDescriptions"]
-    for directory in myDirectories:
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for directory in describe_directories(cache, session)["DirectoryDescriptions"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(directory,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         directoryId = str(directory["DirectoryId"])
         directoryArn = f"arn:{awsPartition}:ds:{awsRegion}:{awsAccountId}:directory/{directoryId}"
         directoryName = str(directory["Name"])
         directoryType = str(directory["Type"])
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         if directoryType != "SimpleAD":
             try:
                 # this is a passing check
-                radiusCheck = str(directory["RadiusSettings"])
+                directory["RadiusSettings"]
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": directoryArn + "/directory-service-radius-check",
@@ -68,7 +71,17 @@ def directory_service_radius_check(cache: dict, session, awsAccountId: str, awsR
                             "Url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/ms_ad_getting_started_prereqs.html#prereq_mfa_ad",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Identity & Access Management",
+                        "AssetService": "AWS Directory Service",
+                        "AssetComponent": "Directory"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsDirectoryServiceDirectory",
@@ -104,7 +117,7 @@ def directory_service_radius_check(cache: dict, session, awsAccountId: str, awsR
                     "RecordState": "ARCHIVED",
                 }
                 yield finding
-            except:
+            except KeyError:
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": directoryArn + "/directory-service-radius-check",
@@ -127,7 +140,17 @@ def directory_service_radius_check(cache: dict, session, awsAccountId: str, awsR
                             "Url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/ms_ad_getting_started_prereqs.html#prereq_mfa_ad",
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Identity & Access Management",
+                        "AssetService": "AWS Directory Service",
+                        "AssetComponent": "Directory"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsDirectoryServiceDirectory",
@@ -164,22 +187,22 @@ def directory_service_radius_check(cache: dict, session, awsAccountId: str, awsR
                 }
                 yield finding
         else:
-            print("SimpleAD does not support RADIUS, skipping")
-            pass
+            print(f"[DirectoryService.1] Check does not support {directoryId} as it is a SimpleAD directory type")
+            continue
 
 @registry.register_check("ds")
 def directory_service_cloudwatch_logs_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[DirectoryService.2] Directories should have log forwarding enabled"""
     ds = session.client("ds")
-    directories = describe_directories(cache, session)
-    myDirectories = directories["DirectoryDescriptions"]
-    for directory in myDirectories:
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    for directory in describe_directories(cache, session)["DirectoryDescriptions"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(directory,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         directoryId = str(directory["DirectoryId"])
         directoryArn = f"arn:{awsPartition}:ds:{awsRegion}:{awsAccountId}:directory/{directoryId}"
         directoryName = str(directory["Name"])
-        response = ds.list_log_subscriptions(DirectoryId=directoryId)
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        if str(response["LogSubscriptions"]) == "[]":
+        if not ds.list_log_subscriptions(DirectoryId=directoryId)["LogSubscriptions"]:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": directoryArn + "/directory-service-cloudwatch-logs-check",
@@ -202,7 +225,17 @@ def directory_service_cloudwatch_logs_check(cache: dict, session, awsAccountId: 
                         "Url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/ms_ad_enable_log_forwarding.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS Directory Service",
+                    "AssetComponent": "Directory"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDirectoryServiceDirectory",
@@ -254,7 +287,17 @@ def directory_service_cloudwatch_logs_check(cache: dict, session, awsAccountId: 
                         "Url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/ms_ad_enable_log_forwarding.html",
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Identity & Access Management",
+                    "AssetService": "AWS Directory Service",
+                    "AssetComponent": "Directory"
+                },
                 "Resources": [
                     {
                         "Type": "AwsDirectoryServiceDirectory",

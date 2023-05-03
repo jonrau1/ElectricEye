@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -30,6 +32,9 @@ def cloudsearch_https_enforcement_check(cache: dict, session, awsAccountId: str,
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # If you have one of these you're probably old as dirt lol
     for domain in cloudsearch.describe_domains()["DomainStatusList"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(domain,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         dArn = str(domain["ARN"])
         dId = str(domain["DomainId"])
         dName = str(domain["DomainName"])
@@ -53,16 +58,24 @@ def cloudsearch_https_enforcement_check(cache: dict, session, awsAccountId: str,
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
                 "Title": "[CloudSearch.1] CloudSearch Domains should be configured to use enforce HTTPS-only communications",
-                "Description": "CloudSearch Domain "
-                + dName
-                + " is not configured to enforce HTTPS-only communications to the Domain. Amazon CloudSearch domains let you require that all traffic to the domain arrive over HTTPS. This security feature helps you block clients that send unencrypted requests to the domain. Refer to the remediation instructions if this configuration is not intended",
+                "Description": f"CloudSearch Domain {dName} is not configured to enforce HTTPS-only communications to the Domain. Amazon CloudSearch domains let you require that all traffic to the domain arrive over HTTPS. This security feature helps you block clients that send unencrypted requests to the domain. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "To learn how to enforce HTTPS refer to the Configuring Domain Endpoint Options in Amazon CloudSearch section of the Amazon CloudSearch Developer Guide",
                         "Url": "https://docs.aws.amazon.com/cloudsearch/latest/developerguide/configuring-domain-endpoint-options.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon CloudSearch",
+                    "AssetComponent": "Search Domain"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudSearchDomain",
@@ -116,16 +129,24 @@ def cloudsearch_https_enforcement_check(cache: dict, session, awsAccountId: str,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[CloudSearch.1] CloudSearch Domains should be configured to use enforce HTTPS-only communications",
-                "Description": "CloudSearch Domain "
-                + dName
-                + " is configured to enforce HTTPS-only communications to the Domain.",
+                "Description": f"CloudSearch Domain {dName} is configured to enforce HTTPS-only communications to the Domain.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "To learn how to enforce HTTPS refer to the Configuring Domain Endpoint Options in Amazon CloudSearch section of the Amazon CloudSearch Developer Guide",
                         "Url": "https://docs.aws.amazon.com/cloudsearch/latest/developerguide/configuring-domain-endpoint-options.html"
                     }
                 },
-                "ProductFields": {"Product Name": "ElectricEye"},
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Analytics",
+                    "AssetService": "Amazon CloudSearch",
+                    "AssetComponent": "Search Domain"
+                },
                 "Resources": [
                     {
                         "Type": "AwsCloudSearchDomain",
@@ -169,6 +190,9 @@ def cloudsearch_tls1dot2_policy_check(cache: dict, session, awsAccountId: str, a
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     # If you have one of these you're probably old as dirt lol
     for domain in cloudsearch.describe_domains()["DomainStatusList"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(domain,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         dArn = str(domain["ARN"])
         dId = str(domain["DomainId"])
         dName = str(domain["DomainName"])
@@ -194,16 +218,24 @@ def cloudsearch_tls1dot2_policy_check(cache: dict, session, awsAccountId: str, a
                     "Severity": {"Label": "HIGH"},
                     "Confidence": 99,
                     "Title": "[CloudSearch.2] CloudSearch Domains that enforce HTTPS-only communications should use TLS 1.2 cipher suites",
-                    "Description": "CloudSearch Domain "
-                    + dName
-                    + " does not use TLS 1.2 cipher suites. Refer to the remediation instructions if this configuration is not intended",
+                    "Description": f"CloudSearch Domain {dName} does not use TLS 1.2 cipher suites. While HTTPS-only communication will protect transmissions from your search domain, using older ciphersuites may expose it to crytographic implementation weaknesses which can defeat the confidentiality of your data in transit. Refer to the remediation instructions if this configuration is not intended.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "To learn how to enforce HTTPS refer to the Configuring Domain Endpoint Options in Amazon CloudSearch section of the Amazon CloudSearch Developer Guide",
                             "Url": "https://docs.aws.amazon.com/cloudsearch/latest/developerguide/configuring-domain-endpoint-options.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Analytics",
+                        "AssetService": "Amazon CloudSearch",
+                        "AssetComponent": "Search Domain"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCloudSearchDomain",
@@ -257,16 +289,24 @@ def cloudsearch_tls1dot2_policy_check(cache: dict, session, awsAccountId: str, a
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Confidence": 99,
                     "Title": "[CloudSearch.2] CloudSearch Domains that enforce HTTPS-only communications should use TLS 1.2 cipher suites",
-                    "Description": "CloudSearch Domain "
-                    + dName
-                    + " uses TLS 1.2 cipher suites.",
+                    "Description": f"CloudSearch Domain {dName} uses TLS 1.2 cipher suites.",
                     "Remediation": {
                         "Recommendation": {
                             "Text": "To learn how to enforce HTTPS refer to the Configuring Domain Endpoint Options in Amazon CloudSearch section of the Amazon CloudSearch Developer Guide",
                             "Url": "https://docs.aws.amazon.com/cloudsearch/latest/developerguide/configuring-domain-endpoint-options.html"
                         }
                     },
-                    "ProductFields": {"Product Name": "ElectricEye"},
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Analytics",
+                        "AssetService": "Amazon CloudSearch",
+                        "AssetComponent": "Search Domain"
+                    },
                     "Resources": [
                         {
                             "Type": "AwsCloudSearchDomain",
