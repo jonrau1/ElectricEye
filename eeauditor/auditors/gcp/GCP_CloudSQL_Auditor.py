@@ -34,13 +34,15 @@ def get_cloudsql_dbs(cache: dict, gcpProjectId: str):
     if response:
         return response
 
-    #  CloudSQL requires SQL Admin API - also doesnt need an aggregatedList
+    # CloudSQL requires SQL Admin API - also doesnt need an aggregatedList
     service = googleapiclient.discovery.build('sqladmin', 'v1beta4')
     instances = service.instances().list(project=gcpProjectId).execute()
-    
-    cache["get_cloudsql_dbs"] = instances["items"]
 
-    return cache["get_cloudsql_dbs"]
+    if instances:
+        cache["get_cloudsql_dbs"] = instances["items"]
+        return cache["get_cloudsql_dbs"]
+    else:
+        return {}
 
 @registry.register_check("cloudsql")
 def cloudsql_instance_public_check(cache: dict, awsAccountId: str, awsRegion: str, awsPartition: str, gcpProjectId: str):
