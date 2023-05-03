@@ -24,6 +24,7 @@ from time import sleep
 from check_register import CheckRegister, accumulate_paged_results
 from pluginbase import PluginBase
 import traceback
+from cloud_utils import CloudConfig
 
 here = os.path.abspath(os.path.dirname(__file__))
 get_path = partial(os.path.join, here)
@@ -43,57 +44,42 @@ class EEAuditor(object):
     GitHub Requires...
     """
 
-    def __init__(self, target_provider, session, region, gcp_project_id, search_path=None):
+    def __init__(self, assessmentTarget, search_path=None):
         # each check must be decorated with the @registry.register_check("cache_name")
         # to be discovered during plugin loading.
         self.registry = CheckRegister()
-        self.name = target_provider
+        self.name = assessmentTarget
         self.plugin_base = PluginBase(package="electriceye")
         
-        if target_provider == "AWS":
+        if assessmentTarget == "AWS":
             search_path = "./auditors/aws"
-
-            # Here is where STS AssumeRole Creds are supplied or a default Session object is used
-            self.session = session
-            sts = session.client("sts")
-            self.awsAccountId = sts.get_caller_identity()["Account"]
-            self.awsRegion = region
-            
-            # GovCloud partition override
-            if self.awsRegion in ["us-gov-east-1", "us-gov-west-1"]:
-                self.awsPartition = "aws-us-gov"
-            # China partition override
-            elif self.awsRegion in ["cn-north-1", "cn-northwest-1"]:
-                self.awsPartition = "aws-cn"
-            # AWS Secret Region override
-            elif self.awsRegion in ["us-isob-east-1"]:
-                self.awsPartition = "aws-isob"
-            # AWS Top Secret Region override
-            # TS West: https://aws.amazon.com/blogs/publicsector/announcing-second-aws-top-secret-region-extending-support-us-government-classified-missions/
-            elif self.awsRegion in ["us-iso-east-1", "us-iso-west-1"]:
-                self.awsPartition = "aws-iso"
-            else:
-                # default to Commercial AWS Partition
-                self.awsPartition = "aws"
-
-        elif target_provider == "AZURE":
+            utils = CloudConfig(assessmentTarget)
+            # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
+            self.aws_account_targets = utils.aws_account_targets
+            self.aws_regions_selection = utils.aws_regions_selection
+            self.aws_electric_eye_iam_role_name = utils.aws_electric_eye_iam_role_name
+        elif assessmentTarget == "Azure":
             search_path = "./auditors/azure"
-        elif target_provider == "GCP":
+            utils = CloudConfig(assessmentTarget)
+        elif assessmentTarget == "GCP":
             search_path = "./auditors/gcp"
-
-            self.gcpProjectId = gcp_project_id
-
-        elif target_provider == "GitHub":
+            utils = CloudConfig(assessmentTarget)
+            # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
+            self.gcp_project_ids = utils.gcp_project_ids
+        elif assessmentTarget == "OracleCloud":
+            search_path = "./auditors/oci"
+            utils = CloudConfig(assessmentTarget)
+        elif assessmentTarget == "GitHub":
             search_path = "./auditors/github"
-        elif target_provider == "Servicenow":
+            utils = CloudConfig(assessmentTarget)
+            
+        elif assessmentTarget == "Servicenow":
             search_path = "./auditors/servicenow"
+            utils = CloudConfig(assessmentTarget)
 
-        # If there is a desire to add support for multiple clouds, this would be
-        # a great place to implement it.
         self.source = self.plugin_base.make_plugin_source(
             searchpath=[get_path(search_path)], identifier=self.name
         )
-
     
     def load_plugins(self, plugin_name=None):
         """
@@ -117,38 +103,34 @@ class EEAuditor(object):
         It is not exactly foolproof as AMB and CloudSearch and a few others are still jacked up...
         """
         # Pull session
-        session = self.session
-        ssm = session.client("ssm")
+        import boto3
+        ssm = boto3.client("ssm")
 
         # create an empty list for Commercial Region lookups
         values = []
 
-        if self.awsPartition == "aws":
-            # only check validity for AWS Commercial Region
-            # Handle the weird v2 services names - global service overrides for lookup
-            if service == 'kinesisanalyticsv2':
-                service = 'kinesisanalytics'
-            elif service == 'macie2':
-                service = 'macie'
-            elif service == 'elbv2':
-                service = 'elb'
-            elif service == 'wafv2':
-                service = 'waf'
-            else:
-                service = service
-
-            paginator = ssm.get_paginator("get_parameters_by_path")
-            response_iterator = paginator.paginate(
-                Path=f"/aws/service/global-infrastructure/services/{service}/regions",
-                PaginationConfig={"MaxItems": 1000, "PageSize": 10},
-            )
-            results = accumulate_paged_results(
-                page_iterator=response_iterator, key="Parameters")
-            
-            for parameter in results["Parameters"]:
-                values.append(parameter["Value"])
+        # Handle the weird v2 services names - global service overrides for lookup
+        if service == 'kinesisanalyticsv2':
+            service = 'kinesisanalytics'
+        elif service == 'macie2':
+            service = 'macie'
+        elif service == 'elbv2':
+            service = 'elb'
+        elif service == 'wafv2':
+            service = 'waf'
         else:
-            print(f"Service endpoint validity cannot be checked in {self.awsPartition}.")
+            service = service
+
+        paginator = ssm.get_paginator("get_parameters_by_path")
+        response_iterator = paginator.paginate(
+            Path=f"/aws/service/global-infrastructure/services/{service}/regions",
+            PaginationConfig={"MaxItems": 1000, "PageSize": 10},
+        )
+        results = accumulate_paged_results(
+            page_iterator=response_iterator, key="Parameters")
+        
+        for parameter in results["Parameters"]:
+            values.append(parameter["Value"])
 
         return values
 
@@ -156,37 +138,44 @@ class EEAuditor(object):
         """
         Separated logic for different checks - this one is for AWS as it calls get_regions(self, service) for the Commerical Partition
         """
-        # Last call for session validation logging
-        print(f'Running ElectricEye in AWS Account {self.awsAccountId} in Region {self.awsRegion}')
 
-        for service_name, check_list in self.registry.checks.items():
-            # only check regions if in AWS Commerical Partition
-            if self.awsPartition == "aws":
-                if self.awsRegion not in self.get_regions(service_name):
-                    next
-
-            for check_name, check in check_list.items():
-                # clearing cache for each control whithin a auditor
-                auditor_cache = {}
-                # if a specific check is requested, only run that one check
-                if (
-                    not requested_check_name
-                    or requested_check_name
-                    and requested_check_name == check_name
-                ):
-                    try:
-                        print(f"Executing Check: {check_name}")
-                        for finding in check(
-                            cache=auditor_cache,
-                            session=self.session,
-                            awsAccountId=self.awsAccountId,
-                            awsRegion=self.awsRegion,
-                            awsPartition=self.awsPartition,
+        for service_name, check_list in self.registry.checks.items():            
+            for account in self.aws_account_targets:
+                for region in self.aws_regions_selection:
+                    # Setup Session & Partition
+                    session = CloudConfig.create_aws_session(
+                        account,
+                        region,
+                        self.aws_electric_eye_iam_role_name
+                    )
+                    partition = CloudConfig.check_aws_partition(region)
+                    # Check AWS Commercial partition service eligibility, not always accurate
+                    if partition == "aws":
+                        if region not in self.get_regions(service_name):
+                            next
+                    for check_name, check in check_list.items():
+                        # clearing cache for each control whithin a auditor
+                        auditor_cache = {}
+                        # if a specific check is requested, only run that one check
+                        if (
+                            not requested_check_name
+                            or requested_check_name
+                            and requested_check_name == check_name
                         ):
-                            yield finding
-                    except Exception as e:
-                        print(traceback.format_exc())
-                        print(f"Failed to execute check {check_name} with exception {e}")
+                            try:
+                                print(f"Executing Check {check_name} for Account {account} in {region}")
+                                for finding in check(
+                                    cache=auditor_cache,
+                                    session=session,
+                                    awsAccountId=account,
+                                    awsRegion=region,
+                                    awsPartition=partition,
+                                ):
+                                    yield finding
+                            except Exception:
+                                print(f"Failed to execute check {check_name}")
+                                print(traceback.format_exc())
+                        
             # optional sleep if specified - hardcode to 0 seconds
             sleep(delay)
 
@@ -197,6 +186,7 @@ class EEAuditor(object):
         NOTE: In the future, this function may change
         """
 
+        # These details are needed for the ASFF...
         import boto3
 
         sts = boto3.client("sts")
@@ -219,31 +209,32 @@ class EEAuditor(object):
         else:
             partition = "aws"
 
-        for service_name, check_list in self.registry.checks.items():
-            for check_name, check in check_list.items():
-                # clearing cache for each control whithin a auditor
-                auditor_cache = {}
-                # if a specific check is requested, only run that one check
-                if (
-                    not requested_check_name
-                    or requested_check_name
-                    and requested_check_name == check_name
-                ):
-                    try:
-                        print(f"Executing Check: {check_name}")
-                        for finding in check(
-                            cache=auditor_cache,
-                            awsAccountId=account,
-                            awsRegion=region,
-                            awsPartition=partition,
-                            gcpProjectId=self.gcpProjectId
-                        ):
-                            yield finding
-                    except Exception as e:
-                        print(traceback.format_exc())
-                        print(f"Failed to execute check {check_name} with exception {e}")
-            # optional sleep if specified - hardcode to 0 seconds
-            sleep(delay)
+        for project in self.gcp_project_ids:
+            for service_name, check_list in self.registry.checks.items():
+                for check_name, check in check_list.items():
+                    # clearing cache for each control whithin a auditor
+                    auditor_cache = {}
+                    # if a specific check is requested, only run that one check
+                    if (
+                        not requested_check_name
+                        or requested_check_name
+                        and requested_check_name == check_name
+                    ):
+                        try:
+                            print(f"Executing Check {check_name} for GCP Project {project}")
+                            for finding in check(
+                                cache=auditor_cache,
+                                awsAccountId=account,
+                                awsRegion=region,
+                                awsPartition=partition,
+                                gcpProjectId=project
+                            ):
+                                yield finding
+                        except Exception:
+                            print(traceback.format_exc())
+                            print(f"Failed to execute check {check_name}")
+                # optional sleep if specified - hardcode to 0 seconds
+                sleep(delay)
 
     def run_non_aws_checks(self, requested_check_name=None, delay=0):
         """
