@@ -32,6 +32,10 @@ python3 eeauditor/controller.py -t AWS -o stdout
   - [For Microsoft M365 (E5) (*Coming Soon*)](./docs//Setup_M365.md)
   - [For Workday ERP (*Coming Soon*)](./docs/setup/Setup_WorkDay.md)
   - [For GitHub (*Coming Soon*)](./docs/setup/Setup_GitHub.md)
+- [Cloud Asset Management](./docs/asset_management/ASSET_MANAGEMENT.md)
+  - [CAM Concept of Operations](./docs/asset_management/ASSET_MANAGEMENT.md#cam-concept-of-operations-conops)
+  - [CAM Reporting](./docs/asset_management/ASSET_MANAGEMENT.md#cloud-asset-management-cam-reporting)
+  - [Asset Class Mapping](./docs/asset_management/ASSET_MANAGEMENT.md#asset-class-mapping)
 - [Custom Outputs](#custom-outputs)
 - [Supported Services and Checks](#supported-services-and-checks)
   - [AWS Checks & Services](#aws-checks--services)
@@ -108,7 +112,15 @@ Refer to sub-headings for per-CSP or per-SaaS setup instructions.
 
 ## Cloud Asset Management (CAM)
 
-For more information on ElectricEye's CAM concept of operations and output, refer to ![the Asset Management documentation](./docs/asset_management/ASSET_MANAGEMENT.md)
+For more information on ElectricEye's CAM concept of operations and output, refer to [the Asset Management documentation](./docs/asset_management/ASSET_MANAGEMENT.md)
+
+Individual information is located at:
+
+- [CAM Concept of Operations](./docs/asset_management/ASSET_MANAGEMENT.md#cam-concept-of-operations-conops)
+
+- [CAM Reporting](./docs/asset_management/ASSET_MANAGEMENT.md#cloud-asset-management-cam-reporting)
+
+- [Asset Class Mapping](./docs/asset_management/ASSET_MANAGEMENT.md#asset-class-mapping)
 
 ## Custom Outputs
 
