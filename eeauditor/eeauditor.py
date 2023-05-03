@@ -129,12 +129,12 @@ class EEAuditor(object):
         return values
 
     # Called from eeauditor/controller.py run_auditor()
-    def run_aws_checks(self, checkName=None, delay=0):
+    def run_aws_checks(self, pluginName=None, delay=0):
         """
         Runs AWS Auditors across all TOML-specified Accounts and Regions in a specific Partition
         """
 
-        for service_name, check_list in self.registry.checks.items():            
+        for serviceName, checkList in self.registry.checks.items():            
             for account in self.aws_account_targets:
                 for region in self.aws_regions_selection:
                     # Setup Session & Partition
@@ -146,19 +146,19 @@ class EEAuditor(object):
                     partition = CloudConfig.check_aws_partition(region)
                     # Check AWS Commercial partition service eligibility, not always accurate
                     if partition == "aws":
-                        if region not in self.get_regions(service_name):
+                        if region not in self.get_regions(serviceName):
                             next
-                    for check_name, check in check_list.items():
+                    for checkName, check in checkList.items():
                         # clearing cache for each control whithin a auditor
                         auditor_cache = {}
                         # if a specific check is requested, only run that one check
                         if (
-                            not checkName
-                            or checkName
-                            and checkName == check_name
+                            not pluginName
+                            or pluginName
+                            and pluginName == checkName
                         ):
                             try:
-                                print(f"Executing Check {check_name} for Account {account} in {region}")
+                                print(f"Executing Check {checkName} for Account {account} in {region}")
                                 for finding in check(
                                     cache=auditor_cache,
                                     session=session,
@@ -168,14 +168,14 @@ class EEAuditor(object):
                                 ):
                                     yield finding
                             except Exception:
-                                print(f"Failed to execute check {check_name}")
+                                print(f"Failed to execute check {checkName}")
                                 print(traceback.format_exc())
                         
             # optional sleep if specified - hardcode to 0 seconds
             sleep(delay)
 
     # Called from eeauditor/controller.py run_auditor()
-    def run_gcp_checks(self, checkName=None, delay=0):
+    def run_gcp_checks(self, pluginName=None, delay=0):
         """
         Runs GCP Auditors across all TOML-specified Projects
         """
@@ -204,18 +204,18 @@ class EEAuditor(object):
             partition = "aws"
 
         for project in self.gcp_project_ids:
-            for service_name, check_list in self.registry.checks.items():
-                for check_name, check in check_list.items():
+            for serviceName, checkList in self.registry.checks.items():
+                for checkName, check in checkList.items():
                     # clearing cache for each control whithin a auditor
                     auditor_cache = {}
                     # if a specific check is requested, only run that one check
                     if (
-                        not checkName
-                        or checkName
-                        and checkName == check_name
+                        not pluginName
+                        or pluginName
+                        and pluginName == checkName
                     ):
                         try:
-                            print(f"Executing Check {check_name} for GCP Project {project}")
+                            print(f"Executing Check {checkName} for GCP Project {project}")
                             for finding in check(
                                 cache=auditor_cache,
                                 awsAccountId=account,
@@ -226,12 +226,12 @@ class EEAuditor(object):
                                 yield finding
                         except Exception:
                             print(traceback.format_exc())
-                            print(f"Failed to execute check {check_name}")
+                            print(f"Failed to execute check {checkName}")
                 # optional sleep if specified - hardcode to 0 seconds
                 sleep(delay)
 
     # Called from eeauditor/controller.py run_auditor()
-    def run_non_aws_checks(self, checkName=None, delay=0):
+    def run_non_aws_checks(self, pluginName=None, delay=0):
         """
         Generic function to run Auditors, unless specialized logic is required, Assessment Target default to running here
         """
@@ -258,18 +258,18 @@ class EEAuditor(object):
         else:
             partition = "aws"
 
-        for service_name, check_list in self.registry.checks.items():
-            for check_name, check in check_list.items():
+        for serviceName, checkList in self.registry.checks.items():
+            for checkName, check in checkList.items():
                 # clearing cache for each control whithin a auditor
                 auditor_cache = {}
                 # if a specific check is requested, only run that one check
                 if (
-                    not checkName
-                    or checkName
-                    and checkName == check_name
+                    not pluginName
+                    or pluginName
+                    and pluginName == checkName
                 ):
                     try:
-                        print(f"Executing Check: {check_name}")
+                        print(f"Executing Check: {checkName}")
                         for finding in check(
                             cache=auditor_cache,
                             awsAccountId=account,
@@ -279,7 +279,7 @@ class EEAuditor(object):
                             yield finding
                     except Exception as e:
                         print(traceback.format_exc())
-                        print(f"Failed to execute check {check_name} with exception {e}")
+                        print(f"Failed to execute check {checkName} with exception {e}")
             # optional sleep if specified - hardcode to 0 seconds
             sleep(delay)
 
@@ -293,15 +293,15 @@ class EEAuditor(object):
             "|----------------------------------------|-------------------------------|----------------------------------------------------------------------------------------|"
         )
 
-        for service_name, check_list in self.registry.checks.items():
-            for check_name, check in check_list.items():
+        for serviceName, checkList in self.registry.checks.items():
+            for checkName, check in checkList.items():
                 doc = check.__doc__
                 if doc:
                     description = (check.__doc__).replace("\n", "")
                 else:
                     description = ""
                 table.append(
-                    f"|{inspect.getfile(check).rpartition('/')[2]} | {service_name} | {description}"
+                    f"|{inspect.getfile(check).rpartition('/')[2]} | {serviceName} | {description}"
                 )
 
         print("\n".join(table))
