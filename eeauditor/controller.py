@@ -31,7 +31,7 @@ def print_checks(assessmentTarget, auditorName=None):
         
     app.print_checks_md()
 
-def run_auditor(assessmentTarget, auditorName=None, checkName=None, delay=0, outputs=None, outputFile=""):
+def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, outputs=None, outputFile=""):
     if not outputs:
         outputs = ["stdout"]
     
@@ -39,11 +39,11 @@ def run_auditor(assessmentTarget, auditorName=None, checkName=None, delay=0, out
     app.load_plugins(auditorName)
     # Per-target calls - ensure you use the right run_*_checks*() function
     if assessmentTarget == "AWS":
-        findings = list(app.run_aws_checks(checkName=checkName, delay=delay))
+        findings = list(app.run_aws_checks(pluginName=pluginName, delay=delay))
     elif assessmentTarget == "GCP":
-        findings = list(app.run_gcp_checks(checkName=checkName, delay=delay))
+        findings = list(app.run_gcp_checks(pluginName=pluginName, delay=delay))
     else:
-        findings = list(app.run_non_aws_checks(checkName=checkName, delay=delay))
+        findings = list(app.run_non_aws_checks(pluginName=pluginName, delay=delay))
 
     print(f"Done running Checks for {assessmentTarget}")
     
@@ -154,7 +154,7 @@ def main(
     run_auditor(
         assessmentTarget=target_provider,
         auditorName=auditor_name,
-        checkName=check_name,
+        pluginName=check_name,
         delay=delay,
         outputs=outputs,
         outputFile=output_file,
