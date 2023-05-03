@@ -21,21 +21,11 @@ python3 eeauditor/controller.py -t AWS -o stdout
 
 ## Table of Contents
 
-- [Quick Run Down](#quick-run-down)
-- [Description](#tell-me-more)
-- [How do I use this](#how-do-i-use-this)
-  - [For Amazon Web Services (AWS)](./docs/setup/Setup_AWS.md)
-  - [For Google Cloud Platform (GCP)](./docs/setup/Setup_GCP.md)
-  - [For Microsoft Azure (*Coming Soon*)](./docs/setup/Setup_Azure.md)
-  - [For Oracle Cloud Infrastructure (*Coming Soon*)](./docs/setup/Setup_OCI.md)
-  - [For ServiceNow](./docs/setup/Setup_ServiceNow.md)
-  - [For Microsoft M365 (E5) (*Coming Soon*)](./docs//Setup_M365.md)
-  - [For Workday ERP (*Coming Soon*)](./docs/setup/Setup_WorkDay.md)
-  - [For GitHub (*Coming Soon*)](./docs/setup/Setup_GitHub.md)
+- [Quick Run Down](#quick-run-down-running-running)
+- [Tell me more!](#tell-me-more-raised_eyebrow-raised_eyebrow)
+- [Over-explain it!](#electriceye-except-over-explained-round_pushpin-round_pushpin)
+- [Using ElectricEye](#using-electriceye)
 - [Cloud Asset Management](./docs/asset_management/ASSET_MANAGEMENT.md)
-  - [CAM Concept of Operations](./docs/asset_management/ASSET_MANAGEMENT.md#cam-concept-of-operations-conops)
-  - [CAM Reporting](./docs/asset_management/ASSET_MANAGEMENT.md#cloud-asset-management-cam-reporting)
-  - [Asset Class Mapping](./docs/asset_management/ASSET_MANAGEMENT.md#asset-class-mapping)
 - [Custom Outputs](#custom-outputs)
 - [Supported Services and Checks](#supported-services-and-checks)
   - [AWS Checks & Services](#aws-checks--services)
@@ -51,27 +41,65 @@ python3 eeauditor/controller.py -t AWS -o stdout
 
 ## Quick Run Down :running: :running:
 
-- ElectricEye is a Python (`>=3.6`) Command Line Interace (CLI) tool that supports *true multi-Cloud* (public CSP & Software-as-a-Service) Cloud Asset Management (CAM), Cloud Security Posture Management (CSPM), SaaS Security Posture Management (SSPM) & External Attack Surface Management (EASM) capabilities across AWS, GCP, and ServiceNow with dozens more Public Cloud Service Providers (CSPs) and SaaS Providers planned.
+- ElectricEye is a Python CLI tool that offers cross-Account, cross-Region, multi-Cloud CAM, CSPM, SSPM, and EASM capabilities across AWS, GCP, and ServiceNow (*with more on the way!*). All Partitions are supported for AWS!
 
-- AWS assessments are done per-Account, per-Region. GCP assessments are done multi-Region, per Project. ServiceNow assessments are done at the Instance level.
+- ElectricEye offers over 500 checks for security, reliability, monitoring, and exposure across 100 CSP & SaaS services, including atypical services not supported by AWS Config/Google Cloud Asset API or mainstream CSPM & CNAPP tools.
 
-- For AWS, ElectricEye supports all 5 Parititions Commercial (`aws`), AWS GovCloud (`aws-gov`), AWS China (`aws-cn`), AWS Secret Region (`aws-iso-b`) and AWS Top Secret Region (`aws-iso`). For all other CSP and SaaS provider, only the commerical/non-US Government partitions/instances/tenants are supported.
+- All checks are currently mapped to NIST Cybersecurity Framework V1.1, NIST Special Publication 800-53 Revision 4, AICPA Trust Service Criteria (TSCs), and ISO 27001:2013 ISMS controls.
 
-- For AWS, ElectricEye is the most comprhensive CAM, CSPM & EASM tool supporting over **500 Checks** for Security, Reliaiblity, Monitoring, and Exposure across **100 CSP Services** including atypical services not supported by AWS Config or mainstream CSPM & Cloud Native Application Protection Platform (CNAPP) tools such as AWS Managed Blockchain, AWS Managed Workflows for Apache AirFlow, Amazon MemoryDB, AWS Amplify, Amazon MQ, and more!
-
-- All checks are currently mapped to [**NIST Cybersecurity Framework V1.1**](https://doi.org/10.6028/NIST.CSWP.04162018), [**NIST Special Publication 800-53 Revision 4**](https://csrc.nist.gov/publications/detail/sp/800-53/rev-4/archive/2015-01-22), [**American Institute of Certified Public Accountants (AICPA) Trust Service Criteria (TSCs)**](https://us.aicpa.org/content/dam/aicpa/interestareas/frc/assuranceadvisoryservices/downloadabledocuments/trust-services-criteria-2020.pdf) which can be used for SOC2 Type I and SOC2 Type II, and [**ISO 27001:2013**](https://www.iso.org/standard/27001) ISMS controls for Audit Readiness and internal GRC requirements.
-
-- Configurable EASM module uses NMAP for service discovery and reachability assessment of over 20 highly-dangerous ports and protocols (e.g., SMB, MongoDB, VMWARE ESXi, and more) for nearly every public-facing capable AWS service. GCP EASM is supported for GCE.
+- The EASM module uses NMAP for service discovery and reachability assessment of over 20 highly-dangerous ports and protocols for nearly every public-facing CSP service
 
 - Outputs to AWS Security Hub, AWS DocumentDB, JSON files, CSV files, MongoDB, PostgreSQL, and [**FireMon Cloud Defense**](https://www.firemon.com/introducing-disruptops/).
 
-## Tell Me More :round_pushpin: :round_pushpin:
+## Tell Me More! :raised_eyebrow: :raised_eyebrow:
+
+First, clone this repository and install the requirements using `pip3`: `pip3 install -r requirements.txt`.
+
+Then, modify the [TOML file](./eeauditor/external_providers.toml) located in `ElectricEye/eeauditor/external_providers.toml` to specify various configurations for the CSP(s) and SaaS Provider(s) you want to assess.
+
+Finally, run the Controller to learn about the various Checks, Auditors, Assessment Targets, and Output.
+
+```bash
+python3 eeauditor/controller.py --help
+Usage: controller.py [OPTIONS]
+
+Options:
+  -t, --target-provider [AWS|GCP|GitHub|Servicenow]
+                                  CSP or SaaS Vendor to perform assessments
+                                  against and load specific plugins, ensure
+                                  that any -a or -c arg maps to your target
+                                  provider e.g., -t AWS -a
+                                  Amazon_APGIW_Auditor
+  -a, --auditor-name TEXT         Specify which Auditor you want to run by
+                                  using its name NOT INCLUDING .py. Defaults
+                                  to ALL Auditors
+  -c, --check-name TEXT           Specify which specific Check in a speciifc
+                                  Auditor you want to run. Defaults to ALL
+                                  Checks
+  -d, --delay INTEGER             Time in seconds to sleep between Auditors
+                                  being ran, defaults to 0
+  -o, --outputs TEXT              Where to send the findings to (another
+                                  platform or to file)  [default: stdout]
+  --output-file TEXT              Name of the file for output, if using
+                                  anything other than SecHub or Dops
+                                  [default: output]
+  --list-options                  Lists all valid Output options
+  --list-checks                   List all Checks within every Auditor
+  --create-insights               Create SecurityHub insights for ElectricEye.
+                                  This only needs to be done once per Security
+                                  Hub instance
+  --help                          Show this message and exit.
+```
+
+For more information see [here](#using-electriceye).
+
+## ElectricEye, except over-explained :round_pushpin: :round_pushpin:
 
 ![Architecture](./screenshots/ElectricEye2023Architecture.jpg)
 
 ElectricEye was created in early 2019 as an extension to [AWS Security Hub](https://aws.amazon.com/security-hub/), AWS Cloud's native Cloud Security Posture Management (CSPM) solution, with the goal to extend beyond only AWS Config-supported Services and add extra checks and Audit Readiness Standards (AKA "Compliance Standards") to support Cloud Security, DevOps, IT, and Risk teams running workloads on AWS. ElectricEye's AWS "pedigree" is most evident in the developer experience as it utilizes AWS credentials natively and expects other credentials to be stored in AWS Systems Manager ([SSM](https://aws.amazon.com/systems-manager/)) [Parameter Store](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html).
 
-Since then, ElectricEye has continued to expand into the most comprehensive AWS CSPM tool from a service support and check support perspective, adding additional functionality such as Secrets Management (powered by Yelp's **Detect-Secrets**), External Attack Surface Management (powered by **NMAP** and **Shodan.io**) and integration into multiple downstream data formats, databases, as well as AWS Security Hub itself. All findings are mapped to the [AWS Security Finding Format (ASFF)](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html) for portability into [Amazon Security Lake](https://aws.amazon.com/security-lake/) and AWS Security Hub, and can be further parsed by supported outputs.
+Since then, ElectricEye has continued to expand into the most comprehensive AWS CSPM tool from a service support and check support perspective, adding additional functionality such as Secrets Management (powered by Yelp's **Detect-Secrets**), External Attack Surface Management (EASM, powered by **NMAP** and **Shodan.io**), Cloud Asset Management (CAM, see [here](#cloud-asset-management-cam) for more details) and integration into multiple downstream data formats, databases, as well as AWS Security Hub itself. All findings are mapped to the [AWS Security Finding Format (ASFF)](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html) for portability into [Amazon Security Lake](https://aws.amazon.com/security-lake/) and AWS Security Hub, and can be further parsed by supported outputs.
 
 A majority of evaluations performed by ElectricEye against public cloud and SaaS providers are aligned to security best practices such as ensuring secure configurations, encryption, logging & monitoring, and resilience. However, ElectricEye also supports use cases such as operational monitoring, high availability, patching, software asset management, sustainability, and performance configurations to broaden the appeal to users. ElectricEye can be used for cloud inventory management via its Cloud Asset Management (CAM) reporting outputs (`cam-json`) which records every unique asset scanned in an environment together with a service hierarchy for ingestion into other IT and security use cases.
 
@@ -81,6 +109,8 @@ Every Assessment Target has a corresponding set of (aptly named) **Auditors** wh
 
 While ElectricEye is primarily a security posture management (SPM) tool, some Checks align to performance, resilience, and optimization best practices which in turn are aligned to **Compliance Standards** or have some secondary or tertiary benefit. Compliance Standards are a term borrowed from the ASFF that refer to any regulatory, industry, and/or "best practice" frameworks which define **Controls** which in turn define People, Process, and/or Technology configurations or outcomes which must be met to abide by or otherwise comply with a Control. ElectricEye solely deals at the infrastructure layer of CSPs and SaaS and thus only supports Technology-relevant controls in these various standards/frameworks/laws that define these Controls.
 
+Currently, all Checks are currently mapped to [**NIST Cybersecurity Framework V1.1**](https://doi.org/10.6028/NIST.CSWP.04162018), [**NIST Special Publication 800-53 Revision 4**](https://csrc.nist.gov/publications/detail/sp/800-53/rev-4/archive/2015-01-22), [**American Institute of Certified Public Accountants (AICPA) Trust Service Criteria (TSCs)**](https://us.aicpa.org/content/dam/aicpa/interestareas/frc/assuranceadvisoryservices/downloadabledocuments/trust-services-criteria-2020.pdf) which can be used for SOC2 Type I and SOC2 Type II, and [**ISO 27001:2013**](https://www.iso.org/standard/27001) ISMS controls for Audit Readiness and internal GRC requirements. In the future, more control mapping will be provided as well as a more generic "ElectricEye Controls" library.
+
 As to the rest of ElectricEye's control flow, besides the arguments from the Controller (via `click`), it also uses a [Tom's Obvious Markup Language (TOML)](https://toml.io/en/) file (a `.toml`) - named [`external_providers.toml`](./eeauditor/external_providers.toml). This `.toml` specifies non-AWS CSPs and SaaS Provider information such as GCP Project IDs, ServiceNow Instance URLs, and takes references for API Keys, Passwords, and other sensitive information as SSM Parameters - in the future this may change to support local vaulting & Privileged Access Management (PAM)/Privileged Identity Management (PIM) tools for non-AWS versions of ElectricEye. 
 
 The `click` and `.toml` arguments and values are passed off the "brain" of ElectricEye which is contained in [`eeauditor.py`](./eeauditor/eeauditor.py) - this Python file will load all Auditors using [`pluginbase`](http://pluginbase.pocoo.org/) and [Decorators](https://znasibov.info/posts/2017/01/22/the_ultimate_guide_to_python_decorators.html), will run the Auditors (or specific Checks) and `yield` back the results to be sent to Security Hub or other locations instrumented by the **Outputs Processor** (defined, partially, in [`processor/main.py`](./eeauditor/processor/main.py)).
@@ -88,11 +118,14 @@ The `click` and `.toml` arguments and values are passed off the "brain" of Elect
 As of April 2023 ElectricEye supports the following CAM, CSPM, EASM, and SSPM capabilities. More SaaS Providers and CSPs - as well as expanded service & capability coverage - is under active development.
 
 - **CAM**: AWS, GCP, ServiceNow
+
 - **CSPM**: AWS, GCP
+
 - **SSPM**: ServiceNow
+
 - **EASM**: AWS, GCP
 
-## How do I use this :thinking: :thinking: ??
+## Using ElectricEye
 
 Refer to sub-headings for per-CSP or per-SaaS setup instructions.
 
@@ -117,9 +150,7 @@ For more information on ElectricEye's CAM concept of operations and output, refe
 Individual information is located at:
 
 - [CAM Concept of Operations](./docs/asset_management/ASSET_MANAGEMENT.md#cam-concept-of-operations-conops)
-
 - [CAM Reporting](./docs/asset_management/ASSET_MANAGEMENT.md#cloud-asset-management-cam-reporting)
-
 - [Asset Class Mapping](./docs/asset_management/ASSET_MANAGEMENT.md#asset-class-mapping)
 
 ## Custom Outputs
