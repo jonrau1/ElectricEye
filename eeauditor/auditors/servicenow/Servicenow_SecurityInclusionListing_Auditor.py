@@ -84,7 +84,7 @@ def servicenow_sspm_url_allowlist_cors_iframe_communication_check(cache: dict, a
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -280,7 +280,7 @@ def servicenow_sspm_enforce_relative_links_check(cache: dict, awsAccountId: str,
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -478,7 +478,7 @@ def servicenow_sspm_specify_url_allowlists_cors_iframe_communications_check(cach
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -674,7 +674,7 @@ def servicenow_sspm_url_allowlist_logout_redirects_check(cache: dict, awsAccount
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -870,7 +870,7 @@ def servicenow_sspm_virtual_agent_embedded_csp_check(cache: dict, awsAccountId: 
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -1066,7 +1066,7 @@ def servicenow_sspm_virtual_agent_embedded_xfo_check(cache: dict, awsAccountId: 
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -1262,7 +1262,7 @@ def servicenow_sspm_xfo_sameorigin_check(cache: dict, awsAccountId: str, awsRegi
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -1458,7 +1458,7 @@ def servicenow_sspm_xxe_entity_expansion_threshold_check(cache: dict, awsAccount
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -1654,7 +1654,7 @@ def servicenow_sspm_xxe_xmldoc_xmlutil_entity_validation_allowlist_check(cache: 
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -1850,7 +1850,7 @@ def servicenow_sspm_xxe_disable_entity_expansion_check(cache: dict, awsAccountId
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -2046,7 +2046,7 @@ def servicenow_sspm_xxe_xmldoc2_entity_validation_allowlist_check(cache: dict, a
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -2242,7 +2242,7 @@ def servicenow_sspm_xxe_processing_allowlist_check(cache: dict, awsAccountId: st
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")

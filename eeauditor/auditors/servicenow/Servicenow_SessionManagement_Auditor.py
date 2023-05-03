@@ -84,7 +84,7 @@ def servicenow_sspm_absolute_session_timeout_check(cache: dict, awsAccountId: st
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -287,7 +287,7 @@ def servicenow_sspm_anti_csrf_token_check(cache: dict, awsAccountId: str, awsReg
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -483,7 +483,7 @@ def servicenow_sspm_cookies_http_only_check(cache: dict, awsAccountId: str, awsR
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -679,7 +679,7 @@ def servicenow_sspm_csrf_strict_validation_check(cache: dict, awsAccountId: str,
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -875,7 +875,7 @@ def servicenow_sspm_disable_passwordless_authentication_check(cache: dict, awsAc
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -1071,7 +1071,7 @@ def servicenow_sspm_enable_mfa_check(cache: dict, awsAccountId: str, awsRegion: 
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -1267,7 +1267,7 @@ def servicenow_sspm_enable_password_policy_check(cache: dict, awsAccountId: str,
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -1463,7 +1463,7 @@ def servicenow_sspm_disable_password_autocomplete_check(cache: dict, awsAccountI
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -1659,7 +1659,7 @@ def servicenow_sspm_remove_rememberme_check(cache: dict, awsAccountId: str, awsR
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -1855,7 +1855,7 @@ def servicenow_sspm_rotate_http_session_ids_check(cache: dict, awsAccountId: str
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -2051,7 +2051,7 @@ def servicenow_sspm_secure_session_cookies_check(cache: dict, awsAccountId: str,
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -2255,7 +2255,7 @@ def servicenow_sspm_security_referral_policy_check(cache: dict, awsAccountId: st
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -2451,7 +2451,7 @@ def servicenow_sspm_session_activity_timeout_check(cache: dict, awsAccountId: st
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -2656,7 +2656,7 @@ def servicenow_sspm_session_window_timeout_check(cache: dict, awsAccountId: str,
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")

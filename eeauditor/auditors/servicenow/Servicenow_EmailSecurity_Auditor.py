@@ -84,7 +84,7 @@ def servicenow_sspm_convert_inbound_email_html_check(cache: dict, awsAccountId: 
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -282,7 +282,7 @@ def servicenow_sspm_restrict_access_to_empty_target_table_emails_check(cache: di
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -478,7 +478,7 @@ def servicenow_sspm_restrict_emails_by_domain_for_user_creation_check(cache: dic
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")

@@ -84,7 +84,7 @@ def servicenow_sspm_certificate_trust_check(cache: dict, awsAccountId: str, awsR
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -276,7 +276,7 @@ def servicenow_sspm_disable_ssl_check(cache: dict, awsAccountId: str, awsRegion:
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -468,7 +468,7 @@ def servicenow_sspm_http_client_hostname_verification_check(cache: dict, awsAcco
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -660,7 +660,7 @@ def servicenow_sspm_revoked_certificate_revocation_check(cache: dict, awsAccount
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
