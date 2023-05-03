@@ -24,30 +24,35 @@ from insights import create_sechub_insights
 from eeauditor import EEAuditor
 from processor.main import get_providers, process_findings
 
-def print_checks(assessmentTarget, auditor_name=None):
+def print_checks(assessmentTarget, auditorName=None):
     app = EEAuditor(assessmentTarget)
 
-    app.load_plugins(plugin_name=auditor_name)
+    app.load_plugins(plugin_name=auditorName)
         
     app.print_checks_md()
 
-def run_auditor(assessmentTarget, auditor_name=None, check_name=None, delay=0, outputs=None, output_file=""):
+def run_auditor(assessmentTarget, auditorName=None, checkName=None, delay=0, outputs=None, outputFile=""):
     if not outputs:
-        # default to AWS SecHub even if somehow Click destination is stripped
-        outputs = ["sechub"]
+        outputs = ["stdout"]
     
     app = EEAuditor(assessmentTarget)
-    app.load_plugins(plugin_name=auditor_name)
+    app.load_plugins(plugin_name=auditorName)
+    # Per-target calls - ensure you use the right run_*_checks*() function
     if assessmentTarget == "AWS":
-        findings = list(app.run_aws_checks(requested_check_name=check_name, delay=delay))
+        findings = list(app.run_aws_checks(checkName=checkName, delay=delay))
     elif assessmentTarget == "GCP":
-        findings = list(app.run_gcp_checks(requested_check_name=check_name, delay=delay))
+        findings = list(app.run_gcp_checks(checkName=checkName, delay=delay))
     else:
-        findings = list(app.run_non_aws_checks(requested_check_name=check_name, delay=delay))
+        findings = list(app.run_non_aws_checks(checkName=checkName, delay=delay))
 
-    # This function writes the findings to Security Hub, or otherwise
     print(f"Done running Checks for {assessmentTarget}")
-    process_findings(findings=findings, outputs=outputs, output_file=output_file)    
+    
+    # Multiple outputs supported
+    process_findings(
+        findings=findings,
+        outputs=outputs,
+        output_file=outputFile
+    )    
 
 @click.command()
 # Assessment Target
@@ -91,7 +96,7 @@ def run_auditor(assessmentTarget, auditor_name=None, check_name=None, delay=0, o
     "-o",
     "--outputs",
     multiple=True,
-    default=(["sechub"]),
+    default=(["stdout"]),
     show_default=True,
     help="Where to send the findings to (another platform or to file)",
 )
@@ -148,11 +153,11 @@ def main(
 
     run_auditor(
         assessmentTarget=target_provider,
-        auditor_name=auditor_name,
-        check_name=check_name,
+        auditorName=auditor_name,
+        checkName=check_name,
         delay=delay,
         outputs=outputs,
-        output_file=output_file,
+        outputFile=output_file,
     )
 
 if __name__ == "__main__":

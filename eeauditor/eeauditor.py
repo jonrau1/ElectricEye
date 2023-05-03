@@ -17,6 +17,7 @@
 #KIND, either express or implied.  See the License for the
 #specific language governing permissions and limitations
 #under the License.
+
 from functools import partial
 import inspect
 import os
@@ -27,24 +28,15 @@ import traceback
 from cloud_utils import CloudConfig
 
 here = os.path.abspath(os.path.dirname(__file__))
-get_path = partial(os.path.join, here)
+getPath = partial(os.path.join, here)
 
 class EEAuditor(object):
     """
-    ElectricEye controller
-
-    This class manages loading auditor plugins and running checks
-
-    AWS Requires `session` and `region` which are assembled within controller.py setup_aws_credentials()
-
-    Azure Requires...
-
-    GCP requires a Project ID that matches the provided Service Account JSON payload stored in SSM that is referenced in the TOML
-
-    GitHub Requires...
+    ElectricEye Controller: loads plugins, prints Checks & Auditors, calls cloud_uitls.CloudConfig to setup
+    credentials and cross-boundary configurations, and runs Checks and yields results back to controller.py CLI
     """
 
-    def __init__(self, assessmentTarget, search_path=None):
+    def __init__(self, assessmentTarget, searchPath=None):
         # each check must be decorated with the @registry.register_check("cache_name")
         # to be discovered during plugin loading.
         self.registry = CheckRegister()
@@ -52,51 +44,53 @@ class EEAuditor(object):
         self.plugin_base = PluginBase(package="electriceye")
         
         if assessmentTarget == "AWS":
-            search_path = "./auditors/aws"
+            searchPath = "./auditors/aws"
             utils = CloudConfig(assessmentTarget)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
             self.aws_account_targets = utils.aws_account_targets
             self.aws_regions_selection = utils.aws_regions_selection
             self.aws_electric_eye_iam_role_name = utils.aws_electric_eye_iam_role_name
         elif assessmentTarget == "Azure":
-            search_path = "./auditors/azure"
+            searchPath = "./auditors/azure"
             utils = CloudConfig(assessmentTarget)
         elif assessmentTarget == "GCP":
-            search_path = "./auditors/gcp"
+            searchPath = "./auditors/gcp"
             utils = CloudConfig(assessmentTarget)
             # parse specific values for Assessment Target - these should match 1:1 with CloudConfig
             self.gcp_project_ids = utils.gcp_project_ids
         elif assessmentTarget == "OracleCloud":
-            search_path = "./auditors/oci"
+            searchPath = "./auditors/oci"
             utils = CloudConfig(assessmentTarget)
         elif assessmentTarget == "GitHub":
-            search_path = "./auditors/github"
+            searchPath = "./auditors/github"
             utils = CloudConfig(assessmentTarget)
             
         elif assessmentTarget == "Servicenow":
-            search_path = "./auditors/servicenow"
+            searchPath = "./auditors/servicenow"
             utils = CloudConfig(assessmentTarget)
 
         self.source = self.plugin_base.make_plugin_source(
-            searchpath=[get_path(search_path)], identifier=self.name
+            searchpath=[getPath(searchPath)], identifier=self.name
         )
     
-    def load_plugins(self, plugin_name=None):
+    # Called from eeauditor/controller.py print_checks() and run_auditor()
+    def load_plugins(self, auditorName=None):
         """
         Loads from pluginbase, works on a search path override as long as the checks have the registry class and decorator
         """
-        if plugin_name:
+        if auditorName:
             try:
-                self.source.load_plugin(plugin_name)
+                self.source.load_plugin(auditorName)
             except Exception as e:
-                print(f"Failed to load plugin {plugin_name} with exception {e}")
+                print(f"Failed to load plugin {auditorName} with exception {e}")
         else:
-            for plugin_name in self.source.list_plugins():
+            for auditorName in self.source.list_plugins():
                 try:
-                    self.source.load_plugin(plugin_name)
+                    self.source.load_plugin(auditorName)
                 except Exception as e:
-                    print(f"Failed to load plugin {plugin_name} with exception {e}")
- 
+                    print(f"Failed to load plugin {auditorName} with exception {e}")
+    
+    # Called from within self.run_aws_checks()
     def get_regions(self, service):
         """
         This is only used for AWS and only for Commerical Partition -- checks against SSM-managed Parameter to see what services are available in a Region
@@ -134,9 +128,10 @@ class EEAuditor(object):
 
         return values
 
-    def run_aws_checks(self, requested_check_name=None, delay=0):
+    # Called from eeauditor/controller.py run_auditor()
+    def run_aws_checks(self, checkName=None, delay=0):
         """
-        Separated logic for different checks - this one is for AWS as it calls get_regions(self, service) for the Commerical Partition
+        Runs AWS Auditors across all TOML-specified Accounts and Regions in a specific Partition
         """
 
         for service_name, check_list in self.registry.checks.items():            
@@ -158,9 +153,9 @@ class EEAuditor(object):
                         auditor_cache = {}
                         # if a specific check is requested, only run that one check
                         if (
-                            not requested_check_name
-                            or requested_check_name
-                            and requested_check_name == check_name
+                            not checkName
+                            or checkName
+                            and checkName == check_name
                         ):
                             try:
                                 print(f"Executing Check {check_name} for Account {account} in {region}")
@@ -179,11 +174,10 @@ class EEAuditor(object):
             # optional sleep if specified - hardcode to 0 seconds
             sleep(delay)
 
-    def run_gcp_checks(self, requested_check_name=None, delay=0):
+    # Called from eeauditor/controller.py run_auditor()
+    def run_gcp_checks(self, checkName=None, delay=0):
         """
-        This "run check" function is for GCP as it accepts a Project ID as an argument in the GCP Auditors
-        
-        NOTE: In the future, this function may change
+        Runs GCP Auditors across all TOML-specified Projects
         """
 
         # These details are needed for the ASFF...
@@ -216,9 +210,9 @@ class EEAuditor(object):
                     auditor_cache = {}
                     # if a specific check is requested, only run that one check
                     if (
-                        not requested_check_name
-                        or requested_check_name
-                        and requested_check_name == check_name
+                        not checkName
+                        or checkName
+                        and checkName == check_name
                     ):
                         try:
                             print(f"Executing Check {check_name} for GCP Project {project}")
@@ -236,11 +230,10 @@ class EEAuditor(object):
                 # optional sleep if specified - hardcode to 0 seconds
                 sleep(delay)
 
-    def run_non_aws_checks(self, requested_check_name=None, delay=0):
+    # Called from eeauditor/controller.py run_auditor()
+    def run_non_aws_checks(self, checkName=None, delay=0):
         """
-        This "run check" function is for all SSPM and non-AWS providers as it does not contain a check against SSM for service eligibility
-        
-        NOTE: In the future, this function may be split off into other providers if other arguments or checks are required
+        Generic function to run Auditors, unless specialized logic is required, Assessment Target default to running here
         """
 
         import boto3
@@ -271,9 +264,9 @@ class EEAuditor(object):
                 auditor_cache = {}
                 # if a specific check is requested, only run that one check
                 if (
-                    not requested_check_name
-                    or requested_check_name
-                    and requested_check_name == check_name
+                    not checkName
+                    or checkName
+                    and checkName == check_name
                 ):
                     try:
                         print(f"Executing Check: {check_name}")
@@ -290,7 +283,7 @@ class EEAuditor(object):
             # optional sleep if specified - hardcode to 0 seconds
             sleep(delay)
 
-    # called from eeauditor/controller.py print_checks()
+    # Called from eeauditor/controller.py print_checks()
     def print_checks_md(self):
         table = []
         table.append(
