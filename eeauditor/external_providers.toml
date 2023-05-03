@@ -22,11 +22,11 @@ credentials_location = "AWS_SSM" # VALID CHOICES: AWS_SSM | AWS_SECRETS_MANAGER 
     # A list of Accounts, OU ID's, or an Organizations Principal ID - must match global.aws_multi_account_target_type
     # if a value is not provided the current Account will be used unless "Organization" is specified
     
-    aws_account_targets = [""]
+    aws_account_targets = []
     
     # If left blank, the *current AWS Region* is used. You can provide a list of AWS Regions or simply "All"
     
-    aws_regions_selection = [""] # VALID CHOICES | ["All"], or AWS Regions such as ["us-east-1", "us-east-2"]
+    aws_regions_selection = [] # VALID CHOICES | ["All"], or AWS Regions such as ["us-east-1", "us-east-2"]
 
     # The NAME of the AWS IAM Role deployed to aws_account_targets - must be the same for all Accounts
     # including your current Account
@@ -37,7 +37,7 @@ credentials_location = "AWS_SSM" # VALID CHOICES: AWS_SSM | AWS_SECRETS_MANAGER 
     
     # Provide a list of GCP Project ID's - your Service Account must be associated with all of the Projects listed
     
-    gcp_project_ids = [""]
+    gcp_project_ids = []
 
 [credentials]
 
