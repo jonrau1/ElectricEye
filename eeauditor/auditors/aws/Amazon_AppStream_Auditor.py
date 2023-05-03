@@ -21,6 +21,8 @@
 import botocore.exceptions
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -33,6 +35,9 @@ def default_internet_access_check(cache: dict, session, awsAccountId: str, awsRe
     try:
         myAppstreamFleets = appstream.describe_fleets()["Fleets"]
         for fleet in myAppstreamFleets:
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(fleet,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             fleetArn = str(fleet["Arn"])
             fleetName = str(fleet["DisplayName"])
             # find fleets that are configured to provide default internet access
@@ -64,9 +69,13 @@ def default_internet_access_check(cache: dict, session, awsAccountId: str, awsRe
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "End User Computing",
                         "AssetService": "AWS AppStream 2.0",
-                        "AssetType": "Fleet"
+                        "AssetComponent": "Fleet"
                     },
                     "Resources": [
                         {
@@ -123,9 +132,13 @@ def default_internet_access_check(cache: dict, session, awsAccountId: str, awsRe
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "End User Computing",
                         "AssetService": "AWS AppStream 2.0",
-                        "AssetType": "Fleet"
+                        "AssetComponent": "Fleet"
                     },
                     "Resources": [
                         {
@@ -169,6 +182,9 @@ def public_image_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
     try:
         myAppstreamImages = appstream.describe_images()["Images"]
         for images in myAppstreamImages:
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(images,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             imageName = str(images["Name"])
             imageArn = str(images["Arn"])        
             # this is a failing check
@@ -200,9 +216,13 @@ def public_image_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "End User Computing",
                     "AssetService": "AWS AppStream 2.0",
-                    "AssetType": "Image"
+                    "AssetComponent": "Image"
                 },
                 "Resources": [
                     {
@@ -249,6 +269,9 @@ def compromise_appstream_user_check(cache: dict, session, awsAccountId: str, aws
         # loop through AppStream 2.0 users
         myAppStreamUsers = appstream.describe_users(AuthenticationType="USERPOOL")["Users"]
         for users in myAppStreamUsers:
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(users,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             userArn = str(users["Arn"])
             userName = str(users["UserName"])
             userStatus = str(users["Status"])
@@ -282,9 +305,13 @@ def compromise_appstream_user_check(cache: dict, session, awsAccountId: str, aws
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Identity & Access Management",
                         "AssetService": "AWS AppStream 2.0",
-                        "AssetType": "User"
+                        "AssetComponent": "User"
                     },
                     "Resources": [
                         {
@@ -351,9 +378,13 @@ def compromise_appstream_user_check(cache: dict, session, awsAccountId: str, aws
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Identity & Access Management",
                         "AssetService": "AWS AppStream 2.0",
-                        "AssetType": "User"
+                        "AssetComponent": "User"
                     },
                     "Resources": [
                         {
@@ -408,6 +439,9 @@ def userpool_auth_check(cache: dict, session, awsAccountId: str, awsRegion: str,
         # loop through AppStream 2.0 users
         myAppStreamUsers = appstream.describe_users(AuthenticationType="USERPOOL")["Users"]
         for users in myAppStreamUsers:
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(users,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             userArn = str(users["Arn"])
             userName = str(users["UserName"])
             # find users that do not auth with SAML basic auth & API access will show as non-compliant
@@ -439,9 +473,13 @@ def userpool_auth_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Identity & Access Management",
                         "AssetService": "AWS AppStream 2.0",
-                        "AssetType": "User"
+                        "AssetComponent": "User"
                     },
                     "Resources": [
                         {
@@ -504,9 +542,13 @@ def userpool_auth_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Identity & Access Management",
                         "AssetService": "AWS AppStream 2.0",
-                        "AssetType": "User"
+                        "AssetComponent": "User"
                     },
                     "Resources": [
                         {

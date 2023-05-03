@@ -46,6 +46,9 @@ def secret_scan_codebuild_envvar_check(cache: dict, session, awsAccountId: str, 
         cbList.append(str(p))
     # Submit batch request
     for proj in codebuild.batch_get_projects(names=cbList)["projects"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(proj,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         # Create an empty list per loop to put "Plaintext" env vars as the SSM and Secrets Manager types will just be a name
         envvarList = []
         cbName = str(proj["name"])
@@ -67,7 +70,7 @@ def secret_scan_codebuild_envvar_check(cache: dict, session, awsAccountId: str, 
         with open(resultsFile, 'r') as readjson:
             data = json.load(readjson)
         # if results is an empty dict then there are no secrets found!
-        if str(data["results"]) == "{}":
+        if not data["results"]:
             # this is a passing check
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -97,9 +100,13 @@ def secret_scan_codebuild_envvar_check(cache: dict, session, awsAccountId: str, 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Developer Tools",
                     "AssetService": "AWS CodeBuild",
-                    "AssetType": "Project"
+                    "AssetComponent": "Project"
                 },
                 "Resources": [
                     {
@@ -142,7 +149,8 @@ def secret_scan_codebuild_envvar_check(cache: dict, session, awsAccountId: str, 
             # this is a failing check - we won't actually parse the full payload of potential secrets
             # otherwise we would break the mutability of a finding...so we will sample the first one
             # and note that in the finding itself
-            secretType = str(data["results"]["codebuild-data-sample.json"][0]["type"])
+            findingFile = list(data["results"].keys())[0]
+            secretType = str(data["results"][findingFile][0]["type"])
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": cbArn + "/codebuild-env-var-secrets-check",
@@ -173,9 +181,13 @@ def secret_scan_codebuild_envvar_check(cache: dict, session, awsAccountId: str, 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Developer Tools",
                     "AssetService": "AWS CodeBuild",
-                    "AssetType": "Project"
+                    "AssetComponent": "Project"
                 },
                 "Resources": [
                     {
@@ -241,6 +253,9 @@ def secret_scan_cloudformation_parameters_check(cache: dict, session, awsAccount
     for sn in stackList:
         try:
             for stack in cloudformation.describe_stacks(StackName=sn)["Stacks"]:
+                # B64 encode all of the details for the Asset
+                assetJson = json.dumps(stack,default=str).encode("utf-8")
+                assetB64 = base64.b64encode(assetJson)
                 stackId = str(stack["StackId"])
                 stackArn = f"arn:{awsPartition}:cloudformation:{awsRegion}:{awsAccountId}:stack/{sn}/{stackId}"
                 # Create an empty list per loop to put the Parameters into
@@ -266,7 +281,7 @@ def secret_scan_cloudformation_parameters_check(cache: dict, session, awsAccount
                 with open(resultsFile, 'r') as readjson:
                     data = json.load(readjson)
                 # if results is an empty dict then there are no secrets found!
-                if str(data["results"]) == "{}":
+                if not data["results"]:
                     # this is a passing check
                     finding = {
                         "SchemaVersion": "2018-10-08",
@@ -296,9 +311,13 @@ def secret_scan_cloudformation_parameters_check(cache: dict, session, awsAccount
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Management & Governance",
                             "AssetService": "AWS CloudFormation",
-                            "AssetType": "Stack"
+                            "AssetComponent": "Stack"
                         },
                         "Resources": [
                             {
@@ -337,7 +356,8 @@ def secret_scan_cloudformation_parameters_check(cache: dict, session, awsAccount
                     # this is a failing check - we won't actually parse the full payload of potential secrets
                     # otherwise we would break the mutability of a finding...so we will sample the first one
                     # and note that in the finding itself
-                    secretType = str(data["results"]["cloudformation-data-sample.json"][0]["type"])
+                    findingFile = list(data["results"].keys())[0]
+                    secretType = str(data["results"][findingFile][0]["type"])
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": stackArn + "/cloudformation-params-secrets-check",
@@ -368,9 +388,13 @@ def secret_scan_cloudformation_parameters_check(cache: dict, session, awsAccount
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Management & Governance",
                             "AssetService": "AWS CloudFormation",
-                            "AssetType": "Stack"
+                            "AssetComponent": "Stack"
                         },
                         "Resources": [
                             {
@@ -437,6 +461,9 @@ def secret_scan_ecs_task_def_envvar_check(cache: dict, session, awsAccountId: st
 
     for t in taskList:
         task = ecs.describe_task_definition(taskDefinition=t)["taskDefinition"]
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(task,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         tdefFamily = str(task["family"])
         for c in task["containerDefinitions"]:
             cdefName = str(c["name"])
@@ -454,7 +481,7 @@ def secret_scan_ecs_task_def_envvar_check(cache: dict, session, awsAccountId: st
             with open(resultsFile, 'r') as readjson:
                 data = json.load(readjson)
             # if results is an empty dict then there are no secrets found!
-            if str(data["results"]) == "{}":
+            if not data["results"]:
                 # this is a passing check
                 finding = {
                     "SchemaVersion": "2018-10-08",
@@ -486,9 +513,13 @@ def secret_scan_ecs_task_def_envvar_check(cache: dict, session, awsAccountId: st
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Containers",
                         "AssetService": "Amazon Elastic Container Service (ECS)",
-                        "AssetType": "Task Definition"
+                        "AssetComponent": "Task Definition"
                     },
                     "Resources": [
                         {
@@ -533,7 +564,8 @@ def secret_scan_ecs_task_def_envvar_check(cache: dict, session, awsAccountId: st
                 # this is a failing check - we won't actually parse the full payload of potential secrets
                 # otherwise we would break the mutability of a finding...so we will sample the first one
                 # and note that in the finding itself
-                secretType = str(data["results"]["ecs-data-sample.json"][0]["type"])
+                findingFile = list(data["results"].keys())[0]
+                secretType = str(data["results"][findingFile][0]["type"])
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": t + cdefName + "/ecs-envvar-secrets-check",
@@ -566,9 +598,13 @@ def secret_scan_ecs_task_def_envvar_check(cache: dict, session, awsAccountId: st
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Containers",
                         "AssetService": "Amazon Elastic Container Service (ECS)",
-                        "AssetType": "Task Definition"
+                        "AssetComponent": "Task Definition"
                     },
                     "Resources": [
                         {
@@ -631,6 +667,9 @@ def secret_scan_ec2_userdata_check(cache: dict, session, awsAccountId: str, awsR
     for page in paginator.paginate(Filters=[{'Name': 'instance-state-name','Values': ['running','stopped']}]):
         for r in page["Reservations"]:
             for i in r["Instances"]:
+                # B64 encode all of the details for the Asset
+                assetJson = json.dumps(i,default=str).encode("utf-8")
+                assetB64 = base64.b64encode(assetJson)
                 instanceId = str(i["InstanceId"])
                 instanceArn = str(f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}:instance/{instanceId}")
                 instanceType = str(i["InstanceType"])
@@ -653,7 +692,7 @@ def secret_scan_ec2_userdata_check(cache: dict, session, awsAccountId: str, awsR
                 with open(resultsFile, 'r') as readjson:
                     data = json.load(readjson)
                 # if results is an empty dict then there are no secrets found!
-                if str(data["results"]) == "{}":
+                if not data["results"]:
                     # this is a passing check
                     finding = {
                         "SchemaVersion": "2018-10-08",
@@ -683,9 +722,13 @@ def secret_scan_ec2_userdata_check(cache: dict, session, awsAccountId: str, awsR
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Compute",
                             "AssetService": "Amazon EC2",
-                            "AssetType": "Instance"
+                            "AssetComponent": "Instance"
                         },
                         "Resources": [
                             {
@@ -729,7 +772,8 @@ def secret_scan_ec2_userdata_check(cache: dict, session, awsAccountId: str, awsR
                     # this is a failing check - we won't actually parse the full payload of potential secrets
                     # otherwise we would break the mutability of a finding...so we will sample the first one
                     # and note that in the finding itself
-                    secretType = str(data["results"]["ec2-data-sample.json"][0]["type"])
+                    findingFile = list(data["results"].keys())[0]
+                    secretType = str(data["results"][findingFile][0]["type"])
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": instanceArn + "/ec2-userdata-secrets-check",
@@ -760,9 +804,13 @@ def secret_scan_ec2_userdata_check(cache: dict, session, awsAccountId: str, awsR
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Compute",
                             "AssetService": "Amazon EC2",
-                            "AssetType": "Instance"
+                            "AssetComponent": "Instance"
                         },
                         "Resources": [
                             {
@@ -811,7 +859,6 @@ def secret_scan_ec2_userdata_check(cache: dict, session, awsAccountId: str, awsR
                 del data
 
 '''
-TODO :)
 @registry.register_check("lambda")
 def secret_scan_lambda_envvar_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Secrets.Lambda.1] Lambda Function environment variables should not have secrets stored in Plaintext"""

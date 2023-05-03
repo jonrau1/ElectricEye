@@ -30,6 +30,9 @@ class JsonProvider(object):
     __provider__ = "docdb"
 
     def write_findings(self, findings: list, output_file: str, **kwargs):
+        if len(findings) == 0:
+            print("There are not any findings to write to file!")
+            exit(0)
         # Ensure that the required variables are present
         try:
             mongoUname = os.environ["MONGODB_USERNAME"]

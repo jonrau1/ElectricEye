@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -57,6 +59,9 @@ def neptune_instance_multi_az_check(cache: dict, session, awsAccountId: str, aws
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for instances in describe_db_instances(cache, session)["DBInstances"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(instances,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         neptuneInstanceArn = str(instances["DBInstanceArn"])
         neptuneDbId = str(instances["DBInstanceIdentifier"])
         mutliAzCheck = str(instances["MultiAZ"])
@@ -85,9 +90,13 @@ def neptune_instance_multi_az_check(cache: dict, session, awsAccountId: str, aws
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Neptune",
-                    "AssetType": "Database Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -157,9 +166,13 @@ def neptune_instance_multi_az_check(cache: dict, session, awsAccountId: str, aws
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Neptune",
-                    "AssetType": "Database Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -211,6 +224,9 @@ def neptune_instance_storage_encryption_check(cache: dict, session, awsAccountId
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for instances in describe_db_instances(cache, session)["DBInstances"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(instances,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         neptuneInstanceArn = str(instances["DBInstanceArn"])
         neptuneDbId = str(instances["DBInstanceIdentifier"])
         storageEncryptionCheck = str(instances["StorageEncrypted"])
@@ -242,9 +258,13 @@ def neptune_instance_storage_encryption_check(cache: dict, session, awsAccountId
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Neptune",
-                    "AssetType": "Database Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -312,9 +332,13 @@ def neptune_instance_storage_encryption_check(cache: dict, session, awsAccountId
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Neptune",
-                    "AssetType": "Database Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -361,6 +385,9 @@ def neptune_instance_iam_authentication_check(cache: dict, session, awsAccountId
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for instances in describe_db_instances(cache, session)["DBInstances"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(instances,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         neptuneInstanceArn = str(instances["DBInstanceArn"])
         neptuneDbId = str(instances["DBInstanceIdentifier"])
         iamDbAuthCheck = str(instances["IAMDatabaseAuthenticationEnabled"])
@@ -392,9 +419,13 @@ def neptune_instance_iam_authentication_check(cache: dict, session, awsAccountId
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Neptune",
-                    "AssetType": "Database Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -473,9 +504,13 @@ def neptune_instance_iam_authentication_check(cache: dict, session, awsAccountId
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Neptune",
-                    "AssetType": "Database Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -534,6 +569,9 @@ def neptune_cluster_parameter_ssl_enforcement_check(cache: dict, session, awsAcc
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for parametergroup in describe_db_cluster_parameter_groups(cache, session)["DBClusterParameterGroups"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(parametergroup,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         parameterGroupName = str(parametergroup["DBClusterParameterGroupName"])
         parameterGroupArn = str(parametergroup["DBClusterParameterGroupArn"])
         # Parse the parameters in the PG
@@ -566,9 +604,13 @@ def neptune_cluster_parameter_ssl_enforcement_check(cache: dict, session, awsAcc
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Database",
                             "AssetService": "Amazon Neptune",
-                            "AssetType": "Database Parameter Group"
+                            "AssetComponent": "Parameter Group"
                         },
                         "Resources": [
                             {
@@ -624,9 +666,13 @@ def neptune_cluster_parameter_ssl_enforcement_check(cache: dict, session, awsAcc
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Database",
                             "AssetService": "Amazon Neptune",
-                            "AssetType": "Database Parameter Group"
+                            "AssetComponent": "Parameter Group"
                         },
                         "Resources": [
                             {
@@ -671,6 +717,9 @@ def neptune_cluster_parameter_audit_log_check(cache: dict, session, awsAccountId
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for parametergroup in describe_db_cluster_parameter_groups(cache, session)["DBClusterParameterGroups"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(parametergroup,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         parameterGroupName = str(parametergroup["DBClusterParameterGroupName"])
         parameterGroupArn = str(parametergroup["DBClusterParameterGroupArn"])
         # Parse the parameters in the PG
@@ -792,6 +841,9 @@ def neptune_instance_audit_logging_check(cache: dict, session, awsAccountId: str
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for instances in describe_db_instances(cache, session)["DBInstances"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(instances,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         neptuneInstanceArn = str(instances["DBInstanceArn"])
         neptuneDbId = str(instances["DBInstanceIdentifier"])
         cwlExports = instances["EnabledCloudwatchLogsExports"]
@@ -820,9 +872,13 @@ def neptune_instance_audit_logging_check(cache: dict, session, awsAccountId: str
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Neptune",
-                    "AssetType": "Database Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -891,9 +947,13 @@ def neptune_instance_audit_logging_check(cache: dict, session, awsAccountId: str
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Neptune",
-                    "AssetType": "Database Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -944,6 +1004,9 @@ def neptune_instance_deletion_protection_check(cache: dict, session, awsAccountI
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for instances in describe_db_instances(cache, session)["DBInstances"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(instances,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         neptuneInstanceArn = str(instances["DBInstanceArn"])
         neptuneDbId = str(instances["DBInstanceIdentifier"])
         delProtCheck = str(instances["DeletionProtection"])
@@ -972,9 +1035,13 @@ def neptune_instance_deletion_protection_check(cache: dict, session, awsAccountI
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Neptune",
-                    "AssetType": "Database Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -1045,9 +1112,13 @@ def neptune_instance_deletion_protection_check(cache: dict, session, awsAccountI
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Neptune",
-                    "AssetType": "Database Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -1100,6 +1171,9 @@ def neptune_instance_minor_version_upgrade_check(cache: dict, session, awsAccoun
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for instances in describe_db_instances(cache, session)["DBInstances"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(instances,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         neptuneInstanceArn = str(instances["DBInstanceArn"])
         neptuneDbId = str(instances["DBInstanceIdentifier"])
         minorVersionUpgradeCheck = str(instances["AutoMinorVersionUpgrade"])
@@ -1128,9 +1202,13 @@ def neptune_instance_minor_version_upgrade_check(cache: dict, session, awsAccoun
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Neptune",
-                    "AssetType": "Database Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -1199,9 +1277,13 @@ def neptune_instance_minor_version_upgrade_check(cache: dict, session, awsAccoun
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Neptune",
-                    "AssetType": "Database Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -1253,6 +1335,9 @@ def neptune_cluster_autoscaling_check(cache: dict, session, awsAccountId: str, a
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for cluster in describe_db_clusters(cache, session)["DBClusters"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(cluster,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clusterArn = cluster["DBClusterArn"]
         clusterId = cluster["DBClusterIdentifier"]
         clusterParameterGroupName = cluster["DBClusterParameterGroup"]
@@ -1285,9 +1370,13 @@ def neptune_cluster_autoscaling_check(cache: dict, session, awsAccountId: str, a
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Database",
                             "AssetService": "Amazon Neptune",
-                            "AssetType": "Database Cluster"
+                            "AssetComponent": "Database Cluster"
                         },
                         "Resources": [
                             {
@@ -1360,9 +1449,13 @@ def neptune_cluster_autoscaling_check(cache: dict, session, awsAccountId: str, a
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Database",
                             "AssetService": "Amazon Neptune",
-                            "AssetType": "Database Cluster"
+                            "AssetComponent": "Database Cluster"
                         },
                         "Resources": [
                             {
@@ -1422,6 +1515,9 @@ def neptune_cluster_gremlin_query_result_cache_check(cache: dict, session, awsAc
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for cluster in describe_db_clusters(cache, session)["DBClusters"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(cluster,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clusterArn = cluster["DBClusterArn"]
         clusterId = cluster["DBClusterIdentifier"]
         clusterParameterGroupName = cluster["DBClusterParameterGroup"]
@@ -1453,9 +1549,13 @@ def neptune_cluster_gremlin_query_result_cache_check(cache: dict, session, awsAc
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Database",
                             "AssetService": "Amazon Neptune",
-                            "AssetType": "Database Cluster"
+                            "AssetComponent": "Database Cluster"
                         },
                         "Resources": [
                             {
@@ -1528,9 +1628,13 @@ def neptune_cluster_gremlin_query_result_cache_check(cache: dict, session, awsAc
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Database",
                             "AssetService": "Amazon Neptune",
-                            "AssetType": "Database Cluster"
+                            "AssetComponent": "Database Cluster"
                         },
                         "Resources": [
                             {

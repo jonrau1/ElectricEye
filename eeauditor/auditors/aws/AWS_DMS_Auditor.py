@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -37,11 +39,13 @@ def dms_replication_instance_public_access_check(cache: dict, session, awsAccoun
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for ri in describe_replication_instances(cache, session)["ReplicationInstances"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(ri,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         dmsInstanceId = ri["ReplicationInstanceIdentifier"]
         dmsInstanceArn = ri["ReplicationInstanceArn"]
-        publicAccessCheck = str(ri["PubliclyAccessible"])
         # this is a failing check
-        if publicAccessCheck == "True":
+        if ri["PubliclyAccessible"] == True:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{dmsInstanceArn}/dms-replication-instance-public-access-check",
@@ -68,9 +72,13 @@ def dms_replication_instance_public_access_check(cache: dict, session, awsAccoun
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Migration & Transfer",
                     "AssetService": "AWS Database Migration Service",
-                    "AssetType": "Replication Instance"
+                    "AssetComponent": "Replication Instance"
                 },
                 "Resources": [
                     {
@@ -134,9 +142,13 @@ def dms_replication_instance_public_access_check(cache: dict, session, awsAccoun
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Migration & Transfer",
                     "AssetService": "AWS Database Migration Service",
-                    "AssetType": "Replication Instance"
+                    "AssetComponent": "Replication Instance"
                 },
                 "Resources": [
                     {
@@ -179,11 +191,13 @@ def dms_replication_instance_multi_az_check(cache: dict, session, awsAccountId: 
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for ri in describe_replication_instances(cache, session)["ReplicationInstances"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(ri,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         dmsInstanceId = ri["ReplicationInstanceIdentifier"]
         dmsInstanceArn = ri["ReplicationInstanceArn"]
-        mutltiAzCheck = str(ri["MultiAZ"])
         # this is a failing check
-        if mutltiAzCheck == "False":
+        if ri["MultiAZ"] == False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{dmsInstanceArn}/dms-replication-instance-multi-az-check",
@@ -207,9 +221,13 @@ def dms_replication_instance_multi_az_check(cache: dict, session, awsAccountId: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Migration & Transfer",
                     "AssetService": "AWS Database Migration Service",
-                    "AssetType": "Replication Instance"
+                    "AssetComponent": "Replication Instance"
                 },
                 "Resources": [
                     {
@@ -270,9 +288,13 @@ def dms_replication_instance_multi_az_check(cache: dict, session, awsAccountId: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Migration & Transfer",
                     "AssetService": "AWS Database Migration Service",
-                    "AssetType": "Replication Instance"
+                    "AssetComponent": "Replication Instance"
                 },
                 "Resources": [
                     {
@@ -315,11 +337,13 @@ def dms_replication_instance_minor_version_update_check(cache: dict, session, aw
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for ri in describe_replication_instances(cache, session)["ReplicationInstances"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(ri,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         dmsInstanceId = ri["ReplicationInstanceIdentifier"]
         dmsInstanceArn = ri["ReplicationInstanceArn"]
-        minorVersionUpgradeCheck = str(ri["AutoMinorVersionUpgrade"])
         # this is a failing check
-        if minorVersionUpgradeCheck == "False":
+        if ri["AutoMinorVersionUpgrade"] == False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{dmsInstanceArn}/dms-replication-instance-minor-version-auto-update-check",
@@ -343,9 +367,13 @@ def dms_replication_instance_minor_version_update_check(cache: dict, session, aw
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Migration & Transfer",
                     "AssetService": "AWS Database Migration Service",
-                    "AssetType": "Replication Instance"
+                    "AssetComponent": "Replication Instance"
                 },
                 "Resources": [
                     {
@@ -404,9 +432,13 @@ def dms_replication_instance_minor_version_update_check(cache: dict, session, aw
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Migration & Transfer",
                     "AssetService": "AWS Database Migration Service",
-                    "AssetType": "Replication Instance"
+                    "AssetComponent": "Replication Instance"
                 },
                 "Resources": [
                     {

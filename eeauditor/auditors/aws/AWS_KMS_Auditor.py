@@ -20,8 +20,9 @@
 
 import datetime
 import botocore.exceptions
-import json
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -52,7 +53,11 @@ def kms_key_rotation_check(cache: dict, session, awsAccountId: str, awsRegion: s
         keyarn = key["KeyArn"]
         try:
             # Check to make sure that we have a Symmetric Key
-            keyUse = kms.describe_key(KeyId=keyid)["KeyMetadata"]["KeyUsage"]
+            keyData = kms.describe_key(KeyId=keyid)
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(keyData,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
+            keyUse = keyData["KeyMetadata"]["KeyUsage"]
             if keyUse == "SIGN_VERIFY":
                 continue
 
@@ -85,9 +90,13 @@ def kms_key_rotation_check(cache: dict, session, awsAccountId: str, awsRegion: s
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Security Services",
                         "AssetService": "Amazon Key Management Service",
-                        "AssetType": "Key"
+                        "AssetComponent": "Key"
                     },
                     "Resources": [
                         {
@@ -159,9 +168,13 @@ def kms_key_rotation_check(cache: dict, session, awsAccountId: str, awsRegion: s
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Security Services",
                         "AssetService": "Amazon Key Management Service",
-                        "AssetType": "Key"
+                        "AssetComponent": "Key"
                     },
                     "Resources": [
                         {
@@ -233,9 +246,13 @@ def kms_key_rotation_check(cache: dict, session, awsAccountId: str, awsRegion: s
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Security Services",
                         "AssetService": "Amazon Key Management Service",
-                        "AssetType": "Key"
+                        "AssetComponent": "Key"
                     },
                     "Resources": [
                         {
@@ -293,6 +310,10 @@ def kms_key_exposed_check(cache: dict, session, awsAccountId: str, awsRegion: st
             aliasArn = alias["AliasArn"]
             keyid = alias["TargetKeyId"]
             try:
+                keyData = kms.describe_key(KeyId=keyid)
+                # B64 encode all of the details for the Asset
+                assetJson = json.dumps(keyData,default=str).encode("utf-8")
+                assetB64 = base64.b64encode(assetJson)
                 policyString = kms.get_key_policy(KeyId=keyid, PolicyName="default")
                 fail = False
                 policy_json = policyString["Policy"]
@@ -337,9 +358,13 @@ def kms_key_exposed_check(cache: dict, session, awsAccountId: str, awsRegion: st
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Security Services",
                             "AssetService": "Amazon Key Management Service",
-                            "AssetType": "Key"
+                            "AssetComponent": "Key Alias"
                         },
                         "Resources": [
                             {
@@ -412,9 +437,13 @@ def kms_key_exposed_check(cache: dict, session, awsAccountId: str, awsRegion: st
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Security Services",
                             "AssetService": "Amazon Key Management Service",
-                            "AssetType": "Key"
+                            "AssetComponent": "Key Alias"
                         },
                         "Resources": [
                             {

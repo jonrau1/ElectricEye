@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -37,6 +39,9 @@ def efs_filesys_encryption_check(cache: dict, session, awsAccountId: str, awsReg
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for filesys in describe_file_systems(cache, session)["FileSystems"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(filesys,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         encryptionCheck = str(filesys["Encrypted"])
         fileSysId = str(filesys["FileSystemId"])
         fileSysArn = f"arn:{awsPartition}:elasticfilesystem:{awsRegion}:{awsAccountId}:file-system/{fileSysId}"
@@ -68,9 +73,13 @@ def efs_filesys_encryption_check(cache: dict, session, awsAccountId: str, awsReg
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Storage",
                     "AssetService": "Amazon Elastic File System",
-                    "AssetType": "File System"
+                    "AssetComponent": "File System"
                 },
                 "Resources": [
                     {
@@ -123,9 +132,13 @@ def efs_filesys_encryption_check(cache: dict, session, awsAccountId: str, awsReg
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Storage",
                     "AssetService": "Amazon Elastic File System",
-                    "AssetType": "File System"
+                    "AssetComponent": "File System"
                 },
                 "Resources": [
                     {
@@ -158,6 +171,9 @@ def efs_filesys_policy_check(cache: dict, session, awsAccountId: str, awsRegion:
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for filesys in describe_file_systems(cache, session)["FileSystems"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(filesys,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         fileSysId = str(filesys["FileSystemId"])
         fileSysArn = f"arn:{awsPartition}:elasticfilesystem:{awsRegion}:{awsAccountId}:file-system/{fileSysId}"
         # this is a passing check
@@ -189,9 +205,13 @@ def efs_filesys_policy_check(cache: dict, session, awsAccountId: str, awsRegion:
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Storage",
                     "AssetService": "Amazon Elastic File System",
-                    "AssetType": "File System"
+                    "AssetComponent": "File System"
                 },
                 "Resources": [
                     {
@@ -221,7 +241,7 @@ def efs_filesys_policy_check(cache: dict, session, awsAccountId: str, awsRegion:
             }
             yield finding
         # this is a failing check
-        except efs.exceptions.FileSystemNotFound:
+        except Exception:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": f"{fileSysArn}/efs-policy-check",
@@ -248,9 +268,13 @@ def efs_filesys_policy_check(cache: dict, session, awsAccountId: str, awsRegion:
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Storage",
                     "AssetService": "Amazon Elastic File System",
-                    "AssetType": "File System"
+                    "AssetComponent": "File System"
                 },
                 "Resources": [
                     {

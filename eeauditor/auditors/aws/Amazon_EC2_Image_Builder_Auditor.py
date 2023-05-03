@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -28,15 +30,17 @@ def imagebuilder_pipeline_tests_enabled_check(cache: dict, session, awsAccountId
     """[ImageBuilder.1] Image pipeline tests should be enabled"""
     imagebuilder = session.client("imagebuilder")
     pipelines = imagebuilder.list_image_pipelines()
-    pipeline_list = pipelines["imagePipelineList"]
+    pipelineList = pipelines["imagePipelineList"]
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for arn in pipeline_list:
+    for arn in pipelineList:
         pipelineArn = arn["arn"]
-        pipeline_name = arn["name"]
-        image_pipelines = imagebuilder.get_image_pipeline(imagePipelineArn=pipelineArn)
-        image_test_config = image_pipelines["imagePipeline"]["imageTestsConfiguration"]
-        image_test_enabled = image_test_config["imageTestsEnabled"]
-        if image_test_enabled == True:
+        pipelineName = arn["name"]
+        imagePipelines = imagebuilder.get_image_pipeline(imagePipelineArn=pipelineArn)
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(imagePipelines,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        imageTestConfig = imagePipelines["imagePipeline"]["imageTestsConfiguration"]
+        if imageTestConfig["imageTestsEnabled"] == True:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": pipelineArn + "/imagebuilder-pipeline-tests-enabled-check",
@@ -53,7 +57,7 @@ def imagebuilder_pipeline_tests_enabled_check(cache: dict, session, awsAccountId
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[ImageBuilder.1] Image pipeline tests should be enabled",
-                "Description": "Image pipeline " + pipeline_name + " has tests enabled.",
+                "Description": "Image pipeline " + pipelineName + " has tests enabled.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on EC2 Image Builder Security and enabling image testing refer to the Best Practices section of the Amazon EC2 Image Builder Developer Guide.",
@@ -63,6 +67,10 @@ def imagebuilder_pipeline_tests_enabled_check(cache: dict, session, awsAccountId
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Developer Tools",
                     "AssetService": "AWS EC2 Image Builder",
                     "AssetType": "Pipeline"
@@ -76,7 +84,7 @@ def imagebuilder_pipeline_tests_enabled_check(cache: dict, session, awsAccountId
                         "Details": {
                             "Other": 
                             {
-                                "PipelineName": pipeline_name
+                                "PipelineName": pipelineName
                             }
                         }
                     }
@@ -115,7 +123,7 @@ def imagebuilder_pipeline_tests_enabled_check(cache: dict, session, awsAccountId
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
                 "Title": "[ImageBuilder.1] Image pipeline tests should be enabled",
-                "Description": "Image pipeline " + pipeline_name + " does not have tests enabled.",
+                "Description": "Image pipeline " + pipelineName + " does not have tests enabled.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on EC2 Image Builder Security and enabling image testing refer to the Best Practices section of the Amazon EC2 Image Builder Developer Guide.",
@@ -125,6 +133,10 @@ def imagebuilder_pipeline_tests_enabled_check(cache: dict, session, awsAccountId
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Developer Tools",
                     "AssetService": "AWS EC2 Image Builder",
                     "AssetType": "Pipeline"
@@ -138,7 +150,7 @@ def imagebuilder_pipeline_tests_enabled_check(cache: dict, session, awsAccountId
                         "Details": {
                             "Other": 
                             {
-                                "PipelineName": pipeline_name
+                                "PipelineName": pipelineName
                             }
                         }
                     }
@@ -166,17 +178,19 @@ def imagebuilder_ebs_encryption_check(cache: dict, session, awsAccountId: str, a
     """[ImageBuilder.2] Image recipes should encrypt EBS volumes"""
     imagebuilder = session.client("imagebuilder")
     recipes = imagebuilder.list_image_recipes()
-    recipes_list = recipes["imageRecipeSummaryList"]
+    recipesList = recipes["imageRecipeSummaryList"]
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for details in recipes_list:
+    for details in recipesList:
         recipeArn = details["arn"]
-        recipe_name = details["name"]
+        recipeName = details["name"]
         recipe = imagebuilder.get_image_recipe(imageRecipeArn=recipeArn)
-        device_mapping = recipe["imageRecipe"]["blockDeviceMappings"]
-        list1 = device_mapping[0]
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(recipe,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        deviceMapping = recipe["imageRecipe"]["blockDeviceMappings"]
+        list1 = deviceMapping[0]
         ebs = list1["ebs"]
-        ebs_encryption = ebs["encrypted"]
-        if ebs_encryption == True:
+        if ebs["encrypted"] == True:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": recipeArn + "/imagebuilder-ebs-encryption-check",
@@ -193,7 +207,7 @@ def imagebuilder_ebs_encryption_check(cache: dict, session, awsAccountId: str, a
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
                 "Title": "[ImageBuilder.2] Image recipes should encrypt EBS volumes",
-                "Description": "Image recipe " + recipe_name + " has EBS encrypted.",
+                "Description": "Image recipe " + recipeName + " has EBS encrypted.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on EC2 Image Builder Security and EBS encyption refer to the How EC2 Image Builder Works section of the Amazon EC2 Image Builder Developer Guide.",
@@ -203,6 +217,10 @@ def imagebuilder_ebs_encryption_check(cache: dict, session, awsAccountId: str, a
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Developer Tools",
                     "AssetService": "AWS EC2 Image Builder",
                     "AssetType": "Recipe"
@@ -216,7 +234,7 @@ def imagebuilder_ebs_encryption_check(cache: dict, session, awsAccountId: str, a
                         "Details": {
                             "Other": 
                             {
-                                "RecipeName": recipe_name
+                                "RecipeName": recipeName
                             }
                         }
                     }
@@ -255,7 +273,7 @@ def imagebuilder_ebs_encryption_check(cache: dict, session, awsAccountId: str, a
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
                 "Title": "[ImageBuilder.2] Image recipes should encrypt EBS volumes",
-                "Description": "Image recipe " + recipe_name + " does not have EBS encrypted.",
+                "Description": "Image recipe " + recipeName + " does not have EBS encrypted.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on EC2 Image Builder Security and EBS encyption refer to the How EC2 Image Builder Works section of the Amazon EC2 Image Builder Developer Guide.",
@@ -265,6 +283,10 @@ def imagebuilder_ebs_encryption_check(cache: dict, session, awsAccountId: str, a
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Developer Tools",
                     "AssetService": "AWS EC2 Image Builder",
                     "AssetType": "Recipe"
@@ -278,7 +300,7 @@ def imagebuilder_ebs_encryption_check(cache: dict, session, awsAccountId: str, a
                         "Details": {
                             "Other": 
                             {
-                                "RecipeName": recipe_name
+                                "RecipeName": recipeName
                             }
                         }
                     }

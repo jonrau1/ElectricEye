@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -34,14 +36,14 @@ def list_apps(cache, session):
 @registry.register_check("amplify")
 def amplify_basic_auth_enabled_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Amplify.1] AWS Amplify should have basic auth enabled for branches"""
-    response = list_apps(cache, session)
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    
-    for apps in response["apps"]:
-        appArn = apps['appArn']
-        appName = apps['name']
-
-        if str(apps['enableBasicAuth']) == 'True':
+    for apps in list_apps(cache, session)["apps"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(apps,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        appArn = apps["appArn"]
+        appName = apps["name"]
+        if apps["enableBasicAuth"] == True:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": appArn + "/amplify-basic-auth-enabled-check",
@@ -67,9 +69,13 @@ def amplify_basic_auth_enabled_check(cache: dict, session, awsAccountId: str, aw
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Developer Tools",
                     "AssetService": "AWS Amplify",
-                    "AssetType": "Application"
+                    "AssetComponent": "Application"
                 },
                 "Resources": [
                     {
@@ -96,8 +102,7 @@ def amplify_basic_auth_enabled_check(cache: dict, session, awsAccountId: str, aw
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED",
             }
-            yield finding
-        
+            yield finding       
         else: 
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -124,9 +129,13 @@ def amplify_basic_auth_enabled_check(cache: dict, session, awsAccountId: str, aw
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Developer Tools",
                     "AssetService": "AWS Amplify",
-                    "AssetType": "Application"
+                    "AssetComponent": "Application"
                 },
                 "Resources": [
                     {
@@ -158,14 +167,14 @@ def amplify_basic_auth_enabled_check(cache: dict, session, awsAccountId: str, aw
 @registry.register_check("amplify")
 def amplify_branch_auto_deletion_enabled_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Amplify.2] AWS Amplify apps should have auto-deletion disabled for branches"""
-    response = list_apps(cache, session)
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    
-    for apps in response["apps"]:
-        appArn = apps['appArn']
-        appName = apps['name']
-
-        if str(apps['enableBranchAutoDeletion']) == 'False':
+    for apps in list_apps(cache, session)["apps"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(apps,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        appArn = apps["appArn"]
+        appName = apps["name"]
+        if apps["enableBranchAutoDeletion"] == False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": appArn + "/amplify-branch-auto-deletion-check",
@@ -191,9 +200,13 @@ def amplify_branch_auto_deletion_enabled_check(cache: dict, session, awsAccountI
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Developer Tools",
                     "AssetService": "AWS Amplify",
-                    "AssetType": "Application"
+                    "AssetComponent": "Application"
                 },
                 "Resources": [
                     {
@@ -220,8 +233,7 @@ def amplify_branch_auto_deletion_enabled_check(cache: dict, session, awsAccountI
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED",
             }
-            yield finding
-        
+            yield finding 
         else: 
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -248,9 +260,13 @@ def amplify_branch_auto_deletion_enabled_check(cache: dict, session, awsAccountI
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Developer Tools",
                     "AssetService": "AWS Amplify",
-                    "AssetType": "Application"
+                    "AssetComponent": "Application"
                 },
                 "Resources": [
                     {
@@ -278,3 +294,5 @@ def amplify_branch_auto_deletion_enabled_check(cache: dict, session, awsAccountI
                 "RecordState": "ACTIVE",
             }
             yield finding
+
+##

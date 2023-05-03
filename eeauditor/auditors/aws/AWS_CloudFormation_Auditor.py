@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -35,6 +37,9 @@ def describe_stacks(cache, session):
 def cfn_drift_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFormation.1] CloudFormation stacks should be monitored for configuration drift"""
     for stacks in describe_stacks(cache, session)["Stacks"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(stacks,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         stackName = str(stacks["StackName"])
         stackArn = str(stacks["StackId"])
         driftCheck = str(stacks["DriftInformation"]["StackDriftStatus"])
@@ -64,9 +69,13 @@ def cfn_drift_check(cache: dict, session, awsAccountId: str, awsRegion: str, aws
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Management & Governance",
                     "AssetService": "AWS CloudFormation",
-                    "AssetType": "Stack"
+                    "AssetComponent": "Stack"
                 },
                 "Resources": [
                     {
@@ -121,9 +130,13 @@ def cfn_drift_check(cache: dict, session, awsAccountId: str, awsRegion: str, aws
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Management & Governance",
                     "AssetService": "AWS CloudFormation",
-                    "AssetType": "Stack"
+                    "AssetComponent": "Stack"
                 },
                 "Resources": [
                     {
@@ -158,6 +171,9 @@ def cfn_drift_check(cache: dict, session, awsAccountId: str, awsRegion: str, aws
 def cfn_monitoring_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudFormation.2] CloudFormation stacks should be monitored for changes"""
     for stacks in describe_stacks(cache, session)["Stacks"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(stacks,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         stackName = str(stacks["StackName"])
         stackArn = str(stacks["StackId"])
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -186,9 +202,13 @@ def cfn_monitoring_check(cache: dict, session, awsAccountId: str, awsRegion: str
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Management & Governance",
                     "AssetService": "AWS CloudFormation",
-                    "AssetType": "Stack"
+                    "AssetComponent": "Stack"
                 },
                 "Resources": [
                     {
@@ -243,9 +263,13 @@ def cfn_monitoring_check(cache: dict, session, awsAccountId: str, awsRegion: str
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Management & Governance",
                     "AssetService": "AWS CloudFormation",
-                    "AssetType": "Stack"
+                    "AssetComponent": "Stack"
                 },
                 "Resources": [
                     {

@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -39,6 +41,9 @@ def vpc_route53_query_logging_association_check(cache: dict, session, awsAccount
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # Loop the VPCs in Cache
     for vpcs in describe_vpcs(cache, session)["Vpcs"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(vpcs,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         vpcId = str(vpcs["VpcId"])
         vpcArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}vpc/{vpcId}"
         # Check for Query Log Configs filtered by VPC ID. 
@@ -76,6 +81,10 @@ def vpc_route53_query_logging_association_check(cache: dict, session, awsAccount
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon Virtual Private Cloud",
                     "AssetType": "Virtual Private Cloud"
@@ -136,6 +145,10 @@ def vpc_route53_query_logging_association_check(cache: dict, session, awsAccount
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon Virtual Private Cloud",
                     "AssetType": "Virtual Private Cloud"
@@ -181,6 +194,9 @@ def vpc_route53_resolver_firewall_association_check(cache: dict, session, awsAcc
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # Loop the VPCs in Cache
     for vpcs in describe_vpcs(cache, session)["Vpcs"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(vpcs,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         vpcId = str(vpcs["VpcId"])
         vpcArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}vpc/{vpcId}"
         # Check for Firewall Associations filtered by VPC ID. 
@@ -212,6 +228,10 @@ def vpc_route53_resolver_firewall_association_check(cache: dict, session, awsAcc
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon Virtual Private Cloud",
                     "AssetType": "Virtual Private Cloud"
@@ -271,6 +291,10 @@ def vpc_route53_resolver_firewall_association_check(cache: dict, session, awsAcc
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon Virtual Private Cloud",
                     "AssetType": "Virtual Private Cloud"
@@ -322,6 +346,9 @@ def vpc_route53_resolver_dnssec_validation_check(cache: dict, session, awsAccoun
             continue
     # Loop the VPCs in Cache
     for vpcs in describe_vpcs(cache, session)["Vpcs"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(vpcs,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         vpcId = str(vpcs["VpcId"])
         vpcArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}vpc/{vpcId}"
         # This is a failing check as the VPC is not in the list of "dnssecVpcs"
@@ -349,6 +376,10 @@ def vpc_route53_resolver_dnssec_validation_check(cache: dict, session, awsAccoun
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon Virtual Private Cloud",
                     "AssetType": "Virtual Private Cloud"
@@ -410,6 +441,10 @@ def vpc_route53_resolver_dnssec_validation_check(cache: dict, session, awsAccoun
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon Virtual Private Cloud",
                     "AssetType": "Virtual Private Cloud"
@@ -456,6 +491,9 @@ def vpc_route53_resolver_firewall_fail_open_check(cache: dict, session, awsAccou
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # Loop the VPCs in Cache
     for vpcs in describe_vpcs(cache, session)["Vpcs"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(vpcs,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         vpcId = str(vpcs["VpcId"])
         vpcArn = f"arn:{awsPartition}:ec2:{awsRegion}:{awsAccountId}vpc/{vpcId}"
         # Check for Firewall Associations filtered by VPC ID. 
@@ -493,6 +531,10 @@ def vpc_route53_resolver_firewall_fail_open_check(cache: dict, session, awsAccou
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Networking",
                         "AssetService": "Amazon Virtual Private Cloud",
                         "AssetType": "Virtual Private Cloud"
@@ -553,6 +595,10 @@ def vpc_route53_resolver_firewall_fail_open_check(cache: dict, session, awsAccou
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Networking",
                         "AssetService": "Amazon Virtual Private Cloud",
                         "AssetType": "Virtual Private Cloud"

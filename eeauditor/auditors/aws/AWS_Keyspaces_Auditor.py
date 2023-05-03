@@ -20,6 +20,8 @@
 
 from check_register import CheckRegister
 import datetime
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -83,6 +85,9 @@ def keyspaces_customer_managed_encryption(cache: dict, session, awsAccountId: st
             keyspaceName=keyspaceName,
             tableName=tableName
         )
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(t,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         # Parse details
         resourceArn = t["resourceArn"]
 
@@ -114,9 +119,13 @@ def keyspaces_customer_managed_encryption(cache: dict, session, awsAccountId: st
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Keyspaces",
-                    "AssetType": "Table"
+                    "AssetComponent": "Table"
                 },
                 "Resources": [
                     {
@@ -174,9 +183,13 @@ def keyspaces_customer_managed_encryption(cache: dict, session, awsAccountId: st
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Keyspaces",
-                    "AssetType": "Table"
+                    "AssetComponent": "Table"
                 },
                 "Resources": [
                     {
@@ -223,6 +236,9 @@ def keyspaces_inaccessible_status_check(cache: dict, session, awsAccountId: str,
             keyspaceName=keyspaceName,
             tableName=tableName
         )
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(t,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         # Parse details
         resourceArn = t["resourceArn"]
 
@@ -254,9 +270,13 @@ def keyspaces_inaccessible_status_check(cache: dict, session, awsAccountId: str,
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Keyspaces",
-                    "AssetType": "Table"
+                    "AssetComponent": "Table"
                 },
                 "Resources": [
                     {
@@ -322,9 +342,13 @@ def keyspaces_inaccessible_status_check(cache: dict, session, awsAccountId: str,
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Keyspaces",
-                    "AssetType": "Table"
+                    "AssetComponent": "Table"
                 },
                 "Resources": [
                     {
@@ -379,6 +403,9 @@ def keyspaces_pitr_check(cache: dict, session, awsAccountId: str, awsRegion: str
             keyspaceName=keyspaceName,
             tableName=tableName
         )
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(t,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         # Parse details
         resourceArn = t["resourceArn"]
 
@@ -407,9 +434,13 @@ def keyspaces_pitr_check(cache: dict, session, awsAccountId: str, awsRegion: str
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Keyspaces",
-                    "AssetType": "Table"
+                    "AssetComponent": "Table"
                 },
                 "Resources": [
                     {
@@ -470,9 +501,13 @@ def keyspaces_pitr_check(cache: dict, session, awsAccountId: str, awsRegion: str
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon Keyspaces",
-                    "AssetType": "Table"
+                    "AssetComponent": "Table"
                 },
                 "Resources": [
                     {

@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -37,6 +39,9 @@ def datasync_public_agent_check(cache: dict, session, awsAccountId: str, awsRegi
                 agentArn = str(a["AgentArn"])
                 agentName = str(a["Name"])
                 response = datasync.describe_agent(AgentArn=agentArn)
+                # B64 encode all of the details for the Asset
+                assetJson = json.dumps(response,default=str).encode("utf-8")
+                assetB64 = base64.b64encode(assetJson)
                 if str(response["EndpointType"]) == "PUBLIC":
                     try:
                         # create Sec Hub finding
@@ -68,9 +73,13 @@ def datasync_public_agent_check(cache: dict, session, awsAccountId: str, awsRegi
                             "ProductFields": {
                                 "ProductName": "ElectricEye",
                                 "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
                                 "AssetClass": "Migration & Transfer",
                                 "AssetService": "AWS DataSync",
-                                "AssetType": "Agent"
+                                "AssetComponent": "Agent"
                             },
                             "Resources": [
                                 {
@@ -140,9 +149,13 @@ def datasync_public_agent_check(cache: dict, session, awsAccountId: str, awsRegi
                             "ProductFields": {
                                 "ProductName": "ElectricEye",
                                 "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
                                 "AssetClass": "Migration & Transfer",
                                 "AssetService": "AWS DataSync",
-                                "AssetType": "Agent"
+                                "AssetComponent": "Agent"
                             },
                             "Resources": [
                                 {
@@ -200,6 +213,9 @@ def datasync_task_logging_check(cache: dict, session, awsAccountId: str, awsRegi
                 taskArn = str(t["TaskArn"])
                 taskName = str(t["Name"])
                 response = datasync.describe_task(TaskArn=taskArn)
+                # B64 encode all of the details for the Asset
+                assetJson = json.dumps(response,default=str).encode("utf-8")
+                assetB64 = base64.b64encode(assetJson)
                 if str(response["EndpointType"]) == "PUBLIC":
                     try:
                         # create Sec Hub finding
@@ -231,9 +247,13 @@ def datasync_task_logging_check(cache: dict, session, awsAccountId: str, awsRegi
                             "ProductFields": {
                                 "ProductName": "ElectricEye",
                                 "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
                                 "AssetClass": "Migration & Transfer",
                                 "AssetService": "AWS DataSync",
-                                "AssetType": "Task"
+                                "AssetComponent": "Task"
                             },
                             "Resources": [
                                 {
@@ -301,9 +321,13 @@ def datasync_task_logging_check(cache: dict, session, awsAccountId: str, awsRegi
                             "ProductFields": {
                                 "ProductName": "ElectricEye",
                                 "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
                                 "AssetClass": "Migration & Transfer",
                                 "AssetService": "AWS DataSync",
-                                "AssetType": "Task"
+                                "AssetComponent": "Task"
                             },
                             "Resources": [
                                 {

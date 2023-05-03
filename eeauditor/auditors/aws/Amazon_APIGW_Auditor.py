@@ -19,6 +19,8 @@
 #under the License.
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -42,6 +44,9 @@ def api_gateway_stage_metrics_enabled_check(cache: dict, session, awsAccountId: 
         apiGwApiName = str(restapi["name"])
         response = apigateway.get_stages(restApiId=apiGwApiId)
         for apistages in response["item"]:
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(apistages,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             apiStageName = str(apistages["stageName"])
             apiStageDeploymentId = str(apistages["deploymentId"])
             apiStageArn = f"arn:{awsPartition}:apigateway:{awsRegion}::/restapis/{apiGwApiId}/stages/{apiStageName}"
@@ -79,9 +84,13 @@ def api_gateway_stage_metrics_enabled_check(cache: dict, session, awsAccountId: 
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Networking",
                         "AssetService": "Amazon API Gateway",
-                        "AssetType": "Stage"
+                        "AssetComponent": "Stage"
                     },
                     "Resources": [
                         {
@@ -145,9 +154,13 @@ def api_gateway_stage_metrics_enabled_check(cache: dict, session, awsAccountId: 
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Networking",
                         "AssetService": "Amazon API Gateway",
-                        "AssetType": "Stage"
+                        "AssetComponent": "Stage"
                     },
                     "Resources": [
                         {
@@ -194,6 +207,9 @@ def api_gateway_stage_logging_check(cache: dict, session, awsAccountId: str, aws
         apiGwApiName = str(restapi["name"])
         response = apigateway.get_stages(restApiId=apiGwApiId)
         for apistages in response["item"]:
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(apistages,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             apiStageName = str(apistages["stageName"])
             apiStageDeploymentId = str(apistages["deploymentId"])
             apiStageArn = f"arn:{awsPartition}:apigateway:{awsRegion}::/restapis/{apiGwApiId}/stages/{apiStageName}"
@@ -230,9 +246,13 @@ def api_gateway_stage_logging_check(cache: dict, session, awsAccountId: str, aws
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Networking",
                         "AssetService": "Amazon API Gateway",
-                        "AssetType": "Stage"
+                        "AssetComponent": "Stage"
                     },
                     "Resources": [
                         {
@@ -295,9 +315,13 @@ def api_gateway_stage_logging_check(cache: dict, session, awsAccountId: str, aws
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Networking",
                         "AssetService": "Amazon API Gateway",
-                        "AssetType": "Stage"
+                        "AssetComponent": "Stage"
                     },
                     "Resources": [
                         {
@@ -344,6 +368,9 @@ def api_gateway_stage_cacheing_enabled_check(cache: dict, session, awsAccountId:
         apiGwApiName = str(restapi["name"])
         response = apigateway.get_stages(restApiId=apiGwApiId)
         for apistages in response["item"]:
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(apistages,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             apiStageName = str(apistages["stageName"])
             apiStageDeploymentId = str(apistages["deploymentId"])
             apiStageArn = f"arn:{awsPartition}:apigateway:{awsRegion}::/restapis/{apiGwApiId}/stages/{apiStageName}"
@@ -381,9 +408,13 @@ def api_gateway_stage_cacheing_enabled_check(cache: dict, session, awsAccountId:
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Networking",
                         "AssetService": "Amazon API Gateway",
-                        "AssetType": "Stage"
+                        "AssetComponent": "Stage"
                     },
                     "Resources": [
                         {
@@ -449,9 +480,13 @@ def api_gateway_stage_cacheing_enabled_check(cache: dict, session, awsAccountId:
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Networking",
                         "AssetService": "Amazon API Gateway",
-                        "AssetType": "Stage"
+                        "AssetComponent": "Stage"
                     },
                     "Resources": [
                         {
@@ -500,6 +535,9 @@ def api_gateway_stage_cache_encryption_check(cache: dict, session, awsAccountId:
         apiGwApiName = str(restapi["name"])
         response = apigateway.get_stages(restApiId=apiGwApiId)
         for apistages in response["item"]:
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(apistages,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             apiStageName = str(apistages["stageName"])
             apiStageDeploymentId = str(apistages["deploymentId"])
             apiStageArn = f"arn:{awsPartition}:apigateway:{awsRegion}::/restapis/{apiGwApiId}/stages/{apiStageName}"
@@ -539,9 +577,13 @@ def api_gateway_stage_cache_encryption_check(cache: dict, session, awsAccountId:
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Networking",
                         "AssetService": "Amazon API Gateway",
-                        "AssetType": "Stage"
+                        "AssetComponent": "Stage"
                     },
                     "Resources": [
                         {
@@ -605,9 +647,13 @@ def api_gateway_stage_cache_encryption_check(cache: dict, session, awsAccountId:
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Networking",
                         "AssetService": "Amazon API Gateway",
-                        "AssetType": "Stage"
+                        "AssetComponent": "Stage"
                     },
                     "Resources": [
                         {
@@ -651,6 +697,9 @@ def api_gateway_stage_xray_tracing_check(cache: dict, session, awsAccountId: str
         apiGwApiName = str(restapi["name"])
         response = apigateway.get_stages(restApiId=apiGwApiId)
         for apistages in response["item"]:
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(apistages,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             apiStageName = str(apistages["stageName"])
             apiStageDeploymentId = str(apistages["deploymentId"])
             apiStageArn = f"arn:{awsPartition}:apigateway:{awsRegion}::/restapis/{apiGwApiId}/stages/{apiStageName}"
@@ -680,9 +729,13 @@ def api_gateway_stage_xray_tracing_check(cache: dict, session, awsAccountId: str
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Networking",
                         "AssetService": "Amazon API Gateway",
-                        "AssetType": "Stage"
+                        "AssetComponent": "Stage"
                     },
                     "Resources": [
                         {
@@ -742,9 +795,13 @@ def api_gateway_stage_xray_tracing_check(cache: dict, session, awsAccountId: str
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Networking",
                         "AssetService": "Amazon API Gateway",
-                        "AssetType": "Stage"
+                        "AssetComponent": "Stage"
                     },
                     "Resources": [
                         {
@@ -791,6 +848,9 @@ def api_gateway_stage_waf_check_check(cache: dict, session, awsAccountId: str, a
         apiGwApiName = str(restapi["name"])
         response = apigateway.get_stages(restApiId=apiGwApiId)
         for apistages in response["item"]:
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(apistages,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             apiStageName = str(apistages["stageName"])
             apiStageDeploymentId = str(apistages["deploymentId"])
             apiStageArn = f"arn:{awsPartition}:apigateway:{awsRegion}::/restapis/{apiGwApiId}/stages/{apiStageName}"
@@ -830,9 +890,13 @@ def api_gateway_stage_waf_check_check(cache: dict, session, awsAccountId: str, a
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Networking",
                         "AssetService": "Amazon API Gateway",
-                        "AssetType": "Stage"
+                        "AssetComponent": "Stage"
                     },
                     "Resources": [
                         {
@@ -902,9 +966,13 @@ def api_gateway_stage_waf_check_check(cache: dict, session, awsAccountId: str, a
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Networking",
                         "AssetService": "Amazon API Gateway",
-                        "AssetType": "Stage"
+                        "AssetComponent": "Stage"
                     },
                     "Resources": [
                         {
@@ -947,6 +1015,9 @@ def api_gateway_rest_api_policy_check(cache: dict, session, awsAccountId: str, a
     """[APIGateway.7] API Gateway Rest APIs should use an API Gateway resource policy"""
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for restapi in get_rest_apis(cache, session)["items"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(restapi,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         apiGwApiId = str(restapi["id"])
         apiGwApiName = str(restapi["name"])
         apiRestArn = f"arn:{awsPartition}:apigateway:{awsRegion}::/restapis/{apiGwApiId}"
@@ -984,9 +1055,13 @@ def api_gateway_rest_api_policy_check(cache: dict, session, awsAccountId: str, a
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon API Gateway",
-                    "AssetType": "REST API"
+                    "AssetComponent": "REST API"
                 },
                 "Resources": [
                     {
@@ -1052,9 +1127,13 @@ def api_gateway_rest_api_policy_check(cache: dict, session, awsAccountId: str, a
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon API Gateway",
-                    "AssetType": "REST API"
+                    "AssetComponent": "REST API"
                 },
                 "Resources": [
                     {
@@ -1097,6 +1176,9 @@ def api_gateway_rest_api_authorizer_check(cache: dict, session, awsAccountId: st
     """[APIGateway.8] API Gateway Rest APIs should consider authentication with an API Gateway Lambda authorizer"""
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for restapi in get_rest_apis(cache, session)["items"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(restapi,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         apiGwApiId = str(restapi["id"])
         apiGwApiName = str(restapi["name"])
         apiRestArn = f"arn:{awsPartition}:apigateway:{awsRegion}::/restapis/{apiGwApiId}"
@@ -1131,9 +1213,13 @@ def api_gateway_rest_api_authorizer_check(cache: dict, session, awsAccountId: st
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon API Gateway",
-                    "AssetType": "REST API"
+                    "AssetComponent": "REST API"
                 },
                 "Resources": [
                     {
@@ -1199,9 +1285,13 @@ def api_gateway_rest_api_authorizer_check(cache: dict, session, awsAccountId: st
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon API Gateway",
-                    "AssetType": "REST API"
+                    "AssetComponent": "REST API"
                 },
                 "Resources": [
                     {

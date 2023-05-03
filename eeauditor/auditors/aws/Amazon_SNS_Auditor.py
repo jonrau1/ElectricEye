@@ -21,6 +21,7 @@
 import datetime
 import json
 from check_register import CheckRegister
+import base64
 
 registry = CheckRegister()
 
@@ -36,11 +37,11 @@ def list_topics(cache, session):
 def sns_topic_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SNS.1] SNS topics should be encrypted"""
     sns = session.client("sns")
-    # loop through SNS topics
-    response = list_topics(cache, session)
-    mySnsTopics = response["Topics"]
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for topic in mySnsTopics:
+    for topic in list_topics(cache, session)["Topics"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(topic,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         topicarn = str(topic["TopicArn"])
         topicName = topicarn.replace(
             f"arn:{awsPartition}:sns:{awsRegion}:{awsAccountId}:", ""
@@ -75,9 +76,13 @@ def sns_topic_encryption_check(cache: dict, session, awsAccountId: str, awsRegio
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Application Integration",
                     "AssetService": "Amazon Simple Notification Service",
-                    "AssetType": "Topic"
+                    "AssetComponent": "Topic"
                 },
                 "Resources": [
                     {
@@ -137,9 +142,13 @@ def sns_topic_encryption_check(cache: dict, session, awsAccountId: str, awsRegio
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Application Integration",
                     "AssetService": "Amazon Simple Notification Service",
-                    "AssetType": "Topic"
+                    "AssetComponent": "Topic"
                 },
                 "Resources": [
                     {
@@ -168,149 +177,152 @@ def sns_topic_encryption_check(cache: dict, session, awsAccountId: str, awsRegio
 
 @registry.register_check("sns")
 def sns_http_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[SNS.2] SNS topics should not use HTTP subscriptions"""
+    """[SNS.2] SNS topics should not use HTTP subscriptions for sensitive or confidential Topics"""
     sns = session.client("sns")
-    # loop through SNS topics
-    response = list_topics(cache, session)
-    mySnsTopics = response["Topics"]
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for topic in mySnsTopics:
+    for topic in list_topics(cache, session)["Topics"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(topic,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         topicarn = str(topic["TopicArn"])
         topicName = topicarn.replace(
             f"arn:{awsPartition}:sns:{awsRegion}:{awsAccountId}:", ""
         )
-        response = sns.list_subscriptions_by_topic(TopicArn=topicarn)
-        mySubs = response["Subscriptions"]
-        for subscriptions in mySubs:
-            subProtocol = str(subscriptions["Protocol"])
-            if subProtocol == "http":
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": topicarn + "/sns-http-subscription-check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": topicarn,
-                    "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices",
-                        "Effects/Data Exposure",
+        httpSubCheck = [subscription["Protocol"] == "http" for subscription in sns.list_subscriptions_by_topic(TopicArn=topicarn)["Subscriptions"]]
+        if httpSubCheck == True:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": topicarn + "/sns-http-subscription-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": topicarn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure",
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "HIGH"},
+                "Confidence": 99,
+                "Title": "[SNS.2] SNS topics should not use HTTP subscriptions for sensitive or confidential Topics",
+                "Description": f"SNS topic {topicName} is using an HTTP subscription. For sensitive, confidential, and otherwise mission or business critical applications where SNS is used, all connectivity should be encrypted in transit using HTTPS Subscribers. Refer to the remediation instructions to remediate this behavior if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on SNS encryption in transit refer to the Enforce Encryption of Data in Transit section of the Amazon Simple Notification Service Developer Guide.",
+                        "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Application Integration",
+                    "AssetService": "Amazon Simple Notification Service",
+                    "AssetComponent": "Topic"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsSnsTopic",
+                        "Id": topicarn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {"AwsSnsTopic": {"TopicName": topicName}},
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1",
                     ],
-                    "FirstObservedAt": iso8601Time,
-                    "CreatedAt": iso8601Time,
-                    "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "HIGH"},
-                    "Confidence": 99,
-                    "Title": "[SNS.2] SNS topics should not use HTTP subscriptions",
-                    "Description": "SNS topic "
-                    + topicName
-                    + " has a HTTP subscriber. Refer to the remediation instructions to remediate this behavior",
-                    "Remediation": {
-                        "Recommendation": {
-                            "Text": "For more information on SNS encryption in transit refer to the Enforce Encryption of Data in Transit section of the Amazon Simple Notification Service Developer Guide.",
-                            "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit",
-                        }
-                    },
-                    "ProductFields": {
-                        "ProductName": "ElectricEye",
-                        "Provider": "AWS",
-                        "AssetClass": "Application Integration",
-                        "AssetService": "Amazon Simple Notification Service",
-                        "AssetType": "Topic"
-                    },
-                    "Resources": [
-                        {
-                            "Type": "AwsSnsTopic",
-                            "Id": topicarn,
-                            "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {"AwsSnsTopic": {"TopicName": topicName}},
-                        }
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE",
+            }
+            yield finding
+        else:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": topicarn + "/sns-http-subscription-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": topicarn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure",
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Confidence": 99,
+                "Title": "[SNS.2] SNS topics should not use HTTP subscriptions for sensitive or confidential Topics",
+                "Description": "SNS topic "
+                + topicName
+                + " does not have a HTTP subscriber.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on SNS encryption in transit refer to the Enforce Encryption of Data in Transit section of the Amazon Simple Notification Service Developer Guide.",
+                        "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit",
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Application Integration",
+                    "AssetService": "Amazon Simple Notification Service",
+                    "AssetComponent": "Topic"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsSnsTopic",
+                        "Id": topicarn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {"AwsSnsTopic": {"TopicName": topicName}},
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.AM-2",
+                        "NIST SP 800-53 Rev. 4 CM-8",
+                        "NIST SP 800-53 Rev. 4 PM-5",
+                        "AICPA TSC CC3.2",
+                        "AICPA TSC CC6.1",
+                        "ISO 27001:2013 A.8.1.1",
+                        "ISO 27001:2013 A.8.1.2",
+                        "ISO 27001:2013 A.12.5.1",
                     ],
-                    "Compliance": {
-                        "Status": "FAILED",
-                        "RelatedRequirements": [
-                            "NIST CSF V1.1 ID.AM-2",
-                            "NIST SP 800-53 Rev. 4 CM-8",
-                            "NIST SP 800-53 Rev. 4 PM-5",
-                            "AICPA TSC CC3.2",
-                            "AICPA TSC CC6.1",
-                            "ISO 27001:2013 A.8.1.1",
-                            "ISO 27001:2013 A.8.1.2",
-                            "ISO 27001:2013 A.12.5.1",
-                        ],
-                    },
-                    "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE",
-                }
-                yield finding
-            else:
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": topicarn + "/sns-http-subscription-check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": topicarn,
-                    "AwsAccountId": awsAccountId,
-                    "Types": [
-                        "Software and Configuration Checks/AWS Security Best Practices",
-                        "Effects/Data Exposure",
-                    ],
-                    "FirstObservedAt": iso8601Time,
-                    "CreatedAt": iso8601Time,
-                    "UpdatedAt": iso8601Time,
-                    "Severity": {"Label": "INFORMATIONAL"},
-                    "Confidence": 99,
-                    "Title": "[SNS.2] SNS topics should not use HTTP subscriptions",
-                    "Description": "SNS topic "
-                    + topicName
-                    + " does not have a HTTP subscriber.",
-                    "Remediation": {
-                        "Recommendation": {
-                            "Text": "For more information on SNS encryption in transit refer to the Enforce Encryption of Data in Transit section of the Amazon Simple Notification Service Developer Guide.",
-                            "Url": "https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit",
-                        }
-                    },
-                    "ProductFields": {
-                        "ProductName": "ElectricEye",
-                        "Provider": "AWS",
-                        "AssetClass": "Application Integration",
-                        "AssetService": "Amazon Simple Notification Service",
-                        "AssetType": "Topic"
-                    },
-                    "Resources": [
-                        {
-                            "Type": "AwsSnsTopic",
-                            "Id": topicarn,
-                            "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {"AwsSnsTopic": {"TopicName": topicName}},
-                        }
-                    ],
-                    "Compliance": {
-                        "Status": "PASSED",
-                        "RelatedRequirements": [
-                            "NIST CSF V1.1 ID.AM-2",
-                            "NIST SP 800-53 Rev. 4 CM-8",
-                            "NIST SP 800-53 Rev. 4 PM-5",
-                            "AICPA TSC CC3.2",
-                            "AICPA TSC CC6.1",
-                            "ISO 27001:2013 A.8.1.1",
-                            "ISO 27001:2013 A.8.1.2",
-                            "ISO 27001:2013 A.12.5.1",
-                        ],
-                    },
-                    "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED",
-                }
-                yield finding
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED",
+            }
+            yield finding
 
 @registry.register_check("sns")
 def sns_public_access_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[SNS.3] SNS topics should not have public access"""
+    """[SNS.3] SNS topics should not allow public or unauthenticated access"""
     sns = session.client("sns")
-    # loop through SNS topics
-    response = list_topics(cache, session)
-    mySnsTopics = response["Topics"]
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for topic in mySnsTopics:
+    for topic in list_topics(cache, session)["Topics"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(topic,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         topicarn = str(topic["TopicArn"])
         topicName = topicarn.replace(
             f"arn:{awsPartition}:sns:{awsRegion}:{awsAccountId}:", ""
@@ -346,7 +358,7 @@ def sns_public_access_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 75,  # The Condition may not effectively limit access
-                "Title": "[SNS.3] SNS topics should not have public access",
+                "Title": "[SNS.3] SNS topics should not allow public or unauthenticated access",
                 "Description": "SNS topic "
                 + topicName
                 + " does not have public access or limited by a Condition. Refer to the remediation instructions to review sns access policy",
@@ -359,9 +371,13 @@ def sns_public_access_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Application Integration",
                     "AssetService": "Amazon Simple Notification Service",
-                    "AssetType": "Topic"
+                    "AssetComponent": "Topic"
                 },
                 "Resources": [
                     {
@@ -409,7 +425,7 @@ def sns_public_access_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
-                "Title": "[SNS.3] SNS topics should not have public access",
+                "Title": "[SNS.3] SNS topics should not allow public or unauthenticated access",
                 "Description": "SNS topic "
                 + topicName
                 + " has public access. Refer to the remediation instructions to remediate this behavior",
@@ -422,9 +438,13 @@ def sns_public_access_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Application Integration",
                     "AssetService": "Amazon Simple Notification Service",
-                    "AssetType": "Topic"
+                    "AssetComponent": "Topic"
                 },
                 "Resources": [
                     {
@@ -461,11 +481,11 @@ def sns_public_access_check(cache: dict, session, awsAccountId: str, awsRegion: 
 def sns_cross_account_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SNS.4] SNS topics should not allow cross-account access"""
     sns = session.client("sns")
-    # loop through SNS topics
-    response = list_topics(cache, session)
-    mySnsTopics = response["Topics"]
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    for topic in mySnsTopics:
+    for topic in list_topics(cache, session)["Topics"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(topic,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         topicarn = str(topic["TopicArn"])
         topicName = topicarn.replace(
             f"arn:{awsPartition}:sns:{awsRegion}:{awsAccountId}:", ""
@@ -521,9 +541,13 @@ def sns_cross_account_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Application Integration",
                     "AssetService": "Amazon Simple Notification Service",
-                    "AssetType": "Topic"
+                    "AssetComponent": "Topic"
                 },
                 "Resources": [
                     {
@@ -582,9 +606,13 @@ def sns_cross_account_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Application Integration",
                     "AssetService": "Amazon Simple Notification Service",
-                    "AssetType": "Topic"
+                    "AssetComponent": "Topic"
                 },
                 "Resources": [
                     {

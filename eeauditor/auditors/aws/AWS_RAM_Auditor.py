@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -28,10 +30,8 @@ def get_resource_shares(cache, session):
     response = cache.get("get_resource_shares")
     if response:
         return response
-    paginator = ram.get_paginator("get_resource_shares")
-    if paginator:
-        for page in paginator.paginate:
-           results = page["resourceShares"] 
+    for page in ram.get_paginator("get_resource_shares").paginate():
+        results = page["resourceShares"] 
 
     cache["get_resource_shares"] = results
     return cache["get_resource_shares"]
@@ -41,6 +41,9 @@ def ram_resource_shares_status_check(cache: dict, session, awsAccountId: str, aw
     """[RAM.1] Resource share should not have a failed status"""
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for resourceShare in get_resource_shares(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(resourceShare,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         status = resourceShare["status"]
         shareName = resourceShare["name"]
         resourceShareArn = f"arn:{awsPartition}:ram:{awsRegion}:{awsAccountId}:resource-share/{shareName}"
@@ -72,9 +75,13 @@ def ram_resource_shares_status_check(cache: dict, session, awsAccountId: str, aw
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Security Services",
                     "AssetService": "AWS Resource Access Manager",
-                    "AssetType": "Resource Share"
+                    "AssetComponent": "Resource Share"
                 },
                 "Resources": [
                     {
@@ -129,9 +136,13 @@ def ram_resource_shares_status_check(cache: dict, session, awsAccountId: str, aw
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Security Services",
                     "AssetService": "AWS Resource Access Manager",
-                    "AssetType": "Resource Share"
+                    "AssetComponent": "Resource Share"
                 },
                 "Resources": [
                     {
@@ -164,6 +175,9 @@ def ram_allow_external_principals_check(cache: dict, session, awsAccountId: str,
     """[RAM.2] Resource share should not allow external principals"""
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for resourceShare in get_resource_shares(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(resourceShare,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         shareName = resourceShare["name"]
         resourceShareArn = f"arn:{awsPartition}:ram:{awsRegion}:{awsAccountId}:resource-share/{shareName}"
         allowExternalPrincipals = resourceShare["allowExternalPrincipals"]
@@ -195,9 +209,13 @@ def ram_allow_external_principals_check(cache: dict, session, awsAccountId: str,
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Security Services",
                     "AssetService": "AWS Resource Access Manager",
-                    "AssetType": "Resource Share"
+                    "AssetComponent": "Resource Share"
                 },
                 "Resources": [
                     {
@@ -256,9 +274,13 @@ def ram_allow_external_principals_check(cache: dict, session, awsAccountId: str,
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Security Services",
                     "AssetService": "AWS Resource Access Manager",
-                    "AssetType": "Resource Share"
+                    "AssetComponent": "Resource Share"
                 },
                 "Resources": [
                     {

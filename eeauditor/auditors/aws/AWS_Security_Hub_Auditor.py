@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -57,10 +59,13 @@ def get_findings(cache, session, awsAccountId):
 def high_critical_findings(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SecurityHub.1] Security Hub should not have active high or critical severity findings from AWS services"""
     getFindings = get_findings(cache, session, awsAccountId)
+    # B64 encode all of the details for the Asset
+    assetJson = json.dumps(getFindings,default=str).encode("utf-8")
+    assetB64 = base64.b64encode(assetJson)
     generatorId = str(getFindings["ResponseMetadata"]["RequestId"])
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    if str(getFindings["Findings"]) == "[]":
+    if not getFindings["Findings"]:
         finding = {
             "SchemaVersion": "2018-10-08",
             "Id": "high-critical-findings-located/" + awsAccountId,
@@ -85,14 +90,18 @@ def high_critical_findings(cache: dict, session, awsAccountId: str, awsRegion: s
             "ProductFields": {
                 "ProductName": "ElectricEye",
                 "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
                 "AssetClass": "Security Services",
                 "AssetService": "AWS Security Hub",
-                "AssetType": "Findings"
+                "AssetComponent": "Findings"
             },
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/AWS_Security_Hub_High_Critical_Findings",
                     "Partition": "aws",
                     "Region": awsRegion,
                 }
@@ -108,11 +117,11 @@ def high_critical_findings(cache: dict, session, awsAccountId: str, awsRegion: s
                     "AICPA TSC 7.2",
                     "ISO 27001:2013 A.12.4.1",
                     "ISO 27001:2013 A.16.1.1",
-                    "ISO 27001:2013 A.16.1.4",
-                ],
+                    "ISO 27001:2013 A.16.1.4"
+                ]
             },
             "Workflow": {"Status": "RESOLVED"},
-            "RecordState": "ARCHIVED",
+            "RecordState": "ARCHIVED"
         }
         yield finding
     else:
@@ -140,14 +149,18 @@ def high_critical_findings(cache: dict, session, awsAccountId: str, awsRegion: s
             "ProductFields": {
                 "ProductName": "ElectricEye",
                 "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
                 "AssetClass": "Security Services",
                 "AssetService": "AWS Security Hub",
-                "AssetType": "Findings"
+                "AssetComponent": "Findings"
             },
             "Resources": [
                 {
                     "Type": "AwsAccount",
-                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/AWS_Security_Hub_High_Critical_Findings",
                     "Partition": "aws",
                     "Region": awsRegion,
                 }
@@ -163,10 +176,10 @@ def high_critical_findings(cache: dict, session, awsAccountId: str, awsRegion: s
                     "AICPA TSC 7.2",
                     "ISO 27001:2013 A.12.4.1",
                     "ISO 27001:2013 A.16.1.1",
-                    "ISO 27001:2013 A.16.1.4",
-                ],
+                    "ISO 27001:2013 A.16.1.4"
+                ]
             },
             "Workflow": {"Status": "NEW"},
-            "RecordState": "ACTIVE",
+            "RecordState": "ACTIVE"
         }
         yield finding

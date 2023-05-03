@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -64,6 +66,9 @@ def docdb_public_instance_check(cache: dict, session, awsAccountId: str, awsRegi
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for docdb in describe_db_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(docdb,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         docdbId = str(docdb["DBInstanceIdentifier"])
         docdbArn = str(docdb["DBInstanceArn"])
         publicAccessCheck = str(docdb["PubliclyAccessible"])
@@ -95,9 +100,13 @@ def docdb_public_instance_check(cache: dict, session, awsAccountId: str, awsRegi
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon DocumentDB",
-                    "AssetType": "Database Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -169,9 +178,13 @@ def docdb_public_instance_check(cache: dict, session, awsAccountId: str, awsRegi
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon DocumentDB",
-                    "AssetType": "Database Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -222,6 +235,9 @@ def docdb_instance_encryption_check(cache: dict, session, awsAccountId: str, aws
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for docdb in describe_db_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(docdb,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         docdbId = str(docdb["DBInstanceIdentifier"])
         docdbArn = str(docdb["DBInstanceArn"])
         encryptionCheck = str(docdb["StorageEncrypted"])
@@ -253,9 +269,13 @@ def docdb_instance_encryption_check(cache: dict, session, awsAccountId: str, aws
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon DocumentDB",
-                    "AssetType": "Database Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -321,9 +341,13 @@ def docdb_instance_encryption_check(cache: dict, session, awsAccountId: str, aws
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon DocumentDB",
-                    "AssetType": "Database Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -368,6 +392,9 @@ def docdb_instance_audit_logging_check(cache: dict, session, awsAccountId: str, 
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for docdb in describe_db_instances(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(docdb,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         docdbId = str(docdb["DBInstanceIdentifier"])
         docdbArn = str(docdb["DBInstanceArn"])
         # this is a passing check
@@ -397,9 +424,13 @@ def docdb_instance_audit_logging_check(cache: dict, session, awsAccountId: str, 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon DocumentDB",
-                    "AssetType": "Database Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -466,9 +497,13 @@ def docdb_instance_audit_logging_check(cache: dict, session, awsAccountId: str, 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon DocumentDB",
-                    "AssetType": "Database Instance"
+                    "AssetComponent": "Database Instance"
                 },
                 "Resources": [
                     {
@@ -517,6 +552,9 @@ def docdb_cluster_multiaz_check(cache: dict, session, awsAccountId: str, awsRegi
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for docdbcluster in describe_db_clusters(cache, session)["DBClusters"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(docdbcluster,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         docdbclusterId = str(docdbcluster["DBClusterIdentifier"])
         docdbClusterArn = str(docdbcluster["DBClusterArn"])
         multiAzCheck = str(docdbcluster["MultiAZ"])
@@ -547,9 +585,13 @@ def docdb_cluster_multiaz_check(cache: dict, session, awsAccountId: str, awsRegi
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon DocumentDB",
-                    "AssetType": "Database Cluster"
+                    "AssetComponent": "Database Cluster"
                 },
                 "Resources": [
                     {
@@ -621,9 +663,13 @@ def docdb_cluster_multiaz_check(cache: dict, session, awsAccountId: str, awsRegi
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon DocumentDB",
-                    "AssetType": "Database Cluster"
+                    "AssetComponent": "Database Cluster"
                 },
                 "Resources": [
                     {
@@ -675,6 +721,9 @@ def docdb_cluster_deletion_protection_check(cache: dict, session, awsAccountId: 
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for docdbcluster in describe_db_clusters(cache, session)["DBClusters"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(docdbcluster,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         docdbclusterId = str(docdbcluster["DBClusterIdentifier"])
         docdbClusterArn = str(docdbcluster["DBClusterArn"])
         multiAzCheck = str(docdbcluster["MultiAZ"])
@@ -703,9 +752,13 @@ def docdb_cluster_deletion_protection_check(cache: dict, session, awsAccountId: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon DocumentDB",
-                    "AssetType": "Database Cluster"
+                    "AssetComponent": "Database Cluster"
                 },
                 "Resources": [
                     {
@@ -775,9 +828,13 @@ def docdb_cluster_deletion_protection_check(cache: dict, session, awsAccountId: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Database",
                     "AssetService": "Amazon DocumentDB",
-                    "AssetType": "Database Cluster"
+                    "AssetComponent": "Database Cluster"
                 },
                 "Resources": [
                     {
@@ -830,6 +887,9 @@ def documentdb_parameter_group_audit_log_check(cache: dict, session, awsAccountI
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for parametergroup in describe_db_cluster_parameter_groups(cache, session)["DBClusterParameterGroups"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(parametergroup,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         if str(parametergroup["DBParameterGroupFamily"]) == ("docdb3.6" or "docdb4.0"):
             parameterGroupName = str(parametergroup["DBClusterParameterGroupName"])
             parameterGroupArn = str(parametergroup["DBClusterParameterGroupArn"])
@@ -864,9 +924,13 @@ def documentdb_parameter_group_audit_log_check(cache: dict, session, awsAccountI
                             "ProductFields": {
                                 "ProductName": "ElectricEye",
                                 "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
                                 "AssetClass": "Database",
                                 "AssetService": "Amazon DocumentDB",
-                                "AssetType": "Database Cluster Parameter Group"
+                                "AssetComponent": "Parameter Group"
                             },
                             "Resources": [
                                 {
@@ -924,9 +988,13 @@ def documentdb_parameter_group_audit_log_check(cache: dict, session, awsAccountI
                             "ProductFields": {
                                 "ProductName": "ElectricEye",
                                 "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
                                 "AssetClass": "Database",
                                 "AssetService": "Amazon DocumentDB",
-                                "AssetType": "Database Cluster Parameter Group"
+                                "AssetComponent": "Parameter Group"
                             },
                             "Resources": [
                                 {
@@ -972,6 +1040,9 @@ def documentdb_parameter_group_tls_enforcement_check(cache: dict, session, awsAc
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for parametergroup in describe_db_cluster_parameter_groups(cache, session)["DBClusterParameterGroups"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(parametergroup,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         if str(parametergroup["DBParameterGroupFamily"]) == ("docdb3.6" or "docdb4.0"):
             parameterGroupName = str(parametergroup["DBClusterParameterGroupName"])
             parameterGroupArn = str(parametergroup["DBClusterParameterGroupArn"])
@@ -1007,9 +1078,13 @@ def documentdb_parameter_group_tls_enforcement_check(cache: dict, session, awsAc
                             "ProductFields": {
                                 "ProductName": "ElectricEye",
                                 "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
                                 "AssetClass": "Database",
                                 "AssetService": "Amazon DocumentDB",
-                                "AssetType": "Database Cluster Parameter Group"
+                                "AssetComponent": "Parameter Group"
                             },
                             "Resources": [
                                 {
@@ -1069,9 +1144,13 @@ def documentdb_parameter_group_tls_enforcement_check(cache: dict, session, awsAc
                             "ProductFields": {
                                 "ProductName": "ElectricEye",
                                 "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
                                 "AssetClass": "Database",
                                 "AssetService": "Amazon DocumentDB",
-                                "AssetType": "Database Cluster Parameter Group"
+                                "AssetComponent": "Parameter Group"
                             },
                             "Resources": [
                                 {
@@ -1118,6 +1197,9 @@ def documentdb_cluster_snapshot_encryption_check(cache: dict, session, awsAccoun
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for docdbcluster in describe_db_clusters(cache, session)["DBClusters"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(docdbcluster,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clusterId = str(docdbcluster["DBClusterIdentifier"])
         response = documentdb.describe_db_cluster_snapshots(DBClusterIdentifier=clusterId)
         for snapshots in response["DBClusterSnapshots"]:
@@ -1152,9 +1234,13 @@ def documentdb_cluster_snapshot_encryption_check(cache: dict, session, awsAccoun
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Storage",
                         "AssetService": "Amazon DocumentDB",
-                        "AssetType": "Database Cluster Snapshot"
+                        "AssetComponent": "Database Cluster Snapshot"
                     },
                     "Resources": [
                         {
@@ -1208,9 +1294,13 @@ def documentdb_cluster_snapshot_encryption_check(cache: dict, session, awsAccoun
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Storage",
                         "AssetService": "Amazon DocumentDB",
-                        "AssetType": "Database Cluster Snapshot"
+                        "AssetComponent": "Database Cluster Snapshot"
                     },
                     "Resources": [
                         {
@@ -1244,6 +1334,9 @@ def documentdb_cluster_snapshot_public_share_check(cache: dict, session, awsAcco
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for docdbcluster in describe_db_clusters(cache, session)["DBClusters"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(docdbcluster,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         clusterId = str(docdbcluster["DBClusterIdentifier"])
         response = documentdb.describe_db_cluster_snapshots(DBClusterIdentifier=clusterId)
         for snapshots in response["DBClusterSnapshots"]:
@@ -1281,9 +1374,13 @@ def documentdb_cluster_snapshot_public_share_check(cache: dict, session, awsAcco
                             "ProductFields": {
                                 "ProductName": "ElectricEye",
                                 "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
                                 "AssetClass": "Storage",
                                 "AssetService": "Amazon DocumentDB",
-                                "AssetType": "Database Cluster Snapshot"
+                                "AssetComponent": "Database Cluster Snapshot"
                             },
                             "Resources": [
                                 {
@@ -1343,9 +1440,13 @@ def documentdb_cluster_snapshot_public_share_check(cache: dict, session, awsAcco
                             "ProductFields": {
                                 "ProductName": "ElectricEye",
                                 "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
                                 "AssetClass": "Storage",
                                 "AssetService": "Amazon DocumentDB",
-                                "AssetType": "Database Cluster Snapshot"
+                                "AssetComponent": "Database Cluster Snapshot"
                             },
                             "Resources": [
                                 {

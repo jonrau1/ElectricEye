@@ -18,9 +18,10 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import json
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -41,6 +42,9 @@ def emr_cluster_security_configuration_check(cache: dict, session, awsAccountId:
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
             response = emr.describe_cluster(ClusterId=clusterId)
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(response,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             clusterId = str(response["Cluster"]["Id"])
             clusterName = str(response["Cluster"]["Name"])
             clusterArn = str(response["Cluster"]["ClusterArn"])
@@ -71,9 +75,13 @@ def emr_cluster_security_configuration_check(cache: dict, session, awsAccountId:
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon Elastic MapReduce",
-                    "AssetType": "Cluster"
+                    "AssetComponent": "Cluster"
                 },
                 "Resources": [
                     {
@@ -148,9 +156,13 @@ def emr_cluster_security_configuration_check(cache: dict, session, awsAccountId:
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                         "AssetClass": "Analytics",
                         "AssetService": "Amazon Elastic MapReduce",
-                        "AssetType": "Cluster"
+                        "AssetComponent": "Cluster"
                     },
                     "Resources": [
                         {
@@ -205,6 +217,9 @@ def emr_security_config_encryption_in_transit_check(cache: dict, session, awsAcc
         clusterId = str(cluster["Id"])
         try:
             response = emr.describe_cluster(ClusterId=clusterId)
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(response,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             clusterId = str(response["Cluster"]["Id"])
             clusterName = str(response["Cluster"]["Name"])
             clusterArn = str(response["Cluster"]["ClusterArn"])
@@ -250,9 +265,13 @@ def emr_security_config_encryption_in_transit_check(cache: dict, session, awsAcc
                             "ProductFields": {
                                 "ProductName": "ElectricEye",
                                 "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
                                 "AssetClass": "Analytics",
                                 "AssetService": "Amazon Elastic MapReduce",
-                                "AssetType": "Cluster"
+                                "AssetComponent": "Cluster"
                             },
                             "Resources": [
                                 {
@@ -317,9 +336,13 @@ def emr_security_config_encryption_in_transit_check(cache: dict, session, awsAcc
                             "ProductFields": {
                                 "ProductName": "ElectricEye",
                                 "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
                                 "AssetClass": "Analytics",
                                 "AssetService": "Amazon Elastic MapReduce",
-                                "AssetType": "Cluster"
+                                "AssetComponent": "Cluster"
                             },
                             "Resources": [
                                 {
@@ -374,6 +397,9 @@ def emr_security_config_encryption_at_rest_check(cache: dict, session, awsAccoun
         clusterId = str(cluster["Id"])
         try:
             response = emr.describe_cluster(ClusterId=clusterId)
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(response,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             clusterId = str(response["Cluster"]["Id"])
             clusterName = str(response["Cluster"]["Name"])
             clusterArn = str(response["Cluster"]["ClusterArn"])
@@ -417,9 +443,13 @@ def emr_security_config_encryption_at_rest_check(cache: dict, session, awsAccoun
                             "ProductFields": {
                                 "ProductName": "ElectricEye",
                                 "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
                                 "AssetClass": "Analytics",
                                 "AssetService": "Amazon Elastic MapReduce",
-                                "AssetType": "Cluster"
+                                "AssetComponent": "Cluster"
                             },
                             "Resources": [
                                 {
@@ -479,9 +509,13 @@ def emr_security_config_encryption_at_rest_check(cache: dict, session, awsAccoun
                             "ProductFields": {
                                 "ProductName": "ElectricEye",
                                 "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
                                 "AssetClass": "Analytics",
                                 "AssetService": "Amazon Elastic MapReduce",
-                                "AssetType": "Cluster"
+                                "AssetComponent": "Cluster"
                             },
                             "Resources": [
                                 {
@@ -531,6 +565,9 @@ def emr_security_config_config_ebs_encryption_check(cache: dict, session, awsAcc
         clusterId = str(cluster["Id"])
         try:
             response = emr.describe_cluster(ClusterId=clusterId)
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(response,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             clusterId = str(response["Cluster"]["Id"])
             clusterName = str(response["Cluster"]["Name"])
             clusterArn = str(response["Cluster"]["ClusterArn"])
@@ -576,9 +613,13 @@ def emr_security_config_config_ebs_encryption_check(cache: dict, session, awsAcc
                             "ProductFields": {
                                 "ProductName": "ElectricEye",
                                 "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
                                 "AssetClass": "Analytics",
                                 "AssetService": "Amazon Elastic MapReduce",
-                                "AssetType": "Cluster"
+                                "AssetComponent": "Cluster"
                             },
                             "Resources": [
                                 {
@@ -638,9 +679,13 @@ def emr_security_config_config_ebs_encryption_check(cache: dict, session, awsAcc
                             "ProductFields": {
                                 "ProductName": "ElectricEye",
                                 "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
                                 "AssetClass": "Analytics",
                                 "AssetService": "Amazon Elastic MapReduce",
-                                "AssetType": "Cluster"
+                                "AssetComponent": "Cluster"
                             },
                             "Resources": [
                                 {
@@ -702,9 +747,13 @@ def emr_security_config_config_ebs_encryption_check(cache: dict, session, awsAcc
                             "ProductFields": {
                                 "ProductName": "ElectricEye",
                                 "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
                                 "AssetClass": "Analytics",
                                 "AssetService": "Amazon Elastic MapReduce",
-                                "AssetType": "Cluster"
+                                "AssetComponent": "Cluster"
                             },
                             "Resources": [
                                 {
@@ -754,6 +803,9 @@ def emr_security_config_kerberos_check(cache: dict, session, awsAccountId: str, 
         clusterId = str(cluster["Id"])
         try:
             response = emr.describe_cluster(ClusterId=clusterId)
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(response,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             clusterId = str(response["Cluster"]["Id"])
             clusterName = str(response["Cluster"]["Name"])
             clusterArn = str(response["Cluster"]["ClusterArn"])
@@ -792,9 +844,13 @@ def emr_security_config_kerberos_check(cache: dict, session, awsAccountId: str, 
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Analytics",
                             "AssetService": "Amazon Elastic MapReduce",
-                            "AssetType": "Cluster"
+                            "AssetComponent": "Cluster"
                         },
                         "Resources": [
                             {
@@ -866,9 +922,13 @@ def emr_security_config_kerberos_check(cache: dict, session, awsAccountId: str, 
                             "ProductFields": {
                                 "ProductName": "ElectricEye",
                                 "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
                                 "AssetClass": "Analytics",
                                 "AssetService": "Amazon Elastic MapReduce",
-                                "AssetType": "Cluster"
+                                "AssetComponent": "Cluster"
                             },
                             "Resources": [
                                 {
@@ -929,6 +989,9 @@ def emr_cluster_termination_protection_check(cache: dict, session, awsAccountId:
         clusterId = str(cluster["Id"])
         try:
             response = emr.describe_cluster(ClusterId=clusterId)
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(response,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             clusterId = str(response["Cluster"]["Id"])
             clusterName = str(response["Cluster"]["Name"])
             clusterArn = str(response["Cluster"]["ClusterArn"])
@@ -962,9 +1025,13 @@ def emr_cluster_termination_protection_check(cache: dict, session, awsAccountId:
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Analytics",
                         "AssetService": "Amazon Elastic MapReduce",
-                        "AssetType": "Cluster"
+                        "AssetComponent": "Cluster"
                     },
                     "Resources": [
                         {
@@ -1024,9 +1091,13 @@ def emr_cluster_termination_protection_check(cache: dict, session, awsAccountId:
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Analytics",
                         "AssetService": "Amazon Elastic MapReduce",
-                        "AssetType": "Cluster"
+                        "AssetComponent": "Cluster"
                     },
                     "Resources": [
                         {
@@ -1071,6 +1142,9 @@ def emr_cluster_logging_check(cache: dict, session, awsAccountId: str, awsRegion
         clusterId = str(cluster["Id"])
         try:
             response = emr.describe_cluster(ClusterId=clusterId)
+            # B64 encode all of the details for the Asset
+            assetJson = json.dumps(response,default=str).encode("utf-8")
+            assetB64 = base64.b64encode(assetJson)
             clusterId = str(response["Cluster"]["Id"])
             clusterName = str(response["Cluster"]["Name"])
             clusterArn = str(response["Cluster"]["ClusterArn"])
@@ -1102,9 +1176,13 @@ def emr_cluster_logging_check(cache: dict, session, awsAccountId: str, awsRegion
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Analytics",
                     "AssetService": "Amazon Elastic MapReduce",
-                    "AssetType": "Cluster"
+                    "AssetComponent": "Cluster"
                 },
                 "Resources": [
                     {
@@ -1167,9 +1245,13 @@ def emr_cluster_logging_check(cache: dict, session, awsAccountId: str, awsRegion
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Analytics",
                         "AssetService": "Amazon Elastic MapReduce",
-                        "AssetType": "Cluster"
+                        "AssetComponent": "Cluster"
                     },
                     "Resources": [
                         {
@@ -1208,133 +1290,141 @@ def emr_cluster_logging_check(cache: dict, session, awsAccountId: str, awsRegion
 def emr_cluster_block_secgroup_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EMR.8] EMR account-level public security group access block should be enabled"""
     emr = session.client("emr")
-    try:
-        response = emr.get_block_public_access_configuration()
-        blockPubSgCheck = str(
-            response["BlockPublicAccessConfiguration"]["BlockPublicSecurityGroupRules"]
-        )
-        iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        if blockPubSgCheck == "False":
-            finding = {
-                "SchemaVersion": "2018-10-08",
-                "Id": awsAccountId + "/account-level-emr-block-public-sg-check",
-                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": awsAccountId + "/" + awsRegion + "/" + "emr-acct-sg-block",
-                "AwsAccountId": awsAccountId,
-                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                "FirstObservedAt": iso8601Time,
-                "CreatedAt": iso8601Time,
-                "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "MEDIUM"},
-                "Confidence": 99,
-                "Title": "[EMR.8] EMR account-level public security group access block should be enabled",
-                "Description": "EMR account-level public security group access block is not enabled for "
-                + awsAccountId
-                + " in AWS region "
-                + awsRegion
-                + ". Amazon EMR block public access prevents a cluster from launching when any security group associated with the cluster has a rule that allows inbound traffic from IPv4 0.0.0.0/0 or IPv6 ::/0 (public access) on a port, unless the port has been specified as an exception. Port 22 is an exception by default. This is the default behavior of Amazon EMR and Hadoop, but can be turned off on creation. If this configuration is not intentional refer to the remediation section.",
-                "Remediation": {
-                    "Recommendation": {
-                        "Text": "For information on EMR Block Public Access refer to the Using Amazon EMR Block Public Access section of the Amazon EMR Management Guide",
-                        "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-block-public-access.html",
-                    }
-                },
-                "ProductFields": {
-                    "ProductName": "ElectricEye",
-                    "Provider": "AWS",
-                    "AssetClass": "Management & Governance",
-                    "AssetService": "Amazon Elastic MapReduce",
-                    "AssetType": "Account Block Public Security Group Rules Setting"
-                },
-                "Resources": [
-                    {
-                        "Type": "AwsAccount",
-                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
-                    }
+    response = emr.get_block_public_access_configuration()
+    # B64 encode all of the details for the Asset
+    assetJson = json.dumps(response,default=str).encode("utf-8")
+    assetB64 = base64.b64encode(assetJson)
+    blockPubSgCheck = str(
+        response["BlockPublicAccessConfiguration"]["BlockPublicSecurityGroupRules"]
+    )
+    iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    if blockPubSgCheck == "False":
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": awsAccountId + "/account-level-emr-block-public-sg-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": awsAccountId + "/" + awsRegion + "/" + "emr-acct-sg-block",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "MEDIUM"},
+            "Confidence": 99,
+            "Title": "[EMR.8] EMR account-level public security group access block should be enabled",
+            "Description": "EMR account-level public security group access block is not enabled for "
+            + awsAccountId
+            + " in AWS region "
+            + awsRegion
+            + ". Amazon EMR block public access prevents a cluster from launching when any security group associated with the cluster has a rule that allows inbound traffic from IPv4 0.0.0.0/0 or IPv6 ::/0 (public access) on a port, unless the port has been specified as an exception. Port 22 is an exception by default. This is the default behavior of Amazon EMR and Hadoop, but can be turned off on creation. If this configuration is not intentional refer to the remediation section.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For information on EMR Block Public Access refer to the Using Amazon EMR Block Public Access section of the Amazon EMR Management Guide",
+                    "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-block-public-access.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Management & Governance",
+                "AssetService": "Amazon Elastic MapReduce",
+                "AssetComponent": "Account Configuration"
+            },
+            "Resources": [
+                {
+                    "Type": "AwsAccount",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/EMR_Block_Public_Access_Configuration",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                }
+            ],
+            "Compliance": {
+                "Status": "FAILED",
+                "RelatedRequirements": [
+                    "NIST CSF V1.1 PR.AC-3",
+                    "NIST SP 800-53 Rev. 4 AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-17",
+                    "NIST SP 800-53 Rev. 4 AC-19",
+                    "NIST SP 800-53 Rev. 4 AC-20",
+                    "NIST SP 800-53 Rev. 4 SC-15",
+                    "AICPA TSC CC6.6",
+                    "ISO 27001:2013 A.6.2.1",
+                    "ISO 27001:2013 A.6.2.2",
+                    "ISO 27001:2013 A.11.2.6",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.13.2.1",
                 ],
-                "Compliance": {
-                    "Status": "FAILED",
-                    "RelatedRequirements": [
-                        "NIST CSF V1.1 PR.AC-3",
-                        "NIST SP 800-53 Rev. 4 AC-1",
-                        "NIST SP 800-53 Rev. 4 AC-17",
-                        "NIST SP 800-53 Rev. 4 AC-19",
-                        "NIST SP 800-53 Rev. 4 AC-20",
-                        "NIST SP 800-53 Rev. 4 SC-15",
-                        "AICPA TSC CC6.6",
-                        "ISO 27001:2013 A.6.2.1",
-                        "ISO 27001:2013 A.6.2.2",
-                        "ISO 27001:2013 A.11.2.6",
-                        "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1",
-                    ],
-                },
-                "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
-            }
-            yield finding
-        else:
-            finding = {
-                "SchemaVersion": "2018-10-08",
-                "Id": awsAccountId + "/account-level-emr-block-public-sg-check",
-                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": awsAccountId + "/" + awsRegion + "/" + "emr-acct-sg-block",
-                "AwsAccountId": awsAccountId,
-                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                "FirstObservedAt": iso8601Time,
-                "CreatedAt": iso8601Time,
-                "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "INFORMATIONAL"},
-                "Confidence": 99,
-                "Title": "[EMR.8] EMR account-level public security group access block should be enabled",
-                "Description": "EMR account-level public security group access block is not enabled for "
-                + awsAccountId
-                + " in AWS region "
-                + awsRegion
-                + ". Amazon EMR block public access prevents a cluster from launching when any security group associated with the cluster has a rule that allows inbound traffic from IPv4 0.0.0.0/0 or IPv6 ::/0 (public access) on a port, unless the port has been specified as an exception. Port 22 is an exception by default. This is the default behavior of Amazon EMR and Hadoop, but can be turned off on creation. If this configuration is not intentional refer to the remediation section.",
-                "Remediation": {
-                    "Recommendation": {
-                        "Text": "For information on EMR Block Public Access refer to the Using Amazon EMR Block Public Access section of the Amazon EMR Management Guide",
-                        "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-block-public-access.html",
-                    }
-                },
-                "ProductFields": {
-                    "ProductName": "ElectricEye",
-                    "Provider": "AWS",
-                    "AssetClass": "Management & Governance",
-                    "AssetService": "Amazon Elastic MapReduce",
-                    "AssetType": "Account Block Public Security Group Rules Setting"
-                },
-                "Resources": [
-                    {
-                        "Type": "AwsAccount",
-                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
-                    }
+            },
+            "Workflow": {"Status": "NEW"},
+            "RecordState": "ACTIVE",
+        }
+        yield finding
+    else:
+        finding = {
+            "SchemaVersion": "2018-10-08",
+            "Id": awsAccountId + "/account-level-emr-block-public-sg-check",
+            "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+            "GeneratorId": awsAccountId + "/" + awsRegion + "/" + "emr-acct-sg-block",
+            "AwsAccountId": awsAccountId,
+            "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+            "FirstObservedAt": iso8601Time,
+            "CreatedAt": iso8601Time,
+            "UpdatedAt": iso8601Time,
+            "Severity": {"Label": "INFORMATIONAL"},
+            "Confidence": 99,
+            "Title": "[EMR.8] EMR account-level public security group access block should be enabled",
+            "Description": "EMR account-level public security group access block is not enabled for "
+            + awsAccountId
+            + " in AWS region "
+            + awsRegion
+            + ". Amazon EMR block public access prevents a cluster from launching when any security group associated with the cluster has a rule that allows inbound traffic from IPv4 0.0.0.0/0 or IPv6 ::/0 (public access) on a port, unless the port has been specified as an exception. Port 22 is an exception by default. This is the default behavior of Amazon EMR and Hadoop, but can be turned off on creation. If this configuration is not intentional refer to the remediation section.",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "For information on EMR Block Public Access refer to the Using Amazon EMR Block Public Access section of the Amazon EMR Management Guide",
+                    "Url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-block-public-access.html",
+                }
+            },
+            "ProductFields": {
+                "ProductName": "ElectricEye",
+                "Provider": "AWS",
+                "ProviderType": "CSP",
+                "ProviderAccountId": awsAccountId,
+                "AssetRegion": awsRegion,
+                "AssetDetails": assetB64,
+                "AssetClass": "Management & Governance",
+                "AssetService": "Amazon Elastic MapReduce",
+                "AssetComponent": "Account Configuration"
+            },
+            "Resources": [
+                {
+                    "Type": "AwsAccount",
+                    "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/{awsRegion}/EMR_Block_Public_Access_Configuration",
+                    "Partition": awsPartition,
+                    "Region": awsRegion,
+                }
+            ],
+            "Compliance": {
+                "Status": "PASSED",
+                "RelatedRequirements": [
+                    "NIST CSF V1.1 PR.AC-3",
+                    "NIST SP 800-53 Rev. 4 AC-1",
+                    "NIST SP 800-53 Rev. 4 AC-17",
+                    "NIST SP 800-53 Rev. 4 AC-19",
+                    "NIST SP 800-53 Rev. 4 AC-20",
+                    "NIST SP 800-53 Rev. 4 SC-15",
+                    "AICPA TSC CC6.6",
+                    "ISO 27001:2013 A.6.2.1",
+                    "ISO 27001:2013 A.6.2.2",
+                    "ISO 27001:2013 A.11.2.6",
+                    "ISO 27001:2013 A.13.1.1",
+                    "ISO 27001:2013 A.13.2.1",
                 ],
-                "Compliance": {
-                    "Status": "PASSED",
-                    "RelatedRequirements": [
-                        "NIST CSF V1.1 PR.AC-3",
-                        "NIST SP 800-53 Rev. 4 AC-1",
-                        "NIST SP 800-53 Rev. 4 AC-17",
-                        "NIST SP 800-53 Rev. 4 AC-19",
-                        "NIST SP 800-53 Rev. 4 AC-20",
-                        "NIST SP 800-53 Rev. 4 SC-15",
-                        "AICPA TSC CC6.6",
-                        "ISO 27001:2013 A.6.2.1",
-                        "ISO 27001:2013 A.6.2.2",
-                        "ISO 27001:2013 A.11.2.6",
-                        "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1",
-                    ],
-                },
-                "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED",
-            }
-            yield finding
-    except Exception as e:
-        print(e)
+            },
+            "Workflow": {"Status": "RESOLVED"},
+            "RecordState": "ARCHIVED",
+        }
+        yield finding

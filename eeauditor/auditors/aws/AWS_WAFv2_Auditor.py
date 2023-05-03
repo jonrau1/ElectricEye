@@ -21,6 +21,8 @@
 import datetime
 import botocore
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -51,8 +53,11 @@ def wafv2_web_acl_metrics_check(cache: dict, session, awsAccountId: str, awsRegi
         wafName = str(w["Name"])
         # Get WAF Details
         waf = wafv2.get_web_acl(Name=wafName,Scope='REGIONAL',Id=wafId)["WebACL"]
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(waf,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         # This is a failing check
-        if str(waf["VisibilityConfig"]["CloudWatchMetricsEnabled"]) == "False":
+        if waf["VisibilityConfig"]["CloudWatchMetricsEnabled"] == False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": wafArn + "/webacl-metrics-enabled-regional-check",
@@ -78,9 +83,13 @@ def wafv2_web_acl_metrics_check(cache: dict, session, awsAccountId: str, awsRegi
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Security Services",
                     "AssetService": "AWS WAFv2 Regional",
-                    "AssetType": "Web Access Control List"
+                    "AssetComponent": "Web Access Control List"
                 },
                 "Resources": [
                     {
@@ -141,9 +150,13 @@ def wafv2_web_acl_metrics_check(cache: dict, session, awsAccountId: str, awsRegi
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Security Services",
                     "AssetService": "AWS WAFv2 Regional",
-                    "AssetType": "Web Access Control List"
+                    "AssetComponent": "Web Access Control List"
                 },
                 "Resources": [
                     {
@@ -190,6 +203,9 @@ def wafv2_web_acl_sampling_check(cache: dict, session, awsAccountId: str, awsReg
         wafName = str(w["Name"])
         # Get WAF Details
         waf = wafv2.get_web_acl(Name=wafName,Scope='REGIONAL',Id=wafId)["WebACL"]
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(waf,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         # This is a failing check
         if str(waf["VisibilityConfig"]["SampledRequestsEnabled"]) == "False":
             finding = {
@@ -217,9 +233,13 @@ def wafv2_web_acl_sampling_check(cache: dict, session, awsAccountId: str, awsReg
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Security Services",
                     "AssetService": "AWS WAFv2 Regional",
-                    "AssetType": "Web Access Control List"
+                    "AssetComponent": "Web Access Control List"
                 },
                 "Resources": [
                     {
@@ -280,9 +300,13 @@ def wafv2_web_acl_sampling_check(cache: dict, session, awsAccountId: str, awsReg
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Security Services",
                     "AssetService": "AWS WAFv2 Regional",
-                    "AssetType": "Web Access Control List"
+                    "AssetComponent": "Web Access Control List"
                 },
                 "Resources": [
                     {
@@ -324,6 +348,9 @@ def wafv2_web_acl_logging_check(cache: dict, session, awsAccountId: str, awsRegi
     wafv2 = session.client("wafv2")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for w in list_wafs(cache, session)["WebACLs"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(w,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         wafArn = str(w["ARN"])
         wafId = str(w["Id"])
         wafName = str(w["Name"])
@@ -355,9 +382,13 @@ def wafv2_web_acl_logging_check(cache: dict, session, awsAccountId: str, awsRegi
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Security Services",
                     "AssetService": "AWS WAFv2 Regional",
-                    "AssetType": "Web Access Control List"
+                    "AssetComponent": "Web Access Control List"
                 },
                 "Resources": [
                     {
@@ -420,9 +451,13 @@ def wafv2_web_acl_logging_check(cache: dict, session, awsAccountId: str, awsRegi
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Security Services",
                         "AssetService": "AWS WAFv2 Regional",
-                        "AssetType": "Web Access Control List"
+                        "AssetComponent": "Web Access Control List"
                     },
                     "Resources": [
                         {
@@ -473,6 +508,9 @@ def wafv2_web_acl_global_metrics_check(cache: dict, session, awsAccountId: str, 
         wafName = str(w["Name"])
         # Get WAF Details
         waf = globalWafv2.get_web_acl(Name=wafName,Scope='CLOUDFRONT',Id=wafId)["WebACL"]
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(waf,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         # This is a failing check
         if str(waf["VisibilityConfig"]["CloudWatchMetricsEnabled"]) == "False":
             finding = {
@@ -500,9 +538,13 @@ def wafv2_web_acl_global_metrics_check(cache: dict, session, awsAccountId: str, 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Security Services",
                     "AssetService": "AWS WAFv2 Global",
-                    "AssetType": "Web Access Control List"
+                    "AssetComponent": "Web Access Control List"
                 },
                 "Resources": [
                     {
@@ -563,9 +605,13 @@ def wafv2_web_acl_global_metrics_check(cache: dict, session, awsAccountId: str, 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Security Services",
                     "AssetService": "AWS WAFv2 Global",
-                    "AssetType": "Web Access Control List"
+                    "AssetComponent": "Web Access Control List"
                 },
                 "Resources": [
                     {
@@ -612,6 +658,9 @@ def wafv2_web_acl_global_sampling_check(cache: dict, session, awsAccountId: str,
         wafName = str(w["Name"])
         # Get WAF Details
         waf = globalWafv2.get_web_acl(Name=wafName,Scope='CLOUDFRONT',Id=wafId)["WebACL"]
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(waf,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         # This is a failing check
         if str(waf["VisibilityConfig"]["SampledRequestsEnabled"]) == "False":
             finding = {
@@ -639,9 +688,13 @@ def wafv2_web_acl_global_sampling_check(cache: dict, session, awsAccountId: str,
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Security Services",
                     "AssetService": "AWS WAFv2 Global",
-                    "AssetType": "Web Access Control List"
+                    "AssetComponent": "Web Access Control List"
                 },
                 "Resources": [
                     {
@@ -702,9 +755,13 @@ def wafv2_web_acl_global_sampling_check(cache: dict, session, awsAccountId: str,
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Security Services",
                     "AssetService": "AWS WAFv2 Global",
-                    "AssetType": "Web Access Control List"
+                    "AssetComponent": "Web Access Control List"
                 },
                 "Resources": [
                     {
@@ -746,6 +803,9 @@ def wafv2_web_acl_global_logging_check(cache: dict, session, awsAccountId: str, 
     globalWafv2 = session.client("wafv2", region_name="us-east-1")
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for w in list_wafs_global(cache, session)["WebACLs"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(w,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         wafArn = str(w["ARN"])
         wafId = str(w["Id"])
         wafName = str(w["Name"])
@@ -777,9 +837,13 @@ def wafv2_web_acl_global_logging_check(cache: dict, session, awsAccountId: str, 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Security Services",
                     "AssetService": "AWS WAFv2 Global",
-                    "AssetType": "Web Access Control List"
+                    "AssetComponent": "Web Access Control List"
                 },
                 "Resources": [
                     {
@@ -842,9 +906,13 @@ def wafv2_web_acl_global_logging_check(cache: dict, session, awsAccountId: str, 
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Security Services",
                         "AssetService": "AWS WAFv2 Global",
-                        "AssetType": "Web Access Control List"
+                        "AssetComponent": "Web Access Control List"
                     },
                     "Resources": [
                         {

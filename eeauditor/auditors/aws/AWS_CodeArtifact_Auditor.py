@@ -20,6 +20,7 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
 import json
 
 registry = CheckRegister()
@@ -32,6 +33,9 @@ def codeartifact_repo_policy_check(cache: dict, session, awsAccountId: str, awsR
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     
     for repo in response["repositories"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(repo,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         domainName = repo['domainName']
         domainOwner = repo['domainOwner']
         repositoryName = repo['name']
@@ -89,9 +93,13 @@ def codeartifact_repo_policy_check(cache: dict, session, awsAccountId: str, awsR
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Developer Tools",
                     "AssetService": "AWS CodeArtifact",
-                    "AssetType": "Repository"
+                    "AssetComponent": "Repository"
                 },
                 "Resources": [
                     {
@@ -127,8 +135,7 @@ def codeartifact_repo_policy_check(cache: dict, session, awsAccountId: str, awsR
                 "Workflow": {"Status": "RESOLVED"},
                 "RecordState": "ARCHIVED"
             }
-            yield finding
-        
+            yield finding   
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -153,9 +160,13 @@ def codeartifact_repo_policy_check(cache: dict, session, awsAccountId: str, awsR
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Developer Tools",
                     "AssetService": "AWS CodeArtifact",
-                    "AssetType": "Repository"
+                    "AssetComponent": "Repository"
                 },
                 "Resources": [
                     {
@@ -201,6 +212,9 @@ def codeartifact_domain_policy_check(cache: dict, session, awsAccountId: str, aw
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     
     for domain in response["domains"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(domain,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         domainName = domain['name']
         domainOwner = domain['owner']
         status = domain['status']
@@ -261,9 +275,13 @@ def codeartifact_domain_policy_check(cache: dict, session, awsAccountId: str, aw
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Developer Tools",
                     "AssetService": "AWS CodeArtifact",
-                    "AssetType": "Domain"
+                    "AssetComponent": "Domain"
                 },
                 "Resources": [
                     {
@@ -325,9 +343,13 @@ def codeartifact_domain_policy_check(cache: dict, session, awsAccountId: str, aw
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Developer Tools",
                     "AssetService": "AWS CodeArtifact",
-                    "AssetType": "Domain"
+                    "AssetComponent": "Domain"
                 },
                 "Resources": [
                     {

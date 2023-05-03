@@ -16,7 +16,7 @@ ElectricEye abides by PEP8 and uses `black` for syntax verification, the followi
 
 **Do not forget** to update the tables within the [**Supported Services and Checks** section of the main docs!](README.md#supported-services-and-checks). You can use [Markdown Tables generator](https://www.tablesgenerator.com/markdown_tables) by copying and pasting the current table into the website's UI (underneath the `File/Paste table data...` dropdown menu) and remove the whitespace / added columns for this task.
 
-## Table of Contents
+### Table of Contents
 
 - [Naming an Auditor](#naming-an-auditor)
 - [Necessary Imports and License file](#necessary-imports-and-license-file)

@@ -21,6 +21,8 @@
 import datetime
 import uuid
 from check_register import CheckRegister, accumulate_paged_results
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -50,6 +52,9 @@ def unhealthy_endpoint_group_check(cache: dict, session, awsAccountId: str, awsR
                 page_iterator=response_iterator, key="EndpointGroups"
             )
             for endpointGroup in endpointGroups["EndpointGroups"]:
+                # B64 encode all of the details for the Asset
+                assetJson = json.dumps(endpointGroup,default=str).encode("utf-8")
+                assetB64 = base64.b64encode(assetJson)
                 endpointGroupArn = endpointGroup["EndpointGroupArn"]
                 for description in endpointGroup["EndpointDescriptions"]:
                     endpointId = description["EndpointId"]
@@ -83,9 +88,13 @@ def unhealthy_endpoint_group_check(cache: dict, session, awsAccountId: str, awsR
                             "ProductFields": {
                                 "ProductName": "ElectricEye",
                                 "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
                                 "AssetClass": "Networking",
                                 "AssetService": "Amazon Global Accelerator",
-                                "AssetType": "Endpoint"
+                                "AssetComponent": "Endpoint"
                             },
                             "Resources": [
                                 {
@@ -140,9 +149,13 @@ def unhealthy_endpoint_group_check(cache: dict, session, awsAccountId: str, awsR
                             "ProductFields": {
                                 "ProductName": "ElectricEye",
                                 "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
                                 "AssetClass": "Networking",
                                 "AssetService": "Amazon Global Accelerator",
-                                "AssetType": "Endpoint"
+                                "AssetComponent": "Endpoint"
                             },
                             "Resources": [
                                 {
@@ -182,6 +195,9 @@ def flow_logs_enabled_check(cache: dict, session, awsAccountId: str, awsRegion: 
     )
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
     for accelerator in accelerators["Accelerators"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(accelerator,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         acceleratorArn = accelerator["AcceleratorArn"]
         acceleratorAttributes = globalaccelerator.describe_accelerator_attributes(
             AcceleratorArn=acceleratorArn
@@ -219,9 +235,13 @@ def flow_logs_enabled_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon Global Accelerator",
-                    "AssetType": "Accelerator"
+                    "AssetComponent": "Accelerator"
                 },
                 "Resources": [
                     {
@@ -278,9 +298,13 @@ def flow_logs_enabled_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon Global Accelerator",
-                    "AssetType": "Accelerator"
+                    "AssetComponent": "Accelerator"
                 },
                 "Resources": [
                     {

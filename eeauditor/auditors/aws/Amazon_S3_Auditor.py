@@ -20,6 +20,8 @@
 
 import datetime
 from check_register import CheckRegister
+import base64
+import json
 
 registry = CheckRegister()
 
@@ -41,6 +43,9 @@ def bucket_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: 
         datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     )
     for buckets in myS3Buckets:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(buckets,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         bucketName = str(buckets["Name"])
         s3Arn = f"arn:{awsPartition}:s3:::{bucketName}"
         try:
@@ -80,9 +85,13 @@ def bucket_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: 
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Storage",
                         "AssetService": "Amazon S3",
-                        "AssetType": "Bucket"
+                        "AssetComponent": "Bucket"
                     },
                     "Resources": [
                         {
@@ -140,9 +149,13 @@ def bucket_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: 
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Storage",
                         "AssetService": "Amazon S3",
-                        "AssetType": "Bucket"
+                        "AssetComponent": "Bucket"
                     },
                     "Resources": [
                         {
@@ -177,6 +190,9 @@ def bucket_lifecycle_check(cache: dict, session, awsAccountId: str, awsRegion: s
     bucket = list_buckets(cache, session)
     myS3Buckets = bucket["Buckets"]
     for buckets in myS3Buckets:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(buckets,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         bucketName = str(buckets["Name"])
         s3Arn = f"arn:{awsPartition}:s3:::{bucketName}"
         iso8601Time = (
@@ -212,9 +228,13 @@ def bucket_lifecycle_check(cache: dict, session, awsAccountId: str, awsRegion: s
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Storage",
                     "AssetService": "Amazon S3",
-                    "AssetType": "Bucket"
+                    "AssetComponent": "Bucket"
                 },
                 "Resources": [
                     {
@@ -277,9 +297,13 @@ def bucket_lifecycle_check(cache: dict, session, awsAccountId: str, awsRegion: s
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Storage",
                         "AssetService": "Amazon S3",
-                        "AssetType": "Bucket"
+                        "AssetComponent": "Bucket"
                     },
                     "Resources": [
                         {
@@ -320,6 +344,9 @@ def bucket_versioning_check(cache: dict, session, awsAccountId: str, awsRegion: 
     bucket = list_buckets(cache, session)
     myS3Buckets = bucket["Buckets"]
     for buckets in myS3Buckets:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(buckets,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         bucketName = str(buckets["Name"])
         s3Arn = f"arn:{awsPartition}:s3:::{bucketName}"
         iso8601Time = (
@@ -356,9 +383,13 @@ def bucket_versioning_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Storage",
                     "AssetService": "Amazon S3",
-                    "AssetType": "Bucket"
+                    "AssetComponent": "Bucket"
                 },
                 "Resources": [
                     {
@@ -418,9 +449,13 @@ def bucket_versioning_check(cache: dict, session, awsAccountId: str, awsRegion: 
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Storage",
                         "AssetService": "Amazon S3",
-                        "AssetType": "Bucket"
+                        "AssetComponent": "Bucket"
                     },
                     "Resources": [
                         {
@@ -461,6 +496,9 @@ def bucket_policy_allows_public_access_check(cache: dict, session, awsAccountId:
     bucket = list_buckets(cache, session)
     myS3Buckets = bucket["Buckets"]
     for buckets in myS3Buckets:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(buckets,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         bucketName = str(buckets["Name"])
         s3Arn = f"arn:{awsPartition}:s3:::{bucketName}"
         iso8601Time = (
@@ -500,9 +538,13 @@ def bucket_policy_allows_public_access_check(cache: dict, session, awsAccountId:
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Storage",
                             "AssetService": "Amazon S3",
-                            "AssetType": "Bucket"
+                            "AssetComponent": "Bucket"
                         },
                         "Resources": [
                             {
@@ -562,9 +604,13 @@ def bucket_policy_allows_public_access_check(cache: dict, session, awsAccountId:
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
+                            "ProviderType": "CSP",
+                            "ProviderAccountId": awsAccountId,
+                            "AssetRegion": awsRegion,
+                            "AssetDetails": assetB64,
                             "AssetClass": "Storage",
                             "AssetService": "Amazon S3",
-                            "AssetType": "Bucket"
+                            "AssetComponent": "Bucket"
                         },
                         "Resources": [
                             {
@@ -608,6 +654,9 @@ def bucket_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str,
     bucket = list_buckets(cache, session)
     myS3Buckets = bucket["Buckets"]
     for buckets in myS3Buckets:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(buckets,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         bucketName = str(buckets["Name"])
         s3Arn = f"arn:{awsPartition}:s3:::{bucketName}"
         iso8601Time = (
@@ -644,9 +693,13 @@ def bucket_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Storage",
                     "AssetService": "Amazon S3",
-                    "AssetType": "Bucket"
+                    "AssetComponent": "Bucket"
                 },
                 "Resources": [
                     {
@@ -709,9 +762,13 @@ def bucket_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str,
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Storage",
                         "AssetService": "Amazon S3",
-                        "AssetType": "Bucket"
+                        "AssetComponent": "Bucket"
                     },
                     "Resources": [
                         {
@@ -752,6 +809,9 @@ def bucket_access_logging_check(cache: dict, session, awsAccountId: str, awsRegi
     bucket = list_buckets(cache, session)
     myS3Buckets = bucket["Buckets"]
     for buckets in myS3Buckets:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(buckets,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         bucketName = str(buckets["Name"])
         s3Arn = f"arn:{awsPartition}:s3:::{bucketName}"
         iso8601Time = (
@@ -787,9 +847,13 @@ def bucket_access_logging_check(cache: dict, session, awsAccountId: str, awsRegi
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Storage",
                     "AssetService": "Amazon S3",
-                    "AssetType": "Bucket"
+                    "AssetComponent": "Bucket"
                 },
                 "Resources": [
                     {
@@ -847,9 +911,13 @@ def bucket_access_logging_check(cache: dict, session, awsAccountId: str, awsRegi
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
                         "AssetClass": "Storage",
                         "AssetService": "Amazon S3",
-                        "AssetType": "Bucket"
+                        "AssetComponent": "Bucket"
                     },
                     "Resources": [
                         {
@@ -890,6 +958,9 @@ def s3_account_level_block(cache: dict, session, awsAccountId: str, awsRegion: s
     # If a Public Access Block is not configured at all we will fail with a higher severity
     try:
         response = s3control.get_public_access_block(AccountId=awsAccountId)
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(response,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
         accountBlock = response["PublicAccessBlockConfiguration"]
         blockAcl = str(accountBlock["BlockPublicAcls"])
         ignoreAcl = str(accountBlock["IgnorePublicAcls"])
@@ -897,10 +968,10 @@ def s3_account_level_block(cache: dict, session, awsAccountId: str, awsRegion: s
         restrictPubBuckets = str(accountBlock["RestrictPublicBuckets"])
 
         if (
-        blockAcl 
-        and ignoreAcl
-        and blockPubPolicy 
-        and restrictPubBuckets == "True"
+            blockAcl 
+            and ignoreAcl
+            and blockPubPolicy 
+            and restrictPubBuckets == "True"
         ):
         # This is a passing check
             finding = {
@@ -931,14 +1002,18 @@ def s3_account_level_block(cache: dict, session, awsAccountId: str, awsRegion: s
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Management & Governance",
                     "AssetService": "Amazon S3",
-                    "AssetType": "Account Public Access Block Setting"
+                    "AssetComponent": "Account Configuration"
                 },
                 "Resources": [
                     {
                         "Type": "AwsAccount",
-                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/S3_Block_Public_Access_Configuration",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }
@@ -994,14 +1069,18 @@ def s3_account_level_block(cache: dict, session, awsAccountId: str, awsRegion: s
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Management & Governance",
                     "AssetService": "Amazon S3",
-                    "AssetType": "Account Public Access Block Setting"
+                    "AssetComponent": "Account Configuration"
                 },
                 "Resources": [
                     {
                         "Type": "AwsAccount",
-                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/S3_Block_Public_Access_Configuration",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }
@@ -1029,6 +1108,7 @@ def s3_account_level_block(cache: dict, session, awsAccountId: str, awsRegion: s
             yield finding
     except Exception as e:
         if str(e) == "An error occurred (NoSuchPublicAccessBlockConfiguration) when calling the GetPublicAccessBlock operation: The public access block configuration was not found":
+            assetB64 = None
             # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -1056,14 +1136,18 @@ def s3_account_level_block(cache: dict, session, awsAccountId: str, awsRegion: s
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Management & Governance",
                     "AssetService": "Amazon S3",
-                    "AssetType": "Account Public Access Block Setting"
+                    "AssetComponent": "Account Configuration"
                 },
                 "Resources": [
                     {
                         "Type": "AwsAccount",
-                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}",
+                        "Id": f"{awsPartition.upper()}::::Account:{awsAccountId}/S3_Block_Public_Access_Configuration",
                         "Partition": awsPartition,
                         "Region": awsRegion,
                     }
@@ -1082,8 +1166,8 @@ def s3_account_level_block(cache: dict, session, awsAccountId: str, awsRegion: s
                         "ISO 27001:2013 A.6.2.2",
                         "ISO 27001:2013 A.11.2.6",
                         "ISO 27001:2013 A.13.1.1",
-                        "ISO 27001:2013 A.13.2.1",
-                    ],
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
                 },
                 "Workflow": {"Status": "NEW"},
                 "RecordState": "ACTIVE",
