@@ -27,7 +27,7 @@ from processor.main import get_providers, process_findings
 def print_checks(assessmentTarget, auditorName=None):
     app = EEAuditor(assessmentTarget)
 
-    app.load_plugins(plugin_name=auditorName)
+    app.load_plugins(auditorName)
         
     app.print_checks_md()
 
@@ -36,7 +36,7 @@ def run_auditor(assessmentTarget, auditorName=None, checkName=None, delay=0, out
         outputs = ["stdout"]
     
     app = EEAuditor(assessmentTarget)
-    app.load_plugins(plugin_name=auditorName)
+    app.load_plugins(auditorName)
     # Per-target calls - ensure you use the right run_*_checks*() function
     if assessmentTarget == "AWS":
         findings = list(app.run_aws_checks(checkName=checkName, delay=delay))
