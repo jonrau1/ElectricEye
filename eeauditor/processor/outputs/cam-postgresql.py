@@ -168,7 +168,7 @@ class PostgresProvider(object):
                         f["ProviderType"],
                         f["ProviderAccountId"],
                         f["AssetRegion"],
-                        f["AssetDetails"],
+                        json.dumps(f["AssetDetails"]),
                         f["AssetClass"],
                         f["AssetService"],
                         f["AssetComponent"],
