@@ -26,6 +26,7 @@ import requests
 import pymongo
 import json
 import base64
+from botocore.exceptions import ClientError
 from processor.outputs.output_base import ElectricEyeOutput
 
 # Boto3 Clients
@@ -109,7 +110,7 @@ class JsonProvider(object):
         # empty strings will trigger `if not`
         if not all(
             s for s in [
-                mongodbUsername, mongodbEndpoint, mongodbPort, mongodbDatabaseName, mongodbCollectionName, mongodbInsertManyChunkSize
+                mongodbUsername, mongodbEndpoint, mongodbPort, mongodbDatabaseName, mongodbCollectionName
                 ]
             ):
             print("An empty value was detected in '[outputs.mongodb]'. Review the TOML file and try again!")
