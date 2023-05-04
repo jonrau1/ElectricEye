@@ -205,6 +205,11 @@ class PostgresProvider(object):
                         f["RecordState"]
                     )
                 )
+
+            # commit the changes
+            engine.commit()
+            # close communication with the postgres server (rds)
+            cursor.close()
             
 
         except psql.OperationalError as oe:
