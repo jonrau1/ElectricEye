@@ -5,15 +5,15 @@ title = "ElectricEye Configuration"
 
 [global]
 
-# Match this to [regions_and_accounts.aws.aws_account_targets] to specify if you want to run ElectricEye
-# against a list of Accounts, list of Accounts within specific OUs, or every Account in an AWS Organization
+    # Match this to [regions_and_accounts.aws.aws_account_targets] to specify if you want to run ElectricEye
+    # against a list of Accounts, list of Accounts within specific OUs, or every Account in an AWS Organization
 
-aws_multi_account_target_type = "Accounts" # VALID CHOICES: Accounts | OU | Organization
+    aws_multi_account_target_type = "Accounts" # VALID CHOICES: Accounts | OU | Organization
 
-# Specifies the location of where credentials are stored and will be retrieved from
-# if you specify "CONFIG_FILE" that means you can provide the value within the option itself
+    # Specifies the location of where credentials are stored and will be retrieved from
+    # if you specify "CONFIG_FILE" that means you can provide the value within the option itself
 
-credentials_location = "AWS_SSM" # VALID CHOICES: AWS_SSM | AWS_SECRETS_MANAGER | CONFIG_FILE
+    credentials_location = "AWS_SSM" # VALID CHOICES: AWS_SSM | AWS_SECRETS_MANAGER | CONFIG_FILE
 
 [regions_and_accounts]
 
@@ -41,24 +41,37 @@ credentials_location = "AWS_SSM" # VALID CHOICES: AWS_SSM | AWS_SECRETS_MANAGER 
 
 [credentials]
 
-# ***IMPORTANT*** all passwords, API keys, and sensitive credentials (that end with '_value') should match the value
-# of [global.credentials_location], for instance, if you specified "AWS_SSM" ensure that the '_value' option is the name
-# of an AWS SecureString Parameter that contains the value to be retrieved
+    # ***IMPORTANT*** 
+    # all passwords, API keys, and sensitive credentials (that end with '_value') should match the value
+    # of [global.credentials_location], for instance, if you specified "AWS_SSM" ensure that the '_value' option is the name
+    # of an AWS SecureString Parameter that contains the value to be retrieved
 
     [credentials.azure]
+
     azure_sp_client_id_value = ""
+
     azure_sp_tenant_id_value = ""
+
     azure_sp_client_secret_id_value = ""
 
     [credentials.gcp]
+
+    # The location (or actual contents) of your GCP Service Account JSON Key this location must match the value 
+    # of `global.credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable should 
+    # be the name of the AWS Systems Manager Parameter Store SecureString Parameter
+
     gcp_service_account_json_payload_value = ""
 
     [credentials.github]
+
     gh_personal_access_token_value = ""
 
     [credentials.m365]
+
     m365_ent_app_client_id_value = ""
+
     m365_ent_app_tenant_id_value = ""
+
     m365_ent_app_client_secret_id_value = ""
 
     [credentials.servicenow]
@@ -86,3 +99,43 @@ credentials_location = "AWS_SSM" # VALID CHOICES: AWS_SSM | AWS_SECRETS_MANAGER 
     # attempts by active users in your Instance
 
     servicenow_failed_login_breaching_rate = "5"
+
+[outputs]
+
+    # ***IMPORTANT*** 
+    # all passwords, API keys, and sensitive credentials (that end with '_value') should match the value
+    # of [global.credentials_location], for instance, if you specified "AWS_SSM" ensure that the '_value' option is the name
+    # of an AWS SecureString Parameter that contains the value to be retrieved
+
+    [outputs.postgresql]
+
+    # The name you want given to the table that will contain ElectricEye findings. Please note that for Cloud Asset 
+    # Management (CAM) outputs that the value "_cam" will be appended to it e.g., if you provide the value of 
+    # "electriceye_findings" then the CAM table will be called "electriceye_findings_cam"
+    # Also note that any value here with be turned into all lowercase (via .lower())
+
+    postgresql_table_name = ""
+
+    # PostgreSQL username, either the "master username" or a user that has the ability to create and insert records into tables
+
+    postgresql_username = ""
+
+    # The location (or actual contents) of the Password for the User specified in `postgresql_username`
+    # this location must match the value of `global.credentials_location` e.g., if you specify "AWS_SSM" then
+    # the value for this variable should be the name of the SSM SecureString Parameter
+
+    postgresql_password_value = ""
+
+    # The name of the PostgreSQL Database you want to connect to and create your Tables within
+
+    postgresql_database_name = ""
+
+    # Endpoint, either an IP address or hostname, of your PostgreSQL database - you can also specify "localhost" for locally running
+    # databases or databases running on local containers. If you use a cloud managed DB such as AWS RDS or GCP CloudSQL ensure that
+    # you have connectivity to it via a VPN or otherwise
+
+    postgresql_endpoint = ""
+
+    # The Port that your PostgreSQL database is running on, defaults to 5432
+
+    postgresql_port = 5432
