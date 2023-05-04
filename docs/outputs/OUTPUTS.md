@@ -66,7 +66,7 @@ It is important to note that outside of `json`, `stdout` and AWS Security Hub, t
 
 The JSON Output selection will write all ElectricEye findings to a JSON file using Python's `json.dump()`. All non-JSON supported values are written as strings using the `default=str` argument.
 
-This Output will provide the `ProductFields.AssetDetails` information as well.
+This Output will provide the `ProductFields.AssetDetails` information.
 
 To use this Output include the following arguments in your ElectricEye CLI: `python3 eeauditor/controller.py {..args..} -o json --output-file my_file_name_here`
 
@@ -107,7 +107,7 @@ To use this Output include the following arguments in your ElectricEye CLI: `pyt
             "FunctionName": "national-security-lambda",
             "FunctionArn": "arn:aws-iso:lambda:us-iso-west-1:111111111111:function:national-security-lambda",
             "Runtime": "nodejs16.x",
-            "Role": "arn:aws-iso:iam::111111111111:role/amplify-login-lambda-95bace58",
+            "Role": "arn:aws-iso:iam::111111111111:role/national-security-lambda-95bace58",
             "Handler": "index.handler",
             "CodeSize": 1770,
             "Description": "",
@@ -127,7 +127,7 @@ To use this Output include the following arguments in your ElectricEye CLI: `pyt
             "EphemeralStorage": {
                 "Size": 512
             },
-            "SnapStart": {
+            "your-internet-historyStart": {
                 "ApplyOn": "None",
                 "OptimizationStatus": "Off"
             }
@@ -180,24 +180,225 @@ To use this Output include the following arguments in your ElectricEye CLI: `pyt
 ### Example JSON "Normalized" Output
 
 ```json
-
+{
+    "SchemaVersion": "2018-10-08",
+    "Id": "arn:aws-iso:lambda:us-iso-west-1:111111111111:function:national-security-lambda/lambda-function-unused-check",
+    "ProductArn": "arn:aws-iso:securityhub:us-iso-west-1:111111111111:product/111111111111/default",
+    "GeneratorId": "arn:aws-iso:lambda:us-iso-west-1:111111111111:function:national-security-lambda",
+    "AwsAccountId": "111111111111",
+    "Types": "['Software and Configuration Checks/AWS Security Best Practices']",
+    "FirstObservedAt": "2021-05-04T19:31:56.263352+00:00",
+    "CreatedAt": "2021-05-04T19:31:56.263352+00:00",
+    "UpdatedAt": "2021-05-04T19:31:56.263352+00:00",
+    "SeverityLabel": "INFORMATIONAL",
+    "Confidence": 99,
+    "Title": "[Lambda.1] Lambda functions should be deleted after 30 days of no use",
+    "Description": "Lambda function national-security-lambda has seen activity within the last 30 days.",
+    "RecommendationText": "For more information on best practices for lambda functions refer to the Best Practices for Working with AWS Lambda Functions section of the Amazon Lambda Developer Guide",
+    "RecommendationUrl": "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html#function-configuration",
+    "ProductFields": "{'ProductName': 'ElectricEye', 'Provider': 'AWS', 'ProviderType': 'CSP', 'ProviderAccountId': '111111111111', 'AssetRegion': 'us-iso-west-1', 'AssetClass': 'Compute', 'AssetService': 'AWS Lambda', 'AssetComponent': 'Function'}",
+    "ResourceType": "AwsLambdaFunction",
+    "ResourceId": "arn:aws-iso:lambda:us-iso-west-1:111111111111:function:national-security-lambda",
+    "ResourcePartition": "aws",
+    "ResourceRegion": "us-iso-west-1",
+    "ResourceDetails": "{'AwsLambdaFunction': {'FunctionName': 'national-security-lambda'}}",
+    "ComplianceStatus": "PASSED",
+    "ComplianceRelatedRequirements": "['NIST CSF V1.1 ID.AM-2', 'NIST SP 800-53 Rev. 4 CM-8', 'NIST SP 800-53 Rev. 4 PM-5', 'AICPA TSC CC3.2', 'AICPA TSC CC6.1', 'ISO 27001:2013 A.8.1.1', 'ISO 27001:2013 A.8.1.2', 'ISO 27001:2013 A.12.5.1']",
+    "WorkflowStatus": "RESOLVED",
+    "RecordState": "ARCHIVED"
+}
 ```
 
 ## JSON Cloud Asset Management (CAM) Output
 
-Remarks
+The Cloud Asset Management (CAM) JSON Output selection will write unique per-asset data derived from ElectricEye findings to a JSON file using Python's `json.dump()`. The CAM JSON Output is meant for collecting the Asset information from each Check, and thus most of the security-specific details as well as most native ASFF data is stripped out. The CAM finding types will provide an aggregated finding count of each severity label per asset as well, this is the only type of Output that type of information can be found.
+
+This Output will provide the `ProductFields.AssetDetails` information.
+
+To use this Output include the following arguments in your ElectricEye CLI: `python3 eeauditor/controller.py {..args..} -o cam_json --output-file my_file_name_here`
+
+### Example JSON Cloud Asset Management (CAM) Output
+
+```json
+{
+    "AssetId": "arn:aws-iso:lambda:us-iso-west-1:111111111111:function:national-security-lambda",
+    "FirstObservedAt": "2021-05-04T19:38:02.783669+00:00",
+    "Provider": "AWS",
+    "ProviderType": "CSP",
+    "ProviderAccountId": "111111111111",
+    "AssetRegion": "us-iso-west-1",
+    "AssetDetails": {
+        "FunctionName": "national-security-lambda",
+        "FunctionArn": "arn:aws-iso:lambda:us-iso-west-1:111111111111:function:national-security-lambda",
+        "Runtime": "nodejs16.x",
+        "Role": "arn:aws-iso:iam::111111111111:role/national-security-lambda-95bace58",
+        "Handler": "index.handler",
+        "CodeSize": 2256,
+        "Description": "",
+        "Timeout": 15,
+        "MemorySize": 256,
+        "LastModified": "2021-04-08T20:27:14.770+0000",
+        "CodeSha256": "aaaa/2222/5rResssatXHc=",
+        "Version": "$LATEST",
+        "TracingConfig": {
+            "Mode": "PassThrough"
+        },
+        "RevisionId": "bd-4fac-asssdas",
+        "PackageType": "Zip",
+        "Architectures": [
+            "x86_64"
+        ],
+        "EphemeralStorage": {
+            "Size": 512
+        },
+        "your-internet-historyStart": {
+            "ApplyOn": "None",
+            "OptimizationStatus": "Off"
+        }
+    },
+    "AssetClass": "Compute",
+    "AssetService": "AWS Lambda",
+    "AssetComponent": "Function",
+    "InformationalSeverityFindings": 1,
+    "LowSeverityFindings": 0,
+    "MediumSeverityFindings": 0,
+    "HighSeverityFindings": 0,
+    "CriticalSeverityFindings": 0
+}
+```
 
 ## CSV Output
 
-Remarks
+The CSV Output selection will write all ElectricEye findings to a CSV file using Python's `csv.writer()`. Due to using CSV, complex data types cannot be captured and only minimal details are provided to the CSV file.
+
+This Output will *not* provide the `ProductFields.AssetDetails` information.
+
+To use this Output include the following arguments in your ElectricEye CLI: `python3 eeauditor/controller.py {..args..} -o csv --output-file my_file_name_here`
+
+### Example CSV Output
+
+```csv
+Id,Title,ProductArn,AwsAccountId,Severity,Confidence,Description,RecordState,Compliance Status,Remediation Recommendation,Remediation Recommendation Link
+arn:aws-iso:ec2:us-iso-west-1:111111111111:volume/vol-123456abcdef/ebs-volume-encryption-check,[EBS.3] EBS Volumes should be encrypted,arn:aws-iso:securityhub:us-iso-west-1:111111111111:product/111111111111/default,111111111111,HIGH,99,EBS Volume vol-123456abcdef is not encrypted. Refer to the remediation instructions if this configuration is not intended,ACTIVE,FAILED,If your EBS volume should be encrypted refer to the Amazon EBS Encryption section of the Amazon Elastic Compute Cloud User Guide,https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html
+```
 
 ## AWS Security Hub Output
 
-Remarks
+The AWS Security Hub Output selection will write all ElectricEye findings into AWS Security Hub using the BatchImportFindings API in chunks of 100. All ElectricEye findings are already in ASFF, so no other processing is done to them, besides removing `ProductFields.AssetDetails` as Security Hub *cannot* support dicts or other complex types within `ProductFields`.
+
+This Output will *not* provide the `ProductFields.AssetDetails` information.
+
+To use this Output include the following arguments in your ElectricEye CLI: `python3 eeauditor/controller.py {..args..} -o sechub`
+
+### Example AWS Security Hub Output
+
+```json
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "national-security-project-id/us-central1-a/123456/gce-instance-del-protection-check",
+  "ProductArn": "arn:aws-iso:securityhub:us-iso-west-1:111111111111:product/111111111111/default",
+  "ProductName": "Default",
+  "CompanyName": "Personal",
+  "Region": "us-iso-west-1",
+  "GeneratorId": "national-security-project-id/us-central1-a/123456/gce-instance-del-protection-check",
+  "AwsAccountId": "111111111111",
+  "Types": [
+    "Software and Configuration Checks"
+  ],
+  "FirstObservedAt": "2021-05-01T13:55:09.692022+00:00",
+  "CreatedAt": "2021-05-01T13:55:09.692022+00:00",
+  "UpdatedAt": "2021-05-01T13:55:09.692022+00:00",
+  "Severity": {
+    "Label": "LOW",
+    "Normalized": 1
+  },
+  "Confidence": 99,
+  "Title": "[GCP.GCE.1] Google Compute Engine VM instances should have deletion protection enabled",
+  "Description": "Google Compute Engine instance instance-1 in us-central1-a does not have deletion protection enabled. As part of your workload, there might be certain VM instances that are critical to running your application or services, such as an instance running a SQL server, a server used as a license manager, and so on. These VM instances might need to stay running indefinitely so you need a way to protect these VMs from being deleted. With Deletion Protection enabled, you have the guarantee that your VM instances cannot be accidentally deleted. Refer to the remediation instructions if this configuration is not intended.",
+  "Remediation": {
+    "Recommendation": {
+      "Text": "If your GCE VM instance should have deletion protection enabled refer to the Prevent accidental VM deletion section of the GCP Compute Engine guide.",
+      "Url": "https://cloud.google.com/compute/docs/instances/preventing-accidental-vm-deletion"
+    }
+  },
+  "ProductFields": {
+    "ProductName": "ElectricEye",
+    "Provider": "GCP",
+    "ProviderType": "CSP",
+    "ProviderAccountId": "national-security-project-id",
+    "AssetRegion": "us-central1-a",
+    "AssetClass": "Compute",
+    "AssetService": "Google Compute Engine",
+    "AssetComponent": "Instance",
+    "aws/securityhub/FindingId": "arn:aws-iso:securityhub:us-iso-west-1:111111111111:product/111111111111/default/national-security-project-id/us-central1-a/123456/gce-instance-del-protection-check",
+    "aws/securityhub/ProductName": "Default",
+    "aws/securityhub/CompanyName": "Personal"
+  },
+  "Resources": [
+    {
+      "Type": "GcpGceVmInstance",
+      "Id": "national-security-project-id/us-central1-a/123456",
+      "Partition": "aws-iso",
+      "Region": "us-iso-west-1",
+      "Details": {
+        "Other": {
+          "GcpProjectId": "national-security-project-id",
+          "Zone": "us-central1-a",
+          "Name": "instance-1",
+          "Id": "123456",
+          "Description": "",
+          "MachineType": "e2-medium",
+          "CreatedAt": "2021-05-01T06:40:45.351-07:00",
+          "LastStartedAt": "2021-05-01T06:40:50.829-07:00",
+          "Status": "RUNNING"
+        }
+      }
+    }
+  ],
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST CSF V1.1 ID.BE-5",
+      "NIST CSF V1.1 PR.PT-5",
+      "NIST SP 800-53 Rev. 4 CP-2",
+      "NIST SP 800-53 Rev. 4 CP-11",
+      "NIST SP 800-53 Rev. 4 SA-13",
+      "NIST SP 800-53 Rev. 4 SA14",
+      "AICPA TSC CC3.1",
+      "AICPA TSC A1.2",
+      "ISO 27001:2013 A.11.1.4",
+      "ISO 27001:2013 A.17.1.1",
+      "ISO 27001:2013 A.17.1.2",
+      "ISO 27001:2013 A.17.2.1"
+    ]
+  },
+  "WorkflowState": "NEW",
+  "Workflow": {
+    "Status": "NEW"
+  },
+  "RecordState": "ACTIVE",
+  "FindingProviderFields": {
+    "Confidence": 99,
+    "Severity": {
+      "Label": "LOW"
+    },
+    "Types": [
+      "Software and Configuration Checks"
+    ]
+  },
+  "ProcessedAt": "2021-05-01T13:55:19.617Z"
+}
+```
 
 ## MongoDB & AWS DocumentDB Output
 
 Remarks
+
+###
+
+```python
+{'_id': 'arn:aws-iso:ec2:us-iso-west-1:111111111111:instance/i-123456aab/ec2-source-dest-verification-check', 'AwsAccountId': '111111111111', 'Compliance': {'Status': 'PASSED', 'RelatedRequirements': ['NIST CSF V1.1 PR.AC-3', 'NIST SP 800-53 Rev. 4 AC-1', 'NIST SP 800-53 Rev. 4 AC-17', 'NIST SP 800-53 Rev. 4 AC-19', 'NIST SP 800-53 Rev. 4 AC-20', 'NIST SP 800-53 Rev. 4 SC-15', 'AICPA TSC CC6.6', 'ISO 27001:2013 A.6.2.1', 'ISO 27001:2013 A.6.2.2', 'ISO 27001:2013 A.11.2.6', 'ISO 27001:2013 A.13.1.1', 'ISO 27001:2013 A.13.2.1']}, 'Confidence': 99, 'CreatedAt': '2021-05-04T15:47:49.036592+00:00', 'Description': 'EC2 Instance i-123456aab has the Source-Destination Check enabled.', 'FirstObservedAt': '2021-05-04T15:47:49.036592+00:00', 'GeneratorId': 'arn:aws-iso:ec2:us-iso-west-1:111111111111:instance/i-123456aab', 'Id': 'arn:aws-iso:ec2:us-iso-west-1:111111111111:instance/i-123456aab/ec2-source-dest-verification-check', 'ProductArn': 'arn:aws-iso:securityhub:us-iso-west-1:111111111111:product/111111111111/default', 'ProductFields': {'ProductName': 'ElectricEye', 'Provider': 'AWS', 'ProviderType': 'CSP', 'ProviderAccountId': '111111111111', 'AssetRegion': 'us-iso-west-1', 'AssetDetails': {'AmiLaunchIndex': 1, 'ImageId': 'ami-124314asdasd', 'InstanceId': 'i-123456aab', 'InstanceType': 't2.large', 'KeyName': 'your-internet-history-scanner', 'LaunchTime': '2021-05-04 11:52:11+00:00', 'Monitoring': {'State': 'disabled'}, 'Placement': {'AvailabilityZone': 'us-iso-west-1a', 'GroupName': '', 'Tenancy': 'default'}, 'PrivateDnsName': 'ip-172-16-227-7.us-iso-west-1.compute.internal', 'PrivateIpAddress': '1.1.1.1', 'ProductCodes': [], 'PublicDnsName': '', 'PublicIpAddress': '8.8.8.8', 'State': {'Code': 16, 'Name': 'running'}, 'StateTransitionReason': '', 'SubnetId': 'subnet-a12s3dg567', 'VpcId': 'vpc-1123123aaaa', 'Architecture': 'x86_64', 'BlockDeviceMappings': [{'DeviceName': '/dev/sda1', 'Ebs': {'AttachTime': '2021-05-04 11:52:12+00:00', 'DeleteOnTermination': True, 'Status': 'attached', 'VolumeId': 'vol-0b5ff2ea277d2da63'}}, {'DeviceName': '/dev/sdm', 'Ebs': {'AttachTime': '2021-05-04 15:42:48+00:00', 'DeleteOnTermination': False, 'Status': 'attached', 'VolumeId': 'vol-124314asdasd'}}], 'ClientToken': 'aaaaaaaa1111111', 'EbsOptimized': False, 'EnaSupport': True, 'Hypervisor': 'xen', 'IamInstanceProfile': {'Arn': 'arn:aws-iso:iam::111111111111:instance-profile/natsec-your-internet-history-scan', 'Id': 'abcs12312'}, 'InstanceLifecycle': 'spot', 'NetworkInterfaces': [{'Association': {'IpOwnerId': 'amazon', 'PublicDnsName': '', 'PublicIp': '8.8.8.8'}, 'Attachment': {'AttachTime': '2021-05-04 11:52:11+00:00', 'AttachmentId': 'eni-attach-1123123aaaa', 'DeleteOnTermination': True, 'DeviceIndex': 0, 'Status': 'attached', 'NetworkCardIndex': 0}, 'Description': '', 'Groups': [{'GroupName': 'allow_ssh', 'GroupId': 'sg-124314asdasd'}], 'Ipv6Addresses': [], 'MacAddress': '02:aaa:sss:82:0f:d1', 'NetworkInterfaceId': 'eni-124314asdasd', 'OwnerId': '111111111111', 'PrivateIpAddress': '1.1.1.1', 'PrivateIpAddresses': [{'Association': {'IpOwnerId': 'amazon', 'PublicDnsName': '', 'PublicIp': '8.8.8.8'}, 'Primary': True, 'PrivateIpAddress': '1.1.1.1'}], 'SourceDestCheck': True, 'Status': 'in-use', 'SubnetId': 'subnet-a12s3dg567', 'VpcId': 'vpc-1123123aaaa', 'InterfaceType': 'interface'}], 'RootDeviceName': '/dev/sda1', 'RootDeviceType': 'ebs', 'SecurityGroups': [{'GroupName': 'allow_ssh', 'GroupId': 'sg-124314asdasd'}], 'SourceDestCheck': True, 'SpotInstanceRequestId': 'sir-squileum', 'Tags': [{'Key': 'aws:ec2:fleet-id', 'Value': 'fleet-a-6e94-4f60-c-v'}, {'Key': 'Name', 'Value': 'light-your-internet-history-scanner'}, {'Key': 'aws:ec2launchtemplate:version', 'Value': '3807'}, {'Key': 'aws:ec2launchtemplate:id', 'Value': 'lt-a12s3dg567'}, {'Key': 'used_by', 'Value': 'natsec - ec2 scan'}], 'VirtualizationType': 'hvm', 'CpuOptions': {'CoreCount': 2, 'ThreadsPerCore': 1}, 'CapacityReservationSpecification': {'CapacityReservationPreference': 'open'}, 'HibernationOptions': {'Configured': False}, 'MetadataOptions': {'State': 'applied', 'HttpTokens': 'optional', 'HttpPutResponseHopLimit': 1, 'HttpEndpoint': 'enabled', 'HttpProtocolIpv6': 'disabled', 'InstanceMetadataTags': 'disabled'}, 'EnclaveOptions': {'Enabled': False}, 'PlatformDetails': 'Linux/UNIX', 'UsageOperation': 'RunInstances', 'UsageOperationUpdateTime': '2021-05-04 11:52:11+00:00', 'PrivateDnsNameOptions': {'HostnameType': 'ip-name', 'EnableResourceNameDnsARecord': False, 'EnableResourceNameDnsAAAARecord': False}, 'MaintenanceOptions': {'AutoRecovery': 'default'}}, 'AssetClass': 'Compute', 'AssetService': 'Amazon EC2', 'AssetComponent': 'Instance'}, 'RecordState': 'ARCHIVED', 'Remediation': {'Recommendation': {'Text': 'To learn more about Source/destination checking refer to the Elastic network interfaces section of the Amazon Elastic Compute Cloud User Guide', 'Url': 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html#eni-basics'}}, 'Resources': [{'Type': 'AwsEc2Instance', 'Id': 'arn:aws-iso:ec2:us-iso-west-1:111111111111:instance/i-123456aab', 'Partition': 'aws', 'Region': 'us-iso-west-1', 'Details': {'AwsEc2Instance': {'Type': 't2.large', 'ImageId': 'ami-124314asdasd', 'VpcId': 'vpc-1123123aaaa', 'SubnetId': 'subnet-a12s3dg567', 'LaunchedAt': '2021-05-04T11:52:12+00:00'}}}], 'SchemaVersion': '2018-10-08', 'Severity': {'Label': 'INFORMATIONAL'}, 'Title': '[EC2.4] EC2 Instances should use Source-Destination checks unless absolutely not required', 'Types': ['Software and Configuration Checks/AWS Security Best Practices'], 'UpdatedAt': '2021-05-04T15:47:49.036592+00:00', 'Workflow': {'Status': 'RESOLVED'}}
+```
 
 ## MongoDB & AWS DocumentDB Cloud Asset Management (CAM) Output
 
