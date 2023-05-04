@@ -68,7 +68,6 @@ class JsonProvider(object):
         mongodbPort = mongodbDetails["mongodb_port"]
         mongodbDatabaseName = mongodbDetails["mongodb_database_name"]
         mongodbCollectionName = mongodbDetails["mongodb_collection_name"]
-        mongodbInsertManyChunkSize = mongodbDetails["mongodb_insert_many_chunk_size"]
 
         # Determine if a password if provided, and if so, retrieve it based on `credentials_location`
         if mongodbDetails["mongodb_password_in_use"] == True:
@@ -122,7 +121,6 @@ class JsonProvider(object):
         self.port = mongodbPort
         self.dbName = mongodbDatabaseName
         self.collName = mongodbCollectionName
-        self.chunkSize = mongodbInsertManyChunkSize
         self.password = password
         self.tlsPath = mongoTlsCertPath
 
@@ -170,16 +168,19 @@ class JsonProvider(object):
 
         del findings
 
-        print(f"Attempting to write {len(decodedFindings)} findings to MongoDB in {self.chunkSize} chunks")
+        print(f"Attempting to upsert {len(decodedFindings)} findings to MongoDB.")
 
-        for i in range(0, len(decodedFindings), self.chunkSize):
-            # here is where the fun begins
-            chunked = decodedFindings[i:i + self.chunkSize]
-
+        for doc in decodedFindings:
             try:
-                collection.insert_many(chunked)
+                # use the Finding "Id" as the MongoDB "_id"
+                doc["_id"] = doc["Id"]
+                filter = {'_id': doc['_id']}
+                update = {'$set': doc}
+                collection.update_one(filter, update, upsert=True)
             except pymongo.errors as e:
                 print(f"Encountered an error during insert_many() operation: {e}")
+            except KeyError as ke:
+                raise ke
 
         return True
     

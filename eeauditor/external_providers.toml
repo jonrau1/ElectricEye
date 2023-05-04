@@ -204,9 +204,3 @@ title = "ElectricEye Configuration"
         # e.g., if you name your Collection "electriceye_stuff" CAM will name it "electriceye_stuff_cam"
 
         mongodb_collection_name = ""
-
-        # This value specifies the batch size for ElectricEye findings written into MongoDB, ElectricEye uses
-        # PyMongo insert_many() to write chunks of findings into your Collections. Right-size this according to your
-        # resource considerations
-
-        mongodb_insert_many_chunk_size = 40 # Must be an Integer
