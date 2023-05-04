@@ -134,7 +134,7 @@ class PostgresProvider(object):
                 )
             """)
 
-            print(f"Attempting to write CAM {len(processedFindings)} entries to PostgreSQL.")
+            print(f"Attempting to write {len(processedFindings)} CAM entries to PostgreSQL.")
             for f in processedFindings:
                 # The Finding ID is our primary key, on conflicts we will overwrite every single value for the specific ID except
                 # for ASFF FirstObservedAt (first_observed_at) and ASFF CreatedAt (created_at) every other value will be preserved
@@ -304,11 +304,11 @@ class PostgresProvider(object):
                     "AssetClass": productFields.get("AssetClass", ""),
                     "AssetService": productFields.get("AssetService", ""),
                     "AssetComponent": productFields.get("AssetComponent", ""),
-                    "Informational_severity_findings": infoSevFindings,
-                    "Low_severity_findings": lowSevFindings,
-                    "Medium_severity_findings": medSevFindings,
-                    "High_severity_findings": highSevFindings,
-                    "Critical_severity_findings": critSevFindings
+                    "InformationalSeverityFindings": infoSevFindings,
+                    "LowSeverityFindings": lowSevFindings,
+                    "MediumSeverityFindings": medSevFindings,
+                    "HighSeverityFindings": highSevFindings,
+                    "CriticalSeverityFindings": critSevFindings
                 }
             )
 
