@@ -212,6 +212,7 @@ class PostgresProvider(object):
             # close communication with the postgres server (rds)
             cursor.close()
             
+            print("Completed writing all findings to PostgreSQL.")
 
         except psql.OperationalError as oe:
             print("Cannot connect to PostgreSQL! Review your Security Group settings and/or information provided to connect")
@@ -298,6 +299,8 @@ class PostgresProvider(object):
                     "RecordState": finding["RecordState"]
                 }
             )
+
+        del findings
 
         print("Parsed out findings details for PostgreSQL.")
 
