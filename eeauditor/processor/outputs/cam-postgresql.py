@@ -142,8 +142,7 @@ class PostgresProvider(object):
                     INSERT INTO {self.tableName}_cam (asset_id, first_observed_at, provider, provider_type, provider_account_id, asset_region, asset_details, asset_class, asset_service, asset_component, informational_severity_findings, low_severity_findings, medium_severity_findings, high_severity_findings, critical_severity_findings)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                     ON CONFLICT (asset_id) DO UPDATE
-                        SET product_arn = excluded.product_arn,
-                            provider = excluded.provider,
+                        SET provider = excluded.provider,
                             provider_type = excluded.provider_type,
                             provider_account_id = excluded.provider_account_id,
                             asset_region = excluded.asset_region,
