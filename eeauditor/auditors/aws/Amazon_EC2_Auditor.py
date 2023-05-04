@@ -1390,11 +1390,9 @@ def ec2_concentration_risk(cache: dict, session, awsAccountId: str, awsRegion: s
     uAzs = []
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+    assetB64 = None
     # Evaluation time - grab all unique subnets per EC2 instance in Region
     for i in describe_instances(cache, session):
-        # B64 encode all of the details for the Asset
-        assetJson = json.dumps(i,default=str).encode("utf-8")
-        assetB64 = base64.b64encode(assetJson)
         subnetId = str(i["SubnetId"])
         # write subnets to list if it"s not there
         if subnetId not in uSubnets:
