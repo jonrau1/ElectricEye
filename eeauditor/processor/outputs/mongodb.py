@@ -24,6 +24,8 @@ import os
 import sys
 import requests
 import pymongo
+import json
+import base64
 from processor.outputs.output_base import ElectricEyeOutput
 
 # Boto3 Clients
@@ -155,12 +157,24 @@ class JsonProvider(object):
         except pymongo.errors.ConnectionError as e:
             print(f"Connection or credential issue with MongoDB/AWS DocumentDB!")
             raise e
+        
+        decodedFindings = [
+            {**d, "ProductFields": {**d["ProductFields"],
+                "AssetDetails": json.loads(base64.b64decode(d["ProductFields"]["AssetDetails"]).decode("utf-8"))
+                    if d["ProductFields"]["AssetDetails"] is not None
+                    else None
+            }} if "AssetDetails" in d["ProductFields"]
+            else d
+            for d in findings
+        ]
 
-        print(f"Attempting to write {len(findings)} findings to MongoDB in {self.chunkSize} chunks")
+        del findings
 
-        for i in range(0, len(findings), self.chunkSize):
+        print(f"Attempting to write {len(decodedFindings)} findings to MongoDB in {self.chunkSize} chunks")
+
+        for i in range(0, len(decodedFindings), self.chunkSize):
             # here is where the fun begins
-            chunked = findings[i:i + self.chunkSize]
+            chunked = decodedFindings[i:i + self.chunkSize]
 
             try:
                 collection.insert_many(chunked)
@@ -211,3 +225,7 @@ class JsonProvider(object):
         return credential
 
 # EOF
+
+"""
+docker run --name my-mongo -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=password -d mongo
+"""
