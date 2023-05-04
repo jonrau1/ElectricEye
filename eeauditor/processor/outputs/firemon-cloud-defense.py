@@ -99,7 +99,9 @@ class DopsProvider(object):
         self.apiKey = apiKey
 
     def write_findings(self, findings: list, **kwargs):
-        
+        if len(findings) == 0:
+            print("There are not any findings to write!")
+            exit(0)
         # Use another list comprehension to remove `ProductFields.AssetDetails` from non-Asset reporting outputs
         noDetails = [
             {**d, "ProductFields": {k: v for k, v in d["ProductFields"].items() if k != "AssetDetails"}} for d in findings

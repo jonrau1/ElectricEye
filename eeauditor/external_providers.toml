@@ -153,3 +153,60 @@ title = "ElectricEye Configuration"
         # should be the name of the AWS Systems Manager Parameter Store SecureString Parameter
 
         firemon_cloud_defense_api_key_value = ""
+
+    [outputs.mongodb] # This unifies the old "docdb" output to account for local MongoDB and AWS DocumentDB
+
+        # This value indicates whether or not you are using a password for your MongoDB deployment (which you should). If
+        # you are using AWS DocumentDB this MUST be "true"
+
+        mongodb_password_in_use = true # Valid Choices BOOLEAN: true | false
+
+        # This value indicates that you are using AWS DocumentDB (true) or a self-hosted or other MongoDB deployment (false)
+
+        mongodb_using_aws_documentdb = false # Valid Choices BOOLEAN: true | false
+
+        # This value indicates that you are using AWS DocumentDB with TLS-enabled (true) or TLS-disabled (false) 
+        # which will instruct ElectricEye to locally download the `global-bundle.pem` from
+        # https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem
+
+        mongodb_aws_documentdb_tls_enabled = false # Valid Choices BOOLEAN: true | false
+
+        # MongoDB Username - if you are utilizes Mongo Role-based Access Control (RBAC) ensure the user has the proper permisisons
+        # write to Databases such as `readWrite` or `readWriteAnyDatabase`. If you are not using a Password then you can leave this
+        # value blank, ElectricEye will overwrite the value here to ensure the "pre-flight" check for blank values won't fail it
+
+        mongodb_username = ""
+
+        # The hostname or IP address of your MongoDB / AWS DocumentDB instance. E.g., `192.1.2.40`, `localhost` or
+        # an AWS Doc DB cluster endpoint `sample-cluster.node.us-east-1.docdb.amazonaws.com`
+
+        mongodb_endpoint = ""
+
+        # The port number for your MongoDB / AWS DocumentDB deployment. Defaults to 27017
+
+        mongodb_port = 27017 # Must be an Integer
+
+        # The location (or actual contents) of the Password for the User specified in `mongodb_username`
+        # this location must match the value of `global.credentials_location` e.g., if you specify "AWS_SSM" then
+        # the value for this variable should be the name of the AWS Systems Manager Parameter Store SecureString Parameter
+        # LEAVE THIS VALUE BLANK IF YOU DO NOT HAVE ONE
+
+        mongodb_password_value = ""
+
+        # The name you want given to your Database that will be created in MongoDB, Database names are case-sensitive so
+        # MongoDB recommends using snake_case or all lowercases
+
+        mongodb_database_name = ""
+
+        # The name you want given to the Collection within your Database that will be created in MongoDB, 
+        # Database names are case-sensitive so MongoDB recommends using snake_case or all lowercases. 
+        # PLEASE NOTE that Cloud Asset Management (CAM) output will append "_cam" to the collection name.
+        # e.g., if you name your Collection "electriceye_stuff" CAM will name it "electriceye_stuff_cam"
+
+        mongodb_collection_name = ""
+
+        # This value specifies the batch size for ElectricEye findings written into MongoDB, ElectricEye uses
+        # PyMongo insert_many() to write chunks of findings into your Collections. Right-size this according to your
+        # resource considerations
+
+        mongodb_insert_many_chunk_size = 40 # Must be an Integer

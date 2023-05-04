@@ -95,9 +95,9 @@ class PostgresProvider(object):
         self.password = password
 
     def write_findings(self, findings: list, **kwargs):
-        processedFindings = self.processing_findings_for_upset(findings)
+        processedFindings = self.processing_findings_for_upsert(findings)
         if len(processedFindings) == 0:
-            print("There are not any findings to write to file!")
+            print("There are not any findings to write!")
             exit(0)
 
         del findings
@@ -227,6 +227,8 @@ class PostgresProvider(object):
             raise oe
         except Exception as e:
             raise e
+        
+        return True
 
     def get_credential_from_aws_ssm(self, value, configurationName):
         """
@@ -269,7 +271,7 @@ class PostgresProvider(object):
         
         return credential
     
-    def processing_findings_for_upset(self, findings):
+    def processing_findings_for_upsert(self, findings):
         """
         This function will take in the "no assets" Findings list and parse out the specific values
         for upsertion into PostgreSQL
@@ -319,3 +321,8 @@ class PostgresProvider(object):
         return processedFindings
 
 ## EOF
+
+"""
+mkdir ~/postgres-data
+docker run -d --name my-postgres -e POSTGRES_PASSWORD=mysecretpassword -v ~/postgres-data:/var/lib/postgresql/data -p 5432:5432 postgres
+"""

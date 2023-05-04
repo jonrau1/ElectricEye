@@ -52,7 +52,7 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
         findings=findings,
         outputs=outputs,
         output_file=outputFile
-    )    
+    )
 
 @click.command()
 # Assessment Target
