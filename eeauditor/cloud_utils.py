@@ -122,7 +122,8 @@ class CloudConfig(object):
                     serviceNowPwVal,
                     "servicenow_sspm_password_value"
                 )
-            # All other ServiceNow Values
+            # All other ServiceNow Values are written as environment variables and either provided
+            # to PySnow Clients or to ProductFields{} within the ASFF per Finding
             os.environ["SNOW_INSTANCE_NAME"] = serviceNowValues["servicenow_instance_name"]
             os.environ["SNOW_INSTANCE_REGION"] = serviceNowValues["servicenow_instance_region"]
             os.environ["SNOW_SSPM_USERNAME"] = serviceNowValues["servicenow_sspm_username"]
@@ -136,6 +137,7 @@ class CloudConfig(object):
         ec2 = boto3.client('ec2')
         
         try:
+            # majority of Regions have a "opt-in-not-required", hence the "not not opted in" list comp
             regions = [region["RegionName"] for region in ec2.describe_regions()["Regions"] if region["OptInStatus"] != "not-opted-in"]
         except ClientError as e:
             raise e
