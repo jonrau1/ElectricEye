@@ -20,6 +20,8 @@ To configure the TOML file, you need to modify the values of the variables in th
 
 - `credentials_location`: Set this variable to specify the location of where credentials are stored and will be retrieved from. You can choose from AWS Systems Manager Parameter Store (`AWS_SSM`), AWS Secrets Manager (`AWS_SECRETS_MANAGER`), or from the TOML file itself (`CONFIG_FILE`) which is **NOT** recommended.
 
+**NOTE** When retrieving from SSM or Secrets Manager, your current Profile / Boto3 Session is used and *NOT* the ElectricEye Role that is specified in `aws_electric_eye_iam_role_name`. Ensure you have `ssm:GetParameter`, `secretsmanager:GetSecretValue`, and relevant `kms` permissions as needed to retrieve this values.
+
 - `aws_account_targets`: This variable specifies a list of AWS accounts, OU IDs, or an organization's principal ID that you want to run ElectricEye against. If you do not specify any values, and your `aws_multi_account_target_type` is set to `Accounts` then your current AWS Account will be evaluated.
 
 If you are running this against your Organization **leave this option empty**. Additionally, the Account you are running ElectricEye from must either be the AWS Organizations Management Account or an Account which is a Delegated Admin for an Organizations-scoped service such as AWS FMS, Amazon GuardDuty, or otherwise.
