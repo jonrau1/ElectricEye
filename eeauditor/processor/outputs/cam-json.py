@@ -83,6 +83,7 @@ class CamJsonProvider(object):
             infoSevFindings = lowSevFindings = medSevFindings = highSevFindings = critSevFindings = 0
             
             for item in subData:
+                firstObserved = str(item["FirstObservedAt"])
                 sevLabel = item["Severity"]["Label"]
                 if sevLabel == "INFORMATIONAL":
                     infoSevFindings += 1
@@ -99,9 +100,7 @@ class CamJsonProvider(object):
             cloudAssetManagementFindings.append(
                 {
                     "AssetId": uid,
-                    "AssetClass": productFields.get("AssetClass", ""),
-                    "AssetService": productFields.get("AssetService", ""),
-                    "AssetComponent": productFields.get("AssetComponent", ""),
+                    "FirstObservedAt": firstObserved,
                     "Provider": productFields.get("Provider", ""),
                     "ProviderType": productFields.get("ProviderType", ""),
                     "ProviderAccountId": productFields.get("ProviderAccountId", ""),
