@@ -124,6 +124,7 @@ class CloudConfig(object):
                 )
             # All other ServiceNow Values
             os.environ["SNOW_INSTANCE_NAME"] = serviceNowValues["servicenow_instance_name"]
+            os.environ["SNOW_INSTANCE_REGION"] = serviceNowValues["servicenow_instance_region"]
             os.environ["SNOW_SSPM_USERNAME"] = serviceNowValues["servicenow_sspm_username"]
             os.environ["SNOW_FAILED_LOGIN_BREACHING_RATE"] = serviceNowValues["servicenow_failed_login_breaching_rate"]
 

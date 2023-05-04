@@ -21,6 +21,7 @@ python3 eeauditor/controller.py -t AWS -o stdout
 
 ## Table of Contents
 
+- [Architecture](#architecture)
 - [Quick Run Down](#quick-run-down-running-running)
 - [Tell me more!](#tell-me-more-raised_eyebrow-raised_eyebrow)
 - [Over-explain it!](#electriceye-except-over-explained-round_pushpin-round_pushpin)
@@ -39,13 +40,17 @@ python3 eeauditor/controller.py -t AWS -o stdout
     - [Auditor testing](./docs/new_checks/DEVELOPER_GUIDE.md#auditor-testing)
 - [License](#license)
 
+## Architecture
+
+![Architecture](./screenshots/ElectricEye2023Architecture.jpg)
+
 ## Quick Run Down :running: :running:
 
 - ElectricEye is a Python CLI tool that offers cross-Account, cross-Region, multi-Cloud CAM, CSPM, SSPM, and EASM capabilities across AWS, GCP, and ServiceNow (*with more on the way!*). All Partitions are supported for AWS!
 
 - ElectricEye offers over 500 checks for security, reliability, monitoring, and exposure across 100 CSP & SaaS services, including atypical services not supported by AWS Config/Google Cloud Asset API or mainstream CSPM & CNAPP tools.
 
-- All checks are currently mapped to NIST Cybersecurity Framework V1.1, NIST Special Publication 800-53 Revision 4, AICPA Trust Service Criteria (TSCs), and ISO 27001:2013 ISMS controls.
+- All checks are currently mapped to NIST Cybersecurity Framework V1.1, NIST Special Publication 800-53 Revision 4, AICPA 2020 Trust Service Criteria (TSCs), and ISO 27001:2013 ISMS controls.
 
 - The EASM module uses NMAP for service discovery and reachability assessment of over 20 highly-dangerous ports and protocols for nearly every public-facing CSP service
 
@@ -94,8 +99,6 @@ Options:
 For more information see [here](#using-electriceye).
 
 ## ElectricEye, except over-explained :round_pushpin: :round_pushpin:
-
-![Architecture](./screenshots/ElectricEye2023Architecture.jpg)
 
 ElectricEye was created in early 2019 as an extension to [AWS Security Hub](https://aws.amazon.com/security-hub/), AWS Cloud's native Cloud Security Posture Management (CSPM) solution, with the goal to extend beyond only AWS Config-supported Services and add extra checks and Audit Readiness Standards (AKA "Compliance Standards") to support Cloud Security, DevOps, IT, and Risk teams running workloads on AWS. ElectricEye's AWS "pedigree" is most evident in the developer experience as it utilizes AWS credentials natively and expects other credentials to be stored in AWS Systems Manager ([SSM](https://aws.amazon.com/systems-manager/)) [Parameter Store](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html).
 

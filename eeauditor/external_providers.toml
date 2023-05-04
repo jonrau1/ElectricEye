@@ -62,7 +62,27 @@ credentials_location = "AWS_SSM" # VALID CHOICES: AWS_SSM | AWS_SECRETS_MANAGER 
     m365_ent_app_client_secret_id_value = ""
 
     [credentials.servicenow]
+
+    # The *name* of your Instance, for example, if its URL is "https://dev90210.service-now.com/" the name is "dev90210"
+    
     servicenow_instance_name = ""
+
+    # Geographic location of your Instance which will be provided to `ProductFields.AssetRegion` within the Electriceye Findings
+    # this is typically "us", "eu", or "ap" and may differ for Federal instances
+
+    servicenow_instance_region = ""
+
+    # The name of the ServiceNow User with permissions that will be used by the PySNOW Client
+
     servicenow_sspm_username = ""
+
+    # The location (or actual contents) of the Password for the User specified in `servicenow_instance_name`
+    # this location must match the value of `global.credentials_location` e.g., if you specify "AWS_SSM" then
+    # the value for this variable should be the name of the SSM SecureString Parameter
+
     servicenow_sspm_password_value = ""
+
+    # The threshold for when to create a failing finding for the "Servicenow_Users_Auditor" Check for failed login-in
+    # attempts by active users in your Instance
+
     servicenow_failed_login_breaching_rate = "5"
