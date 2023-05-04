@@ -36,7 +36,7 @@ class CloudConfig(object):
         self.aws_multi_account_target_type = data["global"]["aws_multi_account_target_type"]
 
         if data["global"]["credentials_location"] not in CREDENTIALS_LOCATION_CHOICES:
-            print("Invalid option for [global.credentials_location].")
+            print(f"Invalid option for [global.credentials_location]. Must be one of {str(CREDENTIALS_LOCATION_CHOICES)}.")
             sys.exit(2)
         self.credentials_location = data["global"]["credentials_location"]
 

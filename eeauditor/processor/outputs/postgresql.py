@@ -36,14 +36,14 @@ CREDENTIALS_LOCATION_CHOICES = ["AWS_SSM", "AWS_SECRETS_MANAGER", "CONFIG_FILE"]
 
 @ElectricEyeOutput
 class PostgresProvider(object):
-    __provider__ = "postgres"
+    __provider__ = "postgresql"
 
     def __init__(self):
         print("Preparing PostgreSQL credentials.")
 
         # Get the absolute path of the current directory
         currentDir = os.path.abspath(os.path.dirname(__file__))
-        # Go two directories back
+        # Go two directories back to /eeauditor/
         twoBack = os.path.abspath(os.path.join(currentDir, "../../"))
 
         # TOML is located in /eeauditor/ directory
@@ -53,7 +53,7 @@ class PostgresProvider(object):
 
         # Parse from [global] to determine credential location of PostgreSQL Password
         if data["global"]["credentials_location"] not in CREDENTIALS_LOCATION_CHOICES:
-            print("Invalid option for [global.credentials_location].")
+            print(f"Invalid option for [global.credentials_location]. Must be one of {str(CREDENTIALS_LOCATION_CHOICES)}.")
             sys.exit(2)
         self.credentials_location = data["global"]["credentials_location"]
 
@@ -81,7 +81,8 @@ class PostgresProvider(object):
                 "gcp_service_account_json_payload_value"
             )
 
-        # Ensure that values are provided for all variable
+        # Ensure that values are provided for all variable - use all() and a list comprehension to check the vars
+        # empty strings will trigger `if not`
         if not all(s for s in [tableName, userName, databaseName, endpoint, port, password]):
             print("An empty value was detected in '[outputs.postgresql]'. Review the TOML file and try again!")
             sys.exit(2)
@@ -95,6 +96,9 @@ class PostgresProvider(object):
 
     def write_findings(self, findings: list, **kwargs):
         processedFindings = self.processing_findings_for_upset(findings)
+        if len(processedFindings) == 0:
+            print("There are not any findings to write to file!")
+            exit(0)
 
         del findings
 
@@ -110,6 +114,9 @@ class PostgresProvider(object):
             cursor = engine.cursor()
 
             # Create a Table based on the provided Table name that contains a majority of the ASFF details
+            # Types and Compliance Requirements will be preserved as TEXT[] as they're just a list of strings
+            # The Resources block will be written as a JSONB (json bytes) but the "resource_id" will also be parsed
+            # All timestamps are already UTC ISO 8061 - TIMESTAMP WITH TIME ZONE (TIMESTAMPTZ) will preserve this
             cursor.execute(f"""
                 CREATE TABLE IF NOT EXISTS {self.tableName} (
                     id TEXT PRIMARY KEY,
@@ -142,7 +149,8 @@ class PostgresProvider(object):
 
             print(f"Attempting to write {len(processedFindings)} to PostgreSQL.")
             for f in processedFindings:
-
+                # The Finding ID is our primary key, on conflicts we will overwrite every single value for the specific ID except
+                # for ASFF FirstObservedAt (first_observed_at) and ASFF CreatedAt (created_at) every other value will be preserved
                 cursor.execute(f"""
                     INSERT INTO {self.tableName} (id, product_arn, types, first_observed_at, created_at, updated_at, severity_label, title, description, remediation_recommendation_text, remediation_recommendation_url, product_name, provider, provider_type, provider_account_id, asset_region, asset_class, asset_service, asset_component, resource_id, resource, compliance_status, compliance_related_requirements, workflow_status, record_state)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
@@ -215,7 +223,7 @@ class PostgresProvider(object):
             print("Completed writing all findings to PostgreSQL.")
 
         except psql.OperationalError as oe:
-            print("Cannot connect to PostgreSQL! Review your Security Group settings and/or information provided to connect")
+            print("Cannot connect to your PostgreSQL database. Review your network configuraions and database parameters and try again.")
             raise oe
         except Exception as e:
             raise e
@@ -266,6 +274,10 @@ class PostgresProvider(object):
         This function will take in the "no assets" Findings list and parse out the specific values
         for upsertion into PostgreSQL
         """
+
+        if len(findings) == 0:
+            print("There are not any findings to write to file!")
+            exit(0)
 
         processedFindings = []
 
