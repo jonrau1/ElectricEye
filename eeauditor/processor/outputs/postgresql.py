@@ -22,6 +22,7 @@ import tomli
 import boto3
 import sys
 import os
+import json
 import psycopg2 as psql
 from botocore.exceptions import ClientError
 from processor.outputs.output_base import ElectricEyeOutput
@@ -40,8 +41,13 @@ class PostgresProvider(object):
     def __init__(self):
         print("Preparing PostgreSQL credentials.")
 
+        # Get the absolute path of the current directory
+        currentDir = os.path.abspath(os.path.dirname(__file__))
+        # Go two directories back
+        twoBack = os.path.abspath(os.path.join(currentDir, "../../"))
+
         # TOML is located in /eeauditor/ directory
-        tomlFile = f"../../external_providers.toml"
+        tomlFile = f"{twoBack}/external_providers.toml"
         with open(tomlFile, "rb") as f:
             data = tomli.load(f)
 
@@ -192,7 +198,7 @@ class PostgresProvider(object):
                         f["AssetService"],
                         f["AssetComponent"],
                         f["ResourceId"],
-                        f["Resource"],
+                        json.dumps(f["Resource"]),
                         f["ComplianceStatus"],
                         f["ComplianceRelatedRequirements"],
                         f["WorkflowStatus"],
