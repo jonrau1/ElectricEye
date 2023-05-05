@@ -4,12 +4,35 @@ This documentation is dedicated to using ElectricEye for evaluation of AWS Envir
 
 ## Table of Contents
 
-- [Quickstart on AWS](#quickstart-on-aws)
+- [Configuring TOML](#configuring-toml)
+- [Use ElectricEye for AWS](#use-electriceye-for-aws)
 - [Building & Pushing ElectricEye Docker Image to ECR](#build-and-push-the-docker-image-to-ecr)
 - [AWS Multi-Account & Multi-Region Usage](#multi-account-usage)
 - [AWS EASM Reporting](#aws-external-attack-surface-reporting)
 
-## Quickstart on AWS
+## Configuring TOML
+
+This section explains how to configure ElectricEye, a Python CLI tool that supports Cloud Asset Management (CAM), Cloud Security Posture Management (CSPM), SaaS Security Posture Management (SSPM), and External Attack Surface Management (EASM) capabilities across AWS, GCP, and ServiceNow, using a TOML configuration file. The configuration file contains settings for credentials, regions, accounts, and global settings and is located [here](../../eeauditor/external_providers.toml).
+
+To configure the TOML file, you need to modify the values of the variables in the `[global]` and `[regions_and_accounts.aws]` sections of the file. Here's an overview of the key variables you need to configure:
+
+- `aws_multi_account_target_type`: Set this variable to specify if you want to run ElectricEye against a list of AWS Accounts (`Accounts`), a list of accounts within specific OUs (`OU`), or every account in an AWS Organization (`Organization`).
+
+- `credentials_location`: Set this variable to specify the location of where credentials are stored and will be retrieved from. You can choose from AWS Systems Manager Parameter Store (`AWS_SSM`), AWS Secrets Manager (`AWS_SECRETS_MANAGER`), or from the TOML file itself (`CONFIG_FILE`) which is **NOT** recommended.
+
+**NOTE** When retrieving from SSM or Secrets Manager, your current Profile / Boto3 Session is used and *NOT* the ElectricEye Role that is specified in `aws_electric_eye_iam_role_name`. Ensure you have `ssm:GetParameter`, `secretsmanager:GetSecretValue`, and relevant `kms` permissions as needed to retrieve this values.
+
+- `aws_account_targets`: This variable specifies a list of AWS accounts, OU IDs, or an organization's principal ID that you want to run ElectricEye against. If you do not specify any values, and your `aws_multi_account_target_type` is set to `Accounts` then your current AWS Account will be evaluated.
+
+If you are running this against your Organization **leave this option empty**. Additionally, the Account you are running ElectricEye from must either be the AWS Organizations Management Account or an Account which is a Delegated Admin for an Organizations-scoped service such as AWS FMS, Amazon GuardDuty, or otherwise.
+
+- `aws_regions_selection`: This variable specifies the AWS regions that you want to scan. If left blank, the current AWS region is used. You can provide a list of AWS regions or simply use `["All"]` to scan all regions.
+
+- `aws_electric_eye_iam_role_name`: This variable specifies the ***Name*** of the AWS IAM role that ElectricEye will assume and utilize to execute its Checks. The role name must be the same for all accounts, including your current account. To facilitate this, use [this CloudFormation template](../../cloudformation/ElectricEye_Organizations_StackSet.yaml) and deploy it as an AWS CloudFormation StackSet.
+
+By configuring these variables in the TOML file, you can customize ElectricEye's behavior to suit your specific AWS environments.
+
+## Use ElectricEye for AWS
 
 1. Navigate to the IAM console and select on **Policies** under **Access management**. Select **Create policy** and under the JSON tab, copy and paste the contents [Instance Profile IAM Policy](../policies/ElectricEye_AWS_Policy.json). Select **Review policy**, create a name, and then select **Create policy**. This Policy can be attached as to EC2 Instance Profiles, ECS Task Policies, and other locations.
 
@@ -45,29 +68,29 @@ pip3 install --user -r requirements.txt
 
 5. Use the Controller to conduct different kinds of Assessments.
 
-- 5A. Retrieve all options for the Controller.
+    - 5A. Retrieve all options for the Controller.
 
-```bash
-python3 eeauditor/controller.py --help
-```
+    ```bash
+    python3 eeauditor/controller.py --help
+    ```
 
-- 5B. Evaluate your entire AWS environment.
+    - 5B. Evaluate your entire AWS environment.
 
-```bash
-python3 eeauditor/controller.py -t AWS
-```
+    ```bash
+    python3 eeauditor/controller.py -t AWS
+    ```
 
-- 5C. Evaluate your AWS environment against a specifc Auditor (runs all Checks within the Auditor).
+    - 5C. Evaluate your AWS environment against a specifc Auditor (runs all Checks within the Auditor).
 
-```bash
-python3 eeauditor/controller.py -t AWS -a AWS_IAM_Auditor
-```
+    ```bash
+    python3 eeauditor/controller.py -t AWS -a AWS_IAM_Auditor
+    ```
 
-- 5D. Evaluate your AWS environment against a specific Check within any Auditor, it is ***not required*** to specify the Auditor name as well. The below examples runs the "[Athena.1] Athena workgroups should be configured to enforce query result encryption" check.
+    - 5D. Evaluate your AWS environment against a specific Check within any Auditor, it is ***not required*** to specify the Auditor name as well. The below examples runs the "[Athena.1] Athena workgroups should be configured to enforce query result encryption" check.
 
-```bash
-python3 eeauditor/controller.py -t AWS -c athena_workgroup_encryption_check
-```
+    ```bash
+    python3 eeauditor/controller.py -t AWS -c athena_workgroup_encryption_check
+    ```
 
 ## Build and push the Docker image to ECR
 
@@ -112,49 +135,6 @@ sudo docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/electriceye:v
 ```
 
 4. Navigate to the ECR console and copy the `URI` of your Docker image.
-
-## Multi Account Usage
-
-ElectricEye supports running all Auditors in remote AWS Accounts as long as the remote AWS Account trusts your ***current*** AWS Account or IAM Principal. Consider deploying a StackSet from the [ElectricEye Organizations StackSet template](../cloudformation/ElectricEye_Organizations_StackSet.yaml) for easier setup.
-
-- To specify a remote Account supply both an Account ID using `--assume-role-account` and the name of the IAM Role in that Account using `--assume-role-name`. ElectricEye will attempt to Assume the role and create a new Boto3 Session.
-
-```bash
-python3 eeauditor/controller.py -t AWS --assume-role-account 111111111111 --assume-role-name CrossAccountElectricEyeRole -o stdout
-```
-
-- To target all Accounts in a specific Organizational Unit, use the following snippet, this will only run on Active Accounts and fail gracefully for Accounts without the specified Role.
-
-```bash
-ACCOUNTS_IN_OU=$(aws organizations list-accounts-for-parent --parent-id ou-p6ba-2hwy74oa --query 'Accounts[?Status==`ACTIVE`].Id' --output text)
-for accountId in $ACCOUNTS_IN_OU; do python3 ElectricEye/eeauditor/controller.py -t AWS --assume-role-account $accountId --assume-role-name CrossAccountElectricEyeRole -o stdout; done
-```
-
-- To target all Accounts in your entire AWS Organization, use the following snippet, this will only run on Active Accounts and fail gracefully for Accounts without the specified Role.
-
-```bash
-ACCOUNTS_IN_ORG=$(aws organizations list-accounts --query 'Accounts[?Status==`ACTIVE`].Id' --output text)
-for accountId in $ACCOUNTS_IN_ORG; do python3 ElectricEye/eeauditor/controller.py -t AWS -a Amazon_EC2_Auditor --assume-role-account $accountId --assume-role-name CrossAccountElectricEyeRole -o stdout; done
-```
-
-- You can additionally override the Region for multi-Region assessments by supplying an AWS Region using `--region-override`, ensure the Region you specify match your current Partition (e.g., GovCloud, AWS China, etc.) otherwise ElectricEye will be very upset at you.
-
-```bash
-python3 eeauditor/controller.py -t AWS --assume-role-account 111111111111 --assume-role-name CrossAccountElectricEyeRole --region-override eu-central-1 -o stdout
-```
-
-- You can also override your current Region without specifying a remote Account, ElectricEye will still attempt to swap to the proper Region for Auditors that require running in a specific Region such as us-east-1 for AWS Health, AWS Trusted Advisor (`support`), AWS WAFv2 in Global context (`cloudfront`) and us-west-2 for Global Accelerator.
-
-```bash
-python3 eeauditor/controller.py -t AWS --region-override us-west-1 -o stdout
-```
-
-- Lastly, you can loop through all AWS Regions for evaulation as well
-
-```bash
-AWS_REGIONS=$(aws ec2 describe-regions --query 'Regions[*].RegionName' --output text)
-for regionId in $AWS_REGIONS; do python3 ElectricEye/eeauditor/controller.py -t AWS --region-override $regionId -o stdout; done
-```
 
 ## AWS External Attack Surface Reporting
 

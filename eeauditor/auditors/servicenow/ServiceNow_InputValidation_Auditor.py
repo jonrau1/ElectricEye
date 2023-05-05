@@ -28,6 +28,7 @@ import json
 registry = CheckRegister()
 
 SNOW_INSTANCE_NAME = os.environ["SNOW_INSTANCE_NAME"]
+SNOW_INSTANCE_REGION = os.environ["SNOW_INSTANCE_REGION"]
 SNOW_SSPM_USERNAME = os.environ["SNOW_SSPM_USERNAME"]
 SNOW_SSPM_PASSWORD = os.environ["SNOW_SSPM_PASSWORD"]
 SNOW_FAILED_LOGIN_BREACHING_RATE = os.environ["SNOW_FAILED_LOGIN_BREACHING_RATE"]
@@ -84,7 +85,7 @@ def servicenow_sspm_disallow_embedded_html_code_check(cache: dict, awsAccountId:
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -126,7 +127,7 @@ def servicenow_sspm_disallow_embedded_html_code_check(cache: dict, awsAccountId:
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -202,7 +203,7 @@ def servicenow_sspm_disallow_embedded_html_code_check(cache: dict, awsAccountId:
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -280,7 +281,7 @@ def servicenow_sspm_disallow_js_tags_embedded_html_code_check(cache: dict, awsAc
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -322,7 +323,7 @@ def servicenow_sspm_disallow_js_tags_embedded_html_code_check(cache: dict, awsAc
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -398,7 +399,7 @@ def servicenow_sspm_disallow_js_tags_embedded_html_code_check(cache: dict, awsAc
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -476,7 +477,7 @@ def servicenow_sspm_check_unsanitized_html_check(cache: dict, awsAccountId: str,
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -518,7 +519,7 @@ def servicenow_sspm_check_unsanitized_html_check(cache: dict, awsAccountId: str,
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -594,7 +595,7 @@ def servicenow_sspm_check_unsanitized_html_check(cache: dict, awsAccountId: str,
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -672,7 +673,7 @@ def servicenow_sspm_client_generated_scripts_sandbox_check(cache: dict, awsAccou
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -714,7 +715,7 @@ def servicenow_sspm_client_generated_scripts_sandbox_check(cache: dict, awsAccou
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -790,7 +791,7 @@ def servicenow_sspm_client_generated_scripts_sandbox_check(cache: dict, awsAccou
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -868,7 +869,7 @@ def servicenow_sspm_enable_ajaxevaluate_check(cache: dict, awsAccountId: str, aw
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -910,7 +911,7 @@ def servicenow_sspm_enable_ajaxevaluate_check(cache: dict, awsAccountId: str, aw
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -986,7 +987,7 @@ def servicenow_sspm_enable_ajaxevaluate_check(cache: dict, awsAccountId: str, aw
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -1064,7 +1065,7 @@ def servicenow_sspm_escape_excel_formula_check(cache: dict, awsAccountId: str, a
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -1106,7 +1107,7 @@ def servicenow_sspm_escape_excel_formula_check(cache: dict, awsAccountId: str, a
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -1182,7 +1183,7 @@ def servicenow_sspm_escape_excel_formula_check(cache: dict, awsAccountId: str, a
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -1260,7 +1261,7 @@ def servicenow_sspm_escape_html_check(cache: dict, awsAccountId: str, awsRegion:
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -1302,7 +1303,7 @@ def servicenow_sspm_escape_html_check(cache: dict, awsAccountId: str, awsRegion:
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -1378,7 +1379,7 @@ def servicenow_sspm_escape_html_check(cache: dict, awsAccountId: str, awsRegion:
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -1456,7 +1457,7 @@ def servicenow_sspm_escape_javascript_check(cache: dict, awsAccountId: str, awsR
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -1498,7 +1499,7 @@ def servicenow_sspm_escape_javascript_check(cache: dict, awsAccountId: str, awsR
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -1574,7 +1575,7 @@ def servicenow_sspm_escape_javascript_check(cache: dict, awsAccountId: str, awsR
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -1652,7 +1653,7 @@ def servicenow_sspm_escape_jelly_check(cache: dict, awsAccountId: str, awsRegion
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -1694,7 +1695,7 @@ def servicenow_sspm_escape_jelly_check(cache: dict, awsAccountId: str, awsRegion
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -1770,7 +1771,7 @@ def servicenow_sspm_escape_jelly_check(cache: dict, awsAccountId: str, awsRegion
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -1848,7 +1849,7 @@ def servicenow_sspm_escape_xml_check(cache: dict, awsAccountId: str, awsRegion: 
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -1890,7 +1891,7 @@ def servicenow_sspm_escape_xml_check(cache: dict, awsAccountId: str, awsRegion: 
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -1966,7 +1967,7 @@ def servicenow_sspm_escape_xml_check(cache: dict, awsAccountId: str, awsRegion: 
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -2044,7 +2045,7 @@ def servicenow_sspm_html_sanitizer_check(cache: dict, awsAccountId: str, awsRegi
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -2086,7 +2087,7 @@ def servicenow_sspm_html_sanitizer_check(cache: dict, awsAccountId: str, awsRegi
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -2162,7 +2163,7 @@ def servicenow_sspm_html_sanitizer_check(cache: dict, awsAccountId: str, awsRegi
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -2240,7 +2241,7 @@ def servicenow_sspm_javascript_jelly_interpolation_check(cache: dict, awsAccount
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -2282,7 +2283,7 @@ def servicenow_sspm_javascript_jelly_interpolation_check(cache: dict, awsAccount
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -2358,7 +2359,7 @@ def servicenow_sspm_javascript_jelly_interpolation_check(cache: dict, awsAccount
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -2436,7 +2437,7 @@ def servicenow_sspm_soap_request_strict_security_check(cache: dict, awsAccountId
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -2478,7 +2479,7 @@ def servicenow_sspm_soap_request_strict_security_check(cache: dict, awsAccountId
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -2554,7 +2555,7 @@ def servicenow_sspm_soap_request_strict_security_check(cache: dict, awsAccountId
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",

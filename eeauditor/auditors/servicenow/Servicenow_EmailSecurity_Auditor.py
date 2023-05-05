@@ -28,6 +28,7 @@ import json
 registry = CheckRegister()
 
 SNOW_INSTANCE_NAME = os.environ["SNOW_INSTANCE_NAME"]
+SNOW_INSTANCE_REGION = os.environ["SNOW_INSTANCE_REGION"]
 SNOW_SSPM_USERNAME = os.environ["SNOW_SSPM_USERNAME"]
 SNOW_SSPM_PASSWORD = os.environ["SNOW_SSPM_PASSWORD"]
 SNOW_FAILED_LOGIN_BREACHING_RATE = os.environ["SNOW_FAILED_LOGIN_BREACHING_RATE"]
@@ -84,7 +85,7 @@ def servicenow_sspm_convert_inbound_email_html_check(cache: dict, awsAccountId: 
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -126,7 +127,7 @@ def servicenow_sspm_convert_inbound_email_html_check(cache: dict, awsAccountId: 
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -202,7 +203,7 @@ def servicenow_sspm_convert_inbound_email_html_check(cache: dict, awsAccountId: 
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -282,7 +283,7 @@ def servicenow_sspm_restrict_access_to_empty_target_table_emails_check(cache: di
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -324,7 +325,7 @@ def servicenow_sspm_restrict_access_to_empty_target_table_emails_check(cache: di
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -400,7 +401,7 @@ def servicenow_sspm_restrict_access_to_empty_target_table_emails_check(cache: di
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -478,7 +479,7 @@ def servicenow_sspm_restrict_emails_by_domain_for_user_creation_check(cache: dic
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -520,7 +521,7 @@ def servicenow_sspm_restrict_emails_by_domain_for_user_creation_check(cache: dic
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -596,7 +597,7 @@ def servicenow_sspm_restrict_emails_by_domain_for_user_creation_check(cache: dic
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",

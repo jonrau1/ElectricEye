@@ -28,6 +28,7 @@ import json
 registry = CheckRegister()
 
 SNOW_INSTANCE_NAME = os.environ["SNOW_INSTANCE_NAME"]
+SNOW_INSTANCE_REGION = os.environ["SNOW_INSTANCE_REGION"]
 SNOW_SSPM_USERNAME = os.environ["SNOW_SSPM_USERNAME"]
 SNOW_SSPM_PASSWORD = os.environ["SNOW_SSPM_PASSWORD"]
 SNOW_FAILED_LOGIN_BREACHING_RATE = os.environ["SNOW_FAILED_LOGIN_BREACHING_RATE"]
@@ -84,7 +85,7 @@ def servicenow_sspm_certificate_trust_check(cache: dict, awsAccountId: str, awsR
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -126,7 +127,7 @@ def servicenow_sspm_certificate_trust_check(cache: dict, awsAccountId: str, awsR
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -200,7 +201,7 @@ def servicenow_sspm_certificate_trust_check(cache: dict, awsAccountId: str, awsR
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -276,7 +277,7 @@ def servicenow_sspm_disable_ssl_check(cache: dict, awsAccountId: str, awsRegion:
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -318,7 +319,7 @@ def servicenow_sspm_disable_ssl_check(cache: dict, awsAccountId: str, awsRegion:
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -392,7 +393,7 @@ def servicenow_sspm_disable_ssl_check(cache: dict, awsAccountId: str, awsRegion:
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -468,7 +469,7 @@ def servicenow_sspm_http_client_hostname_verification_check(cache: dict, awsAcco
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -510,7 +511,7 @@ def servicenow_sspm_http_client_hostname_verification_check(cache: dict, awsAcco
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -584,7 +585,7 @@ def servicenow_sspm_http_client_hostname_verification_check(cache: dict, awsAcco
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -660,7 +661,7 @@ def servicenow_sspm_revoked_certificate_revocation_check(cache: dict, awsAccount
         propUpdatedOn = ""
         propUpdatedBy = ""
         propScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         propertyValue = str(propFinder["value"])
         propDescription = str(propFinder["description"]).replace("\n    ", "")
@@ -702,7 +703,7 @@ def servicenow_sspm_revoked_certificate_revocation_check(cache: dict, awsAccount
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",
@@ -776,7 +777,7 @@ def servicenow_sspm_revoked_certificate_revocation_check(cache: dict, awsAccount
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Properties",

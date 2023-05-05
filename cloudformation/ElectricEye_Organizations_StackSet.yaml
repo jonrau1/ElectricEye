@@ -225,6 +225,8 @@ Resources:
                 - route53resolver:ListFirewallRuleGroupAssociations
                 - imagebuilder:ListImagePipelines
                 - imagebuilder:ListImageRecipes
+                - imagebuilder:GetImageRecipe
+                - imagebuilder:GetImagePipeline
                 - cloudfront:GetDistribution
               Resource: "*"
       AssumeRolePolicyDocument:

@@ -1,26 +1,222 @@
-# This TOML Document maps SSM SecureString Parameters to multi-cloud & SaaS access tokens, APIs and usernames
-# IMPORTANT: Anywhere you see "paramater_name" means the name of an AWS Systems Manager Parameter Store SecureString Paramter
+# This TOML document provides configuration for all of ElectricEye, from credentials to regions to accounts 
+# as well as global settings, filenames, and other directives that can be used by ElectricEye
 
-title = "ElectricEye External Providers"
+title = "ElectricEye Configuration"
 
-[azure]
-azure_sp_client_id_parameter_name = ""
-azure_sp_tenant_id_parameter_name = ""
-azure_sp_client_secret_id_parameter_name = ""
+[global]
 
-[gcp]
-gcp_service_account_json_payload_parameter_name = ""
+    # Match this to [regions_and_accounts.aws.aws_account_targets] to specify if you want to run ElectricEye
+    # against a list of Accounts, list of Accounts within specific OUs, or every Account in an AWS Organization
 
-[github]
-gh_personal_access_token_parameter_name = ""
+    aws_multi_account_target_type = "Accounts" # VALID CHOICES: Accounts | OU | Organization
 
-[m365]
-m365_ent_app_client_id_parameter_name = ""
-m365_ent_app_tenant_id_parameter_name = ""
-m365_ent_app_client_secret_id_parameter_name = ""
+    # Specifies the location of where credentials are stored and will be retrieved from
+    # if you specify "CONFIG_FILE" that means you can provide the value within the option itself
 
-[servicenow]
-snow_instance_name = ""
-snow_sspm_username = ""
-snow_sspm_password_parameter_name = ""
-snow_failed_login_breaching_rate = "5"
+    credentials_location = "AWS_SSM" # VALID CHOICES: AWS_SSM | AWS_SECRETS_MANAGER | CONFIG_FILE
+
+[regions_and_accounts]
+
+    [regions_and_accounts.aws]
+    
+        # A list of Accounts, OU ID's, or an Organizations Principal ID - must match global.aws_multi_account_target_type
+        # if a value is not provided the current Account will be used unless "Organization" is specified
+        
+        aws_account_targets = []
+        
+        # If left blank, the *current AWS Region* is used. You can provide a list of AWS Regions or simply "All"
+        
+        aws_regions_selection = [] # VALID CHOICES: [] | ["All"] | list of regions e.g., ["us-east-1", "us-east-2"]
+
+        # The NAME of the AWS IAM Role deployed to aws_account_targets - must be the same for all Accounts
+        # including your current Account
+        
+        aws_electric_eye_iam_role_name = ""
+
+    [regions_and_accounts.gcp]
+    
+        # Provide a list of GCP Project ID's - your Service Account must be associated with all of the Projects listed
+        
+        gcp_project_ids = []
+
+[credentials]
+
+    # ***IMPORTANT*** 
+    # all passwords, API keys, and sensitive credentials (that end with '_value') should match the value
+    # of [global.credentials_location], for instance, if you specified "AWS_SSM" ensure that the '_value' option is the name
+    # of an AWS SecureString Parameter that contains the value to be retrieved
+
+    [credentials.azure]
+
+        azure_sp_client_id_value = ""
+
+        azure_sp_tenant_id_value = ""
+
+        azure_sp_client_secret_id_value = ""
+
+    [credentials.gcp]
+
+        # The location (or actual contents) of your GCP Service Account JSON Key this location must match the value 
+        # of `global.credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable should 
+        # be the name of the AWS Systems Manager Parameter Store SecureString Parameter
+
+        gcp_service_account_json_payload_value = ""
+
+    [credentials.github]
+
+        gh_personal_access_token_value = ""
+
+    [credentials.m365]
+
+        m365_ent_app_client_id_value = ""
+
+        m365_ent_app_tenant_id_value = ""
+
+        m365_ent_app_client_secret_id_value = ""
+
+    [credentials.servicenow]
+
+        # The *name* of your Instance, for example, if its URL is "https://dev90210.service-now.com/" the name is "dev90210"
+        
+        servicenow_instance_name = ""
+
+        # Geographic location of your Instance which will be provided to `ProductFields.AssetRegion` within the Electriceye Findings
+        # this is typically "us", "eu", or "ap" and may differ for Federal instances
+
+        servicenow_instance_region = ""
+
+        # The name of the ServiceNow User with permissions that will be used by the PySNOW Client
+
+        servicenow_sspm_username = ""
+
+        # The location (or actual contents) of the Password for the User specified in `servicenow_instance_name`
+        # this location must match the value of `global.credentials_location` e.g., if you specify "AWS_SSM" then
+        # the value for this variable should be the name of the AWS Systems Manager Parameter Store SecureString Parameter
+
+        servicenow_sspm_password_value = ""
+
+        # The threshold for when to create a failing finding for the "Servicenow_Users_Auditor" Check for failed login-in
+        # attempts by active users in your Instance
+
+        servicenow_failed_login_breaching_rate = "5"
+
+[outputs]
+
+    # ***IMPORTANT*** 
+    # all passwords, API keys, and sensitive credentials (that end with '_value') should match the value
+    # of [global.credentials_location], for instance, if you specified "AWS_SSM" ensure that the '_value' option is the name
+    # of an AWS SecureString Parameter that contains the value to be retrieved
+
+    [outputs.postgresql]
+
+        # The name you want given to the table that will contain ElectricEye findings. Please note that for Cloud Asset 
+        # Management (CAM) outputs that the value "_cam" will be appended to it e.g., if you provide the value of 
+        # "electriceye_findings" then the CAM table will be called "electriceye_findings_cam"
+        # Also note that any value here with be turned into all lowercase (via .lower())
+
+        postgresql_table_name = ""
+
+        # PostgreSQL username, either the "master username" or a user that has the ability to create and insert records into tables
+
+        postgresql_username = ""
+
+        # The location (or actual contents) of the Password for the User specified in `postgresql_username`
+        # this location must match the value of `global.credentials_location` e.g., if you specify "AWS_SSM" then
+        # the value for this variable should be the name of the AWS Systems Manager Parameter Store SecureString Parameter
+
+        postgresql_password_value = ""
+
+        # The name of the PostgreSQL Database you want to connect to and create your Tables within
+
+        postgresql_database_name = ""
+
+        # Endpoint, either an IP address or hostname, of your PostgreSQL database - you can also specify "localhost" for locally running
+        # databases or databases running on local containers. If you use a cloud managed DB such as AWS RDS or GCP CloudSQL ensure that
+        # you have connectivity to it via a VPN or otherwise
+
+        postgresql_endpoint = ""
+
+        # The Port that your PostgreSQL database is running on, defaults to 5432
+
+        postgresql_port = 5432
+
+    [outputs.firemon_cloud_defense] # This takes place of the former DisruptOps ("dops") values, but the integration is largely the same
+
+        # Client ID for your Firemon Cloud Defense (formerly known as DisruptOps (dops)) tenant - this location must match 
+        # the value of `global. credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable 
+        # should be the name of the AWS Systems Manager Parameter Store SecureString Parameter
+
+        firemon_cloud_defense_client_id_value = ""
+
+        # API Key for your Firemon Cloud Defense (formerly known as DisruptOps (dops)) tenant - this location must match 
+        # the value of `global. credentials_location` e.g., if you specify "AWS_SSM" then the value for this variable 
+        # should be the name of the AWS Systems Manager Parameter Store SecureString Parameter
+
+        firemon_cloud_defense_api_key_value = ""
+
+    [outputs.mongodb] # This unifies the old "docdb" output to account for local MongoDB and AWS DocumentDB
+
+        # This value indicates whether or not you are using a password for your MongoDB deployment (which you should). If
+        # you are using AWS DocumentDB this MUST be "true"
+
+        mongodb_password_in_use = true # Valid Choices BOOLEAN: true | false
+
+        # This value indicates that you are using AWS DocumentDB (true) or a self-hosted or other MongoDB deployment (false)
+
+        mongodb_using_aws_documentdb = false # Valid Choices BOOLEAN: true | false
+
+        # This value indicates that you are using AWS DocumentDB with TLS-enabled (true) or TLS-disabled (false) 
+        # which will instruct ElectricEye to locally download the `global-bundle.pem` from
+        # https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem
+
+        mongodb_aws_documentdb_tls_enabled = false # Valid Choices BOOLEAN: true | false
+
+        # MongoDB Username - if you are utilizes Mongo Role-based Access Control (RBAC) ensure the user has the proper permisisons
+        # write to Databases such as `readWrite` or `readWriteAnyDatabase`. If you are not using a Password then you can leave this
+        # value blank, ElectricEye will overwrite the value here to ensure the "pre-flight" check for blank values won't fail it
+
+        mongodb_username = ""
+
+        # The hostname or IP address of your MongoDB / AWS DocumentDB instance. E.g., `192.1.2.40`, `localhost` or
+        # an AWS Doc DB cluster endpoint `sample-cluster.node.us-east-1.docdb.amazonaws.com`
+
+        mongodb_endpoint = ""
+
+        # The port number for your MongoDB / AWS DocumentDB deployment. Defaults to 27017
+
+        mongodb_port = 27017 # Must be an Integer
+
+        # The location (or actual contents) of the Password for the User specified in `mongodb_username`
+        # this location must match the value of `global.credentials_location` e.g., if you specify "AWS_SSM" then
+        # the value for this variable should be the name of the AWS Systems Manager Parameter Store SecureString Parameter
+        # LEAVE THIS VALUE BLANK IF YOU DO NOT HAVE ONE
+
+        mongodb_password_value = ""
+
+        # The name you want given to your Database that will be created in MongoDB, Database names are case-sensitive so
+        # MongoDB recommends using snake_case or all lowercases
+
+        mongodb_database_name = ""
+
+        # The name you want given to the Collection within your Database that will be created in MongoDB, 
+        # Database names are case-sensitive so MongoDB recommends using snake_case or all lowercases. 
+        # PLEASE NOTE that Cloud Asset Management (CAM) output will append "_cam" to the collection name.
+        # e.g., if you name your Collection "electriceye_stuff" CAM will name it "electriceye_stuff_cam"
+
+        mongodb_collection_name = ""
+
+    [outputs.dynamodb]
+
+        # Table name
+
+        dynamodb_table_name = ""
+
+    [outputs.amazon_sqs]
+
+        # Queue Name / URL
+
+        amazon_sqs_queue_url = ""
+
+        # Batch
+
+        amazon_sqs_batch_size = 10 # This must be an integer

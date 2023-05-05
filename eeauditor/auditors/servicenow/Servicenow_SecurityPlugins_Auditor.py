@@ -28,6 +28,7 @@ import json
 registry = CheckRegister()
 
 SNOW_INSTANCE_NAME = os.environ["SNOW_INSTANCE_NAME"]
+SNOW_INSTANCE_REGION = os.environ["SNOW_INSTANCE_REGION"]
 SNOW_SSPM_USERNAME = os.environ["SNOW_SSPM_USERNAME"]
 SNOW_SSPM_PASSWORD = os.environ["SNOW_SSPM_PASSWORD"]
 
@@ -86,7 +87,7 @@ def servicenow_sspm_contextual_security_role_mgmt_plugin_check(cache: dict, awsA
         pluginUpdatedBy = ""
         pluginLicenseModel = ""
         pluginScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         pluginActivityStatus = str(pluginFinder["active"])
         pluginState = str(pluginFinder["state"])
@@ -131,7 +132,7 @@ def servicenow_sspm_contextual_security_role_mgmt_plugin_check(cache: dict, awsA
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Plugins",
@@ -210,7 +211,7 @@ def servicenow_sspm_contextual_security_role_mgmt_plugin_check(cache: dict, awsA
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Plugins",
@@ -294,7 +295,7 @@ def servicenow_sspm_explicit_role_plugin_check(cache: dict, awsAccountId: str, a
         pluginUpdatedBy = ""
         pluginLicenseModel = ""
         pluginScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         pluginActivityStatus = str(pluginFinder["active"])
         pluginState = str(pluginFinder["state"])
@@ -339,7 +340,7 @@ def servicenow_sspm_explicit_role_plugin_check(cache: dict, awsAccountId: str, a
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Plugins",
@@ -418,7 +419,7 @@ def servicenow_sspm_explicit_role_plugin_check(cache: dict, awsAccountId: str, a
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Plugins",
@@ -502,7 +503,7 @@ def servicenow_sspm_saml20_web_browser_sso_profile_plugin_check(cache: dict, aws
         pluginUpdatedBy = ""
         pluginLicenseModel = ""
         pluginScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         pluginActivityStatus = str(pluginFinder["active"])
         pluginState = str(pluginFinder["state"])
@@ -547,7 +548,7 @@ def servicenow_sspm_saml20_web_browser_sso_profile_plugin_check(cache: dict, aws
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Plugins",
@@ -626,7 +627,7 @@ def servicenow_sspm_saml20_web_browser_sso_profile_plugin_check(cache: dict, aws
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Plugins",
@@ -710,7 +711,7 @@ def servicenow_sspm_security_jumpstart_plugin_check(cache: dict, awsAccountId: s
         pluginUpdatedBy = ""
         pluginLicenseModel = ""
         pluginScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         pluginActivityStatus = str(pluginFinder["active"])
         pluginState = str(pluginFinder["state"])
@@ -755,7 +756,7 @@ def servicenow_sspm_security_jumpstart_plugin_check(cache: dict, awsAccountId: s
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Plugins",
@@ -834,7 +835,7 @@ def servicenow_sspm_security_jumpstart_plugin_check(cache: dict, awsAccountId: s
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Plugins",
@@ -918,7 +919,7 @@ def servicenow_sspm_snc_access_control_plugin_check(cache: dict, awsAccountId: s
         pluginUpdatedBy = ""
         pluginLicenseModel = ""
         pluginScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         pluginActivityStatus = str(pluginFinder["active"])
         pluginState = str(pluginFinder["state"])
@@ -963,7 +964,7 @@ def servicenow_sspm_snc_access_control_plugin_check(cache: dict, awsAccountId: s
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Plugins",
@@ -1042,7 +1043,7 @@ def servicenow_sspm_snc_access_control_plugin_check(cache: dict, awsAccountId: s
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Plugins",
@@ -1126,7 +1127,7 @@ def servicenow_sspm_email_spam_scoring_filtering_plugin_check(cache: dict, awsAc
         pluginUpdatedBy = ""
         pluginLicenseModel = ""
         pluginScope = ""
-        assetB64 = base64.b64encode("None".encode("utf-8"))
+        assetB64 = None
     else:
         pluginActivityStatus = str(pluginFinder["active"])
         pluginState = str(pluginFinder["state"])
@@ -1171,7 +1172,7 @@ def servicenow_sspm_email_spam_scoring_filtering_plugin_check(cache: dict, awsAc
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Plugins",
@@ -1250,7 +1251,7 @@ def servicenow_sspm_email_spam_scoring_filtering_plugin_check(cache: dict, awsAc
                 "Provider": "ServiceNow",
                 "ProviderType": "SaaS",
                 "ProviderAccountId": SNOW_INSTANCE_NAME,
-                "AssetRegion": "",
+                "AssetRegion": SNOW_INSTANCE_REGION,
                 "AssetDetails": assetB64,
                 "AssetClass": "Management & Governance",
                 "AssetService": "System Plugins",
