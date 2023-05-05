@@ -392,9 +392,37 @@ To use this Output include the following arguments in your ElectricEye CLI: `pyt
 
 ## MongoDB & AWS DocumentDB Output
 
-Remarks
+The MongoDB Output selection will write all ElectricEye findings to a MongoDB database or to an AWS DocumentDB Instance/Cluster along with the `ProductFields.AssetDetails` using `pymongo`. To facilitate mutable records being written to a Collection, ElectricEye will duplicate the ASFF `Id` (the finding's GUID) into the MongoDB `_id` field and write all records sequentially using the `update_one(upsert=True)` method within `pymongo`. This is written with a filter to replace the entire record where and existing `_id` is located.
 
-###
+This Output will provide the `ProductFields.AssetDetails` information.
+
+To use this Output include the following arguments in your ElectricEye CLI: `python3 eeauditor/controller.py {..args..} -o mongodb`
+
+#### NOTE! This Output used to be `-o docdb` which has been replaced fully with `-o mongodb`
+
+Additionally, values within the `[outputs.mongodb]` section of the TOML file *must be provided* for this integration to work. This is where you can differentiate between AWS DocumentDB and non-AWS MongoDB databases being used, enable TLS for AWS DocumentDB, and specify the names of the database and Collection for ElectricEye.
+
+- **`mongodb_password_in_use`**: A boolean variable that indicates whether or not you are using a password for your MongoDB deployment. If you are using AWS DocumentDB, this *must* be set to `true`.
+
+- **`mongodb_using_aws_documentdb`**: A boolean variable that indicates whether you are using AWS DocumentDB (`true`) or a self-hosted or other MongoDB deployment (`false`).
+
+- **`mongodb_aws_documentdb_tls_enabled`**: A boolean variable that indicates whether you are using AWS DocumentDB with TLS-enabled (`true`) or TLS-disabled (`false`). If this is set to `true`, ElectricEye will locally download the global-bundle.pem from https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem.
+
+- **`mongodb_username`**: The MongoDB username. If you are utilizing Mongo Role-based Access Control (RBAC), ensure the user has the proper permissions to write to Databases such as `readWrite` or `readWriteAnyDatabase`. If you are not using a Password then you can leave this value blank, ElectricEye will overwrite the value here to ensure the "pre-flight" check for blank values won't fail it.
+
+- **`mongodb_endpoint`**: The hostname or IP address of your MongoDB / AWS DocumentDB instance. This could be "192.1.2.40", "localhost", or an AWS Doc DB cluster endpoint "sample-cluster.node.us-east-1.docdb.amazonaws.com".
+
+- **`mongodb_port`**: The port number for your MongoDB / AWS DocumentDB deployment. Defaults to 27017.
+
+- **`mongodb_password_value`**: The location (or actual contents) of the Password for the User specified in mongodb_username. This location must match the value of `global.credentials_location`. For example, if you specify `"AWS_SSM"`, then the value for this variable should be the name of the AWS Systems Manager Parameter Store SecureString Parameter. Leave this value blank if you do not have one.
+
+- **`mongodb_database_name`**: The name you want given to your Database that will be created in MongoDB. Database names are case-sensitive, so MongoDB recommends using snake_case or all lowercases.
+
+- **`mongodb_collection_name`**: The name you want given to the Collection within your Database that will be created in MongoDB. Database names are case-sensitive, so MongoDB recommends using snake_case or all lowercases. Please note that Cloud Asset Management (CAM) output will append _cam to the collection name. For example, if you name your Collection "electriceye_stuff", CAM will name it "electriceye_stuff_cam".
+
+### Sample MongoDB & AWS DocumentDB Output
+
+**NOTE!** This is how it is returned from `pymongo`
 
 ```python
 {'_id': 'arn:aws-iso:ec2:us-iso-west-1:111111111111:instance/i-123456aab/ec2-source-dest-verification-check', 'AwsAccountId': '111111111111', 'Compliance': {'Status': 'PASSED', 'RelatedRequirements': ['NIST CSF V1.1 PR.AC-3', 'NIST SP 800-53 Rev. 4 AC-1', 'NIST SP 800-53 Rev. 4 AC-17', 'NIST SP 800-53 Rev. 4 AC-19', 'NIST SP 800-53 Rev. 4 AC-20', 'NIST SP 800-53 Rev. 4 SC-15', 'AICPA TSC CC6.6', 'ISO 27001:2013 A.6.2.1', 'ISO 27001:2013 A.6.2.2', 'ISO 27001:2013 A.11.2.6', 'ISO 27001:2013 A.13.1.1', 'ISO 27001:2013 A.13.2.1']}, 'Confidence': 99, 'CreatedAt': '2021-05-04T15:47:49.036592+00:00', 'Description': 'EC2 Instance i-123456aab has the Source-Destination Check enabled.', 'FirstObservedAt': '2021-05-04T15:47:49.036592+00:00', 'GeneratorId': 'arn:aws-iso:ec2:us-iso-west-1:111111111111:instance/i-123456aab', 'Id': 'arn:aws-iso:ec2:us-iso-west-1:111111111111:instance/i-123456aab/ec2-source-dest-verification-check', 'ProductArn': 'arn:aws-iso:securityhub:us-iso-west-1:111111111111:product/111111111111/default', 'ProductFields': {'ProductName': 'ElectricEye', 'Provider': 'AWS', 'ProviderType': 'CSP', 'ProviderAccountId': '111111111111', 'AssetRegion': 'us-iso-west-1', 'AssetDetails': {'AmiLaunchIndex': 1, 'ImageId': 'ami-124314asdasd', 'InstanceId': 'i-123456aab', 'InstanceType': 't2.large', 'KeyName': 'your-internet-history-scanner', 'LaunchTime': '2021-05-04 11:52:11+00:00', 'Monitoring': {'State': 'disabled'}, 'Placement': {'AvailabilityZone': 'us-iso-west-1a', 'GroupName': '', 'Tenancy': 'default'}, 'PrivateDnsName': 'ip-172-16-227-7.us-iso-west-1.compute.internal', 'PrivateIpAddress': '1.1.1.1', 'ProductCodes': [], 'PublicDnsName': '', 'PublicIpAddress': '8.8.8.8', 'State': {'Code': 16, 'Name': 'running'}, 'StateTransitionReason': '', 'SubnetId': 'subnet-a12s3dg567', 'VpcId': 'vpc-1123123aaaa', 'Architecture': 'x86_64', 'BlockDeviceMappings': [{'DeviceName': '/dev/sda1', 'Ebs': {'AttachTime': '2021-05-04 11:52:12+00:00', 'DeleteOnTermination': True, 'Status': 'attached', 'VolumeId': 'vol-0b5ff2ea277d2da63'}}, {'DeviceName': '/dev/sdm', 'Ebs': {'AttachTime': '2021-05-04 15:42:48+00:00', 'DeleteOnTermination': False, 'Status': 'attached', 'VolumeId': 'vol-124314asdasd'}}], 'ClientToken': 'aaaaaaaa1111111', 'EbsOptimized': False, 'EnaSupport': True, 'Hypervisor': 'xen', 'IamInstanceProfile': {'Arn': 'arn:aws-iso:iam::111111111111:instance-profile/natsec-your-internet-history-scan', 'Id': 'abcs12312'}, 'InstanceLifecycle': 'spot', 'NetworkInterfaces': [{'Association': {'IpOwnerId': 'amazon', 'PublicDnsName': '', 'PublicIp': '8.8.8.8'}, 'Attachment': {'AttachTime': '2021-05-04 11:52:11+00:00', 'AttachmentId': 'eni-attach-1123123aaaa', 'DeleteOnTermination': True, 'DeviceIndex': 0, 'Status': 'attached', 'NetworkCardIndex': 0}, 'Description': '', 'Groups': [{'GroupName': 'allow_ssh', 'GroupId': 'sg-124314asdasd'}], 'Ipv6Addresses': [], 'MacAddress': '02:aaa:sss:82:0f:d1', 'NetworkInterfaceId': 'eni-124314asdasd', 'OwnerId': '111111111111', 'PrivateIpAddress': '1.1.1.1', 'PrivateIpAddresses': [{'Association': {'IpOwnerId': 'amazon', 'PublicDnsName': '', 'PublicIp': '8.8.8.8'}, 'Primary': True, 'PrivateIpAddress': '1.1.1.1'}], 'SourceDestCheck': True, 'Status': 'in-use', 'SubnetId': 'subnet-a12s3dg567', 'VpcId': 'vpc-1123123aaaa', 'InterfaceType': 'interface'}], 'RootDeviceName': '/dev/sda1', 'RootDeviceType': 'ebs', 'SecurityGroups': [{'GroupName': 'allow_ssh', 'GroupId': 'sg-124314asdasd'}], 'SourceDestCheck': True, 'SpotInstanceRequestId': 'sir-squileum', 'Tags': [{'Key': 'aws:ec2:fleet-id', 'Value': 'fleet-a-6e94-4f60-c-v'}, {'Key': 'Name', 'Value': 'light-your-internet-history-scanner'}, {'Key': 'aws:ec2launchtemplate:version', 'Value': '3807'}, {'Key': 'aws:ec2launchtemplate:id', 'Value': 'lt-a12s3dg567'}, {'Key': 'used_by', 'Value': 'natsec - ec2 scan'}], 'VirtualizationType': 'hvm', 'CpuOptions': {'CoreCount': 2, 'ThreadsPerCore': 1}, 'CapacityReservationSpecification': {'CapacityReservationPreference': 'open'}, 'HibernationOptions': {'Configured': False}, 'MetadataOptions': {'State': 'applied', 'HttpTokens': 'optional', 'HttpPutResponseHopLimit': 1, 'HttpEndpoint': 'enabled', 'HttpProtocolIpv6': 'disabled', 'InstanceMetadataTags': 'disabled'}, 'EnclaveOptions': {'Enabled': False}, 'PlatformDetails': 'Linux/UNIX', 'UsageOperation': 'RunInstances', 'UsageOperationUpdateTime': '2021-05-04 11:52:11+00:00', 'PrivateDnsNameOptions': {'HostnameType': 'ip-name', 'EnableResourceNameDnsARecord': False, 'EnableResourceNameDnsAAAARecord': False}, 'MaintenanceOptions': {'AutoRecovery': 'default'}}, 'AssetClass': 'Compute', 'AssetService': 'Amazon EC2', 'AssetComponent': 'Instance'}, 'RecordState': 'ARCHIVED', 'Remediation': {'Recommendation': {'Text': 'To learn more about Source/destination checking refer to the Elastic network interfaces section of the Amazon Elastic Compute Cloud User Guide', 'Url': 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html#eni-basics'}}, 'Resources': [{'Type': 'AwsEc2Instance', 'Id': 'arn:aws-iso:ec2:us-iso-west-1:111111111111:instance/i-123456aab', 'Partition': 'aws', 'Region': 'us-iso-west-1', 'Details': {'AwsEc2Instance': {'Type': 't2.large', 'ImageId': 'ami-124314asdasd', 'VpcId': 'vpc-1123123aaaa', 'SubnetId': 'subnet-a12s3dg567', 'LaunchedAt': '2021-05-04T11:52:12+00:00'}}}], 'SchemaVersion': '2018-10-08', 'Severity': {'Label': 'INFORMATIONAL'}, 'Title': '[EC2.4] EC2 Instances should use Source-Destination checks unless absolutely not required', 'Types': ['Software and Configuration Checks/AWS Security Best Practices'], 'UpdatedAt': '2021-05-04T15:47:49.036592+00:00', 'Workflow': {'Status': 'RESOLVED'}}
@@ -402,15 +430,158 @@ Remarks
 
 ## MongoDB & AWS DocumentDB Cloud Asset Management (CAM) Output
 
-Remarks
+The Cloud Asset Management (CAM) MongoDB (with AWS) Output selection will write unique per-asset data derived from ElectricEye findings to a MongoDB database or to an AWS DocumentDB Instance/Cluster along with the `ProductFields.AssetDetails` using `pymongo`. The CAM Output is meant for collecting the Asset information from each Check, and thus most of the security-specific details as well as most native ASFF data is stripped out. The CAM finding types will provide an aggregated finding count of each severity label per asset as well, this is the only type of Output that type of information can be found.
+
+This Output will provide the `ProductFields.AssetDetails` information.
+
+To use this Output include the following arguments in your ElectricEye CLI: `python3 eeauditor/controller.py {..args..} -o cam_mongodb`
+
+Note that the TOML configurations are exactly the same as the normal [MongoDB & AWS DocumentDB Output](#mongodb--aws-documentdb-output)
+
+### Sample MongoDB & AWS DocumentDB Cloud Asset Management (CAM) Output
 
 ## PostgreSQL Output
 
-Remarks
+The PostgreSQL Output selection will write a modified schema of all ElectricEye findings to a PostgreSQL database using `psycopg2`, this will include a blend of the finding's security & compliance readiness context as well as all asset data except for the specific details. Native PostgreSQL types will be used, any lists of strings (e.g., `Compliance.RelatedRequirements`, `Types`) are written to `TEXT[]` columns, Python dictionaries (`Resources.[0]`) as JSON bytes (`JSONB`), all timestamps as `TIMESTAMP WITH TIME ZONE`, and everything else as `TEXT`. The following SQL Statement mirrors this creation process.
+
+```sql
+CREATE TABLE IF NOT EXISTS table_name (
+    id TEXT PRIMARY KEY,
+    product_arn TEXT,
+    types TEXT[],
+    first_observed_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE,
+    updated_at TIMESTAMP WITH TIME ZONE,
+    severity_label TEXT,
+    title TEXT,
+    description TEXT,
+    remediation_recommendation_text TEXT,
+    remediation_recommendation_url TEXT,
+    product_name TEXT,
+    provider TEXT,
+    provider_type TEXT,
+    provider_account_id TEXT,
+    asset_region TEXT,
+    asset_class TEXT,
+    asset_service TEXT,
+    asset_component TEXT,
+    resource_id TEXT,
+    resource JSONB,
+    compliance_status TEXT,
+    compliance_related_requirements TEXT[],
+    workflow_status TEXT,
+    record_state TEXT
+);
+```
+
+To facilitate "upserts", the ASFF `Id` is set as the `PRIMARY KEY` within the `id` column and all findings are written as `INSERT` statements with `ON CONFLICT (id) DO UPDATE` to overwrite all columns on matched findings except for `CreatedAt` and `FirstObservedAt` to mimic the indexing behavior of AWS Security Hub and track the provenance (or at least the age) of a specific finding. The following SQL Statement mirrors this logic. (Just review [the damn code](../../eeauditor/processor/outputs/postgresql.py) to see!)
+
+```sql
+INSERT INTO table_name (
+    id, product_arn, types, first_observed_at, created_at, updated_at, severity_label, 
+    title, description, remediation_recommendation_text, remediation_recommendation_url, 
+    product_name, provider, provider_type, provider_account_id, asset_region, asset_class, 
+    asset_service, asset_component, resource_id, resource, compliance_status, 
+    compliance_related_requirements, workflow_status, record_state
+)
+VALUES (
+    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
+    %s, %s, %s, %s, %s
+)
+ON CONFLICT (id) DO UPDATE SET 
+    product_arn = excluded.product_arn,
+    types = excluded.types,
+    updated_at = excluded.updated_at,
+    severity_label = excluded.severity_label,
+    title = excluded.title,
+    description = excluded.description,
+    remediation_recommendation_text = excluded.remediation_recommendation_text,
+    remediation_recommendation_url = excluded.remediation_recommendation_url,
+    product_name = excluded.product_name,
+    provider = excluded.provider,
+    provider_type = excluded.provider_type,
+    provider_account_id = excluded.provider_account_id,
+    asset_region = excluded.asset_region,
+    asset_class = excluded.asset_class,
+    asset_service = excluded.asset_service,
+    asset_component = excluded.asset_component,
+    resource_id = excluded.resource_id,
+    resource = excluded.resource,
+    compliance_status = excluded.compliance_status,
+    compliance_related_requirements = excluded.compliance_related_requirements,
+    workflow_status = excluded.workflow_status,
+    record_state = excluded.record_state,
+    first_observed_at = CASE
+        WHEN table_name.first_observed_at < excluded.first_observed_at 
+            THEN table_name.first_observed_at
+        ELSE excluded.first_observed_at
+    END,
+    created_at = CASE
+        WHEN table_name.created_at < excluded.created_at 
+            THEN table_name.created_at
+        ELSE excluded.created_at
+    END;
+```
+
+This Output *will not* provide the `ProductFields.AssetDetails` information.
+
+To use this Output include the following arguments in your ElectricEye CLI: `python3 eeauditor/controller.py {..args..} -o postgresql`
+
+#### NOTE! This Output used to be `-o postgres` which has been replaced fully with `-o postgresql`
+
+Additionally, values within the `[outputs.postgresql]` section of the TOML file *must be provided* for this integration to work.
+
+**`postgresql_table_name`**: The name given to the table that will contain ElectricEye findings. Note that for Cloud Asset Management (CAM) outputs, the value `_cam` will be appended to it. Also, any value here will be turned into all lowercase.
+
+**`postgresql_username`**: The PostgreSQL username, either the "master username" or a user that has the ability to create and insert records into tables.
+
+**`postgresql_password_value`**: The location (or actual contents) of the Password for the User specified in postgresql_username. This location must match the value of `global.credentials_location`. For example, if you specify `"AWS_SSM"` then the value for this variable should be the name of the AWS Systems Manager Parameter Store SecureString Parameter.
+
+**`postgresql_database_name`**: The name of the PostgreSQL Database you want to connect to and create your Tables within.
+
+**`postgresql_endpoint`**: The endpoint, either an IP address or hostname, of your PostgreSQL database. You can also specify "localhost" for locally running databases or databases running on local containers. If you use a cloud-managed DB such as AWS RDS or GCP CloudSQL, ensure that you have connectivity to it via a VPN or otherwise.
+
+**`postgresql_port`**: The Port that your PostgreSQL database is running on, which defaults to 5432.
 
 ## PostgreSQL Cloud Asset Management (CAM) Output
 
 Remarks
+
+### Sample PostgreSQL Cloud Asset Management (CAM) Output
+
+**NOTE!** This is how it is returned from `psycopg2`
+
+```python
+['asset_id', 'first_observed_at', 'provider', 'provider_type', 'provider_account_id', 'asset_region', 'asset_details', 'asset_class', 'asset_service', 'asset_component', 'informational_severity_findings', 'low_severity_findings', 'medium_severity_findings', 'high_severity_findings', 'critical_severity_findings']
+(
+    'arn:aws-iso:athena:us-iso-west-1:111111111111:workgroup/primary',
+    datetime.datetime(
+        2023, 5, 4, 17, 3, 15, 86896, tzinfo=datetime.timezone.utc
+    ),
+    'AWS',
+    'CSP',
+    '111111111111',
+    'us-iso-west-1',
+    {
+        'Name': 'primary',
+        'State': 'ENABLED',
+        'Description': '',
+        'CreationTime': '1997-05-04 5:03:12.333333+00:00',
+        'EngineVersion': {
+            'SelectedEngineVersion': 'AUTO',
+            'EffectiveEngineVersion': 'Athena engine version 69-420'
+        }
+    },
+    'Analytics',
+    'Amazon Athena',
+    'Workgroup',
+    3,
+    1,
+    0,
+    0,
+    0
+)
+```
 
 ## Firemon Cloud Defense (DisruptOps) Output
 
