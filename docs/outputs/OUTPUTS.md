@@ -442,6 +442,12 @@ Additionally, values within the `[outputs.mongodb]` section of the TOML file *mu
 
 - **`mongodb_collection_name`**: The name you want given to the Collection within your Database that will be created in MongoDB. Database names are case-sensitive, so MongoDB recommends using snake_case or all lowercases. Please note that Cloud Asset Management (CAM) output will append _cam to the collection name. For example, if you name your Collection "electriceye_stuff", CAM will name it "electriceye_stuff_cam".
 
+You can run a local MongoDB container for testing on Docker.
+
+```bash
+docker run --name my-mongo -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=password -d mongo
+```
+
 ### Sample MongoDB & AWS DocumentDB Output
 
 **NOTE!** This is how it is returned from `pymongo`
@@ -461,6 +467,8 @@ To use this Output include the following arguments in your ElectricEye CLI: `pyt
 Note that the TOML configurations are exactly the same as the normal [MongoDB & AWS DocumentDB Output](#mongodb--aws-documentdb-output)
 
 ### Sample MongoDB & AWS DocumentDB Cloud Asset Management (CAM) Output
+
+**NOTE!** This is how it is returned from `pymongo`
 
 ## PostgreSQL Output
 
@@ -564,6 +572,63 @@ Additionally, values within the `[outputs.postgresql]` section of the TOML file 
 - **`postgresql_endpoint`**: The endpoint, either an IP address or hostname, of your PostgreSQL database. You can also specify "localhost" for locally running databases or databases running on local containers. If you use a cloud-managed DB such as AWS RDS or GCP CloudSQL, ensure that you have connectivity to it via a VPN or otherwise.
 
 - **`postgresql_port`**: The Port that your PostgreSQL database is running on, which defaults to 5432.
+
+You can run a local PostgreSQL container for testing using Docker - the database name and username are `postgres`
+
+```bash
+mkdir ~/postgres-data
+docker run -d --name my-postgres -e POSTGRES_PASSWORD=mysecretpassword -v ~/postgres-data:/var/lib/postgresql/data -p 5432:5432 postgres
+```
+
+### Example PostgreSQL Output
+
+**NOTE!** This is how it is returned from `psycopg2`
+
+```python
+['id', 'product_arn', 'types', 'first_observed_at', 'created_at', 'updated_at', 'severity_label', 'title', 'description', 'remediation_recommendation_text', 'remediation_recommendation_url', 'product_name', 'provider', 'provider_type', 'provider_account_id', 'asset_region', 'asset_class', 'asset_service', 'asset_component', 'resource_id', 'resource', 'compliance_status', 'compliance_related_requirements', 'workflow_status', 'record_state']
+(
+  'arn:aws-iso:s3:::national-security-bucket/s3-bucket-encryption-check',
+  'arn:aws-iso:securityhub:us-iso-west-1:111111111111:product/111111111111/default',
+  [
+    'Software and Configuration Checks/AWS Security Best Practices',
+    'Effects/Data Exposure'
+  ],
+  datetime.datetime(2023, 5, 5, 16, 20, 41, 117287, tzinfo=datetime.timezone.utc),
+  datetime.datetime(2023, 5, 5, 16, 20, 41, 117287, tzinfo=datetime.timezone.utc),
+  datetime.datetime(2023, 5, 5, 16, 20, 41, 117287, tzinfo=datetime.timezone.utc),
+  'INFORMATIONAL',
+  '[S3.1] S3 Buckets should be encrypted',
+  'S3 bucket national-security-bucket is encrypted using AES256.',
+  'For more information on Bucket Encryption and how to configure it refer to the Amazon S3 Default Encryption for S3 Buckets section of the Amazon Simple Storage Service Developer Guide',
+  'https://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html',
+  'ElectricEye',
+  'AWS',
+  'CSP',
+  '111111111111',
+  'us-iso-west-1',
+  'Storage',
+  'Amazon S3',
+  'Bucket',
+  'arn:aws-iso:s3:::national-security-bucket',
+  {
+    'Id': 'arn:aws-iso:s3:::national-security-bucket',
+    'Type': 'AwsS3Bucket',
+    'Region': 'us-iso-west-1',
+    'Partition': 'aws'
+  },
+  'PASSED',
+  [
+    'NIST CSF V1.1 PR.DS-1',
+    'NIST SP 800-53 Rev. 4 MP-8',
+    'NIST SP 800-53 Rev. 4 SC-12',
+    'NIST SP 800-53 Rev. 4 SC-28',
+    'AICPA TSC CC6.1',
+    'ISO 27001:2013 A.8.2.3'
+  ],
+  'RESOLVED',
+  'ARCHIVED'
+)
+```
 
 ## PostgreSQL Cloud Asset Management (CAM) Output
 

@@ -130,6 +130,10 @@ class JsonProvider(object):
             print("There are not any findings to write!")
             exit(0)
         
+        processedFindings = self.process_findings(findings)
+
+        del findings
+        
         # There are different possible connection objects based on if Passwords are used and if TLS is enabled for AWS DocDB
 
         # Self-hosted, no password
@@ -152,29 +156,17 @@ class JsonProvider(object):
             # Connect to MongoDB
             client = pymongo.MongoClient(connectionString)
             db = client[self.dbName]
-            collection = db[self.collName]
+            collection = db[f"{self.collName}_cam"]
         except pymongo.errors.ConnectionError as e:
             print(f"Connection or credential issue with MongoDB/AWS DocumentDB!")
             raise e
-        
-        decodedFindings = [
-            {**d, "ProductFields": {**d["ProductFields"],
-                "AssetDetails": json.loads(base64.b64decode(d["ProductFields"]["AssetDetails"]).decode("utf-8"))
-                    if d["ProductFields"]["AssetDetails"] is not None
-                    else None
-            }} if "AssetDetails" in d["ProductFields"]
-            else d
-            for d in findings
-        ]
 
-        del findings
+        print(f"Attempting to upsert {len(processedFindings)} findings to MongoDB.")
 
-        print(f"Attempting to upsert {len(decodedFindings)} findings to MongoDB.")
-
-        for doc in decodedFindings:
+        for doc in processedFindings:
             try:
-                # use the Finding "Id" as the MongoDB "_id"
-                doc["_id"] = doc["Id"]
+                # use the CAM Output "AssetId" as the MongoDB "_id"
+                doc["_id"] = doc["AssetId"]
                 filter = {'_id': doc['_id']}
                 update = {'$set': doc}
                 collection.update_one(filter, update, upsert=True)
@@ -225,6 +217,81 @@ class JsonProvider(object):
             raise e
         
         return credential
+
+    def process_findings(self, findings):
+        """
+        This function uses the list comprehension to base64 decode all `AssetDetails` and then takes a selective
+        cross-section of unique per-asset details to be written to file within the main function
+        """
+        # This list contains the CAM output
+        cloudAssetManagementFindings = []
+        # Create a new list from raw findings that base64 decodes `AssetDetails` where it is not None, if it is, just
+        # use None and bring forward `ProductFields` where it is missing `AssetDetails`...which shouldn't happen
+        print(f"Base64 decoding AssetDetails for {len(findings)} ElectricEye findings.")
+
+        data = [
+            {**d, "ProductFields": {**d["ProductFields"],
+                "AssetDetails": json.loads(base64.b64decode(d["ProductFields"]["AssetDetails"]).decode("utf-8"))
+                    if d["ProductFields"]["AssetDetails"] is not None
+                    else None
+            }} if "AssetDetails" in d["ProductFields"]
+            else d
+            for d in findings
+        ]
+
+        print(f"Completed base64 decoding for {len(data)} ElectricEye findings.")
+
+        # This list will contain unique identifiers from `Resources.[*].Id`
+        uniqueIds = set(item["Resources"][0]["Id"] for item in data)
+
+        print(f"Processing Asset and Finding Summary data for {len(uniqueIds)} unique Assets.")
+
+        for uid in uniqueIds:
+            subData = [item for item in data if item["Resources"][0]["Id"] == uid]
+            productFields = subData[0]["ProductFields"]
+            infoSevFindings = lowSevFindings = medSevFindings = highSevFindings = critSevFindings = 0
+            
+            for item in subData:
+                firstObserved = str(item["FirstObservedAt"])
+                sevLabel = item["Severity"]["Label"]
+                if sevLabel == "INFORMATIONAL":
+                    infoSevFindings += 1
+                elif sevLabel == "LOW":
+                    lowSevFindings += 1
+                elif sevLabel == "MEDIUM":
+                    medSevFindings += 1
+                elif sevLabel == "HIGH":
+                    highSevFindings += 1
+                elif sevLabel == "CRITICAL":
+                    critSevFindings += 1
+                
+            
+            cloudAssetManagementFindings.append(
+                {
+                    "AssetId": uid,
+                    "FirstObservedAt": firstObserved,
+                    "Provider": productFields.get("Provider", ""),
+                    "ProviderType": productFields.get("ProviderType", ""),
+                    "ProviderAccountId": productFields.get("ProviderAccountId", ""),
+                    "AssetRegion": productFields.get("AssetRegion", ""),
+                    "AssetDetails": productFields.get("AssetDetails", ""),
+                    "AssetClass": productFields.get("AssetClass", ""),
+                    "AssetService": productFields.get("AssetService", ""),
+                    "AssetComponent": productFields.get("AssetComponent", ""),
+                    "InformationalSeverityFindings": infoSevFindings,
+                    "LowSeverityFindings": lowSevFindings,
+                    "MediumSeverityFindings": medSevFindings,
+                    "HighSeverityFindings": highSevFindings,
+                    "CriticalSeverityFindings": critSevFindings
+                }
+            )
+
+        del findings
+        del data
+        del uniqueIds
+        del subData
+
+        return cloudAssetManagementFindings
 
 # EOF
 
