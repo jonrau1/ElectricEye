@@ -138,7 +138,10 @@ def main(
     create_insights,
 ):
     if list_options:
-        print(get_providers())
+        print(
+                sorted(get_providers()
+            )
+        )
         sys.exit(0)
 
     if list_checks:

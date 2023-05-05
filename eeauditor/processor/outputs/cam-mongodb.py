@@ -38,7 +38,7 @@ CREDENTIALS_LOCATION_CHOICES = ["AWS_SSM", "AWS_SECRETS_MANAGER", "CONFIG_FILE"]
 
 @ElectricEyeOutput
 class JsonProvider(object):
-    __provider__ = "mongodb"
+    __provider__ = "cam_mongodb"
 
     def __init__(self):
         print("Preparing MongoDB / AWS DocumentDB credentials and PEM files (as needed).")
