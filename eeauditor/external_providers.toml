@@ -204,3 +204,19 @@ title = "ElectricEye Configuration"
         # e.g., if you name your Collection "electriceye_stuff" CAM will name it "electriceye_stuff_cam"
 
         mongodb_collection_name = ""
+
+    [outputs.dynamodb]
+
+        # Table name
+
+        dynamodb_table_name = ""
+
+    [outputs.amazon_sqs]
+
+        # Queue Name / URL
+
+        amazon_sqs_queue_url = ""
+
+        # Batch
+
+        amazon_sqs_batch_size = 10 # This must be an integer

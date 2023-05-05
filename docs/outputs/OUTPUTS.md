@@ -679,7 +679,23 @@ Note that the TOML configurations are exactly the same as the normal [PostgreSQL
 
 ## Firemon Cloud Defense (DisruptOps) Output
 
-Remarks
+The Firemon Cloud Defense Output selection will all ElectricEye findings to a Cloud Defense (DisruptOps) endpoint using `requests`, the `AssetDetails` will be stripped off. A Pro license for Cloud Defense is required for API Access, best effort is made to respect throttling limitations and `4xx` HTTP Codes. ElectricEye will sleep on `429` and will raise an `Exception` on other `4xx` codes.
+
+This Output *will not* provide the `ProductFields.AssetDetails` information.
+
+To use this Output include the following arguments in your ElectricEye CLI: `python3 eeauditor/controller.py {..args..} -o postgresql`
+
+#### NOTE! This Output used to be `-o dops` which has been replaced fully with `-o firemon_cloud_defense`
+
+Additionally, values within the `[outputs.postgresql]` section of the TOML file *must be provided* for this integration to work.
+
+- **`firemon_cloud_defense_client_id_value`**: This variable should be set to the Client ID for your FireMon Cloud Defense tenant. This ID is used to authenticate with the FireMon Cloud Defense API. The location where these credentials are stored should match the value of the `global.credentials_location` variable, which specifies the location of the credentials for all integrations.
+
+- **`firemon_cloud_defense_api_key_value`**: This variable should be set to the API Key for your FireMon Cloud Defense tenant. This key is used to authenticate with the FireMon Cloud Defense API. The location where these credentials are stored should match the value of the `global.credentials_location` variable, which specifies the location of the credentials for all integrations.
+
+### Example Firemon Cloud Defense (DisruptOps) Output
+
+**NOT AVAILABLE**
 
 ## AWS DynamoDB Output
 
