@@ -64,11 +64,10 @@ class EEAuditor(object):
         elif assessmentTarget == "GitHub":
             searchPath = "./auditors/github"
             utils = CloudConfig(assessmentTarget)
-            
         elif assessmentTarget == "Servicenow":
             searchPath = "./auditors/servicenow"
             utils = CloudConfig(assessmentTarget)
-
+        # Search path for Auditors
         self.source = self.plugin_base.make_plugin_source(
             searchpath=[getPath(searchPath)], identifier=self.name
         )
@@ -305,3 +304,5 @@ class EEAuditor(object):
                 )
 
         print("\n".join(table))
+
+# EOF

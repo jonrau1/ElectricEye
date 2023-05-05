@@ -470,6 +470,10 @@ Note that the TOML configurations are exactly the same as the normal [MongoDB & 
 
 **NOTE!** This is how it is returned from `pymongo`
 
+```python
+{'_id': 'arn:aws-iso:s3:::national-security-secret-bucket123', 'AssetClass': 'Storage', 'AssetComponent': 'Bucket', 'AssetDetails': {'Name': 'national-security-secret-bucket123', 'CreationDate': '2021-09-27 18:16:25+00:00'}, 'AssetId': 'arn:aws-iso:s3:::national-security-secret-bucket123', 'AssetRegion': 'us-iso-west-1', 'AssetService': 'Amazon S3', 'CriticalSeverityFindings': 0, 'FirstObservedAt': '2023-05-05T16:56:28.215324+00:00', 'HighSeverityFindings': 0, 'InformationalSeverityFindings': 2, 'LowSeverityFindings': 2, 'MediumSeverityFindings': 1, 'Provider': 'AWS', 'ProviderAccountId': '111111111111', 'ProviderType': 'CSP'}
+```
+
 ## PostgreSQL Output
 
 The PostgreSQL Output selection will write a modified schema of all ElectricEye findings to a PostgreSQL database using `psycopg2`, this will include a blend of the finding's security & compliance readiness context as well as all asset data except for the specific details. Native PostgreSQL types will be used, any lists of strings (e.g., `Compliance.RelatedRequirements`, `Types`) are written to `TEXT[]` columns, Python dictionaries (`Resources.[0]`) as JSON bytes (`JSONB`), all timestamps as `TIMESTAMP WITH TIME ZONE`, and everything else as `TEXT`. The following SQL Statement mirrors this creation process.

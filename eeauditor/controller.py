@@ -62,14 +62,15 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
     default="AWS",
     type=click.Choice(
         [
-            'AWS',
-            'GCP',
-            'GitHub',
-            'Servicenow'
+            "AWS",
+            "Azure",
+            "OracleCloud",
+            "GCP",
+            "Servicenow"
         ],
         case_sensitive=True
     ),
-    help="CSP or SaaS Vendor to perform assessments against and load specific plugins, ensure that any -a or -c arg maps to your target provider e.g., -t AWS -a Amazon_APGIW_Auditor"
+    help="CSP or SaaS Vendor Assessment Target, ensure that any -a or -c arg maps to your target provider e.g., -t AWS -a Amazon_APGIW_Auditor"
 )
 # Run Specific Auditor
 @click.option(
@@ -83,7 +84,7 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
     "-c",
     "--check-name",
     default="",
-    help="Specify which specific Check in a speciifc Auditor you want to run. Defaults to ALL Checks")
+    help="A specific Check in a specific Auditor you want to run, this correlates to the function name. Defaults to ALL Checks")
 # Delay
 @click.option(
     "-d", 
@@ -98,14 +99,14 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
     multiple=True,
     default=(["stdout"]),
     show_default=True,
-    help="Where to send the findings to (another platform or to file)",
+    help="A list of Outputs (files, APIs, databases) to send ElectricEye Findings - can provide more than one",
 )
 # Output File Name
 @click.option(
     "--output-file",
     default="output", 
     show_default=True, 
-    help="Name of the file for output, if using anything other than SecHub or Dops"
+    help="For file outputs such as JSON and CSV, the name of the file, DO NOT SPECIFY .file_type"
 )
 # List Output Options
 @click.option(
@@ -117,7 +118,7 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
 @click.option(
     "--list-checks",
     is_flag=True,
-    help="List all Checks within every Auditor"
+    help="List all Checks, Assets, and Check Description within every Auditor for a specific Assessment Target"
 )
 # Insights
 @click.option(
