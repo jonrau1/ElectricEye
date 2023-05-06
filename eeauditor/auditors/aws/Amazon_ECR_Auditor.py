@@ -481,14 +481,6 @@ def ecr_latest_image_vuln_check(cache: dict, session, awsAccountId: str, awsRegi
                         .isoformat()
                     )
                     if imageVulnCheck != "{}":
-                        vulnDeepLink = (
-                            "https://console.aws.amazon.com/ecr/repositories/"
-                            + repoName
-                            + "/image/"
-                            + imageDigest
-                            + "/scan-results?region="
-                            + awsRegion
-                        )
                         finding = {
                             "SchemaVersion": "2018-10-08",
                             "Id": repoName + "/" + imageDigest + "/ecr-latest-image-vuln-check",
@@ -509,17 +501,20 @@ def ecr_latest_image_vuln_check(cache: dict, session, awsAccountId: str, awsRegi
                             + repoName
                             + " has the following vulnerabilities reported: "
                             + imageVulnCheck
-                            + ". Refer to the SourceUrl or Remediation.Recommendation.Url to review the specific vulnerabilities and remediation information from ECR.",
+                            + ". Refer to the Repository or Inspector console.",
                             "Remediation": {
                                 "Recommendation": {
-                                    "Text": "Click here to navigate to the ECR Vulnerability console for this image",
-                                    "Url": vulnDeepLink,
+                                    "Text": "For more information about scanning images refer to the Image Scanning section of the Amazon ECR User Guide",
+                                    "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html",
                                 }
                             },
-                            "SourceUrl": vulnDeepLink,
                             "ProductFields": {
                                 "ProductName": "ElectricEye",
                                 "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
                                 "AssetClass": "Containers",
                                 "AssetService": "Amazon Elastic Container Registry",
                                 "AssetComponent": "Image"
@@ -575,9 +570,19 @@ def ecr_latest_image_vuln_check(cache: dict, session, awsAccountId: str, awsRegi
                             "Description": "The latest image in the ECR repository "
                             + repoName
                             + " does not have any vulnerabilities reported.",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "For more information about scanning images refer to the Image Scanning section of the Amazon ECR User Guide",
+                                    "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html",
+                                }
+                            },
                             "ProductFields": {
                                 "ProductName": "ElectricEye",
                                 "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
                                 "AssetClass": "Containers",
                                 "AssetService": "Amazon Elastic Container Registry",
                                 "AssetComponent": "Image"
@@ -697,6 +702,7 @@ def ecr_registry_policy_check(cache: dict, session, awsAccountId: str, awsRegion
         yield finding
     except botocore.exceptions.ClientError as error:
         if error.response["Error"]["Code"] == "RegistryPolicyNotFoundException":
+            assetB64 = None
             # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -725,6 +731,10 @@ def ecr_registry_policy_check(cache: dict, session, awsAccountId: str, awsRegion
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Containers",
                     "AssetService": "Amazon Elastic Container Registry",
                     "AssetComponent": "Registry"

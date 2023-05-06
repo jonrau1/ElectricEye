@@ -73,7 +73,7 @@ def imagebuilder_pipeline_tests_enabled_check(cache: dict, session, awsAccountId
                     "AssetDetails": assetB64,
                     "AssetClass": "Developer Tools",
                     "AssetService": "AWS EC2 Image Builder",
-                    "AssetType": "Pipeline"
+                    "AssetComponent": "Pipeline"
                 },
                 "Resources": [
                     {
@@ -139,7 +139,7 @@ def imagebuilder_pipeline_tests_enabled_check(cache: dict, session, awsAccountId
                     "AssetDetails": assetB64,
                     "AssetClass": "Developer Tools",
                     "AssetService": "AWS EC2 Image Builder",
-                    "AssetType": "Pipeline"
+                    "AssetComponent": "Pipeline"
                 },
                 "Resources": [
                     {
@@ -223,7 +223,7 @@ def imagebuilder_ebs_encryption_check(cache: dict, session, awsAccountId: str, a
                     "AssetDetails": assetB64,
                     "AssetClass": "Developer Tools",
                     "AssetService": "AWS EC2 Image Builder",
-                    "AssetType": "Recipe"
+                    "AssetComponent": "Recipe"
                 },
                 "Resources": [
                     {
@@ -289,7 +289,7 @@ def imagebuilder_ebs_encryption_check(cache: dict, session, awsAccountId: str, a
                     "AssetDetails": assetB64,
                     "AssetClass": "Developer Tools",
                     "AssetService": "AWS EC2 Image Builder",
-                    "AssetType": "Recipe"
+                    "AssetComponent": "Recipe"
                 },
                 "Resources": [
                     {
