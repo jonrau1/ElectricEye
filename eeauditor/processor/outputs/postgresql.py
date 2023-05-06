@@ -284,35 +284,39 @@ class PostgresProvider(object):
         processedFindings = []
 
         for finding in findings:
-            processedFindings.append(
-                {
-                    "Id": finding["Id"],
-                    "ProductArn": finding["ProductArn"],
-                    "Types": finding["Types"],
-                    "FirstObservedAt": finding["FirstObservedAt"],
-                    "CreatedAt": finding["CreatedAt"],
-                    "UpdatedAt": finding["UpdatedAt"],
-                    "SeverityLabel": finding["Severity"]["Label"],
-                    "Title": finding["Title"],
-                    "Description": finding["Description"],
-                    "RemedationRecommendationText": finding["Remediation"]["Recommendation"]["Text"],
-                    "RemediationRecommendationUrl": finding["Remediation"]["Recommendation"]["Url"],
-                    "ProductName": finding["ProductFields"]["ProductName"],
-                    "Provider": finding["ProductFields"]["Provider"],
-                    "ProviderType": finding["ProductFields"]["ProviderType"],
-                    "ProviderAccountId": finding["ProductFields"]["ProviderAccountId"],
-                    "AssetRegion": finding["ProductFields"]["AssetRegion"],
-                    "AssetClass": finding["ProductFields"]["AssetClass"],
-                    "AssetService": finding["ProductFields"]["AssetService"],
-                    "AssetComponent": finding["ProductFields"]["AssetComponent"],
-                    "ResourceId": finding["Resources"][0]["Id"],
-                    "Resource": finding["Resources"][0],
-                    "ComplianceStatus": finding["Compliance"]["Status"],
-                    "ComplianceRelatedRequirements": finding["Compliance"]["RelatedRequirements"],
-                    "WorkflowStatus": finding["Workflow"]["Status"],
-                    "RecordState": finding["RecordState"]
-                }
-            )
+            try:
+                processedFindings.append(
+                    {
+                        "Id": finding["Id"],
+                        "ProductArn": finding["ProductArn"],
+                        "Types": finding["Types"],
+                        "FirstObservedAt": finding["FirstObservedAt"],
+                        "CreatedAt": finding["CreatedAt"],
+                        "UpdatedAt": finding["UpdatedAt"],
+                        "SeverityLabel": finding["Severity"]["Label"],
+                        "Title": finding["Title"],
+                        "Description": finding["Description"],
+                        "RemedationRecommendationText": finding["Remediation"]["Recommendation"]["Text"],
+                        "RemediationRecommendationUrl": finding["Remediation"]["Recommendation"]["Url"],
+                        "ProductName": finding["ProductFields"]["ProductName"],
+                        "Provider": finding["ProductFields"]["Provider"],
+                        "ProviderType": finding["ProductFields"]["ProviderType"],
+                        "ProviderAccountId": finding["ProductFields"]["ProviderAccountId"],
+                        "AssetRegion": finding["ProductFields"]["AssetRegion"],
+                        "AssetClass": finding["ProductFields"]["AssetClass"],
+                        "AssetService": finding["ProductFields"]["AssetService"],
+                        "AssetComponent": finding["ProductFields"]["AssetComponent"],
+                        "ResourceId": finding["Resources"][0]["Id"],
+                        "Resource": finding["Resources"][0],
+                        "ComplianceStatus": finding["Compliance"]["Status"],
+                        "ComplianceRelatedRequirements": finding["Compliance"]["RelatedRequirements"],
+                        "WorkflowStatus": finding["Workflow"]["Status"],
+                        "RecordState": finding["RecordState"]
+                    }
+                )
+            except Exception as e:
+                print(f"Issue with {finding} because {e}")
+                continue
 
         del findings
 

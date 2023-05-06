@@ -87,7 +87,7 @@ def vpc_route53_query_logging_association_check(cache: dict, session, awsAccount
                     "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon Virtual Private Cloud",
-                    "AssetType": "Virtual Private Cloud"
+                    "AssetComponent": "Virtual Private Cloud"
                 },
                 "Resources": [
                     {
@@ -151,7 +151,7 @@ def vpc_route53_query_logging_association_check(cache: dict, session, awsAccount
                     "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon Virtual Private Cloud",
-                    "AssetType": "Virtual Private Cloud"
+                    "AssetComponent": "Virtual Private Cloud"
                 },
                 "Resources": [
                     {
@@ -234,7 +234,7 @@ def vpc_route53_resolver_firewall_association_check(cache: dict, session, awsAcc
                     "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon Virtual Private Cloud",
-                    "AssetType": "Virtual Private Cloud"
+                    "AssetComponent": "Virtual Private Cloud"
                 },
                 "Resources": [
                     {
@@ -297,7 +297,7 @@ def vpc_route53_resolver_firewall_association_check(cache: dict, session, awsAcc
                     "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon Virtual Private Cloud",
-                    "AssetType": "Virtual Private Cloud"
+                    "AssetComponent": "Virtual Private Cloud"
                 },
                 "Resources": [
                     {
@@ -382,7 +382,7 @@ def vpc_route53_resolver_dnssec_validation_check(cache: dict, session, awsAccoun
                     "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon Virtual Private Cloud",
-                    "AssetType": "Virtual Private Cloud"
+                    "AssetComponent": "Virtual Private Cloud"
                 },
                 "Resources": [
                     {
@@ -447,7 +447,7 @@ def vpc_route53_resolver_dnssec_validation_check(cache: dict, session, awsAccoun
                     "AssetDetails": assetB64,
                     "AssetClass": "Networking",
                     "AssetService": "Amazon Virtual Private Cloud",
-                    "AssetType": "Virtual Private Cloud"
+                    "AssetComponent": "Virtual Private Cloud"
                 },
                 "Resources": [
                     {
@@ -537,7 +537,7 @@ def vpc_route53_resolver_firewall_fail_open_check(cache: dict, session, awsAccou
                         "AssetDetails": assetB64,
                         "AssetClass": "Networking",
                         "AssetService": "Amazon Virtual Private Cloud",
-                        "AssetType": "Virtual Private Cloud"
+                        "AssetComponent": "Virtual Private Cloud"
                     },
                     "Resources": [
                         {
@@ -601,7 +601,7 @@ def vpc_route53_resolver_firewall_fail_open_check(cache: dict, session, awsAccou
                         "AssetDetails": assetB64,
                         "AssetClass": "Networking",
                         "AssetService": "Amazon Virtual Private Cloud",
-                        "AssetType": "Virtual Private Cloud"
+                        "AssetComponent": "Virtual Private Cloud"
                     },
                     "Resources": [
                         {

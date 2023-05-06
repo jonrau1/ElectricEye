@@ -71,7 +71,7 @@ def xray_kms_encryption_check(cache: dict, session, awsAccountId: str, awsRegion
                 "AssetDetails": assetB64,
                 "AssetClass": "Developer Tools",
                 "AssetService": "AWS XRay",
-                "AssetType": "Encryption Configuration"
+                "AssetComponent": "Encryption Configuration"
             },
             "Resources": [
                 {
@@ -131,7 +131,7 @@ def xray_kms_encryption_check(cache: dict, session, awsAccountId: str, awsRegion
                 "AssetDetails": assetB64,
                 "AssetClass": "Developer Tools",
                 "AssetService": "AWS XRay",
-                "AssetType": "Encryption Configuration"
+                "AssetComponent": "Encryption Configuration"
             },
             "Resources": [
                 {
