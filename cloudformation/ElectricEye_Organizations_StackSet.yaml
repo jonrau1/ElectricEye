@@ -53,6 +53,7 @@ Resources:
                 - elasticloadbalancing:DescribeLoadBalancers
                 - kinesis:ListStreams
                 - cognito-idp:DescribeUserPool
+                - cognito-idp:GetWebACLForResource
                 - dynamodb:DescribeTable
                 - dynamodb:DescribeContinuousBackups
                 - dynamodb:DescribeTimeToLive
