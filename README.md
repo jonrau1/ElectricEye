@@ -2,7 +2,7 @@
 
 ![Logo](./screenshots/logo.svg)
 
-ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Cloud Asset Management (CAM), Cloud Security Posture Management (CSPM), SaaS Security Posture Management (SSPM), and External Attack Surface Management (EASM) supporting 100s of services and evaluations to harden your public cloud & SaaS environments.
+ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management, and External Attack Surface Management supporting 100s of services and evaluations to harden your public cloud & SaaS environments.
 
 ***Up here in space***<br/>
 ***I'm looking down on you***<br/>
@@ -27,7 +27,7 @@ python3 eeauditor/controller.py -t AWS -o stdout
 - [Over-explain it!](#electriceye-except-over-explained-round_pushpin-round_pushpin)
 - [Using ElectricEye](#using-electriceye)
 - [Cloud Asset Management](./docs/asset_management/ASSET_MANAGEMENT.md)
-- [Custom Outputs](#custom-outputs)
+- [Custom Outputs](./docs/outputs/OUTPUTS.md)
 - [Supported Services and Checks](#supported-services-and-checks)
   - [AWS Checks & Services](#aws-checks--services)
   - [GCP Checks & Services](#gcp-checks--services)
@@ -65,35 +65,37 @@ Then, modify the [TOML file](./eeauditor/external_providers.toml) located in `El
 Finally, run the Controller to learn about the various Checks, Auditors, Assessment Targets, and Output.
 
 ```bash
-python3 eeauditor/controller.py --help
+$ python3 eeauditor/controller.py --help
 Usage: controller.py [OPTIONS]
 
 Options:
-  -t, --target-provider [AWS|GCP|GitHub|Servicenow]
-                                  CSP or SaaS Vendor to perform assessments
-                                  against and load specific plugins, ensure
-                                  that any -a or -c arg maps to your target
-                                  provider e.g., -t AWS -a
-                                  Amazon_APGIW_Auditor
-  -a, --auditor-name TEXT         Specify which Auditor you want to run by
-                                  using its name NOT INCLUDING .py. Defaults
-                                  to ALL Auditors
-  -c, --check-name TEXT           Specify which specific Check in a speciifc
-                                  Auditor you want to run. Defaults to ALL
-                                  Checks
-  -d, --delay INTEGER             Time in seconds to sleep between Auditors
-                                  being ran, defaults to 0
-  -o, --outputs TEXT              Where to send the findings to (another
-                                  platform or to file)  [default: stdout]
-  --output-file TEXT              Name of the file for output, if using
-                                  anything other than SecHub or Dops
-                                  [default: output]
-  --list-options                  Lists all valid Output options
-  --list-checks                   List all Checks within every Auditor
-  --create-insights               Create SecurityHub insights for ElectricEye.
-                                  This only needs to be done once per Security
-                                  Hub instance
-  --help                          Show this message and exit.
+-t, --target-provider [AWS|Azure|OracleCloud|GCP|Servicenow]
+                                CSP or SaaS Vendor Assessment Target, ensure
+                                that any -a or -c arg maps to your target
+                                provider e.g., -t AWS -a
+                                Amazon_APGIW_Auditor
+-a, --auditor-name TEXT         Specify which Auditor you want to run by
+                                using its name NOT INCLUDING .py. Defaults
+                                to ALL Auditors
+-c, --check-name TEXT           A specific Check in a specific Auditor you
+                                want to run, this correlates to the function
+                                name. Defaults to ALL Checks
+-d, --delay INTEGER             Time in seconds to sleep between Auditors
+                                being ran, defaults to 0
+-o, --outputs TEXT              A list of Outputs (files, APIs, databases)
+                                to send ElectricEye Findings - can provide
+                                more than one  [default: stdout]
+--output-file TEXT              For file outputs such as JSON and CSV, the
+                                name of the file, DO NOT SPECIFY .file_type
+                                [default: output]
+--list-options                  Lists all valid Output options
+--list-checks                   List all Checks, Assets, and Check
+                                Description within every Auditor for a
+                                specific Assessment Target
+--create-insights               Create SecurityHub insights for ElectricEye.
+                                This only needs to be done once per Security
+                                Hub instance
+--help                          Show this message and exit.
 ```
 
 For more information see [here](#using-electriceye).
@@ -112,7 +114,7 @@ Every Assessment Target has a corresponding set of (aptly named) **Auditors** wh
 
 While ElectricEye is primarily a security posture management (SPM) tool, some Checks align to performance, resilience, and optimization best practices which in turn are aligned to **Compliance Standards** or have some secondary or tertiary benefit. Compliance Standards are a term borrowed from the ASFF that refer to any regulatory, industry, and/or "best practice" frameworks which define **Controls** which in turn define People, Process, and/or Technology configurations or outcomes which must be met to abide by or otherwise comply with a Control. ElectricEye solely deals at the infrastructure layer of CSPs and SaaS and thus only supports Technology-relevant controls in these various standards/frameworks/laws that define these Controls.
 
-Currently, all Checks are currently mapped to [**NIST Cybersecurity Framework V1.1**](https://doi.org/10.6028/NIST.CSWP.04162018), [**NIST Special Publication 800-53 Revision 4**](https://csrc.nist.gov/publications/detail/sp/800-53/rev-4/archive/2015-01-22), [**American Institute of Certified Public Accountants (AICPA) Trust Service Criteria (TSCs)**](https://us.aicpa.org/content/dam/aicpa/interestareas/frc/assuranceadvisoryservices/downloadabledocuments/trust-services-criteria-2020.pdf) which can be used for SOC2 Type I and SOC2 Type II, and [**ISO 27001:2013**](https://www.iso.org/standard/27001) ISMS controls for Audit Readiness and internal GRC requirements. In the future, more control mapping will be provided as well as a more generic "ElectricEye Controls" library.
+Currently, all Checks are currently mapped to [**NIST Cybersecurity Framework V1.1**](https://doi.org/10.6028/NIST.CSWP.04162018), [**NIST Special Publication 800-53 Revision 4**](https://csrc.nist.gov/publications/detail/sp/800-53/rev-4/archive/2015-01-22), [**American Institute of Certified Public Accountants (AICPA) 200 Trust Service Criteria (TSCs)**](https://us.aicpa.org/content/dam/aicpa/interestareas/frc/assuranceadvisoryservices/downloadabledocuments/trust-services-criteria-2020.pdf) which can be used for SOC2 Type I and SOC2 Type II, and [**ISO 27001:2013**](https://www.iso.org/standard/27001) ISMS controls for Audit Readiness and internal GRC requirements. In the future, more control mapping will be provided as well as a more generic "ElectricEye Controls" library.
 
 As to the rest of ElectricEye's control flow, besides the arguments from the Controller (via `click`), it also uses a [Tom's Obvious Markup Language (TOML)](https://toml.io/en/) file (a `.toml`) - named [`external_providers.toml`](./eeauditor/external_providers.toml). This `.toml` specifies non-AWS CSPs and SaaS Provider information such as GCP Project IDs, ServiceNow Instance URLs, and takes references for API Keys, Passwords, and other sensitive information as SSM Parameters, AWS Secrets Manager Secrets and in the future this may change to support local vaulting & Privileged Access Management (PAM)/Privileged Identity Management (PIM) tools for non-AWS versions of ElectricEye. 
 
@@ -155,122 +157,6 @@ Individual information is located at:
 - [CAM Concept of Operations](./docs/asset_management/ASSET_MANAGEMENT.md#cam-concept-of-operations-conops)
 - [CAM Reporting](./docs/asset_management/ASSET_MANAGEMENT.md#cloud-asset-management-cam-reporting)
 - [Asset Class Mapping](./docs/asset_management/ASSET_MANAGEMENT.md#asset-class-mapping)
-
-## Custom Outputs
-
-By default ElectricEye will send all evaluation results from Auditors to AWS Security Hub, however, several outputs are also possible.
-
-**Note**: This section will be replaced at a later date.
-
-To list all currently available outputs: `python3 eeauditor/controller.py --list-options`, it will return a list of valid output locations such as `['postgres', 'sechub', 'json', 'csv', 'json_normalized', 'dops']`, by default findings go to AWS Security Hub (`sechub`).
-
-Some considerations...
-
-- To output to JSON, add the following arguments to your call to `controller.py`: `-o json --output-file electriceye-findings` (**Note:** `.json` will be automatically appended)
-
-- Normalized / flatteneded JSON can output instead using `-o json_normalized`. This is better suited for sending findings to BI tools as the structure eliminates all nested lists and dicts.
-
-- To output to CSV, add the following arguments to your call to `controller.py`: `-o csv --output-file electriceye-findings` (**Note:** `.csv` will be automatically appended)
-
-- To output to a PostgreSQL database, add the following arguement to your call to `controller.py`: `-o postgres`. You will also need to ensure that your IP Address (or AWS Security Group ID, if using Amazon RDS/Aurora) is allowed to communicate with your database. Plaintext passwords are frowned upon, so create an AWS Systems Manager Parameter Store secure parameter with the below command.
-
-```bash
-aws ssm put-parameter \
-    --name $PLACEHOLDER \
-    --description 'PostgreSQL Database Password' \
-    --type SecureString --value $PLACEHOLDER
-```
-
-- To configure your ENV to have the proper outputs for PostgreSQL (provided youre on a Linux system) use the below `EXPORT` commands and switch any value that says `$PLACEHOLDER`, but keep the double quotes (`"`).
-
-```bash
-export POSTGRES_USERNAME="$PLACEHOLDER"
-export ELECTRICEYE_POSTGRESQL_DB_NAME="$PLACEHOLDER"
-export POSTGRES_DB_ENDPOINT="$PLACEHOLDER"
-export POSTGRES_DB_PORT="$PLACEHOLDER"
-export POSTGRES_PASSWORD_SSM_PARAM_NAME="$PLACEHOLDER"
-```
-
-- To output to the DisruptOps Platform , add the following arguement to your call to `controller.py`: `-o dops`. You will need to create two AWS Systems Manager Parameter Store secure parameters for your API Key and Client ID within the DisruptOps platform, as shown below. Only change the `--value` entry for either, the names can stay the same.
-
-```bash
-aws ssm put-parameter \
-    --name dops-client-id \
-    --description 'DisruptOps client id' \
-    --type SecureString \
-    --value <CLIENT-ID-HERE>
-```
-
-```bash
-aws ssm put-parameter \
-    --name dops-api-key \
-    --description 'DisruptOps api key' \
-    --type SecureString \
-    --value <API-KEY-HERE>
-```
-
-- To configure your ENV to have the proper outputs for DisruptOps (provided youre on a Linux system) use the below `EXPORT` commands.
-
-```bash
-export DOPS_CLIENT_ID_PARAM="dops-client-id"
-export DOPS_API_KEY_PARAM="dops-api-key"
-```
-
-- To output to a AWS DocumentDB database, add the following arguement to your call to `controller.py`: `-o docdb`. You will also need to ensure that your DocDB security group allows you to communicate with your database. Plaintext passwords are frowned upon, so create an AWS Systems Manager Parameter Store secure parameter with the below command, switch any value that says `$PLACEHOLDER`, but keep the double quotes (`"`)..
-
-```bash
-aws ssm put-parameter \
-    --name $PLACEHOLDER \
-    --description 'AWS DocDB Database Password' \
-    --type SecureString --value $PLACEHOLDER
-```
-
-- To configure your ENV to have the proper outputs for AWS DocumentDB use the below `EXPORT` commands and switch any value that says `$PLACEHOLDER`, but keep the double quotes (`"`).
-
-```bash
-export MONGODB_USERNAME="$PLACEHOLDER"
-export MONGODB_HOSTNAME="$PLACEHOLDER"
-export MONGODB_PASSWORD_PARAMETER="$PLACEHOLDER"
-```
-
-- If you will be using Shodan.io to gain information about your public facing assets, retrieve your API key [from your account here](https://developer.shodan.io/dashboard), and then create an AWS Systems Manager Parameter Store secure parameter with the below command. Only change the `--value` entry for either, the name can stay the same.
-
-```bash
-aws ssm put-parameter \
-    --name electriceye-shodan-api-key \
-    --description 'Shodan.io API Key' \
-    --type SecureString \
-    --value <API-KEY-HERE>
-```
-
-- To configure your ENV to have the proper values for Shodan (provided youre on a Linux system) use the below `EXPORT` commands.
-
-```bash
-export SHODAN_API_KEY_PARAM="electriceye-shodan-api-key"
-```
-
-- If you will be outputting to Amazon DynamoDB use the below `EXPORT` commands and switch any value that says `$PLACEHOLDER`, but keep the double quotes (`"`) along with the output of `-o ddb_backend`.
-
-```bash
-export DYNAMODB_TABLE_NAME="$PLACEHOLDER"
-```
-
-#### Setting up Shodan
-___
-
-This is an **optional** step to setup a Shodan.io API key to determine if your internet-facing resources have been indexed. This is not an exact science as a lot of abstracted services (ES, RDS, ELB) share IP space with other resources and AWS addresses (non-EIP / BYOIP) are always change (such as when you have an EC2 instance shutoff for a prolonged period of time). You may end up having indexed resources that were indexed when someone else was using the IP space, you should still review it either way just to make sure.
-
-1. Create a Shodan account and retrieve your Shodan.io API Key [from here](https://developer.shodan.io/dashboard).
-
-2. Create a Systems Manager Parameter Store `SecureString` parameter for this API key:
-
-```bash
-aws ssm put-parameter \
-    --name electriceye-shodan-api-key \
-    --description 'Shodan.io API Key' \
-    --type SecureString \
-    --value <API-KEY-HERE>
-```
 
 ## Supported Services and Checks
 

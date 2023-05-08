@@ -216,7 +216,7 @@ def cloudsql_instance_public_check(cache: dict, awsAccountId: str, awsRegion: st
 
 ### Formatting Findings
 
-Findings will be formatted for AWS Security Hub, [ASSF](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html). Look to other auditors findings format for more specifics on ElectricEye formatting. Parts that will stay consistent across checks are: `SchemaVersion`, `ProductArn`, `AwsAccountId`, `FirstObservedAt`, `CreatedAt`, `UpdatedAt`, `ProductFields.ProductName` (ElectricEye), and the `Resources` array. Example finding formatting from Amazon_EC2_Auditor's IMDSv2 Check:
+Findings will be formatted for AWS Security Hub, [ASSF](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html). Look to other auditors findings format for more specifics on ElectricEye formatting. Parts that will stay consistent across checks are: `SchemaVersion`, `ProductArn`, `AwsAccountId`, `FirstObservedAt`, `CreatedAt`, `UpdatedAt`, `ProductFields`, and the `Resources` array. Example finding formatting from `Amazon_EC2_Auditor` IMDSv2 Check:
 
 
 ```python
@@ -367,22 +367,34 @@ For the `.Description`, `Remediation.Recommendation.Text` and `Remediation.Recom
 },
 ```
 
-Lastly, ElectricEye has an asset-reporting capability that should be defined within `.ProductFields` such as follows:
+Lastly, ElectricEye has an asset-reporting capability that should be defined within `.ProductFields` such as the below example. Refer to the [Cloud Asset Management docs](../asset_management/ASSET_MANAGEMENT.md) for information on this schema and its design principles.
 
 ```python
 "ProductFields": {
     "ProductName": "ElectricEye",
-    "Provider": "GCP",
-    "AssetClass": "Database",
-    "AssetService": "Google CloudSQL",
-    "AssetType": "CloudSQL Instance"
-},
+    "Provider": "AWS",
+    "ProviderType": "CSP",
+    "ProviderAccountId": awsAccountId,
+    "AssetRegion": awsRegion,
+    "AssetDetails": assetB64,
+    "AssetClass": "Networking",
+    "AssetService": "Amazon API Gateway",
+    "AssetComponent": "Stage"
+}
 ```
 
-The `AssetClass` is derived from how AWS organizies and categorizes its service offers, such as `Management & Governance`, `Security & Identity`, `Compute`, `Container`, `Database`, and so on. There are clear-cut examples such as the above example's GCP CloudSQL being part of the `Database` offering. Some services may be more nuanced and can be generically categorized such as ServiceNow Instances and Plugins being part of `Management & Governance` as that is where AWS categorizes indivdual Accounts and other shared services.
+The Asset Details in the `assetB64` variable are a Base64 encoded JSON object about the `AssetComponent` itself, in cases where a Check is written about an Account or a series of configurations, the `AssetDetails` should be aligned against the high level check or hard-code as `None`. The example below shows the loop for capturing `assetB64` for an Amazon API Gateway Stage.
 
-The `AssetService` should align to the "type" of Asset it is from the Provider, such as `Google CloudSQL` and `AssetType` should point to the smallest, discrete component within the service's taxonomy, such as an `EC2 Instance`, `CloudSQL Instance`, or `IAM User`.
-
+```python
+for restapi in get_rest_apis(cache, session)["items"]:
+    apiGwApiId = str(restapi["id"])
+    apiGwApiName = str(restapi["name"])
+    response = apigateway.get_stages(restApiId=apiGwApiId)
+    for apistages in response["item"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(apistages,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+```
 
 ### Creating Tests
 
