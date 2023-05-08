@@ -276,7 +276,7 @@ def public_alb_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
                         "AssetRegion": awsRegion,
                         "AssetDetails": assetB64,
                         "AssetClass": "Networking",
-                        "AssetService": "Amazon Elastic Load Balancing V2",
+                        "AssetService": "AWS Elastic Load Balancer V2",
                         "AssetComponent": "Application Load Balancer"
                     },
                     "Resources": [
@@ -353,7 +353,7 @@ def public_alb_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
                         "AssetRegion": awsRegion,
                         "AssetDetails": assetB64,
                         "AssetClass": "Networking",
-                        "AssetService": "Amazon Elastic Load Balancing V2",
+                        "AssetService": "AWS Elastic Load Balancer V2",
                         "AssetComponent": "Application Load Balancer"
                     },
                     "ThreatIntelIndicators": [

@@ -5,6 +5,7 @@
 - [CAM Concept of Operations](#cam-concept-of-operations-conops)
 - [CAM Reporting](#cloud-asset-management-cam-reporting)
 - [Asset Class Mapping](#asset-class-mapping)
+- [Supported Asset Services]
 
 ## CAM Concept of Operations (CONOPs)
 
@@ -124,3 +125,206 @@ The following mapping is used, where the entry for "ElectricEye CAM `AssetClass`
 | Storage | Storage | In some cases, `Storage` is used in lieu of `Compute` such as with Disks and AMIs |
 
 As more Providers and Services are added into ElectricEye this section will be further broken out.
+
+## Supported Asset Services
+
+**NOTE** To get an up to date list of these values, navigate to the directory of Auditors you want to check and use the following command: `grep -ho 'AssetService": "[^"]*' *.py | sed 's/.*: "//;s/"$//' | sort -u`
+
+```
+AWS Account
+AWS Amplify
+AWS App Mesh
+AWS AppStream 2.0
+AWS Auto Scaling
+AWS CloudFormation
+AWS CloudHSM
+AWS CloudTrail
+AWS CodeArtifact
+AWS CodeBuild
+AWS DataSync
+AWS Database Migration Service
+AWS Directory Service
+AWS EC2 Image Builder
+AWS Elastic Load Balancer
+AWS Elastic Load Balancer V2
+AWS Glue
+AWS Health
+AWS IAM
+AWS IAM Access Analyzer
+AWS IAM Roles Anywhere
+AWS Lambda
+AWS License Manager
+AWS MemoryDB for Redis
+AWS Resource Access Manager
+AWS Secrets Manager
+AWS Security Hub
+AWS Systems Manager
+AWS Trusted Advisor
+AWS WAFv2 Global
+AWS WAFv2 Regional
+AWS WorkSpaces
+AWS XRay
+Amazon API Gateway
+Amazon Athena
+Amazon Certificate Manager
+Amazon Cloud9
+Amazon CloudFront
+Amazon CloudSearch
+Amazon Cogntio
+Amazon Detective
+Amazon DocumentDB
+Amazon DynamoDB
+Amazon DynamoDB Accelerator (DAX)
+Amazon EC2
+Amazon ElastiCache for Redis
+Amazon Elastic Beanstalk
+Amazon Elastic Block Storage
+Amazon Elastic Container Registry
+Amazon Elastic Container Service
+Amazon Elastic Container Service (ECS)
+Amazon Elastic File System
+Amazon Elastic Kubernetes Service
+Amazon Elastic Load Balancing
+Amazon Elastic Load Balancing V2
+Amazon Elastic MapReduce
+Amazon Global Accelerator
+Amazon GuardDuty
+Amazon Key Management Service
+Amazon Keyspaces
+Amazon Kinesis Data Analytics
+Amazon Kinesis Data Firehose
+Amazon Kinesis Data Streams
+Amazon MQ
+Amazon Macie
+Amazon Managed Blockchain
+Amazon Managed Streaming for Apache Kafka
+Amazon Managed Workflows for Apache Airflow
+Amazon Neptune
+Amazon OpenSearch Service
+Amazon Quantum Ledger Database
+Amazon Redshift
+Amazon Relational Database Service
+Amazon Route53
+Amazon S3
+Amazon SageMaker
+Amazon Shield Advanced
+Amazon Simple Notification Service
+Amazon Simple Queue Service
+Amazon VPC
+Amazon Virtual Private Cloud
+Google CloudSQL
+Google Compute Engine
+System Plugins (ServiceNow)
+System Properties (ServiceNow)
+Users & Groups (ServiceNow)
+```
+
+This list will be kept up to date, probably.
+
+## Supported Asset Components
+
+**NOTE** To get an up to date list of these values, navigate to the directory of Auditors you want to check and use the following command: `grep -ho 'AssetComponent": "[^"]*' *.py | sed 's/.*: "//;s/"$//' | sort -u`
+
+```
+Plugin
+System Property
+User
+Accelerator
+Access Key
+Account Activation
+Account Configuration
+Agent
+Application
+Application Load Balancer
+Association
+Attack
+Autoscaling Group
+Broker
+Bucket
+Cache Cluster
+Certificate
+Check
+Classic Load Balancer
+Cluster
+Crawler
+Data Catalog
+Database Cluster
+Database Cluster Snapshot
+Database Instance
+Delivery Stream
+Directory
+Distribution
+Document
+Domain
+Elastic IP
+Encryption Configuration
+Endpoint
+Environment
+Event
+Event Subscription
+File System
+Findings
+Fleet
+Function
+Group
+Hardware Security Module
+Hosted Zone
+Hosted Zone Resource Record
+Image
+Instance
+Journal Export
+Key
+Key Alias
+Layer
+Ledger
+License Configuration
+Member
+Mesh
+Model
+Network Load Balancer
+Notebook Instance
+Parameter Group
+Password Policy
+Peer Node
+Pipeline
+Policy
+Profile
+Project
+Queue
+REST API
+Recipe
+Registry
+Replication Instance
+Repository
+Resource Share
+Role
+Search Domain
+Secret
+Security Group
+Server Certificate Storage
+Snapshot
+Source Credential
+Stack
+Stage
+Stream
+Subnet
+Subscription
+Table
+Task
+Task Definition
+Topic
+Trail
+Trust Anchor
+User
+User Pool
+Virtual Node
+Virtual Private Cloud
+Volume
+Web Access Control List
+Workgroup
+Workspace
+Database Instance
+Instance
+```
+
+This list will be kept up to date, probably.

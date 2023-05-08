@@ -227,7 +227,7 @@ def shield_advanced_elb_protection_check(cache: dict, session, awsAccountId: str
                     "AssetRegion": awsRegion,
                     "AssetDetails": assetB64,
                     "AssetClass": "Networking",
-                    "AssetService": "Amazon Elastic Load Balancing",
+                    "AssetService": "AWS Elastic Load Balancer",
                     "AssetComponent": "Classic Load Balancer"
                 },
                 "Resources": [
@@ -298,7 +298,7 @@ def shield_advanced_elb_protection_check(cache: dict, session, awsAccountId: str
                         "AssetRegion": awsRegion,
                         "AssetDetails": assetB64,
                         "AssetClass": "Networking",
-                        "AssetService": "Amazon Elastic Load Balancing",
+                        "AssetService": "AWS Elastic Load Balancer",
                         "AssetComponent": "Classic Load Balancer"
                     },
                     "Resources": [
