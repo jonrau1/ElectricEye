@@ -119,9 +119,9 @@ To use this Output include the following arguments in your ElectricEye CLI: `pyt
 
 ### Example HTML Report
 
-**NOTE** This was screen-recorded in Chrome using Loom then it was converted to GIF, so it looks like shit.
+**NOTE** This was screen-captured on a 3840x2160 screen at 67% zoom, so it looks like shit, sorry.
 
-![HTML GIF](../../screenshots/html_screen.gif)
+![HTML JPG](../../screenshots/html_output.jpg)
 
 ## JSON Output
 
