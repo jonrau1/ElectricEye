@@ -147,6 +147,9 @@ class EEAuditor(object):
                     if partition == "aws":
                         if region not in self.get_regions(serviceName):
                             next
+                        # Manual service checks where the endpoint doesn't exist despite SSM saying it does in Global Infra...
+                        if region == ("us-east-2" or "eu-west-3") and serviceName == ("cloudsearch" or "appstream"):
+                            next
                     for checkName, check in checkList.items():
                         # clearing cache for each control whithin a auditor
                         auditor_cache = {}
