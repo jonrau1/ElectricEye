@@ -57,13 +57,13 @@ python3 eeauditor/controller.py -t AWS -o stdout
 
 ## Tell Me More! :raised_eyebrow: :raised_eyebrow:
 
-ElectricEye's core concept is the **Auditor** which are sets of Python scripts that run **Checks** per Service dedicated to a specific SaaS vendor or public cloud service provider called an **Assessment Target**. You can run an entire Assessment Target, a specific Auditor, or a specific Check within an Auditor. After ElectricEye is done with evaluations, it supports over a dozen types of **Outputs**
+ElectricEye's core concept is the **Auditor** which are sets of Python scripts that run **Checks** per Service dedicated to a specific SaaS vendor or public cloud service provider called an **Assessment Target**. You can run an entire Assessment Target, a specific Auditor, or a specific Check within an Auditor. After ElectricEye is done with evaluations, it supports over a dozen types of **Outputs** ranging from an HTML executive report to AWS DocumentDB clusters. ElectricEye also uses other tools such as Shodan, `detect-secrets`, and NMAP for carrying out its Checks. While mainly a security tool, ElectricEye can be used for Cloud Asset Management use cases such as discovery and inventory and has Checks aligned to several best-practice regimes that cover resiliency, recovery, performance optimization, monitoring, as well as several 100 security checks against your cloud infrastructure and identities.
 
 First, clone this repository and install the requirements using `pip3`: `pip3 install -r requirements.txt`.
 
 Then, modify the [TOML file](./eeauditor/external_providers.toml) located in `ElectricEye/eeauditor/external_providers.toml` to specify various configurations for the CSP(s) and SaaS Provider(s) you want to assess.
 
-Finally, run the Controller to learn about the various Checks, Auditors, Assessment Targets, and Output.
+Finally, run the Controller to learn about the various Checks, Auditors, Assessment Targets, and Outputs.
 
 ```bash
 $ python3 eeauditor/controller.py --help
