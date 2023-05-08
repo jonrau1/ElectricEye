@@ -84,6 +84,41 @@ $ python3 eeauditor/controller.py -t AWS -c ebs_volume_encryption_check -o stdou
 {"SchemaVersion": "2018-10-08", "Id": "arn:aws-iso:ec2:us-iso-west-1:111111111111:volume/vol-0istateintotheabyss2/ebs-volume-encryption-check", "ProductArn": "arn:aws-iso:securityhub:us-iso-west-1:111111111111:product/111111111111/default", "GeneratorId": "arn:aws-iso:ec2:us-iso-west-1:111111111111:volume/vol-0istateintotheabyss2", "AwsAccountId": "111111111111", "Types": ["Software and Configuration Checks/AWS Security Best Practices", "Effects/Data Exposure"], "FirstObservedAt": "1977-06-02T122:29:47.694473+00:00", "CreatedAt": "1977-06-02T12:39:57.694473+00:00", "UpdatedAt": "1977-06-02T12:29:47.694473+00:00", "Severity": {"Label": "INFORMATIONAL"}, "Confidence": 99, "Title": "[EBS.3] EBS Volumes should be encrypted", "Description": "EBS Volume vol-0istateintotheabyss2 is encrypted.", "Remediation": {"Recommendation": {"Text": "If your EBS volume should be encrypted refer to the Amazon EBS Encryption section of the Amazon Elastic Compute Cloud User Guide", "Url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html"}}, "ProductFields": {"ProductName": "ElectricEye", "Provider": "AWS", "ProviderType": "CSP", "ProviderAccountId": "111111111111", "AssetRegion": "us-iso-west-1", "AssetDetails": {"Attachments": [{"AttachTime": "2013-04-08 17:28:08+00:00", "Device": "/dev/xvda", "InstanceId": "i-123456abc", "State": "attached", "VolumeId": "vol-0istateintotheabyss2", "DeleteOnTermination": true}], "AvailabilityZone": "us-iso-west-1a", "CreateTime": "2023-04-08 17:28:08.422000+00:00", "Encrypted": true, "Size": 10, "SnapshotId": "snap-123456abc", "State": "in-use", "VolumeId": "vol-0istateintotheabyss2", "Iops": 100, "VolumeType": "gp2", "MultiAttachEnabled": false}, "AssetClass": "Storage", "AssetService": "Amazon Elastic Block Storage", "AssetComponent": "Volume"}, "Resources": [{"Type": "AwsEc2Volume", "Id": "arn:aws-iso:ec2:us-iso-west-1:111111111111:volume/vol-0istateintotheabyss2", "Partition": "aws", "Region": "us-iso-west-1", "Details": {"AwsEc2Volume": {"Encrypted": true}}}], "Compliance": {"Status": "PASSED", "RelatedRequirements": ["NIST CSF V1.1 PR.DS-1", "NIST SP 800-53 Rev. 4 MP-8", "NIST SP 800-53 Rev. 4 SC-12", "NIST SP 800-53 Rev. 4 SC-28", "AICPA TSC CC6.1", "ISO 27001:2013 A.8.2.3"]}, "Workflow": {"Status": "RESOLVED"}, "RecordState": "ARCHIVED"}
 ```
 
+## HTML Output
+
+The HTML Output selection writes a selective cross-section of ElectricEye findings to an HTML file for viewing in a browser and conversion to PDF and other reporting medium. An "executive report" format is created and forward text is dynamically generated to provide high-level statistics such as a failing percentage, passing and failing checks, number of unique resources, total resources, a breakdown of severity, and the amount of Accounts, Regions, `AssetService`, and `AssetComponents` scanned.
+
+The generated Table supports dyanmic scrolling, hidden scroll bars, and will use [iconography.yaml](../../eeauditor/processor/outputs/iconography.yaml) to generate in-line `<img>` tags for each `AssetService`.
+
+The Table format follows this schema in HTML
+
+```html
+<thead>
+    <tr>
+        <th>Finding ID</th>
+        <th>Created At</th>
+        <th>Severity</th>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Provider</th>
+        <th>Provider Account ID</th>
+        <th>Asset Region</th>
+        <th>Asset Class</th>
+        <th>Asset Service</th>
+        <th>Asset Component</th>
+        <th>Resource ID</th>
+        <th>Finding State</th>
+        <th>Compliance Status</th>
+    </tr>
+</thead>
+```
+
+### Example HTML Report
+
+**NOTE** This was screen-recorded in Chrome using Loom then it was converted to GIF, so it looks like shit.
+
+![HTML GIF](../../screenshots/html_screen.gif)
+
 ## JSON Output
 
 The JSON Output selection will write all ElectricEye findings to a JSON file using Python's `json.dump()`. All non-JSON supported values are written as strings using the `default=str` argument.
