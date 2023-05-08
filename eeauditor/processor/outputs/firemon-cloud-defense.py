@@ -36,7 +36,7 @@ asm = boto3.client("secretsmanager")
 CREDENTIALS_LOCATION_CHOICES = ["AWS_SSM", "AWS_SECRETS_MANAGER", "CONFIG_FILE"]
 
 @ElectricEyeOutput
-class DopsProvider(object):
+class FiremonCloudDefenseProvider(object):
     __provider__ = "firemon_cloud_defense"
 
     def __init__(self):

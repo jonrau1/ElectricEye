@@ -36,7 +36,7 @@ asm = boto3.client("secretsmanager")
 CREDENTIALS_LOCATION_CHOICES = ["AWS_SSM", "AWS_SECRETS_MANAGER", "CONFIG_FILE"]
 
 @ElectricEyeOutput
-class PostgresProvider(object):
+class CamPostgresProvider(object):
     __provider__ = "cam_postgresql"
 
     def __init__(self):

@@ -88,6 +88,8 @@ $ python3 eeauditor/controller.py -t AWS -c ebs_volume_encryption_check -o stdou
 
 The HTML Output selection writes a selective cross-section of ElectricEye findings to an HTML file for viewing in a browser and conversion to PDF and other reporting medium. An "executive report" format is created and forward text is dynamically generated to provide high-level statistics such as a failing percentage, passing and failing checks, number of unique resources, total resources, a breakdown of severity, and the amount of Accounts, Regions, `AssetService`, and `AssetComponents` scanned.
 
+This Output will provide the `ProductFields.AssetDetails` information.
+
 The generated Table supports dyanmic scrolling, hidden scroll bars, and will use [iconography.yaml](../../eeauditor/processor/outputs/iconography.yaml) to generate in-line `<img>` tags for each `AssetService`.
 
 The Table format follows this schema in HTML
@@ -112,6 +114,8 @@ The Table format follows this schema in HTML
     </tr>
 </thead>
 ```
+
+To use this Output include the following arguments in your ElectricEye CLI: `python3 eeauditor/controller.py {..args..} -o html --output-file my_file_name_here`
 
 ### Example HTML Report
 
