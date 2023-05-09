@@ -55,6 +55,7 @@ def get_shodan_api_key():
         sys.exit(2)
     if not shodanCredValue:
         print(f"Shodan API Key location is empty - review [global.shodan_api_key_value] and try again.")
+        return None
 
     # Boto3 Clients
     ssm = boto3.client("ssm")
@@ -242,6 +243,8 @@ def paginate_distributions(cache, session):
 @registry.register_check("ec2")
 def public_ec2_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.EC2.1] EC2 instances with public IP addresses should be monitored for being indexed by Shodan"""
+    if get_shodan_api_key() == None:
+        pass
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for i in describe_instances(cache, session):
