@@ -46,14 +46,16 @@ def list_brokers(cache, session):
 @registry.register_check("mq")
 def broker_kms_cmk_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AmazonMQ.1] AmazonMQ message brokers should use customer-managed KMS CMKs for encryption"""
+    amzmq = session.client("mq")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for response in list_brokers(cache, session):
+    for broker in list_brokers(cache, session):
         # B64 encode all of the details for the Asset
+        brokerId = str(broker["BrokerId"])
+        response = amzmq.describe_broker(BrokerId=brokerName)
         assetJson = json.dumps(response,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         brokerArn = str(response["BrokerArn"])
-        brokerId = str(response["BrokerId"])
         brokerName = str(response["BrokerName"])
         if response["EncryptionOptions"]["UseAwsOwnedKey"] == True:
             finding = {
@@ -184,14 +186,16 @@ def broker_kms_cmk_check(cache: dict, session, awsAccountId: str, awsRegion: str
 @registry.register_check("mq")
 def broker_audit_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AmazonMQ.2] AmazonMQ message brokers should have audit logging enabled"""
+    amzmq = session.client("mq")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for response in list_brokers(cache, session):
+    for broker in list_brokers(cache, session):
         # B64 encode all of the details for the Asset
+        brokerId = str(broker["BrokerId"])
+        response = amzmq.describe_broker(BrokerId=brokerName)
         assetJson = json.dumps(response,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         brokerArn = str(response["BrokerArn"])
-        brokerId = str(response["BrokerId"])
         brokerName = str(response["BrokerName"])
         auditLogCheck = str(response["Logs"]["Audit"])
         if auditLogCheck == "False":
@@ -324,14 +328,16 @@ def broker_audit_logging_check(cache: dict, session, awsAccountId: str, awsRegio
 @registry.register_check("mq")
 def broker_general_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AmazonMQ.3] AmazonMQ message brokers should have general logging enabled"""
+    amzmq = session.client("mq")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for response in list_brokers(cache, session):
+    for broker in list_brokers(cache, session):
         # B64 encode all of the details for the Asset
+        brokerId = str(broker["BrokerId"])
+        response = amzmq.describe_broker(BrokerId=brokerName)
         assetJson = json.dumps(response,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         brokerArn = str(response["BrokerArn"])
-        brokerId = str(response["BrokerId"])
         brokerName = str(response["BrokerName"])
         genLogCheck = str(response["Logs"]["General"])
         if genLogCheck == "False":
@@ -466,14 +472,16 @@ def broker_general_logging_check(cache: dict, session, awsAccountId: str, awsReg
 @registry.register_check("mq")
 def broker_public_access_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AmazonMQ.4] AmazonMQ message brokers should not be publicly accessible"""
+    amzmq = session.client("mq")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for response in list_brokers(cache, session):
+    for broker in list_brokers(cache, session):
         # B64 encode all of the details for the Asset
+        brokerId = str(broker["BrokerId"])
+        response = amzmq.describe_broker(BrokerId=brokerName)
         assetJson = json.dumps(response,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         brokerArn = str(response["BrokerArn"])
-        brokerId = str(response["BrokerId"])
         brokerName = str(response["BrokerName"])
         if response["PubliclyAccessible"] == True:
             finding = {
@@ -617,17 +625,17 @@ def broker_public_access_check(cache: dict, session, awsAccountId: str, awsRegio
 @registry.register_check("mq")
 def broker_minor_version_auto_upgrade_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AmazonMQ.5] AmazonMQ message brokers should be configured to automatically upgrade to the latest minor version"""
+    amzmq = session.client("mq")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for response in list_brokers(cache, session):
+    for broker in list_brokers(cache, session):
         # B64 encode all of the details for the Asset
+        brokerId = str(broker["BrokerId"])
+        response = amzmq.describe_broker(BrokerId=brokerName)
         assetJson = json.dumps(response,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         brokerArn = str(response["BrokerArn"])
-        brokerId = str(response["BrokerId"])
         brokerName = str(response["BrokerName"])
-        brokerArn = str(response["BrokerArn"])
-        brokerId = str(response["BrokerId"])
         if response["AutoMinorVersionUpgrade"] == False:
             finding = {
                 "SchemaVersion": "2018-10-08",
