@@ -324,7 +324,7 @@ class EEAuditor(object):
                 # For R&D
                 controls.append(
                     {
-                        "ElectricEyeControlId": description.split("] ")[0],
+                        "ElectricEyeControlId": description.split("] ")[0] + "]",
                         "ElectricEyeControlDescription": description.split("] ")[1],
                         "ElectricEyeControl": description
                     }
@@ -332,7 +332,7 @@ class EEAuditor(object):
                 
                 controlPrinter.append(description)
 
-            print(json.dumps(controls,indent=2))
+            print(json.dumps(controlPrinter,indent=2))
 
             with open('.controls.json', 'w') as jsonfile:
                 json.dump(
