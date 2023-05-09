@@ -148,7 +148,7 @@ class EEAuditor(object):
                         if region not in self.get_regions(serviceName):
                             next
                         # Manual service checks where the endpoint doesn't exist despite SSM saying it does in Global Infra...
-                        if region == ("us-east-2" or "eu-west-3") and serviceName == ("cloudsearch" or "appstream"):
+                        if region == ("us-east-2" or "eu-west-3") and serviceName == ("cloudsearch" or "appstream" or "workspaces"):
                             next
                     for checkName, check in checkList.items():
                         # clearing cache for each control whithin a auditor
@@ -197,7 +197,7 @@ class EEAuditor(object):
         elif region in ["cn-north-1", "cn-northwest-1"]:
             partition = "aws-cn"
         # AWS Secret Region override
-        elif region in ["us-isob-east-1"]:
+        elif region in ["us-isob-east-1", "us-isob-west-1"]:
             partition = "aws-isob"
         # AWS Top Secret Region override
         elif region in ["us-iso-east-1", "us-iso-west-1"]:
@@ -252,7 +252,7 @@ class EEAuditor(object):
         elif region in ["cn-north-1", "cn-northwest-1"]:
             partition = "aws-cn"
         # AWS Secret Region override
-        elif region in ["us-isob-east-1"]:
+        elif region in ["us-isob-east-1", "us-isob-west-1"]:
             partition = "aws-isob"
         # AWS Top Secret Region override
         elif region in ["us-iso-east-1", "us-iso-west-1"]:

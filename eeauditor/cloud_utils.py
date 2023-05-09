@@ -40,7 +40,7 @@ class CloudConfig(object):
             sys.exit(2)
         self.credentials_location = data["global"]["credentials_location"]
 
-        # From TOML [regions_and_accounts]
+        
         # AWS
         if assessmentTarget == "AWS":
             # Process ["aws_account_targets"] 
@@ -63,6 +63,7 @@ class CloudConfig(object):
                 self.aws_account_targets = self.get_aws_accounts_from_organizational_units(awsAccountTargets)
             elif self.aws_multi_account_target_type == "Organization":
                 self.aws_account_targets = self.get_aws_accounts_from_organization()
+            
             # Process ["aws_regions_selection"]
             awsRegions = self.get_aws_regions()
             if not data["regions_and_accounts"]["aws"]["aws_regions_selection"]:
@@ -74,12 +75,14 @@ class CloudConfig(object):
                 else:
                     # Validation check
                     self.aws_regions_selection = [a for a in tomlRegions if a in awsRegions]
+            
             # Process ["aws_electric_eye_iam_role_name"]
             electricEyeRoleName = data["regions_and_accounts"]["aws"]["aws_electric_eye_iam_role_name"]
             if electricEyeRoleName == (None or ""):
                 print(f"A value for ['aws_electric_eye_iam_role_name'] was not provided. Fix the TOML file and run ElectricEye again.")
                 sys.exit(2)
             self.aws_electric_eye_iam_role_name = electricEyeRoleName
+        
         # GCP
         elif assessmentTarget == "GCP":
             # Process ["gcp_project_ids"]
@@ -89,6 +92,7 @@ class CloudConfig(object):
                 sys.exit(2)
             else:
                 self.gcp_project_ids = gcpProjects
+            
             # Process ["gcp_service_account_json_payload_value"]
             gcpCred = data["credentials"]["gcp"]["gcp_service_account_json_payload_value"]
             if self.credentials_location == "CONFIG_FILE":
@@ -104,6 +108,7 @@ class CloudConfig(object):
                     "gcp_service_account_json_payload_value"
                 )
             self.setup_gcp_credentials(self.gcp_service_account_json_payload_value)
+        
         # ServiceNow
         elif assessmentTarget == "Servicenow":
             # Process data["credentials"]["servicenow"] - nothing needs to be assigned to `self`
@@ -129,8 +134,12 @@ class CloudConfig(object):
             os.environ["SNOW_INSTANCE_REGION"] = serviceNowValues["servicenow_instance_region"]
             os.environ["SNOW_SSPM_USERNAME"] = serviceNowValues["servicenow_sspm_username"]
             os.environ["SNOW_FAILED_LOGIN_BREACHING_RATE"] = serviceNowValues["servicenow_failed_login_breaching_rate"]
+        
+        # Azure
         elif assessmentTarget == "Azure":
             print("Coming soon!")
+        
+        # Oracle Cloud Infrastructure (OCI)
         elif assessmentTarget == "OracleCloud":
             print("Coming soon!")
 
@@ -254,7 +263,7 @@ class CloudConfig(object):
         elif region in ["cn-north-1", "cn-northwest-1"]:
             partition = "aws-cn"
         # AWS Secret Region override
-        elif region in ["us-isob-east-1"]:
+        elif region in ["us-isob-east-1", "us-isob-west-1"]:
             partition = "aws-isob"
         # AWS Top Secret Region override
         elif region in ["us-iso-east-1", "us-iso-west-1"]:

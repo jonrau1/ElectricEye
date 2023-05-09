@@ -27,13 +27,8 @@ python3 eeauditor/controller.py -t AWS -o stdout
 - [Using ElectricEye](#using-electriceye)
 - [Cloud Asset Management](./docs/asset_management/ASSET_MANAGEMENT.md)
 - [Custom Outputs](./docs/outputs/OUTPUTS.md)
+- [FAQ](./docs/faq/FAQ.md)
 - [Supported Services and Checks](#supported-services-and-checks)
-  - [AWS Checks & Services](#aws-checks--services)
-  - [GCP Checks & Services](#gcp-checks--services)
-  - [Azure Checks & Services (*Coming Soon*)](#azure-checks--services)
-  - [SSPM: GitHub Checks & Services (*Coming Soon*)](#sspm-github-checks--services)
-  - [SSPM: ServiceNow Checks & Services](#sspm-servicenow-checks--services)
-  - [SSPM: M365 Checks & Services (*Coming Soon*)](#sspm-m365-checks--services)
 - [Contributing](#contributing)
 - [Developer Guide](./docs/new_checks/DEVELOPER_GUIDE.md)
     - [Auditor testing](./docs/new_checks/DEVELOPER_GUIDE.md#auditor-testing)
@@ -99,7 +94,7 @@ Options:
 --help                          Show this message and exit.
 ```
 
-For more information see [here](#using-electriceye), or if you want a more in-depth analysis of the control flow and concepts review [the Developer Guide](./docs/new_checks/DEVELOPER_GUIDE.md).
+For more information see [here](#using-electriceye), you can read the [FAQ here](./docs/faq/FAQ.md), or if you want a more in-depth analysis of the control flow and concepts review [the Developer Guide](./docs/new_checks/DEVELOPER_GUIDE.md).
 
 ## Using ElectricEye
 
