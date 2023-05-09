@@ -46,15 +46,17 @@ def list_brokers(cache, session):
 @registry.register_check("mq")
 def broker_kms_cmk_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AmazonMQ.1] AmazonMQ message brokers should use customer-managed KMS CMKs for encryption"""
+    amzmq = session.client("mq")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for response in list_brokers(cache, session):
+    for broker in list_brokers(cache, session):
         # B64 encode all of the details for the Asset
+        brokerId = str(broker["BrokerId"])
+        brokerName = str(broker["BrokerName"])
+        response = amzmq.describe_broker(BrokerId=brokerName)
         assetJson = json.dumps(response,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         brokerArn = str(response["BrokerArn"])
-        brokerId = str(response["BrokerId"])
-        brokerName = str(response["BrokerName"])
         if response["EncryptionOptions"]["UseAwsOwnedKey"] == True:
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -184,17 +186,23 @@ def broker_kms_cmk_check(cache: dict, session, awsAccountId: str, awsRegion: str
 @registry.register_check("mq")
 def broker_audit_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AmazonMQ.2] AmazonMQ message brokers should have audit logging enabled"""
+    amzmq = session.client("mq")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for response in list_brokers(cache, session):
+    for broker in list_brokers(cache, session):
         # B64 encode all of the details for the Asset
+        brokerId = str(broker["BrokerId"])
+        brokerName = str(broker["BrokerName"])
+        response = amzmq.describe_broker(BrokerId=brokerName)
         assetJson = json.dumps(response,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         brokerArn = str(response["BrokerArn"])
-        brokerId = str(response["BrokerId"])
-        brokerName = str(response["BrokerName"])
-        auditLogCheck = str(response["Logs"]["Audit"])
-        if auditLogCheck == "False":
+        brokerName = str(broker["BrokerName"])
+        try:
+            auditLogCheck = response["Logs"]["Audit"]
+        except KeyError:
+            auditLogCheck = False
+        if auditLogCheck == False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": brokerArn + "/amazonmq-broker-audit-logging-check",
@@ -324,15 +332,18 @@ def broker_audit_logging_check(cache: dict, session, awsAccountId: str, awsRegio
 @registry.register_check("mq")
 def broker_general_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AmazonMQ.3] AmazonMQ message brokers should have general logging enabled"""
+    amzmq = session.client("mq")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for response in list_brokers(cache, session):
+    for broker in list_brokers(cache, session):
         # B64 encode all of the details for the Asset
+        brokerId = str(broker["BrokerId"])
+        brokerName = str(broker["BrokerName"])
+        response = amzmq.describe_broker(BrokerId=brokerName)
         assetJson = json.dumps(response,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         brokerArn = str(response["BrokerArn"])
-        brokerId = str(response["BrokerId"])
-        brokerName = str(response["BrokerName"])
+        brokerName = str(broker["BrokerName"])
         genLogCheck = str(response["Logs"]["General"])
         if genLogCheck == "False":
             finding = {
@@ -466,15 +477,18 @@ def broker_general_logging_check(cache: dict, session, awsAccountId: str, awsReg
 @registry.register_check("mq")
 def broker_public_access_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AmazonMQ.4] AmazonMQ message brokers should not be publicly accessible"""
+    amzmq = session.client("mq")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for response in list_brokers(cache, session):
+    for broker in list_brokers(cache, session):
         # B64 encode all of the details for the Asset
+        brokerId = str(broker["BrokerId"])
+        brokerName = str(broker["BrokerName"])
+        response = amzmq.describe_broker(BrokerId=brokerName)
         assetJson = json.dumps(response,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         brokerArn = str(response["BrokerArn"])
-        brokerId = str(response["BrokerId"])
-        brokerName = str(response["BrokerName"])
+        brokerName = str(broker["BrokerName"])
         if response["PubliclyAccessible"] == True:
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -489,12 +503,10 @@ def broker_public_access_check(cache: dict, session, awsAccountId: str, awsRegio
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "CRITICAL"},
+                "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
                 "Title": "[AmazonMQ.4] AmazonMQ message brokers should not be publicly accessible",
-                "Description": "AmazonMQ broker "
-                + brokerName
-                + " is publicly accessible. Brokers created without public accessibility cannot be accessed from outside of your VPC. This greatly reduces your susceptibility to Distributed Denial of Service (DDoS) attacks from the public internet. Refer to the remediation instructions if this configuration is not intended",
+                "Description": f"AmazonMQ broker {brokerName} is publicly accessible. Brokers created without public accessibility cannot be accessed from outside of your VPC. This greatly reduces your susceptibility to Distributed Denial of Service (DDoS) attacks from the public internet and can also expose your RabbitMQ or ActiveMQ dashboards to unauthorized access. Refer to the remediation instructions if this configuration is not intended",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on message broker accessibility through a VPC refer to the Accessing the ActiveMQ Web Console of a Broker without Public Accessibility section of the Amazon MQ Developer Guide",
@@ -617,17 +629,18 @@ def broker_public_access_check(cache: dict, session, awsAccountId: str, awsRegio
 @registry.register_check("mq")
 def broker_minor_version_auto_upgrade_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AmazonMQ.5] AmazonMQ message brokers should be configured to automatically upgrade to the latest minor version"""
+    amzmq = session.client("mq")
     # ISO Time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    for response in list_brokers(cache, session):
+    for broker in list_brokers(cache, session):
         # B64 encode all of the details for the Asset
+        brokerId = str(broker["BrokerId"])
+        brokerName = str(broker["BrokerName"])
+        response = amzmq.describe_broker(BrokerId=brokerName)
         assetJson = json.dumps(response,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         brokerArn = str(response["BrokerArn"])
-        brokerId = str(response["BrokerId"])
-        brokerName = str(response["BrokerName"])
-        brokerArn = str(response["BrokerArn"])
-        brokerId = str(response["BrokerId"])
+        brokerName = str(broker["BrokerName"])
         if response["AutoMinorVersionUpgrade"] == False:
             finding = {
                 "SchemaVersion": "2018-10-08",

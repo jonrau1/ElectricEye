@@ -1,4 +1,4 @@
-## Developer Guide
+# Developer Guide
 
 This section is dedicated to guidance around creating new ElectricEye Auditors, it includes naming considerations, required information to map to the [Amazon Security Finding Format (ASFF)](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html) as well as information that is custom to ElectricEye.
 
@@ -16,7 +16,7 @@ ElectricEye abides by PEP8 and uses `black` for syntax verification, the followi
 
 **Do not forget** to update the tables within the [**Supported Services and Checks** section of the main docs!](README.md#supported-services-and-checks). You can use [Markdown Tables generator](https://www.tablesgenerator.com/markdown_tables) by copying and pasting the current table into the website's UI (underneath the `File/Paste table data...` dropdown menu) and remove the whitespace / added columns for this task.
 
-### Table of Contents
+## Table of Contents
 
 - [Naming an Auditor](#naming-an-auditor)
 - [Necessary Imports and License file](#necessary-imports-and-license-file)
@@ -26,7 +26,37 @@ ElectricEye abides by PEP8 and uses `black` for syntax verification, the followi
 - [Creating Test](#creating-tests)
 - [Auditor testing](#auditor-testing)
 
-### Naming an Auditor
+## In-depth overview of ElectricEye
+
+ElectricEye was created in early 2019 as an extension to [AWS Security Hub](https://aws.amazon.com/security-hub/), AWS Cloud's native Cloud Security Posture Management (CSPM) solution, with the goal to extend beyond only AWS Config-supported Services and add extra checks and Audit Readiness Standards (AKA "Compliance Standards") to support Cloud Security, DevOps, IT, and Risk teams running workloads on AWS. ElectricEye's AWS "pedigree" is most evident in the developer experience as it utilizes AWS credentials natively and expects other credentials to be stored in AWS Systems Manager ([SSM](https://aws.amazon.com/systems-manager/)) [Parameter Store](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html).
+
+Since then, ElectricEye has continued to expand into the most comprehensive AWS CSPM tool from a service support and check support perspective, adding additional functionality such as Secrets Management (powered by Yelp's **Detect-Secrets**), External Attack Surface Management (EASM, powered by **NMAP** and **Shodan.io**), Cloud Asset Management (CAM, see [here](#cloud-asset-management-cam) for more details) and integration into multiple downstream data formats, databases, as well as AWS Security Hub itself. All findings are mapped to the [AWS Security Finding Format (ASFF)](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html) for portability into [Amazon Security Lake](https://aws.amazon.com/security-lake/) and AWS Security Hub, and can be further parsed by supported outputs.
+
+A majority of evaluations performed by ElectricEye against public cloud and SaaS providers are aligned to security best practices such as ensuring secure configurations, encryption, logging & monitoring, and resilience. However, ElectricEye also supports use cases such as operational monitoring, high availability, patching, software asset management, sustainability, and performance configurations to broaden the appeal to users. ElectricEye can be used for cloud inventory management via its Cloud Asset Management (CAM) reporting outputs (`cam-json`) which records every unique asset scanned in an environment together with a service hierarchy for ingestion into other IT and security use cases.
+
+ElectricEye's terminology is as follows: the "entrypoint" into the evaluation logic of the tool is contained within the aptly named **Controller** (seen in [`controller.py`](./eeauditor/controller.py)) where all arguments are parsed and credentials are prepared. Command-line arguments are provided and parsed using [`click`](https://click.palletsprojects.com/en/8.1.x/) which is an alternative to [`argparse`](https://docs.python.org/3/library/argparse.html) to direct the evaluation logic of ElectricEye. The "top-level" concept within ElectricEye is the **Assessment Target** (sometimes referenced as **Target** or **AT** in other documentation & code targets) which corresponds to a single public Cloud Service Provider (CSP) - such as Amazon Web Services (AWS) - or to a single Software-as-a-Service (SaaS) provider - such as ServiceNow or GitHub.
+
+Every Assessment Target has a corresponding set of (aptly named) **Auditors** which are individual Python scripts that encapsulate discrete logic to evaluate the overall posture of a specific Cloud resource or component called a **Check**. In some cases an Auditor can contain Checks for multiple services where it makes sense to do so, such as within the EASM Auditors or within the [Shodan Auditor](./eeauditor/auditors/aws/Amazon_Shodan_Auditor.py) for AWS. 
+
+While ElectricEye is primarily a security posture management (SPM) tool, some Checks align to performance, resilience, and optimization best practices which in turn are aligned to **Compliance Standards** or have some secondary or tertiary benefit. Compliance Standards are a term borrowed from the ASFF that refer to any regulatory, industry, and/or "best practice" frameworks which define **Controls** which in turn define People, Process, and/or Technology configurations or outcomes which must be met to abide by or otherwise comply with a Control. ElectricEye solely deals at the infrastructure layer of CSPs and SaaS and thus only supports Technology-relevant controls in these various standards/frameworks/laws that define these Controls.
+
+Currently, all Checks are currently mapped to [**NIST Cybersecurity Framework V1.1**](https://doi.org/10.6028/NIST.CSWP.04162018), [**NIST Special Publication 800-53 Revision 4**](https://csrc.nist.gov/publications/detail/sp/800-53/rev-4/archive/2015-01-22), [**American Institute of Certified Public Accountants (AICPA) 200 Trust Service Criteria (TSCs)**](https://us.aicpa.org/content/dam/aicpa/interestareas/frc/assuranceadvisoryservices/downloadabledocuments/trust-services-criteria-2020.pdf) which can be used for SOC2 Type I and SOC2 Type II, and [**ISO 27001:2013**](https://www.iso.org/standard/27001) ISMS controls for Audit Readiness and internal GRC requirements. In the future, more control mapping will be provided as well as a more generic "ElectricEye Controls" library.
+
+As to the rest of ElectricEye's control flow, besides the arguments from the Controller (via `click`), it also uses a [Tom's Obvious Markup Language (TOML)](https://toml.io/en/) file (a `.toml`) - named [`external_providers.toml`](./eeauditor/external_providers.toml). This `.toml` specifies non-AWS CSPs and SaaS Provider information such as GCP Project IDs, ServiceNow Instance URLs, and takes references for API Keys, Passwords, and other sensitive information as SSM Parameters, AWS Secrets Manager Secrets and in the future this may change to support local vaulting & Privileged Access Management (PAM)/Privileged Identity Management (PIM) tools for non-AWS versions of ElectricEye. 
+
+The `click` and `.toml` arguments and values are passed off the "brain" of ElectricEye which is contained in [`eeauditor.py`](./eeauditor/eeauditor.py) - this Python file will load all Auditors using [`pluginbase`](http://pluginbase.pocoo.org/) and [Decorators](https://znasibov.info/posts/2017/01/22/the_ultimate_guide_to_python_decorators.html), will run the Auditors (or specific Checks) and `yield` back the results to be sent to Security Hub or other locations instrumented by the **Outputs Processor** (defined, partially, in [`processor/main.py`](./eeauditor/processor/main.py)). Outputs are all chosen via the command-line with support for multiple Outputs, filenames are specified in the CLI but all other per-Output settings are located in the TOML file.
+
+As of April 2023 ElectricEye supports the following CAM, CSPM, EASM, and SSPM capabilities. More SaaS Providers and CSPs - as well as expanded service & capability coverage - is under active development.
+
+- **CAM**: AWS, GCP, ServiceNow
+
+- **CSPM**: AWS, GCP
+
+- **SSPM**: ServiceNow
+
+- **EASM**: AWS, GCP
+
+## Naming an Auditor
 
 To keep naming consistent, the following pattern of `{Provider}_{ServiceName}_Auditor.py` is used such as [`Amazon_APIGW_Auditor.py`](./eeauditor/auditors/aws/Amazon_APIGW_Auditor.py) or [`GCP_CloudSQL_Auditor.py`](./eeauditor/auditors/gcp/GCP_CloudSQL_Auditor.py). Take notice that some Amazon Web Services (AWS) Cloud services take on the AWS moniker such as [`AWS_MemoryDB_Auditor.py`](./eeauditor/auditors/aws/AWS_MemoryDB_Auditor.py) and should reflect that naming convention, refer the official AWS documentation to verify those cases.
 
@@ -36,7 +66,7 @@ In the case of SaaS Security Posture Management (SSPM) Auditors, the "service na
 
 In other cases for SSPM, instead of a service name or "category" you can point to a higher-level product, such as in Microsoft M365 there are multiple product lines such as **Microsoft Defender for Cloud Apps** or **Microsoft Defender for Endpoint**.
 
-### Necessary Imports and License file
+## Necessary Imports and License file
 
 Within every single Auditor file, the first contents should be the Apache-2.0 license header
 
@@ -70,7 +100,7 @@ Only use the minimum necessary amount of imports per Auditor and do not forget t
 
 In the case of Amazon, `boto3` ***DOES NOT NEED TO BE IMPORTED*** into the Auditors, as it is imported into the Controller and passed to the AWS Auditors. This is done to utilize the `Boto3.Session()` object for overriding Regions, Accounts, and Profiles (as needed).
 
-### Creating Caches
+## Creating Caches
 
 ElectricEye uses locally instantiated Caches using Python `dict` which is invoked per-Auditor, this is done to call a service API only the maximum amount of times required and the response is saved into the `cache` dictionary and retrieved upon subsequent Checks within the Auditor. Use your discretion here and add as many Cache functions as are required for your Auditor. Name your functions either after the exact `method` from the Client API or give it a descriptive name that tells its purpose. The arguments should always be `cache` followed by service-specific values.
 
@@ -180,7 +210,7 @@ def get_servicenow_sys_properties(cache: dict):
 
 In the above example, the Constants are provided into the `pysnow.Client()` object themselves, when developed multi-instance/multi-tenant/multi-account checks ensure that the environment-looping is down within `eeauditor.py` and not within the individual Auditors.
 
-### Registering and Defining Checks
+## Registering and Defining Checks
 
 When Auditors and their Checks are registered by the `CheckRegister()` function, a [Decorator](https://realpython.com/primer-on-python-decorators/) is used to intake this information and it is important for both listing and executing checks, as well as determining when to reuse the Cache dictionary.
 
@@ -214,9 +244,9 @@ def cloudsql_instance_public_check(cache: dict, awsAccountId: str, awsRegion: st
     [GCP.CloudSQL.1] CloudSQL Instances should not be publicly reachable
     """
 
-### Formatting Findings
+## Formatting Findings
 
-Findings will be formatted for AWS Security Hub, [ASSF](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html). Look to other auditors findings format for more specifics on ElectricEye formatting. Parts that will stay consistent across checks are: `SchemaVersion`, `ProductArn`, `AwsAccountId`, `FirstObservedAt`, `CreatedAt`, `UpdatedAt`, `ProductFields.ProductName` (ElectricEye), and the `Resources` array. Example finding formatting from Amazon_EC2_Auditor's IMDSv2 Check:
+Findings will be formatted for AWS Security Hub, [ASSF](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html). Look to other auditors findings format for more specifics on ElectricEye formatting. Parts that will stay consistent across checks are: `SchemaVersion`, `ProductArn`, `AwsAccountId`, `FirstObservedAt`, `CreatedAt`, `UpdatedAt`, `ProductFields`, and the `Resources` array. Example finding formatting from `Amazon_EC2_Auditor` IMDSv2 Check:
 
 
 ```python
@@ -367,24 +397,36 @@ For the `.Description`, `Remediation.Recommendation.Text` and `Remediation.Recom
 },
 ```
 
-Lastly, ElectricEye has an asset-reporting capability that should be defined within `.ProductFields` such as follows:
+Lastly, ElectricEye has an asset-reporting capability that should be defined within `.ProductFields` such as the below example. Refer to the [Cloud Asset Management docs](../asset_management/ASSET_MANAGEMENT.md) for information on this schema and its design principles.
 
 ```python
 "ProductFields": {
     "ProductName": "ElectricEye",
-    "Provider": "GCP",
-    "AssetClass": "Database",
-    "AssetService": "Google CloudSQL",
-    "AssetType": "CloudSQL Instance"
-},
+    "Provider": "AWS",
+    "ProviderType": "CSP",
+    "ProviderAccountId": awsAccountId,
+    "AssetRegion": awsRegion,
+    "AssetDetails": assetB64,
+    "AssetClass": "Networking",
+    "AssetService": "Amazon API Gateway",
+    "AssetComponent": "Stage"
+}
 ```
 
-The `AssetClass` is derived from how AWS organizies and categorizes its service offers, such as `Management & Governance`, `Security & Identity`, `Compute`, `Container`, `Database`, and so on. There are clear-cut examples such as the above example's GCP CloudSQL being part of the `Database` offering. Some services may be more nuanced and can be generically categorized such as ServiceNow Instances and Plugins being part of `Management & Governance` as that is where AWS categorizes indivdual Accounts and other shared services.
+The Asset Details in the `assetB64` variable are a Base64 encoded JSON object about the `AssetComponent` itself, in cases where a Check is written about an Account or a series of configurations, the `AssetDetails` should be aligned against the high level check or hard-code as `None`. The example below shows the loop for capturing `assetB64` for an Amazon API Gateway Stage.
 
-The `AssetService` should align to the "type" of Asset it is from the Provider, such as `Google CloudSQL` and `AssetType` should point to the smallest, discrete component within the service's taxonomy, such as an `EC2 Instance`, `CloudSQL Instance`, or `IAM User`.
+```python
+for restapi in get_rest_apis(cache, session)["items"]:
+    apiGwApiId = str(restapi["id"])
+    apiGwApiName = str(restapi["name"])
+    response = apigateway.get_stages(restApiId=apiGwApiId)
+    for apistages in response["item"]:
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(apistages,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+```
 
-
-### Creating Tests
+## Creating Tests
 
 For each check within an auditor there should be a corresponding test for each case the check could come across, often times a pass and fail but sometimes more. A stubber is used to give the auditor the desired responses for testing. Necessary imports are:
 
@@ -397,7 +439,7 @@ import sys
 from botocore.stub import Stubber, ANY
 ```
 
-### Auditor testing
+## Auditor testing
 
 TODO: EXPAND THIS SHIT...
 

@@ -65,7 +65,6 @@ def ec2_imdsv2_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
         if metadataServiceCheck == "enabled":
             imdsv2Check = str(i["MetadataOptions"]["HttpTokens"])
             if imdsv2Check != "required":
-                # this is a passing check
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": instanceArn + "/ec2-imdsv2-check",
@@ -145,7 +144,6 @@ def ec2_imdsv2_check(cache: dict, session, awsAccountId: str, awsRegion: str, aw
                 }
                 yield finding
             else:
-                # this is a failing check
                 finding = {
                     "SchemaVersion": "2018-10-08",
                     "Id": instanceArn + "/ec2-imdsv2-check",
@@ -247,7 +245,7 @@ def ec2_secure_enclave_check(cache: dict, session, awsAccountId: str, awsRegion:
         except KeyError:
             instanceLaunchedAt = str(i["LaunchTime"])
         # Check specific metadata
-        if str(i["EnclaveOptions"]["Enabled"]) == "False":
+        if i["EnclaveOptions"]["Enabled"] == False:
             # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -449,7 +447,7 @@ def ec2_public_facing_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "Title": "[EC2.3] EC2 Instances should not be internet-facing",
                 "Description": "EC2 Instance "
                 + instanceId
-                + " is internet-facing (due to having a Public DNS), instances should be behind Load Balancers or CloudFront distrobutions to avoid any vulnerabilities on the middleware or the operating system from being exploited directly and to increase high availability and resilience of applications hosted on EC2. Refer to the remediation instructions if this configuration is not intended",
+                + " is internet-facing (due to having a Public DNS), instances should be behind AWS Elastic Load Balancers, CloudFront Distributions, or a 3rd-party CDN/Load Balancer to avoid any vulnerabilities on the middleware or the operating system from being exploited directly. Additionally, load balancing can increase high availability and resilience of applications hosted on EC2. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "EC2 Instances should be rebuilt in Private Subnets within your VPC and placed behind Load Balancers. To learn how to attach Instances to a public-facing load balancer refer to the How do I attach backend instances with private IP addresses to my internet-facing load balancer in ELB? post within the AWS Premium Support Knowledge Center",
@@ -459,10 +457,10 @@ def ec2_public_facing_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "Amazon EC2",
                     "AssetComponent": "Instance"
@@ -501,8 +499,8 @@ def ec2_public_facing_check(cache: dict, session, awsAccountId: str, awsRegion: 
                         "ISO 27001:2013 A.13.2.1"
                     ]
                 },
-                "Workflow": {"Status": "RESOLVED"},
-                "RecordState": "ARCHIVED"
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
             }
             yield finding
         else:
@@ -535,10 +533,10 @@ def ec2_public_facing_check(cache: dict, session, awsAccountId: str, awsRegion: 
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Compute",
                     "AssetService": "Amazon EC2",
                     "AssetComponent": "Instance"
@@ -577,8 +575,8 @@ def ec2_public_facing_check(cache: dict, session, awsAccountId: str, awsRegion: 
                         "ISO 27001:2013 A.13.2.1"
                     ]
                 },
-                "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE"
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
             }
             yield finding
 
@@ -602,7 +600,7 @@ def ec2_source_dest_verification_check(cache: dict, session, awsAccountId: str, 
         except KeyError:
             instanceLaunchedAt = str(i["LaunchTime"])
         # Check specific metadata
-        if str(i["SourceDestCheck"]) == "False":
+        if i["SourceDestCheck"] == False:
             # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -621,7 +619,7 @@ def ec2_source_dest_verification_check(cache: dict, session, awsAccountId: str, 
                 "Title": "[EC2.4] EC2 Instances should use Source-Destination checks unless absolutely not required",
                 "Description": "EC2 Instance "
                 + instanceId
-                + " does have have the Source-Destination Check enabled. Typically, this is done for self-managed Network Address Translation (NAT), Forward Proxies (such as Squid, for URL Filtering/DNS Protection) or self-managed Firewalls (ModSecurity). These settings should be verified, and underlying technology must be patched to avoid exploits or availability loss. Refer to the remediation instructions if this configuration is not intended",
+                + " does have have the Source-Destination Check enabled. Typically, this is done for self-managed Network Address Translation (NAT), Forward Proxies (such as Squid, for URL Filtering/DNS Protection) or self-managed Firewalls (ModSecurity). These settings should be verified, and underlying technology must be patched to avoid exploits or availability loss. Refer to the remediation instructions if this configuration is not intended.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "To learn more about Source/destination checking refer to the Elastic network interfaces section of the Amazon Elastic Compute Cloud User Guide",
@@ -1390,11 +1388,9 @@ def ec2_concentration_risk(cache: dict, session, awsAccountId: str, awsRegion: s
     uAzs = []
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+    assetB64 = None
     # Evaluation time - grab all unique subnets per EC2 instance in Region
     for i in describe_instances(cache, session):
-        # B64 encode all of the details for the Asset
-        assetJson = json.dumps(i,default=str).encode("utf-8")
-        assetB64 = base64.b64encode(assetJson)
         subnetId = str(i["SubnetId"])
         # write subnets to list if it"s not there
         if subnetId not in uSubnets:

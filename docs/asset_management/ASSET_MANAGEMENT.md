@@ -5,6 +5,7 @@
 - [CAM Concept of Operations](#cam-concept-of-operations-conops)
 - [CAM Reporting](#cloud-asset-management-cam-reporting)
 - [Asset Class Mapping](#asset-class-mapping)
+- [Supported Asset Services]
 
 ## CAM Concept of Operations (CONOPs)
 
@@ -52,167 +53,39 @@ In some cases the `AssetComponent` doesn't refer to a "thing" but it may refer t
 
 ## Cloud Asset Management (CAM) Reporting
 
-**NOTE**: This section will be modified or removed altogether for the next Outputs refresh which will change documentation as well as the way that Outputs are used within ElectricEye
-
 ElectricEye has several Cloud Asset Management (CAM) reporting mechanisms within the Outputs, for the most accurate output information uses the following command from wherever you have the root directory of ElectricEye installed: `python3 eeauditor/controller.py --list-options`.
 
-### JSON Output
+For information on how to use these Outputs and view sample outputs refer to
 
-Using the `-o json` Output option will create a JSON file that contains ALL Checks along with the Base64-decoded values for `ProductFields.AssetDetails`. This is the most comprehensive Output available to ElectricEye and the only output that contains the fully ASFF payload along with the full `AssetDetails` payload.
+- [Cloud Asset Management JSON Output](../outputs/OUTPUTS.md#json-cloud-asset-management-cam-output)
+- [Cloud Asset Management MongoDB & AWS DocumentDB Output](../outputs/OUTPUTS.md#mongodb--aws-documentdb-cloud-asset-management-cam-output)
+- [Cloud Asset Management PostgreSQL Output](../outputs/OUTPUTS.md#postgresql-cloud-asset-management-cam-output)
 
-```json
-{
-  "SchemaVersion": "2018-10-08",
-  "Id": "arn:aws-isob:iam::123456123456:role/exampleRoleName123456/role_policy_least_priv",
-  "ProductArn": "arn:aws-isob:securityhub:us-isob-east-1:123456123456:product/123456123456/default",
-  "GeneratorId": "arn:aws-isob:iam::123456123456:role/exampleRoleName123456",
-  "AwsAccountId": "123456123456",
-  "Types": [
-    "Software and Configuration Checks/AWS Security Best Practices"
-  ],
-  "FirstObservedAt": "2021-04-02T20:34:28.840122+00:00",
-  "CreatedAt": "2021-04-02T20:34:28.840122+00:00",
-  "UpdatedAt": "2021-04-02T20:34:28.840122+00:00",
-  "Severity": {
-    "Label": "INFORMATIONAL"
-  },
-  "Confidence": 99,
-  "Title": "[IAM.11] Role inline policies should follow least privilege principles",
-  "Description": "The role exampleRoleName123456 inline policy exampleScaryPolicy is following least privilege principles.",
-  "Remediation": {
-    "Recommendation": {
-      "Text": "For information on IAM least privilege refer to the inline policy section of the AWS IAM User Guide",
-      "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#inline-policies"
-    }
-  },
-  "ProductFields": {
-    "ProductName": "ElectricEye",
-    "Provider": "AWS",
-    "ProviderType": "CSP",
-    "ProviderAccountId": "123456123456",
-    "AssetRegion": "us-isob-east-1",
-    "AssetDetails": {
-      "Path": "/",
-      "RoleName": "exampleRoleName123456",
-      "RoleId": "AROA3TX2ECB4SEKQKIHFB",
-      "Arn": "arn:aws-isob:iam::123456123456:role/exampleRoleName123456",
-      "CreateDate": "2021-04-08 20:38:25+00:00",
-      "AssumeRolePolicyDocument": {
-        "Version": "2012-10-17",
-        "Statement": [
-          {
-            "Effect": "Allow",
-            "Principal": {
-              "Service": "appsync.amazonaws.com"
-            },
-            "Action": "sts:AssumeRole"
-          }
-        ]
-      },
-      "Description": "",
-      "MaxSessionDuration": 3600
-    },
-    "AssetClass": "Identity & Access Management",
-    "AssetService": "AWS IAM",
-    "AssetComponent": "Role"
-  },
-  "Resources": [
-    {
-      "Type": "AwsIamRole",
-      "Id": "arn:aws-isob:iam::123456123456:role/exampleRoleName123456",
-      "Partition": "aws",
-      "Region": "us-isob-east-1",
-      "Details": {
-        "AwsIamRole": {
-          "RolePolicyList": [
-            {
-              "PolicyName": "exampleScaryPolicy"
-            }
-          ],
-          "RoleName": "exampleRoleName123456"
-        }
-      }
-    }
-  ],
-  "Compliance": {
-    "Status": "PASSED",
-    "RelatedRequirements": [
-      "NIST CSF V1.1 PR.AC-3",
-      "NIST SP 800-53 Rev. 4 AC-1",
-      "NIST SP 800-53 Rev. 4 AC-17",
-      "NIST SP 800-53 Rev. 4 AC-19",
-      "NIST SP 800-53 Rev. 4 AC-20",
-      "NIST SP 800-53 Rev. 4 SC-15",
-      "AICPA TSC CC6.6",
-      "ISO 27001:2013 A.6.2.1",
-      "ISO 27001:2013 A.6.2.2",
-      "ISO 27001:2013 A.11.2.6",
-      "ISO 27001:2013 A.13.1.1",
-      "ISO 27001:2013 A.13.2.1"
-    ]
-  },
-  "Workflow": {
-    "Status": "RESOLVED"
-  },
-  "RecordState": "ARCHIVED"
-}
-```
+The `cam_` Outputs will generate new Outputs listed below.
 
-### CAM JSON Output
+### `AssetId` 
 
-Using the `-o cam_json` Output option will create a JSON file that specifically contains only the values from `ProductFields` without `ProductFields.ProductName`. It will also contain some new values that are derived from other parts of the ASFF that are detailed below. This is the only Output where the specialized values detailed below are contained. This is ideal for usage in pure Asset Management & "roll-up" / "executive" reporting.
+This key is derived from `Resources.[*].Id` in the ASFF and is typically an ARN for AWS and is an ElectricEye-specific GUID for GCP and ServiceNow. (This section will be updated upon subsequent provider releases).
 
-- **`AssetId`**: This key is derived from `Resources.[*].Id` in the ASFF and is typically an ARN for AWS and is an ElectricEye-specific GUID for GCP and ServiceNow. (This section will be updated upon subsequent provider releases).
+### `InformationalSeverityFindings` 
 
-- **`InformationalSeverityFindings`**: This key contains the ***sum*** of all **INFORMATIONAL** Check results specified in `Severity.Label` regardless of `Compliance.Status`, `RecordState`, or `Workflow.Status` values.
+This key contains the ***sum*** of all **INFORMATIONAL** Check results specified in `Severity.Label` regardless of `Compliance.Status`, `RecordState`, or `Workflow.Status` values.
 
-- **`LowSeverityFindings`**: This key contains the ***sum*** of all **LOW** Check results specified in `Severity.Label` regardless of `Compliance.Status`, `RecordState`, or `Workflow.Status` values.
+### `LowSeverityFindings` 
 
-- **`MediumSeverityFindings`**: This key contains the ***sum*** of all **MEDIUM** Check results specified in `Severity.Label` regardless of `Compliance.Status`, `RecordState`, or `Workflow.Status` values.
+This key contains the ***sum*** of all **LOW** Check results specified in `Severity.Label` regardless of `Compliance.Status`, `RecordState`, or `Workflow.Status` values.
 
-- **`HighSeverityFindings`**: This key contains the ***sum*** of all **HIGH** Check results specified in `Severity.Label` regardless of `Compliance.Status`, `RecordState`, or `Workflow.Status` values.
+### `MediumSeverityFindings` 
 
-- **`CriticalSeverityFindings`**: This key contains the ***sum*** of all **CRITICAL** Check results specified in `Severity.Label` regardless of `Compliance.Status`, `RecordState`, or `Workflow.Status` values.
+This key contains the ***sum*** of all **MEDIUM** Check results specified in `Severity.Label` regardless of `Compliance.Status`, `RecordState`, or `Workflow.Status` values.
 
-```json
-{
-    "AssetId": "arn:aws-isob:ec2:us-isob-east-1:123456123456:volume/vol-11111111",
-    "AssetClass": "Storage",
-    "AssetService": "Amazon Elastic Block Storage",
-    "AssetComponent": "Volume",
-    "Provider": "AWS",
-    "ProviderType": "CSP",
-    "ProviderAccountId": "123456123456",
-    "AssetRegion": "us-isob-east-1",
-    "AssetDetails": {
-        "Attachments": [
-            {
-                "AttachTime": "2023-02-15 17:08:49+00:00",
-                "Device": "/dev/sda1",
-                "InstanceId": "i-11111111",
-                "State": "attached",
-                "VolumeId": "vol-11111111",
-                "DeleteOnTermination": true
-            }
-        ],
-        "AvailabilityZone": "us-isob-east-1b",
-        "CreateTime": "2023-02-15 17:08:49.250000+00:00",
-        "Encrypted": false,
-        "Size": 64,
-        "SnapshotId": "snap-1111111111",
-        "State": "in-use",
-        "VolumeId": "vol-11111111",
-        "Iops": 192,
-        "VolumeType": "gp2",
-        "MultiAttachEnabled": false
-    },
-    "InformationalSeverityFindings": 3,
-    "LowSeverityFindings": 0,
-    "MediumSeverityFindings": 1,
-    "HighSeverityFindings": 1,
-    "CriticalSeverityFindings": 0
-}
-```
+### `HighSeverityFindings` 
+
+This key contains the ***sum*** of all **HIGH** Check results specified in `Severity.Label` regardless of `Compliance.Status`, `RecordState`, or `Workflow.Status` values.
+
+### `CriticalSeverityFindings` 
+
+This key contains the ***sum*** of all **CRITICAL** Check results specified in `Severity.Label` regardless of `Compliance.Status`, `RecordState`, or `Workflow.Status` values.
 
 ## Asset Class Mapping
 
@@ -252,3 +125,206 @@ The following mapping is used, where the entry for "ElectricEye CAM `AssetClass`
 | Storage | Storage | In some cases, `Storage` is used in lieu of `Compute` such as with Disks and AMIs |
 
 As more Providers and Services are added into ElectricEye this section will be further broken out.
+
+## Supported Asset Services
+
+**NOTE** To get an up to date list of these values, navigate to the directory of Auditors you want to check and use the following command: `grep -ho 'AssetService": "[^"]*' *.py | sed 's/.*: "//;s/"$//' | sort -u`
+
+```
+AWS Account
+AWS Amplify
+AWS App Mesh
+AWS AppStream 2.0
+AWS Auto Scaling
+AWS CloudFormation
+AWS CloudHSM
+AWS CloudTrail
+AWS CodeArtifact
+AWS CodeBuild
+AWS DataSync
+AWS Database Migration Service
+AWS Directory Service
+AWS EC2 Image Builder
+AWS Elastic Load Balancer
+AWS Elastic Load Balancer V2
+AWS Glue
+AWS Health
+AWS IAM
+AWS IAM Access Analyzer
+AWS IAM Roles Anywhere
+AWS Lambda
+AWS License Manager
+AWS MemoryDB for Redis
+AWS Resource Access Manager
+AWS Secrets Manager
+AWS Security Hub
+AWS Systems Manager
+AWS Trusted Advisor
+AWS WAFv2 Global
+AWS WAFv2 Regional
+AWS WorkSpaces
+AWS XRay
+Amazon API Gateway
+Amazon Athena
+Amazon Certificate Manager
+Amazon Cloud9
+Amazon CloudFront
+Amazon CloudSearch
+Amazon Cogntio
+Amazon Detective
+Amazon DocumentDB
+Amazon DynamoDB
+Amazon DynamoDB Accelerator (DAX)
+Amazon EC2
+Amazon ElastiCache for Redis
+Amazon Elastic Beanstalk
+Amazon Elastic Block Storage
+Amazon Elastic Container Registry
+Amazon Elastic Container Service
+Amazon Elastic Container Service (ECS)
+Amazon Elastic File System
+Amazon Elastic Kubernetes Service
+Amazon Elastic Load Balancing
+Amazon Elastic Load Balancing V2
+Amazon Elastic MapReduce
+Amazon Global Accelerator
+Amazon GuardDuty
+Amazon Key Management Service
+Amazon Keyspaces
+Amazon Kinesis Data Analytics
+Amazon Kinesis Data Firehose
+Amazon Kinesis Data Streams
+Amazon MQ
+Amazon Macie
+Amazon Managed Blockchain
+Amazon Managed Streaming for Apache Kafka
+Amazon Managed Workflows for Apache Airflow
+Amazon Neptune
+Amazon OpenSearch Service
+Amazon Quantum Ledger Database
+Amazon Redshift
+Amazon Relational Database Service
+Amazon Route53
+Amazon S3
+Amazon SageMaker
+Amazon Shield Advanced
+Amazon Simple Notification Service
+Amazon Simple Queue Service
+Amazon VPC
+Amazon Virtual Private Cloud
+Google CloudSQL
+Google Compute Engine
+System Plugins (ServiceNow)
+System Properties (ServiceNow)
+Users & Groups (ServiceNow)
+```
+
+This list will be kept up to date, probably.
+
+## Supported Asset Components
+
+**NOTE** To get an up to date list of these values, navigate to the directory of Auditors you want to check and use the following command: `grep -ho 'AssetComponent": "[^"]*' *.py | sed 's/.*: "//;s/"$//' | sort -u`
+
+```
+Plugin
+System Property
+User
+Accelerator
+Access Key
+Account Activation
+Account Configuration
+Agent
+Application
+Application Load Balancer
+Association
+Attack
+Autoscaling Group
+Broker
+Bucket
+Cache Cluster
+Certificate
+Check
+Classic Load Balancer
+Cluster
+Crawler
+Data Catalog
+Database Cluster
+Database Cluster Snapshot
+Database Instance
+Delivery Stream
+Directory
+Distribution
+Document
+Domain
+Elastic IP
+Encryption Configuration
+Endpoint
+Environment
+Event
+Event Subscription
+File System
+Findings
+Fleet
+Function
+Group
+Hardware Security Module
+Hosted Zone
+Hosted Zone Resource Record
+Image
+Instance
+Journal Export
+Key
+Key Alias
+Layer
+Ledger
+License Configuration
+Member
+Mesh
+Model
+Network Load Balancer
+Notebook Instance
+Parameter Group
+Password Policy
+Peer Node
+Pipeline
+Policy
+Profile
+Project
+Queue
+REST API
+Recipe
+Registry
+Replication Instance
+Repository
+Resource Share
+Role
+Search Domain
+Secret
+Security Group
+Server Certificate Storage
+Snapshot
+Source Credential
+Stack
+Stage
+Stream
+Subnet
+Subscription
+Table
+Task
+Task Definition
+Topic
+Trail
+Trust Anchor
+User
+User Pool
+Virtual Node
+Virtual Private Cloud
+Volume
+Web Access Control List
+Workgroup
+Workspace
+Database Instance
+Instance
+```
+
+This list will be kept up to date, probably.

@@ -17,6 +17,7 @@
 #KIND, either express or implied.  See the License for the
 #specific language governing permissions and limitations
 #under the License.
+
 class ElectricEyeOutput(object):
     """Class to be used as a decorator to register all output providers"""
 
@@ -31,8 +32,9 @@ class ElectricEyeOutput(object):
         """Returns the class to process the findings"""
         try:
             return cls._outputs[provider]
-        except KeyError:
+        except KeyError as ke:
             print(f"Designated output provider {provider} does not exist")
+            raise ke
 
     @classmethod
     def get_all_providers(cls):

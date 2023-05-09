@@ -204,7 +204,7 @@ def security_group_all_open_check(cache: dict, session, awsAccountId: str, awsRe
 
 @registry.register_check("ec2")
 def security_group_master_auditor_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """The Security Group Master Auditor check generates findings for every configuration file entry"""
+    """[SecurityGroup.{checkIdNumber}] Security groups should not allow unrestricted {protocol} access"""
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
 
     # Open the Configuration file and parse the information within the dynamically populate this auditor

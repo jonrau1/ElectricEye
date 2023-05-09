@@ -25,7 +25,7 @@ import json
 
 registry = CheckRegister()
 
-def paginate(cache, session):
+def paginate_distributions(cache, session):
     cloudfront = session.client("cloudfront")
 
     itemList = []
@@ -49,7 +49,7 @@ def cloudfront_active_trusted_signers_check(cache: dict, session, awsAccountId: 
     cloudfront = session.client("cloudfront")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache, session):
+    for dist in paginate_distributions(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(dist,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -262,7 +262,7 @@ def cloudfront_origin_shield_check(cache: dict, session, awsAccountId: str, awsR
     cloudfront = session.client("cloudfront")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache, session):
+    for dist in paginate_distributions(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(dist,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -434,7 +434,7 @@ def cloudfront_default_viewer_cert_check(cache: dict, session, awsAccountId: str
     cloudfront = session.client("cloudfront")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache, session):
+    for dist in paginate_distributions(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(dist,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -585,7 +585,7 @@ def cloudfront_georestriction_check(cache: dict, session, awsAccountId: str, aws
     cloudfront = session.client("cloudfront")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache, session):
+    for dist in paginate_distributions(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(dist,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -738,7 +738,7 @@ def cloudfront_field_level_encryption_check(cache: dict, session, awsAccountId: 
     cloudfront = session.client("cloudfront")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache, session):
+    for dist in paginate_distributions(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(dist,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -879,7 +879,7 @@ def cloudfront_waf_enabled_check(cache: dict, session, awsAccountId: str, awsReg
     cloudfront = session.client("cloudfront")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache, session):
+    for dist in paginate_distributions(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(dist,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -1038,7 +1038,7 @@ def cloudfront_default_viewer_tls12_check(cache: dict, session, awsAccountId: st
     ]
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache, session):
+    for dist in paginate_distributions(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(dist,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -1196,7 +1196,7 @@ def cloudfront_custom_origin_tls12_check(cache: dict, session, awsAccountId: str
     ]
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache, session):
+    for dist in paginate_distributions(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(dist,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -1443,7 +1443,7 @@ def cloudfront_custom_origin_https_only_protcol_check(cache: dict, session, awsA
     cloudfront = session.client("cloudfront")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache, session):
+    for dist in paginate_distributions(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(dist,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -1689,7 +1689,7 @@ def cloudfront_default_viewer_https_sni_check(cache: dict, session, awsAccountId
     cloudfront = session.client("cloudfront")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache, session):
+    for dist in paginate_distributions(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(dist,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -1840,7 +1840,7 @@ def cloudfront_distro_logging_check(cache: dict, session, awsAccountId: str, aws
     cloudfront = session.client("cloudfront")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache, session):
+    for dist in paginate_distributions(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(dist,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -1989,7 +1989,7 @@ def cloudfront_distro_default_root_object_check(cache: dict, session, awsAccount
     cloudfront = session.client("cloudfront")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache, session):
+    for dist in paginate_distributions(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(dist,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -2150,7 +2150,7 @@ def cloudfront_default_viewer_https_only_protcol_check(cache: dict, session, aws
     cloudfront = session.client("cloudfront")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache, session):
+    for dist in paginate_distributions(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(dist,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -2301,7 +2301,7 @@ def cloudfront_s3_origin_oai_check(cache: dict, session, awsAccountId: str, awsR
     cloudfront = session.client("cloudfront")
     # ISO Time
     iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
-    for dist in paginate(cache, session):
+    for dist in paginate_distributions(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(dist,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)

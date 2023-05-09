@@ -30,7 +30,8 @@ def get_resource_shares(cache, session):
     response = cache.get("get_resource_shares")
     if response:
         return response
-    for page in ram.get_paginator("get_resource_shares").paginate():
+
+    for page in ram.get_paginator("get_resource_shares").paginate(resourceOwner='SELF'):
         results = page["resourceShares"] 
 
     cache["get_resource_shares"] = results

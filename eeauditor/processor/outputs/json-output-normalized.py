@@ -73,14 +73,14 @@ class JsonProvider(object):
                     "Description": str(fi["Description"]),
                     "RecommendationText": str(fi["Remediation"]["Recommendation"]["Text"]),
                     "RecommendationUrl": str(fi["Remediation"]["Recommendation"]["Url"]),
-                    "ProductFields": fi["ProductFields"],
+                    "ProductFields": str(fi["ProductFields"]),
                     "ResourceType": str(fi["Resources"][0]["Type"]),
                     "ResourceId": str(fi["Resources"][0]["Id"]),
                     "ResourcePartition": str(fi["Resources"][0]["Partition"]),
                     "ResourceRegion": str(fi["Resources"][0]["Region"]),
-                    "ResourceDetails": resourceDetails,
+                    "ResourceDetails": str(resourceDetails),
                     "ComplianceStatus": str(fi["Compliance"]["Status"]),
-                    "ComplianceRelatedRequirements": fi["Compliance"]["RelatedRequirements"],
+                    "ComplianceRelatedRequirements": str(fi["Compliance"]["RelatedRequirements"]),
                     "WorkflowStatus": str(fi["Workflow"]["Status"]),
                     "RecordState": str(fi["RecordState"])
                 }

@@ -527,10 +527,82 @@ def public_lambda_layer_check(cache: dict, session, awsAccountId: str, awsRegion
         createDate = parser.parse(layer["LatestMatchingVersion"]["CreatedDate"]).isoformat()
         layerVersion = layer["LatestMatchingVersion"]["Version"]
         # Get the layer Policy
-        layerPolicy = json.loads(lambdas.get_layer_version_policy(
-            LayerName=layerName,
-            VersionNumber=layerVersion
-        )["Policy"])
+        try:
+            layerPolicy = json.loads(lambdas.get_layer_version_policy(
+                LayerName=layerName,
+                VersionNumber=layerVersion
+            )["Policy"])
+        except Exception:
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{layerArn}/public-lambda-layer-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": layerArn,
+                "AwsAccountId": awsAccountId,
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices",
+                    "Effects/Data Exposure",
+                ],
+                "FirstObservedAt": iso8601Time,
+                "CreatedAt": iso8601Time,
+                "UpdatedAt": iso8601Time,
+                "Severity": {"Label": "LOW"},
+                "Confidence": 99,
+                "Title": "[Lambda.4] Lambda layers should not be publicly shared",
+                "Description": f"Lambda layer {layerName} does not have have a policy defined. While the Layer cannot be publicly shared without a Policy, it is a best practice to apply one to apply extra identity-based access controls and to explicitly deny sharing a Layer outside of a Zone of Trust (Account, Organization). Refer to the remediation instructions if this configuration is not intended.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "For more information on sharing Lambda Layers and modifiying their permissions refer to the Configuring layer permissions section of the Amazon Lambda Developer Guide",
+                        "Url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html#configuration-layers-permissions"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Compute",
+                    "AssetService": "AWS Lambda",
+                    "AssetComponent": "Layer"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsLambdaLayerVersion",
+                        "Id": layerArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsLambdaLayerVersion": {
+                                "Version": layerVersion,
+                                "CompatibleRuntimes": compatibleRuntimes,
+                                "CreatedDate": createDate
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 PR.AC-3",
+                        "NIST SP 800-53 Rev. 4 AC-1",
+                        "NIST SP 800-53 Rev. 4 AC-17",
+                        "NIST SP 800-53 Rev. 4 AC-19",
+                        "NIST SP 800-53 Rev. 4 AC-20",
+                        "NIST SP 800-53 Rev. 4 SC-15",
+                        "AICPA TSC CC6.6",
+                        "ISO 27001:2013 A.6.2.1",
+                        "ISO 27001:2013 A.6.2.2",
+                        "ISO 27001:2013 A.11.2.6",
+                        "ISO 27001:2013 A.13.1.1",
+                        "ISO 27001:2013 A.13.2.1"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
         # Evaluate layer Policy
         for s in layerPolicy["Statement"]:
             principal = s["Principal"]

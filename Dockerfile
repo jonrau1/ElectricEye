@@ -18,7 +18,7 @@
 #specific language governing permissions and limitations
 #under the License.
 
-# latest hash as of 11 APR 2023 - Alpine 3.17.3
+# latest hash as of 5 MAY 2023 - Alpine 3.17.3 / alpine:latest
 # https://hub.docker.com/layers/library/alpine/3.17.3/images/sha256-b6ca290b6b4cdcca5b3db3ffa338ee0285c11744b4a6abaa9627746ee3291d8d?context=explore
 # use as builder image to pull in required deps
 FROM alpine@sha256:b6ca290b6b4cdcca5b3db3ffa338ee0285c11744b4a6abaa9627746ee3291d8d AS builder
@@ -28,8 +28,12 @@ FROM alpine@sha256:b6ca290b6b4cdcca5b3db3ffa338ee0285c11744b4a6abaa9627746ee3291
 ENV PYTHONUNBUFFERED=1
 
 COPY requirements.txt /tmp/requirements.txt
+
 # NOTE: This will copy all application files and auditors to the container
+# IMPORTANT: ADD YOUR TOML CONFIGURATIONS BEFORE YOU BUILD THIS!
+
 COPY ./eeauditor/ /eeauditor/
+
 # Installing dependencies
 RUN \
     apk update && \
@@ -45,30 +49,13 @@ RUN \
 # new stage to bring in Labels and ENV Vars
 FROM builder as electriceye
 
-ENV \
-    # SHODAN ENV VARS
-    SHODAN_API_KEY_PARAM=SHODAN_API_KEY_PARAM \
-    # DISRUPTOPS ENV VARS
-    DOPS_CLIENT_ID_PARAM=DOPS_CLIENT_ID_PARAM \
-    DOPS_API_KEY_PARAM=DOPS_API_KEY_PARAM \
-    # POSTGRES VARS
-    POSTGRES_USERNAME=POSTGRES_USERNAME \
-    ELECTRICEYE_POSTGRESQL_DB_NAME=ELECTRICEYE_POSTGRESQL_DB_NAME \
-    POSTGRES_DB_ENDPOINT=POSTGRES_DB_ENDPOINT \
-    POSTGRES_DB_PORT=POSTGRES_DB_PORT \
-    POSTGRES_PASSWORD_SSM_PARAM_NAME=POSTGRES_PASSWORD_SSM_PARAM_NAME \
-    # DOCUMENTDB/MONGO VARS
-    MONGODB_USERNAME=MONGODB_USERNAME \
-    MONGODB_HOSTNAME=MONGODB_HOSTNAME \
-    MONGODB_PASSWORD_PARAMETER=MONGODB_PASSWORD_PARAMETER \
-    # DYNAMODB VARS
-    DYNAMODB_TABLE_NAME=DYNAMODB_TABLE_NAME
+ENV SHODAN_API_KEY_PARAM=SHODAN_API_KEY_PARAM
 
 LABEL \ 
     maintainer="https://github.com/jonrau1" \
     version="3.0" \
     license="Apache-2.0" \
-    description="ElectricEye is a Cloud Security Configuration CLI for AWS, GCP, Azure, and SaaS Security Posture Management with support for 100s of services and evaluations to harden your entire cloud footprint."
+    description="ElectricEye is a multi-cloud, multi-SaaS Python CLI tool for Asset Management, Security Posture Management, and External Attack Surface Management supporting 100s of services and evaluations to harden your public cloud & SaaS environments."
 
 # Create a System Group and User for ElectricEye so we don't run as root
 RUN \

@@ -174,7 +174,7 @@ def ecr_repo_image_lifecycle_policy_check(cache: dict, session, awsAccountId: st
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
             # this is a passing finding
-            response = ecr.get_lifecycle_policy(repositoryName=repoName)
+            ecr.get_lifecycle_policy(repositoryName=repoName)
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": repoArn + "/ecr-lifecycle-policy-check",
@@ -234,7 +234,7 @@ def ecr_repo_image_lifecycle_policy_check(cache: dict, session, awsAccountId: st
                 "RecordState": "ARCHIVED",
             }
             yield finding
-        except:
+        except KeyError:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": repoArn + "/ecr-lifecycle-policy-check",
@@ -309,7 +309,7 @@ def ecr_repo_permission_policy_check(cache: dict, session, awsAccountId: str, aw
         iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         try:
             # this is a passing finding
-            response = ecr.get_repository_policy(repositoryName=repoName)
+            ecr.get_repository_policy(repositoryName=repoName)
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": repoArn + "/ecr-repo-access-policy-check",
@@ -378,7 +378,7 @@ def ecr_repo_permission_policy_check(cache: dict, session, awsAccountId: str, aw
                 "RecordState": "ARCHIVED",
             }
             yield finding
-        except:
+        except KeyError:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": repoArn + "/ecr-repo-access-policy-check",
@@ -451,20 +451,18 @@ def ecr_repo_permission_policy_check(cache: dict, session, awsAccountId: str, aw
 @registry.register_check("ecr")
 def ecr_latest_image_vuln_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ECR.4] The latest image in an ECR Repository should not have any vulnerabilities"""
+    # ISO Time
+    iso8601Time = (datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
     ecr = session.client("ecr")
     for repo in describe_repositories(cache, session)["repositories"]:
         # B64 encode all of the details for the Asset
-        assetJson = json.dumps(repo,default=str).encode("utf-8")
-        assetB64 = base64.b64encode(assetJson)
         repoArn = str(repo["repositoryArn"])
         repoName = str(repo["repositoryName"])
-        scanningConfig = str(repo["imageScanningConfiguration"]["scanOnPush"])
-        if scanningConfig == "True":
+        if repo["imageScanningConfiguration"]["scanOnPush"] == True:
             try:
-                response = ecr.describe_images(
-                    repositoryName=repoName, filter={"tagStatus": "TAGGED"}, maxResults=1000,
-                )
-                for images in response["imageDetails"]:
+                for images in ecr.describe_images(repositoryName=repoName, filter={"tagStatus": "TAGGED"}, maxResults=1000,)["imageDetails"]:
+                    assetJson = json.dumps(images,default=str).encode("utf-8")
+                    assetB64 = base64.b64encode(assetJson)
                     imageDigest = str(images["imageDigest"])
                     # use the first tag only as we need it to create the canonical ID for the Resource.Id in the ASFF for the Container Resource.Type
                     imageTag = str(images["imageTags"][0])
@@ -472,26 +470,13 @@ def ecr_latest_image_vuln_check(cache: dict, session, awsAccountId: str, awsRegi
                         imageVulnCheck = str(
                             images["imageScanFindingsSummary"]["findingSeverityCounts"]
                         )
-                    except:
+                    except KeyError:
                         imageVulnCheck = "{}"
-                    # ISO Time
-                    iso8601Time = (
-                        datetime.datetime.utcnow()
-                        .replace(tzinfo=datetime.timezone.utc)
-                        .isoformat()
-                    )
+                    # Failing check
                     if imageVulnCheck != "{}":
-                        vulnDeepLink = (
-                            "https://console.aws.amazon.com/ecr/repositories/"
-                            + repoName
-                            + "/image/"
-                            + imageDigest
-                            + "/scan-results?region="
-                            + awsRegion
-                        )
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": repoName + "/" + imageDigest + "/ecr-latest-image-vuln-check",
+                            "Id": f"arn:{awsPartition}:ecr:{awsRegion}:{awsAccountId}:image/{repoName}:{imageTag}/ecr-latest-image-vuln-check",
                             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": imageDigest,
                             "AwsAccountId": awsAccountId,
@@ -505,21 +490,20 @@ def ecr_latest_image_vuln_check(cache: dict, session, awsAccountId: str, awsRegi
                             "Severity": {"Label": "MEDIUM"},
                             "Confidence": 99,
                             "Title": "[ECR.4] The latest image in an ECR Repository should not have any vulnerabilities",
-                            "Description": "The latest image in the ECR repository "
-                            + repoName
-                            + " has the following vulnerabilities reported: "
-                            + imageVulnCheck
-                            + ". Refer to the SourceUrl or Remediation.Recommendation.Url to review the specific vulnerabilities and remediation information from ECR.",
+                            "Description": f"The latest image {imageDigest} in the ECR repository {repoName} has {imageVulnCheck} vulnerabilities reported by ECR Basic Scans. The latest image is likely the last used or is likely active in your environment, while container vulnerabilities can be transient and harder to exploit, it is important for your security hygeine and threat reduction that active images are aggressively patched and minimized. Refer to the remediation instructions as well as your ECR Basic or Full (Inspector) scan results.",
                             "Remediation": {
                                 "Recommendation": {
-                                    "Text": "Click here to navigate to the ECR Vulnerability console for this image",
-                                    "Url": vulnDeepLink,
+                                    "Text": "For more information about scanning images refer to the Image Scanning section of the Amazon ECR User Guide",
+                                    "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html",
                                 }
                             },
-                            "SourceUrl": vulnDeepLink,
                             "ProductFields": {
                                 "ProductName": "ElectricEye",
                                 "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
                                 "AssetClass": "Containers",
                                 "AssetService": "Amazon Elastic Container Registry",
                                 "AssetComponent": "Image"
@@ -527,19 +511,15 @@ def ecr_latest_image_vuln_check(cache: dict, session, awsAccountId: str, awsRegi
                             "Resources": [
                                 {
                                     "Type": "Container",
-                                    "Id": repoName + ":" + imageTag,
+                                    "Id": f"arn:{awsPartition}:ecr:{awsRegion}:{awsAccountId}:image/{repoName}:{imageTag}",
                                     "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "Container": {
-                                            "Name": repoName + ":" + imageTag,
-                                            "ImageId": imageDigest,
-                                        },
-                                        "Other": {
-                                            "RepositoryName": repoName,
-                                            "RepositoryArn": repoArn,
-                                        },
-                                    },
+                                            "Name": f"{repoName}:{imageTag}",
+                                            "ImageId": imageDigest
+                                        }
+                                    }
                                 }
                             ],
                             "Compliance": {
@@ -548,17 +528,17 @@ def ecr_latest_image_vuln_check(cache: dict, session, awsAccountId: str, awsRegi
                                     "NIST CSF V1.1 DE.CM-8",
                                     "NIST SP 800-53 Rev. 4 RA-5",
                                     "AICPA TSC CC7.1",
-                                    "ISO 27001:2013 A.12.6.1",
-                                ],
+                                    "ISO 27001:2013 A.12.6.1"
+                                ]
                             },
                             "Workflow": {"Status": "NEW"},
-                            "RecordState": "ACTIVE",
+                            "RecordState": "ACTIVE"
                         }
                         yield finding
                     else:
                         finding = {
                             "SchemaVersion": "2018-10-08",
-                            "Id": repoName + "/" + imageDigest + "/ecr-latest-image-vuln-check",
+                            "Id": f"arn:{awsPartition}:ecr:{awsRegion}:{awsAccountId}:image/{repoName}:{imageTag}/ecr-latest-image-vuln-check",
                             "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                             "GeneratorId": imageDigest,
                             "AwsAccountId": awsAccountId,
@@ -572,12 +552,20 @@ def ecr_latest_image_vuln_check(cache: dict, session, awsAccountId: str, awsRegi
                             "Severity": {"Label": "INFORMATIONAL"},
                             "Confidence": 99,
                             "Title": "[ECR.4] The latest image in an ECR Repository should not have any vulnerabilities",
-                            "Description": "The latest image in the ECR repository "
-                            + repoName
-                            + " does not have any vulnerabilities reported.",
+                            "Description": f"The latest image {imageDigest} in the ECR repository {repoName} does not have any vulnerabilities reported, good job!.",
+                            "Remediation": {
+                                "Recommendation": {
+                                    "Text": "For more information about scanning images refer to the Image Scanning section of the Amazon ECR User Guide",
+                                    "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html",
+                                }
+                            },
                             "ProductFields": {
                                 "ProductName": "ElectricEye",
                                 "Provider": "AWS",
+                                "ProviderType": "CSP",
+                                "ProviderAccountId": awsAccountId,
+                                "AssetRegion": awsRegion,
+                                "AssetDetails": assetB64,
                                 "AssetClass": "Containers",
                                 "AssetService": "Amazon Elastic Container Registry",
                                 "AssetComponent": "Image"
@@ -585,19 +573,15 @@ def ecr_latest_image_vuln_check(cache: dict, session, awsAccountId: str, awsRegi
                             "Resources": [
                                 {
                                     "Type": "Container",
-                                    "Id": repoName + ":" + imageTag,
+                                    "Id": f"arn:{awsPartition}:ecr:{awsRegion}:{awsAccountId}:image/{repoName}:{imageTag}",
                                     "Partition": awsPartition,
                                     "Region": awsRegion,
                                     "Details": {
                                         "Container": {
-                                            "Name": repoName + ":" + imageTag,
-                                            "ImageId": imageDigest,
-                                        },
-                                        "Other": {
-                                            "RepositoryName": repoName,
-                                            "RepositoryArn": repoArn,
-                                        },
-                                    },
+                                            "Name": f"{repoName}:{imageTag}",
+                                            "ImageId": imageDigest
+                                        }
+                                    }
                                 }
                             ],
                             "Compliance": {
@@ -606,11 +590,11 @@ def ecr_latest_image_vuln_check(cache: dict, session, awsAccountId: str, awsRegi
                                     "NIST CSF V1.1 DE.CM-8",
                                     "NIST SP 800-53 Rev. 4 RA-5",
                                     "AICPA TSC CC7.1",
-                                    "ISO 27001:2013 A.12.6.1",
-                                ],
+                                    "ISO 27001:2013 A.12.6.1"
+                                ]
                             },
                             "Workflow": {"Status": "RESOLVED"},
-                            "RecordState": "ARCHIVED",
+                            "RecordState": "ARCHIVED"
                         }
                         yield finding
             except Exception as e:
@@ -697,6 +681,7 @@ def ecr_registry_policy_check(cache: dict, session, awsAccountId: str, awsRegion
         yield finding
     except botocore.exceptions.ClientError as error:
         if error.response["Error"]["Code"] == "RegistryPolicyNotFoundException":
+            assetB64 = None
             # this is a failing check
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -725,6 +710,10 @@ def ecr_registry_policy_check(cache: dict, session, awsAccountId: str, awsRegion
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Containers",
                     "AssetService": "Amazon Elastic Container Registry",
                     "AssetComponent": "Registry"

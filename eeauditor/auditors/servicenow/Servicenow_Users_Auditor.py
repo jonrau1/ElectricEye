@@ -28,6 +28,7 @@ import json
 registry = CheckRegister()
 
 SNOW_INSTANCE_NAME = os.environ["SNOW_INSTANCE_NAME"]
+SNOW_INSTANCE_REGION = os.environ["SNOW_INSTANCE_REGION"]
 SNOW_SSPM_USERNAME = os.environ["SNOW_SSPM_USERNAME"]
 SNOW_SSPM_PASSWORD = os.environ["SNOW_SSPM_PASSWORD"]
 SNOW_FAILED_LOGIN_BREACHING_RATE = os.environ["SNOW_FAILED_LOGIN_BREACHING_RATE"]
@@ -103,7 +104,7 @@ def servicenow_sspm_active_user_mfa_check(cache: dict, awsAccountId: str, awsReg
                     "Provider": "ServiceNow",
                     "ProviderType": "SaaS",
                     "ProviderAccountId": SNOW_INSTANCE_NAME,
-                    "AssetRegion": "",
+                    "AssetRegion": SNOW_INSTANCE_REGION,
                     "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
                     "AssetService": "Users & Groups",
@@ -184,6 +185,10 @@ def servicenow_sspm_active_user_mfa_check(cache: dict, awsAccountId: str, awsReg
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "ServiceNow",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": SNOW_INSTANCE_NAME,
+                    "AssetRegion": SNOW_INSTANCE_REGION,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
                     "AssetService": "Users & Groups",
                     "AssetComponent": "User"
@@ -293,6 +298,10 @@ def servicenow_sspm_active_user_failed_login_audits_check(cache: dict, awsAccoun
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "ServiceNow",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": SNOW_INSTANCE_NAME,
+                    "AssetRegion": SNOW_INSTANCE_REGION,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
                     "AssetService": "Users & Groups",
                     "AssetComponent": "User"
@@ -368,6 +377,10 @@ def servicenow_sspm_active_user_failed_login_audits_check(cache: dict, awsAccoun
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "ServiceNow",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": SNOW_INSTANCE_NAME,
+                    "AssetRegion": SNOW_INSTANCE_REGION,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
                     "AssetService": "Users & Groups",
                     "AssetComponent": "User"
@@ -468,6 +481,10 @@ def servicenow_sspm_active_user_lockout_audit_check(cache: dict, awsAccountId: s
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "ServiceNow",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": SNOW_INSTANCE_NAME,
+                    "AssetRegion": SNOW_INSTANCE_REGION,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
                     "AssetService": "Users & Groups",
                     "AssetComponent": "User"
@@ -543,6 +560,10 @@ def servicenow_sspm_active_user_lockout_audit_check(cache: dict, awsAccountId: s
                 "ProductFields": {
                     "ProductName": "ElectricEye",
                     "Provider": "ServiceNow",
+                    "ProviderType": "SaaS",
+                    "ProviderAccountId": SNOW_INSTANCE_NAME,
+                    "AssetRegion": SNOW_INSTANCE_REGION,
+                    "AssetDetails": assetB64,
                     "AssetClass": "Identity & Access Management",
                     "AssetService": "Users & Groups",
                     "AssetComponent": "User"

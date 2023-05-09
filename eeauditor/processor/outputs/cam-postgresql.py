@@ -23,6 +23,7 @@ import boto3
 import sys
 import os
 import json
+import base64
 import psycopg2 as psql
 from botocore.exceptions import ClientError
 from processor.outputs.output_base import ElectricEyeOutput
@@ -35,8 +36,8 @@ asm = boto3.client("secretsmanager")
 CREDENTIALS_LOCATION_CHOICES = ["AWS_SSM", "AWS_SECRETS_MANAGER", "CONFIG_FILE"]
 
 @ElectricEyeOutput
-class PostgresProvider(object):
-    __provider__ = "postgresql"
+class CamPostgresProvider(object):
+    __provider__ = "cam_postgresql"
 
     def __init__(self):
         print("Preparing PostgreSQL credentials.")
@@ -95,10 +96,7 @@ class PostgresProvider(object):
         self.password = password
 
     def write_findings(self, findings: list, **kwargs):
-        processedFindings = self.processing_findings_for_upsert(findings)
-        if len(processedFindings) == 0:
-            print("There are not any findings to write!")
-            exit(0)
+        processedFindings = self.create_cam_format(findings)
 
         del findings
 
@@ -113,105 +111,71 @@ class PostgresProvider(object):
 
             cursor = engine.cursor()
 
-            # Create a Table based on the provided Table name that contains a majority of the ASFF details
-            # Types and Compliance Requirements will be preserved as TEXT[] as they're just a list of strings
-            # The Resources block will be written as a JSONB (json bytes) but the "resource_id" will also be parsed
-            # All timestamps are already UTC ISO 8061 - TIMESTAMP WITH TIME ZONE (TIMESTAMPTZ) will preserve this
+            # Create a Table based on the provided Table name that contains a Cloud Asset Management (CAM)
+            # schema that mirrors cam_json. "asset_id" is the PRIMARY KEY and is derived from Resources.[*].Id
+            # and the AssetDetails will be JSONB (json binary) format, everything else is TEXT or TIMESTAMP...
             cursor.execute(f"""
-                CREATE TABLE IF NOT EXISTS {self.tableName} (
-                    id TEXT PRIMARY KEY,
-                    product_arn TEXT,
-                    types TEXT[],
+                CREATE TABLE IF NOT EXISTS {self.tableName}_cam (
+                    asset_id TEXT PRIMARY KEY,
                     first_observed_at TIMESTAMP WITH TIME ZONE,
-                    created_at TIMESTAMP WITH TIME ZONE,
-                    updated_at TIMESTAMP WITH TIME ZONE,
-                    severity_label TEXT,
-                    title TEXT,
-                    description TEXT,
-                    remediation_recommendation_text TEXT,
-                    remediation_recommendation_url TEXT,
-                    product_name TEXT,
                     provider TEXT,
                     provider_type TEXT,
                     provider_account_id TEXT,
                     asset_region TEXT,
+                    asset_details JSONB,
                     asset_class TEXT,
                     asset_service TEXT,
                     asset_component TEXT,
-                    resource_id TEXT,
-                    resource JSONB,
-                    compliance_status TEXT,
-                    compliance_related_requirements TEXT[],
-                    workflow_status TEXT,
-                    record_state TEXT
+                    informational_severity_findings INTEGER,
+                    low_severity_findings INTEGER,
+                    medium_severity_findings INTEGER,
+                    high_severity_findings INTEGER,
+                    critical_severity_findings INTEGER
                 )
             """)
 
-            print(f"Attempting to write {len(processedFindings)} findings to PostgreSQL.")
+            print(f"Attempting to write {len(processedFindings)} CAM entries to PostgreSQL.")
             for f in processedFindings:
                 # The Finding ID is our primary key, on conflicts we will overwrite every single value for the specific ID except
                 # for ASFF FirstObservedAt (first_observed_at) and ASFF CreatedAt (created_at) every other value will be preserved
                 cursor.execute(f"""
-                    INSERT INTO {self.tableName} (id, product_arn, types, first_observed_at, created_at, updated_at, severity_label, title, description, remediation_recommendation_text, remediation_recommendation_url, product_name, provider, provider_type, provider_account_id, asset_region, asset_class, asset_service, asset_component, resource_id, resource, compliance_status, compliance_related_requirements, workflow_status, record_state)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    ON CONFLICT (id) DO UPDATE
-                        SET product_arn = excluded.product_arn,
-                            types = excluded.types,
-                            updated_at = excluded.updated_at,
-                            severity_label = excluded.severity_label,
-                            title = excluded.title,
-                            description = excluded.description,
-                            remediation_recommendation_text = excluded.remediation_recommendation_text,
-                            remediation_recommendation_url = excluded.remediation_recommendation_url,
-                            product_name = excluded.product_name,
-                            provider = excluded.provider,
+                    INSERT INTO {self.tableName}_cam (asset_id, first_observed_at, provider, provider_type, provider_account_id, asset_region, asset_details, asset_class, asset_service, asset_component, informational_severity_findings, low_severity_findings, medium_severity_findings, high_severity_findings, critical_severity_findings)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    ON CONFLICT (asset_id) DO UPDATE
+                        SET provider = excluded.provider,
                             provider_type = excluded.provider_type,
                             provider_account_id = excluded.provider_account_id,
                             asset_region = excluded.asset_region,
+                            asset_details = excluded.asset_details,
                             asset_class = excluded.asset_class,
                             asset_service = excluded.asset_service,
                             asset_component = excluded.asset_component,
-                            resource_id = excluded.resource_id,
-                            resource = excluded.resource,
-                            compliance_status = excluded.compliance_status,
-                            compliance_related_requirements = excluded.compliance_related_requirements,
-                            workflow_status = excluded.workflow_status,
-                            record_state = excluded.record_state,
+                            informational_severity_findings = excluded.informational_severity_findings,
+                            low_severity_findings = excluded.low_severity_findings,
+                            medium_severity_findings = excluded.medium_severity_findings,
+                            high_severity_findings = excluded.high_severity_findings,
+                            critical_severity_findings = excluded.critical_severity_findings,
                             first_observed_at = CASE
-                                                    WHEN {self.tableName}.first_observed_at < excluded.first_observed_at THEN {self.tableName}.first_observed_at
+                                                    WHEN {self.tableName}_cam.first_observed_at < excluded.first_observed_at THEN {self.tableName}_cam.first_observed_at
                                                     ELSE excluded.first_observed_at
-                                                END,
-                            created_at = CASE
-                                                WHEN {self.tableName}.created_at < excluded.created_at THEN {self.tableName}.created_at
-                                                ELSE excluded.created_at
-                                            END;
+                                                END;
                     """,
                     (
-                        f["Id"],
-                        f["ProductArn"],
-                        f["Types"],
+                        f["AssetId"],
                         f["FirstObservedAt"],
-                        f["CreatedAt"],
-                        f["UpdatedAt"],
-                        f["SeverityLabel"],
-                        f["Title"],
-                        f["Description"],
-                        f["RemedationRecommendationText"],
-                        f["RemediationRecommendationUrl"],
-                        f["ProductName"],
                         f["Provider"],
                         f["ProviderType"],
                         f["ProviderAccountId"],
                         f["AssetRegion"],
+                        json.dumps(f["AssetDetails"]),
                         f["AssetClass"],
                         f["AssetService"],
                         f["AssetComponent"],
-                        f["ResourceId"],
-                        json.dumps(f["Resource"]),
-                        f["ComplianceStatus"],
-                        f["ComplianceRelatedRequirements"],
-                        f["WorkflowStatus"],
-                        f["RecordState"]
+                        f["InformationalSeverityFindings"],
+                        f["LowSeverityFindings"],
+                        f["MediumSeverityFindings"],
+                        f["HighSeverityFindings"],
+                        f["CriticalSeverityFindings"]
                     )
                 )
 
@@ -220,7 +184,7 @@ class PostgresProvider(object):
             # close communication with the postgres server (rds)
             cursor.close()
             
-            print("Completed writing all findings to PostgreSQL.")
+            print("Completed writing all CAM entries to PostgreSQL.")
 
         except psql.OperationalError as oe:
             print("Cannot connect to your PostgreSQL database. Review your network configuraions and database parameters and try again.")
@@ -271,58 +235,88 @@ class PostgresProvider(object):
         
         return credential
     
-    def processing_findings_for_upsert(self, findings):
+    def create_cam_format(self, findings):
         """
-        This function will take in the "no assets" Findings list and parse out the specific values
-        for upsertion into PostgreSQL
+        This function uses the list comprehension to base64 decode all `AssetDetails` and then takes a selective
+        cross-section of unique per-asset details to be written to PostgreSQL
         """
 
         if len(findings) == 0:
-            print("There are not any findings to write to file!")
+            print("There are not any findings to write!")
             exit(0)
 
-        processedFindings = []
+        # This list contains the CAM output
+        cloudAssetManagementFindings = []
+        # Create a new list from raw findings that base64 decodes `AssetDetails` where it is not None, if it is, just
+        # use None and bring forward `ProductFields` where it is missing `AssetDetails`...which shouldn't happen
+        print(f"Base64 decoding AssetDetails for {len(findings)} ElectricEye findings.")
 
-        for finding in findings:
-            try:
-                processedFindings.append(
-                    {
-                        "Id": finding["Id"],
-                        "ProductArn": finding["ProductArn"],
-                        "Types": finding["Types"],
-                        "FirstObservedAt": finding["FirstObservedAt"],
-                        "CreatedAt": finding["CreatedAt"],
-                        "UpdatedAt": finding["UpdatedAt"],
-                        "SeverityLabel": finding["Severity"]["Label"],
-                        "Title": finding["Title"],
-                        "Description": finding["Description"],
-                        "RemedationRecommendationText": finding["Remediation"]["Recommendation"]["Text"],
-                        "RemediationRecommendationUrl": finding["Remediation"]["Recommendation"]["Url"],
-                        "ProductName": finding["ProductFields"]["ProductName"],
-                        "Provider": finding["ProductFields"]["Provider"],
-                        "ProviderType": finding["ProductFields"]["ProviderType"],
-                        "ProviderAccountId": finding["ProductFields"]["ProviderAccountId"],
-                        "AssetRegion": finding["ProductFields"]["AssetRegion"],
-                        "AssetClass": finding["ProductFields"]["AssetClass"],
-                        "AssetService": finding["ProductFields"]["AssetService"],
-                        "AssetComponent": finding["ProductFields"]["AssetComponent"],
-                        "ResourceId": finding["Resources"][0]["Id"],
-                        "Resource": finding["Resources"][0],
-                        "ComplianceStatus": finding["Compliance"]["Status"],
-                        "ComplianceRelatedRequirements": finding["Compliance"]["RelatedRequirements"],
-                        "WorkflowStatus": finding["Workflow"]["Status"],
-                        "RecordState": finding["RecordState"]
-                    }
-                )
-            except Exception as e:
-                print(f"Issue with {finding} because {e}")
-                continue
+        data = [
+            {**d, "ProductFields": {**d["ProductFields"],
+                "AssetDetails": json.loads(base64.b64decode(d["ProductFields"]["AssetDetails"]).decode("utf-8"))
+                    if d["ProductFields"]["AssetDetails"] is not None
+                    else None
+            }} if "AssetDetails" in d["ProductFields"]
+            else d
+            for d in findings
+        ]
+
+        print(f"Completed base64 decoding for {len(data)} ElectricEye findings.")
+
+        # This list will contain unique identifiers from `Resources.[*].Id`
+        uniqueIds = set(item["Resources"][0]["Id"] for item in data)
+
+        print(f"Processing Asset and Finding Summary data for {len(uniqueIds)} unique Assets.")
+
+        for uid in uniqueIds:
+            subData = [item for item in data if item["Resources"][0]["Id"] == uid]
+            productFields = subData[0]["ProductFields"]
+            infoSevFindings = lowSevFindings = medSevFindings = highSevFindings = critSevFindings = 0
+            
+            for item in subData:
+                firstObserved = item["FirstObservedAt"]
+                sevLabel = item["Severity"]["Label"]
+                if sevLabel == "INFORMATIONAL":
+                    infoSevFindings += 1
+                elif sevLabel == "LOW":
+                    lowSevFindings += 1
+                elif sevLabel == "MEDIUM":
+                    medSevFindings += 1
+                elif sevLabel == "HIGH":
+                    highSevFindings += 1
+                elif sevLabel == "CRITICAL":
+                    critSevFindings += 1
+                
+            
+            cloudAssetManagementFindings.append(
+                {
+                    "AssetId": uid,
+                    "FirstObservedAt": firstObserved,
+                    "AssetClass": productFields.get("AssetClass", ""),
+                    "AssetService": productFields.get("AssetService", ""),
+                    "AssetComponent": productFields.get("AssetComponent", ""),
+                    "Provider": productFields.get("Provider", ""),
+                    "ProviderType": productFields.get("ProviderType", ""),
+                    "ProviderAccountId": productFields.get("ProviderAccountId", ""),
+                    "AssetRegion": productFields.get("AssetRegion", ""),
+                    "AssetDetails": productFields.get("AssetDetails", ""),
+                    "AssetClass": productFields.get("AssetClass", ""),
+                    "AssetService": productFields.get("AssetService", ""),
+                    "AssetComponent": productFields.get("AssetComponent", ""),
+                    "InformationalSeverityFindings": infoSevFindings,
+                    "LowSeverityFindings": lowSevFindings,
+                    "MediumSeverityFindings": medSevFindings,
+                    "HighSeverityFindings": highSevFindings,
+                    "CriticalSeverityFindings": critSevFindings
+                }
+            )
 
         del findings
+        del data
+        del uniqueIds
+        del subData
 
-        print("Parsed out findings details for PostgreSQL.")
-
-        return processedFindings
+        return cloudAssetManagementFindings
 
 ## EOF
 

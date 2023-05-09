@@ -51,7 +51,6 @@ def describe_db_instances(cache, session):
                         "sqlserver-se",
                         "sqlserver-ex",
                         "sqlserver-web",
-                        "custom-oracle-ee",
                         "custom-sqlserver-ee",
                         "custom-sqlserver-se",
                         "custom-sqlserver-web"
