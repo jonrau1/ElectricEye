@@ -81,10 +81,9 @@ class CloudConfig(object):
             # Process ["aws_electric_eye_iam_role_name"]
             electricEyeRoleName = data["regions_and_accounts"]["aws"]["aws_electric_eye_iam_role_name"]
             if electricEyeRoleName == (None or ""):
-                print(self.aws_account_targets)
-                print(str(self.aws_account_targets))
-                print("TESTING")
-                if self.aws_account_targets == [sts.get_caller_identity()["Account"]]:
+                acct = sts.get_caller_identity()["Account"]                
+                if str(self.aws_account_targets) == f"[{acct}]":
+                    print("TESTING")
                     self.aws_electric_eye_iam_role_name = "UseCurrentSession"
                 else:
                     print(f"A value for ['aws_electric_eye_iam_role_name'] was not provided. Fix the TOML file and run ElectricEye again.")
