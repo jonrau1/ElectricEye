@@ -45,13 +45,11 @@ class CloudConfig(object):
         if assessmentTarget == "AWS":
             # Process ["aws_account_targets"] 
             awsAccountTargets = data["regions_and_accounts"]["aws"]["aws_account_targets"]
-
             if self.aws_multi_account_target_type == "Accounts":
                 if not awsAccountTargets:
                     self.aws_account_targets = [sts.get_caller_identity()["Account"]]
                 else:
                     self.aws_account_targets = awsAccountTargets
-            
             elif self.aws_multi_account_target_type == "OU":
                 if not awsAccountTargets:
                     print("OU was specified but targets were not specified.")
@@ -81,13 +79,8 @@ class CloudConfig(object):
             # Process ["aws_electric_eye_iam_role_name"]
             electricEyeRoleName = data["regions_and_accounts"]["aws"]["aws_electric_eye_iam_role_name"]
             if electricEyeRoleName == (None or ""):
-                acct = sts.get_caller_identity()["Account"]                
-                if str(self.aws_account_targets) == f"[{acct}]":
-                    print("TESTING")
-                    self.aws_electric_eye_iam_role_name = "UseCurrentSession"
-                else:
-                    print(f"A value for ['aws_electric_eye_iam_role_name'] was not provided. Fix the TOML file and run ElectricEye again.")
-                    sys.exit(2)
+                print(f"A value for ['aws_electric_eye_iam_role_name'] was not provided. Fix the TOML file and run ElectricEye again.")
+                sys.exit(2)
             self.aws_electric_eye_iam_role_name = electricEyeRoleName
         
         # GCP
@@ -239,25 +232,22 @@ class CloudConfig(object):
         """
         Uses STS AssumeRole to create a temporary Boto3 Session with a specified Account and Region
         """
-        if roleName == "UseCurrentSession":
-            return boto3.Session(region_name=region)
-        else:
-            crossAccountRoleArn = f"arn:aws:iam::{account}:role/{roleName}"
+        crossAccountRoleArn = f"arn:aws:iam::{account}:role/{roleName}"
 
-            try:
-                memberAcct = sts.assume_role(
-                    RoleArn=crossAccountRoleArn,
-                    RoleSessionName="ElectricEye"
-                )
-            except ClientError as e:
-                raise e
-
-            session = boto3.Session(
-                aws_access_key_id=memberAcct["Credentials"]["AccessKeyId"],
-                aws_secret_access_key=memberAcct["Credentials"]["SecretAccessKey"],
-                aws_session_token=memberAcct["Credentials"]["SessionToken"],
-                region_name=region
+        try:
+            memberAcct = sts.assume_role(
+                RoleArn=crossAccountRoleArn,
+                RoleSessionName="ElectricEye"
             )
+        except ClientError as e:
+            raise e
+
+        session = boto3.Session(
+            aws_access_key_id=memberAcct["Credentials"]["AccessKeyId"],
+            aws_secret_access_key=memberAcct["Credentials"]["SecretAccessKey"],
+            aws_session_token=memberAcct["Credentials"]["SessionToken"],
+            region_name=region
+        )
 
         return session
     
