@@ -48,7 +48,7 @@ def get_shodan_api_key():
         data = tomli.load(f)
 
     # Parse from [global] to determine credential location of PostgreSQL Password
-    credLocation = data["global"]["credLocation"]
+    credLocation = data["global"]["shodan_api_key_value"]
     shodanCredLocation = data["global"]["shodan_api_key_value"]
     if credLocation not in validCredLocations:
         print(f"Invalid option for [global.credLocation]. Must be one of {str(validCredLocations)}.")
@@ -791,10 +791,10 @@ def public_rds_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
         else:
             continue
 
-@registry.register_check("elasticsearch")
+@registry.register_check("es")
 def public_es_domain_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.Elasticsearch.1] OpenSearch/ElasticSearch Service domains outside of a VPC should be monitored for being indexed by Shodan"""
-    elasticsearch = session.client("elasticsearch")
+    elasticsearch = session.client("es")
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for domain in list_domain_names(cache, session):
