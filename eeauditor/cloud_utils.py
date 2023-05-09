@@ -81,6 +81,9 @@ class CloudConfig(object):
             # Process ["aws_electric_eye_iam_role_name"]
             electricEyeRoleName = data["regions_and_accounts"]["aws"]["aws_electric_eye_iam_role_name"]
             if electricEyeRoleName == (None or ""):
+                print(self.aws_account_targets)
+                print(str(self.aws_account_targets))
+                print("TESTING")
                 if self.aws_account_targets == [sts.get_caller_identity()["Account"]]:
                     self.aws_electric_eye_iam_role_name = "UseCurrentSession"
                 else:
