@@ -40,7 +40,7 @@ try:
     else:
         shodanApiKey = ssm.get_parameter(Name=apiKeyParam, WithDecryption=True)["Parameter"]["Value"]
 except KeyError:
-    raise
+    os.environ["SHODAN_API_KEY_PARAM"] = None
 
 # Shodan information for Requests
 shodanUrl = "https://api.shodan.io/shodan/host/"

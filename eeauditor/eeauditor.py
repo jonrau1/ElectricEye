@@ -311,6 +311,7 @@ class EEAuditor(object):
 
     def print_controls_json(self):
         controls = []
+        controlPrinter = []
 
         for serviceName, checkList in self.registry.checks.items():
             for checkName, check in checkList.items():
@@ -319,13 +320,26 @@ class EEAuditor(object):
                     description = (check.__doc__).replace("\n", "")
                 else:
                     description = ""
-                controls.append(description)
+                
+                # For R&D
+                controls.append(
+                    {
+                        "ElectricEyeControlId": description.split("] ")[0],
+                        "ElectricEyeControlDescription": description.split("] ")[1],
+                        "ElectricEyeControl": description
+                    }
+                )
+                
+                controlPrinter.append(description)
 
-        print(
-            json.dumps(
-                controls,
-                indent=2
-            )
-        )
+            print(json.dumps(controls,indent=2))
+
+            with open('.controls.json', 'w') as jsonfile:
+                json.dump(
+                    controls,
+                    jsonfile,
+                    indent=2,
+                    default=str
+                )
 
 # EOF
