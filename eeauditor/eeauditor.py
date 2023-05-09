@@ -197,12 +197,15 @@ class EEAuditor(object):
         # China partition override
         elif region in ["cn-north-1", "cn-northwest-1"]:
             partition = "aws-cn"
-        # AWS Secret Region override
+        # AWS Secret Region override - sc2s.sgov.gov
         elif region in ["us-isob-east-1", "us-isob-west-1"]:
             partition = "aws-isob"
-        # AWS Top Secret Region override
+        # AWS Top Secret Region override - c2s.ic.gov
         elif region in ["us-iso-east-1", "us-iso-west-1"]:
             partition = "aws-iso"
+        # UK GCHQ Classified Region override - cloud.adc-e.uk
+        elif region in ["eu-isoe-west-1", "eu-isoe-west-2"]:
+            partition = "aws-isoe"
         else:
             partition = "aws"
 
@@ -252,12 +255,15 @@ class EEAuditor(object):
         # China partition override
         elif region in ["cn-north-1", "cn-northwest-1"]:
             partition = "aws-cn"
-        # AWS Secret Region override
+        # AWS Secret Region override - sc2s.sgov.gov
         elif region in ["us-isob-east-1", "us-isob-west-1"]:
             partition = "aws-isob"
-        # AWS Top Secret Region override
+        # AWS Top Secret Region override - c2s.ic.gov
         elif region in ["us-iso-east-1", "us-iso-west-1"]:
             partition = "aws-iso"
+        # UK GCHQ Classified Region override - cloud.adc-e.uk
+        elif region in ["eu-isoe-west-1", "eu-isoe-west-2"]:
+            partition = "aws-isoe"
         else:
             partition = "aws"
 
