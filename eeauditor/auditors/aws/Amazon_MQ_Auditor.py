@@ -198,8 +198,11 @@ def broker_audit_logging_check(cache: dict, session, awsAccountId: str, awsRegio
         assetB64 = base64.b64encode(assetJson)
         brokerArn = str(response["BrokerArn"])
         brokerName = str(broker["BrokerName"])
-        auditLogCheck = str(response["Logs"]["Audit"])
-        if auditLogCheck == "False":
+        try:
+            auditLogCheck = response["Logs"]["Audit"]
+        except KeyError:
+            auditLogCheck = False
+        if auditLogCheck == False:
             finding = {
                 "SchemaVersion": "2018-10-08",
                 "Id": brokerArn + "/amazonmq-broker-audit-logging-check",

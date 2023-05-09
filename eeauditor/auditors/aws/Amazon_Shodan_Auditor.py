@@ -1282,7 +1282,10 @@ def public_amazon_mq_broker_shodan_check(cache: dict, session, awsAccountId: str
         brokerId = str(response["BrokerId"])
         if response["PubliclyAccessible"] == True:
             for instance in response["BrokerInstances"]:
-                mqBrokerIpv4 = str(instance["IpAddress"])
+                try:
+                    mqBrokerIpv4 = str(instance["IpAddress"])
+                except KeyError:
+                    continue
                 r = requests.get(url=f"{SHODAN_HOSTS_URL}{mqBrokerIpv4}?key={shodanApiKey}").json()
                 if str(r) == "{'error': 'No information available for that IP.'}":
                     # this is a passing check
