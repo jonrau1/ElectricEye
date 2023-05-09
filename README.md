@@ -65,33 +65,35 @@ $ python3 eeauditor/controller.py --help
 Usage: controller.py [OPTIONS]
 
 Options:
--t, --target-provider [AWS|Azure|OracleCloud|GCP|Servicenow]
-                                CSP or SaaS Vendor Assessment Target, ensure
-                                that any -a or -c arg maps to your target
-                                provider e.g., -t AWS -a
-                                Amazon_APGIW_Auditor
--a, --auditor-name TEXT         Specify which Auditor you want to run by
-                                using its name NOT INCLUDING .py. Defaults
-                                to ALL Auditors
--c, --check-name TEXT           A specific Check in a specific Auditor you
-                                want to run, this correlates to the function
-                                name. Defaults to ALL Checks
--d, --delay INTEGER             Time in seconds to sleep between Auditors
-                                being ran, defaults to 0
--o, --outputs TEXT              A list of Outputs (files, APIs, databases)
-                                to send ElectricEye Findings - can provide
-                                more than one  [default: stdout]
---output-file TEXT              For file outputs such as JSON and CSV, the
-                                name of the file, DO NOT SPECIFY .file_type
-                                [default: output]
---list-options                  Lists all valid Output options
---list-checks                   List all Checks, Assets, and Check
-                                Description within every Auditor for a
-                                specific Assessment Target
---create-insights               Create SecurityHub insights for ElectricEye.
-                                This only needs to be done once per Security
-                                Hub instance
---help                          Show this message and exit.
+  -t, --target-provider [AWS|Azure|OracleCloud|GCP|Servicenow]
+                                  CSP or SaaS Vendor Assessment Target, ensure
+                                  that any -a or -c arg maps to your target
+                                  provider e.g., -t AWS -a
+                                  Amazon_APGIW_Auditor
+  -a, --auditor-name TEXT         Specify which Auditor you want to run by
+                                  using its name NOT INCLUDING .py. Defaults
+                                  to ALL Auditors
+  -c, --check-name TEXT           A specific Check in a specific Auditor you
+                                  want to run, this correlates to the function
+                                  name. Defaults to ALL Checks
+  -d, --delay INTEGER             Time in seconds to sleep between Auditors
+                                  being ran, defaults to 0
+  -o, --outputs TEXT              A list of Outputs (files, APIs, databases)
+                                  to send ElectricEye Findings - can provide
+                                  more than one  [default: stdout]
+  --output-file TEXT              For file outputs such as JSON and CSV, the
+                                  name of the file, DO NOT SPECIFY .file_type
+                                  [default: output]
+  --list-options                  Lists all valid Output options
+  --list-checks                   List all Checks, Assets, and Check
+                                  Description within every Auditor for a
+                                  specific Assessment Target
+  --create-insights               Create SecurityHub insights for ElectricEye.
+                                  This only needs to be done once per Security
+                                  Hub instance
+  --list-controls                 Lists all Controls (Check Titles) for an
+                                  Assessment Target, used for mapping...
+  --help                          Show this message and exit.                     Show this message and exit.
 ```
 
 For more information see [here](#using-electriceye), you can read the [FAQ here](./docs/faq/FAQ.md), or if you want a more in-depth analysis of the control flow and concepts review [the Developer Guide](./docs/new_checks/DEVELOPER_GUIDE.md).

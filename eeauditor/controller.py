@@ -153,11 +153,11 @@ def main(
     list_controls,
 ):
     if list_controls:
-        print(
-            sorted(
-                print_controls()
-            )
+        print_controls(
+            assessmentTarget=target_provider
         )
+        sys.exit(0)
+
     if list_options:
         print(
             sorted(
