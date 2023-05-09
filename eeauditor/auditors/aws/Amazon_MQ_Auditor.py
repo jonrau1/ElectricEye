@@ -52,11 +52,11 @@ def broker_kms_cmk_check(cache: dict, session, awsAccountId: str, awsRegion: str
     for broker in list_brokers(cache, session):
         # B64 encode all of the details for the Asset
         brokerId = str(broker["BrokerId"])
+        brokerName = str(broker["BrokerName"])
         response = amzmq.describe_broker(BrokerId=brokerName)
         assetJson = json.dumps(response,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         brokerArn = str(response["BrokerArn"])
-        brokerName = str(response["BrokerName"])
         if response["EncryptionOptions"]["UseAwsOwnedKey"] == True:
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -192,11 +192,12 @@ def broker_audit_logging_check(cache: dict, session, awsAccountId: str, awsRegio
     for broker in list_brokers(cache, session):
         # B64 encode all of the details for the Asset
         brokerId = str(broker["BrokerId"])
+        brokerName = str(broker["BrokerName"])
         response = amzmq.describe_broker(BrokerId=brokerName)
         assetJson = json.dumps(response,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         brokerArn = str(response["BrokerArn"])
-        brokerName = str(response["BrokerName"])
+        brokerName = str(broker["BrokerName"])
         auditLogCheck = str(response["Logs"]["Audit"])
         if auditLogCheck == "False":
             finding = {
@@ -334,11 +335,12 @@ def broker_general_logging_check(cache: dict, session, awsAccountId: str, awsReg
     for broker in list_brokers(cache, session):
         # B64 encode all of the details for the Asset
         brokerId = str(broker["BrokerId"])
+        brokerName = str(broker["BrokerName"])
         response = amzmq.describe_broker(BrokerId=brokerName)
         assetJson = json.dumps(response,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         brokerArn = str(response["BrokerArn"])
-        brokerName = str(response["BrokerName"])
+        brokerName = str(broker["BrokerName"])
         genLogCheck = str(response["Logs"]["General"])
         if genLogCheck == "False":
             finding = {
@@ -478,11 +480,12 @@ def broker_public_access_check(cache: dict, session, awsAccountId: str, awsRegio
     for broker in list_brokers(cache, session):
         # B64 encode all of the details for the Asset
         brokerId = str(broker["BrokerId"])
+        brokerName = str(broker["BrokerName"])
         response = amzmq.describe_broker(BrokerId=brokerName)
         assetJson = json.dumps(response,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         brokerArn = str(response["BrokerArn"])
-        brokerName = str(response["BrokerName"])
+        brokerName = str(broker["BrokerName"])
         if response["PubliclyAccessible"] == True:
             finding = {
                 "SchemaVersion": "2018-10-08",
@@ -631,11 +634,12 @@ def broker_minor_version_auto_upgrade_check(cache: dict, session, awsAccountId: 
     for broker in list_brokers(cache, session):
         # B64 encode all of the details for the Asset
         brokerId = str(broker["BrokerId"])
+        brokerName = str(broker["BrokerName"])
         response = amzmq.describe_broker(BrokerId=brokerName)
         assetJson = json.dumps(response,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
         brokerArn = str(response["BrokerArn"])
-        brokerName = str(response["BrokerName"])
+        brokerName = str(broker["BrokerName"])
         if response["AutoMinorVersionUpgrade"] == False:
             finding = {
                 "SchemaVersion": "2018-10-08",
