@@ -48,12 +48,12 @@ def get_shodan_api_key():
         data = tomli.load(f)
 
     # Parse from [global] to determine credential location of PostgreSQL Password
-    credLocation = data["global"]["shodan_api_key_value"]
-    shodanCredLocation = data["global"]["shodan_api_key_value"]
+    credLocation = data["global"]["credentials_location"]
+    shodanCredValue = data["global"]["shodan_api_key_value"]
     if credLocation not in validCredLocations:
         print(f"Invalid option for [global.credLocation]. Must be one of {str(validCredLocations)}.")
         sys.exit(2)
-    if not shodanCredLocation:
+    if not shodanCredValue:
         print(f"Shodan API Key location is empty - review [global.shodan_api_key_value] and try again.")
 
     # Boto3 Clients
@@ -62,14 +62,14 @@ def get_shodan_api_key():
 
     # Retrieve API Key
     if credLocation == "CONFIG_FILE":
-        apiKey = shodanCredLocation
+        apiKey = shodanCredValue
 
     # Retrieve the credential from SSM Parameter Store
     elif credLocation == "AWS_SSM":
         
         try:
             apiKey = ssm.get_parameter(
-                Name=shodanCredLocation,
+                Name=shodanCredValue,
                 WithDecryption=True
             )["Parameter"]["Value"]
         except ClientError as e:
@@ -79,7 +79,7 @@ def get_shodan_api_key():
     elif credLocation == "AWS_SECRETS_MANAGER":
         try:
             apiKey = asm.get_secret_value(
-                SecretId=shodanCredLocation,
+                SecretId=shodanCredValue,
             )["SecretString"]
         except ClientError as e:
             raise e
