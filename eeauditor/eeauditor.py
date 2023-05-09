@@ -26,6 +26,7 @@ from check_register import CheckRegister, accumulate_paged_results
 from pluginbase import PluginBase
 import traceback
 from cloud_utils import CloudConfig
+import json
 
 here = os.path.abspath(os.path.dirname(__file__))
 getPath = partial(os.path.join, here)
@@ -307,5 +308,24 @@ class EEAuditor(object):
                 )
 
         print("\n".join(table))
+
+    def print_controls_json(self):
+        controls = []
+
+        for serviceName, checkList in self.registry.checks.items():
+            for checkName, check in checkList.items():
+                doc = check.__doc__
+                if doc:
+                    description = (check.__doc__).replace("\n", "")
+                else:
+                    description = ""
+                controls.append(description)
+
+        print(
+            json.dumps(
+                controls,
+                indent=2
+            )
+        )
 
 # EOF

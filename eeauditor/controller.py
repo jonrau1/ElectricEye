@@ -24,6 +24,13 @@ from insights import create_sechub_insights
 from eeauditor import EEAuditor
 from processor.main import get_providers, process_findings
 
+def print_controls(assessmentTarget, auditorName=None):
+    app = EEAuditor(assessmentTarget)
+
+    app.load_plugins(auditorName)
+        
+    app.print_controls_json()
+
 def print_checks(assessmentTarget, auditorName=None):
     app = EEAuditor(assessmentTarget)
 
@@ -124,7 +131,13 @@ def run_auditor(assessmentTarget, auditorName=None, pluginName=None, delay=0, ou
 @click.option(
     "--create-insights",
     is_flag=True,
-    help="Create SecurityHub insights for ElectricEye.  This only needs to be done once per Security Hub instance",
+    help="Create SecurityHub insights for ElectricEye. This only needs to be done once per Security Hub instance",
+)
+# Controls (Description)
+@click.option(
+    "--list-controls",
+    is_flag=True,
+    help="Lists all Controls (Check Titles) for an Assessment Target, used for mapping..."
 )
 
 def main(
@@ -137,10 +150,18 @@ def main(
     list_options,
     list_checks,
     create_insights,
+    list_controls,
 ):
+    if list_controls:
+        print(
+            sorted(
+                print_controls()
+            )
+        )
     if list_options:
         print(
-                sorted(get_providers()
+            sorted(
+                get_providers()
             )
         )
         sys.exit(0)
