@@ -54,8 +54,7 @@ def get_shodan_api_key():
         print(f"Invalid option for [global.credLocation]. Must be one of {str(validCredLocations)}.")
         sys.exit(2)
     if not shodanCredValue:
-        print(f"Shodan API Key location is empty - review [global.shodan_api_key_value] and try again.")
-        return None
+        apiKey = None
 
     # Boto3 Clients
     ssm = boto3.client("ssm")
@@ -243,7 +242,8 @@ def paginate_distributions(cache, session):
 @registry.register_check("ec2")
 def public_ec2_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.EC2.1] EC2 instances with public IP addresses should be monitored for being indexed by Shodan"""
-    if get_shodan_api_key() == None:
+    shodanApiKey = get_shodan_api_key()
+    if shodanApiKey == None:
         pass
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -262,7 +262,7 @@ def public_ec2_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
         except KeyError:
             continue
         # check if IP indexed by Shodan
-        r = requests.get(url=f"{SHODAN_HOSTS_URL}{ec2PublicIp}?key={get_shodan_api_key()}").json()
+        r = requests.get(url=f"{SHODAN_HOSTS_URL}{ec2PublicIp}?key={shodanApiKey}").json()
         if str(r) == "{'error': 'No information available for that IP.'}":
             # this is a passing check
             finding = {
@@ -426,6 +426,9 @@ def public_ec2_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
 @registry.register_check("elbv2")
 def public_alb_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.ELBv2.1] Internet-facing Application Load Balancers should be monitored for being indexed by Shodan"""
+    shodanApiKey = get_shodan_api_key()
+    if shodanApiKey == None:
+        pass
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for lb in describe_load_balancers(cache, session)["LoadBalancers"]:
@@ -444,7 +447,7 @@ def public_alb_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
             if elbv2Ip is None:
                 continue
             # check if IP indexed by Shodan
-            r = requests.get(url=f"{SHODAN_HOSTS_URL}{elbv2Ip}?key={get_shodan_api_key()}").json()
+            r = requests.get(url=f"{SHODAN_HOSTS_URL}{elbv2Ip}?key={shodanApiKey}").json()
             if str(r) == "{'error': 'No information available for that IP.'}":
                 # this is a passing check
                 finding = {
@@ -610,6 +613,9 @@ def public_alb_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
 @registry.register_check("rds")
 def public_rds_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.RDS.1] Public accessible RDS instances should be monitored for being indexed by Shodan"""
+    shodanApiKey = get_shodan_api_key()
+    if shodanApiKey == None:
+        pass
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for rdsdb in describe_db_instances(cache, session):
@@ -629,7 +635,7 @@ def public_rds_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
             if rdsIp is None:
                 continue
             # check if IP indexed by Shodan
-            r = requests.get(url=f"{SHODAN_HOSTS_URL}{rdsIp}?key={get_shodan_api_key()}").json()
+            r = requests.get(url=f"{SHODAN_HOSTS_URL}{rdsIp}?key={shodanApiKey}").json()
             if str(r) == "{'error': 'No information available for that IP.'}":
                 # this is a passing check
                 finding = {
@@ -797,6 +803,9 @@ def public_rds_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
 @registry.register_check("es")
 def public_es_domain_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.Elasticsearch.1] OpenSearch/ElasticSearch Service domains outside of a VPC should be monitored for being indexed by Shodan"""
+    shodanApiKey = get_shodan_api_key()
+    if shodanApiKey == None:
+        pass
     elasticsearch = session.client("es")
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -820,7 +829,7 @@ def public_es_domain_shodan_check(cache: dict, session, awsAccountId: str, awsRe
             if esDomainIp is None:
                 continue
             # check if IP indexed by Shodan
-            r = requests.get(url=f"{SHODAN_HOSTS_URL}{esDomainIp}?key={get_shodan_api_key()}").json()
+            r = requests.get(url=f"{SHODAN_HOSTS_URL}{esDomainIp}?key={shodanApiKey}").json()
             if str(r) == "{'error': 'No information available for that IP.'}":
                 # this is a passing check
                 finding = {
@@ -984,6 +993,9 @@ def public_es_domain_shodan_check(cache: dict, session, awsAccountId: str, awsRe
 @registry.register_check("elb")
 def public_clb_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.ELB.1] Internet-facing Classic Load Balancers should be monitored for being indexed by Shodan"""
+    shodanApiKey = get_shodan_api_key()
+    if shodanApiKey == None:
+        pass
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for clbs in describe_clbs(cache, session)["LoadBalancerDescriptions"]:
@@ -1000,7 +1012,7 @@ def public_clb_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
             if clbIp is None:
                 continue
             # check if IP indexed by Shodan
-            r = requests.get(url=f"{SHODAN_HOSTS_URL}{clbIp}?key={get_shodan_api_key()}").json()
+            r = requests.get(url=f"{SHODAN_HOSTS_URL}{clbIp}?key={shodanApiKey}").json()
             if str(r) == "{'error': 'No information available for that IP.'}":
                 # this is a passing check
                 finding = {
@@ -1150,6 +1162,9 @@ def public_clb_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
 @registry.register_check("dms")
 def public_dms_replication_instance_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.DMS.1] Publicly accessible Database Migration Service (DMS) Replication Instances should be monitored for being indexed by Shodan"""
+    shodanApiKey = get_shodan_api_key()
+    if shodanApiKey == None:
+        pass
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for ri in describe_replication_instances(cache, session)["ReplicationInstances"]:
@@ -1161,7 +1176,7 @@ def public_dms_replication_instance_shodan_check(cache: dict, session, awsAccoun
         if ri["PubliclyAccessible"] == True:
             dmsPublicIp = str(ri["ReplicationInstancePublicIpAddress"])
             # check if IP indexed by Shodan
-            r = requests.get(url=f"{SHODAN_HOSTS_URL}{dmsPublicIp}?key={get_shodan_api_key()}").json()
+            r = requests.get(url=f"{SHODAN_HOSTS_URL}{dmsPublicIp}?key={shodanApiKey}").json()
             if str(r) == "{'error': 'No information available for that IP.'}":
                 # this is a passing check
                 finding = {
@@ -1313,6 +1328,9 @@ def public_dms_replication_instance_shodan_check(cache: dict, session, awsAccoun
 @registry.register_check("mq")
 def public_amazon_mq_broker_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.AmazonMQ.1] Publicly accessible Amazon MQ message brokers should be monitored for being indexed by Shodan"""
+    shodanApiKey = get_shodan_api_key()
+    if shodanApiKey == None:
+        pass
     amzmq = session.client("mq")
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -1330,7 +1348,7 @@ def public_amazon_mq_broker_shodan_check(cache: dict, session, awsAccountId: str
                     mqBrokerIpv4 = str(instance["IpAddress"])
                 except KeyError:
                     continue
-                r = requests.get(url=f"{SHODAN_HOSTS_URL}{mqBrokerIpv4}?key={get_shodan_api_key()}").json()
+                r = requests.get(url=f"{SHODAN_HOSTS_URL}{mqBrokerIpv4}?key={shodanApiKey}").json()
                 if str(r) == "{'error': 'No information available for that IP.'}":
                     # this is a passing check
                     finding = {
@@ -1490,6 +1508,9 @@ def public_amazon_mq_broker_shodan_check(cache: dict, session, awsAccountId: str
 @registry.register_check("cloudfront")
 def cloudfront_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.CloudFront.1] CloudFront Distributions should be monitored for being indexed by Shodan"""
+    shodanApiKey = get_shodan_api_key()
+    if shodanApiKey == None:
+        pass
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for cfront in paginate_distributions(cache, session):
@@ -1504,7 +1525,7 @@ def cloudfront_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
         if cfDomainIp is None:
             continue
         # check if IP indexed by Shodan
-        r = requests.get(url=f"{SHODAN_HOSTS_URL}{cfDomainIp}?key={get_shodan_api_key()}").json()
+        r = requests.get(url=f"{SHODAN_HOSTS_URL}{cfDomainIp}?key={shodanApiKey}").json()
         if str(r) == "{'error': 'No information available for that IP.'}":
             # this is a passing check
             finding = {
@@ -1662,6 +1683,9 @@ def cloudfront_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
 @registry.register_check("globalaccelerator")
 def global_accelerator_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.GlobalAccelerator.1] Accelerators should be monitored for being indexed by Shodan"""
+    shodanApiKey = get_shodan_api_key()
+    if shodanApiKey == None:
+        pass
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     gax = session.client("globalaccelerator", region_name="us-west-2")
@@ -1677,7 +1701,7 @@ def global_accelerator_shodan_check(cache: dict, session, awsAccountId: str, aws
             if gaxDomainIp is None:
                 continue
             # check if IP indexed by Shodan
-            r = requests.get(url=f"{SHODAN_HOSTS_URL}{gaxDomainIp}?key={get_shodan_api_key()}").json()
+            r = requests.get(url=f"{SHODAN_HOSTS_URL}{gaxDomainIp}?key={shodanApiKey}").json()
             if str(r) == "{'error': 'No information available for that IP.'}":
                 # this is a passing check
                 finding = {
