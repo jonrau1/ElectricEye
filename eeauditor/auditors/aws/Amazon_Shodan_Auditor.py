@@ -55,34 +55,35 @@ def get_shodan_api_key():
         sys.exit(2)
     if not shodanCredValue:
         apiKey = None
+    else:
 
-    # Boto3 Clients
-    ssm = boto3.client("ssm")
-    asm = boto3.client("secretsmanager")
+        # Boto3 Clients
+        ssm = boto3.client("ssm")
+        asm = boto3.client("secretsmanager")
 
-    # Retrieve API Key
-    if credLocation == "CONFIG_FILE":
-        apiKey = shodanCredValue
+        # Retrieve API Key
+        if credLocation == "CONFIG_FILE":
+            apiKey = shodanCredValue
 
-    # Retrieve the credential from SSM Parameter Store
-    elif credLocation == "AWS_SSM":
-        
-        try:
-            apiKey = ssm.get_parameter(
-                Name=shodanCredValue,
-                WithDecryption=True
-            )["Parameter"]["Value"]
-        except ClientError as e:
-            raise e
+        # Retrieve the credential from SSM Parameter Store
+        elif credLocation == "AWS_SSM":
+            
+            try:
+                apiKey = ssm.get_parameter(
+                    Name=shodanCredValue,
+                    WithDecryption=True
+                )["Parameter"]["Value"]
+            except ClientError as e:
+                raise e
 
-    # Retrieve the credential from AWS Secrets Manager
-    elif credLocation == "AWS_SECRETS_MANAGER":
-        try:
-            apiKey = asm.get_secret_value(
-                SecretId=shodanCredValue,
-            )["SecretString"]
-        except ClientError as e:
-            raise e
+        # Retrieve the credential from AWS Secrets Manager
+        elif credLocation == "AWS_SECRETS_MANAGER":
+            try:
+                apiKey = asm.get_secret_value(
+                    SecretId=shodanCredValue,
+                )["SecretString"]
+            except ClientError as e:
+                raise e
         
     return apiKey
 
@@ -243,11 +244,11 @@ def paginate_distributions(cache, session):
 def public_ec2_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.EC2.1] EC2 instances with public IP addresses should be monitored for being indexed by Shodan"""
     shodanApiKey = get_shodan_api_key()
-    if shodanApiKey == None:
-        pass
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for i in describe_instances(cache, session):
+        if shodanApiKey == None:
+            continue
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(i,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -427,11 +428,11 @@ def public_ec2_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
 def public_alb_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.ELBv2.1] Internet-facing Application Load Balancers should be monitored for being indexed by Shodan"""
     shodanApiKey = get_shodan_api_key()
-    if shodanApiKey == None:
-        pass
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for lb in describe_load_balancers(cache, session)["LoadBalancers"]:
+        if shodanApiKey == None:
+            continue
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(lb,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -614,11 +615,11 @@ def public_alb_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
 def public_rds_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.RDS.1] Public accessible RDS instances should be monitored for being indexed by Shodan"""
     shodanApiKey = get_shodan_api_key()
-    if shodanApiKey == None:
-        pass
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for rdsdb in describe_db_instances(cache, session):
+        if shodanApiKey == None:
+            continue
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(rdsdb,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -804,12 +805,12 @@ def public_rds_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
 def public_es_domain_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.Elasticsearch.1] OpenSearch/ElasticSearch Service domains outside of a VPC should be monitored for being indexed by Shodan"""
     shodanApiKey = get_shodan_api_key()
-    if shodanApiKey == None:
-        pass
     elasticsearch = session.client("es")
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for domain in list_domain_names(cache, session):
+        if shodanApiKey == None:
+            continue
         esDomain = str(domain["DomainName"])
         response = elasticsearch.describe_elasticsearch_domain(DomainName=esDomain)["DomainStatus"]
         # B64 encode all of the details for the Asset
@@ -994,11 +995,11 @@ def public_es_domain_shodan_check(cache: dict, session, awsAccountId: str, awsRe
 def public_clb_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.ELB.1] Internet-facing Classic Load Balancers should be monitored for being indexed by Shodan"""
     shodanApiKey = get_shodan_api_key()
-    if shodanApiKey == None:
-        pass
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for clbs in describe_clbs(cache, session)["LoadBalancerDescriptions"]:
+        if shodanApiKey == None:
+            continue
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(clbs,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -1163,11 +1164,11 @@ def public_clb_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
 def public_dms_replication_instance_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.DMS.1] Publicly accessible Database Migration Service (DMS) Replication Instances should be monitored for being indexed by Shodan"""
     shodanApiKey = get_shodan_api_key()
-    if shodanApiKey == None:
-        pass
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for ri in describe_replication_instances(cache, session)["ReplicationInstances"]:
+        if shodanApiKey == None:
+            continue
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(ri,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -1329,12 +1330,12 @@ def public_dms_replication_instance_shodan_check(cache: dict, session, awsAccoun
 def public_amazon_mq_broker_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.AmazonMQ.1] Publicly accessible Amazon MQ message brokers should be monitored for being indexed by Shodan"""
     shodanApiKey = get_shodan_api_key()
-    if shodanApiKey == None:
-        pass
     amzmq = session.client("mq")
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for brokers in list_brokers(cache, session):
+        if shodanApiKey == None:
+            continue
         brokerName = str(brokers["BrokerName"])
         response = amzmq.describe_broker(BrokerId=brokerName)
         # B64 encode all of the details for the Asset
@@ -1509,11 +1510,11 @@ def public_amazon_mq_broker_shodan_check(cache: dict, session, awsAccountId: str
 def cloudfront_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.CloudFront.1] CloudFront Distributions should be monitored for being indexed by Shodan"""
     shodanApiKey = get_shodan_api_key()
-    if shodanApiKey == None:
-        pass
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for cfront in paginate_distributions(cache, session):
+        if shodanApiKey == None:
+            continue
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(cfront,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -1684,12 +1685,12 @@ def cloudfront_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
 def global_accelerator_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.GlobalAccelerator.1] Accelerators should be monitored for being indexed by Shodan"""
     shodanApiKey = get_shodan_api_key()
-    if shodanApiKey == None:
-        pass
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     gax = session.client("globalaccelerator", region_name="us-west-2")
     for page in gax.get_paginator("list_accelerators").paginate():
+        if shodanApiKey == None:
+            continue
         for ga in page["Accelerators"]:
             # B64 encode all of the details for the Asset
             assetJson = json.dumps(ga,default=str).encode("utf-8")
