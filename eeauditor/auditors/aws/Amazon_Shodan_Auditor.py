@@ -180,6 +180,24 @@ def list_brokers(cache, session):
     cache["list_brokers"] = amazonMqBrokerDetails
     return cache["list_brokers"]
 
+def paginate_distributions(cache, session):
+    cloudfront = session.client("cloudfront")
+
+    itemList = []
+    response = cache.get("items")
+    if response:
+        return response
+    paginator = cloudfront.get_paginator("list_distributions")
+    if paginator:
+        for page in paginator.paginate():
+            try:
+                for items in page["DistributionList"]["Items"]:
+                    itemList.append(items)
+            except KeyError:
+                return {}
+        cache["items"] = itemList
+        return cache["items"]
+
 @registry.register_check("ec2")
 def public_ec2_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.EC2.1] EC2 instances with public IP addresses should be monitored for being indexed by Shodan"""
@@ -1279,7 +1297,7 @@ def public_amazon_mq_broker_shodan_check(cache: dict, session, awsAccountId: str
                         "UpdatedAt": iso8601time,
                         "Severity": {"Label": "INFORMATIONAL"},
                         "Title": "[Shodan.AmazonMQ.1] Publicly accessible Amazon MQ message brokers should be monitored for being indexed by Shodan",
-                        "Description": f"Amazon MQ message brokers {brokerName} has not been indexed by Shodan.",
+                        "Description": f"Amazon MQ message broker {brokerName} has not been indexed by Shodan.",
                         "Remediation": {
                             "Recommendation": {
                                 "Text": "To learn more about the information that Shodan indexed on your host refer to the URL in the remediation section.",
@@ -1305,8 +1323,8 @@ def public_amazon_mq_broker_shodan_check(cache: dict, session, awsAccountId: str
                                 "Region": awsRegion,
                                 "Details": {
                                     "Other": {
-                                        "brokerName": brokerName,
-                                        "brokerId": brokerId,
+                                        "BrokerName": brokerName,
+                                        "BrokerId": brokerId,
                                     }
                                 },
                             }
@@ -1342,6 +1360,12 @@ def public_amazon_mq_broker_shodan_check(cache: dict, session, awsAccountId: str
                     }
                     yield finding
                 else:
+                    assetPayload = {
+                        "Broker": response,
+                        "Shodan": r
+                    }
+                    assetJson = json.dumps(assetPayload,default=str).encode("utf-8")
+                    assetB64 = base64.b64encode(assetJson)
                     finding = {
                         "SchemaVersion": "2018-10-08",
                         "Id": f"{brokerArn}/{mqBrokerIpv4}/amazon-mq-broker-shodan-index-check",
@@ -1353,11 +1377,13 @@ def public_amazon_mq_broker_shodan_check(cache: dict, session, awsAccountId: str
                         "UpdatedAt": iso8601time,
                         "Severity": {"Label": "MEDIUM"},
                         "Title": "[Shodan.AmazonMQ.1] Publicly accessible Amazon MQ message brokers should be monitored for being indexed by Shodan",
-                        "Description": "Amazon MQ message brokers "
-                        + brokerName
-                        + " has been indexed by Shodan on IP address "
-                        + mqBrokerIpv4
-                        + ".",
+                        "Description": f"AmazonMQ Broker {brokerName} has been indexed on IP address {mqBrokerIpv4}. Shodan is an 'internet search engine' which continuously crawls and scans across the entire internet to capture host, geolocation, TLS, and running service information. Shodan is a popular tool used by blue teams, security researchers and adversaries alike. Having your asset indexed on Shodan, depending on its configuration, may increase its risk of unauthorized access and further compromise. Review your configuration and refer to the Shodan URL in the remediation section to take action to reduce your exposure and harden your host.",
+                        "Remediation": {
+                            "Recommendation": {
+                                "Text": "To learn more about the information that Shodan indexed on your host refer to the URL in the remediation section.",
+                                "Url": f"{SHODAN_HOSTS_URL}{mqBrokerIpv4}"
+                            }
+                        },
                         "ProductFields": {
                             "ProductName": "ElectricEye",
                             "Provider": "AWS",
@@ -1377,8 +1403,8 @@ def public_amazon_mq_broker_shodan_check(cache: dict, session, awsAccountId: str
                                 "Region": awsRegion,
                                 "Details": {
                                     "Other": {
-                                        "brokerName": brokerName,
-                                        "brokerId": brokerId,
+                                        "BrokerName": brokerName,
+                                        "BrokerId": brokerId,
                                     }
                                 },
                             }
@@ -1414,181 +1440,179 @@ def public_amazon_mq_broker_shodan_check(cache: dict, session, awsAccountId: str
                     }
                     yield finding
 
-@registry.register_check("aws.shodan")
+@registry.register_check("cloudfront")
 def cloudfront_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.CloudFront.1] CloudFront Distributions should be monitored for being indexed by Shodan"""
-    cloudfront = session.client("cloudfront")
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    paginator = cloudfront.get_paginator("list_distributions")
-    iterator = paginator.paginate()
-    for page in iterator:
-        for cfront in page["DistributionList"]["Items"]:
-            # B64 encode all of the details for the Asset
-            assetJson = json.dumps(cfront,default=str).encode("utf-8")
+    for cfront in paginate_distributions(cache, session):
+        # B64 encode all of the details for the Asset
+        assetJson = json.dumps(cfront,default=str).encode("utf-8")
+        assetB64 = base64.b64encode(assetJson)
+        domainName = str(cfront["DomainName"])
+        cfArn = str(cfront["ARN"])
+        cfId = str(cfront["Id"])
+        # Use Google DNS to resolve
+        cfDomainIp = google_dns_resolver(domainName)
+        if cfDomainIp is None:
+            continue
+        # check if IP indexed by Shodan
+        r = requests.get(url=f"{SHODAN_HOSTS_URL}{cfDomainIp}?key={shodanApiKey}").json()
+        if str(r) == "{'error': 'No information available for that IP.'}":
+            # this is a passing check
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{cfArn}/{domainName}/cloudfront-shodan-index-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": cfArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Effects/Data Exposure"],
+                "CreatedAt": iso8601time,
+                "UpdatedAt": iso8601time,
+                "Severity": {"Label": "INFORMATIONAL"},
+                "Title": "[Shodan.CloudFront.1] CloudFront Distributions should be monitored for being indexed by Shodan",
+                "Description": f"CloudFront Distribution {cfId} has not been indexed by Shodan.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "To learn more about the information that Shodan indexed on your host refer to the URL in the remediation section.",
+                        "Url": SHODAN_HOSTS_URL
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon CloudFront",
+                    "AssetComponent": "Distribution"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsCloudFrontDistribution",
+                        "Id": cfArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsCloudFrontDistribution": {
+                                "DomainName": domainName
+                            }
+                        }
+                    }
+                ],
+                "Compliance": {
+                    "Status": "PASSED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.RA-2",
+                        "NIST CSF V1.1 DE.AE-2",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 PM-15",
+                        "NIST SP 800-53 Rev. 4 PM-16",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "NIST SP 800-53 Rev. 4 SI-5",
+                        "AIPCA TSC CC3.2",
+                        "AIPCA TSC CC7.2",
+                        "ISO 27001:2013 A.6.1.4",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.1",
+                        "ISO 27001:2013 A.16.1.4",
+                        "MITRE ATT&CK T1040",
+                        "MITRE ATT&CK T1046",
+                        "MITRE ATT&CK T1580",
+                        "MITRE ATT&CK T1590",
+                        "MITRE ATT&CK T1592",
+                        "MITRE ATT&CK T1595"
+                    ]
+                },
+                "Workflow": {"Status": "RESOLVED"},
+                "RecordState": "ARCHIVED"
+            }
+            yield finding
+        else:
+            assetPayload = {
+                "Distribution": cfront,
+                "Shodan": r
+            }
+            assetJson = json.dumps(assetPayload,default=str).encode("utf-8")
             assetB64 = base64.b64encode(assetJson)
-            domainName = str(cfront["DomainName"])
-            cfArn = str(cfront["ARN"])
-            cfId = str(cfront["Id"])
-            cfDomainIp = socket.gethostbyname(domainName)
-            # check if IP indexed by Shodan
-            r = requests.get(url=f"{SHODAN_HOSTS_URL}{cfDomainIp}?key={shodanApiKey}")
-            data = r.json()
-            shodanOutput = str(data)
-            if shodanOutput == "{'error': 'No information available for that IP.'}":
-                # this is a passing check
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": cfArn + "/" + domainName + "/cloudfront-shodan-index-check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": cfArn,
-                    "AwsAccountId": awsAccountId,
-                    "Types": ["Effects/Data Exposure"],
-                    "CreatedAt": iso8601time,
-                    "UpdatedAt": iso8601time,
-                    "Severity": {"Label": "INFORMATIONAL"},
-                    "Title": "[Shodan.CloudFront.1] CloudFront Distributions should be monitored for being indexed by Shodan",
-                    "Description": "CloudFront Distribution "
-                    + cfId
-                    + " has not been indexed by Shodan.",
-                    "ProductFields": {
-                        "ProductName": "ElectricEye",
-                        "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
-                        "AssetClass": "Networking",
-                        "AssetService": "Amazon CloudFront",
-                        "AssetComponent": "Distribution"
-                    },
-                    "Resources": [
-                        {
-                            "Type": "AwsCloudFrontDistribution",
-                            "Id": cfArn,
-                            "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {
-                                "AwsCloudFrontDistribution": {
-                                    "DomainName": domainName
-                                }
+            finding = {
+                "SchemaVersion": "2018-10-08",
+                "Id": f"{cfArn}/{domainName}/cloudfront-shodan-index-check",
+                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                "GeneratorId": cfArn,
+                "AwsAccountId": awsAccountId,
+                "Types": ["Effects/Data Exposure"],
+                "CreatedAt": iso8601time,
+                "UpdatedAt": iso8601time,
+                "Severity": {"Label": "MEDIUM"},
+                "Title": "[Shodan.CloudFront.1] CloudFront Distributions should be monitored for being indexed by Shodan",
+                "Description": f"CloudFront Distribution {cfId} has been indexed by Shodan on IP address {cfDomainIp} - resolved from DNS name {domainName}. Shodan is an 'internet search engine' which continuously crawls and scans across the entire internet to capture host, geolocation, TLS, and running service information. Shodan is a popular tool used by blue teams, security researchers and adversaries alike. Having your asset indexed on Shodan, depending on its configuration, may increase its risk of unauthorized access and further compromise. Review your configuration and refer to the Shodan URL in the remediation section to take action to reduce your exposure and harden your host.",
+                "Remediation": {
+                    "Recommendation": {
+                        "Text": "To learn more about the information that Shodan indexed on your host refer to the URL in the remediation section.",
+                        "Url": f"{SHODAN_HOSTS_URL}{cfDomainIp}"
+                    }
+                },
+                "ProductFields": {
+                    "ProductName": "ElectricEye",
+                    "Provider": "AWS",
+                    "ProviderType": "CSP",
+                    "ProviderAccountId": awsAccountId,
+                    "AssetRegion": awsRegion,
+                    "AssetDetails": assetB64,
+                    "AssetClass": "Networking",
+                    "AssetService": "Amazon CloudFront",
+                    "AssetComponent": "Distribution"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsCloudFrontDistribution",
+                        "Id": cfArn,
+                        "Partition": awsPartition,
+                        "Region": awsRegion,
+                        "Details": {
+                            "AwsCloudFrontDistribution": {
+                                "DomainName": domainName
                             }
                         }
-                    ],
-                    "Compliance": {
-                        "Status": "PASSED",
-                        "RelatedRequirements": [
-                            "NIST CSF V1.1 ID.RA-2",
-                            "NIST CSF V1.1 DE.AE-2",
-                            "NIST SP 800-53 Rev. 4 AU-6",
-                            "NIST SP 800-53 Rev. 4 CA-7",
-                            "NIST SP 800-53 Rev. 4 IR-4",
-                            "NIST SP 800-53 Rev. 4 PM-15",
-                            "NIST SP 800-53 Rev. 4 PM-16",
-                            "NIST SP 800-53 Rev. 4 SI-4",
-                            "NIST SP 800-53 Rev. 4 SI-5",
-                            "AIPCA TSC CC3.2",
-                            "AIPCA TSC CC7.2",
-                            "ISO 27001:2013 A.6.1.4",
-                            "ISO 27001:2013 A.12.4.1",
-                            "ISO 27001:2013 A.16.1.1",
-                            "ISO 27001:2013 A.16.1.4",
-                            "MITRE ATT&CK T1040",
-                            "MITRE ATT&CK T1046",
-                            "MITRE ATT&CK T1580",
-                            "MITRE ATT&CK T1590",
-                            "MITRE ATT&CK T1592",
-                            "MITRE ATT&CK T1595"
-                        ]
-                    },
-                    "Workflow": {"Status": "RESOLVED"},
-                    "RecordState": "ARCHIVED"
-                }
-                yield finding
-            else:
-                finding = {
-                    "SchemaVersion": "2018-10-08",
-                    "Id": cfArn + "/" + domainName + "/cloudfront-shodan-index-check",
-                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                    "GeneratorId": cfArn,
-                    "AwsAccountId": awsAccountId,
-                    "Types": ["Effects/Data Exposure"],
-                    "CreatedAt": iso8601time,
-                    "UpdatedAt": iso8601time,
-                    "Severity": {"Label": "MEDIUM"},
-                    "Title": "[Shodan.CloudFront.1] CloudFront Distributions should be monitored for being indexed by Shodan",
-                    "Description": "CloudFront Distribution "
-                    + cfId
-                    + " has been indexed by Shodan on IP Address (from Domain Name) "
-                    + cfDomainIp
-                    + ". review the Shodan.io host information in the SourceUrl or ThreatIntelIndicators.SourceUrl fields for information about what ports and services are exposed and then take action to reduce exposure and harden your host.",
-                    "SourceUrl": "https://www.shodan.io/host/" + cfDomainIp,
-                    "ProductFields": {
-                        "ProductName": "ElectricEye",
-                        "Provider": "AWS",
-                        "ProviderType": "CSP",
-                        "ProviderAccountId": awsAccountId,
-                        "AssetRegion": awsRegion,
-                        "AssetDetails": assetB64,
-                        "AssetClass": "Networking",
-                        "AssetService": "Amazon CloudFront",
-                        "AssetComponent": "Distribution"
-                    },
-                    "ThreatIntelIndicators": [
-                        {
-                            "Type": "IPV4_ADDRESS",
-                            "Category": "EXPLOIT_SITE",
-                            "Value": cfDomainIp,
-                            "LastObservedAt": iso8601time,
-                            "Source": "Shodan.io",
-                            "SourceUrl": "https://www.shodan.io/host/" + cfDomainIp,
-                        },
-                    ],
-                    "Resources": [
-                        {
-                            "Type": "AwsCloudFrontDistribution",
-                            "Id": cfArn,
-                            "Partition": awsPartition,
-                            "Region": awsRegion,
-                            "Details": {
-                                "AwsCloudFrontDistribution": {
-                                    "DomainName": domainName
-                                }
-                            }
-                        }
-                    ],
-                    "Compliance": {
-                        "Status": "FAILED",
-                        "RelatedRequirements": [
-                            "NIST CSF V1.1 ID.RA-2",
-                            "NIST CSF V1.1 DE.AE-2",
-                            "NIST SP 800-53 Rev. 4 AU-6",
-                            "NIST SP 800-53 Rev. 4 CA-7",
-                            "NIST SP 800-53 Rev. 4 IR-4",
-                            "NIST SP 800-53 Rev. 4 PM-15",
-                            "NIST SP 800-53 Rev. 4 PM-16",
-                            "NIST SP 800-53 Rev. 4 SI-4",
-                            "NIST SP 800-53 Rev. 4 SI-5",
-                            "AIPCA TSC CC3.2",
-                            "AIPCA TSC CC7.2",
-                            "ISO 27001:2013 A.6.1.4",
-                            "ISO 27001:2013 A.12.4.1",
-                            "ISO 27001:2013 A.16.1.1",
-                            "ISO 27001:2013 A.16.1.4",
-                            "MITRE ATT&CK T1040",
-                            "MITRE ATT&CK T1046",
-                            "MITRE ATT&CK T1580",
-                            "MITRE ATT&CK T1590",
-                            "MITRE ATT&CK T1592",
-                            "MITRE ATT&CK T1595"
-                        ]
-                    },
-                    "Workflow": {"Status": "NEW"},
-                    "RecordState": "ACTIVE"
-                }
-                yield finding
+                    }
+                ],
+                "Compliance": {
+                    "Status": "FAILED",
+                    "RelatedRequirements": [
+                        "NIST CSF V1.1 ID.RA-2",
+                        "NIST CSF V1.1 DE.AE-2",
+                        "NIST SP 800-53 Rev. 4 AU-6",
+                        "NIST SP 800-53 Rev. 4 CA-7",
+                        "NIST SP 800-53 Rev. 4 IR-4",
+                        "NIST SP 800-53 Rev. 4 PM-15",
+                        "NIST SP 800-53 Rev. 4 PM-16",
+                        "NIST SP 800-53 Rev. 4 SI-4",
+                        "NIST SP 800-53 Rev. 4 SI-5",
+                        "AIPCA TSC CC3.2",
+                        "AIPCA TSC CC7.2",
+                        "ISO 27001:2013 A.6.1.4",
+                        "ISO 27001:2013 A.12.4.1",
+                        "ISO 27001:2013 A.16.1.1",
+                        "ISO 27001:2013 A.16.1.4",
+                        "MITRE ATT&CK T1040",
+                        "MITRE ATT&CK T1046",
+                        "MITRE ATT&CK T1580",
+                        "MITRE ATT&CK T1590",
+                        "MITRE ATT&CK T1592",
+                        "MITRE ATT&CK T1595"
+                    ]
+                },
+                "Workflow": {"Status": "NEW"},
+                "RecordState": "ACTIVE"
+            }
+            yield finding
 
-@registry.register_check("aws.shodan")
+@registry.register_check("globalaccelerator")
 def global_accelerator_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.GlobalAccelerator.1] Accelerators should be monitored for being indexed by Shodan"""
     # ISO Time
@@ -1596,9 +1620,7 @@ def global_accelerator_shodan_check(cache: dict, session, awsAccountId: str, aws
     # Create a Session is us-west-2 - which is where the Global Accelerator API is in
     session = session.Session(region_name="us-west-2")
     gax = session.client("globalaccelerator")
-    paginator = gax.get_paginator("list_accelerators")
-    iterator = paginator.paginate()
-    for page in iterator:
+    for page in gax.get_paginator("list_accelerators").paginate():
         for ga in page["Accelerators"]:
             # B64 encode all of the details for the Asset
             assetJson = json.dumps(ga,default=str).encode("utf-8")
@@ -1606,16 +1628,16 @@ def global_accelerator_shodan_check(cache: dict, session, awsAccountId: str, aws
             gaxArn = str(ga["AcceleratorArn"])
             gaxName = str(ga["Name"])
             gaxDns = str(ga["DnsName"])
-            gaxDomainIp = socket.gethostbyname(gaxDns)
+            gaxDomainIp = google_dns_resolver(gaxDns)
+            if gaxDomainIp is None:
+                continue
             # check if IP indexed by Shodan
-            r = requests.get(url=f"{SHODAN_HOSTS_URL}{gaxDomainIp}?key={shodanApiKey}")
-            data = r.json()
-            shodanOutput = str(data)
-            if shodanOutput == "{'error': 'No information available for that IP.'}":
+            r = requests.get(url=f"{SHODAN_HOSTS_URL}{gaxDomainIp}?key={shodanApiKey}").json()
+            if str(r) == "{'error': 'No information available for that IP.'}":
                 # this is a passing check
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": gaxArn + "/" + gaxDns + "/global-accelerator-shodan-check",
+                    "Id": f"{gaxArn}/{gaxDns}/global-accelerator-shodan-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": gaxArn,
                     "AwsAccountId": awsAccountId,
@@ -1624,9 +1646,13 @@ def global_accelerator_shodan_check(cache: dict, session, awsAccountId: str, aws
                     "UpdatedAt": iso8601time,
                     "Severity": {"Label": "INFORMATIONAL"},
                     "Title": "[Shodan.GlobalAccelerator.1] Accelerators should be monitored for being indexed by Shodan",
-                    "Description": "Accelerator "
-                    + gaxName
-                    + " has not been indexed by Shodan.",
+                    "Description": f"Accelerator {gaxName} has not been indexed by Shodan.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "To learn more about the information that Shodan indexed on your host refer to the URL in the remediation section.",
+                            "Url": SHODAN_HOSTS_URL
+                        }
+                    },
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
@@ -1683,9 +1709,15 @@ def global_accelerator_shodan_check(cache: dict, session, awsAccountId: str, aws
                 }
                 yield finding
             else:
+                assetPayload = {
+                    "Accelerator": ga,
+                    "Shodan": r
+                }
+                assetJson = json.dumps(assetPayload,default=str).encode("utf-8")
+                assetB64 = base64.b64encode(assetJson)
                 finding = {
                     "SchemaVersion": "2018-10-08",
-                    "Id": gaxArn + "/" + gaxDns + "/global-accelerator-shodan-check",
+                    "Id": f"{gaxArn}/{gaxDns}/global-accelerator-shodan-check",
                     "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                     "GeneratorId": gaxArn,
                     "AwsAccountId": awsAccountId,
@@ -1694,12 +1726,13 @@ def global_accelerator_shodan_check(cache: dict, session, awsAccountId: str, aws
                     "UpdatedAt": iso8601time,
                     "Severity": {"Label": "MEDIUM"},
                     "Title": "[Shodan.GlobalAccelerator.1] Accelerators should be monitored for being indexed by Shodan",
-                    "Description": "Accelerator "
-                    + gaxName
-                    + " has been indexed by Shodan on IP Address (from DNS Name) "
-                    + gaxDomainIp
-                    + ". review the Shodan.io host information in the SourceUrl or ThreatIntelIndicators.SourceUrl fields for information about what ports and services are exposed and then take action to reduce exposure and harden your host.",
-                    "SourceUrl": "https://www.shodan.io/host/" + gaxDomainIp,
+                    "Description": f"Accelerator {gaxName} has been indexed by Shodan on IP address {gaxDomainIp} - resolved from DNS name {gaxDns}. Shodan is an 'internet search engine' which continuously crawls and scans across the entire internet to capture host, geolocation, TLS, and running service information. Shodan is a popular tool used by blue teams, security researchers and adversaries alike. Having your asset indexed on Shodan, depending on its configuration, may increase its risk of unauthorized access and further compromise. Review your configuration and refer to the Shodan URL in the remediation section to take action to reduce your exposure and harden your host.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "To learn more about the information that Shodan indexed on your host refer to the URL in the remediation section.",
+                            "Url": f"{SHODAN_HOSTS_URL}{gaxDomainIp}"
+                        }
+                    },
                     "ProductFields": {
                         "ProductName": "ElectricEye",
                         "Provider": "AWS",
@@ -1711,16 +1744,6 @@ def global_accelerator_shodan_check(cache: dict, session, awsAccountId: str, aws
                         "AssetService": "Amazon Global Accelerator",
                         "AssetComponent": "Accelerator"
                     },
-                    "ThreatIntelIndicators": [
-                        {
-                            "Type": "IPV4_ADDRESS",
-                            "Category": "EXPLOIT_SITE",
-                            "Value": gaxDomainIp,
-                            "LastObservedAt": iso8601time,
-                            "Source": "Shodan.io",
-                            "SourceUrl": "https://www.shodan.io/host/" + gaxDomainIp,
-                        },
-                    ],
                     "Resources": [
                         {
                             "Type": "AwsGlobalAcceleratorAccelerator",
