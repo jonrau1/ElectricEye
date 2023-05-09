@@ -99,7 +99,7 @@ def google_dns_resolver(target):
         result = json.loads(r.text)["Answer"][0]["data"]
         # make sure we didn't resolve to a private IP
         ip = ipaddress.ip_address(result)
-        if not ip.is_private():
+        if not ip.is_private:
             return result
         else:
             return None
@@ -1661,9 +1661,7 @@ def global_accelerator_shodan_check(cache: dict, session, awsAccountId: str, aws
     """[Shodan.GlobalAccelerator.1] Accelerators should be monitored for being indexed by Shodan"""
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    # Create a Session is us-west-2 - which is where the Global Accelerator API is in
-    session = session.Session(region_name="us-west-2")
-    gax = session.client("globalaccelerator")
+    gax = session.client("globalaccelerator", region_name="us-west-2")
     for page in gax.get_paginator("list_accelerators").paginate():
         for ga in page["Accelerators"]:
             # B64 encode all of the details for the Asset
