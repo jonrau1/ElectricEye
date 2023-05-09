@@ -18,32 +18,73 @@
 #specific language governing permissions and limitations
 #under the License.
 
-import boto3
+import tomli
 import os
+import sys
+import boto3
 import requests
-import socket
+import ipaddress
 import datetime
-from check_register import CheckRegister
 import base64
 import json
-import ipaddress
+from botocore.exceptions import ClientError
+from check_register import CheckRegister
 
 registry = CheckRegister()
 
-class ShodanError(Exception):
-    pass
-
-try:
-    ssm = boto3.client("ssm")
-    apiKeyParam = os.environ["SHODAN_API_KEY_PARAM"]
-    if apiKeyParam == ("placeholder" or "" or None):
-        raise ShodanError("No valid Shodan API Key")
-    else:
-        shodanApiKey = ssm.get_parameter(Name=apiKeyParam, WithDecryption=True)["Parameter"]["Value"]
-except KeyError:
-    os.environ["SHODAN_API_KEY_PARAM"] = None
-
 SHODAN_HOSTS_URL = "https://api.shodan.io/shodan/host/"
+
+def get_shodan_api_key():
+    validCredLocations = ["AWS_SSM", "AWS_SECRETS_MANAGER", "CONFIG_FILE"]
+
+    # Get the absolute path of the current directory
+    currentDir = os.path.abspath(os.path.dirname(__file__))
+    # Go two directories back to /eeauditor/
+    twoBack = os.path.abspath(os.path.join(currentDir, "../../"))
+
+    # TOML is located in /eeauditor/ directory
+    tomlFile = f"{twoBack}/external_providers.toml"
+    with open(tomlFile, "rb") as f:
+        data = tomli.load(f)
+
+    # Parse from [global] to determine credential location of PostgreSQL Password
+    credLocation = data["global"]["credLocation"]
+    shodanCredLocation = data["global"]["shodan_api_key_value"]
+    if credLocation not in validCredLocations:
+        print(f"Invalid option for [global.credLocation]. Must be one of {str(validCredLocations)}.")
+        sys.exit(2)
+    if not shodanCredLocation:
+        print(f"Shodan API Key location is empty - review [global.shodan_api_key_value] and try again.")
+
+    # Boto3 Clients
+    ssm = boto3.client("ssm")
+    asm = boto3.client("secretsmanager")
+
+    # Retrieve API Key
+    if credLocation == "CONFIG_FILE":
+        apiKey = shodanCredLocation
+
+    # Retrieve the credential from SSM Parameter Store
+    elif credLocation == "AWS_SSM":
+        
+        try:
+            apiKey = ssm.get_parameter(
+                Name=shodanCredLocation,
+                WithDecryption=True
+            )["Parameter"]["Value"]
+        except ClientError as e:
+            raise e
+
+    # Retrieve the credential from AWS Secrets Manager
+    elif credLocation == "AWS_SECRETS_MANAGER":
+        try:
+            apiKey = asm.get_secret_value(
+                SecretId=shodanCredLocation,
+            )["SecretString"]
+        except ClientError as e:
+            raise e
+        
+    return apiKey
 
 def google_dns_resolver(target):
     """
@@ -218,7 +259,7 @@ def public_ec2_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
         except KeyError:
             continue
         # check if IP indexed by Shodan
-        r = requests.get(url=f"{SHODAN_HOSTS_URL}{ec2PublicIp}?key={shodanApiKey}").json()
+        r = requests.get(url=f"{SHODAN_HOSTS_URL}{ec2PublicIp}?key={get_shodan_api_key()}").json()
         if str(r) == "{'error': 'No information available for that IP.'}":
             # this is a passing check
             finding = {
@@ -400,7 +441,7 @@ def public_alb_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
             if elbv2Ip is None:
                 continue
             # check if IP indexed by Shodan
-            r = requests.get(url=f"{SHODAN_HOSTS_URL}{elbv2Ip}?key={shodanApiKey}").json()
+            r = requests.get(url=f"{SHODAN_HOSTS_URL}{elbv2Ip}?key={get_shodan_api_key()}").json()
             if str(r) == "{'error': 'No information available for that IP.'}":
                 # this is a passing check
                 finding = {
@@ -585,7 +626,7 @@ def public_rds_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
             if rdsIp is None:
                 continue
             # check if IP indexed by Shodan
-            r = requests.get(url=f"{SHODAN_HOSTS_URL}{rdsIp}?key={shodanApiKey}").json()
+            r = requests.get(url=f"{SHODAN_HOSTS_URL}{rdsIp}?key={get_shodan_api_key()}").json()
             if str(r) == "{'error': 'No information available for that IP.'}":
                 # this is a passing check
                 finding = {
@@ -776,7 +817,7 @@ def public_es_domain_shodan_check(cache: dict, session, awsAccountId: str, awsRe
             if esDomainIp is None:
                 continue
             # check if IP indexed by Shodan
-            r = requests.get(url=f"{SHODAN_HOSTS_URL}{esDomainIp}?key={shodanApiKey}").json()
+            r = requests.get(url=f"{SHODAN_HOSTS_URL}{esDomainIp}?key={get_shodan_api_key()}").json()
             if str(r) == "{'error': 'No information available for that IP.'}":
                 # this is a passing check
                 finding = {
@@ -956,7 +997,7 @@ def public_clb_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
             if clbIp is None:
                 continue
             # check if IP indexed by Shodan
-            r = requests.get(url=f"{SHODAN_HOSTS_URL}{clbIp}?key={shodanApiKey}").json()
+            r = requests.get(url=f"{SHODAN_HOSTS_URL}{clbIp}?key={get_shodan_api_key()}").json()
             if str(r) == "{'error': 'No information available for that IP.'}":
                 # this is a passing check
                 finding = {
@@ -1117,7 +1158,7 @@ def public_dms_replication_instance_shodan_check(cache: dict, session, awsAccoun
         if ri["PubliclyAccessible"] == True:
             dmsPublicIp = str(ri["ReplicationInstancePublicIpAddress"])
             # check if IP indexed by Shodan
-            r = requests.get(url=f"{SHODAN_HOSTS_URL}{dmsPublicIp}?key={shodanApiKey}").json()
+            r = requests.get(url=f"{SHODAN_HOSTS_URL}{dmsPublicIp}?key={get_shodan_api_key()}").json()
             if str(r) == "{'error': 'No information available for that IP.'}":
                 # this is a passing check
                 finding = {
@@ -1286,7 +1327,7 @@ def public_amazon_mq_broker_shodan_check(cache: dict, session, awsAccountId: str
                     mqBrokerIpv4 = str(instance["IpAddress"])
                 except KeyError:
                     continue
-                r = requests.get(url=f"{SHODAN_HOSTS_URL}{mqBrokerIpv4}?key={shodanApiKey}").json()
+                r = requests.get(url=f"{SHODAN_HOSTS_URL}{mqBrokerIpv4}?key={get_shodan_api_key()}").json()
                 if str(r) == "{'error': 'No information available for that IP.'}":
                     # this is a passing check
                     finding = {
@@ -1460,7 +1501,7 @@ def cloudfront_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: 
         if cfDomainIp is None:
             continue
         # check if IP indexed by Shodan
-        r = requests.get(url=f"{SHODAN_HOSTS_URL}{cfDomainIp}?key={shodanApiKey}").json()
+        r = requests.get(url=f"{SHODAN_HOSTS_URL}{cfDomainIp}?key={get_shodan_api_key()}").json()
         if str(r) == "{'error': 'No information available for that IP.'}":
             # this is a passing check
             finding = {
@@ -1635,7 +1676,7 @@ def global_accelerator_shodan_check(cache: dict, session, awsAccountId: str, aws
             if gaxDomainIp is None:
                 continue
             # check if IP indexed by Shodan
-            r = requests.get(url=f"{SHODAN_HOSTS_URL}{gaxDomainIp}?key={shodanApiKey}").json()
+            r = requests.get(url=f"{SHODAN_HOSTS_URL}{gaxDomainIp}?key={get_shodan_api_key()}").json()
             if str(r) == "{'error': 'No information available for that IP.'}":
                 # this is a passing check
                 finding = {

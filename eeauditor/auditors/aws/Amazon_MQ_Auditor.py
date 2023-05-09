@@ -503,12 +503,10 @@ def broker_public_access_check(cache: dict, session, awsAccountId: str, awsRegio
                 "FirstObservedAt": iso8601Time,
                 "CreatedAt": iso8601Time,
                 "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "CRITICAL"},
+                "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
                 "Title": "[AmazonMQ.4] AmazonMQ message brokers should not be publicly accessible",
-                "Description": "AmazonMQ broker "
-                + brokerName
-                + " is publicly accessible. Brokers created without public accessibility cannot be accessed from outside of your VPC. This greatly reduces your susceptibility to Distributed Denial of Service (DDoS) attacks from the public internet. Refer to the remediation instructions if this configuration is not intended",
+                "Description": f"AmazonMQ broker {brokerName} is publicly accessible. Brokers created without public accessibility cannot be accessed from outside of your VPC. This greatly reduces your susceptibility to Distributed Denial of Service (DDoS) attacks from the public internet and can also expose your RabbitMQ or ActiveMQ dashboards to unauthorized access. Refer to the remediation instructions if this configuration is not intended",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "For more information on message broker accessibility through a VPC refer to the Accessing the ActiveMQ Web Console of a Broker without Public Accessibility section of the Amazon MQ Developer Guide",

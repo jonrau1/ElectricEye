@@ -15,6 +15,12 @@ title = "ElectricEye Configuration"
 
     credentials_location = "AWS_SSM" # VALID CHOICES: AWS_SSM | AWS_SECRETS_MANAGER | CONFIG_FILE
 
+    # The location (or actual contents) of your Shodan.io API Key
+    # this location must match the value of `global.credentials_location` e.g., if you specify "AWS_SSM" then
+    # the value for this variable should be the name of the AWS Systems Manager Parameter Store SecureString Parameter
+
+    shodan_api_key_value = ""
+
 [regions_and_accounts]
 
     [regions_and_accounts.aws]
