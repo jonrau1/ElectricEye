@@ -18,10 +18,11 @@
 #specific language governing permissions and limitations
 #under the License.
 
-from check_register import CheckRegister
+import botocore
 import datetime
 import base64
 import json
+from check_register import CheckRegister
 
 registry = CheckRegister()
 
@@ -41,26 +42,29 @@ def gather_keyspaces_tables(cache, session):
     # First, paginate all Keyspace names and pass them to another Paginator which will attempt to enumerate all Tables
     # Then write both of the data points to a list to be used for all Checks within this Auditor
     # We will also not include any Keyspace Name that corresponds to AWS-managed system Keyspaces
-    keyspace_paginator = keyspaces.get_paginator("list_keyspaces")
-    table_paginator = keyspaces.get_paginator("list_tables")
-    keyspace_iterator = keyspace_paginator.paginate()
-    for page in keyspace_iterator:
-        for k in page["keyspaces"]:
-            keyspaceName = k["keyspaceName"]
-            if keyspaceName in defaultKeyspaceNames:
-                continue
-            else:
-                # Now get all of the tables per Keyspace - setup a new iterator
-                table_iterator = table_paginator.paginate(keyspaceName=keyspaceName)
-                for page in table_iterator:
-                    for t in page["tables"]:
-                        tableName = t["tableName"]
-                        # Write dict of Keyspace Name & Table Name to list
-                        keyspacesDict = {
-                            "KeyspaceName": keyspaceName,
-                            "TableName": tableName
-                        }
-                        awsKeyspaceInfo.append(keyspacesDict)
+    try:
+        keyspace_paginator = keyspaces.get_paginator("list_keyspaces")
+        table_paginator = keyspaces.get_paginator("list_tables")
+        keyspace_iterator = keyspace_paginator.paginate()
+        for page in keyspace_iterator:
+            for k in page["keyspaces"]:
+                keyspaceName = k["keyspaceName"]
+                if keyspaceName not in defaultKeyspaceNames:
+                    # Now get all of the tables per Keyspace - setup a new iterator
+                    table_iterator = table_paginator.paginate(keyspaceName=keyspaceName)
+                    for page in table_iterator:
+                        for t in page["tables"]:
+                            tableName = t["tableName"]
+                            # Write dict of Keyspace Name & Table Name to list
+                            keyspacesDict = {
+                                "KeyspaceName": keyspaceName,
+                                "TableName": tableName
+                            }
+                            awsKeyspaceInfo.append(keyspacesDict)
+    except botocore.exceptions.ClientError as error:
+        if error.response["Error"]["Code"] == "ResourceNotFoundException":
+            cache["gather_keyspaces_tables"] = {}
+            return cache["gather_keyspaces_tables"]
 
     del keyspace_iterator
     del keyspace_paginator
@@ -72,7 +76,7 @@ def gather_keyspaces_tables(cache, session):
 
 @registry.register_check("cassandra")
 def keyspaces_customer_managed_encryption(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Keyspaces.1] AWS Keyspaces (Cassandra) Tables should be encrypted with customer-managed keys"""
+    """[Keyspaces.1] Amazon Keyspaces (Cassandra) Tables should be encrypted with customer-managed keys"""
     keyspaces = session.client("keyspaces")
     # ISO8061 Timestamp
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -95,7 +99,7 @@ def keyspaces_customer_managed_encryption(cache: dict, session, awsAccountId: st
         if t["encryptionSpecification"]["type"] != "CUSTOMER_MANAGED_KMS_KEY":
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": resourceArn + "/table-cmk-encryption",
+                "Id": f"{resourceArn}/table-cmk-encryption",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": resourceArn,
                 "AwsAccountId": awsAccountId,
@@ -108,8 +112,8 @@ def keyspaces_customer_managed_encryption(cache: dict, session, awsAccountId: st
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "MEDIUM"},
                 "Confidence": 99,
-                "Title": "[Keyspaces.1] AWS Keyspaces (Cassandra) Tables should be encrypted with customer-managed keys",
-                "Description": f"AWS Keyspaces for Cassandra table {tableName} in Keyspace {keyspaceName} is not encrypted with a customer-managed key (AWS KMS CMK). Without using CMKs, additional identity-based controls to the table cannot be used to enforce encryption. If this configuration is not intended refer to the remediation guide linked below.",
+                "Title": "[Keyspaces.1] Amazon Keyspaces (Cassandra) Tables should be encrypted with customer-managed keys",
+                "Description": f"Amazon Keyspaces for Cassandra table {tableName} in Keyspace {keyspaceName} is not encrypted with a customer-managed key (AWS KMS CMK). Without using CMKs, additional identity-based controls to the table cannot be used to enforce encryption. If this configuration is not intended refer to the remediation guide linked below.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your Cassandra table should be encrypted with a KMS CMK refer to the Encryption at rest in Amazon Keyspaces section of the Amazon Keyspaces (for Apache Cassandra) Developer Guide",
@@ -159,7 +163,7 @@ def keyspaces_customer_managed_encryption(cache: dict, session, awsAccountId: st
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": resourceArn + "/table-cmk-encryption",
+                "Id": f"{resourceArn}/table-cmk-encryption",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": resourceArn,
                 "AwsAccountId": awsAccountId,
@@ -172,8 +176,8 @@ def keyspaces_customer_managed_encryption(cache: dict, session, awsAccountId: st
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Keyspaces.1] AWS Keyspaces (Cassandra) Tables should be encrypted with customer-managed keys",
-                "Description": f"AWS Keyspaces for Cassandra table {tableName} in Keyspace {keyspaceName} is encrypted with a customer-managed key (AWS KMS CMK).",
+                "Title": "[Keyspaces.1] Amazon Keyspaces (Cassandra) Tables should be encrypted with customer-managed keys",
+                "Description": f"Amazon Keyspaces for Cassandra table {tableName} in Keyspace {keyspaceName} is encrypted with a customer-managed key (AWS KMS CMK).",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your Cassandra table should be encrypted with a KMS CMK refer to the Encryption at rest in Amazon Keyspaces section of the Amazon Keyspaces (for Apache Cassandra) Developer Guide",
@@ -223,7 +227,7 @@ def keyspaces_customer_managed_encryption(cache: dict, session, awsAccountId: st
 
 @registry.register_check("cassandra")
 def keyspaces_inaccessible_status_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Keyspaces.2] AWS Keyspaces (Cassandra) Tables should not be in an inaccessible state"""
+    """[Keyspaces.2] Amazon Keyspaces (Cassandra) Tables should not be in an inaccessible state"""
     keyspaces = session.client("keyspaces")
     # ISO8061 Timestamp
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -246,7 +250,7 @@ def keyspaces_inaccessible_status_check(cache: dict, session, awsAccountId: str,
         if t["status"] == "INACCESSIBLE_ENCRYPTION_CREDENTIALS":
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": resourceArn + "/table-inaccessible-encryption-state",
+                "Id": f"{resourceArn}/table-inaccessible-encryption-state",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": resourceArn,
                 "AwsAccountId": awsAccountId,
@@ -259,8 +263,8 @@ def keyspaces_inaccessible_status_check(cache: dict, session, awsAccountId: str,
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "HIGH"},
                 "Confidence": 99,
-                "Title": "[Keyspaces.2] AWS Keyspaces (Cassandra) Tables should not be in an inaccessible state",
-                "Description": f"AWS Keyspaces for Cassandra table {tableName} in Keyspace {keyspaceName} is in an inaccessible state due to encryption credentials. When using KMS CMKs and assigning Key Policies, if you do not provide IAM principals in you AWS Account proper decryption permissions you can lock yourself out of a table. If this configuration is not intended refer to the remediation guide linked below.",
+                "Title": "[Keyspaces.2] Amazon Keyspaces (Cassandra) Tables should not be in an inaccessible state",
+                "Description": f"Amazon Keyspaces for Cassandra table {tableName} in Keyspace {keyspaceName} is in an inaccessible state due to encryption credentials. When using KMS CMKs and assigning Key Policies, if you do not provide IAM principals in you AWS Account proper decryption permissions you can lock yourself out of a table. If this configuration is not intended refer to the remediation guide linked below.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your Cassandra table is in an inaccessible state refer to the Troubleshooting Amazon Keyspaces identity and access section of the Amazon Keyspaces (for Apache Cassandra) Developer Guide",
@@ -318,7 +322,7 @@ def keyspaces_inaccessible_status_check(cache: dict, session, awsAccountId: str,
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": resourceArn + "/table-inaccessible-encryption-state",
+                "Id": f"{resourceArn}/table-inaccessible-encryption-state",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": resourceArn,
                 "AwsAccountId": awsAccountId,
@@ -331,8 +335,8 @@ def keyspaces_inaccessible_status_check(cache: dict, session, awsAccountId: str,
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Keyspaces.2] AWS Keyspaces (Cassandra) Tables should not be in an inaccessible state",
-                "Description": f"AWS Keyspaces for Cassandra table {tableName} in Keyspace {keyspaceName} is not in an inaccessible state due to encryption credentials.",
+                "Title": "[Keyspaces.2] Amazon Keyspaces (Cassandra) Tables should not be in an inaccessible state",
+                "Description": f"Amazon Keyspaces for Cassandra table {tableName} in Keyspace {keyspaceName} is not in an inaccessible state due to encryption credentials.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your Cassandra table is in an inaccessible state refer to the Troubleshooting Amazon Keyspaces identity and access section of the Amazon Keyspaces (for Apache Cassandra) Developer Guide",
@@ -390,7 +394,7 @@ def keyspaces_inaccessible_status_check(cache: dict, session, awsAccountId: str,
 
 @registry.register_check("cassandra")
 def keyspaces_pitr_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
-    """[Keyspaces.3] AWS Keyspaces (Cassandra) Tables should have Point-in-Time Recovery (PITR) enabled"""
+    """[Keyspaces.3] Amazon Keyspaces (Cassandra) Tables should have Point-in-Time Recovery (PITR) enabled"""
     keyspaces = session.client("keyspaces")
     # ISO8061 Timestamp
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
@@ -413,7 +417,7 @@ def keyspaces_pitr_check(cache: dict, session, awsAccountId: str, awsRegion: str
         if t["pointInTimeRecovery"]["status"] == "DISABLED":
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": resourceArn + "/table-pitr-enabled",
+                "Id": f"{resourceArn}/table-pitr-enabled",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": resourceArn,
                 "AwsAccountId": awsAccountId,
@@ -423,8 +427,8 @@ def keyspaces_pitr_check(cache: dict, session, awsAccountId: str, awsRegion: str
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "LOW"},
                 "Confidence": 99,
-                "Title": "[Keyspaces.3] AWS Keyspaces (Cassandra) Tables should have Point-in-Time Recovery (PITR) enabled",
-                "Description": f"AWS Keyspaces for Cassandra table {tableName} in Keyspace {keyspaceName} does not have Point-in-Time Recovery (PITR) enabled. PITR helps protect your Amazon Keyspaces tables from accidental write or delete operations by providing you continuous backups of your table data. If this configuration is not intended refer to the remediation guide linked below.",
+                "Title": "[Keyspaces.3] Amazon Keyspaces (Cassandra) Tables should have Point-in-Time Recovery (PITR) enabled",
+                "Description": f"Amazon Keyspaces for Cassandra table {tableName} in Keyspace {keyspaceName} does not have Point-in-Time Recovery (PITR) enabled. PITR helps protect your Amazon Keyspaces tables from accidental write or delete operations by providing you continuous backups of your table data. If this configuration is not intended refer to the remediation guide linked below.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your Cassandra table should have PITR enabled refer to the Point-in-time recovery for Amazon Keyspaces (for Apache Cassandra) section of the Amazon Keyspaces (for Apache Cassandra) Developer Guide",
@@ -480,7 +484,7 @@ def keyspaces_pitr_check(cache: dict, session, awsAccountId: str, awsRegion: str
         else:
             finding = {
                 "SchemaVersion": "2018-10-08",
-                "Id": resourceArn + "/table-pitr-enabled",
+                "Id": f"{resourceArn}/table-pitr-enabled",
                 "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
                 "GeneratorId": resourceArn,
                 "AwsAccountId": awsAccountId,
@@ -490,8 +494,8 @@ def keyspaces_pitr_check(cache: dict, session, awsAccountId: str, awsRegion: str
                 "UpdatedAt": iso8601Time,
                 "Severity": {"Label": "INFORMATIONAL"},
                 "Confidence": 99,
-                "Title": "[Keyspaces.3] AWS Keyspaces (Cassandra) Tables should have Point-in-Time Recovery (PITR) enabled",
-                "Description": f"AWS Keyspaces for Cassandra table {tableName} in Keyspace {keyspaceName} has Point-in-Time Recovery (PITR) enabled.",
+                "Title": "[Keyspaces.3] Amazon Keyspaces (Cassandra) Tables should have Point-in-Time Recovery (PITR) enabled",
+                "Description": f"Amazon Keyspaces for Cassandra table {tableName} in Keyspace {keyspaceName} has Point-in-Time Recovery (PITR) enabled.",
                 "Remediation": {
                     "Recommendation": {
                         "Text": "If your Cassandra table should have PITR enabled refer to the Point-in-time recovery for Amazon Keyspaces (for Apache Cassandra) section of the Amazon Keyspaces (for Apache Cassandra) Developer Guide",
