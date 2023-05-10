@@ -33,7 +33,7 @@ def describe_clusters(cache, session):
     cache["describe_clusters"] = cloudhsm.describe_clusters()
     return cache["describe_clusters"]
 
-@registry.register_check("cloudhsm")
+@registry.register_check("cloudhsmv2")
 def cloudhsm_cluster_degradation_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudHsm.1] CloudHsm clusters should not be degraded"""
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -176,7 +176,7 @@ def cloudhsm_cluster_degradation_check(cache: dict, session, awsAccountId: str, 
             }
             yield finding
 
-@registry.register_check("cloudhsm")
+@registry.register_check("cloudhsmv2")
 def cloudhsm_hsm_degradation_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudHsm.2] CloudHsm HSMs should not be degraded"""
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -321,7 +321,7 @@ def cloudhsm_hsm_degradation_check(cache: dict, session, awsAccountId: str, awsR
                 }
                 yield finding
 
-@registry.register_check("cloudhsm")
+@registry.register_check("cloudhsmv2")
 def cloudhsm_cluster_backup_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[CloudHsm.3] CloudHsm clusters should have at least 1 backup in a READY state"""
     cloudhsm = session.client("cloudhsmv2")
