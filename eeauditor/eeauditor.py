@@ -91,7 +91,7 @@ class EEAuditor(object):
                 except Exception as e:
                     print(f"Failed to load plugin {auditorName} with exception {e}")
         
-    def check_service_endpoint_availability(awsPartition, service, awsRegion):
+    def check_service_endpoint_availability(self, awsPartition, service, awsRegion):
         """
         This function downloads the latest version of botocore's endpoints.json file from GitHub and checks if a provided
         service within a specific AWS Partition and Region is available
