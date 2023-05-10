@@ -22,11 +22,12 @@ from functools import partial
 import inspect
 import os
 from time import sleep
-from check_register import CheckRegister, accumulate_paged_results
-from pluginbase import PluginBase
 import traceback
-from cloud_utils import CloudConfig
 import json
+import requests
+from check_register import CheckRegister, accumulate_paged_results
+from cloud_utils import CloudConfig
+from pluginbase import PluginBase
 
 here = os.path.abspath(os.path.dirname(__file__))
 getPath = partial(os.path.join, here)
@@ -89,45 +90,52 @@ class EEAuditor(object):
                     self.source.load_plugin(auditorName)
                 except Exception as e:
                     print(f"Failed to load plugin {auditorName} with exception {e}")
-    
-    # Called from within self.run_aws_checks()
-    def get_regions(self, service):
-        """
-        This is only used for AWS and only for Commerical Partition -- checks against SSM-managed Parameter to see what services are available in a Region
-        It is not exactly foolproof as AMB and CloudSearch and a few others are still jacked up...
-        """
-        # Pull session
-        import boto3
-        ssm = boto3.client("ssm")
-
-        # create an empty list for Commercial Region lookups
-        values = []
-
-        # Handle the weird v2 services names - global service overrides for lookup
-        if service == 'kinesisanalyticsv2':
-            service = 'kinesisanalytics'
-        elif service == 'macie2':
-            service = 'macie'
-        elif service == 'elbv2':
-            service = 'elb'
-        elif service == 'wafv2':
-            service = 'waf'
-        else:
-            service = service
-
-        paginator = ssm.get_paginator("get_parameters_by_path")
-        response_iterator = paginator.paginate(
-            Path=f"/aws/service/global-infrastructure/services/{service}/regions",
-            PaginationConfig={"MaxItems": 1000, "PageSize": 10},
-        )
-        results = accumulate_paged_results(
-            page_iterator=response_iterator, key="Parameters")
         
-        for parameter in results["Parameters"]:
-            values.append(parameter["Value"])
+    def check_service_endpoint_availability(awsPartition, service, awsRegion):
+        """
+        This function downloads the latest version of botocore's endpoints.json file from GitHub and checks if a provided
+        service within a specific AWS Partition and Region is available
+        """
 
-        return values
+        # these are "endpoints" and not so much regions, since ElectricEye provides local overrides to the "global"
+        # AWS region within each Auditor already as long as these are present for a specific service then we're good
+        globalEndpointPseudoRegions = [
+            "aws-global", "fips-aws-global", "aws-cn-global", "aws-us-gov-global", "aws-us-gov-global-fips","iam-govcloud", "iam-govcloud-fips", "aws-iso-global", "aws-iso-b-global", "aws-iso-e-global"
+        ]
 
+        endpointUrl = "https://raw.githubusercontent.com/boto/botocore/develop/botocore/data/endpoints.json"
+        endpointData = json.loads(
+            requests.get(endpointUrl).text
+        )
+
+        for partition in endpointData['partitions']:
+            if awsPartition == partition['partition']:
+                services = partition['services']
+                for serviceName, serviceData in services.items():
+                    try:
+                        # ecr, sagemaker, and a few other services have "api." on their names
+                        # which is not consistent with the service at all
+                        serviceName = serviceName.split("api.")[1]
+                    except IndexError:
+                        serviceName = serviceName
+                    if service == serviceName:
+                        regions = list(serviceData['endpoints'].keys())
+                        # Backcheck on the "global" services e.g., Support, Trustedadvisor, CloudFront, IAM
+                        if any(item in globalEndpointPseudoRegions for item in regions):
+                            serviceAvailable = True
+                            break
+                        if awsRegion in regions:
+                            serviceAvailable = True
+                            break
+                        else:
+                            serviceAvailable = False
+                        # break if there is nothing else
+                        break
+                    else:
+                        serviceAvailable = False
+
+        return serviceAvailable
+    
     # Called from eeauditor/controller.py run_auditor()
     def run_aws_checks(self, pluginName=None, delay=0):
         """
@@ -144,16 +152,15 @@ class EEAuditor(object):
                         self.aws_electric_eye_iam_role_name
                     )
                     partition = CloudConfig.check_aws_partition(region)
-                    # Check AWS Commercial partition service eligibility, not always accurate
-                    if partition == "aws":
-                        if region not in self.get_regions(serviceName):
-                            next
-                        # Manual service checks where the endpoint doesn't exist despite SSM saying it does in Global Infra...
-                        if region == ("us-east-2" or "eu-west-3") and serviceName == ("cloudsearch" or "appstream" or "workspaces"):
-                            next
+
+                    # Check service availability, not always accurate
+                    if self.check_service_endpoint_availability(partition, serviceName, region) == False:
+                        print(f"{serviceName} is not available in {region}")
+                        next
+
                     for checkName, check in checkList.items():
                         # clearing cache for each control whithin a auditor
-                        auditor_cache = {}
+                        auditorCache = {}
                         # if a specific check is requested, only run that one check
                         if (
                             not pluginName
@@ -163,7 +170,7 @@ class EEAuditor(object):
                             try:
                                 print(f"Executing Check {checkName} for Account {account} in {region}")
                                 for finding in check(
-                                    cache=auditor_cache,
+                                    cache=auditorCache,
                                     session=session,
                                     awsAccountId=account,
                                     awsRegion=region,
@@ -213,7 +220,7 @@ class EEAuditor(object):
             for serviceName, checkList in self.registry.checks.items():
                 for checkName, check in checkList.items():
                     # clearing cache for each control whithin a auditor
-                    auditor_cache = {}
+                    auditorCache = {}
                     # if a specific check is requested, only run that one check
                     if (
                         not pluginName
@@ -223,7 +230,7 @@ class EEAuditor(object):
                         try:
                             print(f"Executing Check {checkName} for GCP Project {project}")
                             for finding in check(
-                                cache=auditor_cache,
+                                cache=auditorCache,
                                 awsAccountId=account,
                                 awsRegion=region,
                                 awsPartition=partition,
@@ -270,7 +277,7 @@ class EEAuditor(object):
         for serviceName, checkList in self.registry.checks.items():
             for checkName, check in checkList.items():
                 # clearing cache for each control whithin a auditor
-                auditor_cache = {}
+                auditorCache = {}
                 # if a specific check is requested, only run that one check
                 if (
                     not pluginName
@@ -280,7 +287,7 @@ class EEAuditor(object):
                     try:
                         print(f"Executing Check: {checkName}")
                         for finding in check(
-                            cache=auditor_cache,
+                            cache=auditorCache,
                             awsAccountId=account,
                             awsRegion=region,
                             awsPartition=partition

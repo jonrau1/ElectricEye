@@ -26,7 +26,7 @@ import json
 
 registry = CheckRegister()
 
-@registry.register_check("appstream")
+@registry.register_check("appstream2")
 def default_internet_access_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AppStream.1] AppStream 2.0 fleets should not provide default internet access"""
     appstream = session.client("appstream")
@@ -174,7 +174,7 @@ def default_internet_access_check(cache: dict, session, awsAccountId: str, awsRe
         else:
             print(f'We found another error! {error}')
 
-@registry.register_check("appstream")
+@registry.register_check("appstream2")
 def public_image_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AppStream.2] AppStream 2.0 images you build should not be publicly accessible"""
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -260,7 +260,7 @@ def public_image_check(cache: dict, session, awsAccountId: str, awsRegion: str, 
         else:
             print(f'We found another error! {error}')
 
-@registry.register_check("appstream")
+@registry.register_check("appstream2")
 def compromise_appstream_user_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AppStream.3] AppStream 2.0 users should be monitored for signs of compromise"""
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -430,7 +430,7 @@ def compromise_appstream_user_check(cache: dict, session, awsAccountId: str, aws
         else:
             print(f'We found another error! {error}')
 
-@registry.register_check("appstream")
+@registry.register_check("appstream2")
 def userpool_auth_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AppStream.4] AppStream 2.0 users should be configured to authenticate using SAML"""
     iso8601Time = datetime.datetime.now(datetime.timezone.utc).isoformat()
