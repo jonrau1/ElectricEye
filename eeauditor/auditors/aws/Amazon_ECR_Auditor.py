@@ -234,66 +234,67 @@ def ecr_repo_image_lifecycle_policy_check(cache: dict, session, awsAccountId: st
                 "RecordState": "ARCHIVED",
             }
             yield finding
-        except KeyError:
-            finding = {
-                "SchemaVersion": "2018-10-08",
-                "Id": repoArn + "/ecr-lifecycle-policy-check",
-                "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                "GeneratorId": repoArn,
-                "AwsAccountId": awsAccountId,
-                "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
-                "FirstObservedAt": iso8601Time,
-                "CreatedAt": iso8601Time,
-                "UpdatedAt": iso8601Time,
-                "Severity": {"Label": "MEDIUM"},
-                "Confidence": 99,
-                "Title": "[ECR.2] ECR repositories should be have an image lifecycle policy configured",
-                "Description": "ECR repository "
-                + repoName
-                + " does not have an image lifecycle policy configured. Refer to the remediation instructions if this configuration is not intended",
-                "Remediation": {
-                    "Recommendation": {
-                        "Text": "If your repository should be configured to have an image lifecycle policy refer to the Amazon ECR Lifecycle Policies section in the Amazon ECR User Guide",
-                        "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html",
-                    }
-                },
-                "ProductFields": {
-                    "ProductName": "ElectricEye",
-                    "Provider": "AWS",
-                    "ProviderType": "CSP",
-                    "ProviderAccountId": awsAccountId,
-                    "AssetRegion": awsRegion,
-                    "AssetDetails": assetB64,
-                    "AssetClass": "Containers",
-                    "AssetService": "Amazon Elastic Container Registry",
-                    "AssetComponent": "Repository"
-                },
-                "Resources": [
-                    {
-                        "Type": "AwsEcrRepository",
-                        "Id": repoArn,
-                        "Partition": awsPartition,
-                        "Region": awsRegion,
-                        "Details": {"Other": {"RepositoryName": repoName}},
-                    }
-                ],
-                "Compliance": {
-                    "Status": "FAILED",
-                    "RelatedRequirements": [
-                        "NIST CSF V1.1 ID.AM-2",
-                        "NIST SP 800-53 Rev. 4 CM-8",
-                        "NIST SP 800-53 Rev. 4 PM-5",
-                        "AICPA TSC CC3.2",
-                        "AICPA TSC CC6.1",
-                        "ISO 27001:2013 A.8.1.1",
-                        "ISO 27001:2013 A.8.1.2",
-                        "ISO 27001:2013 A.12.5.1",
+        except botocore.exceptions.ClientError as error:
+            if error.response["Error"]["Code"] == "LifecyclePolicyNotFoundException":
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": repoArn + "/ecr-lifecycle-policy-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": repoArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Software and Configuration Checks/AWS Security Best Practices"],
+                    "FirstObservedAt": iso8601Time,
+                    "CreatedAt": iso8601Time,
+                    "UpdatedAt": iso8601Time,
+                    "Severity": {"Label": "MEDIUM"},
+                    "Confidence": 99,
+                    "Title": "[ECR.2] ECR repositories should be have an image lifecycle policy configured",
+                    "Description": "ECR repository "
+                    + repoName
+                    + " does not have an image lifecycle policy configured. Refer to the remediation instructions if this configuration is not intended",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "If your repository should be configured to have an image lifecycle policy refer to the Amazon ECR Lifecycle Policies section in the Amazon ECR User Guide",
+                            "Url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html",
+                        }
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Containers",
+                        "AssetService": "Amazon Elastic Container Registry",
+                        "AssetComponent": "Repository"
+                    },
+                    "Resources": [
+                        {
+                            "Type": "AwsEcrRepository",
+                            "Id": repoArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {"Other": {"RepositoryName": repoName}},
+                        }
                     ],
-                },
-                "Workflow": {"Status": "NEW"},
-                "RecordState": "ACTIVE",
-            }
-            yield finding
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF V1.1 ID.AM-2",
+                            "NIST SP 800-53 Rev. 4 CM-8",
+                            "NIST SP 800-53 Rev. 4 PM-5",
+                            "AICPA TSC CC3.2",
+                            "AICPA TSC CC6.1",
+                            "ISO 27001:2013 A.8.1.1",
+                            "ISO 27001:2013 A.8.1.2",
+                            "ISO 27001:2013 A.12.5.1",
+                        ],
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE",
+                }
+                yield finding
 
 @registry.register_check("ecr")
 def ecr_repo_permission_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
