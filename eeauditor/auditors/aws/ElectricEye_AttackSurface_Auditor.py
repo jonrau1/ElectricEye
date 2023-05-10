@@ -1169,7 +1169,7 @@ def cloudfront_attack_surface_open_tcp_port_check(cache: dict, session, awsAccou
             except KeyError:
                 continue
 
-@registry.register_check("cloudfront")
+@registry.register_check("route53")
 def route53_public_hz_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AttackSurface.Route53.{checkIdNumber}] Route53 Public Hosted Zones A Records should not be publicly reachable on {serviceName}"""
     route53 = session.client("route53")

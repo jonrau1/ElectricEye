@@ -70,7 +70,7 @@ def gather_keyspaces_tables(cache, session):
     cache["gather_keyspaces_tables"] = awsKeyspaceInfo
     return cache["gather_keyspaces_tables"]
 
-@registry.register_check("keyspaces")
+@registry.register_check("cassandra")
 def keyspaces_customer_managed_encryption(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Keyspaces.1] AWS Keyspaces (Cassandra) Tables should be encrypted with customer-managed keys"""
     keyspaces = session.client("keyspaces")
@@ -221,7 +221,7 @@ def keyspaces_customer_managed_encryption(cache: dict, session, awsAccountId: st
             }
             yield finding
 
-@registry.register_check("keyspaces")
+@registry.register_check("cassandra")
 def keyspaces_inaccessible_status_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Keyspaces.2] AWS Keyspaces (Cassandra) Tables should not be in an inaccessible state"""
     keyspaces = session.client("keyspaces")
@@ -388,7 +388,7 @@ def keyspaces_inaccessible_status_check(cache: dict, session, awsAccountId: str,
             }
             yield finding
 
-@registry.register_check("keyspaces")
+@registry.register_check("cassandra")
 def keyspaces_pitr_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Keyspaces.3] AWS Keyspaces (Cassandra) Tables should have Point-in-Time Recovery (PITR) enabled"""
     keyspaces = session.client("keyspaces")

@@ -142,9 +142,9 @@ class EEAuditor(object):
         Runs AWS Auditors across all TOML-specified Accounts and Regions in a specific Partition
         """
 
-        for serviceName, checkList in self.registry.checks.items():            
-            for account in self.aws_account_targets:
-                for region in self.aws_regions_selection:
+        for account in self.aws_account_targets:
+            for region in self.aws_regions_selection:
+                for serviceName, checkList in self.registry.checks.items():
                     # Setup Session & Partition
                     session = CloudConfig.create_aws_session(
                         account,
@@ -156,7 +156,7 @@ class EEAuditor(object):
                     # Check service availability, not always accurate
                     if self.check_service_endpoint_availability(partition, serviceName, region) == False:
                         print(f"{serviceName} is not available in {region}")
-                        next
+                        continue
 
                     for checkName, check in checkList.items():
                         # clearing cache for each control whithin a auditor
