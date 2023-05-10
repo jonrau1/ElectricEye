@@ -335,7 +335,7 @@ def ec2_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: s
                 except KeyError:
                     continue
 
-@registry.register_check("elbv2")
+@registry.register_check("elasticloadbalancing")
 def elbv2_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AttackSurface.ELBv2.{checkIdNumber}] Application Load Balancers should not be publicly reachable on {serviceName}"""
     # ISO Time
@@ -548,7 +548,7 @@ def elbv2_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId:
         else:
             continue
 
-@registry.register_check("elb")
+@registry.register_check("elasticloadbalancing")
 def elb_attack_surface_open_tcp_port_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[AttackSurface.ELB.{checkIdNumber}] Classic Load Balancers should not be publicly reachable on {serviceName}"""
     # ISO Time

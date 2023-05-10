@@ -34,7 +34,7 @@ def describe_load_balancers(cache, session):
     cache["describe_load_balancers"] = elbv2.describe_load_balancers()
     return cache["describe_load_balancers"]
 
-@registry.register_check("elbv2")
+@registry.register_check("elasticloadbalancing")
 def elbv2_alb_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELBv2.1] Application Load Balancers should have access logging enabled"""
     elbv2 = session.client("elbv2")
@@ -208,7 +208,7 @@ def elbv2_alb_logging_check(cache: dict, session, awsAccountId: str, awsRegion: 
         else:
             continue
 
-@registry.register_check("elbv2")
+@registry.register_check("elasticloadbalancing")
 def elbv2_deletion_protection_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELBv2.2] Application and Network Load Balancers should have deletion protection enabled"""
     elbv2 = session.client("elbv2")
@@ -389,7 +389,7 @@ def elbv2_deletion_protection_check(cache: dict, session, awsAccountId: str, aws
             else:
                 continue
 
-@registry.register_check("elbv2")
+@registry.register_check("elasticloadbalancing")
 def elbv2_internet_facing_secure_listeners_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELBv2.3] Internet-facing Application and Network Load Balancers should have secure listeners configured"""
     elbv2 = session.client("elbv2")
@@ -563,7 +563,7 @@ def elbv2_internet_facing_secure_listeners_check(cache: dict, session, awsAccoun
                 }
                 yield finding
 
-@registry.register_check("elbv2")
+@registry.register_check("elasticloadbalancing")
 def elbv2_tls12_listener_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELBv2.4] Application and Network Load Balancers with HTTPS or TLS listeners should enforce TLS 1.2 or TLS 1.3 policies"""
     elbv2 = session.client("elbv2")
@@ -760,7 +760,7 @@ def elbv2_tls12_listener_policy_check(cache: dict, session, awsAccountId: str, a
             else:
                 continue
 
-@registry.register_check("elbv2")
+@registry.register_check("elasticloadbalancing")
 def elbv2_drop_invalid_header_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELBv2.5] Application Load Balancers should drop invalid HTTP header fields"""
     elbv2 = session.client("elbv2")
@@ -929,7 +929,7 @@ def elbv2_drop_invalid_header_check(cache: dict, session, awsAccountId: str, aws
             else:
                 continue
 
-@registry.register_check("elbv2")
+@registry.register_check("elasticloadbalancing")
 def elbv2_nlb_tls_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELBv2.6] Network Load Balancers with TLS listeners should have access logging enabled"""
     elbv2 = session.client("elbv2")
@@ -1109,7 +1109,7 @@ def elbv2_nlb_tls_logging_check(cache: dict, session, awsAccountId: str, awsRegi
         else:
             continue
 
-@registry.register_check("elbv2")
+@registry.register_check("elasticloadbalancing")
 def elbv2_alb_http_desync_protection_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELBv2.7] Application Load Balancers should have HTTP Desync protection enabled"""
     elbv2 = session.client("elbv2")
@@ -1305,7 +1305,7 @@ def elbv2_alb_http_desync_protection_check(cache: dict, session, awsAccountId: s
         else:
             continue
 
-@registry.register_check("elbv2")
+@registry.register_check("elasticloadbalancing")
 def elbv2_alb_sg_risk_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELBv2.8] Application Load Balancer security groups should not allow non-Listener ports access"""
     elbv2 = session.client("elbv2")
@@ -1507,7 +1507,7 @@ def elbv2_alb_sg_risk_check(cache: dict, session, awsAccountId: str, awsRegion: 
         else:
             continue
 
-@registry.register_check("elbv2")
+@registry.register_check("elasticloadbalancing")
 def elbv2_alb_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[ELBv2.9] Application Load Balancers should be protected by AWS Web Application Firewall"""
     wafv2 = session.client("wafv2")

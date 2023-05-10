@@ -26,7 +26,7 @@ import json
 
 registry = CheckRegister()
 
-@registry.register_check("accessanalyzer")
+@registry.register_check("access-analyzer")
 def iam_access_analyzer_detector_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[SecSvcs.1] Amazon IAM Access Analyzer should be enabled"""
     accessanalyzer = session.client("accessanalyzer")

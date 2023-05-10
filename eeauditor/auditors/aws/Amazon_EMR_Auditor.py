@@ -33,7 +33,7 @@ def list_clusters(cache, session):
     cache["list_clusters"] = emr.list_clusters(ClusterStates=["STARTING", "RUNNING", "WAITING"])
     return cache["list_clusters"]
 
-@registry.register_check("emr")
+@registry.register_check("elasticmapreduce")
 def emr_cluster_security_configuration_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EMR.1] EMR Clusters should have a security configuration specified"""
     emr = session.client("emr")
@@ -209,7 +209,7 @@ def emr_cluster_security_configuration_check(cache: dict, session, awsAccountId:
             else:
                 print(e)
 
-@registry.register_check("emr")
+@registry.register_check("elasticmapreduce")
 def emr_security_config_encryption_in_transit_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EMR.2] EMR Cluster security configurations should enforce encryption in transit"""
     emr = session.client("emr")
@@ -389,7 +389,7 @@ def emr_security_config_encryption_in_transit_check(cache: dict, session, awsAcc
             else:
                 print(e)
 
-@registry.register_check("emr")
+@registry.register_check("elasticmapreduce")
 def emr_security_config_encryption_at_rest_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EMR.3] EMR Cluster security configurations should enforce encryption at rest for EMRFS"""
     emr = session.client("emr")
@@ -557,7 +557,7 @@ def emr_security_config_encryption_at_rest_check(cache: dict, session, awsAccoun
             else:
                 print(e)
 
-@registry.register_check("emr")
+@registry.register_check("elasticmapreduce")
 def emr_security_config_config_ebs_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EMR.4] EMR Cluster security configurations should enforce encryption at rest for EBS"""
     emr = session.client("emr")
@@ -795,7 +795,7 @@ def emr_security_config_config_ebs_encryption_check(cache: dict, session, awsAcc
             else:
                 print(e)
 
-@registry.register_check("emr")
+@registry.register_check("elasticmapreduce")
 def emr_security_config_kerberos_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EMR.5] EMR Cluster security configurations should enable Kerberos authentication"""
     emr = session.client("emr")
@@ -981,7 +981,7 @@ def emr_security_config_kerberos_check(cache: dict, session, awsAccountId: str, 
             else:
                 print(e)
 
-@registry.register_check("emr")
+@registry.register_check("elasticmapreduce")
 def emr_cluster_termination_protection_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EMR.6] EMR Clusters should have termination protection enabled"""
     emr = session.client("emr")
@@ -1134,7 +1134,7 @@ def emr_cluster_termination_protection_check(cache: dict, session, awsAccountId:
         except Exception as e:
             print(e)
 
-@registry.register_check("emr")
+@registry.register_check("elasticmapreduce")
 def emr_cluster_logging_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EMR.7] EMR Clusters should have logging enabled"""
     emr = session.client("emr")
@@ -1286,7 +1286,7 @@ def emr_cluster_logging_check(cache: dict, session, awsAccountId: str, awsRegion
             else:
                 print(e)
 
-@registry.register_check("emr")
+@registry.register_check("elasticmapreduce")
 def emr_cluster_block_secgroup_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EMR.8] EMR account-level public security group access block should be enabled"""
     emr = session.client("emr")

@@ -108,6 +108,12 @@ class EEAuditor(object):
             requests.get(endpointUrl).text
         )
 
+        # overrides
+        if service == "globalaccelerator":
+            service = "iam"
+        elif service == "imagebuilder":
+            service = "ec2"
+
         for partition in endpointData['partitions']:
             if awsPartition == partition['partition']:
                 services = partition['services']

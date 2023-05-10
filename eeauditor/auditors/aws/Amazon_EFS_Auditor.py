@@ -33,7 +33,7 @@ def describe_file_systems(cache, session):
     cache["describe_file_systems"] = efs.describe_file_systems()
     return cache["describe_file_systems"]
 
-@registry.register_check("efs")
+@registry.register_check("elasticfilesystem")
 def efs_filesys_encryption_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EFS.1] EFS File Systems should have encryption enabled"""
     # ISO Time
@@ -164,7 +164,7 @@ def efs_filesys_encryption_check(cache: dict, session, awsAccountId: str, awsReg
             }
             yield finding
 
-@registry.register_check("efs")
+@registry.register_check("elasticfilesystem")
 def efs_filesys_policy_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[EFS.2] EFS File Systems should not use the default file system policy"""
     efs = session.client("efs")
