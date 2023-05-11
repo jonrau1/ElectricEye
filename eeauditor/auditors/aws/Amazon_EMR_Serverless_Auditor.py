@@ -35,20 +35,11 @@ def get_emr_serverless_apps(cache, session):
     emrServerlessApps = []
 
     for apps in emrs.list_applications(states=["CREATED", "STARTED", "STOPPED"])["applications"]:
-        emrServerlessApps.append(
-            emrs.get_application(applicationId=apps["id"])["application"]
-        )
+        emrApp = emrs.get_application(applicationId=apps["id"])["application"]
+        emrServerlessApps.append(emrApp)
 
     cache["get_emr_serverless_apps"] = emrServerlessApps
-    return["get_emr_serverless_apps"]
-
-def list_work_groups(cache, session):
-    athena = session.client("athena")
-    response = cache.get("list_work_groups")
-    if response:
-        return response
-    cache["list_work_groups"] = athena.list_work_groups()
-    return cache["list_work_groups"]
+    return cache["get_emr_serverless_apps"]
 
 @registry.register_check("emr-serverless")
 def emr_serverless_application_in_vpc_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
@@ -56,7 +47,7 @@ def emr_serverless_application_in_vpc_check(cache: dict, session, awsAccountId: 
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # loop work groups from cache
-    for emrapp in get_emr_serverless_apps(cache, session)["WorkGroups"]:
+    for emrapp in get_emr_serverless_apps(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(emrapp,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
@@ -209,7 +200,7 @@ def emr_serverless_application_custom_container_runtime_check(cache: dict, sessi
     # ISO time
     iso8601Time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     # loop work groups from cache
-    for emrapp in get_emr_serverless_apps(cache, session)["WorkGroups"]:
+    for emrapp in get_emr_serverless_apps(cache, session):
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(emrapp,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
