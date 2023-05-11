@@ -94,7 +94,7 @@ def google_dns_resolver(target):
     url = f"https://dns.google/resolve?name={target}&type=A"
     
     r = requests.get(url=url)
-    if r.status_code != 200:
+    if r.status_code != 200 or 201:
         return None
     else:
         for result in json.loads(r.text)["Answer"]:
@@ -106,7 +106,7 @@ def google_dns_resolver(target):
                 ):
                     return result["data"]
                 else:
-                    return None
+                    continue
             except ipaddress.AddressValueError:
                 continue
         # if the loop terminates without any result return None
@@ -1337,181 +1337,182 @@ def public_dms_replication_instance_shodan_check(cache: dict, session, awsAccoun
 def public_amazon_mq_broker_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
     """[Shodan.AmazonMQ.1] Publicly accessible Amazon MQ message brokers should be monitored for being indexed by Shodan"""
     shodanApiKey = get_shodan_api_key()
-    amzmq = session.client("mq")
     # ISO Time
     iso8601time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     for brokers in list_brokers(cache, session):
         if shodanApiKey == None:
             continue
         brokerName = str(brokers["BrokerName"])
-        response = amzmq.describe_broker(BrokerId=brokerName)
         # B64 encode all of the details for the Asset
         assetJson = json.dumps(brokers,default=str).encode("utf-8")
         assetB64 = base64.b64encode(assetJson)
-        brokerArn = str(response["BrokerArn"])
-        brokerId = str(response["BrokerId"])
-        if response["PubliclyAccessible"] == True:
-            for instance in response["BrokerInstances"]:
-                try:
-                    mqBrokerIpv4 = str(instance["IpAddress"])
-                except KeyError:
-                    continue
-                r = requests.get(url=f"{SHODAN_HOSTS_URL}{mqBrokerIpv4}?key={shodanApiKey}").json()
-                if str(r) == "{'error': 'No information available for that IP.'}":
-                    # this is a passing check
-                    finding = {
-                        "SchemaVersion": "2018-10-08",
-                        "Id": f"{brokerArn}/{mqBrokerIpv4}/amazon-mq-broker-shodan-index-check",
-                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": brokerArn,
-                        "AwsAccountId": awsAccountId,
-                        "Types": ["Effects/Data Exposure"],
-                        "CreatedAt": iso8601time,
-                        "UpdatedAt": iso8601time,
-                        "Severity": {"Label": "INFORMATIONAL"},
-                        "Title": "[Shodan.AmazonMQ.1] Publicly accessible Amazon MQ message brokers should be monitored for being indexed by Shodan",
-                        "Description": f"Amazon MQ message broker {brokerName} has not been indexed by Shodan.",
-                        "Remediation": {
-                            "Recommendation": {
-                                "Text": "To learn more about the information that Shodan indexed on your host refer to the URL in the remediation section.",
-                                "Url": SHODAN_HOSTS_URL
-                            }
-                        },
-                        "ProductFields": {
-                            "ProductName": "ElectricEye",
-                            "Provider": "AWS",
-                            "ProviderType": "CSP",
-                            "ProviderAccountId": awsAccountId,
-                            "AssetRegion": awsRegion,
-                            "AssetDetails": assetB64,
-                            "AssetClass": "Application Integration",
-                            "AssetService": "Amazon MQ",
-                            "AssetComponent": "Broker"
-                        },
-                        "Resources": [
-                            {
-                                "Type": "AwsMqMessageBroker",
-                                "Id": brokerArn,
-                                "Partition": awsPartition,
-                                "Region": awsRegion,
-                                "Details": {
-                                    "Other": {
-                                        "BrokerName": brokerName,
-                                        "BrokerId": brokerId,
-                                    }
-                                },
-                            }
-                        ],
-                        "Compliance": {
-                            "Status": "PASSED",
-                            "RelatedRequirements": [
-                                "NIST CSF V1.1 ID.RA-2",
-                                "NIST CSF V1.1 DE.AE-2",
-                                "NIST SP 800-53 Rev. 4 AU-6",
-                                "NIST SP 800-53 Rev. 4 CA-7",
-                                "NIST SP 800-53 Rev. 4 IR-4",
-                                "NIST SP 800-53 Rev. 4 PM-15",
-                                "NIST SP 800-53 Rev. 4 PM-16",
-                                "NIST SP 800-53 Rev. 4 SI-4",
-                                "NIST SP 800-53 Rev. 4 SI-5",
-                                "AIPCA TSC CC3.2",
-                                "AIPCA TSC CC7.2",
-                                "ISO 27001:2013 A.6.1.4",
-                                "ISO 27001:2013 A.12.4.1",
-                                "ISO 27001:2013 A.16.1.1",
-                                "ISO 27001:2013 A.16.1.4",
-                                "MITRE ATT&CK T1040",
-                                "MITRE ATT&CK T1046",
-                                "MITRE ATT&CK T1580",
-                                "MITRE ATT&CK T1590",
-                                "MITRE ATT&CK T1592",
-                                "MITRE ATT&CK T1595"
-                            ]
-                        },
-                        "Workflow": {"Status": "RESOLVED"},
-                        "RecordState": "ARCHIVED"
-                    }
-                    yield finding
-                else:
-                    assetPayload = {
-                        "Broker": response,
-                        "Shodan": r
-                    }
-                    assetJson = json.dumps(assetPayload,default=str).encode("utf-8")
-                    assetB64 = base64.b64encode(assetJson)
-                    finding = {
-                        "SchemaVersion": "2018-10-08",
-                        "Id": f"{brokerArn}/{mqBrokerIpv4}/amazon-mq-broker-shodan-index-check",
-                        "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
-                        "GeneratorId": brokerArn,
-                        "AwsAccountId": awsAccountId,
-                        "Types": ["Effects/Data Exposure"],
-                        "CreatedAt": iso8601time,
-                        "UpdatedAt": iso8601time,
-                        "Severity": {"Label": "MEDIUM"},
-                        "Title": "[Shodan.AmazonMQ.1] Publicly accessible Amazon MQ message brokers should be monitored for being indexed by Shodan",
-                        "Description": f"AmazonMQ Broker {brokerName} has been indexed on IP address {mqBrokerIpv4}. Shodan is an 'internet search engine' which continuously crawls and scans across the entire internet to capture host, geolocation, TLS, and running service information. Shodan is a popular tool used by blue teams, security researchers and adversaries alike. Having your asset indexed on Shodan, depending on its configuration, may increase its risk of unauthorized access and further compromise. Review your configuration and refer to the Shodan URL in the remediation section to take action to reduce your exposure and harden your host.",
-                        "Remediation": {
-                            "Recommendation": {
-                                "Text": "To learn more about the information that Shodan indexed on your host refer to the URL in the remediation section.",
-                                "Url": f"{SHODAN_HOSTS_URL}{mqBrokerIpv4}"
-                            }
-                        },
-                        "ProductFields": {
-                            "ProductName": "ElectricEye",
-                            "Provider": "AWS",
-                            "ProviderType": "CSP",
-                            "ProviderAccountId": awsAccountId,
-                            "AssetRegion": awsRegion,
-                            "AssetDetails": assetB64,
-                            "AssetClass": "Application Integration",
-                            "AssetService": "Amazon MQ",
-                            "AssetComponent": "Broker"
-                        },
-                        "Resources": [
-                            {
-                                "Type": "AwsMqMessageBroker",
-                                "Id": brokerArn,
-                                "Partition": awsPartition,
-                                "Region": awsRegion,
-                                "Details": {
-                                    "Other": {
-                                        "BrokerName": brokerName,
-                                        "BrokerId": brokerId,
-                                    }
-                                },
-                            }
-                        ],
-                        "Compliance": {
-                            "Status": "FAILED",
-                            "RelatedRequirements": [
-                                "NIST CSF V1.1 ID.RA-2",
-                                "NIST CSF V1.1 DE.AE-2",
-                                "NIST SP 800-53 Rev. 4 AU-6",
-                                "NIST SP 800-53 Rev. 4 CA-7",
-                                "NIST SP 800-53 Rev. 4 IR-4",
-                                "NIST SP 800-53 Rev. 4 PM-15",
-                                "NIST SP 800-53 Rev. 4 PM-16",
-                                "NIST SP 800-53 Rev. 4 SI-4",
-                                "NIST SP 800-53 Rev. 4 SI-5",
-                                "AIPCA TSC CC3.2",
-                                "AIPCA TSC CC7.2",
-                                "ISO 27001:2013 A.6.1.4",
-                                "ISO 27001:2013 A.12.4.1",
-                                "ISO 27001:2013 A.16.1.1",
-                                "ISO 27001:2013 A.16.1.4",
-                                "MITRE ATT&CK T1040",
-                                "MITRE ATT&CK T1046",
-                                "MITRE ATT&CK T1580",
-                                "MITRE ATT&CK T1590",
-                                "MITRE ATT&CK T1592",
-                                "MITRE ATT&CK T1595"
-                            ]
-                        },
-                        "Workflow": {"Status": "NEW"},
-                        "RecordState": "ACTIVE"
-                    }
-                    yield finding
+        brokerArn = str(brokers["BrokerArn"])
+        brokerId = str(brokers["BrokerId"])
+        if brokers["PubliclyAccessible"] == True:
+            try:
+                consoleHostname = brokers["BrokerInstances"][0]["ConsoleURL"].split("https://")[1].split(":")[0]
+            except KeyError:
+                continue
+            try:
+                mqBrokerIpv4 = google_dns_resolver(consoleHostname)
+            except KeyError:
+                continue
+            r = requests.get(url=f"{SHODAN_HOSTS_URL}{mqBrokerIpv4}?key={shodanApiKey}").json()
+            if str(r) == "{'error': 'No information available for that IP.'}":
+                # this is a passing check
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{brokerArn}/{mqBrokerIpv4}/amazon-mq-broker-shodan-index-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": brokerArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Effects/Data Exposure"],
+                    "CreatedAt": iso8601time,
+                    "UpdatedAt": iso8601time,
+                    "Severity": {"Label": "INFORMATIONAL"},
+                    "Title": "[Shodan.AmazonMQ.1] Publicly accessible Amazon MQ message brokers should be monitored for being indexed by Shodan",
+                    "Description": f"Amazon MQ message broker {brokerName} has not been indexed by Shodan.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "To learn more about the information that Shodan indexed on your host refer to the URL in the remediation section.",
+                            "Url": SHODAN_HOSTS_URL
+                        }
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Application Integration",
+                        "AssetService": "Amazon MQ",
+                        "AssetComponent": "Broker"
+                    },
+                    "Resources": [
+                        {
+                            "Type": "AwsMqMessageBroker",
+                            "Id": brokerArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "Other": {
+                                    "BrokerName": brokerName,
+                                    "BrokerId": brokerId,
+                                }
+                            },
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "PASSED",
+                        "RelatedRequirements": [
+                            "NIST CSF V1.1 ID.RA-2",
+                            "NIST CSF V1.1 DE.AE-2",
+                            "NIST SP 800-53 Rev. 4 AU-6",
+                            "NIST SP 800-53 Rev. 4 CA-7",
+                            "NIST SP 800-53 Rev. 4 IR-4",
+                            "NIST SP 800-53 Rev. 4 PM-15",
+                            "NIST SP 800-53 Rev. 4 PM-16",
+                            "NIST SP 800-53 Rev. 4 SI-4",
+                            "NIST SP 800-53 Rev. 4 SI-5",
+                            "AIPCA TSC CC3.2",
+                            "AIPCA TSC CC7.2",
+                            "ISO 27001:2013 A.6.1.4",
+                            "ISO 27001:2013 A.12.4.1",
+                            "ISO 27001:2013 A.16.1.1",
+                            "ISO 27001:2013 A.16.1.4",
+                            "MITRE ATT&CK T1040",
+                            "MITRE ATT&CK T1046",
+                            "MITRE ATT&CK T1580",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1592",
+                            "MITRE ATT&CK T1595"
+                        ]
+                    },
+                    "Workflow": {"Status": "RESOLVED"},
+                    "RecordState": "ARCHIVED"
+                }
+                yield finding
+            else:
+                assetPayload = {
+                    "Broker": brokers,
+                    "Shodan": r
+                }
+                assetJson = json.dumps(assetPayload,default=str).encode("utf-8")
+                assetB64 = base64.b64encode(assetJson)
+                finding = {
+                    "SchemaVersion": "2018-10-08",
+                    "Id": f"{brokerArn}/{mqBrokerIpv4}/amazon-mq-broker-shodan-index-check",
+                    "ProductArn": f"arn:{awsPartition}:securityhub:{awsRegion}:{awsAccountId}:product/{awsAccountId}/default",
+                    "GeneratorId": brokerArn,
+                    "AwsAccountId": awsAccountId,
+                    "Types": ["Effects/Data Exposure"],
+                    "CreatedAt": iso8601time,
+                    "UpdatedAt": iso8601time,
+                    "Severity": {"Label": "MEDIUM"},
+                    "Title": "[Shodan.AmazonMQ.1] Publicly accessible Amazon MQ message brokers should be monitored for being indexed by Shodan",
+                    "Description": f"AmazonMQ Broker {brokerName} has been indexed on IP address {mqBrokerIpv4}. Shodan is an 'internet search engine' which continuously crawls and scans across the entire internet to capture host, geolocation, TLS, and running service information. Shodan is a popular tool used by blue teams, security researchers and adversaries alike. Having your asset indexed on Shodan, depending on its configuration, may increase its risk of unauthorized access and further compromise. Review your configuration and refer to the Shodan URL in the remediation section to take action to reduce your exposure and harden your host.",
+                    "Remediation": {
+                        "Recommendation": {
+                            "Text": "To learn more about the information that Shodan indexed on your host refer to the URL in the remediation section.",
+                            "Url": f"{SHODAN_HOSTS_URL}{mqBrokerIpv4}"
+                        }
+                    },
+                    "ProductFields": {
+                        "ProductName": "ElectricEye",
+                        "Provider": "AWS",
+                        "ProviderType": "CSP",
+                        "ProviderAccountId": awsAccountId,
+                        "AssetRegion": awsRegion,
+                        "AssetDetails": assetB64,
+                        "AssetClass": "Application Integration",
+                        "AssetService": "Amazon MQ",
+                        "AssetComponent": "Broker"
+                    },
+                    "Resources": [
+                        {
+                            "Type": "AwsMqMessageBroker",
+                            "Id": brokerArn,
+                            "Partition": awsPartition,
+                            "Region": awsRegion,
+                            "Details": {
+                                "Other": {
+                                    "BrokerName": brokerName,
+                                    "BrokerId": brokerId,
+                                }
+                            },
+                        }
+                    ],
+                    "Compliance": {
+                        "Status": "FAILED",
+                        "RelatedRequirements": [
+                            "NIST CSF V1.1 ID.RA-2",
+                            "NIST CSF V1.1 DE.AE-2",
+                            "NIST SP 800-53 Rev. 4 AU-6",
+                            "NIST SP 800-53 Rev. 4 CA-7",
+                            "NIST SP 800-53 Rev. 4 IR-4",
+                            "NIST SP 800-53 Rev. 4 PM-15",
+                            "NIST SP 800-53 Rev. 4 PM-16",
+                            "NIST SP 800-53 Rev. 4 SI-4",
+                            "NIST SP 800-53 Rev. 4 SI-5",
+                            "AIPCA TSC CC3.2",
+                            "AIPCA TSC CC7.2",
+                            "ISO 27001:2013 A.6.1.4",
+                            "ISO 27001:2013 A.12.4.1",
+                            "ISO 27001:2013 A.16.1.1",
+                            "ISO 27001:2013 A.16.1.4",
+                            "MITRE ATT&CK T1040",
+                            "MITRE ATT&CK T1046",
+                            "MITRE ATT&CK T1580",
+                            "MITRE ATT&CK T1590",
+                            "MITRE ATT&CK T1592",
+                            "MITRE ATT&CK T1595"
+                        ]
+                    },
+                    "Workflow": {"Status": "NEW"},
+                    "RecordState": "ACTIVE"
+                }
+                yield finding
 
 @registry.register_check("cloudfront")
 def cloudfront_shodan_check(cache: dict, session, awsAccountId: str, awsRegion: str, awsPartition: str) -> dict:
