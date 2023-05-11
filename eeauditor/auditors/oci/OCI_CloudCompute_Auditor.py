@@ -21,13 +21,21 @@
 import os
 import oci
 from oci.config import validate_config
-from oci_response_processor import OciResponseProcessor
 import datetime
 import base64
 import json
 from check_register import CheckRegister
 
 registry = CheckRegister()
+
+def process_response(responseObject):
+        """
+        Receives an OCI Python SDK `Response` type (differs by service) and responds with a JSON object
+        """
+
+        payload = json.loads(str(responseObject))
+
+        return payload
 
 def get_oci_compute_instances(cache, ociTenancyId, ociUserId, ociRegionName, ociCompartments, ociUserApiKeyFingerprint):
     
@@ -56,7 +64,7 @@ def get_oci_compute_instances(cache, ociTenancyId, ociUserId, ociRegionName, oci
             for instance in listInstances.data:
                 instancesList.append(
                     # transform into JSON
-                    instancePayload = OciResponseProcessor(instance)
+                    instancePayload = process_response(instance)
                 )
         else:
             return {}
