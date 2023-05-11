@@ -94,7 +94,7 @@ def google_dns_resolver(target):
     url = f"https://dns.google/resolve?name={target}&type=A"
     
     r = requests.get(url=url)
-    if r.status_code != 200 or 201:
+    if r.status_code != 200:
         return None
     else:
         for result in json.loads(r.text)["Answer"]:
